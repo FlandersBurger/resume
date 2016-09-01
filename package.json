@@ -1,0 +1,14 @@
+{
+  "name": "resume",
+  "dependencies": {
+    "bson": "^0.5.4"
+  },
+  "devDependencies": {
+    "gulp": "^3.9.1",
+    "gulp-concat": "^2.6.0",
+    "gulp-ng-annotate": "^1.1.0",
+    "gulp-sourcemaps": "^1.6.0",
+    "gulp-stylus": "^2.5.0",
+    "gulp-uglify": "^1.5.4"
+  }
+}
