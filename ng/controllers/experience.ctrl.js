@@ -4,8 +4,12 @@ angular.module('app')
   $scope.jobs = [
     {
       "company": "Imprint Plus",
+      "description": "Software & Data Analyst"
       "startDate": new Date('7/22/2011'),
-      "image": "ip.png"
+      "image": "ip.png",
+      "skills": [
+        "sql", "angular", "node", "js"
+      ]
     },
     {
       "company": "Hewlet-Packard",

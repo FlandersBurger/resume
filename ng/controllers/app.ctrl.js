@@ -1,5 +1,19 @@
 angular.module('app')
-.controller('AppCtrl', function ($scope, $location) {
+.controller('AppCtrl', function ($scope, $location, LanguageSvc) {
+
+  $scope.themeCounter = 1;
+
+  $scope.flipTheme = function () {
+    $scope.themeCounter < 6 ? $scope.themeCounter++ : $scope.themeCounter = 1;
+  }
+
+  $scope.languages = LanguageSvc.languages;
+
+  $scope.selectedLanguage = LanguageSvc.getLanguage();
+
+  $scope.selectLanguage = function (language) {
+    $scope.selectedLanguage = LanguageSvc.setLanguage(language);
+  }
 
   $scope.socialMedia = [
     {
