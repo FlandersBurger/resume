@@ -23,10 +23,10 @@ angular.module('app')
   svc.setLanguage = function (language) {
     svc.selectedLanguage = language;
     return language;
-  }
+  };
 
   svc.getLanguage = function () {
     return svc.selectedLanguage;
-  }
+  };
 
-})
+});

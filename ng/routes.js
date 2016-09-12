@@ -10,12 +10,19 @@ angular.module('app')
   .state('experience', {
     url: '/experience',
     controller: 'ExperienceCtrl',
-    templateUrl: 'pages/experience.html'
+    templateUrl: 'pages/experience.html',
+    templateStyleUrl: 'assets/experience.css'
   })
+  .state('skills', {
+    url: '/skills',
+    controller: 'SkillsCtrl',
+    templateUrl: 'pages/skills.html',
+    templateStyleUrl: 'assets/skills.css'
+  });
 
   $locationProvider.html5Mode({
     enabled: true,
     requireBase: false
   });
 
-})
+});

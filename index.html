@@ -1,5 +1,5 @@
 ﻿<!DOCTYPE html>
-<html ng-app="app" ng-controller="AppCtrl">
+<html ng-app="app" ng-controller="AppCtrl" ui-router-styles>
 <head>
 <title>Laurent Debacker Resume</title>
 
@@ -37,7 +37,7 @@
           <a class="nav-link" ui-sref="experience">Experience</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link" href="#">Skills</a>
+          <a class="nav-link" ui-sref="skills">Skills</a>
         </li>
         <li class="nav-item">
           <a class="nav-link" href="#">Hobbies</a>
@@ -76,6 +76,7 @@
   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
   <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.7/angular.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/angular-ui-router/0.3.1/angular-ui-router.min.js"></script>
+  <script src="./resources/underscore-min.js"></script>
   <script src="./assets/app.js"></script>
 
 

@@ -4,8 +4,8 @@ angular.module('app')
   $scope.themeCounter = 1;
 
   $scope.flipTheme = function () {
-    $scope.themeCounter < 6 ? $scope.themeCounter++ : $scope.themeCounter = 1;
-  }
+    $scope.themeCounter = $scope.themeCounter < 6 ? $scope.themeCounter + 1 : $scope.themeCounter = 1;
+  };
 
   $scope.languages = LanguageSvc.languages;
 
@@ -13,7 +13,7 @@ angular.module('app')
 
   $scope.selectLanguage = function (language) {
     $scope.selectedLanguage = LanguageSvc.setLanguage(language);
-  }
+  };
 
   $scope.socialMedia = [
     {
@@ -46,5 +46,5 @@ angular.module('app')
       "url": "https://jsfiddle.net/user/BelgoCanadian/fiddles/",
       "icon": "fa-jsfiddle"
     }
-  ]
-})
+  ];
+});

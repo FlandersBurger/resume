@@ -1,0 +1,8 @@
+<!--ul class="nav nav-tabs">
+  <li role="presentation" ng-repeat="skill in skills"><a href="#" role="tab" data-toggle="tab"><img class="tab-image" ng-src="./images/{{skill.image}}"/></a></li>
+</ul-->
+<div class="skill-wheel" ng-style="getSkillWheelSize()">
+  <div ng-repeat="skill in skills track by $index" ng-style="getPosition($index)" ng-click="selectedSkill = $index" ng-cloak>
+    <img ng-src="./images/{{skill.image}}"/>
+  </div>
+</div>
