@@ -1,17 +1,46 @@
+#skills-page {
+  text-align:center;
+}
+
 .skill-wheel {
   position: relative;
-  margin:0 auto;
+  margin: 0 auto;
 }
 
-.skill-wheel div {
-  width:80px;
-  height:80px;
+.selected-skill {
+  position: relative;
+  margin: 0 auto;
+  text-align:center;
 }
 
-.skill-wheel div img {
-  width:100%
+.selected-skill img {
+  max-width: 150px;
 }
 
-.skill-wheel div:hover img {
-  transform:scale(1.5);
+.selectable-skill img {
+  width:100%;
+}
+
+.selectable-skill:hover img, .selected-skill:hover img {
+  transform:scale(1.2);
+}
+
+.selectable-skill.ng-hide-remove {
+  -webkit-animation:0.5s zoomInDown ease;
+  animation:0.5s zoomInDown ease;
+}
+
+.selectable-skill.ng-hide-add {
+  -webkit-animation:0.5s rotateOut ease;
+  animation:0.5s rotateOut ease;
+}
+
+.selected-skill-text.ng-hide-add {
+  -webkit-animation: 0.5s fadeOut ease;
+  animation: 0.5s fadeOut ease;
+}
+
+.selected-skill-text.ng-hide-remove {
+  -webkit-animation: 0.5s fadeInUp ease;
+  animation: 0.5s fadeInUp ease;
 }

@@ -6,15 +6,18 @@ angular.module('app')
   svc.languages = [
     {
       "code": "EN",
-      "name": "English"
+      "name": "English",
+      "flag": "flag-icon-gb"
     },
     {
       "code": "NL",
-      "name": "Nederlands"
+      "name": "Nederlands",
+      "flag": "flag-icon-nl"
     },
     {
       "code": "FR",
-      "name": "Français"
+      "name": "Français",
+      "flag": "flag-icon-fr"
     }
   ];
 

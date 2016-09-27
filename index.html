@@ -15,6 +15,9 @@
 
   <link rel="stylesheet" href="./assets/app.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.5.2/animate.min.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.8.3/underscore-min.js"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.5.2/animate.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/flag-icon-css/2.5.0/css/flag-icon.min.css">
 
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
@@ -25,35 +28,40 @@
   <base href="/">
 </head>
 
-<body>
+<body ng-cloak>
 
   <nav class="navbar navbar-default">
     <div class="container-fluid">
       <div class="navbar-header">
         <a class="navbar-brand active" ui-sref="home">Laurent Debacker</a>
+        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar">
+          <i class="fa fa-bars" aria-hidden="true"></i>
+        </button>
       </div>
-      <ul class="nav navbar-nav navbar-left">
-        <li class="nav-item">
-          <a class="nav-link" ui-sref="experience">Experience</a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link" ui-sref="skills">Skills</a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link" href="#">Hobbies</a>
-        </li>
-      </ul>
-      <ul class="nav navbar-nav navbar-right">
-        <li>
-          <button class="btn btn-default navbar-btn" ng-click="flipTheme()">Surprise me</button>
-        </li>
-        <li class="dropdown">
-          <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">{{selectedLanguage.code}}</a>
-          <ul class="dropdown-menu">
-            <li ng-repeat="language in languages"><a href="#" ng-click="selectLanguage(language)">{{language.name}}</a></li>
-          </ul>
-        </li>
-      </ul>
+      <div class="collapse navbar-collapse" id="navbar">
+        <ul class="nav navbar-nav navbar-left">
+          <li class="nav-item">
+            <a class="nav-link" ui-sref="experience">Experience</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" ui-sref="skills">Skills</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="#">Hobbies</a>
+          </li>
+        </ul>
+        <ul class="nav navbar-nav navbar-right">
+          <li>
+            <button class="btn btn-default navbar-btn" ng-click="flipTheme()">Surprise me</button>
+          </li>
+          <li class="dropdown">
+            <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">{{selectedLanguage.code}}</a>
+            <ul class="dropdown-menu">
+              <li ng-repeat="language in languages"><a href="#" ng-click="selectLanguage(language)"><span class="flag-icon" ng-class="language.flag"></span> {{language.name}}</a></li>
+            </ul>
+          </li>
+        </ul>
+      </div>
     </div>
   </nav>
 
@@ -61,9 +69,9 @@
     <div ui-view></div>
   </div>
 
-  <nav class="navbar navbar-default navbar-fixed-bottom">
+  <nav class="navbar navbar-default navbar-fixed-bottom" id="footer">
     <div class="container">
-      <ul class="nav navbar-nav">
+      <ul class="nav navbar-nav collapse navbar-collapse">
         <li ng-repeat="profile in socialMedia" class="nav-item">
           <a class="nav-link social-media" ng-href="{{profile.url}}" target="_blank"><i class="fa fa-2x" ng-class="profile.icon" aria-hidden="true"></i><span> {{profile.name}}</span></a>
         </li>
@@ -76,6 +84,7 @@
   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
   <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.7/angular.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/angular-ui-router/0.3.1/angular-ui-router.min.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.5.8/angular-animate.js"></script>
   <script src="./resources/underscore-min.js"></script>
   <script src="./assets/app.js"></script>
 
