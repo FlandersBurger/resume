@@ -1,9 +1,21 @@
 angular.module('app')
 .controller('AppCtrl', function ($scope, $location, LanguageSvc) {
 
+
+  $(window).load(function(){
+    $(".loading").fadeOut("slow");
+    $(".content").fadeIn("slow");
+  });
+
   $scope.themeCounter = 1;
 
   $scope.flipTheme = function () {
+      $(".loading").show();
+      $(".content").hide();
+      setTimeout(function(){
+        $(".loading").fadeOut("slow");
+        $(".content").fadeIn("slow");
+      }, 300);
     $scope.themeCounter = $scope.themeCounter < 6 ? $scope.themeCounter + 1 : $scope.themeCounter = 1;
   };
 
