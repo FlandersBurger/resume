@@ -18,6 +18,12 @@ angular.module('app')
     controller: 'SkillsCtrl',
     templateUrl: 'pages/skills.html',
     templateStyleUrl: 'assets/skills.css'
+  })
+  .state('hobbies', {
+    url: '/hobbies',
+    controller: 'HobbiesCtrl',
+    templateUrl: 'pages/hobbies.html',
+    templateStyleUrl: 'assets/hobbies.css'
   });
 
   $locationProvider.html5Mode({

@@ -32,11 +32,13 @@ angular.module('app')
         display: $scope.skillsVisible ? 'block' : 'none',
         position: 'absolute',
         left: $scope.wheelWidth / 2 * Math.cos(i * (Math.PI / ($scope.skills.length - 1))) + $scope.wheelWidth / 2 - $scope.wheelWidth * 0.025,
-        top: Math.sin(i * (Math.PI / ($scope.skills.length - 1))) * $('.selected-skill').height() * 1.5,
+        top: Math.sin(i * (Math.PI / ($scope.skills.length - 1))) * $('.selected-skill').height() * 2.5,
         width: $scope.wheelWidth * 0.05,
         height: $scope.wheelWidth * 0.05
       };
     };
+
+    $scope.$apply();
   });
 
 });

@@ -15,7 +15,7 @@ angular.module('app')
       setTimeout(function(){
         $(".loading").fadeOut("slow");
         $(".content").fadeIn("slow");
-      }, 300);
+      }, 800);
     $scope.themeCounter = $scope.themeCounter < 6 ? $scope.themeCounter + 1 : $scope.themeCounter = 1;
   };
 

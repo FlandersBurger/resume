@@ -1,0 +1,353 @@
+[
+  {
+    "name": "Reading",
+    "icon": "fa-book",
+    "images": [
+      {
+        "name": "Oryx and Crake",
+        "file": "oryxandcrake.jpg",
+        "url": "https://www.goodreads.com/book/show/46756.Oryx_and_Crake"
+      },
+      {
+        "name": "1984",
+        "file": "1984.jpg",
+        "url": "https://www.goodreads.com/book/show/5470.1984"
+      },
+      {
+        "name": "A House in the Sky",
+        "file": "ahouseinthesky.jpg",
+        "url": "https://www.goodreads.com/book/show/18039963-a-house-in-the-sky"
+      },
+      {
+        "name": "American Gods",
+        "file": "americangods.jpg",
+        "url": "https://www.goodreads.com/book/show/30165203-american-gods"
+      },
+      {
+        "name": "Bossypants",
+        "file": "bossypants.jpg",
+        "url": "https://www.goodreads.com/book/show/9418327-bossypants"
+      },
+      {
+        "name": "Brave New World",
+        "file": "bravenewworld.jpg",
+        "url": "https://www.goodreads.com/book/show/5129.Brave_New_World"
+      },
+      {
+        "name": "Fahrenheit 451",
+        "file": "fahrenheit451.jpg",
+        "url": "https://www.goodreads.com/book/show/17470674-fahrenheit-451"
+      },
+      {
+        "name": "Hitchhiker's Guide to the Galaxy",
+        "file": "hitchhikersguide.jpg",
+        "url": "https://www.goodreads.com/book/show/11.The_Hitchhiker_s_Guide_to_the_Galaxy"
+      },
+      {
+        "name": "The Kite Runner",
+        "file": "kiterunner.jpg",
+        "url": "https://www.goodreads.com/book/show/77203.The_Kite_Runner"
+      },
+      {
+        "name": "Mistborn",
+        "file": "mistborn.jpg",
+        "url": "https://www.goodreads.com/book/show/68428.The_Final_Empire"
+      },
+      {
+        "name": "The Pillars of the Earth",
+        "file": "pillarsoftheearth.jpg",
+        "url": "https://www.goodreads.com/book/show/5043.The_Pillars_of_the_Earth"
+      },
+      {
+        "name": "Saga",
+        "file": "saga.jpg",
+        "url": "https://www.goodreads.com/book/show/22078240-saga-deluxe-edition-volume-1"
+      },
+      {
+        "name": "The Book Thief",
+        "file": "thebookthief.jpg",
+        "url": "https://www.goodreads.com/book/show/19063.The_Book_Thief"
+      },
+      {
+        "name": "The Girl with the Dragon Tattoo",
+        "file": "thegirlwiththedragontattoo.jpg",
+        "url": "https://www.goodreads.com/book/show/2429135.The_Girl_with_the_Dragon_Tattoo"
+      },
+      {
+        "name": "The Handmaid's Tale",
+        "file": "thehandmaidstale.jpg",
+        "url": "https://www.goodreads.com/book/show/38447.The_Handmaid_s_Tale"
+      },
+      {
+        "name": "The Martian",
+        "file": "themartian.jpg",
+        "url": "https://www.goodreads.com/book/show/18007564-the-martian"
+      },
+      {
+        "name": "The Name of the Wind",
+        "file": "thenameofthewind.jpg",
+        "url": "https://www.goodreads.com/book/show/186074.The_Name_of_the_Wind"
+      },
+      {
+        "name": "The Way of Kings",
+        "file": "stormlight.jpg",
+        "url": "https://www.goodreads.com/book/show/7235533-the-way-of-kings"
+      },
+      {
+        "name": "The Road",
+        "file": "theroad.jpg",
+        "url": "https://www.goodreads.com/book/show/6288.The_Road"
+      },
+      {
+        "name": "The Stand",
+        "file": "thestand.jpg",
+        "url": "https://www.goodreads.com/book/show/149267.The_Stand"
+      },
+      {
+        "name": "Watchmen",
+        "file": "watchmen.jpg",
+        "url": "https://www.goodreads.com/book/show/472331.Watchmen"
+      },
+      {
+        "name": "World War Z",
+        "file": "worldwarz.jpg",
+        "url": "https://www.goodreads.com/book/show/8908.World_War_Z"
+      },
+      {
+        "name": "Animal Farm",
+        "file": "animalfarm.jpg",
+        "url": "https://www.goodreads.com/book/show/7613.Animal_Farm"
+      },
+      {
+        "name": "Frankenstein",
+        "file": "frankenstein.jpg",
+        "url": "https://www.goodreads.com/book/show/18490.Frankenstein"
+      },
+      {
+        "name": "Good Omens",
+        "file": "goodomens.jpg",
+        "url": "https://www.goodreads.com/book/show/12067.Good_Omens"
+      },
+      {
+        "name": "Let the Right One in",
+        "file": "lettherightonein.jpg",
+        "url": "https://www.goodreads.com/book/show/943402.Let_the_Right_One_In"
+      },
+      {
+        "name": "Locke and Key",
+        "file": "lockeandkey.jpg",
+        "url": "https://www.goodreads.com/book/show/26225895-locke-key"
+      },
+      {
+        "name": "Slaughterhouse Five",
+        "file": "slaughterhousefive.jpg",
+        "url": "https://www.goodreads.com/book/show/4981.Slaughterhouse_Five"
+      },
+      {
+        "name": "The Gum Thief",
+        "file": "thegumthief.jpg",
+        "url": "https://www.goodreads.com/book/show/386043.The_Gum_Thief"
+      },
+      {
+        "name": "Harry Potter",
+        "file": "harrypotter.jpg",
+        "url": "https://www.goodreads.com/book/show/3.Harry_Potter_and_the_Sorcerer_s_Stone"
+      },
+      {
+        "name": "The Golden Compass",
+        "file": "goldencompass.jpg",
+        "url": "https://www.goodreads.com/book/show/119322.The_Golden_Compass"
+      },
+      {
+        "name": "The Wind-Up Bird Chronicle",
+        "file": "windupbird.jpg",
+        "url": "https://www.goodreads.com/book/show/11275.The_Wind_Up_Bird_Chronicle"
+      },
+      {
+        "name": "Colour of Magic",
+        "file": "clourofmagic.jpg",
+        "url": "https://www.goodreads.com/book/show/22743742-colour-of-magic---disc-world-1"
+      },
+      {
+        "name": "Rant",
+        "file": "rant.jpg",
+        "url": "https://www.goodreads.com/book/show/22285.Rant"
+      },
+      {
+        "name": "Snow Crash",
+        "file": "snowcrash.jpg",
+        "url": "https://www.goodreads.com/book/show/830.Snow_Crash"
+      }
+    ]
+  },
+  {
+    "name": "Learning",
+    "icon": "fa-graduation-cap"
+  },
+  {
+    "name": "Bingewatching",
+    "icon": "fa-television"
+  },
+  {
+    "name": "Surfing",
+    "icon": "fa-globe"
+  },
+  {
+    "name": "Hiking",
+    "icon": "fa-map-signs"
+  },
+  {
+    "name": "Gaming",
+    "icon": "fa-gamepad",
+    "images": [
+      {
+        "name": "Arkham Horror",
+        "file": "arkhamhorror.jpg"
+      },
+      {
+        "name": "Avalon",
+        "file": "avalon.jpg"
+      },
+      {
+        "name": "Battleblock Theater",
+        "file": "battleblock.jpg"
+      },
+      {
+        "name": "Bioshock Infinity",
+        "file": "bioshock.jpg"
+      },
+      {
+        "name": "Carcassonne",
+        "file": "carcassonne.jpg"
+      },
+      {
+        "name": "Cosmic Encounter",
+        "file": "cosmicencounter.jpg"
+      },
+      {
+        "name": "DEad of Winter",
+        "file": "deadofwinter.jpg"
+      },
+      {
+        "name": "Fez",
+        "file": "fez.png"
+      },
+      {
+        "name": "Half-Life",
+        "file": "halflife3.png"
+      },
+      {
+        "name": "Heroes of Might and Magic",
+        "file": "heroes3.jpg"
+      },
+      {
+        "name": "Legend of Grimrock",
+        "file": "legendofgrimrock.jpg"
+      },
+      {
+        "name": "Mark of the Ninja",
+        "file": "markoftheninja.png"
+      },
+      {
+        "name": "Outlast",
+        "file": "outlast.jpg"
+      },
+      {
+        "name": "Pandemic",
+        "file": "pandemic.jpg"
+      },
+      {
+        "name": "Papers Please",
+        "file": "papersplease.png"
+      },
+      {
+        "name": "Pony Island",
+        "file": "ponyisland.jpg"
+      },
+      {
+        "name": "Portal 2",
+        "file": "portal2.jpg"
+      },
+      {
+        "name": "Power Grid",
+        "file": "powergrid.jpg"
+      },
+      {
+        "name": "Puerto Rico",
+        "file": "puertorico.jpg"
+      },
+      {
+        "name": "Race for the Galaxy",
+        "file": "raceforthegalaxy.jpg"
+      },
+      {
+        "name": "Red Alert 2",
+        "file": "redalert2.jpg"
+      },
+      {
+        "name": "Settlers of Catan",
+        "file": "settlersofcatan.jpg"
+      },
+      {
+        "name": "Sim City",
+        "file": "simcity2000.png"
+      },
+      {
+        "name": "Skyrim",
+        "file": "skyrim.png"
+      },
+      {
+        "name": "Sleeping Dogs",
+        "file": "sleepingdogs.jpg"
+      },
+      {
+        "name": "Smallworld",
+        "file": "smallworld.jpg"
+      },
+      {
+        "name": "Starcraft",
+        "file": "starcraft.jpg"
+      },
+      {
+        "name": "Stone Age",
+        "file": "stoneage.jpg"
+      },
+      {
+        "name": "Super Mario Bros. 3",
+        "file": "supermario3.png"
+      },
+      {
+        "name": "The Talos Principle",
+        "file": "talosprinciple.jpg"
+      },
+      {
+        "name": "Terra Mystica",
+        "file": "terramystica.jpg"
+      },
+      {
+        "name": "The Walking Dead",
+        "file": "thewalkingdead.jpg"
+      },
+      {
+        "name": "Undertale",
+        "file": "undertale.jpg"
+      },
+      {
+        "name": "The Legend of Zelda",
+        "file": "zelda.png"
+      }
+    ]
+  },
+  {
+    "name": "Eating",
+    "icon": "fa-cutlery"
+  },
+  {
+    "name": "Skiing",
+    "icon": "fa-cloud"
+  },
+  {
+    "name": "Travel",
+    "icon": "fa-map-o"
+  }
+]
