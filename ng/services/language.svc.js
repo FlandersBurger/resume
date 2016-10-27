@@ -21,6 +21,18 @@ angular.module('app')
     }
   ];
 
+  svc.text = [
+    {
+      "code": "EN"
+    },
+    {
+      "code": "NL"
+    },
+    {
+      "code": "FR"
+    }
+  ];
+
   svc.selectedLanguage = svc.languages[0];
 
   svc.setLanguage = function (language) {

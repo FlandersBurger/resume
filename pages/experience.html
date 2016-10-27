@@ -1,3 +1,14 @@
-<ul class="nav nav-tabs">
-  <li role="presentation" ng-repeat="job in jobs"><a href="#" role="tab" data-toggle="tab"><img class="tab-image" ng-src="./images/experience/{{job.image}}"/></a></li>
-</ul>
+
+<div id="experience-page" ng-cloak>
+  <div class="col-sm-12" ng-repeat="job in jobs" class="job-section">
+    <div class="col-lg-1 col-sm-2 job-header">
+      <h4>{{getTimeSpan(job)}}</h4>
+    </div>
+    <div class="col-lg-2 col-sm-2 job-image">
+      <img ng-src="./images/experience/{{job.image}}"/>
+    </div>
+    <div class="col-lg-9 col-sm-8 job-body">
+      <p>{{job.story}}</p>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,42 @@
+
+[
+    {
+      "company": "Imprint Plus",
+      "description": "Software & Data Analyst",
+      "startDate": "2011-07-22",
+      "image": "ip.png",
+      "skills": [
+        "sql", "angular", "node", "js"
+      ],
+      "projects": [
+        {
+          "name": "NPG Cloud"
+        }
+      ],
+      "story": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum."
+    },
+    {
+      "company": "BC Hydro",
+      "startDate": "2010-05-01",
+      "endDate": "2011-07-21",
+      "image": "bchydro.png"
+    },
+    {
+      "company": "Acer @ VANOC",
+      "startDate": "2009-02-01",
+      "endDate": "2010-03-31",
+      "image": "acer.png"
+    },
+    {
+      "company": "Immigration",
+      "startDate": "2006-06-01",
+      "endDate": "2009-11-12",
+      "image": "canada.png"
+    },
+    {
+      "company": "Hewlet-Packard",
+      "startDate": "2004-10-01",
+      "endDate": "2005-12-01",
+      "image": "hp.png"
+    }
+  ]
