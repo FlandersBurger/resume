@@ -1,20 +1,42 @@
 #experience-page {
   padding-top:20px;
+  padding-bottom:100px;
+  overflow:auto;
+}
+
+p {
+ padding:8px;
 }
 
 .job-section {
   min-height:100px;
+  margin: 10px;
 }
 
-.job-header {
-  max-width:300px;
+@media (max-width:768px) {
+  .job-image {
+    margin-top:10px;
+    text-align:center;
+  }
+
+  .job-image img {
+    max-height:80px;
+  }
+}
+
+@media (min-width:768px) {
+  .job-image {
+    margin-top:20px;
+  }
+  .job-image img {
+    width: 100%;
+  }
 }
 
 .job-image {
-  max-width:150px;
-  overflow: hidden;
-}
-
-.job-image img {
-  width: 100%;
+  min-width:80px;
+  box-shadow: 5px 5px 5px #888;
+  border-radius: 7px;
+  border: 1px solid #ddd;
+  background-color: #fff;
 }

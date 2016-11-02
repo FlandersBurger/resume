@@ -1,14 +1,41 @@
 
 <div id="experience-page" ng-cloak>
-  <div class="col-sm-12" ng-repeat="job in jobs" class="job-section">
-    <div class="col-lg-1 col-sm-2 job-header">
-      <h4>{{getTimeSpan(job)}}</h4>
+  <!--div class="col-sm-2" ng-repeat="job in jobs">
+    <img class="job-selector" ng-src="./images/experience/{{job.image}}" style="float:left;"/>
+  </div-->
+  <div ng-repeat="job in jobs" class="job-section">
+    <div class="col-md-2 col-sm-3 col-xs-4 job-header">
+      <div class="job-image">
+        <img ng-src="./images/experience/{{job.image}}"/>
+      </div>
     </div>
-    <div class="col-lg-2 col-sm-2 job-image">
-      <img ng-src="./images/experience/{{job.image}}"/>
+    <div class="col-md-10 col-sm-9 col-xs-8 job-title">
+      <h2>{{job.company}}</h2>
+      <h4>{{job.title}} ~ {{getTimeSpan(job)}}</h4>
     </div>
-    <div class="col-lg-9 col-sm-8 job-body">
-      <p>{{job.story}}</p>
+    <div class="col-md-10 col-sm-9 col-xs-12 job-body">
+      <ul class="nav nav-pills" ng-show="job.projects || job.responsibilities || job.skills">
+        <li class="active"><a data-toggle="pill" href="#{{job.code}}-story">Story</a></li>
+        <li><a data-toggle="pill" href="#{{job.code}}-projects" ng-show="job.projects.length > 0">Projects</a></li>
+        <li><a data-toggle="pill" href="#{{job.code}}-responsibilities" ng-show="job.responsibilities.length > 0">Responsibilities</a></li>
+        <li><a data-toggle="pill" href="#{{job.code}}-skills" ng-show="job.skills.length > 0">Skills</a></li>
+      </ul>
+      <div class="tab-content">
+        <div id="{{job.code}}-story" class="tab-pane fade in active">
+          <p>{{job.story}}</p>
+        </div>
+        <div id="{{job.code}}-projects" class="tab-pane fade">
+          <div ng-repeat="project in job.projects">
+            <h5>{{project.name}}<h5>
+              <a ng-href="{{project.url}}" target="_blank">{{project.url}}</a>
+          </div>
+        </div>
+        <div id="{{job.code}}-responsibilities" class="tab-pane fade">
+        </div>
+        <div id="{{job.code}}-skills" class="tab-pane fade">
+        </div>
+      </div>
     </div>
+    <div class="col-xs-12"></div>
   </div>
 </div>

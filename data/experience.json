@@ -2,7 +2,9 @@
 [
     {
       "company": "Imprint Plus",
-      "description": "Software & Data Analyst",
+      "description": "Imprint Plus is the number one name badge supplier in North America servicing major hotel chains (Best Western, Marriott, Hilton,...), office product stores (Staples, Office Depot,...) and retail stores (Macy's, Ulta, Stage Stores,...).",
+      "code":"ip",
+      "title": "Software & Data Analyst",
       "startDate": "2011-07-22",
       "image": "ip.png",
       "skills": [
@@ -10,33 +12,61 @@
       ],
       "projects": [
         {
-          "name": "NPG Cloud"
+          "name": "NPG Cloud",
+          "url":"https://npgcloud.com"
         }
       ],
-      "story": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum."
+      "story": "My time at Imprint Plus started on the phone supporting customers with designing and printing their name badges"
     },
     {
       "company": "BC Hydro",
+      "code":"bch",
+      "title": "Tier 2 On-Site Tech Support",
       "startDate": "2010-05-01",
       "endDate": "2011-07-21",
-      "image": "bchydro.png"
+      "image": "bchydro.png",
+      "story": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum."
     },
     {
       "company": "Acer @ VANOC",
+      "code":"acer",
+      "title": "Server Specialist",
       "startDate": "2009-02-01",
       "endDate": "2010-03-31",
-      "image": "acer.png"
+      "image": "acer.png",
+      "story": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum."
     },
     {
       "company": "Immigration",
+      "code":"imm",
+      "title": "Waiter",
       "startDate": "2006-06-01",
       "endDate": "2009-11-12",
-      "image": "canada.png"
+      "image": "canada.png",
+      "story": "I met my [Canadian] partner in Dublin, Ireland in September 2005 and after travelling in Europe and I immigrated to Canada as I didn't want it to end. The majority of this timespan I worked in a sushi restaurant as a waiter in New Westminster, BC. I received my Canadian Permanent Residency in 2009 after which I promptly searched for a tech job again."
     },
     {
       "company": "Hewlet-Packard",
+      "code":"hp",
+      "title": "Tier 2 Phone Tech Support",
       "startDate": "2004-10-01",
       "endDate": "2005-12-01",
-      "image": "hp.png"
+      "image": "hp.png",
+      "story": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum."
+    },
+    {
+      "company": "Hogeschool Gent",
+      "code":"hg",
+      "title": "Bachelor of Computer Science",
+      "startDate": "2000-09-01",
+      "endDate": "2004-06-01",
+      "image": "hogent.png",
+      "projects":[
+        {
+          "name": "SimpleGameNet",
+          "url":"http://simplegamenet.sourceforge.net/"
+        }
+      ],
+      "story": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum."
     }
   ]
