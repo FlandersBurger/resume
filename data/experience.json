@@ -7,13 +7,24 @@
       "title": "Software & Data Analyst",
       "startDate": "2011-07-22",
       "image": "ip.png",
-      "skills": [
-        "sql", "angular", "node", "js"
-      ],
       "projects": [
         {
           "name": "NPG Cloud",
-          "url":"https://npgcloud.com"
+          "skills": [
+            "git",
+            "js",
+            "html5",
+            "mongo",
+            "redis",
+            "atom",
+            "angular",
+            "node",
+            "bootstrap",
+            "fa",
+            "wkhtmltopdf"
+          ],
+          "url":"https://npgcloud.com",
+          "description": "A HTML5 web application written from scratch in Atom to accomodate 2 aging name badge creation web apps: a java web application (<a href='http://nameprintgraphics.com' target='_blank'>http://nameprintgraphics.com</a>) and a discontinued Silverlight app. The app is used by big corporate clients (including Hudson Bay Company, Canadian Tire, Sprint, Lego, Philips, Bell, Virgin, Chartwell and many more. I urge anyone reading this to go login with these credentials username: <i>Username</i>, password: <i>Password</i>. The server side uses Node for the API and general processing, Mongo as its [No-SQL] database, Redis for scalability, Gulp for buidling annd distribution, Git as the repository and wkhtmltopdf for accurate PDF creation. The client side relies on Angular for the flow and feel of the app while Bootstrap and Font Awesome provide the look. I executed all steps of the project from concept to plan, development, QC, deployment and pitch to corporate customers."
         }
       ],
       "story": "My time at Imprint Plus started on the phone supporting customers with designing and printing their name badges"
@@ -25,7 +36,7 @@
       "startDate": "2010-05-01",
       "endDate": "2011-07-21",
       "image": "bchydro.png",
-      "story": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum."
+      "story": "I was initially hired at BC Hydro for a computer / operating system upgrade (from Win XP to Win 7). I travelled around the lower mainland to BC Hydro locations (mostly alone) to upgrade the users and accomodate their previous setups on their new environment, some of which included dual boot systems with legacy DOS programs, a challenge to say the least but challenges are there to be stared in the face. It required me to think on my feet a lot as the job was usually of hours without extra support on-site with heavily costumized computers (think engineering). The job evolved to a tier 2 tech support position as the upgrade project slowly came to an end. The tier 2 position was your standard support job: end user hardware/software support"
     },
     {
       "company": "Acer @ VANOC",
@@ -34,7 +45,29 @@
       "startDate": "2009-02-01",
       "endDate": "2010-03-31",
       "image": "acer.png",
-      "story": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum."
+      "projects": [
+        {
+          "name": "Staff Scheduling Application",
+          "skills": [
+            "Visual Studio",
+            "Visual Basic"
+          ],
+          "description": "A scheduling application written in Visual Basic developed in Visual Studio. Used to manage hundreds of employees easily across 24h timespans, re-assign shifts for unavailable employees and keep employee work hours within 40 hour timespans with mandatory 8 hour gaps between shifts while keeping travel time in mind. The software was so well received it was taken to the 2012 London Olympics."
+        },
+        {
+          "name": "Acer Hardware Repair Tool",
+          "skills": [
+            {
+              "name":"MS Access"
+            },
+            {
+              "name":"Visual Basic for Applications"
+            }
+          ],
+          "description": "An Access Database Application (VBA) used to track all the parts used to repair computers/laptops and to track the computers and laptops themselves for recurring issues. It was an established project that had a lot of faulty behaviours and had the added challenge of having all function and variable names in Vietnamese. I was recruited to make it functional after I had proven my VB knowledge with the Scheduling Application."
+        }
+      ],
+      "story": "After I landed my, uhum, landed immigrant status I immediately looked for a job to get back on the IT wagon. It didn't take very long to find a new position working for Acer @ Vanoc [Vancouver Winter Olympics] as a tier 2 tech support agent. The position mostly revolved around end user support until our Acer project manager heard I had programming experience acquired During my BS in Computer Science. He had me develop an application in Visual Basic to schedule the hundreds of Acer employees at all the Olympic locations giving him an overview of all the employees while easily being able to re-assign shifts should positions alter or employess fall sick. The last few months I was promoted to server specialist and oversaw the computer and server deployments at Hillcrest Olympic Centre (Curling venue) where I spent most of my time leading up to the Olympics. I managed a team of 5 during this time, throughout the Olympics and afterwards for the decmmission of all equipment at Hillcrest."
     },
     {
       "company": "Immigration",

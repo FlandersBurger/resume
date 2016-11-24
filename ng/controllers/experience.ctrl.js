@@ -7,11 +7,22 @@ angular.module('app')
       job.startDate = new Date(job.startDate);
       if (job.endDate) job.endDate = new Date(job.endDate);
     });
-    $scope.$apply();
+
+    $.getJSON('../assets/skills.json', function( data ) {
+      $scope.skills = data;
+      $scope.$apply();
+    });
   });
 
   $scope.getTimeSpan = function (job) {
     return job.startDate.getFullYear() + (job.endDate ? (' - ' + job.endDate.getFullYear()) : ' - Today');
+  };
+
+  $scope.getSkill = function(skillCode) {
+    if (!$scope.skills) return;
+    return $scope.skills.find(function(skill) {
+      return skill.code === skillCode;
+    });
   };
 
 });

@@ -6,7 +6,7 @@
 <div id="hobbies-page" ng-cloak>
   <div id="hobby-selector-container" class="col-xs-12">
     <div id="hobby-toggler" class="col-xs-12" ng-click="hobbySelectorVisible = true" ng-hide="hobbySelectorVisible">
-      <i class="fa fa-4x" aria-hidden="true" ng-class="{'fa-arrow-down' : hover, 'fa-arrow-up' : !hover}" ng-mouseenter="hover = true" ng-mouseleave="hover = false"></i>
+      <i class="fa fa-4x" aria-hidden="true" ng-class="{'fa-arrow-down' : hover, 'fa-bars' : !hover}" ng-mouseenter="hover = true" ng-mouseleave="hover = false"></i>
     </div>
     <div id="hobby-selector" class="col-xs-12" ng-show="hobbySelectorVisible">
       <div ng-repeat="hobby in hobbies" class="col-lg-2 col-md-3 col-sm-3 col-xs-6 hobby-panel" >

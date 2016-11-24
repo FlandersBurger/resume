@@ -13,6 +13,7 @@
       <h2>{{job.company}}</h2>
       <h4>{{job.title}} ~ {{getTimeSpan(job)}}</h4>
     </div>
+    <div class="col-md-10 col-sm-9 col-xs-12"><br></div>
     <div class="col-md-10 col-sm-9 col-xs-12 job-body">
       <ul class="nav nav-pills" ng-show="job.projects || job.responsibilities || job.skills">
         <li class="active"><a data-toggle="pill" href="#{{job.code}}-story">Story</a></li>
@@ -22,12 +23,14 @@
       </ul>
       <div class="tab-content">
         <div id="{{job.code}}-story" class="tab-pane fade in active">
-          <p>{{job.story}}</p>
+          <p class="story">{{job.story}}</p>
         </div>
         <div id="{{job.code}}-projects" class="tab-pane fade">
           <div ng-repeat="project in job.projects">
-            <h5>{{project.name}}<h5>
-              <a ng-href="{{project.url}}" target="_blank">{{project.url}}</a>
+            <h4>{{project.name}}</h4>
+            <a ng-href="{{project.url}}" target="_blank">{{project.url}}</a>
+            <div class="col-xs-12"><img class="project-skill-image" ng-repeat="skill in project.skills" ng-src="./images/skills/{{getSkill(skill).image}}"/></div>
+            <p ng-bind-html="project.description"></p>
           </div>
         </div>
         <div id="{{job.code}}-responsibilities" class="tab-pane fade">

@@ -1,6 +1,7 @@
 [
   {
     "name": "AngularJS",
+    "code": "angular",
     "description": [
       {
         "language" : "EN",
@@ -19,6 +20,7 @@
   },
   {
     "name": "NodeJS",
+    "code": "node",
     "description": [
       {
         "language" : "EN",
@@ -37,6 +39,7 @@
   },
   {
     "name": "SQL Server",
+    "code": "sql",
     "description": [
       {
         "language" : "EN",
@@ -55,6 +58,7 @@
   },
   {
     "name": "MS ASP",
+    "code": "asp",
     "description": [
       {
         "language" : "EN",
@@ -73,6 +77,7 @@
   },
   {
     "name": "JQuery",
+    "code": "jquery",
     "description": [
       {
         "language" : "EN",
@@ -91,6 +96,7 @@
   },
   {
     "name": "Java",
+    "code": "java",
     "description": [
       {
         "language" : "EN",
@@ -109,6 +115,7 @@
   },
   {
     "name": "MySQL",
+    "code": "mysql",
     "description": [
       {
         "language" : "EN",
@@ -127,6 +134,7 @@
   },
   {
     "name": "Symantec",
+    "code": "symantec",
     "description": [
       {
         "language" : "EN",
@@ -145,6 +153,7 @@
   },
   {
     "name": "Redis",
+    "code": "redis",
     "description": [
       {
         "language" : "EN",
@@ -163,6 +172,7 @@
   },
   {
     "name": "WordPress",
+    "code": "wp",
     "description": [
       {
         "language" : "EN",
@@ -181,6 +191,7 @@
   },
   {
     "name": "MS IIS",
+    "code": "iis",
     "description": [
       {
         "language" : "EN",
@@ -199,6 +210,7 @@
   },
   {
     "name": "MongoDB",
+    "code": "mongo",
     "description": [
       {
         "language" : "EN",
@@ -216,7 +228,8 @@
     "image": "mongodb.png"
   },
   {
-    "name": "MS Dynamics",
+    "name": "MS Dynamics CRM",
+    "code": "crm",
     "description": [
       {
         "language" : "EN",
@@ -235,6 +248,7 @@
   },
   {
     "name": "HTML5",
+    "code": "html5",
     "description": [
       {
         "language" : "EN",
@@ -253,6 +267,7 @@
   },
   {
     "name": "Google Webmaster",
+    "code": "google",
     "description": [
       {
         "language" : "EN",
@@ -271,6 +286,7 @@
   },
   {
     "name": "PhoneGap",
+    "code": "phonegap",
     "description": [
       {
         "language" : "EN",
@@ -289,6 +305,7 @@
   },
   {
     "name": "MS Partner",
+    "code": "mspartner",
     "description": [
       {
         "language" : "EN",

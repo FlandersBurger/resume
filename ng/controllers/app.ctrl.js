@@ -57,6 +57,12 @@ angular.module('app')
       "name": "jsfiddle",
       "url": "https://jsfiddle.net/user/BelgoCanadian/fiddles/",
       "icon": "fa-jsfiddle"
+    },
+    {
+      "name": "stackoverflow",
+      "url": "http://stackoverflow.com/users/1083923/belgocanadian",
+      "icon": "fa-stack-overflow"
+
     }
   ];
 });
