@@ -23,9 +23,18 @@
     "code": "fr",
     "enabled":"true",
     "percentage":"75",
-    "description": "Growing up in a small bilingual country with a non-common mother tongue, getting a second language is mandatory. By 12th grade we were required to read novels and do book reports on them, debate with classmates on various subjects and do an oral exam. Even though at the time it didn't seem like a great thing, I later landed a job for Nestle tech support (HP) in Dublin which only served French-speaking users while all my colleagues were also French. Crazily enough, I learned a vast amount of technical and colloquial French in an English speaking country. Although I am getting rustier again at French due to not having used it in a while, it still comes in handy when a French-speaking customer is having trouble.",
+    "description": "Growing up in a small bilingual country with a non-common mother tongue, getting a second language is mandatory. By 12th grade we were required to read novels and do book reports on them, debate with classmates on various subjects and do an oral exam. Even though at the time it didn't seem like a great thing, I later landed a job for Nestle tech support (HP) in Dublin which only served French-speaking users while all my colleagues were also French. Crazily enough, I learned a vast amount of technical and colloquial French in an English speaking country. This skill comes in very handy in Canada as I can write manuals and user interfaces in both official languages (and which I am not a stranger too). Although I am getting rustier again at French due to not having used it in a while, it still comes in handy when a French-speaking customer is having trouble.",
     "tldr": "",
     "image": "france.png"
+  },
+  {
+    "name": "Dutch",
+    "code": "nl",
+    "enabled":"true",
+    "percentage":"100",
+    "description": "Although my mother tongue is <a href='https://en.wikipedia.org/wiki/West_Flemish' target='_blank'>West-Flemish</a>, Dutch is basically a second mother tongue to me due to the closeness of the languages and having to speak Dutch to the rest of the Flemish and Dutch population so they could understand us. I've used this asset to translate software I've made that is sold to Dutch customers currently.",
+    "tldr": "",
+    "image": "netherlands.png"
   },
   {
     "name": "SQL Server",

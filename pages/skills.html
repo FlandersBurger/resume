@@ -8,19 +8,15 @@
     </div>
   </div>
   <div class="skill-display col-xs-9">
-    <div class="selected-skill">
+    <div class="selected-skill hover-div" id="{{getSelectedSkill().code}}">
       <img ng-src="./images/skills/{{getSelectedSkill().image}}"/>
     </div>
     <div class="selected-skill-text">
       <h1>{{getSelectedSkill().name}}</h1>
       <p ng-bind-html="getSelectedSkillText()"></p>
     </div>
-    <div ng-show="false" class="c100 p66 center small" ng-class="p{{getSelectedSkill().percentage}}">
-      <span>{{getSelectedSkill().percentage}}%</span>
-      <div class="slice">
-        <div class="bar"></div>
-        <div class="fill"></div>
-      </div>
+    <div class="hover-div-info" id="{{getSelectedSkill().code}}-info">
+      <kbd class="bg-primary">{{getSelectedSkill().percentage}}%</kbd>
     </div>
     <div ng-show="false">
       <canvas id="doughnut" class="chart chart-doughnut"
