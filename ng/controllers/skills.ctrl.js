@@ -18,7 +18,7 @@ angular.module('app')
     };
 
     $scope.getSelectedSkillText = function () {
-      return $scope.skills[$scope.selectedSkill].description.filter(function(desc) { return desc.language === $scope.selectedLanguage.code; })[0].text;
+      return $scope.skills[$scope.selectedSkill].description;
     };
 
     $scope.setSelectedSkill = function (i) {

@@ -31,6 +31,9 @@
             <a ng-href="{{project.url}}" target="_blank">{{project.url}}</a>
             <div class="col-xs-12"><img class="project-skill-image" ng-repeat="skill in project.skills" ng-src="./images/skills/{{getSkill(skill).image}}"/></div>
             <p ng-bind-html="project.description"></p>
+            <p ng-show="project.tldr">
+              <strong title="Too Long; Didn't Read">TL;DR</strong> <span ng-bind-html="project.tldr"></span>
+            </p>
           </div>
         </div>
         <div id="{{job.code}}-responsibilities" class="tab-pane fade">
