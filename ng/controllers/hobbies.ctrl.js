@@ -3,6 +3,10 @@ angular.module('app')
 
   $scope.hobbySelectorVisible = false;
 
+  $.getJSON('https://www.reddit.com/user/belgocanadian/about/.json', function (response) {
+    console.log(response.data);
+  });
+
   $.getJSON('../assets/hobbies.json', function( data ) {
     $scope.hobbies = data;
     $scope.selectedHobby = $scope.hobbies[0];

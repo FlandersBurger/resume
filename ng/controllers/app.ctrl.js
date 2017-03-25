@@ -7,7 +7,7 @@ angular.module('app')
     $(".content").fadeIn("slow");
   });
 
-  $scope.themeCounter = 1;
+  $scope.themeCounter = 6;
 
   $scope.flipTheme = function () {
       $(".loading").show();

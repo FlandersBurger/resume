@@ -1,5 +1,6 @@
 angular.module('app', [
   'ui.router',
   'ngAnimate',
-  'ngSanitize'
+  'ngSanitize',
+  'chart.js'
 ]);

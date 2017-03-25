@@ -1,11 +1,13 @@
 angular.module('app')
 .config(function ($stateProvider, $urlRouterProvider, $locationProvider) {
 
-  $urlRouterProvider.otherwise('/');
+  $urlRouterProvider.otherwise('/home');
 
   $stateProvider
   .state('home', {
-    url: '/',
+    url: '/home',
+    templateUrl: 'pages/home.html',
+    templateStyleUrl: 'assets/home.css'
   })
   .state('experience', {
     url: '/experience',

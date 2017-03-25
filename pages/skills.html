@@ -2,19 +2,30 @@
   <li role="presentation" ng-repeat="skill in skills"><a href="#" role="tab" data-toggle="tab"><img class="tab-image" ng-src="./images/{{skill.image}}"/></a></li>
 </ul-->
 <div id="skills-page" ng-cloak>
-  <div class="skill-wheel">
-    <div ng-show="skillsVisible" ng-click="skillsVisible = false" ng-cloak>
-      <div class="selectable-skill" ng-repeat="skill in skills track by $index" ng-style="getPosition($index)" ng-mouseover="setSelectedSkill($index)">
-        <img ng-src="./images/skills/{{skill.image}}"/>
-      </div>
+  <div class="skill-selector col-xs-3" ng-cloak>
+    <div class="selectable-skill" ng-repeat="skill in skills track by $index" ng-click="setSelectedSkill($index)">
+      <img ng-src="./images/skills/{{skill.image}}"/>
     </div>
   </div>
-
-  <div class="selected-skill">
-    <img ng-src="./images/skills/{{getSelectedSkill().image}}" ng-mouseover="skillsVisible = true"/>
-  </div>
-  <div class="selected-skill-text" ng-hide="skillsVisible">
-    <h1>{{getSelectedSkill().name}}</h1>
-    <p>{{getSelectedSkillText()}}</p>
+  <div class="skill-display col-xs-9">
+    <div class="selected-skill">
+      <img ng-src="./images/skills/{{getSelectedSkill().image}}"/>
+    </div>
+    <div class="selected-skill-text">
+      <h1>{{getSelectedSkill().name}}</h1>
+      <p ng-bind-html="getSelectedSkillText()"></p>
+    </div>
+    <div ng-show="false" class="c100 p66 center small" ng-class="p{{getSelectedSkill().percentage}}">
+      <span>{{getSelectedSkill().percentage}}%</span>
+      <div class="slice">
+        <div class="bar"></div>
+        <div class="fill"></div>
+      </div>
+    </div>
+    <div ng-show="false">
+      <canvas id="doughnut" class="chart chart-doughnut"
+        chart-data="data" chart-labels="labels">
+      </canvas>
+    </div>
   </div>
 </div>

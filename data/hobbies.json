@@ -177,12 +177,55 @@
         "name": "Snow Crash",
         "file": "snowcrash.jpg",
         "url": "https://www.goodreads.com/book/show/830.Snow_Crash"
+      },
+      {
+        "name": "Game of Thrones",
+        "file": "gameofthrones.jpg",
+        "url": "https://www.goodreads.com/book/show/13496.A_Game_of_Thrones"
+      },
+      {
+        "name": "The City & The City",
+        "file": "cityandcity.jpg",
+        "url": "https://www.goodreads.com/book/show/4703581-the-city-the-city"
       }
     ]
   },
   {
     "name": "Learning",
-    "icon": "fa-graduation-cap"
+    "icon": "fa-graduation-cap",
+    "images": [
+      {
+        "name": "Code Wars",
+        "file":"codewars.png",
+        "url":"https://www.codewars.com/users/FlandersBurger"
+      },
+      {
+        "name": "Coursera",
+        "file":"coursera.png",
+        "url":"https://www.coursera.org/user/i/cea3a8541018b7bbbf2adcd192c59aab"
+      },
+      {
+        "name": "Udemy",
+        "file":"udemy.png",
+        "url":"https://www.udemy.com/user/laurent-debacker/"
+      },
+      {
+        "name": "Write Modern Web Apps with the MEAN Stack",
+        "file":"mean.jpg",
+        "url":"https://github.com/dickeyxxx/mean-sample"
+      },
+      {
+        "name": "Wikipedia",
+        "file":"wiki.png",
+        "url":"https://en.wikipedia.org/wiki/User:Ldebacker"
+      },
+      {
+        "name": "JS Fiddle",
+        "file":"jsfiddle.png",
+        "url":"https://jsfiddle.net/user/BelgoCanadian/fiddles/"
+      }
+
+    ]
   },
   {
     "name": "Bingewatching",
@@ -190,7 +233,60 @@
   },
   {
     "name": "Surfing",
-    "icon": "fa-globe"
+    "icon": "fa-globe",
+    "images": [
+      {
+        "name": "Reddit",
+        "file": "reddit.jpg",
+        "url": "https://www.reddit.com/user/BelgoCanadian/"
+      },
+      {
+        "name": "Youtube",
+        "file": "youtube.png",
+        "url": "https://www.youtube.com/channel/UC_EH8avqJp5oGfpynqWG4yQ"
+      },
+      {
+        "name": "IMDB",
+        "file": "imdb.png",
+        "url": "http://www.imdb.com/user/ur11743026/"
+      },
+      {
+        "name": "Metacritic",
+        "file": "metacritic.jpg",
+        "url": "http://www.metacritic.com/user/BelgoCanadian"
+      },
+      {
+        "name": "The Guardian",
+        "file": "guardian.png",
+        "url": "https://www.theguardian.com/international"
+      },
+      {
+        "name": "Box Office Mojo",
+        "file": "mojo.jpg",
+        "url": "http://www.boxofficemojo.com/"
+      },
+      {
+        "name": "The Intercept",
+        "file": "intercept.png",
+        "url": "https://theintercept.com/"
+      },
+      {
+        "name": "Newsy",
+        "file": "newsy.jpg",
+        "url": "http://www.newsy.com/"
+      },
+      {
+        "name": "Kickstarter",
+        "file": "kickstarter.png",
+        "url": "https://www.kickstarter.com/profile/flandersburger"
+      },
+      {
+        "name": "Steam",
+        "file": "steam.jpg",
+        "url": "http://steamcommunity.com/profiles/76561198053906137/"
+      }
+
+    ]
   },
   {
     "name": "Hiking",
@@ -247,6 +343,10 @@
       {
         "name": "Mark of the Ninja",
         "file": "markoftheninja.png"
+      },
+      {
+        "name": "Ori and the Blind Forest",
+        "file": "ori.jpg"
       },
       {
         "name": "Outlast",

@@ -1,19 +1,17 @@
 angular.module('app')
 .controller('SkillsCtrl', function ($scope, $window) {
 
-    $scope.wheelWidth = $('.skill-wheel').width();
     $scope.selectedSkill = 0;
     $scope.skillsVisible = false;
 
-    var w = angular.element($window);
-    w.bind('resize', function () {
-      $scope.wheelWidth = $('.skill-wheel').width();
-      $scope.$apply();
-    });
 
+  $scope.labels = ["Download Sales", "In-Store Sales", "Mail-Order Sales"];
+  $scope.data = [300, 500, 100];
 
   $.getJSON('../assets/skills.json', function( data ) {
-    $scope.skills = data;
+    $scope.skills = data.filter(function(skill) {
+      return skill.enabled;
+    });
 
     $scope.getSelectedSkill = function () {
       return $scope.skills[$scope.selectedSkill];
@@ -27,7 +25,8 @@ angular.module('app')
       $scope.selectedSkill = i;
     };
 
-    $scope.getPosition = function (i) {
+      /*
+      half circle skill wheel that didn't turn out great
       return {
         display: $scope.skillsVisible ? 'block' : 'none',
         position: 'absolute',
@@ -36,7 +35,7 @@ angular.module('app')
         width: $scope.wheelWidth * 0.05,
         height: $scope.wheelWidth * 0.05
       };
-    };
+      */
 
     $scope.$apply();
   });
