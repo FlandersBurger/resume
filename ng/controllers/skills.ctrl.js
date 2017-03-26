@@ -13,16 +13,19 @@ angular.module('app')
       return skill.enabled;
     });
 
-    $scope.getSelectedSkill = function () {
-      return $scope.skills[$scope.selectedSkill];
-    };
-
-    $scope.getSelectedSkillText = function () {
-      return $scope.skills[$scope.selectedSkill].description;
-    };
-
-    $scope.setSelectedSkill = function (i) {
-      $scope.selectedSkill = i;
+    $scope.setSelectedSkill = function (skill) {
+      $scope.selectedSkill = skill;
+      $scope.selectedSkill.chartOptions = {
+        cutoutPercentage : 80,
+        circumference: 2 * Math.PI * $scope.selectedSkill.percentage / 100,
+        maintainAspectRatio: false
+      };
+      $scope.selectedSkill.chartStyle = {
+        'background-image': 'url(./images/skills/' + $scope.selectedSkill.image + ')',
+        'background-repeat': 'no-repeat',
+        'background-size': '60%',
+        'background-position': '50% 50%'
+      };
     };
 
       /*

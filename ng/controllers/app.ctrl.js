@@ -34,8 +34,8 @@ angular.module('app')
 
     var div = document.getElementById(divid);
 
-    div.style.left = left;
-    div.style.top = top;
+    $("#"+divid).css('left',left);
+    $("#"+divid).css('top',top);
 
     $("#"+divid).toggle();
     return false;
