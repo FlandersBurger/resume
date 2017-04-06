@@ -1,0 +1,46 @@
+<div id="contact-page" ng-cloak>
+  <h2>Contact</h2>
+  <h4 ng-show="sent">Thanks for dropping a line, I usually read my mails the same day unless I happpen to be on holiday :)</h4>
+  <form class="form-horizontal" ng-hide="sent">
+    <div class="form-group">
+      <label class="col-sm-2 control-label">Name</label>
+      <div class="col-sm-10">
+        <input class="form-control" type="text" ng-model="contact.name" />
+      </div>
+    </div>
+    <div class="form-group">
+      <label class="col-sm-2 control-label">Email</label>
+      <div class="col-sm-10">
+        <input class="form-control" type="email" ng-model="contact.email" />
+      </div>
+    </div>
+    <div class="form-group">
+      <label class="col-sm-2 control-label">Phone</label>
+      <div class="col-sm-10">
+        <input class="form-control" type="tel" ng-model="contact.phone" />
+      </div>
+    </div>
+    <div class="form-group">
+      <label class="col-sm-2 control-label">Subject</label>
+      <div class="col-sm-10">
+        <div class="btn-group btn-group-vertical" style="width:100%;">
+          <label ng-repeat="option in options" class="btn col-sm-12" style="margin-bottom:4px;white-space: normal;" ng-class="{'btn-primary': contact.about === option.name, 'btn-default': contact.about !== option.name}" ng-click="contact.about = option.name">
+            {{option.text}}
+          </label>
+        </div>
+      </div>
+    </div>
+    <div class="form-group">
+      <label  class="col-sm-2 control-label" for="comment">Message</label>
+      <div class="col-sm-10">
+        <textarea class="form-control" rows="5" id="comment" ng-model="contact.message"></textarea>
+      </div>
+    </div>
+    <div class="form-group">
+      <label  class="col-sm-2 control-label" for="comment"></label>
+      <div class="col-sm-10">
+        <button class="btn btn-lg btn-default btn-block" ng-click="send()" ng-disabled="sending"><i class="fa" ng-class="{'fa-paper-plane': !sending, 'fa-spinner fa-spin': sending}"></i> {{sending ? 'Sending': 'Send'}}</button>
+      </div>
+    </div>
+  </form>
+</div>

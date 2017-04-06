@@ -4,7 +4,7 @@ angular.module('app')
   $scope.hobbySelectorVisible = false;
 
   $.getJSON('https://www.reddit.com/user/belgocanadian/about/.json', function (response) {
-    console.log(response.data);
+    //console.log(response.data);
   });
 
   $.getJSON('../assets/hobbies.json', function( data ) {

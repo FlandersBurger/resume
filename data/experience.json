@@ -1,4 +1,3 @@
-
 [
     {
       "company": "Imprint Plus",
@@ -7,36 +6,69 @@
       "title": "Software & Data Analyst",
       "startDate": "2011-07-22",
       "image": "ip.png",
+      "responsibilities": [
+        {
+          "name": "Reporting",
+          "description": "Maintain all SSRS (250+) reports, find patterns, implement data opportunities, automate email reports and ensure accuracy"
+        },
+        {
+          "name": "Database Administrator",
+          "description": "Ensure SQL databases are optimized to handle load, maintain datacubes, do data integrity audits"
+        },
+        {
+          "name": "Data Analysis",
+          "description": "Find patterns in data, meet with departments to highlight potential KPIs and deliver data in a manner that can be easily understood"
+        },
+        {
+          "name": "Software Analysis",
+          "description": "Audit existing software for bugs and opportunities, meet with corporate customers to highlight sofware needs and make plans, schemas and wireframes for development."
+        },
+        {
+          "name": "E-Commerce",
+          "description": "Ensure all E-commerce (EDI, E-stores, Automated order processing, Fax ordering, Email ordering) is running correctly and implement new solutions where possible."
+        },
+        {
+          "name": "Software Development",
+          "description": "Develop (js, java, c++, asp, php) or outsource both internal and external software, QC, set up environments, launch software and train staff."
+        },
+        {
+          "name": "Tier 3 Support",
+          "description": "Troubleshooting and addressing major outages and business impacting tickets in a timely manner while providing detailed incident reports afterwards in order to prevent potential repeats"
+        },
+        {
+          "name": "Tier 1 & 2 Overflow Support",
+          "description": "End-user and customer support in an overflow role"
+        }
+      ],
       "projects": [
         {
           "name": "NPG Cloud",
           "skills": [
-            "git",
-            "js",
-            "html5",
-            "mongo",
-            "redis",
-            "atom",
-            "angular",
-            "node",
-            "bootstrap",
-            "fa",
-            "wkhtmltopdf"
+            "git", "js", "html5", "mongo", "redis", "atom", "angular", "node", "bootstrap", "fa", "wkhtmltopdf", "ws", "ssl"
           ],
           "url":"https://npgcloud.com",
-          "description": "A HTML5 web application written from scratch in Atom to accomodate 2 aging name badge creation web apps: a java web application (<a href='http://nameprintgraphics.com' target='_blank'>http://nameprintgraphics.com</a>) and a discontinued Silverlight app. The app is used by big corporate clients (including Hudson Bay Company, Canadian Tire, Sprint, Lego, Philips, Bell, Virgin, Chartwell and many more. I urge anyone reading this to go login with these credentials username: <i>Username</i>, password: <i>Password</i>. The server side uses Node for the API and general processing, Mongo as its [No-SQL] database, Redis for scalability, Gulp for buidling annd distribution, Git as the repository and wkhtmltopdf for accurate PDF creation. The client side relies on Angular for the flow and feel of the app while Bootstrap and Font Awesome provide the look. I executed all steps of the project from concept to plan, development, QC, deployment and pitch to corporate customers.",
+          "description": "A HTML5 web application written from scratch in Atom to accomodate 2 aging name badge creation web apps: a java web application (<a href='http://nameprintgraphics.com' target='_blank'>http://nameprintgraphics.com</a>) and a discontinued Silverlight app. The app is used by big corporate clients (including Hudson Bay Company, Canadian Tire, Sprint, Lego, Philips, Bell, Virgin, Chartwell and many more. I urge anyone reading this to go login with these credentials username: <i>Username</i>, password: <i>Password</i>. The server side uses Node for the API and general processing, Mongo as its [No-SQL] database, Redis for scalability, Gulp for building and distribution, Git as the repository and wkhtmltopdf for accurate PDF creation. The client side relies on Angular for the flow and feel of the app while Bootstrap and Font Awesome provide the look. I executed all steps of the project from concept to plan, development, QC, deployment and pitch to corporate customers.",
           "tldr": "Replaced Java Applet with Full-stack MEAN application"
         },
         {
           "name": "Reporting",
           "skills": [
-            "sql"
+            "sql", "git", "vs"
           ],
           "description": "When the programmer left Imprint Plus it was a perfect opportunity to prove myself by taking on SQL reporting. I revamped all the reports he had made to make them more efficient and created datasources, datasets, SQL jobs, datacubes, procedures, function, keys and every other SQL magic I had picked up in college. I guess I ended up excelling in what they had initially set out for me to do as a few months later I was awarded the CEO award out of the blue in a company-wide meeting. I was promoted to Software & Data Analyst an had officially taken on all reporting and programming. This sparked a project whereby I would make company-wide metrics and KPI's to be used to make corporate decisions and improve internal processes. As a result I maintained over 250 reports coupled with an intricate web of SQL processes to make sure they run as fast as possible with accurate u-to-date data.",
-          "tldr": ""
+          "tldr": "Created over 250 reports with relevant data generation for company-wide metrics"
+        },
+        {
+          "name": "CD-Less Delivery",
+          "skills": [
+            "sql", "angular", "node", "sequelize", "atom", "html5", "git", "js", "bootstrap"
+          ],
+          "url":"http://dnd.imprintplus.com",
+          "description": "Due to CDs pretty much being obsolete nowadays, the aging C++ application flagship software needed to be adjusted so it could be delivered completely online. The problem was that most CDs had the customer's customized templates on it. I needed to devise a way for the production department to deliver the templates with a download. An outsourced vendor adjusted the C++ application itself to be able to communicate with an API (express + node) I developed. The API would take the serial number entered by the customer in the software and then translate that into which templates should be downloaded. This portion was fairly easy. However, our production department needed a way to tie the serial numbers to templates files for the customer. I built a custom interface (html5, angular, bootstrap) to facilitate the production process and so with a few clicks they could upload templates that were instantly available for the software to download. I further created and certified all MSI installers and created a download site for the user to get the software (link above).",
+          "tldr": "Made customized CD software available online"
         }
       ],
-      "story": "My time at Imprint Plus started on the phone supporting customers with designing and printing their name badges. My knack for troubleshooting, my customer service experience, my unquenchable thirst for knowledge and my programming degree quickly catapulted me into more involved positions. SQL Server proved my first stepping stone, I created reports using SSRS that management had never seen before. Reports that allowed them to correlate any values on the fly showing them trends they didn't know were there. After I was dubbed Software & Data Analyst I started tackling legacy systems that were in dire need of upgrading: automating faxed, ftp'd and emailed orders from different customers into one unified system, creating a new web app from scratch to replace a java applet and completely revamping how tech support was handled and making it as smooth of a process as possible amongst a plethora of random small improvements all around. It is hard to deny that my programming tendrils will be felt long after I leave. Aside from programming, my role required me to meet with high profile customers to find solutions that worked for them, whether it be how they would place their orders or how they would print their badges. Amongst others, I've directly helped bring in customers like: 7-11, Best Buy, Hudson Bay Company, Stage Stores, Zales, Sprint, Lego, Rite-Aid and Ulta."
+      "story": "My time at Imprint Plus started on the phone supporting customers with designing and printing their name badges. My knack for troubleshooting, my customer service experience, my unquenchable thirst for knowledge and my programming degree quickly catapulted me into more involved positions. SQL Server proved my first stepping stone, I created reports using SSRS that management had never seen before. Reports that allowed them to correlate any values on the fly showing them trends they didn't know were there. After I was dubbed Software & Data Analyst I started tackling legacy systems that were in dire need of upgrading: automating faxed, ftp'd and emailed orders from different customers into one unified system, creating a new web app from scratch to replace a java applet and completely revamping how tech support was handled and making it as smooth of a process as possible amongst a plethora of random small improvements all around, including: translating wordpress forms into leads, auto-syncing separate systems, writing excel macros, automating msi creation,... It is hard to deny that my programming tendrils will be felt long after I leave. Aside from programming, my role required me to meet with high profile customers to find solutions that worked for them, whether it be how they would place their orders or how they would print their badges. Amongst others, I've directly helped bring in customers like: 7-11, Best Buy, Hudson Bay Company, Stage Stores, Zales, Sprint, Lego, Rite-Aid and Ulta."
     },
     {
       "company": "BC Hydro",
@@ -45,6 +77,16 @@
       "startDate": "2010-05-01",
       "endDate": "2011-07-21",
       "image": "bchydro.png",
+      "responsibilities": [
+        {
+          "name": "Computer refresh",
+          "description": "Set-up times with users to upgrade their computers from Win XP to Win 7 and address any issues that might arise"
+        },
+        {
+          "name": "Tier 2 Support",
+          "description": "Provide on-site support based on a monitored ticketing service."
+        }
+      ],
       "story": "I was initially hired at BC Hydro for a computer / operating system upgrade (from Win XP to Win 7). I travelled around the lower mainland to BC Hydro locations (mostly alone) to upgrade the users and accomodate their previous setups on their new environment, some of which included dual boot systems with legacy DOS programs, a challenge to say the least but challenges are there to be stared in the face. It required me to think on my feet a lot as the job was usually of hours without extra support on-site with heavily costumized computers (think engineering). The job evolved to a tier 2 tech support position as the upgrade project slowly came to an end. The tier 2 position was your standard support job: end user hardware/software support"
     },
     {
@@ -54,12 +96,25 @@
       "startDate": "2009-02-01",
       "endDate": "2010-03-31",
       "image": "acer.png",
+      "responsibilities": [
+        {
+          "name": "Venue deployment planning",
+          "description": "Plan the deployment of over 200 computers with accompanying servers at the Olympic Curling Venue"
+        },
+        {
+          "name": "Software Development",
+          "description": "Enhance and maintain existing software, plan and execute development."
+        },
+        {
+          "name": "Tier 2 Support",
+          "description": "Provide on-site support based on a monitored ticketing service."
+        }
+      ],
       "projects": [
         {
           "name": "Staff Scheduling Application",
           "skills": [
-            "Visual Studio",
-            "Visual Basic"
+            "vs", "vb"
           ],
           "description": "A scheduling application written in Visual Basic developed in Visual Studio. Used to manage hundreds of employees easily across 24h timespans, re-assign shifts for unavailable employees and keep employee work hours within 40 hour timespans with mandatory 8 hour gaps between shifts while keeping travel time in mind. The software was so well received it was taken to the 2012 London Olympics.",
           "tldr": ""
@@ -67,18 +122,13 @@
         {
           "name": "Acer Hardware Repair Tool",
           "skills": [
-            {
-              "name":"MS Access"
-            },
-            {
-              "name":"Visual Basic for Applications"
-            }
+            "access", "vba"
           ],
           "description": "An Access Database Application (VBA) used to track all the parts used to repair computers/laptops and to track the computers and laptops themselves for recurring issues. It was an established project that had a lot of faulty behaviours and had the added challenge of having all function and variable names in Vietnamese. I was recruited to make it functional after I had proven my VB knowledge with the Scheduling Application.",
           "tldr": ""
         }
       ],
-      "story": "After I landed my, uhum, landed immigrant status I immediately looked for a job to get back on the IT wagon. It didn't take very long to find a new position working for Acer @ Vanoc [Vancouver Winter Olympics] as a tier 2 tech support agent. The position mostly revolved around end user support until our Acer project manager heard I had programming experience acquired During my BS in Computer Science. He had me develop an application in Visual Basic to schedule the hundreds of Acer employees at all the Olympic locations giving him an overview of all the employees while easily being able to re-assign shifts should positions alter or employess fall sick. The last few months I was promoted to server specialist and oversaw the computer and server deployments at Hillcrest Olympic Centre (Curling venue) where I spent most of my time leading up to the Olympics. I managed a team of 5 during this time, throughout the Olympics and afterwards for the decmmission of all equipment at Hillcrest."
+      "story": "After I landed my, uhum, landed immigrant status I immediately looked for a job to get back on the IT wagon. It didn't take very long to find a new position working for Acer @ Vanoc [Vancouver Winter Olympics] as a tier 2 tech support agent. The position mostly revolved around end user support until our Acer project manager heard I had programming experience acquired during my BS in Computer Science. He had me develop an application in Visual Basic to schedule the hundreds of Acer employees at all the Olympic locations giving him an overview of all the employees while easily being able to re-assign shifts should positions alter or employess fall sick. The last few months I was promoted to server specialist and oversaw the computer and server deployments at Hillcrest Olympic Centre (Curling venue) where I spent most of my time leading up to the Olympics. I managed a team of 5 during this time, throughout the Olympics and afterwards for the decommission of all equipment at Hillcrest."
     },
     {
       "company": "Immigration",
@@ -96,7 +146,7 @@
       "startDate": "2004-10-01",
       "endDate": "2005-12-01",
       "image": "hp.png",
-      "story": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum."
+      "story": "I landed my first tech job at HP in Dublin after getting my Bachelor's degree in computer science. The first few months I provided tier 1 tech support to Nestle R&D in French. After a few months I got added to the Glaverbel French/Dutch tier 2 team as well, averaging around 25 calls a day. Only system-wide and hardware issues were to be escalated to another support team. I refined my technical and colloquial French quite a bit working for French companies surrounded by French colleagues."
     },
     {
       "company": "Hogeschool Gent",

@@ -30,7 +30,7 @@
             <h4>{{project.name}}</h4>
             <a ng-href="{{project.url}}" target="_blank">{{project.url}}</a>
             <div class="col-xs-12">
-              <div class="project-skill" ng-repeat="skill in project.skills">
+              <div class="project-skill" ng-repeat="skill in project.skills | orderBy: 'name'">
                 <img class="project-skill-image" ng-src="./images/skills/{{getSkill(skill).image}}" title="{{getSkill(skill).name}}"/>
               </div>
             </div>
@@ -41,6 +41,9 @@
           </div>
         </div>
         <div id="{{job.code}}-responsibilities" class="tab-pane fade">
+          <ul class="list-group">
+            <li  class="list-group-item" ng-repeat="responsibility in job.responsibilities | orderBy: 'name'"><strong>{{responsibility.name}}:</strong> {{responsibility.description}}</li>
+          </ul>
         </div>
         <div id="{{job.code}}-skills" class="tab-pane fade">
         </div>

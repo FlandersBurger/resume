@@ -20,6 +20,12 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/flag-icon-css/2.5.0/css/flag-icon.min.css">
 
   <link href="https://fonts.googleapis.com/css?family=Merriweather|VT323" rel="stylesheet">
+  <script type="text/javascript" src="https://cdn.emailjs.com/dist/email.min.js"></script>
+  <script type="text/javascript">
+     (function(){
+        emailjs.init("user_XkF9tU8gtA0LC4H4FsHlP");
+     })();
+  </script>
 
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
@@ -55,6 +61,9 @@
             </li>
             <li class="nav-item">
               <a class="nav-link" ui-sref="hobbies" ng-click="navCollapsed = true">Hobbies</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" ui-sref="contact" ng-click="navCollapsed = true">Contact</a>
             </li>
           </ul>
           <ul class="nav navbar-nav navbar-right">

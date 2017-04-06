@@ -26,6 +26,12 @@ angular.module('app')
     controller: 'HobbiesCtrl',
     templateUrl: 'pages/hobbies.html',
     templateStyleUrl: 'assets/hobbies.css'
+  })
+  .state('contact', {
+    url: '/contact',
+    controller: 'ContactCtrl',
+    templateUrl: 'pages/contact.html',
+    templateStyleUrl: 'assets/contact.css'
   });
 
   $locationProvider.html5Mode({

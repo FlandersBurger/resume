@@ -229,7 +229,33 @@
   },
   {
     "name": "Bingewatching",
-    "icon": "fa-television"
+    "icon": "fa-television",
+    "images": [
+      {
+        "name": "Game of Thrones",
+        "file": "got.png"
+      },
+      {
+        "name": "Silicon Valley",
+        "file": "silicon.png"
+      },
+      {
+        "name": "Bojack Horseman",
+        "file": "bojack.png"
+      },
+      {
+        "name": "Stranger Things",
+        "file": "strangerthings.png"
+      },
+      {
+        "name": "Broad City",
+        "file": "broadcity.png"
+      },
+      {
+        "name": "Ash vs The Evil Dead",
+        "file": "ash.png"
+      }
+    ]
   },
   {
     "name": "Surfing",
@@ -437,14 +463,6 @@
         "file": "zelda.png"
       }
     ]
-  },
-  {
-    "name": "Eating",
-    "icon": "fa-cutlery"
-  },
-  {
-    "name": "Skiing",
-    "icon": "fa-cloud"
   },
   {
     "name": "Travel",

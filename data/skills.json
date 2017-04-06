@@ -3,8 +3,8 @@
     "name": "AngularJS",
     "code": "angular",
     "enabled":"true",
-    "percentage":"75",
-    "description": "AngularJS has quickly become my favourite front-end web app framework, so much so that I can't imagine ever creating another website without it. In fact, this website relies heavily on AngularJS. The crown-jewel of my AngularJS experience is found at <a href='https://npgcloud.com' target='_blank'>https://npgcloud.com</a>, a web app where high profile customers such as Hudson Bay Company, 7-Eleven and Sprint go to design and print their name badges.",
+    "percentage":"80",
+    "description": "AngularJS has quickly become my favourite front-end web app framework, so much so that I can't imagine ever creating another website without it (I haven't tried ReactJs yet however). In fact, this website relies heavily on AngularJS. The crown-jewel of my AngularJS experience is found at <a href='https://npgcloud.com' target='_blank'>https://npgcloud.com</a>, a web app where high profile customers such as Hudson Bay Company, 7-Eleven and Sprint go to design and print their name badges.",
     "tldr": "",
     "image": "angular.png"
   },
@@ -12,7 +12,7 @@
     "name": "NodeJS",
     "code": "node",
     "enabled":"true",
-    "percentage":"65",
+    "percentage":"70",
     "description": "I discovered Node and started learning its possibilities in June 2015. The simplicity to set up a running server with Node is quite frankly astonishing and the ease of adding community written plugins still amazes me on a daily basis. Currently I have 4 node apps running, 2 externally facing that have helped me automate various processes, including an app that made it possible to download software prevously only available via CD.<br>I've used a lot of plugins so far, the most notable ones would be: <ul><li><strong>Tedious</strong> To make SQL connections easy</li><li><strong>Sequelize</strong> To make SQL queries using JS syntax</li><li><strong>Mongoose</strong> To make
         query MongoDB</li><li><strong>IIS Node</strong> To run node apps in IIS</li><li><strong>Nodemailer</strong> Simple SMTP package to make mailing easy</li><li><strong>Gulp</strong> To make development a breeze</li></ul>A full mastery of Node is impossible; I learn new things every time I use it and I am eager to keep learning it.",
     "tldr": "",
@@ -49,7 +49,7 @@
     "name": "Sequelize",
     "code": "sequelize",
     "enabled":"true",
-    "percentage":"70",
+    "percentage":"80",
     "description": "I first found Sequelize in the beginning of 2017 as I was searching for a tool to make SQL querying easier and making SQL injection hard. I stumbled upon Sequelize and have since implemented it in practically all my node apps. Since I'm know my way around SQL and I'm very accustomed to javascript syntax, this tool just married both into a fantastic tool to speed up all coding related to SQL.",
     "tldr": "",
     "image": "sequelize.png"
@@ -85,6 +85,12 @@
     "image": "symantec.png"
   },
   {
+    "name": "SSL",
+    "code": "ssl",
+    "description": "",
+    "image": "ssl.png"
+  },
+  {
     "name": "Redis",
     "code": "redis",
     "description": "",
@@ -99,13 +105,18 @@
   {
     "name": "MS IIS",
     "code": "iis",
-    "description": "",
+    "enabled":"true",
+    "percentage":"65",
+    "description": "I've maintained multiple different websites in IIS including a server which had PHP, ASP and Node (IIS Node) websites runnning concurrently. I'm no stranger to setting up SSL certificates, redirects, web.config files, APIs (WebDAV FTL) and managing the appropriate permissions for app pools and users. Although I have set up a bunch of sites already, there is still much to learn in IIS.",
+    "tldr": "",
     "image": "iis.png"
   },
   {
     "name": "MongoDB",
     "code": "mongo",
-    "description": "",
+    "enabled":"true",
+    "percentage":"85",
+    "description": "Currently Mongo is the only No-SQL database language I've ever used (both the local installation administered with Robomongo and one hosted by Mongolab). I've used in together with Mongoose in node. Although I do see the benefits of fast data access with documents, I still prefer the robust nature of a SQL relational database. However, the speed at which you can set up a No-SQL database is my biggest draw.",
     "image": "mongodb.png"
   },
   {
@@ -118,7 +129,90 @@
     "name": "HTML5",
     "code": "html5",
     "description": "",
-    "image": "trinity.png"
+    "image": "html5.png"
+  },
+  {
+    "name": "Git",
+    "code": "git",
+    "enabled":"true",
+    "percentage":"85",
+    "description": "I've worked with SVN before, but in my eyes, it is no match with Git. There simple is no project I will start without Git nowadays. I've used it to create repositories for all code at Imprint Plus (with Atlassian BitBucket) as previously the code was all over the place without a central location.",
+    "image": "git.png"
+  },
+  {
+    "name": "Atom",
+    "code": "atom",
+    "enabled":"true",
+    "percentage":"90",
+    "description": "My go-to text editor to code web apps in. The community-driven list is endless and it works like magic in conjunction with Git.",
+    "image": "atom.png"
+  },
+  {
+    "name": "Bootstrap",
+    "code": "bootstrap",
+    "description": "",
+    "image": "bootstrap.png"
+  },
+  {
+    "name": "Express",
+    "code": "express",
+    "description": "",
+    "image": "express.png"
+  },
+  {
+    "name": "Javascript",
+    "code": "js",
+    "percentage":"85",
+    "description": "",
+    "image": "js.png"
+  },
+  {
+    "name": "Visual Studio",
+    "code": "vs",
+    "description": "",
+    "image": "vs.png"
+  },
+  {
+    "name": "PHP",
+    "code": "php",
+    "description": "",
+    "image": "php.png"
+  },
+  {
+    "name": "Advanced Installer",
+    "code": "ai",
+    "description": "",
+    "image": "ai.png"
+  },
+  {
+    "name": "Websockets",
+    "code": "ws",
+    "description": "",
+    "image": "ws.png"
+  },
+  {
+    "name": "Visual Basic for Applications",
+    "code": "vba",
+    "description": "",
+    "image": "vba.png"
+  },
+  {
+    "name": "Visual Basic",
+    "code": "vb",
+    "description": "",
+    "image": "vb.png"
+  },
+  {
+    "name": "MS Access",
+    "code": "access",
+    "description": "",
+    "image": "access.png"
+  },
+  {
+    "name": "WK<html>TOpdf",
+    "code": "wkhtmltopdf",
+    "description": "",
+    "image": "wkhtmltopdf.png"
   },
   {
     "name": "Google Webmaster",
