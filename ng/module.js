@@ -3,5 +3,6 @@ angular.module('app', [
   'ui.bootstrap',
   'ngAnimate',
   'ngSanitize',
+  'vcRecaptcha',
   'chart.js'
 ]);

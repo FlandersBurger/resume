@@ -1,5 +1,5 @@
 angular.module('app')
-.controller('ContactCtrl', function ($scope) {
+.controller('ContactCtrl', function ($scope, $window) {
 
   $scope.options = [
     {
@@ -29,6 +29,24 @@ angular.module('app')
     message: ""
   };
 
+  $scope.key = '6LdptyMUAAAAAI_qNhUJ2-jeXrW9A5pegIDdbdoC';
+
+  $scope.setResponse = function (response) {
+      $scope.response = response;
+      console.log(response);
+      $scope.send();
+  };
+
+  $scope.setWidgetId = function (widgetId) {
+      $scope.widgetId = widgetId;
+      console.log(widgetId);
+  };
+
+  $scope.cbExpiration = function() {
+      vcRecaptchaService.reload($scope.widgetId);
+      $scope.response = null;
+  };
+
   $scope.send = function () {
     $scope.sending = true;
     emailjs.send("gmail", "resume", {
@@ -42,11 +60,14 @@ angular.module('app')
       $scope.sent = true;
       $scope.$apply();
       console.log("SUCCESS. status=%d, text=%s", response.status, response.text);
+      console.log(response);
     }, function(err) {
       $scope.sending = false;
       $scope.$apply();
       console.log("FAILED. error=", err);
     });
   };
+
+  $window.send = $scope.send;
 
 });
