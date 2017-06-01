@@ -2,8 +2,10 @@
   {
     "name": "AngularJS",
     "code": "angular",
+    "type": "skill",
     "enabled":"true",
     "percentage":"80",
+    "since":2015,
     "description": "AngularJS has quickly become my favourite front-end web app framework, so much so that I can't imagine ever creating another website without it (I haven't tried ReactJs yet however). In fact, this website relies heavily on AngularJS. The crown-jewel of my AngularJS experience is found at <a href='https://npgcloud.com' target='_blank'>https://npgcloud.com</a>, a web app where high profile customers such as Hudson Bay Company, 7-Eleven and Sprint go to design and print their name badges.",
     "tldr": "",
     "image": "angular.png"
@@ -11,8 +13,10 @@
   {
     "name": "NodeJS",
     "code": "node",
+    "type": "skill",
     "enabled":"true",
     "percentage":"70",
+    "since":2015,
     "description": "I discovered Node and started learning its possibilities in June 2015. The simplicity to set up a running server with Node is quite frankly astonishing and the ease of adding community written plugins still amazes me on a daily basis. Currently I have 4 node apps running, 2 externally facing that have helped me automate various processes, including an app that made it possible to download software prevously only available via CD.<br>I've used a lot of plugins so far, the most notable ones would be: <ul><li><strong>Tedious</strong> To make SQL connections easy</li><li><strong>Sequelize</strong> To make SQL queries using JS syntax</li><li><strong>Mongoose</strong> To make
         query MongoDB</li><li><strong>IIS Node</strong> To run node apps in IIS</li><li><strong>Nodemailer</strong> Simple SMTP package to make mailing easy</li><li><strong>Gulp</strong> To make development a breeze</li></ul>A full mastery of Node is impossible; I learn new things every time I use it and I am eager to keep learning it.",
     "tldr": "",
@@ -21,8 +25,10 @@
   {
     "name": "French",
     "code": "fr",
+    "type": "language",
     "enabled":"true",
     "percentage":"75",
+    "since":1992,
     "description": "Growing up in a small bilingual country with a non-common mother tongue, getting a second language is mandatory. By 12th grade we were required to read novels and do book reports on them, debate with classmates on various subjects and do an oral exam. Even though at the time it didn't seem like a great thing, I later landed a job for Nestle tech support (HP) in Dublin which only served French-speaking users while all my colleagues were also French. Crazily enough, I learned a vast amount of technical and colloquial French in an English speaking country. This skill comes in very handy in Canada as I can write manuals and user interfaces in both official languages (and which I am not a stranger too). Although I am getting rustier again at French due to not having used it in a while, it still comes in handy when a French-speaking customer is having trouble.",
     "tldr": "",
     "image": "france.png"
@@ -30,17 +36,21 @@
   {
     "name": "Dutch",
     "code": "nl",
+    "type": "language",
     "enabled":"true",
     "percentage":"100",
+    "since":1988,
     "description": "Although my mother tongue is <a href='https://en.wikipedia.org/wiki/West_Flemish' target='_blank'>West-Flemish</a>, Dutch is basically a second mother tongue to me due to the closeness of the languages and having to speak Dutch to the rest of the Flemish and Dutch population so they could understand us. I've used this asset to translate software I've made that is sold to Dutch customers currently.",
     "tldr": "",
     "image": "netherlands.png"
   },
   {
-    "name": "SQL Server",
+    "name": "T-SQL",
     "code": "sql",
+    "type": "skill",
     "enabled":"true",
-    "percentage":"80",
+    "percentage":"85",
+    "since":2012,
     "description": "SQL Server is one of the environments I'm most comfortable in. I have been able to use SQL server to automate a plethora of processes saving countless hours of manual work and weeding out errors made by it: automating emailed orders, calling APIs to auto-process orders, getting form data from wordpress, adding tarriffed item counts to UPS labels, calculating US customs dues, sending packing slips to third party warehouses, auto-enrolling supply chain customers,.... I've received a substantial <strong>CEO award</strong> in 2015 for building a report that allowed users to correlate any 2 attributes of sales to show trending. I've set up a couple of SQL databases from scratch to use for various reasons: APIs, SSRS reporting cubes, Automated order processing and am savvy in creating all aspects of a new database (keys, procedures, functions, relationships, backups, jobs,...)",
     "tldr": "",
     "image": "sql.png"
@@ -48,8 +58,10 @@
   {
     "name": "Sequelize",
     "code": "sequelize",
+    "type": "tool",
     "enabled":"true",
     "percentage":"80",
+    "since":2016,
     "description": "I first found Sequelize in the beginning of 2017 as I was searching for a tool to make SQL querying easier and making SQL injection hard. I stumbled upon Sequelize and have since implemented it in practically all my node apps. Since I'm know my way around SQL and I'm very accustomed to javascript syntax, this tool just married both into a fantastic tool to speed up all coding related to SQL.",
     "tldr": "",
     "image": "sequelize.png"
@@ -57,56 +69,69 @@
   {
     "name": "MS ASP",
     "code": "asp",
+    "type": "skill",
     "description": "",
+    "since":2013,
     "image": "aspnet.png"
   },
   {
     "name": "JQuery",
     "code": "jquery",
+    "type": "skill",
     "description": "",
+    "since":2012,
     "image": "jquery.png"
   },
   {
     "name": "Java",
     "code": "java",
+    "type": "skill",
     "description": "",
+    "since":2012,
     "image": "java.png"
   },
   {
     "name": "MySQL",
     "code": "mysql",
+    "type": "skill",
     "description": "",
     "image": "mysql.png"
   },
   {
     "name": "Symantec",
     "code": "symantec",
+    "type": "tool",
     "description": "",
     "image": "symantec.png"
   },
   {
     "name": "SSL",
     "code": "ssl",
+    "type": "skill",
     "description": "",
     "image": "ssl.png"
   },
   {
     "name": "Redis",
     "code": "redis",
+    "type": "skill",
     "description": "",
     "image": "redis.png"
   },
   {
     "name": "WordPress",
     "code": "wp",
+    "type": "skill",
     "description": "",
     "image": "wordpress.png"
   },
   {
     "name": "MS IIS",
     "code": "iis",
+    "type": "skill",
     "enabled":"true",
     "percentage":"65",
+    "since":1999,
     "description": "I've maintained multiple different websites in IIS including a server which had PHP, ASP and Node (IIS Node) websites runnning concurrently. I'm no stranger to setting up SSL certificates, redirects, web.config files, APIs (WebDAV FTL) and managing the appropriate permissions for app pools and users. Although I have set up a bunch of sites already, there is still much to learn in IIS.",
     "tldr": "",
     "image": "iis.png"
@@ -114,121 +139,148 @@
   {
     "name": "MongoDB",
     "code": "mongo",
+    "type": "skill",
     "enabled":"true",
     "percentage":"85",
+    "since":2015,
     "description": "Currently Mongo is the only No-SQL database language I've ever used (both the local installation administered with Robomongo and one hosted by Mongolab). I've used in together with Mongoose in node. Although I do see the benefits of fast data access with documents, I still prefer the robust nature of a SQL relational database. However, the speed at which you can set up a No-SQL database is my biggest draw.",
     "image": "mongodb.png"
   },
   {
     "name": "MS Dynamics CRM",
     "code": "crm",
+    "type": "skill",
     "description": "",
     "image": "msdynamics.png"
   },
   {
     "name": "HTML5",
     "code": "html5",
+    "type": "skill",
     "description": "",
     "image": "html5.png"
   },
   {
     "name": "Git",
     "code": "git",
+    "type": "skill",
     "enabled":"true",
     "percentage":"85",
+    "since":2015,
     "description": "I've worked with SVN before, but in my eyes, it is no match with Git. There simple is no project I will start without Git nowadays. I've used it to create repositories for all code at Imprint Plus (with Atlassian BitBucket) as previously the code was all over the place without a central location.",
     "image": "git.png"
   },
   {
     "name": "Atom",
     "code": "atom",
+    "type": "tool",
     "enabled":"true",
-    "percentage":"90",
+    "percentage":"100",
+    "since":2015,
     "description": "My go-to text editor to code web apps in. The community-driven list is endless and it works like magic in conjunction with Git.",
     "image": "atom.png"
   },
   {
     "name": "Bootstrap",
     "code": "bootstrap",
-    "description": "",
+    "type": "skill",
+    "enabled":"true",
+    "percentage":"95",
+    "since":2012,
+    "description": "It is undeniable how convenient and smooth Bootstrap is and easily you can plop in different themes. If I have to make a quick web app or I'm making an elaborate website, bootstrap is the first thing in the resource folder. Clikc change theme in this website to see just how easy it is to switch.",
     "image": "bootstrap.png"
   },
   {
     "name": "Express",
     "code": "express",
+    "type": "skill",
     "description": "",
     "image": "express.png"
   },
   {
     "name": "Javascript",
     "code": "js",
+    "type": "skill",
+    "enabled":"true",
     "percentage":"85",
-    "description": "",
+    "since":2001,
+    "description": "Due to its ease of use, javascript is my go-to language for most solutions. I've used it to make easy URL builders, file matching, ftp transactions, dynamic intranet pages, CRM automation, search functions, online coding challenges, and numerous other things to quickly help out people. It is essential when making sites and combined with Node it truly becomes a powerhouse for which you only have to know one language.",
     "image": "js.png"
   },
   {
     "name": "Visual Studio",
     "code": "vs",
+    "type": "tool",
     "description": "",
     "image": "vs.png"
   },
   {
     "name": "PHP",
     "code": "php",
+    "type": "skill",
     "description": "",
     "image": "php.png"
   },
   {
     "name": "Advanced Installer",
     "code": "ai",
+    "type": "tool",
     "description": "",
     "image": "ai.png"
   },
   {
     "name": "Websockets",
     "code": "ws",
+    "type": "skill",
     "description": "",
     "image": "ws.png"
   },
   {
     "name": "Visual Basic for Applications",
     "code": "vba",
+    "type": "skill",
     "description": "",
     "image": "vba.png"
   },
   {
     "name": "Visual Basic",
     "code": "vb",
+    "type": "skill",
     "description": "",
     "image": "vb.png"
   },
   {
     "name": "MS Access",
     "code": "access",
+    "type": "tool",
     "description": "",
     "image": "access.png"
   },
   {
     "name": "WK<html>TOpdf",
     "code": "wkhtmltopdf",
+    "type": "tool",
     "description": "",
     "image": "wkhtmltopdf.png"
   },
   {
     "name": "Google Webmaster",
     "code": "google",
+    "type": "tool",
     "description": "",
     "image": "googlewebmaster.png"
   },
   {
     "name": "PhoneGap",
     "code": "phonegap",
+    "type": "tool",
     "description": "",
     "image": "phonegap.png"
   },
   {
     "name": "MS Partner",
     "code": "mspartner",
+    "type": "skill",
     "description": "",
     "image": "mspartner.png"
   }

@@ -117,15 +117,15 @@
             "vs", "vb"
           ],
           "description": "A scheduling application written in Visual Basic developed in Visual Studio. Used to manage hundreds of employees easily across 24h timespans, re-assign shifts for unavailable employees and keep employee work hours within 40 hour timespans with mandatory 8 hour gaps between shifts while keeping travel time in mind. The software was so well received it was taken to the 2012 London Olympics.",
-          "tldr": ""
+          "tldr": "Olympic shift scheduling application"
         },
         {
           "name": "Acer Hardware Repair Tool",
           "skills": [
             "access", "vba"
           ],
-          "description": "An Access Database Application (VBA) used to track all the parts used to repair computers/laptops and to track the computers and laptops themselves for recurring issues. It was an established project that had a lot of faulty behaviours and had the added challenge of having all function and variable names in Vietnamese. I was recruited to make it functional after I had proven my VB knowledge with the Scheduling Application.",
-          "tldr": ""
+          "description": "An Access Database Application (VBA) used to track all the parts used to repair computers/laptops and to track the computers and laptops themselves for recurring issues. It was an established project that had a lot of faulty behaviours and had the added challenge of having all function and variable names in Vietnamese. I was recruited to make it functional after I had proven my programming knowledge with the Scheduling Application.",
+          "tldr": "Elaborate MS Access app used for hardware tracking"
         }
       ],
       "story": "After I landed my, uhum, landed immigrant status I immediately looked for a job to get back on the IT wagon. It didn't take very long to find a new position working for Acer @ Vanoc [Vancouver Winter Olympics] as a tier 2 tech support agent. The position mostly revolved around end user support until our Acer project manager heard I had programming experience acquired during my BS in Computer Science. He had me develop an application in Visual Basic to schedule the hundreds of Acer employees at all the Olympic locations giving him an overview of all the employees while easily being able to re-assign shifts should positions alter or employess fall sick. The last few months I was promoted to server specialist and oversaw the computer and server deployments at Hillcrest Olympic Centre (Curling venue) where I spent most of my time leading up to the Olympics. I managed a team of 5 during this time, throughout the Olympics and afterwards for the decommission of all equipment at Hillcrest."
@@ -158,9 +158,14 @@
       "projects":[
         {
           "name": "SimpleGameNet",
-          "url":"http://simplegamenet.sourceforge.net/"
+          "url":"http://simplegamenet.sourceforge.net/",
+          "skills": [
+            "java"
+          ],
+          "description": "A framework built to accomodate developers to build online games. This project was the final project of my Bachelor's degree for which I received an A.",
+          "tldr": "Online simple game framework"
         }
       ],
-      "story": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum."
+      "story": "The main focus of the program was C++, Cobol, Visual Basic, Java, networking and SQL. Web development wasn't as big as it is nowadays, most of the relevant skills I use today I acquired later on. However, it is undeniable that the studies helped lay a solid foundation."
     }
   ]

@@ -8,6 +8,21 @@
   }
 }
 
+@media print {
+
+  .print {
+    display: block !important;
+    -webkit-print-color-adjust: exact;
+  }
+
+  .display {
+    display: none !important;
+  }
+}
+
+.print {
+  display: none;
+}
 
 body {
   min-width:300px;
@@ -54,5 +69,8 @@ body {
 .hover-div-info {
   position: fixed;
   display:none;
+}
 
+hr {
+  clear:both;
 }

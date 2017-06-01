@@ -9,6 +9,10 @@ angular.module('app')
     templateUrl: 'pages/home.html',
     templateStyleUrl: 'assets/home.css'
   })
+  .state('print', {
+    url: '/print',
+    templateUrl: 'pages/print.html'
+  })
   .state('experience', {
     url: '/experience',
     controller: 'ExperienceCtrl',

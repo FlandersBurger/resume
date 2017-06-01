@@ -7,15 +7,15 @@ angular.module('app')
     //console.log(response.data);
   });
 
-  $.getJSON('../assets/hobbies.json', function( data ) {
-    $scope.hobbies = data;
-    $scope.selectedHobby = $scope.hobbies[0];
-    $scope.$apply();
-  });
-
+  $scope.selectedHobby = $scope.hobbies[0];
 
   $scope.selectHobby = function (hobby) {
     $scope.selectedHobby = hobby;
     $scope.hobbySelectorVisible = false;
+  };
+
+  $scope.showHobby = function (value, index, array) {
+    if (!value.images) return false;
+    return value.images.length > 0;
   };
 });
