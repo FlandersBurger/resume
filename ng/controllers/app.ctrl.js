@@ -66,10 +66,9 @@ angular.module('app')
     $scope.selectedLanguage = LanguageSvc.setLanguage(language);
   };
 
-  $scope.hoverdiv = function (e,divid){
-    console.log(divid);
-    var left  = e.clientX  + "px";
-    var top  = e.clientY  + "px";
+  $scope.hoverdiv = function (e, divid) {
+    var left  = e.clientX + "px";
+    var top  = (e.clientY + 20) + "px";
 
     var div = document.getElementById(divid);
 

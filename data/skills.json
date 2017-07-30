@@ -107,18 +107,22 @@
     "image": "mysql.png"
   },
   {
-    "name": "Symantec",
-    "code": "symantec",
-    "type": "tool",
-    "description": "",
-    "image": "symantec.png"
+    "name": "Certifications",
+    "code": "certify",
+    "type": "skill",
+    "enabled":"true",
+    "percentage":"85",
+    "description": "I've certified a plethora of different software applications using various certificates: websites (Node and IIS), EXEs, MSIs, DLLs, JARs with PFX and EV certifications, self-signed or provided by Symantec.",
+    "image": "certified.png"
   },
   {
-    "name": "SSL",
-    "code": "ssl",
+    "name": "Google API",
+    "code": "googleapi",
     "type": "skill",
-    "description": "",
-    "image": "ssl.png"
+    "enabled":"true",
+    "percentage":"60",
+    "description": "I've used the Google Developer Console to dynamically load Youtube videos, create smooth maps, add funky fonts, analyze visitor data and add recaptchas to sites. There is a vast amount of resources available there and I've just scratched the surface of them. Undoubtedly I will continue using Google's APIs.",
+    "image": "redis.png"
   },
   {
     "name": "Redis",
@@ -152,8 +156,18 @@
     "enabled":"true",
     "percentage":"85",
     "since":2015,
-    "description": "Currently Mongo is the only No-SQL database language I've ever used (both the local installation administered with Robomongo and one hosted by Mongolab). I've used in together with Mongoose in node. Although I do see the benefits of fast data access with documents, I still prefer the robust nature of a SQL relational database. However, the speed at which you can set up a No-SQL database is my biggest draw.",
+    "description": "Currently Mongo is the only No-SQL database language I've ever used (both the local installation administered with Robomongo and one hosted by Mongolab). I've used it together with Mongoose in node. Although I do see the benefits of fast data access with documents, I still prefer the robust nature of a SQL relational database. However, the speed at which you can set up a No-SQL database is my biggest draw.",
     "image": "mongodb.png"
+  },
+  {
+    "name": "C++",
+    "code": "c++",
+    "type": "skill",
+    "enabled":"true",
+    "percentage":"55",
+    "since":2000,
+    "description": "Back in college I wrote C++ applications (2000-2003) but there was a hiatus of over a decade before I dove into it again by adding features and fixing bugs of an existing application. I wouldn't call myself an expert in C++ but having dived back into it, it has really shown that it is like riding a bike, give or take some maintenance.",
+    "image": "c++.png"
   },
   {
     "name": "MS Dynamics CRM",
@@ -186,7 +200,7 @@
     "enabled":"true",
     "percentage":"100",
     "since":2015,
-    "description": "My go-to text editor to code web apps in. The community-driven list of plugins is endless and it works like magic in conjunction with Git.",
+    "description": "My go-to text editor to code web apps in. The community-driven list of plugins is endless and it works like magic in conjunction with Git. Some plugins I particularly enjoyed are: <ul><li>minimap</li><li>linter</li><li>jshint</li><li>autoclose-html</li><li>pigments</li><li>highlight-selected</li></ul>",
     "image": "atom.png"
   },
   {
@@ -196,15 +210,28 @@
     "enabled":"true",
     "percentage":"95",
     "since":2012,
-    "description": "It is undeniable how convenient and smooth Bootstrap is and easily you can plop in different themes. If I have to make a quick web app or I'm making an elaborate website, bootstrap is the first thing in the resource folder. Clikc change theme in this website to see just how easy it is to switch.",
+    "description": "It is undeniable how convenient and smooth Bootstrap is and how easily you can plop in different themes. If I have to make a quick web app or I'm making an elaborate website, bootstrap is the first thing in the resource folder. Clikc change theme in this website to see just how easy it is to switch.",
     "image": "bootstrap.png"
   },
   {
     "name": "Express",
     "code": "express",
     "type": "skill",
-    "description": "",
+    "enabled":"true",
+    "percentage":"95",
+    "since":2015,
+    "description": "My go to for building RESTful APIs, I haven't tried any others as Express always does what I ned it to do in a simple and comprehensible way.",
     "image": "express.png"
+  },
+  {
+    "name": "RESTful API",
+    "code": "api",
+    "type": "skill",
+    "enabled":"true",
+    "percentage":"90",
+    "since":2015,
+    "description": "I already knew the usefulness of Restful APIs but when I started exploring the possiblities myself a proverbial whole new world opened up. I've built APIs for executables to be able to download templates, to send orders to remote warehouses, to process shopify orders, to analyze worpress data, build pdfs, monitor/log software activity... ",
+    "image": "rest.png"
   },
   {
     "name": "Javascript",
@@ -220,7 +247,10 @@
     "name": "Visual Studio",
     "code": "vs",
     "type": "tool",
-    "description": "",
+    "enabled":"true",
+    "percentage":"70",
+    "since":2001,
+    "description": "I've used Visual Studio for a long time for both SSRS reporting, C++ and Visual Basic programming projects. Like all Microsoft products, it is so feature rich that you can get lost in it easily. I know my around in Visual Studio but for web design I prefer some of the newer smart text editors (most notably Atom)",
     "image": "vs.png"
   },
   {
@@ -241,7 +271,10 @@
     "name": "Websockets",
     "code": "ws",
     "type": "skill",
-    "description": "",
+    "enabled":"true",
+    "percentage":"70",
+    "since":2015,
+    "description": "I've used websockets to create an online chat but having create that, I can see how useful it can be beyond just updating messages. I will explore this further when I get the chance.",
     "image": "ws.png"
   },
   {

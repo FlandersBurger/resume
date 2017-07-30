@@ -31,7 +31,17 @@
             <a ng-href="{{project.url}}" target="_blank">{{project.url}}</a>
             <div class="col-xs-12">
               <div class="project-skill" ng-repeat="skill in project.skills | orderBy: 'name'">
-                <img class="project-skill-image" ng-src="./images/skills/{{getSkill(skill).image}}" title="{{getSkill(skill).name}}"/>
+                <img class="project-skill-image" ng-mouseleave="hoverdiv($event, getSkill(skill).code + '-info')" ng-mouseenter="hoverdiv($event, getSkill(skill).code + '-info')" ng-src="./images/skills/{{getSkill(skill).image}}"/>
+                <div class="hover-div" id="{{getSkill(skill).code}}-info">
+                  <div class="panel panel-default">
+                    <div class="panel-heading">
+                      <h3>{{getSkill(skill).name}}</h3>
+                    </div>
+                    <div class="panel-body">
+                      <p ng-bind-html="getSkill(skill).description"></p>
+                    </div>
+                  </div>
+                </div>
               </div>
             </div>
             <p ng-bind-html="project.description"></p>

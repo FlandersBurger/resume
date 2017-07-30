@@ -230,6 +230,46 @@
       {
         "name": "Dirk Gently's Holistic Detective Agency",
         "file": "dirk.jpg"
+      },
+      {
+        "name": "House of Cards",
+        "file": "houseofcards.jpg"
+      },
+      {
+        "name": "Breaking Bad",
+        "file": "breakingbad.jpg"
+      },
+      {
+        "name": "Orange is the new Black",
+        "file": "orangeblack.jpg"
+      },
+      {
+        "name": "Master of None",
+        "file": "masterofnone.jpg"
+      },
+      {
+        "name": "Archer",
+        "file": "archer.jpg"
+      },
+      {
+        "name": "Fargo",
+        "file": "fargo.jpg"
+      },
+      {
+        "name": "Atlanta",
+        "file": "atlanta.jpg"
+      },
+      {
+        "name": "Insecure",
+        "file": "insecure.png"
+      },
+      {
+        "name": "Westworld",
+        "file": "westworld.jpg"
+      },
+      {
+        "name": "Halt & Catch Fire",
+        "file": "haltcatchfire.jpg"
       }
     ]
   },
