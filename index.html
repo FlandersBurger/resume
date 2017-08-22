@@ -19,7 +19,11 @@
   <link rel="stylesheet" ng-href="./resources/bootstrap{{themeCounter}}.min.css">
   <!--link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"-->
 
-  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.6.3/css/font-awesome.min.css">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+
+  <!--script defer src="/resources/solid.min.js"></script>
+  <script defer src="/resources/regular.min.js"></script>
+  <script defer src="/resources/fontawesome.min.js"></script-->
 
   <link rel="stylesheet" ng-href="./assets/app.css?v={{random}}">
   <link rel="stylesheet" href="./resources/circle.css">
@@ -73,7 +77,7 @@
               <a class="nav-link" ui-sref="contact" ng-click="navCollapsed = true">Contact</a>
             </li>
             <li class="nav-item">
-              <a class="nav-link" onclick="window.print();" ng-click="navCollapsed = true">Print</a>
+              <a class="nav-link" onclick="window.print();" style="cursor:pointer" ng-click="navCollapsed = true">Print</a>
             </li>
           </ul>
           <ul class="nav navbar-nav navbar-right">

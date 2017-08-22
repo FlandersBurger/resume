@@ -9,7 +9,7 @@ gulp.task('css', function () {
       compress: true,
       'include css': true
     }))
-    //.pipe(concat('app.css'))
+    .pipe(concat('app.css'))
     .pipe(gulp.dest('assets'));
 });
 

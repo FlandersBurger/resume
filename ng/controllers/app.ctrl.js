@@ -83,7 +83,7 @@ angular.module('app')
     {
       "name": "facebook",
       "url": "https://www.facebook.com/flandersburger",
-      "icon": "fa-facebook"
+      "icon": "fa-facebook-f"
     },
     {
       "name": "twitter",
