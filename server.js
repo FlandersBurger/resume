@@ -11,7 +11,7 @@ app.use(require('./auth'));
 //app.use('/api/posts', require('./controllers/api/posts'));
 app.use(require('./controllers/static'));
 
-var port = process.env.PORT || 80;
+var port = process.env.PORT || 3000;
 
 var server = app.listen(port, function () {
   console.log('Server ', process.pid ,' listening on', port);
