@@ -1,0 +1,11 @@
+<div id="workout-page" class="container">
+  <div class="well well-lg">
+    <button class="btn btn-default" ng-click="workout()">
+      {{ timeRemaining ? 'Stop' : 'Start' }} Workout
+    </button>
+  </div>
+  <h1 class="display-2">{{timer}}</h1>
+  <h2 class="display-3">{{rest ? 'Next up: ' : ''}}{{exercise.name}}</h2>
+  <h2 ng-show="exercise.split && !rest">{{timer < 15 ? 'Right' : 'Left'}}</h2>
+  <img ng-src="images/exercises/{{exercise.name}}.gif" ng-show="rest" />
+</div>

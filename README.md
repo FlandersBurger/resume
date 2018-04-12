@@ -1,1 +1,3 @@
-Resume hosted at http://belgocanadian.neocities.org
+Minimized with Gulp
+
+Resume hosted at https://belgocanadian.com

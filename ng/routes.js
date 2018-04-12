@@ -1,7 +1,7 @@
 angular.module('app')
 .config(function ($stateProvider, $urlRouterProvider, $locationProvider) {
 
-  $urlRouterProvider.otherwise('/home');
+  $urlRouterProvider.otherwise('/top-priority');
 
   $stateProvider
   .state('home', {
@@ -36,6 +36,16 @@ angular.module('app')
     controller: 'ContactCtrl',
     templateUrl: 'pages/contact.html',
     //templateStyleUrl: 'assets/contact.css'
+  })
+  .state('workout', {
+    url: '/workout',
+    controller: 'WorkoutCtrl',
+    templateUrl: 'pages/workout.html'
+  })
+  .state('top-priority', {
+    url: '/top-priority',
+    controller: 'TopPriorityCtrl',
+    templateUrl: 'pages/top-priority.html'
   });
 
   $locationProvider.html5Mode({
