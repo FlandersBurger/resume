@@ -1,0 +1,6 @@
+RewriteEngine   On
+RewriteBase     /
+RewriteCond     %{REQUEST_URI} !^(/app\.php|/img|/js|/css|/robots\.txt|/favicon\.ico)
+RewriteCond     %{REQUEST_FILENAME} !-f
+RewriteCond     %{REQUEST_FILENAME} !-d
+RewriteRule     .               /app.html              [L]

@@ -34,19 +34,19 @@ angular.module('app')
   };
 
 
-  $.getJSON('../assets/skills.json', function( data ) {
+  $.getJSON('/skills.json', function( data ) {
     $scope.skills = data.filter(function(skill) {
       return skill.enabled;
     });
   });
 
 
-  $.getJSON('../assets/hobbies.json', function( data ) {
+  $.getJSON('/hobbies.json', function( data ) {
     $scope.hobbies = data;
   });
 
 
-  $.getJSON('../assets/experience.json', function( data ) {
+  $.getJSON('/experience.json', function( data ) {
     $scope.jobs = data;
     $scope.jobs.forEach(function (job) {
       job.startDate = new Date(job.startDate);

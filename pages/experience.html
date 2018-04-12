@@ -1,12 +1,12 @@
 
 <div id="experience-page" ng-cloak>
   <!--div class="col-sm-2" ng-repeat="job in jobs">
-    <img class="job-selector" ng-src="./images/experience/{{job.image}}" style="float:left;"/>
+    <img class="job-selector" ng-src="/experience/{{job.image}}" style="float:left;"/>
   </div-->
   <div ng-repeat="job in jobs" class="job-section">
     <div class="col-md-2 col-sm-3 col-xs-4 job-header">
       <div class="job-image">
-        <img ng-src="./images/experience/{{job.image}}"/>
+        <img ng-src="/experience/{{job.image}}"/>
       </div>
     </div>
     <div class="col-md-10 col-sm-9 col-xs-8 job-title">
@@ -31,7 +31,7 @@
             <a ng-href="{{project.url}}" target="_blank">{{project.url}}</a>
             <div class="col-xs-12">
               <div class="project-skill" ng-repeat="skill in project.skills | orderBy: 'name'">
-                <img class="project-skill-image" ng-mouseleave="hoverdiv($event, getSkill(skill).code + '-info')" ng-mouseenter="hoverdiv($event, getSkill(skill).code + '-info')" ng-src="./images/skills/{{getSkill(skill).image}}"/>
+                <img class="project-skill-image" ng-mouseleave="hoverdiv($event, getSkill(skill).code + '-info')" ng-mouseenter="hoverdiv($event, getSkill(skill).code + '-info')" ng-src="/skills/{{getSkill(skill).image}}"/>
                 <div class="hover-div" id="{{getSkill(skill).code}}-info">
                   <div class="panel panel-default">
                     <div class="panel-heading">
