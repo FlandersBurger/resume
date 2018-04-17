@@ -34,7 +34,7 @@ angular.module('app')
   .state('contact', {
     url: '/contact',
     controller: 'ContactCtrl',
-    templateUrl: 'S/contact.html',
+    templateUrl: '/contact.html',
     //templateStyleUrl: 'assets/contact.css'
   })
   .state('workout', {

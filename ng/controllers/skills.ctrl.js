@@ -1,14 +1,13 @@
 angular.module('app')
 .controller('SkillsCtrl', function ($scope, $window) {
 
-    $scope.selectedSkill = 0;
-    $scope.skillsVisible = false;
-
+  $scope.selectedSkill = 0;
+  $scope.skillsVisible = false;
 
   $scope.labels = ["Download Sales", "In-Store Sales", "Mail-Order Sales"];
   $scope.data = [300, 500, 100];
 
-  $.getJSON('../assets/skills.json', function( data ) {
+  $.getJSON('/skills.json', function( data ) {
     $scope.skills = data.filter(function(skill) {
       return skill.enabled;
     });
@@ -21,7 +20,7 @@ angular.module('app')
         maintainAspectRatio: false
       };
       $scope.selectedSkill.chartStyle = {
-        'background-image': 'url(./images/skills/' + $scope.selectedSkill.image + ')',
+        'background-image': 'url(/skills/' + $scope.selectedSkill.image + ')',
         'background-repeat': 'no-repeat',
         'background-size': '60%',
         'background-position': '50% 50%'

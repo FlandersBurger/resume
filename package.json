@@ -8,6 +8,7 @@
     "flag-icon-css": "^2.4.0",
     "jwt-simple": "^0.5.1",
     "morgan": "^1.9.0",
+    "nodemailer": "^4.6.4",
     "ws": "^5.1.1"
   },
   "devDependencies": {

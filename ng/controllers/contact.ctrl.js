@@ -1,5 +1,5 @@
 angular.module('app')
-.controller('ContactCtrl', function ($scope, $window) {
+.controller('ContactCtrl', function ($scope, $window, EmailSvc) {
 
   $scope.options = [
     {
@@ -29,12 +29,12 @@ angular.module('app')
     message: ""
   };
 
-  $scope.key = '6LdptyMUAAAAAI_qNhUJ2-jeXrW9A5pegIDdbdoC';
+  $scope.key = '6LcEplMUAAAAAFEVP_bJVNISNHx0c2cXy9hi89iE';
 
   $scope.setResponse = function (response) {
       $scope.response = response;
       console.log(response);
-      $scope.send();
+      $scope.send(response);
   };
 
   $scope.setWidgetId = function (widgetId) {
@@ -47,14 +47,16 @@ angular.module('app')
       $scope.response = null;
   };
 
-  $scope.send = function () {
-    $scope.sending = true;
-    emailjs.send("gmail", "resume", {
+  $scope.send = function (response) {
+    EmailSvc.send({
+      captcha: response,
+      email: {
       "email": $scope.contact.email,
       "name": $scope.contact.name,
       "phone":  $scope.contact.phone,
       "about": $scope.contact.about,
       "message": $scope.contact.message
+      }
     })
     .then(function(response) {
       $scope.sent = true;
