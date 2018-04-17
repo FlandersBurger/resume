@@ -9,6 +9,7 @@ app.use(logger('dev'));
 
 app.use(require('./auth'));
 //app.use('/api/posts', require('./controllers/api/posts'));
+app.use('/api/email', require('./controllers/api/email'));
 app.use(require('./controllers/static'));
 
 var port = process.env.PORT || 3000;

@@ -3,8 +3,9 @@ angular.module('app')
 
   var svc = this;
 
-  svc.send = function (options) {
-    return $http.post('/api/email', options);
+  svc.send = function (email) {
+    console.log(email);
+    return $http.post('/api/email', email);
   };
 
 });
