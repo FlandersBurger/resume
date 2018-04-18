@@ -261,14 +261,8 @@ angular.module('app')
   };
 
   //Triggered when a choice is made
-  $scope.choose = function (item) {
-      var i, button;
-      //Check which button was clicked
-      if (item == choices[choice][0]) {
-          button = 0;
-      } else {
-          button = 1;
-      }
+  $scope.choose = function (button) {
+      var i;
       //Increase the scores for those buttons
       score.choose(choices[choice][button]);
       players[players.length - 1].choose(choices[choice][button]);

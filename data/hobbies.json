@@ -380,6 +380,10 @@
         "file": "carcassonne.jpg"
       },
       {
+        "name": "Codenames",
+        "file": "codenames.jpg"
+      },
+      {
         "name": "Cosmic Encounter",
         "file": "cosmicencounter.jpg"
       },
@@ -486,6 +490,10 @@
       {
         "name": "Terra Mystica",
         "file": "terramystica.jpg"
+      },
+      {
+        "name": "Tomb Raider",
+        "file": "tombraider.jpg"
       },
       {
         "name": "The Walking Dead",

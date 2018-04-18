@@ -13,8 +13,8 @@
     <div id="hobby-selector" class="col-xs-12" ng-show="hobbySelectorVisible">
       <div ng-repeat="hobby in hobbies | filter: showHobby" class="col-lg-2 col-md-3 col-sm-3 col-xs-6 hobby-panel" >
         <div class="hobby" ng-click="selectHobby(hobby)" ng-class="{'hobby-current': selectedHobby === hobby}">
-          <h4>{{hobby.name}}</h4>
           <i class="fa fa-4x" ng-class="hobby.icon"></i>
+          <h4>{{hobby.name}}</h4>
         </div>
       </div>
     </div>

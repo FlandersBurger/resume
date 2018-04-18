@@ -23,7 +23,7 @@ angular.module('app')
 
   $scope.workout = function() {
     if (!$scope.timeRemaining) {
-      $scope.timeRemaining = exercises.length * 40;
+      $scope.timeRemaining = exercises.length * 45;
       exercising = setInterval(function() {
         $scope.timeRemaining--;
         if ($scope.timeRemaining === 0) {
@@ -34,8 +34,8 @@ angular.module('app')
           $scope.$apply();
           return clearInterval(exercising);
         }
-        var currentExercise = Math.floor($scope.timeRemaining / 40);
-        var timer = $scope.timeRemaining - currentExercise * 40;
+        var currentExercise = Math.floor($scope.timeRemaining / 45);
+        var timer = $scope.timeRemaining - currentExercise * 45;
         $scope.timer = timer > 30 ? timer - 30 : timer;
         if (timer > 30) {
           $scope.rest = true;

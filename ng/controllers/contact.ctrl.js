@@ -41,12 +41,10 @@ angular.module('app')
     })
     .then(function(response) {
       $scope.sent = true;
-      $scope.$apply();
       console.log("SUCCESS. status=%d, text=%s", response.status, response.text);
       console.log(response);
     }, function(err) {
       $scope.sending = false;
-      $scope.$apply();
       console.log("FAILED. error=", err);
     });
   };
