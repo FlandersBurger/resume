@@ -9,7 +9,7 @@
   </div>
   <div class="skill-display col-xs-9">
     <div class="selected-skill" id="{{selectedSkill.code}}">
-      <canvas id="doughnut" class="chart chart-doughnut" ng-style="selectedSkill.chartStyle" chart-options="selectedSkill.chartOptions" chart-data="[selectedSkill.percentage]" chart-labels="['Mastery']"></canvas>
+      <canvas id="doughnut" class="chart chart-doughnut" ng-style="selectedSkill.chartStyle" chart-options="selectedSkill.chartOptions" chart-data="[selectedSkill.percentage, 100 - selectedSkill.percentage]" chart-labels="['Mastery', 'Learning Opportunity']"></canvas>
     </div>
     <div class="selected-skill-text">
       <h1>{{selectedSkill.name}}</h1>

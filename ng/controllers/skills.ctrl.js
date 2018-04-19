@@ -16,8 +16,8 @@ angular.module('app')
       $scope.selectedSkill = skill;
       $scope.selectedSkill.chartOptions = {
         cutoutPercentage : 80,
-        circumference: 2 * Math.PI * $scope.selectedSkill.percentage / 100,
-        maintainAspectRatio: false
+        circumference: 2 * Math.PI,
+        maintainAspectRatio: true
       };
       $scope.selectedSkill.chartStyle = {
         'background-image': 'url(/skills/' + $scope.selectedSkill.image + ')',
@@ -26,6 +26,8 @@ angular.module('app')
         'background-position': '50% 50%'
       };
     };
+
+    $scope.setSelectedSkill($scope.skills[0]);
 
       /*
       half circle skill wheel that didn't turn out great

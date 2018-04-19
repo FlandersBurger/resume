@@ -27,7 +27,7 @@
     "code": "fr",
     "type": "language",
     "enabled":"true",
-    "percentage":"75",
+    "percentage":"80",
     "since":1992,
     "description": "Growing up in a small bilingual country with a non-common mother tongue, getting a second language is mandatory. By 12th grade we were required to read novels and do book reports on them, debate with classmates on various subjects and do an oral exam. Even though at the time it didn't seem like a great thing, I later landed a job for Nestle tech support (HP) in Dublin which only served French-speaking users while all my colleagues were also French. Crazily enough, I learned a vast amount of technical and colloquial French in an English speaking country. This skill comes in very handy in Canada as I can write manuals and user interfaces in both official languages (and which I am not a stranger too). Although I am getting rustier again at French due to not having used it in a while, it still comes in handy when a French-speaking customer is having trouble.",
     "tldr": "",
@@ -122,7 +122,7 @@
     "enabled":"true",
     "percentage":"60",
     "description": "I've used the Google Developer Console to dynamically load Youtube videos, create smooth maps, add funky fonts, analyze visitor data and add recaptchas to sites. There is a vast amount of resources available there and I've just scratched the surface of them. Undoubtedly I will continue using Google's APIs.",
-    "image": "redis.png"
+    "image": "google.png"
   },
   {
     "name": "Redis",
@@ -164,7 +164,7 @@
     "code": "c++",
     "type": "skill",
     "enabled":"true",
-    "percentage":"55",
+    "percentage":"40",
     "since":2000,
     "description": "Back in college I wrote C++ applications (2000-2003) but there was a hiatus of over a decade before I dove into it again by adding features and fixing bugs of an existing application. I wouldn't call myself an expert in C++ but having dived back into it, it has really shown that it is like riding a bike, give or take some maintenance.",
     "image": "c++.png"
