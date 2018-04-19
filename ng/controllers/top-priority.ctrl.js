@@ -12,34 +12,41 @@ angular.module('app')
   var AVATAR_ROWS = 4;
 
   $scope.defaultLists = {
+    blank: {
+      caption: 'Blank List',
+      message: 'What needs to be prioritized?',
+      list: ['', '', '']
+    },
     chores: {
-      caption: 'Chores, ugh',
+      caption: 'Chores',
       message: 'What chores need to be done?',
       list: ['Laundry', 'Dishes', 'Sweeping', 'Groceries', 'Tidy']
     },
     restaurants: {
-      caption: 'We\'re hungry',
+      caption: 'Restaurants',
       message: 'What do you want to eat?',
       list: ['Chinese', 'Japanese', 'American', 'Indian', 'Greek', 'Italian', 'Korean', 'Thai', 'Vietnamese', 'Mexican']
     },
     pokemon: {
-      caption: 'I choose you',
+      caption: 'Pokemon',
       message: 'Which do you gotta catch?',
       list: ['Pikachu', 'Squirtle', 'Charmander', 'Bulbasaur', 'Pidgeotto', 'Snorlax']
-    }
+    },
+    genres: {
+      caption: 'Movie Genres',
+      message: 'What shall we watch tonight?',
+      list: ['Comedy', 'Drama', 'Thriller', 'Action', 'Horror', 'Animated', 'Adventure', 'Documentary', 'Musical', 'Science Fiction']
+    },
   };
 
   $scope.list = [];
 
   $scope.choose_type = function (name) {
     $('#TypeSection').hide();
-    if (!name) {
-      $scope.list = ['', ''];
-      $('#InputTitle').text('What needs prioritizing?');
-    } else {
-      $scope.list = $scope.defaultLists[name].list;
-      $('#InputTitle').text($scope.defaultLists[name].message);
-    }
+    $scope.list = $scope.defaultLists[name].list.map(function(item) {
+      return { item: item };
+    });
+    $('#InputTitle').text($scope.defaultLists[name].message);
     $('#InputSection').show();
   };
 
@@ -48,7 +55,7 @@ angular.module('app')
   };
 
   $scope.addListItem = function() {
-    $scope.list.push('');
+    $scope.list.push({ item: '' });
   };
 
   $scope.choose_avatar = function() {
@@ -73,7 +80,7 @@ angular.module('app')
     this.tasks = [];
 
     for (var i in list) {
-      this.tasks[i] = new Task(list[i]);
+      this.tasks[i] = new Task(list[i].item);
     }
 
     this.choose = function(choice) {
@@ -117,18 +124,15 @@ angular.module('app')
 
   //Triggered by 'Start Prioritizing' button
   $scope.start = function () {
-    var i, j, l, temp;
-    t = 0;
     //Get rid of blanks
     $scope.list = $scope.list.filter(function(item) {
-      return item;
+      return item.item;
     });
-    l = $scope.list.length;
     //Check if all values are unique
     var unique = checkIfArrayIsUnique($scope.list);
-    if (l < 2) {
+    if ($scope.list.length < 2) {
         alert('Oi, there\'re 2 textboxes for a reason!');
-        $scope.list = ['', ''];
+        $scope.choose_type('blank');
         return false;
     } else if (unique !== true) {
         alert('Seems like you prefer ' + unique + '.');
@@ -147,25 +151,25 @@ angular.module('app')
 
   //Triggered when an avatar is chosen
   $scope.prioritize = function () {
-      var i, j, l, t;
-      t = 0;
-      l = score.tasks.length;
-      choices = [];
-      $('#AvatarSection').hide();
-      //Make a new choice list
-      for (i = 0; i < l - 1; i++) {
-        for (j = i + 1; j < l; j++) {
-          choices[t] = [];
-          choices[t][0] = score.tasks[i].name;
-          choices[t][1] = score.tasks[j].name;
-          choices[t][2] = 0;
-          t++;
-        }
+    var i, j, l, t;
+    t = 0;
+    l = score.tasks.length;
+    choices = [];
+    $('#AvatarSection').hide();
+    //Make a new choice list
+    for (i = 0; i < l - 1; i++) {
+      for (j = i + 1; j < l; j++) {
+        choices[t] = [];
+        choices[t][0] = score.tasks[i].name;
+        choices[t][1] = score.tasks[j].name;
+        choices[t][2] = 0;
+        t++;
       }
-      //Shuffle will randomize all choices before displaying
-      shuffle(choices);
-      $scope.new_choice();
-      $('#PrioritizeSection').fadeIn();
+    }
+    //Shuffle will randomize all choices before displaying
+    shuffle(choices);
+    $scope.new_choice();
+    $('#PrioritizeSection').fadeIn();
   };
 
   //Triggered when 'Pass to Next Player' is chosen
@@ -226,16 +230,16 @@ angular.module('app')
       }
   }
 
-  //Checks if all vales are unique in an array
+  //Checks if all values are unique in an array
   function checkIfArrayIsUnique(arr) {
       var map = {}, i, size;
 
-      for (i = 0, size = arr.length; i < size; i++){
-          if (map[arr[i]]){
-              return arr[i];
+      for (i in arr){
+          if (map[arr[i].item]){
+              return arr[i].item;
           }
 
-          map[arr[i]] = true;
+          map[arr[i].item] = true;
       }
 
       return true;
@@ -276,14 +280,14 @@ angular.module('app')
         }
       }
       if (finished == 1) {
-        $scope.results();
+        results();
       } else {
         $scope.new_choice();
       }
   };
 
   //Triggered when all choices are made
-  $scope.results = function () {
+  function results() {
       //Set progress bar to 100, this goes too quickly, perhaps I can find a way to delay the rest
       $('.progress-bar').css('width', '100%').attr('aria-valuenow', 100);
       document.getElementById('ChoicesLeft').innerHTML = '100%';
@@ -303,7 +307,7 @@ angular.module('app')
           document.getElementById('ResultList').appendChild(node);
       }
       $('#ResultSection').fadeIn();
-  };
+  }
 
   //Triggered when 'Final Results' is clicked. Cannot be reached if there's only 1 player
   $scope.final_results = function () {

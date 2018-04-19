@@ -6,14 +6,13 @@
   <div class="App">
     <div class="AppSection" id="TypeSection" style="display:block;">
       <h1>What kind of list?</h1>
-      <input type="button" ng-click="choose_type('')" class="btn btn-primary" value="I can enter it myself" />
       <input type="button" ng-repeat="(name, list) in defaultLists" ng-click="choose_type(name)" class="btn btn-primary" ng-value="list.caption" />
     </div>
     <div class="AppSection" id="InputSection">
       <h3 id="InputTitle"></h3>
       <div class="ListInputs">
         <div class="input-group" ng-repeat="item in list track by $index">
-          <input type="text" class="form-control ListItem" ng-model="item">
+          <input type="text" class="form-control ListItem" ng-model="item.item">
           <span class="input-group-btn">
             <button class="btn btn-default" type="button" ng-click="removeListItem($index)" ng-disabled="list.length <= 2" >X</button>
           </span>

@@ -79,7 +79,7 @@ angular.module('app')
     return false;
   };
 
-  $scope.socialMedia = [
+  $scope.socialMedia = [/*
     {
       "name": "facebook",
       "url": "https://www.facebook.com/flandersburger",
@@ -94,7 +94,7 @@ angular.module('app')
       "name": "goodreads",
       "url": "https://www.goodreads.com/user/show/17070010-laurent",
       "icon": "fa-book"
-    },
+    },*/
     {
       "name": "linkedin",
       "url": "https://www.linkedin.com/in/laurent-debacker-1633a916",

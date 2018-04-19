@@ -17,7 +17,10 @@ angular.module('app')
       $scope.selectedSkill.chartOptions = {
         cutoutPercentage : 80,
         circumference: 2 * Math.PI,
-        maintainAspectRatio: true
+        maintainAspectRatio: true,
+        tooltips: {
+          enabled: false
+        }
       };
       $scope.selectedSkill.chartStyle = {
         'background-image': 'url(/skills/' + $scope.selectedSkill.image + ')',
@@ -29,17 +32,17 @@ angular.module('app')
 
     $scope.setSelectedSkill($scope.skills[0]);
 
-      /*
-      half circle skill wheel that didn't turn out great
-      return {
-        display: $scope.skillsVisible ? 'block' : 'none',
-        position: 'absolute',
-        left: $scope.wheelWidth / 2 * Math.cos(i * (Math.PI / ($scope.skills.length - 1))) + $scope.wheelWidth / 2 - $scope.wheelWidth * 0.025,
-        top: Math.sin(i * (Math.PI / ($scope.skills.length - 1))) * $('.selected-skill').height() * 2.5,
-        width: $scope.wheelWidth * 0.05,
-        height: $scope.wheelWidth * 0.05
-      };
-      */
+    /*
+    half circle skill wheel that didn't turn out great
+    return {
+      display: $scope.skillsVisible ? 'block' : 'none',
+      position: 'absolute',
+      left: $scope.wheelWidth / 2 * Math.cos(i * (Math.PI / ($scope.skills.length - 1))) + $scope.wheelWidth / 2 - $scope.wheelWidth * 0.025,
+      top: Math.sin(i * (Math.PI / ($scope.skills.length - 1))) * $('.selected-skill').height() * 2.5,
+      width: $scope.wheelWidth * 0.05,
+      height: $scope.wheelWidth * 0.05
+    };
+    */
 
     $scope.$apply();
   });
