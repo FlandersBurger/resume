@@ -1,4 +1,4 @@
-var db = require('../db')
+var db = require('../db');
 
 var User = db.model('User', {
   username: { type: String, required: true },
@@ -6,6 +6,6 @@ var User = db.model('User', {
   password: { type: String, required: true, select: false },
   gender: { type: Number, required: false },
   flags: { type: Array, required: false }
-})
+});
 
-module.exports = User
+module.exports = User;
