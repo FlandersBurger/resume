@@ -46,6 +46,11 @@ angular.module('app')
     url: '/top-priority',
     controller: 'TopPriorityCtrl',
     templateUrl: '/top-priority.html'
+  })
+  .state('posts', {
+    url: '/posts',
+    controller: 'PostsCtrl',
+    templateUrl: '/posts.html'
   });
 
   $locationProvider.html5Mode({

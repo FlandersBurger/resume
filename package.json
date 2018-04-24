@@ -7,9 +7,11 @@
     "express": "^4.16.3",
     "flag-icon-css": "^3.0.0",
     "jwt-simple": "^0.5.1",
+    "mongoose": "^5.0.16",
     "morgan": "^1.9.0",
     "nodemailer": "^4.6.4",
     "npm": "^5.8.0",
+    "redis": "^2.8.0",
     "ws": "^5.1.1"
   },
   "devDependencies": {

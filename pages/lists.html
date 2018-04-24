@@ -1,0 +1,47 @@
+<div class="container" ng-init="init()">
+  <form class="form-group">
+    <h2 ng-click="selectedCategory ? showCategory = !showCategory : showCategory = true" ng-style="showCategory ? {'font-size' : '2em'} : {'font-size' : '1.2em'}"><i class="fa" ng-class="{'fa-caret-down': showCategory, 'fa-caret-right': !showCategory}"></i> Category</h2>
+    <div ng-show="showCategory">
+      <div class="input-group">
+        <input type="text" ng-model="enteredCategory" class="form-control" placeholder="Search or Add Category">
+        <span class="input-group-btn">
+          <button ng-click="newCategory(enteredCategory)" class="btn btn-default" type="submit">
+            <i class="fa fa-plus"></i>
+          </button>
+        </span>
+      </div>
+      <button ng-repeat="category in categories | orderBy:'+name' | filter:enteredCategory | limitTo: 10" class="btn btn-default choice" ng-click="selectCategory(category)" type="button">
+        {{ category.name }}
+      </button>
+    </div>
+  </form>
+  <div ng-show="selectedCategory">
+    <hr>
+    <form class="form-group">
+      <h2>{{ selectedCategory.name }}</h2>
+      <div class="input-group">
+        <input type="text" ng-model="enteredTask" class="form-control" placeholder="Search or Add Item">
+        <span class="input-group-btn">
+          <button ng-click="newTask(enteredTask)" class="btn btn-default" type="submit">
+            <i class="fa fa-plus"></i>
+          </button>
+        </span>
+      </div>
+    </form>
+    <button ng-repeat="task in selectableTasks | orderBy:'+name' | filter:enteredTask | limitTo: 10" class="btn btn-default choice" ng-click="selectTask(task)">
+      {{ task.name }}
+    </button>
+  </div>
+  <div ng-show="selectedTasks.length > 0">
+    <hr>
+    <h2>Prioritize these:</h2>
+    <button ng-repeat="task in selectedTasks" class="btn btn-primary choice" ng-click="unselectTask(task)">
+      {{ task.name }}
+    </button>
+  </div>
+  <div ng-show="selectedTasks.length > 2">
+    <hr>
+    <h3>{{getQuestions()}} choices</h3>
+    <button class="btn btn-lg btn-primary" ng-click="startPrioritizing()">Start Prioritizing</button>
+  </div>
+</div>

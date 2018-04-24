@@ -1,0 +1,91 @@
+<div class="container">
+  <form>
+    <div class="form-group">
+      <div class="input-group" ng-show="usernameToggle">
+        <span class="input-group-btn">
+          <button ng-click="toggleUsername()" class="btn btn-default">
+            <i class="fa fa-pencil"></i>
+          </button>
+        </span>
+        <input ng-disabled="usernameToggle" class="form-control" type="text" placeholder={{currentUser.username}}>
+      </div>
+      <div class="input-group" ng-show="!usernameToggle">
+        <span class="input-group-btn">
+          <button ng-click="changeUsername(newUsername); toggleUsername();"  class="btn btn-default">
+            <i class="fa fa-save"></i>
+          </button>
+          <button ng-click="toggleUsername();"  class="btn btn-default">
+            <i class="fa fa-times"></i>
+          </button>
+        </span>
+        <input class="form-control" type="text" ng-model="newUsername">
+      </div>
+    </div>
+  </form>
+  <form ng-submit="updateUser()">
+    <div class="form-group">
+      <div id="slider"></div>
+    </div>
+    <div class="form-group">
+      <tags-input ng-model="tags"
+                  display-property="name"
+                  placeholder="Add a country"
+                  replace-spaces-with-dashes="false"
+                  template="tag-flag">
+        <auto-complete source="loadCountries($query)"
+                       min-length="0"
+                       load-on-focus="true"
+                       load-on-empty="true"
+                       max-results-to-show="32"
+                       template="autocomplete-flag">
+        </auto-complete>
+      </tags-input>
+    </div>
+    <input class="btn btn-success btn-lg btn-block" type="submit" value="Save">
+  </form>
+  <hr class="divider" />
+  <form>
+    <div class="form-group">
+      <div class="input-group" ng-show="passwordToggle">
+        <span class="input-group-btn">
+          <button ng-click="checkPassword(oldPassword);"  class="btn btn-default">
+            <i class="fa fa-lock"></i>
+          </button>
+        </span>
+        <input class="form-control password" type="password" ng-model="oldPassword" placeholder="Change Current Password">
+      </div>
+    </div>
+    <div class="form-group">
+      <div class="input-group" ng-show="!passwordToggle">
+        <span class="input-group-btn">
+          <button ng-click="changePassword(oldPassword, newPassword, confirmPassword);"  class="btn btn-default">
+            <i class="fa fa-save"></i>
+          </button>
+          <button ng-click="togglePassword();"  class="btn btn-default">
+            <i class="fa fa-times"></i>
+          </button>
+        </span>
+        <input class="form-control password" type="password" ng-model="newPassword" placeholder="New Password">
+        <span class="input-group-addon"></span>
+        <input class="form-control password" type="password" ng-model="confirmPassword" placeholder="Confirm Password">
+      </div>
+    </div>
+  </form>
+</div>
+
+<script type="text/ng-template" id="tag-flag">
+  <div class="tag-flag">
+    <div class="flag {{data.flag}}" ng-if="data.flag"> </div>
+  </div>
+</script>
+
+<script type="text/ng-template" id="autocomplete-flag">
+  <div class="autocomplete-flag">
+    <div class="left-panel">
+      <div class="flag {{data.flag}}" ng-if="data.flag"> </div>
+    </div>
+    <div class="right-panel">
+      <span ng-bind-html="$highlight($getDisplayText())"></span>
+    </div>
+  </div>
+</script>

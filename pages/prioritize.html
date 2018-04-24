@@ -1,0 +1,51 @@
+<div class="container" id="prioritizePage">
+  <div id="prioritizeChoices">
+    <h1>This or That</h1>
+    <ul class="pagination">
+      <li ng-click="selectQuestion(1)" ng-class="{'active' : selectedQuestion === 1}">
+        <span ng-hide="getFilteredPriorityList()[0].choice === ''">1</span>
+        <span ng-show="getFilteredPriorityList()[0].choice === ''"><i class="fa fa-spinner fa-spin"></i></span>
+      </li>
+      <li ng-click="selectQuestion(selectedQuestion - 3)" ng-show="selectedQuestion > 4">
+        <span>...</span>
+      </li>
+      <li ng-repeat="question in getFilteredPriorityList()" ng-class="{'active' : question.id === selectedQuestion}" ng-click="selectQuestion(question.id)" ng-show="question.id > 1 && question.id >= selectedQuestion - 2 && question.id <= selectedQuestion + 2 && question.id < getFilteredPriorityList().length">
+          <span ng-hide="question.choice === ''">{{question.id}}</span>
+          <span ng-show="question.choice === ''"><i class="fa fa-spinner fa-spin"></i></span>
+      </li>
+      <li ng-click="selectQuestion(selectedQuestion + 3)" ng-show="selectedQuestion < getFilteredPriorityList().length - 3 && getFilteredPriorityList().length > 6">
+        <span>...</span>
+      </li>
+      <li ng-click="selectQuestion(getFilteredPriorityList().length)" ng-class="{'active' : selectedQuestion === getFilteredPriorityList().length}" ng-show="selectedQuestion !== 1 || done">
+        <span ng-hide="getFilteredPriorityList()[getFilteredPriorityList().length - 1].choice === ''">{{getFilteredPriorityList().length}}</span>
+        <span ng-show="getFilteredPriorityList()[getFilteredPriorityList().length - 1].choice === ''"><i class="fa fa-spinner fa-spin"></i></span>
+      </li>
+    </ul>
+    <div class="progress" ng-hide="done">
+      <div
+        class="progress-bar"
+        ng-class="{'progress-bar-striped active' : (getChoicesMade() / priorityList.length) < 1 }"
+        role="progressbar"
+        aria-valuenow="{{getChoicesMade() / priorityList.length * 100}}"
+        aria-valuemin="0"
+        aria-valuemax="100"
+        ng-style="{'width': (getChoicesMade() / priorityList.length * 100) + '%'}"
+      >
+        {{(getChoicesMade() / priorityList.length * 100).toFixed(0)}}%
+      </div>
+    </div>
+    <button animate-on-change="currentQuestion" style="width:100%" class="btn btn-lg btn-primary" ng-class="getButtonClass(1)" ng-click="makeChoice(1)" ng-disabled="done">{{getButtonValue(1)}}</button>
+    <h2>or</h2>
+    <button animate-on-change="currentQuestion" style="width:100%" class="btn btn-lg btn-primary" ng-class="getButtonClass(2)" ng-click="makeChoice(2)" ng-disabled="done">{{getButtonValue(2)}}</button>
+    <hr>
+  </div>
+  <div id="prioritizeResult" ng-show="done">
+    <button id="reviewChoices" class="btn btn-lg btn-primary" ng-click="showChoices()">Review Choices</button>
+    <button class="btn btn-lg btn-primary" ng-click="showResults()">Results</button>
+  </div>
+  <canvas tc-chartjs-pie chart-data="data" chart-options="options" chart-legend="legend" ng-click="chartClick($event)" chart="chart"></canvas>
+  <div tc-chartjs-legend chart-legend="legend"></div>
+  <!--div id="priorityResults" style="display:none">
+    <canvas tc-chartjs-pie chart-data="data" chart-options="options" auto-legend></canvas>
+  </div-->
+</div>

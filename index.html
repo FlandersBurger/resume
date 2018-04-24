@@ -73,8 +73,12 @@
             <li class="nav-item">
               <a class="nav-link" ui-sref="hobbies" ng-click="navCollapsed = true">Hobbies</a>
             </li>
-            <li class="nav-item" data-toggle="collapse" data-target=".navbar-collapse" >
-              <a class="nav-link" ui-sref="contact" ng-click="navCollapsed = true">Contact</a>
+            <li class="nav-item dropdown">
+              <a class="dropdown-toggle" data-toggle="dropdown" href="#">Contact</a>
+              <ul class="dropdown-menu">
+                <li><a ui-sref="contact" ng-click="navCollapsed = true">Form</a></li>
+                <li><a ui-sref="posts" ng-click="navCollapsed = true">Chat</a></li>
+              </ul>
             </li>
             <li class="nav-item dropdown">
               <a class="dropdown-toggle" data-toggle="dropdown" href="#">Doodles</a>
