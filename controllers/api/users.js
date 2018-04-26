@@ -1,8 +1,9 @@
 var router = require('express').Router();
-var User = require('../../models/user');
 var bcrypt = require('bcryptjs');
 var jwt = require('jwt-simple');
+var admin = require('firebase-admin');
 var config = require('../../config');
+var User = require('../../models/user');
 
 router.get('/', function (req, res, next) {
   if (!req.headers['x-auth']) {
@@ -27,8 +28,46 @@ router.post('/', function (req, res, next) {
           throw next(err);
         }
         res.sendStatus(201);
-      })
+      });
     });
+  });
+});
+
+router.post('/login', function (req, res, next) {
+  var user = req.body.user;
+  admin.auth().verifyIdToken(user.idToken)
+  .then(function(decodedToken) {
+    var uid = decodedToken.uid;
+    User.findOne({uid: uid})
+    .exec(function (err, foundUser) {
+      if (err) {
+        return next(err);
+      }
+      if (!foundUser) {
+        var newUser = new User({
+          username: user.displayName,
+          displayName: user.displayName,
+          email: user.email,
+          photoUrl: user.photoUrl,
+          emailVerified: user.emailVerified,
+          uid: uid,
+        });
+        newUser.save(function (err, user) {
+          if (err) {
+            throw next(err);
+          }
+          console.log(user.username + ' created');
+          var token = jwt.encode({userid: user.id}, config.secret);
+          res.json(token);
+        });
+      } else {
+        console.log(foundUser.username + ' authenticated');
+        var token = jwt.encode({userid: foundUser.id}, config.secret);
+        res.json(token);
+      }
+    });
+  }).catch(function(error) {
+    // Handle error
   });
 });
 

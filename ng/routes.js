@@ -9,6 +9,11 @@ angular.module('app')
     templateUrl: '/home.html',
     //templateStyleUrl: 'assets/home.css'
   })
+  .state('policy', {
+    url: '/policy',
+    templateUrl: '/policy.html',
+    //templateStyleUrl: 'assets/home.css'
+  })
   .state('print', {
     url: '/print',
     templateUrl: '/print.html'

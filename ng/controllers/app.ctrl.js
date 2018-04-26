@@ -117,4 +117,24 @@ angular.module('app')
 
     }
   ];
+
+  $scope.$on('login', function (_, user) {
+    $scope.loggedIn = true;
+    $scope.currentUser = user;
+  });
+
+  $scope.$on('update', function (_, user) {
+    $scope.currentUser = user;
+  });
+
+  $scope.logout = function() {
+    firebase.auth().signOut().then(function() {
+      // Sign-out successful.
+      $scope.loggedIn = false;
+      localStorage.clear();
+    }).catch(function(error) {
+      // An error happened.
+    });
+  };
+
 });

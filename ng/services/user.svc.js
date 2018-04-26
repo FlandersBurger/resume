@@ -12,10 +12,9 @@ angular.module('app')
     return svc.getUser();
   };
 
-  svc.login = function (username, password) {
-    return $http.post('/api/sessions', {
-      username: username,
-      password: password
+  svc.login = function (user) {
+    return $http.post('/api/users/login', {
+      user: user
     }).then(function (response) {
       window.localStorage.token = response.data;
       return svc.setToken(response.data);

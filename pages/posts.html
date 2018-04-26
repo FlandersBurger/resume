@@ -1,17 +1,18 @@
 <div class="container">
+  <br />
   <form role="form">
     <div class="form-group">
       <div class="input-group">
         <input ng-model="postBody" class="form-control" placeholder="Post"/>
         <span class="input-group-btn">
-          <button ng-click="addPost()" class="btn btn-default"><i class="fa fa-lg fa-envelope"></i></button>
+          <button ng-click="addPost()" class="btn btn-default" ng-disabled="!loggedIn"><i class="fa fa-lg fa-envelope"></i></button>
         </span>
       </div>
       <input type="text" ng-model="searchText" class="form-control" placeholder="Search">
     </div>
   </form>
   <ul class="list-group">
-    <li ng-repeat="post in posts | orderBy:'-date' | filter:searchText" class="list-group-item">
+    <li ng-repeat="post in posts | orderBy:'-date' | filter:searchText | limitTo: 50" class="list-group-item">
       <strong>{{ post.poster.username }}:</strong>
       <span>{{ post.body }}</span>
     </li>
