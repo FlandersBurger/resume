@@ -9,7 +9,7 @@ angular.module('app')
       signInSuccess: function(currentUser, credential, redirectUrl) {
         // No redirect.
         firebase.auth().currentUser.getIdToken(true).then(function(idToken) {
-          UserSvc.login({
+          UserSvc.authenticate({
             displayName: currentUser.displayName,
             email: currentUser.email,
             photoURL: currentUser.photoURL,

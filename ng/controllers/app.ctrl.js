@@ -118,8 +118,10 @@ angular.module('app')
     }
   ];
 
-  if (localStorage.getItem('user')) {
-    UserSvc.login(localStorage.getItem('user'))
+  console.log(window.localStorage.user);
+
+  if (window.localStorage.user) {
+    UserSvc.login(window.localStorage.user)
     .then(function(response) {
       $scope.loggedIn = true;
       $scope.currentUser = response.data;
@@ -127,7 +129,7 @@ angular.module('app')
   }
 
   $scope.$on('login', function (_, user) {
-    localStorage.setItem('user', user.uid);
+    window.localStorage.user = user._id;
     $scope.loggedIn = true;
     $scope.currentUser = user;
   });
