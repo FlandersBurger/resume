@@ -9,7 +9,7 @@ angular.module('app')
   }
 
   var connection;
-  this.connect = function () {
+  var connect = function () {
     connection = new WebSocket(websocketHost());
 
     connection.onopen = function () {
@@ -35,6 +35,8 @@ angular.module('app')
     var json = JSON.stringify({topic: topic, data: data});
     connection.send(json);
   };
+
+  this.connect = connect;
 
 }).run(function (WebSocketSvc) {
   WebSocketSvc.connect();
