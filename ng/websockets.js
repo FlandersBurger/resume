@@ -2,9 +2,9 @@ angular.module('app')
 .service('WebSocketSvc', function ($rootScope, $timeout) {
   function websocketHost() {
     if (window.location.protocol === 'https:') {
-      return "wss://" + window.location.host + '/websocket';
+      return "wss://" + window.location.host;
     } else {
-      return "ws://" + window.location.host + '/websocket';
+      return "ws://" + window.location.host;
     }
   }
 
@@ -18,7 +18,7 @@ angular.module('app')
 
     connection.onclose = function (e) {
       console.log('Websocket closed. Reconnecting...');
-      $timeout(connect, 10*1000);
+      $timeout(connect, 1000);
     };
 
     connection.onerror = function(e) {

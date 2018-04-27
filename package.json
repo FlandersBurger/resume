@@ -1,6 +1,12 @@
 {
   "name": "resume",
   "dependencies": {
+    "@fortawesome/fontawesome": "^1.1.5",
+    "@fortawesome/fontawesome-free-brands": "^5.0.10",
+    "@fortawesome/fontawesome-pro-light": "^5.0.10",
+    "@fortawesome/fontawesome-pro-regular": "^5.0.10",
+    "@fortawesome/fontawesome-pro-solid": "^5.0.10",
+    "@fortawesome/fontawesome-pro-webfonts": "^1.0.6",
     "angular-chart.js": "^1.1.1",
     "angular-recaptcha": "^4.1.0",
     "bcryptjs": "^2.4.3",

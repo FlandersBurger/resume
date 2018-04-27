@@ -33,7 +33,7 @@ router.post('/', function (req, res, next) {
   });
 });
 
-router.post('/login', function (req, res, next) {
+router.post('/authenticate', function (req, res, next) {
   var user = req.body.user;
   admin.auth().verifyIdToken(user.idToken)
   .then(function(decodedToken) {
@@ -68,6 +68,23 @@ router.post('/login', function (req, res, next) {
     });
   }).catch(function(error) {
     // Handle error
+  });
+});
+
+
+router.get('/:id/login', function (req, res, next) {
+  User.findOne({_id: req.params.id})
+  .exec(function (err, foundUser) {
+    if (err) {
+      return next(err);
+    }
+    if (!foundUser) {
+      res.sendStatus(404);
+    } else {
+      console.log(foundUser.username + ' logged in');
+      var token = jwt.encode({userid: foundUser.id}, config.secret);
+      res.json(token);
+    }
   });
 });
 

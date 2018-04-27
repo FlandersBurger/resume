@@ -12,10 +12,18 @@ angular.module('app')
     return svc.getUser();
   };
 
-  svc.login = function (user) {
-    return $http.post('/api/users/login', {
+  svc.authenticate = function (user) {
+    return $http.post('/api/users/authenticate', {
       user: user
     }).then(function (response) {
+      window.localStorage.token = response.data;
+      return svc.setToken(response.data);
+    });
+  };
+
+  svc.login = function (user) {
+    return $http.get('/api/users/' + user + '/login')
+    .then(function (response) {
       window.localStorage.token = response.data;
       return svc.setToken(response.data);
     });
