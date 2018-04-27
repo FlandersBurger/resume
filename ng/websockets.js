@@ -2,9 +2,9 @@ angular.module('app')
 .service('WebSocketSvc', function ($rootScope, $timeout) {
   function websocketHost() {
     if (window.location.protocol === 'https:') {
-      return "wss://" + window.location.host;
+      return "wss://" + window.location.host + '/websocket';
     } else {
-      return "ws://" + window.location.host;
+      return "ws://" + window.location.host + '/websocket';
     }
   }
 
