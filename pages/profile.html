@@ -1,4 +1,4 @@
-<div class="container">
+<div class="container" id="profile-page">
   <form>
     <div class="form-group">
       <div class="input-group" ng-show="usernameToggle">
@@ -27,13 +27,15 @@
       <div class="col-xs-1">
         <i class="fa fa-mars fa-lg"></i>
       </div>
-      <div class="col-xs-10" id="gender-slider">
-        <div id="gender-slider-indicator"
-          data-drag="true"
-          jqyoui-draggable="{ onStart: 'startSlider()', onDrag: 'dragSlider()', onStop: 'stopSlider()'}"
-          data-jqyoui-options="{ containment: '#gender-slider' }"
-        >
-
+      <div class="col-xs-10">
+        <div id="gender-slider">
+          {{gender(currentUser.gender.sex)}}
+          <div id="gender-slider-indicator"
+            data-drag="true"
+            jqyoui-draggable="{ onStart: 'startSlider()', onDrag: 'dragSlider()', onStop: 'stopSlider()'}"
+            data-jqyoui-options="{ containment: '#gender-slider' }"
+          >
+          </div>
         </div>
       </div>
       <div class="col-xs-1">
@@ -58,8 +60,8 @@
     </div>
     <input class="btn btn-success btn-lg btn-block" type="submit" value="Save">
   </form>
-  <hr class="divider" />
-  <!--form>
+  <!--hr class="divider" />
+  <form>
     <div class="form-group">
       <div class="input-group" ng-show="passwordToggle">
         <span class="input-group-btn">

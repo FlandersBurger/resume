@@ -4,16 +4,32 @@ angular.module('app')
   if (!$scope.currentUser) {
     $location.path('/');
   } else {
-    $('#gender-slider').offset().left = $scope.currentUser.gender / 200 * $('#gender-slider-indicator').width();
+    $('#gender-slider-indicator').offset({ top: $('#gender-slider').offset().top, left: ($scope.currentUser.gender.sex / 200 * $('#gender-slider').width()) + $('#gender-slider').offset().left });
     $scope.tags = $scope.currentUser.flags;
+    console.log($scope.currentUser.gender.sex);
   }
+
+  $scope.gender = function(percentage) {
+    if (percentage < 50) {
+      return 'Male';
+    } else if (percentage < 75) {
+      return 'FtM Male';
+    } else if (percentage < 125) {
+      return 'Intersex';
+    } else if (percentage < 150) {
+      return 'MtF Female';
+    } else {
+      return 'Female';
+    }
+  };
 
   $scope.startSlider = function() {
 
   };
   $scope.dragSlider = function() {
-    var gender = Math.round(($('#gender-slider-indicator').offset().left - $('#gender-slider').offset().left) / ($('#gender-slider').width() - $('#gender-slider-indicator').width()) * 200);
-    console.log(gender);
+    $scope.currentUser.gender.sex = Math.round(($('#gender-slider-indicator').offset().left - $('#gender-slider').offset().left) / ($('#gender-slider').width() - $('#gender-slider-indicator').width()) * 200);
+    console.log($scope.currentUser.gender.sex);
+    $scope.$apply();
   };
   $scope.stopSlider = function() {
 
@@ -88,10 +104,9 @@ angular.module('app')
   };
 
   $scope.updateUser = function () {
-    var gender = Math.round(($('#gender-slider-indicator').offset().left - $('#gender-slider').offset().left) / ($('#gender-slider').width() - $('#gender-slider-indicator').width()) * 200);
     var flags = $scope.tags;
     var user = $scope.currentUser._id;
-    UserSvc.updateUser(user, gender, flags)
+    UserSvc.updateUser(user, $scope.currentUser.gender, flags)
     .then(function (response) {
       $scope.$emit('update', response.data);
       $scope.$emit('popup', {
@@ -352,10 +367,10 @@ angular.module('app')
       { "name": "South Africa", "flag": "flag-za" },
       { "name": "Zambia", "flag": "flag-zm" },
       { "name": "Zimbabwe", "flag": "flag-zw" },
-    ]
+    ];
     return countries.filter(function(country) {
       return country.name.toLowerCase().indexOf($query.toLowerCase()) != -1;
     });
   };
 
-})
+});
