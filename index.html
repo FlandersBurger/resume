@@ -49,12 +49,6 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/flag-icon-css/2.5.0/css/flag-icon.min.css">
 
   <link href="https://fonts.googleapis.com/css?family=Merriweather|VT323" rel="stylesheet">
-  <script type="text/javascript" src="https://cdn.emailjs.com/dist/email.min.js"></script>
-  <script type="text/javascript">
-     (function(){
-        emailjs.init("user_XkF9tU8gtA0LC4H4FsHlP");
-     })();
-  </script>
 
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
@@ -116,7 +110,7 @@
               </a>
               <ul class="dropdown-menu">
                 <li><a ui-sref="profile" ng-click="navCollapsed = true">Profile</a></li>
-                <li><a ui-sref="top-priority" ng-click="navCollapsed = true;logout()">Logout</a></li>
+                <li><a ng-click="navCollapsed = true;logout()">Logout</a></li>
               </ul>
             </li>
             <li ng-hide="loggedIn">
@@ -152,6 +146,7 @@
   <div ng-include="'/modals/login.html'"></div>
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.2.4/jquery.min.js"></script>
+  <script src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/tether/1.3.4/js/tether.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.5.0/Chart.min.js"></script>
   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
@@ -162,6 +157,7 @@
   <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.5.8/angular-animate.js"></script>
   <script src="/angular-chart.min.js"></script>
   <script src="/angular-recaptcha.min.js"></script>
+  <script src="/angular-dragdrop.min.js"></script>
   <script src="/underscore-min.js"></script>
   <script src="/app.js"></script>
 

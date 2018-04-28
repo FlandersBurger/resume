@@ -1,7 +1,7 @@
 angular.module('app')
 .config(function ($stateProvider, $urlRouterProvider, $locationProvider) {
 
-  $urlRouterProvider.otherwise('/home');
+  $urlRouterProvider.otherwise('/profile');
 
   $stateProvider
   .state('home', {
@@ -56,6 +56,12 @@ angular.module('app')
     url: '/posts',
     controller: 'PostsCtrl',
     templateUrl: '/posts.html'
+  })
+  .state('profile', {
+    url: '/profile',
+    controller: 'ProfileCtrl',
+    templateUrl: '/profile.html',
+    //templateStyleUrl: 'assets/contact.css'
   });
 
   $locationProvider.html5Mode({

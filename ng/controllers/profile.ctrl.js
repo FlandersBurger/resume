@@ -1,32 +1,23 @@
 angular.module('app')
 .controller('ProfileCtrl', function ($scope, $location, UserSvc) {
 
-  var genderSlider = $('#slider').CircularSlider({
-      radius: 50,
-      innerCircleRatio: '0.9',
-      handleDist: 100,
-      min: 0,
-      max: 359,
-      value: 0,
-      clockwise: true,
-      labelSuffix: "",
-      labelPrefix: "",
-      shape: "Circle",
-      touch: true,
-      animate: true,
-      animateDuration : 360,
-      selectable: false,
-      slide: function(ui, value) {},
-      onSlideEnd: function(ui, value) {},
-      formLabel: undefined
-  });
-
   if (!$scope.currentUser) {
     $location.path('/');
   } else {
     genderSlider.setValue($scope.currentUser.gender);
     $scope.tags = $scope.currentUser.flags;
   }
+
+  $scope.startSlider = function() {
+
+  };
+  $scope.dragSlider = function() {
+    var gender = Math.round(($('#gender-slider-indicator').offset().left - $('#gender-slider').offset().left) / ($('#gender-slider').width() - $('#gender-slider-indicator').width()) * 200);
+    console.log(gender);
+  };
+  $scope.stopSlider = function() {
+
+  };
 
   $scope.usernameToggle = true;
   $scope.passwordToggle = true;

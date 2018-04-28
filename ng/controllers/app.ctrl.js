@@ -142,7 +142,8 @@ angular.module('app')
     firebase.auth().signOut().then(function() {
       // Sign-out successful.
       $scope.loggedIn = false;
-      localStorage.clear();
+      window.localStorage.clear();      
+      $scope.$broadcast('logout');
     }).catch(function(error) {
       // An error happened.
     });

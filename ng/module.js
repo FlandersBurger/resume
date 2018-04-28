@@ -3,6 +3,7 @@ angular.module('app', [
   'ui.bootstrap',
   'ngAnimate',
   'ngSanitize',
+  'ngDragDrop',
   'vcRecaptcha',
   'chart.js'
 ]);

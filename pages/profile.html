@@ -23,9 +23,24 @@
     </div>
   </form>
   <form ng-submit="updateUser()">
-    <div class="form-group">
-      <div id="slider"></div>
+    <div class="col-xs-12" style="margin:5px">
+      <div class="col-xs-1">
+        <i class="fa fa-mars fa-lg"></i>
+      </div>
+      <div class="col-xs-10" id="gender-slider">
+        <div id="gender-slider-indicator"
+          data-drag="true"
+          jqyoui-draggable="{ onStart: 'startSlider()', onDrag: 'dragSlider()', onStop: 'stopSlider()'}"
+          data-jqyoui-options="{ containment: '#gender-slider' }"
+        >
+
+        </div>
+      </div>
+      <div class="col-xs-1">
+        <i class="fa fa-venus fa-lg"></i>
+      </div>
     </div>
+    <h2></h2>
     <div class="form-group">
       <tags-input ng-model="tags"
                   display-property="name"
