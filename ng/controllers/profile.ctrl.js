@@ -4,7 +4,7 @@ angular.module('app')
   if (!$scope.currentUser) {
     $location.path('/');
   } else {
-    genderSlider.setValue($scope.currentUser.gender);
+    $('#gender-slider').offset().left = $scope.currentUser.gender / 200 * $('#gender-slider-indicator').width();
     $scope.tags = $scope.currentUser.flags;
   }
 
@@ -35,41 +35,41 @@ angular.module('app')
 
   $scope.checkPassword = function (password) {
     if (password) {
-      var user = $scope.currentUser._id
+      var user = $scope.currentUser._id;
       UserSvc.checkPassword(user, password)
       .then(function (response) {
-        $scope.togglePassword()
+        $scope.togglePassword();
       }, function () {
-        var originalBg = $(".password").css("backgroundColor")
+        var originalBg = $(".password").css("backgroundColor");
         $(".password").animate({ backgroundColor: "#FFB6C1" }, 200).animate({ backgroundColor: originalBg }, 200);
-      })
+      });
     }
-  }
+  };
 
   $scope.changePassword = function (oldPassword, newPassword, confirmPassword) {
     if (newPassword) {
       if (newPassword == confirmPassword) {
-        var user = $scope.currentUser._id
+        var user = $scope.currentUser._id;
         UserSvc.changePassword(user, oldPassword, newPassword)
         .then(function (response) {
           $scope.$emit('popup', {
             message: 'Password Changed',
             type: 'alert-success'
-          })
+          });
           $scope.oldPassword = null;
-          $scope.togglePassword()
+          $scope.togglePassword();
         }, function () {
           $scope.$emit('popup', {
             message: 'Password Change Failed',
             type: 'alert-danger'
-          })
-        })
+          });
+        });
       } else {
-        var originalBg = $(".password").css("backgroundColor")
+        var originalBg = $(".password").css("backgroundColor");
         $(".password").animate({ backgroundColor: "#FFB6C1" }, 200).animate({ backgroundColor: originalBg }, 200);
       }
     }
-  }
+  };
 
   $scope.changeUsername = function (username) {
     UserSvc.changeUsername($scope.currentUser._id, username)
@@ -77,29 +77,29 @@ angular.module('app')
       $scope.$emit('popup', {
         message: 'Username changed to ' + username,
         type: 'alert-success'
-      })
-      $scope.currentUser.username = username
+      });
+      $scope.currentUser.username = username;
     }, function(response) {
       $scope.$emit('popup', {
         message: username + ' already in use',
         type: 'alert-danger'
-      })
-    })
-  }
+      });
+    });
+  };
 
   $scope.updateUser = function () {
-    var gender = genderSlider.getValue()
-    var flags = $scope.tags
-    var user = $scope.currentUser._id
+    var gender = Math.round(($('#gender-slider-indicator').offset().left - $('#gender-slider').offset().left) / ($('#gender-slider').width() - $('#gender-slider-indicator').width()) * 200);
+    var flags = $scope.tags;
+    var user = $scope.currentUser._id;
     UserSvc.updateUser(user, gender, flags)
     .then(function (response) {
-      $scope.$emit('update', response.data)
+      $scope.$emit('update', response.data);
       $scope.$emit('popup', {
         message: 'Profile updated',
         type: 'alert-success'
-      })
-    })
-  }
+      });
+    });
+  };
 
   $scope.loadCountries = function($query) {
     var countries = [
