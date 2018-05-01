@@ -24,16 +24,37 @@
   </form>
   <form ng-submit="updateUser()">
     <div class="col-xs-12" style="margin:5px">
+      <h4>Gender Identity</h4>
+      <div class="col-xs-1">
+        <i class="fa fa-male fa-lg"></i>
+      </div>
+      <div class="col-xs-10">
+        <div class="gender-slider" id="identity">
+          {{identity(currentUser.gender.identity)}}
+          <div class="gender-slider-indicator" id="identity-indicator"
+            data-drag="true"
+            jqyoui-draggable="{ onDrag: 'dragSlider(\'identity\')' }"
+            data-jqyoui-options="{ containment: '#identity' }"
+          >
+          </div>
+        </div>
+      </div>
+      <div class="col-xs-1">
+        <i class="fa fa-female fa-lg"></i>
+      </div>
+    </div>
+    <div class="col-xs-12" style="margin:5px">
+      <h4>Biological Sex</h4>
       <div class="col-xs-1">
         <i class="fa fa-mars fa-lg"></i>
       </div>
       <div class="col-xs-10">
-        <div id="gender-slider">
-          {{gender(currentUser.gender.sex)}}
-          <div id="gender-slider-indicator"
+        <div class="gender-slider" id="sex">
+          {{sex(currentUser.gender.sex)}}
+          <div class="gender-slider-indicator" id="sex-indicator"
             data-drag="true"
-            jqyoui-draggable="{ onStart: 'startSlider()', onDrag: 'dragSlider()', onStop: 'stopSlider()'}"
-            data-jqyoui-options="{ containment: '#gender-slider' }"
+            jqyoui-draggable="{ onDrag: 'dragSlider(\'sex\')' }"
+            data-jqyoui-options="{ containment: '#sex' }"
           >
           </div>
         </div>

@@ -4,31 +4,41 @@ angular.module('app')
   if (!$scope.currentUser) {
     $location.path('/');
   } else {
-    $('#gender-slider-indicator').offset({ top: $('#gender-slider').offset().top, left: ($scope.currentUser.gender.sex / 200 * $('#gender-slider').width()) + $('#gender-slider').offset().left });
+    $('#sex-indicator').offset({ left: ($scope.currentUser.gender.sex / 200 * $('#sex').width()) + $('#sex').offset().left });
+    $('#identity-indicator').offset({ left: ($scope.currentUser.gender.identity / 200 * $('#identity').width()) + $('#identity').offset().left });
     $scope.tags = $scope.currentUser.flags;
-    console.log($scope.currentUser.gender.sex);
   }
 
-  $scope.gender = function(percentage) {
-    if (percentage < 50) {
-      return 'Male';
-    } else if (percentage < 75) {
-      return 'FtM Male';
-    } else if (percentage < 125) {
-      return 'Intersex';
-    } else if (percentage < 150) {
-      return 'MtF Female';
-    } else {
-      return 'Female';
-    }
+  $scope.sex = function(percentage) {
+    var sexes = [
+      'Male',
+      'FtM Male',
+      'Intersex',
+      'MtF Female',
+      'Female'
+    ];
+    return sexes[Math.round(percentage / 200 * (sexes.length - 1))];
+  };
+  $scope.identity = function(percentage) {
+    var identities = [
+      'Man',
+      'Bigender',
+      'Pangender',
+      'Agender',
+      'Polygender',
+      'Genderfluid',
+      'Genderqueer',
+      'Queer',
+      'Woman'
+    ];
+    return identities[Math.round(percentage / 200 * (identities.length - 1))];
   };
 
   $scope.startSlider = function() {
 
   };
-  $scope.dragSlider = function() {
-    $scope.currentUser.gender.sex = Math.round(($('#gender-slider-indicator').offset().left - $('#gender-slider').offset().left) / ($('#gender-slider').width() - $('#gender-slider-indicator').width()) * 200);
-    console.log($scope.currentUser.gender.sex);
+  $scope.dragSlider = function(event, ui, type) {
+    $scope.currentUser.gender[type] = Math.round(($('#' + type + '-indicator').offset().left - $('#' + type).offset().left) / ($('#' + type).width() - $('#' + type + '-indicator').width()) * 200);
     $scope.$apply();
   };
   $scope.stopSlider = function() {
