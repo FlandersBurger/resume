@@ -64,7 +64,7 @@ angular.module('app')
       },
       signInSuccessUrl: '/home',
       signInOptions: [
-        firebase.auth.EmailAuthProvider.PROVIDER_ID,
+        //firebase.auth.EmailAuthProvider.PROVIDER_ID,
         firebase.auth.GoogleAuthProvider.PROVIDER_ID,
         firebase.auth.FacebookAuthProvider.PROVIDER_ID,
       ],
@@ -74,7 +74,7 @@ angular.module('app')
       // Other config options...
     });
   }
-  
+
   startUI();
 
 });

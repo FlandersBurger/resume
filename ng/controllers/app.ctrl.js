@@ -136,13 +136,14 @@ angular.module('app')
 
   $scope.$on('update', function (_, user) {
     $scope.currentUser = user;
+    $scope.currentUser.birthDate = new Date($scope.currentUser.birthDate);
   });
 
   $scope.logout = function() {
     firebase.auth().signOut().then(function() {
       // Sign-out successful.
       $scope.loggedIn = false;
-      window.localStorage.clear();      
+      window.localStorage.clear();
       $scope.$broadcast('logout');
     }).catch(function(error) {
       // An error happened.

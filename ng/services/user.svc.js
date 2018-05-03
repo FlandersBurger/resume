@@ -29,10 +29,9 @@ angular.module('app')
     });
   };
 
-  svc.updateUser = function (user, gender, flags) {
-    return $http.post('/api/users/' + user, {
-      gender: gender,
-      flags: flags
+  svc.updateUser = function (user) {
+    return $http.post('/api/users/' + user._id, {
+      user: user
     }).then(function () {
       return svc.getUser();
     });

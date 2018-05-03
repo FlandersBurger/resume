@@ -106,21 +106,10 @@ router.post('/:id/verification', function (req, res, next) {
 
 router.post('/:id', function (req, res, next) {
   if (checkUser(req.params.id, req)) {
-    User.findOne({_id: req.auth.userid})
-    .select('username')
-    .select('gender')
-    .select('flags')
+    User.update({_id: req.auth.userid}, req.body.user)
     .exec(function (err, user) {
       if (err) { return next(err); }
-      user.gender = req.body.gender;
-      user.flags = req.body.flags;
-      user.save(function (err, user) {
-        if (err) {
-          throw next(err);
-        }
-        console.log(user.username + ' updated their profile');
-        res.sendStatus(200);
-      });
+      res.sendStatus(200);
     });
   } else {
     return res.sendStatus(401);

@@ -16,6 +16,17 @@ gulp.task('js', function () {
     .on('error', onError);
 });
 
+gulp.task('resources', function () {
+  gulp.src(['resources/ui-bootstrap-tpls-2.5.0.js'])
+    .pipe(sourcemaps.init())
+    .pipe(concat('ui-bootstrap-tpls-2.5.0.min.js'))
+    .pipe(ngAnnotate())
+    .pipe(uglify())
+    .pipe(sourcemaps.write())
+    .pipe(gulp.dest('resources'))
+    .on('error', onError);
+});
+
 gulp.task('watch:js', ['js'], function () {
   gulp.watch('ng/**/*.js', ['js']);
 });
