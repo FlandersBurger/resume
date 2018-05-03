@@ -107,10 +107,9 @@ router.post('/:id/verification', function (req, res, next) {
 router.post('/:id', function (req, res, next) {
   if (checkUser(req.params.id, req)) {
     User.findOne({_id: req.auth.userid})
-    .select('username')
-    .select('gender')
     .exec(function (err, user) {
       if (err) { return next(err); }
+      console.log(req.body.user);
       user.gender = req.body.user.gender;
       user.save(function (err, user) {
         if (err) {
