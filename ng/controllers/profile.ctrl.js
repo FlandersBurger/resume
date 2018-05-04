@@ -8,34 +8,34 @@ angular.module('app')
     $('#identity-indicator').offset({ left: ($scope.currentUser.gender.identity / 200 * $('#identity').width()) + $('#identity').offset().left });
   }
 
+  $scope.sexes = [
+    'Male',
+    'FtM Male',
+    'Intersex',
+    'MtF Female',
+    'Female'
+  ];
+  $scope.identities = [
+    'Man',
+    'Bigender',
+    'Pangender',
+    'Agender',
+    'Polygender',
+    'Genderfluid',
+    'Genderqueer',
+    'Queer',
+    'Woman'
+  ];
+
   $scope.dateOptions = {
     maxDate: new Date(),
-    minDate: new Date('1900-01-01'),
+    minDate: new Date(1900, 1, 1),
+    initDate: new Date(2000, 1, 1),
+    datepickerMode: 'year'
   };
 
-  $scope.sex = function(percentage) {
-    var sexes = [
-      'Male',
-      'FtM Male',
-      'Intersex',
-      'MtF Female',
-      'Female'
-    ];
-    return sexes[Math.round(percentage / 200 * (sexes.length - 1))];
-  };
-  $scope.identity = function(percentage) {
-    var identities = [
-      'Man',
-      'Bigender',
-      'Pangender',
-      'Agender',
-      'Polygender',
-      'Genderfluid',
-      'Genderqueer',
-      'Queer',
-      'Woman'
-    ];
-    return identities[Math.round(percentage / 200 * (identities.length - 1))];
+  $scope.gender = function(array, percentage) {
+    return array[Math.round(percentage / 200 * (array.length - 1))];
   };
 
   $scope.startSlider = function() {
@@ -102,13 +102,10 @@ angular.module('app')
   };
 
   $scope.changeUsername = function (username) {
+    $scope.$emit('loading');
     UserSvc.changeUsername($scope.currentUser._id, username)
     .then(function (response) {
-      $scope.$emit('popup', {
-        message: 'Username changed to ' + username,
-        type: 'alert-success'
-      });
-      $scope.currentUser.username = username;
+      $scope.$emit('update', response.data);
     }, function(response) {
       $scope.$emit('popup', {
         message: username + ' already in use',
@@ -118,13 +115,10 @@ angular.module('app')
   };
 
   $scope.updateUser = function () {
+    $scope.$emit('loading');
     UserSvc.updateUser($scope.currentUser)
     .then(function (response) {
       $scope.$emit('update', response.data);
-      $scope.$emit('popup', {
-        message: 'Profile updated',
-        type: 'alert-success'
-      });
     });
   };
 

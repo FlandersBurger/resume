@@ -118,8 +118,6 @@ angular.module('app')
     }
   ];
 
-  console.log(window.localStorage.user);
-
   if (window.localStorage.user) {
     UserSvc.login(window.localStorage.user)
     .then(function(response) {
@@ -137,6 +135,23 @@ angular.module('app')
   $scope.$on('update', function (_, user) {
     $scope.currentUser = user;
     $scope.currentUser.birthDate = new Date($scope.currentUser.birthDate);
+    $scope.loading = false;
+    setTimeout(function(){
+      $("#loading-icon").fadeOut("slow");
+    }, 1000);
+  });
+
+
+  $scope.$on('loading', function (_, user) {
+    $scope.loading = true;
+    $("#loading-icon").show();
+  });
+
+  $scope.$on('loaded', function (_, user) {
+    $scope.loading = false;
+    setTimeout(function(){
+      $("#loading-icon").fadeOut("slow");
+    }, 1000);
   });
 
   $scope.logout = function() {

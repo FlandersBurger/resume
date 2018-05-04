@@ -28,7 +28,7 @@
       <span class="input-group-btn">
         <button type="button" class="btn btn-default" ng-click="birthdateOpen = true"><i class="fa fa-calendar"></i></button>
       </span>
-      <input type="text" class="form-control" uib-datepicker-popup="dd-MMM-yyyy" ng-model="currentUser.birthDate" is-open="birthdateOpen" datepicker-options="dateOptions" ng-required="true" close-text="Close"/>
+      <input type="text" class="form-control" uib-datepicker-popup="dd-MMM-yyyy" ng-model="currentUser.birthDate" ng-change="updateUser()" is-open="birthdateOpen" datepicker-options="dateOptions" ng-required="true" close-text="Close"/>
     </p>
   </div>
   <form ng-submit="updateUser()">
@@ -39,7 +39,7 @@
       </div>
       <div class="col-xs-10">
         <div class="gender-slider" id="identity">
-          {{identity(currentUser.gender.identity)}}
+          {{gender(identities, currentUser.gender.identity)}}
           <div class="gender-slider-indicator" id="identity-indicator"
             data-drag="true"
             jqyoui-draggable="{ onDrag: 'dragSlider(\'identity\')', onStop: 'updateUser()' }"
@@ -59,7 +59,7 @@
       </div>
       <div class="col-xs-10">
         <div class="gender-slider" id="sex">
-          {{sex(currentUser.gender.sex)}}
+          {{gender(sexes, currentUser.gender.sex)}}
           <div class="gender-slider-indicator" id="sex-indicator"
             data-drag="true"
             jqyoui-draggable="{ onDrag: 'dragSlider(\'sex\')', onStop: 'updateUser()' }"
@@ -72,8 +72,5 @@
         <i class="fa fa-venus fa-lg"></i>
       </div>
     </div>
-    <h2></h2>
-
-    <input class="btn btn-success btn-lg btn-block" type="submit" value="Save">
   </form>
 </div>
