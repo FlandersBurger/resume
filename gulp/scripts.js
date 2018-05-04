@@ -4,10 +4,17 @@ var sourcemaps = require('gulp-sourcemaps');
 var ngAnnotate = require('gulp-ng-annotate');
 var uglify = require('gulp-uglify');
 var jsonminify = require('gulp-jsonminify');
+var browserify = require('gulp-browserify');
 
 gulp.task('js', function () {
   gulp.src(['ng/module.js', 'ng/**/*.js'])
-    .pipe(sourcemaps.init())
+    .pipe(sourcemaps.init())/*
+    .pipe(
+      browserify({
+        insertGlobals: true,
+        debug: true
+      })
+    )*/
     .pipe(concat('app.js'))
     .pipe(ngAnnotate())
     .pipe(uglify())

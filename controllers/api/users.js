@@ -110,6 +110,7 @@ router.post('/:id', function (req, res, next) {
     .exec(function (err, user) {
       if (err) { return next(err); }
       user.gender = req.body.user.gender;
+      user.flags = req.body.user.flags;
       user.save(function (err, user) {
         if (err) {
           throw next(err);

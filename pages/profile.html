@@ -72,5 +72,41 @@
         <i class="fa fa-venus fa-lg"></i>
       </div>
     </div>
+
+    <div class="form-group">
+      <tags-input ng-model="currentUser.flags"
+                  ng-change="updateUser()"
+                  display-property="name"
+                  placeholder="Add a country"
+                  replace-spaces-with-dashes="false"
+                  template="tag-flag">
+        <auto-complete source="loadCountries($query)"
+                       min-length="0"
+                       load-on-focus="true"
+                       load-on-empty="true"
+                       max-results-to-show="32"
+                       template="autocomplete-flag">
+        </auto-complete>
+      </tags-input>
+    </div>
   </form>
 </div>
+
+
+
+<script type="text/ng-template" id="tag-flag">
+  <div class="tag-flag">
+    <div class="flag {{data.flag}}" ng-if="data.flag"> </div>
+  </div>
+</script>
+
+<script type="text/ng-template" id="autocomplete-flag">
+  <div class="autocomplete-flag">
+    <div class="left-panel">
+      <div class="flag {{data.flag}}" ng-if="data.flag"> </div>
+    </div>
+    <div class="right-panel">
+      <span ng-bind-html="$highlight($getDisplayText())"></span>
+    </div>
+  </div>
+</script>
