@@ -47,11 +47,6 @@ angular.module('app')
     controller: 'WorkoutCtrl',
     templateUrl: '/workout.html'
   })
-  .state('top-priority', {
-    url: '/top-priority',
-    controller: 'TopPriorityCtrl',
-    templateUrl: '/top-priority.html'
-  })
   .state('posts', {
     url: '/posts',
     controller: 'PostsCtrl',
@@ -62,6 +57,16 @@ angular.module('app')
     controller: 'ProfileCtrl',
     templateUrl: '/profile.html',
     //templateStyleUrl: 'assets/contact.css'
+  })
+  .state('lists', {
+    url: '/lists',
+    controller: 'ListsCtrl',
+    templateUrl: 'lists.html'
+  })
+  .state('prioritize', {
+    url: '/prioritize',
+    controller: 'PrioritizeCtrl',
+    templateUrl: 'prioritize.html'
   });
 
   $locationProvider.html5Mode({

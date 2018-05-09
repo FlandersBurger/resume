@@ -5,16 +5,15 @@ angular.module('app')
     if ($scope.postBody) {
       PostsSvc.create({
         body: $scope.postBody
-      }).success(function (post) {
+      }).then(function (post) {
         $scope.postBody = null;
       });
     }
   };
 
   PostsSvc.fetch()
-  .success(function (posts) {
-    $scope.posts = posts;
-    $scope.filteredPosts = posts;
+  .then(function (response) {
+    $scope.posts = response.data;
   });
 
   $scope.$on('ws:new_post', function (_, post) {

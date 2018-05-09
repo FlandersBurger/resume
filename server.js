@@ -18,6 +18,7 @@ app.use(logger('dev'));
 app.use(require('./auth'));
 app.use('/api/users', require('./controllers/api/users'));
 app.use('/api/posts', require('./controllers/api/posts'));
+app.use('/api/categories', require('./controllers/api/categories'));
 app.use('/api/email', require('./controllers/api/email'));
 app.use(require('./controllers/static'));
 

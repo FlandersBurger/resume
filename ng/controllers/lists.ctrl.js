@@ -5,11 +5,11 @@ angular.module('app')
 
   $scope.init = function () {
     CategoriesSvc.getCategories()
-    .success(function (categories) {
-      $scope.categories = categories;
+    .then(function (response) {
+      $scope.categories = response.data;
       $scope.tasks = [];
-      for (var i = 0; i < $scope.categories.length; i++) {
-        for (var j = 0; j < $scope.categories[i].tasks.length; j++) {
+      for (var i in $scope.categories) {
+        for (var j in $scope.categories[i].tasks) {
           $scope.tasks.push({
             "category": $scope.categories[i].name,
             "task": $scope.categories[i].tasks[j].name
@@ -23,11 +23,11 @@ angular.module('app')
     $scope.selectedCategory = category;
     $scope.selectedTasks = [];
     $scope.selectableTasks = [];
-    for (var i = 0; i < $scope.selectedCategory.tasks.length; i++) {
+    for (var i in $scope.selectedCategory.tasks) {
       $scope.selectableTasks.push($scope.selectedCategory.tasks[i]);
     }
     $scope.showCategory = false;
-    $scope.enteredCategory = null;
+    $scope.enteredCategory = '';
   };
 
   $scope.newCategory = function (category) {
@@ -41,17 +41,17 @@ angular.module('app')
     if (!found) {
       CategoriesSvc.addCategory({
         category: category
-      }).success(function (category) {
+      }).then(function (category) {
         $scope.init();
         $scope.selectCategory(category);
       });
     }
-    $scope.enteredCategory = null;
+    $scope.enteredCategory = '';
   };
 
   $scope.newTask = function (task) {
     var found = false;
-    for (var i = 0; i < $scope.selectedCategory.tasks.length; i++) {
+    for (var i in $scope.selectedCategory.tasks) {
       if ($scope.selectedCategory.tasks[i].name === task) {
         found = true;
         $scope.selectTask($scope.selectedCategory.tasks[i]);
@@ -60,18 +60,18 @@ angular.module('app')
     if (!found) {
       CategoriesSvc.addTask($scope.selectedCategory.name, {
         task: task
-      }).success(function () {
+      }).then(function () {
         $scope.selectedCategory.tasks.push({ name: task });
         $scope.addTask($scope.selectedTasks, $scope.selectedCategory.tasks[$scope.selectedCategory.tasks.length - 1]);
       });
     }
-    $scope.enteredTask = null;
+    $scope.enteredTask = '';
   };
 
   $scope.selectTask = function (task) {
     $scope.addTask($scope.selectedTasks, task);
     $scope.removeTask($scope.selectableTasks, task);
-    $scope.enteredTask = null;
+    $scope.enteredTask = '';
   };
 
   $scope.unselectTask = function (task) {
