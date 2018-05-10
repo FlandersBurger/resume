@@ -8,10 +8,11 @@
           <button ng-click="addPost()" class="btn btn-default" ng-disabled="!loggedIn"><i class="fa fa-lg fa-envelope"></i></button>
         </span>
       </div>
-      <input type="text" ng-model="searchText" class="form-control" placeholder="Search">
+      <input type="text" ng-model="searchText" class="form-control" placeholder="Search" ng-show="loggedIn">
     </div>
   </form>
-  <ul class="list-group">
+  <h2 ng-hide="loggedIn">Please login to see the chat and post</h2>
+  <ul class="list-group" ng-show="loggedIn">
     <li ng-repeat="post in posts | orderBy:'-date' | filter:searchText | limitTo: 50" class="list-group-item">
       <strong>{{ post.poster ? post.poster.username : post.username }}:</strong>
       <span>{{ post.body }}</span>

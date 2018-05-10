@@ -3,7 +3,7 @@
 </ul-->
 <div id="skills-page" ng-cloak>
   <div class="skill-selector col-xs-3" ng-cloak>
-    <div class="selectable-skill" ng-repeat="skill in skills track by $index" ng-click="setSelectedSkill(skill)">
+    <div class="selectable-skill" ng-repeat="skill in skills track by $index" ng-click="setSelectedSkill(skill)" uib-tooltip="{{skill.name}}" tooltip-placement="right">
       <img ng-src="/skills/{{skill.image}}"/>
     </div>
   </div>

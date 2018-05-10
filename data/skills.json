@@ -6,9 +6,20 @@
     "enabled":"true",
     "percentage":"80",
     "since":2015,
-    "description": "AngularJS has quickly become my favourite front-end web app framework, so much so that I can't imagine ever creating another website without it (I haven't tried ReactJs yet however). In fact, this website relies heavily on AngularJS. The crown-jewel of my AngularJS experience is found at <a href='https://npgcloud.com' target='_blank'>https://npgcloud.com</a>, a web app where high profile customers such as Hudson Bay Company, 7-Eleven and Sprint go to design and print their name badges.",
+    "description": "AngularJS has quickly become my favourite front-end web app framework, so much so that I can't imagine ever creating another website without it (I haven't tried ReactJs yet however). In fact, this website is built with AngularJS. The crown-jewel of my AngularJS experience is found at <a href='https://npgcloud.com' target='_blank'>https://npgcloud.com</a>, a web app where high profile customers such as Hudson Bay Company, 7-Eleven and Sprint go to design and print their name badges.",
     "tldr": "",
     "image": "angular.png"
+  },
+  {
+    "name": "Firebase",
+    "code": "firebase",
+    "type": "skill",
+    "enabled":"true",
+    "percentage":"60",
+    "since":2018,
+    "description": "My knowledge with firebase currently extends to the login functionality on this site. That being said, don't hesitate to give it a whirl. The chat under the 'Contact' heading will become usable once you login",
+    "tldr": "",
+    "image": "firebase.png"
   },
   {
     "name": "NodeJS",
