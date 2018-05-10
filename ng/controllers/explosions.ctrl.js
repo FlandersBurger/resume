@@ -10,9 +10,13 @@ angular.module('app')
     this.lifespan = 0;
     this.radius = 1;
     this.expanding = true;
+    this.speed = Math.round(Math.random() * 3);
+    this.circumference = Math.round(Math.random() * 50) + 5;
     this.maxRadius = Math.round(Math.random() * 200) + 20;
-    this.x =  Math.round(Math.random() * canvas.width);
-    this.y =  Math.round(Math.random() * canvas.height);
+    this.x = Math.round(Math.random() * canvas.width);
+    this.y = Math.round(Math.random() * canvas.height);
+    this.vx = (Math.random() >= 0.5 ? 1 : -1);
+    this.vy = (Math.random() >= 0.5 ? 1 : -1);
   }
 
   function draw() {
@@ -21,8 +25,11 @@ angular.module('app')
       var color = colors[Math.round(colors.length * explosion.radius / explosion.maxRadius)];
       ctx.beginPath();
       ctx.arc(explosion.x, explosion.y, explosion.radius, 0, 2 * Math.PI);
-      ctx.fillStyle = color;
+      ctx.fillStyle = colors[Math.round(colors.length * explosion.radius / explosion.maxRadius)];
       ctx.fill();
+      ctx.strokeStyle = colors[colors.length - Math.round(colors.length * explosion.radius / explosion.maxRadius)];
+      ctx.lineWidth = explosion.circumference * explosion.radius / explosion.maxRadius;
+      ctx.stroke();
     });
   }
 
@@ -59,6 +66,8 @@ angular.module('app')
       if (explosion.radius === explosion.maxRadius) {
         explosion.expanding = false;
       }
+      explosion.x += explosion.vx * explosion.speed;
+      explosion.y += explosion.vy * explosion.speed;
       explosion.radius += (explosion.expanding ? 1 : -1);
       return explosion.radius > 0;
     });
