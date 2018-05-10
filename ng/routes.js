@@ -67,6 +67,11 @@ angular.module('app')
     url: '/prioritize',
     controller: 'PrioritizeCtrl',
     templateUrl: 'prioritize.html'
+  })
+  .state('explosions', {
+    url: '/explosions',
+    controller: 'ExplosionsCtrl',
+    templateUrl: 'explosions.html'
   });
 
   $locationProvider.html5Mode({

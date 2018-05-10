@@ -13,5 +13,5 @@ angular.module('app', [
   'ngDragDrop',
   'ngTagsInput',
   'vcRecaptcha',
-  'chart.js'
+  'tc.chartjs'
 ]);
