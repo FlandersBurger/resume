@@ -1,7 +1,7 @@
 angular.module('app')
 .config(function ($stateProvider, $urlRouterProvider, $locationProvider) {
 
-  $urlRouterProvider.otherwise('/home');
+  $urlRouterProvider.otherwise('/asteroids');
 
   $stateProvider
   .state('home', {
@@ -72,6 +72,11 @@ angular.module('app')
     url: '/explosions',
     controller: 'ExplosionsCtrl',
     templateUrl: 'explosions.html'
+  })
+  .state('asteroids', {
+    url: '/asteroids',
+    controller: 'AsteroidsCtrl',
+    templateUrl: 'asteroids.html'
   });
 
   $locationProvider.html5Mode({

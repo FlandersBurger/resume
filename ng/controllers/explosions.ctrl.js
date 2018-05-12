@@ -33,6 +33,22 @@ angular.module('app')
     });
   }
 
+  function filterExplosions() {
+    explosions.push(new Explosion());
+    explosions = explosions.filter(function (explosion) {
+      if (explosion.radius === explosion.maxRadius) {
+        explosion.expanding = false;
+      }
+      explosion.x += explosion.vx * explosion.speed;
+      explosion.y += explosion.vy * explosion.speed;
+      explosion.radius += (explosion.expanding ? 1 : -1);
+      return explosion.radius > 0;
+    });
+    draw();
+    requestAnimationFrame(filterExplosions);
+  }
+
+  requestAnimationFrame(filterExplosions);
 
 
 	(function() {
@@ -60,24 +76,6 @@ angular.module('app')
 
 	})();
 
-  function filterExplosions() {
-    explosions.push(new Explosion());
-    explosions = explosions.filter(function (explosion) {
-      if (explosion.radius === explosion.maxRadius) {
-        explosion.expanding = false;
-      }
-      explosion.x += explosion.vx * explosion.speed;
-      explosion.y += explosion.vy * explosion.speed;
-      explosion.radius += (explosion.expanding ? 1 : -1);
-      return explosion.radius > 0;
-    });
-    draw();
-    setTimeout(function() {
-      filterExplosions();
-    }, 20);
-  }
-
-  filterExplosions();
 
 
 });
