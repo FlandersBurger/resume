@@ -1,7 +1,7 @@
 angular.module('app')
 .config(function ($stateProvider, $urlRouterProvider, $locationProvider) {
 
-  $urlRouterProvider.otherwise('/home');
+  $urlRouterProvider.otherwise('/asteroids');
 
   $stateProvider
   .state('home', {

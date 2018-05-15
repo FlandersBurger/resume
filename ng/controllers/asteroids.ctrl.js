@@ -3,10 +3,13 @@ angular.module('app')
 
   var canvas = document.getElementById('asteroids-page');
   var ctx = canvas.getContext('2d');
+  var shots = [];
 
   function Spaceship() {
-    this.x = canvas.width / 2 - 25;
-    this.y = canvas.height / 2 - 25;
+    this.width = 50;
+    this.height = 50;
+    this.x = canvas.width / 2 - this.width / 2;
+    this.y = canvas.height / 2 - this.height / 2;
     this.img = new Image();
     this.img.src = 'spaceship.png';
     this.speed = 0;
@@ -14,15 +17,41 @@ angular.module('app')
     this.rotation = 0;
 
     this.shoot = function() {
-
+      shots.push(new Shot(this));
     };
   }
 
-  function Shot() {
-    this.x = spaceship.x;
-    this.y = spaceship.y;
+  function Shot(spaceship) {
+    this.x = spaceship.x + spaceship.width / 2 + spaceship.width / 2 * Math.cos((spaceship.rotation - 90) * Math.PI / 180);
+    this.y = spaceship.y + spaceship.height / 2 + spaceship.height / 2 * Math.sin((spaceship.rotation - 90) * Math.PI / 180);
+    this.width = 9;
+    this.height = 15;
     this.rotation = spaceship.rotation;
     this.speed = spaceship.speed + 2;
+    this.age = 0;
+    this.img = new Image();
+    this.img.src = 'shot.png';
+  }
+
+  function move(object) {
+     object.x += object.speed * Math.cos((object.rotation - 90) * Math.PI / 180);
+     object.y += object.speed * Math.sin((object.rotation - 90) * Math.PI / 180);
+     if (object.x > canvas.width) {
+       object.x = -object.width;
+     } else if (object.x < -object.width) {
+       object.x = canvas.width;
+     }
+     if (object.y > canvas.height) {
+       object.y = -object.height;
+     } else if (object.y < -object.height) {
+       object.y = canvas.height;
+     }
+     ctx.save();
+     ctx.translate(object.x, object.y);
+     ctx.translate(object.width / 2, object.height / 2);
+     ctx.rotate(object.rotation * Math.PI / 180);
+     ctx.drawImage(object.img, -object.width / 2, -object.height / 2, object.width, object.height);
+     ctx.restore();
   }
 
   var spaceship = new Spaceship();
@@ -36,7 +65,8 @@ angular.module('app')
     if (e.keyCode === 32) {
       //Space
       spaceship.shoot();
-    } else if (e.keyCode === 37) {
+    }
+    if (e.keyCode === 37) {
       //Left Arrow
       if (spaceship.rotation === 0) {
         spaceship.rotation = 360;
@@ -46,12 +76,14 @@ angular.module('app')
       if (spaceship.rotationSpeed < 3) {
         spaceship.rotationSpeed++;
       }
-    } else if (e.keyCode === 38) {
+    }
+    if (e.keyCode === 38) {
       //Up Arrow
       if (spaceship.speed <= 5) {
         spaceship.speed++;
       }
-    } else if (e.keyCode === 39) {
+    }
+    if (e.keyCode === 39) {
       //Right Arrow
       if (spaceship.rotation === 360) {
         spaceship.rotation = 0;
@@ -61,7 +93,8 @@ angular.module('app')
       if (spaceship.rotationSpeed < 3) {
         spaceship.rotationSpeed++;
       }
-    } else if (e.keyCode === 40) {
+    }
+    if (e.keyCode === 40) {
       //Down Arrow
       if (spaceship.speed >= 0) {
         spaceship.speed--;
@@ -100,24 +133,14 @@ angular.module('app')
 
     function draw() {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
-      spaceship.x += spaceship.speed * Math.cos((spaceship.rotation - 90) * Math.PI / 180);
-      spaceship.y += spaceship.speed * Math.sin((spaceship.rotation - 90) * Math.PI / 180);
-      if (spaceship.x > canvas.width) {
-        spaceship.x = -50;
-      } else if (spaceship.x < -50) {
-        spaceship.x = canvas.width;
-      }
-      if (spaceship.y > canvas.height) {
-        spaceship.y = -50;
-      } else if (spaceship.y < -50) {
-        spaceship.y = canvas.height;
-      }
-    	ctx.save();
-      ctx.translate(spaceship.x, spaceship.y);
-      ctx.translate(25, 25);
-      ctx.rotate(spaceship.rotation * Math.PI / 180);
-      ctx.drawImage(spaceship.img, -25, -25, 50, 50);
-      ctx.restore();
+      move(spaceship);
+      shots = shots.filter(function(shot) {
+        return shot.age < 100;
+      });
+      shots.forEach(function(shot) {
+        shot.age++;
+        move(shot);
+      });
       requestAnimationFrame(draw);
     }
 
