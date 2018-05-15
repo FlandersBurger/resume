@@ -1,7 +1,7 @@
 angular.module('app')
 .config(function ($stateProvider, $urlRouterProvider, $locationProvider) {
 
-  $urlRouterProvider.otherwise('/asteroids');
+  $urlRouterProvider.otherwise('/home');
 
   $stateProvider
   .state('home', {
@@ -68,10 +68,10 @@ angular.module('app')
     controller: 'PrioritizeCtrl',
     templateUrl: 'prioritize.html'
   })
-  .state('explosions', {
-    url: '/explosions',
-    controller: 'ExplosionsCtrl',
-    templateUrl: 'explosions.html'
+  .state('bubbles', {
+    url: '/bubbles',
+    controller: 'BubblesCtrl',
+    templateUrl: 'bubbles.html'
   })
   .state('asteroids', {
     url: '/asteroids',

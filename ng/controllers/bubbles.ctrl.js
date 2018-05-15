@@ -1,12 +1,12 @@
 angular.module('app')
-.controller('ExplosionsCtrl', function ($scope) {
+.controller('BubblesCtrl', function ($scope) {
 
-  var canvas = document.getElementById('explosions-page');
-  var ctx = canvas.getContext("2d");
-  var explosions = [];
+  var canvas = document.getElementById('bubbles-page');
+  var ctx = canvas.getContext('2d');
+  var bubbles = [];
   var colors = ['#ffc300','#ff5733','#c70039','#900c3e','#571845'];
 
-  function Explosion() {
+  function Bubble() {
     this.lifespan = 0;
     this.radius = 1;
     this.expanding = true;
@@ -21,34 +21,34 @@ angular.module('app')
 
   function draw() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
-    explosions.forEach(function(explosion) {
-      var color = colors[Math.round(colors.length * explosion.radius / explosion.maxRadius)];
+    bubbles.forEach(function(bubble) {
+      var color = colors[Math.round(colors.length * bubble.radius / bubble.maxRadius)];
       ctx.beginPath();
-      ctx.arc(explosion.x, explosion.y, explosion.radius, 0, 2 * Math.PI);
-      ctx.fillStyle = colors[Math.round(colors.length * explosion.radius / explosion.maxRadius)];
+      ctx.arc(bubble.x, bubble.y, bubble.radius, 0, 2 * Math.PI);
+      ctx.fillStyle = colors[Math.round(colors.length * bubble.radius / bubble.maxRadius)];
       ctx.fill();
-      ctx.strokeStyle = colors[colors.length - Math.round(colors.length * explosion.radius / explosion.maxRadius)];
-      ctx.lineWidth = explosion.circumference * explosion.radius / explosion.maxRadius;
+      ctx.strokeStyle = colors[colors.length - Math.round(colors.length * bubble.radius / bubble.maxRadius)];
+      ctx.lineWidth = bubble.circumference * bubble.radius / bubble.maxRadius;
       ctx.stroke();
     });
   }
 
-  function filterExplosions() {
-    explosions.push(new Explosion());
-    explosions = explosions.filter(function (explosion) {
-      if (explosion.radius === explosion.maxRadius) {
-        explosion.expanding = false;
+  function filterBubbles() {
+    bubbles.push(new Bubble());
+    bubbles = bubbles.filter(function (bubble) {
+      if (bubble.radius === bubble.maxRadius) {
+        bubble.expanding = false;
       }
-      explosion.x += explosion.vx * explosion.speed;
-      explosion.y += explosion.vy * explosion.speed;
-      explosion.radius += (explosion.expanding ? 1 : -1);
-      return explosion.radius > 0;
+      bubble.x += bubble.vx * bubble.speed;
+      bubble.y += bubble.vy * bubble.speed;
+      bubble.radius += (bubble.expanding ? 1 : -1);
+      return bubble.radius > 0;
     });
     draw();
-    requestAnimationFrame(filterExplosions);
+    requestAnimationFrame(filterBubbles);
   }
 
-  requestAnimationFrame(filterExplosions);
+  requestAnimationFrame(filterBubbles);
 
 
 	(function() {

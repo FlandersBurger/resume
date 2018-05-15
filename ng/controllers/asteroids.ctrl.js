@@ -5,31 +5,38 @@ angular.module('app')
   var ctx = canvas.getContext('2d');
 
   function Spaceship() {
-    this.x = window.innerWidth / 2;
-    this.y = window.innerHeight / 2;
+    this.x = canvas.width / 2 - 25;
+    this.y = canvas.height / 2 - 25;
     this.img = new Image();
     this.img.src = 'spaceship.png';
     this.speed = 0;
     this.rotationSpeed = 1;
     this.rotation = 0;
+
+    this.shoot = function() {
+
+    };
   }
 
-  var spaceship;
+  function Shot() {
+    this.x = spaceship.x;
+    this.y = spaceship.y;
+    this.rotation = spaceship.rotation;
+    this.speed = spaceship.speed + 2;
+  }
+
+  var spaceship = new Spaceship();
 
   $scope.start = function() {
     spaceship = new Spaceship();
-    spaceship.img.onload = function() {
-
-      ctx.drawImage(spaceship.img, spaceship.x, spaceship.y, 50, 50);
-      ctx.restore();
-    };
   };
-
-  $scope.start();
 
   //Below picks up the Keyboard keys pressed
   $(document).on("keydown", function(e) {
-    if (e.keyCode === 37) {
+    if (e.keyCode === 32) {
+      //Space
+      spaceship.shoot();
+    } else if (e.keyCode === 37) {
       //Left Arrow
       if (spaceship.rotation === 0) {
         spaceship.rotation = 360;
@@ -41,7 +48,9 @@ angular.module('app')
       }
     } else if (e.keyCode === 38) {
       //Up Arrow
-      spaceship.speed++;
+      if (spaceship.speed <= 5) {
+        spaceship.speed++;
+      }
     } else if (e.keyCode === 39) {
       //Right Arrow
       if (spaceship.rotation === 360) {
@@ -54,34 +63,15 @@ angular.module('app')
       }
     } else if (e.keyCode === 40) {
       //Down Arrow
-      spaceship.speed--;
+      if (spaceship.speed >= 0) {
+        spaceship.speed--;
+      }
     }
   });
 
   $(document).on("keyup", function(e) {
     spaceship.rotationSpeed = 1;
   });
-
-  function draw() {
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-    spaceship.x -= spaceship.speed * Math.sin(spaceship.rotation * Math.PI / 180);
-    spaceship.y -= spaceship.speed * Math.cos(spaceship.rotation * Math.PI / 180);
-  	ctx.save();
-    ctx.translate(spaceship.x / 2, spaceship.y / 2);
-    ctx.translate(25, 25);
-    ctx.rotate(spaceship.rotation * Math.PI / 180);
-    ctx.drawImage(spaceship.img, -25, -25, 50, 50);
-    ctx.restore();
-  }
-
-  function redraw() {
-    draw();
-    requestAnimationFrame(redraw);
-  }
-
-  requestAnimationFrame(redraw);
-
-	(function() {
 
 		// Start listening to resize events and
 		// draw canvas.
@@ -93,6 +83,7 @@ angular.module('app')
 			// the window is resized.
 			window.addEventListener('resize', resizeCanvas, false);
 
+
 			// Draw canvas border for the first time.
 			resizeCanvas();
 		}
@@ -102,8 +93,34 @@ angular.module('app')
 		function resizeCanvas() {
 			canvas.width = window.innerWidth;
 			canvas.height = window.innerHeight - (canvas.width <= 768 ? 55 : 111);
+      requestAnimationFrame(draw);
 		}
 
-	})();
+    $scope.start();
+
+    function draw() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      spaceship.x += spaceship.speed * Math.cos((spaceship.rotation - 90) * Math.PI / 180);
+      spaceship.y += spaceship.speed * Math.sin((spaceship.rotation - 90) * Math.PI / 180);
+      if (spaceship.x > canvas.width) {
+        spaceship.x = -50;
+      } else if (spaceship.x < -50) {
+        spaceship.x = canvas.width;
+      }
+      if (spaceship.y > canvas.height) {
+        spaceship.y = -50;
+      } else if (spaceship.y < -50) {
+        spaceship.y = canvas.height;
+      }
+    	ctx.save();
+      ctx.translate(spaceship.x, spaceship.y);
+      ctx.translate(25, 25);
+      ctx.rotate(spaceship.rotation * Math.PI / 180);
+      ctx.drawImage(spaceship.img, -25, -25, 50, 50);
+      ctx.restore();
+      requestAnimationFrame(draw);
+    }
+
+
 
 });
