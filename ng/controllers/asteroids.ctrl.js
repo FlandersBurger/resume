@@ -3,8 +3,8 @@ angular.module('app')
 
   var canvas = document.getElementById('asteroids-page');
   var ctx = canvas.getContext('2d');
-  var shots = [];
-  var asteroids = [];
+  var shots = {};
+  var asteroids = {};
   var map = {};
 
   window.addEventListener('keydown',function(e){
@@ -66,11 +66,18 @@ angular.module('app')
     this.rotation = 0;
 
     this.shoot = function() {
-      this.cooldown = 50;
-      shots.push(new Shot(this));
+      this.cooldown = 20;
+      var id = Math.round(Math.random() * 100000000);
+      shots[id] = new Shot(id, this);
     };
 
     this.move = function() {
+      for (var i in asteroids) {
+        var asteroid = asteroids[i];
+        if (hit(asteroid, this)) {
+          return gameOver();
+        }
+      }
       this.angle = this.rotation;
       if (this.cooldown > 0) {
         this.cooldown--;
@@ -79,7 +86,8 @@ angular.module('app')
     };
   }
 
-  function Shot(spaceship) {
+  function Shot(id, spaceship) {
+    this.id = id;
     this.x = spaceship.x + spaceship.cannon.x + spaceship.cannon.x * Math.cos((spaceship.rotation - 90) * Math.PI / 180);
     this.y = spaceship.y + spaceship.cannon.y + spaceship.cannon.y * Math.sin((spaceship.rotation - 90) * Math.PI / 180);
     this.width = 9;
@@ -97,11 +105,27 @@ angular.module('app')
     };
   }
 
-  function Asteroid() {
-    this.x = Math.random() * canvas.width;
-    this.y = Math.random() * canvas.height;
-    this.width = Math.random() * 50 + 30;
+  function Asteroid(id) {
+    this.id = id;
+    this.width = Math.random() * 50 + 20;
     this.height = this.width;
+    var x = Math.random() * 2;
+    var y = Math.random() * 2;
+    if (x >= 1) {
+      this.x = Math.random() * canvas.width;
+      if (y >= 1) {
+        this.y = 0 - this.height;
+      } else {
+        this.y = canvas.height;
+      }
+    } else {
+      this.y = Math.random() * canvas.height;
+      if (y >= 1) {
+        this.x = 0 - this.width;
+      } else {
+        this.x = canvas.width;
+      }
+    }
     this.angle = Math.random() * 360;
     this.rotation = Math.random() * 360;
     this.rotationSpeed = Math.random() * 6 - 3;
@@ -115,6 +139,15 @@ angular.module('app')
         this.rotation = this.rotation - 360;
       } else if (this.rotation < 0) {
         this.rotation = 360 + this.rotation;
+      }
+      for (var i in shots) {
+        var shot = shots[i];
+        if (hit(shot, this)) {
+          $scope.score++;
+          $scope.$apply();
+          delete shots[i];
+          return delete asteroids[this.id];
+        }
       }
       move(this);
     };
@@ -145,14 +178,31 @@ angular.module('app')
 
   $scope.start = function() {
     spaceship = new Spaceship();
+    $scope.score = 0;
     spawnAsteroid();
   };
 
+  function hit(object1, object2) {
+    return (object1.x < object2.x + object2.width) &&
+           (object2.x < object1.x + object1.width) &&
+           (object1.y < object2.y + object2.height) &&
+           (object2.y < object1.y + object1.height);
+  }
+
   function spawnAsteroid() {
-    asteroids.push(new Asteroid());
+    var id = Math.round(Math.random() * 100000000);
+    asteroids[id] = new Asteroid(id);
     setTimeout(function() {
       spawnAsteroid();
     }, 1000);
+  }
+
+  function gameOver() {
+    asteroids = {};
+    shots = {};
+    spaceship = new Spaceship();
+    $scope.score = 0;
+    $scope.$apply();
   }
 
 	// Start listening to resize events and
@@ -182,15 +232,16 @@ angular.module('app')
 
   function draw() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
-    shots = shots.filter(function(shot) {
-      return shot.age < 100;
-    });
-    shots.forEach(function(shot) {
-      shot.move();
-    });
-    asteroids.forEach(function(asteroid) {
-      asteroid.move();
-    });
+    for (var i in shots) {
+      if (shots[i].age > 100) {
+        delete shots[i];
+      } else {
+        shots[i].move();
+      }
+    }
+    for (i in asteroids) {
+      asteroids[i].move();
+    }
     spaceship.move();
     evaluateKeys();
     requestAnimationFrame(draw);
