@@ -6,6 +6,8 @@ angular.module('app')
   var shots = {};
   var asteroids = {};
   var map = {};
+  var spacepics = 10;
+  var space = Math.floor(Math.random() * spacepics);
 
   window.addEventListener('keydown',function(e){
       map[e.keyCode || e.which] = true;
@@ -47,6 +49,12 @@ angular.module('app')
         spaceship.speed--;
       }
     }
+    if (map[40]) {
+      //Down Arrow
+      if (spaceship.speed > 0) {
+        spaceship.speed -= 2;
+      }
+    }
   }
 
   function Spaceship() {
@@ -74,8 +82,10 @@ angular.module('app')
     this.move = function() {
       for (var i in asteroids) {
         var asteroid = asteroids[i];
-        if (hit(asteroid, this)) {
-          return gameOver();
+        if (!asteroid.explosion) {
+          if (hit(asteroid, this)) {
+            return gameOver();
+          }
         }
       }
       this.angle = this.rotation;
@@ -133,6 +143,10 @@ angular.module('app')
     this.img = new Image();
     this.img.src = 'asteroids/asteroid' + (Math.round(Math.random() * 6) + 1) + '.png';
 
+    this.explode = function() {
+      this.explosion = new Explosion(this);
+    };
+
     this.move = function() {
       if (this.explosion) {
         if (this.explosion.age < 48) {
@@ -150,7 +164,7 @@ angular.module('app')
         for (var i in shots) {
           var shot = shots[i];
           if (hit(shot, this)) {
-            this.explosion = new Explosion(this);
+            this.explode();
             $scope.score++;
             $scope.$apply();
             delete shots[i];
@@ -221,18 +235,23 @@ angular.module('app')
   }
 
   function spawnAsteroid() {
-    var id = Math.round(Math.random() * 100000000);
-    asteroids[id] = new Asteroid(id);
+    if (Object.keys(asteroids).length < 200) {      
+      var id = Math.round(Math.random() * 100000000);
+      asteroids[id] = new Asteroid(id);
+    }
     setTimeout(function() {
       spawnAsteroid();
     }, 1000);
   }
 
   function gameOver() {
-    asteroids = {};
+    for (var i in asteroids) {
+      asteroids[i].explode();
+    }
     shots = {};
-    spaceship = new Spaceship();
+    //spaceship = new Spaceship();
     $scope.score = 0;
+    space = Math.floor(Math.random() * spacepics);
     $scope.$apply();
   }
 
@@ -277,6 +296,12 @@ angular.module('app')
     evaluateKeys();
     requestAnimationFrame(draw);
   }
+
+  $scope.space = function() {
+    return {
+      backgroundImage: 'url("asteroids/space' + space + '.jpg")'
+    };
+  };
 
 
 
