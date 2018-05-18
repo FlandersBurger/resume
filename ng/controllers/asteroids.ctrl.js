@@ -134,22 +134,53 @@ angular.module('app')
     this.img.src = 'asteroids/asteroid' + (Math.round(Math.random() * 6) + 1) + '.png';
 
     this.move = function() {
-      this.rotation += this.rotationSpeed;
-      if (this.rotation > 360) {
-        this.rotation = this.rotation - 360;
-      } else if (this.rotation < 0) {
-        this.rotation = 360 + this.rotation;
-      }
-      for (var i in shots) {
-        var shot = shots[i];
-        if (hit(shot, this)) {
-          $scope.score++;
-          $scope.$apply();
-          delete shots[i];
+      if (this.explosion) {
+        if (this.explosion.age < 48) {
+          this.explosion.next();
+        } else {
           return delete asteroids[this.id];
         }
+      } else {
+        this.rotation += this.rotationSpeed;
+        if (this.rotation > 360) {
+          this.rotation = this.rotation - 360;
+        } else if (this.rotation < 0) {
+          this.rotation = 360 + this.rotation;
+        }
+        for (var i in shots) {
+          var shot = shots[i];
+          if (hit(shot, this)) {
+            this.explosion = new Explosion(this);
+            $scope.score++;
+            $scope.$apply();
+            delete shots[i];
+          }
+        }
+        move(this);
       }
-      move(this);
+    };
+  }
+
+  function Explosion(object) {
+    this.x = object.x;
+    this.y = object.y;
+    this.width = object.width;
+    this.height = object.height;
+    this.age = 0;
+    this.row = 0;
+    this.column = 0;
+    this.img = new Image();
+    this.img.src = 'asteroids/explosion.png';
+
+    this.next = function() {
+      ctx.drawImage(this.img, 256 * this.column, 256 * this.row, 256, 256, this.x, this.y, this.width, this.height);
+      if (this.column < 7) {
+        this.column++;
+      } else {
+        this.column = 0;
+        this.row++;
+      }
+      this.age++;
     };
   }
 
