@@ -21,7 +21,7 @@ angular.module('app')
       name: 'cooldown',
       img: new Image(),
       activate: function(spaceship) {
-        console.log(space.cooldown);
+        console.log(spaceship.cooldown);
         spaceship.cooldownTime -= 2;
       }
     },/*
@@ -223,13 +223,13 @@ angular.module('app')
     this.lifespan = 500;
     this.id = id;
     this.width = 40;
-    this.height = this.width;
+    this.height = 40;
     this.position = getEntryPosition(this.width, this.height);
     this.powerup = powerupTypes[Math.floor(Math.random() * powerupTypes.length)];
     this.img = this.powerup.img;
+    this.angle = Math.random() * 360;
     this.speed = Math.random() * 300 + 2;
     this.rotation = Math.random() * 360;
-    console.log(this);
     this.move = function() {
       if (this.lifespan <= 0) {
         return delete powerups[this.id];
