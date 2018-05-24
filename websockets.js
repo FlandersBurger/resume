@@ -5,6 +5,7 @@ var clients = [];
 exports.connect = function (server) {
   var wss = new ws.Server({server: server});
   wss.on('connection', function (ws) {
+    ws.id = Math.floor(Math.random() * 10000000);
     clients.push(ws);
     exports.broadcast('new client joined');
     ws.on('data', function(data) {
@@ -21,4 +22,8 @@ exports.broadcast = function (topic, data) {
   clients.forEach(function (client) {
     client.send(json);
   });
+};
+
+exports.ids = function () {
+  return clients.map(function(client) { return client.id; });
 };

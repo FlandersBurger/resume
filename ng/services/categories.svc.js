@@ -35,7 +35,7 @@ angular.module('app')
       }
     }
     shuffle(svc.priorityList);
-    for (var i = 0; i < svc.priorityList.length; i++) {
+    for (i in svc.priorityList) {
       svc.priorityList[i].id = i + 1;
     }
   };
@@ -51,7 +51,7 @@ angular.module('app')
       // Pick a remaining element…
       i = Math.floor(Math.random() * m--);
       // And swap it with the current element.
-      array[m].firstChoice;
+      //array[m].firstChoice;
       t = array[m];
       array[m] = array[i];
       array[i] = t;

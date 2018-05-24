@@ -1,18 +1,48 @@
 angular.module('app')
-.controller('AsteroidsCtrl', function ($scope) {
+.controller('AsteroidsCtrl', function ($scope, AsteroidsSvc) {
 
   var canvas = document.getElementById('asteroids-page');
   var ctx = canvas.getContext('2d');
   var shots = {};
   var asteroids = {};
+  var powerups = {};
   var map = {};
   var spacepics = 10;
   var space = Math.floor(Math.random() * spacepics);
+  var powerupTypes = [
+    {
+      name: 'speed',
+      img: new Image(),
+      activate: function(spaceship) {
+        spaceship.maxSpeed += 100;
+      }
+    },
+    {
+      name: 'cooldown',
+      img: new Image(),
+      activate: function(spaceship) {
+        console.log(space.cooldown);
+        spaceship.cooldownTime -= 2;
+      }
+    },/*
+    'side_cannons',
+    'laser',
+    'shield',
+    'life',
+    'missiles',
+    'nuke'*/
+  ];
+  powerupTypes.forEach(function(powerup, i, array) {
+    array[i].img.src = 'asteroids/' + powerup.name + '.png';
+  });
 
-  window.addEventListener('keydown',function(e){
+  var explosionImage = new Image();
+  explosionImage.src = 'asteroids/explosion.png';
+
+  window.addEventListener('keydown', function(e) {
       map[e.keyCode || e.which] = true;
   },true);
-  window.addEventListener('keyup',function(e){
+  window.addEventListener('keyup', function(e) {
       map[e.keyCode || e.which] = false;
   },true);
 
@@ -41,7 +71,7 @@ angular.module('app')
     }
     if (map[38]) {
       //Up Arrow
-      if (spaceship.speed <= 1000) {
+      if (spaceship.speed <= spaceship.maxSpeed) {
         spaceship.speed += 5;
       }
     } else {
@@ -65,16 +95,20 @@ angular.module('app')
       y: this.height / 2 - this.height * 0.078125
     };
     this.cooldown = 0;
-    this.x = canvas.width / 2 - this.width / 2;
-    this.y = canvas.height / 2 - this.height / 2;
+    this.cooldownTime = 20;
+    this.position = [
+      canvas.width / 2 - this.width / 2,
+      canvas.height / 2 - this.height / 2
+    ];
     this.img = new Image();
     this.img.src = 'asteroids/spaceship.png';
     this.speed = 0;
+    this.maxSpeed = 1000;
     this.angle = 0;
     this.rotation = 0;
 
     this.shoot = function() {
-      this.cooldown = 20;
+      this.cooldown = this.cooldownTime;
       var id = Math.round(Math.random() * 100000000);
       shots[id] = new Shot(id, this);
     };
@@ -98,19 +132,21 @@ angular.module('app')
 
   function Shot(id, spaceship) {
     this.id = id;
-    this.x = spaceship.x + spaceship.cannon.x + spaceship.cannon.x * Math.cos((spaceship.rotation - 90) * Math.PI / 180);
-    this.y = spaceship.y + spaceship.cannon.y + spaceship.cannon.y * Math.sin((spaceship.rotation - 90) * Math.PI / 180);
+    this.position = [
+      spaceship.position[0] + spaceship.cannon.x + spaceship.cannon.x * Math.cos((spaceship.rotation - 90) * Math.PI / 180),
+      spaceship.position[1] + spaceship.cannon.y + spaceship.cannon.y * Math.sin((spaceship.rotation - 90) * Math.PI / 180)
+    ];
     this.width = 9;
     this.height = 15;
     this.angle = spaceship.angle;
     this.rotation = spaceship.rotation;
     this.speed = spaceship.speed + 500;
-    this.age = 0;
+    this.lifespan = 100;
     this.img = new Image();
     this.img.src = 'asteroids/shot.png';
 
     this.move = function() {
-      this.age++;
+      this.lifespan--;
       move(this);
     };
   }
@@ -119,27 +155,11 @@ angular.module('app')
     this.id = id;
     this.width = Math.random() * 50 + 20;
     this.height = this.width;
-    var x = Math.random() * 2;
-    var y = Math.random() * 2;
-    if (x >= 1) {
-      this.x = Math.random() * canvas.width;
-      if (y >= 1) {
-        this.y = 0 - this.height;
-      } else {
-        this.y = canvas.height;
-      }
-    } else {
-      this.y = Math.random() * canvas.height;
-      if (y >= 1) {
-        this.x = 0 - this.width;
-      } else {
-        this.x = canvas.width;
-      }
-    }
+    this.position = getEntryPosition(this.width, this.height);
     this.angle = Math.random() * 360;
     this.rotation = Math.random() * 360;
     this.rotationSpeed = Math.random() * 6 - 3;
-    this.speed = Math.random() * 300;
+    this.speed = Math.random() * 300 + 2;
     this.img = new Image();
     this.img.src = 'asteroids/asteroid' + (Math.round(Math.random() * 6) + 1) + '.png';
 
@@ -149,7 +169,7 @@ angular.module('app')
 
     this.move = function() {
       if (this.explosion) {
-        if (this.explosion.age < 48) {
+        if (this.explosion.lifespan >= 0) {
           this.explosion.next();
         } else {
           return delete asteroids[this.id];
@@ -166,6 +186,9 @@ angular.module('app')
           if (hit(shot, this)) {
             this.explode();
             $scope.score++;
+            if ($scope.score % 5 === 0) {
+              spawnPowerup();
+            }
             $scope.$apply();
             delete shots[i];
           }
@@ -176,43 +199,66 @@ angular.module('app')
   }
 
   function Explosion(object) {
-    this.x = object.x;
-    this.y = object.y;
+    this.position = object.position;
     this.width = object.width;
     this.height = object.height;
-    this.age = 0;
+    this.lifespan = 48;
     this.row = 0;
     this.column = 0;
-    this.img = new Image();
-    this.img.src = 'asteroids/explosion.png';
+    this.img = explosionImage;
 
     this.next = function() {
-      ctx.drawImage(this.img, 256 * this.column, 256 * this.row, 256, 256, this.x, this.y, this.width, this.height);
+      ctx.drawImage(this.img, 256 * this.column, 256 * this.row, 256, 256, this.position[0], this.position[1], this.width, this.height);
       if (this.column < 7) {
         this.column++;
       } else {
         this.column = 0;
         this.row++;
       }
-      this.age++;
+      this.lifespan--;
+    };
+  }
+
+  function Powerup(id) {
+    this.lifespan = 500;
+    this.id = id;
+    this.width = 40;
+    this.height = this.width;
+    this.position = getEntryPosition(this.width, this.height);
+    this.powerup = powerupTypes[Math.floor(Math.random() * powerupTypes.length)];
+    this.img = this.powerup.img;
+    this.speed = Math.random() * 300 + 2;
+    this.rotation = Math.random() * 360;
+    console.log(this);
+    this.move = function() {
+      if (this.lifespan <= 0) {
+        return delete powerups[this.id];
+      }
+      if (hit(spaceship, this)) {
+        console.log('activating');
+        this.powerup.activate(spaceship);
+        return delete powerups[this.id];
+      }
+      this.lifespan--;
+      move(this);
     };
   }
 
   function move(object) {
-     object.x += object.speed / 100 * Math.cos((object.angle - 90) * Math.PI / 180);
-     object.y += object.speed / 100 * Math.sin((object.angle - 90) * Math.PI / 180);
-     if (object.x > canvas.width) {
-       object.x = -object.width;
-     } else if (object.x < -object.width) {
-       object.x = canvas.width;
+     object.position[0] += object.speed / 100 * Math.cos((object.angle - 90) * Math.PI / 180);
+     object.position[1] += object.speed / 100 * Math.sin((object.angle - 90) * Math.PI / 180);
+     if (object.position[0] > canvas.width) {
+       object.position[0] = -object.width;
+     } else if (object.position[0] < -object.width) {
+       object.position[0] = canvas.width;
      }
-     if (object.y > canvas.height) {
-       object.y = -object.height;
-     } else if (object.y < -object.height) {
-       object.y = canvas.height;
+     if (object.position[1] > canvas.height) {
+       object.position[1] = -object.height;
+     } else if (object.position[1] < -object.height) {
+       object.position[1] = canvas.height;
      }
      ctx.save();
-     ctx.translate(object.x, object.y);
+     ctx.translate(object.position[0], object.position[1]);
      ctx.translate(object.width / 2, object.height / 2);
      ctx.rotate(object.rotation * Math.PI / 180);
      ctx.drawImage(object.img, -object.width / 2, -object.height / 2, object.width, object.height);
@@ -227,21 +273,50 @@ angular.module('app')
     spawnAsteroid();
   };
 
+  function getEntryPosition(width, height) {
+    var gridX = Math.random() * 2;
+    var gridY = Math.random() * 2;
+    var x, y = 0;
+    if (gridX >= 1) {
+      x = Math.random() * canvas.width;
+      if (y >= 1) {
+        y = 0 - height;
+      } else {
+        y = canvas.height;
+      }
+    } else {
+      y = Math.random() * canvas.height;
+      if (gridY >= 1) {
+        x = 0 - width;
+      } else {
+        x = canvas.width;
+      }
+    }
+    return [x, y];
+  }
+
   function hit(object1, object2) {
-    return (object1.x < object2.x + object2.width) &&
-           (object2.x < object1.x + object1.width) &&
-           (object1.y < object2.y + object2.height) &&
-           (object2.y < object1.y + object1.height);
+    return (object1.position[0] < object2.position[0] + object2.width) &&
+           (object2.position[0] < object1.position[0] + object1.width) &&
+           (object1.position[1] < object2.position[1] + object2.height) &&
+           (object2.position[1] < object1.position[1] + object1.height);
   }
 
   function spawnAsteroid() {
-    if (Object.keys(asteroids).length < 200) {      
+    if (Object.keys(asteroids).length < 200) {
       var id = Math.round(Math.random() * 100000000);
       asteroids[id] = new Asteroid(id);
     }
     setTimeout(function() {
       spawnAsteroid();
     }, 1000);
+  }
+
+  function spawnPowerup() {
+    if (Object.keys(powerups).length < 3) {
+      var id = Math.round(Math.random() * 100000000);
+      powerups[id] = new Powerup(id);
+    }
   }
 
   function gameOver() {
@@ -283,7 +358,7 @@ angular.module('app')
   function draw() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     for (var i in shots) {
-      if (shots[i].age > 100) {
+      if (shots[i].lifespan <= 0) {
         delete shots[i];
       } else {
         shots[i].move();
@@ -291,6 +366,9 @@ angular.module('app')
     }
     for (i in asteroids) {
       asteroids[i].move();
+    }
+    for (i in powerups) {
+      powerups[i].move();
     }
     spaceship.move();
     evaluateKeys();
