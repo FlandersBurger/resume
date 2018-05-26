@@ -236,8 +236,8 @@ angular.module('app')
     this.width = Math.round(this.height / this.cycle.size[1] * this.cycle.size[0]);
     this.position = getEntryPosition(this.width, this.height);
     this.img = this.powerup.img;
-    this.angle = 0;
-    this.speed = Math.random() * 300 + 2;
+    this.angle = Math.random() * 360;
+    this.speed = Math.random() * 150 + 50;
     this.move = function() {
       if (this.lifespan <= 0) {
         return delete powerups[this.id];
@@ -295,6 +295,11 @@ angular.module('app')
 
   $scope.start = function() {
     spaceship = new Spaceship();
+    var i = 0;
+    do {
+      var id = Math.round(Math.random() * 100000000);
+      asteroids[id] = new Asteroid(id);
+    } while (i++ <= 10);
     $scope.score = 0;
     spawnAsteroid();
   };
