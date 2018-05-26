@@ -6,12 +6,20 @@ angular.module('app')
   var shots = {};
   var asteroids = {};
   var powerups = {};
+  var explosions = {};
   var map = {};
   var spacepics = 10;
   var space = Math.floor(Math.random() * spacepics);
   var powerupTypes = [
     {
       name: 'speed',
+      cycle: {
+        rows: 1,
+        columns: 4,
+        size: [14, 35],
+        i: 0,
+        direction: true
+      },
       img: new Image(),
       activate: function(spaceship) {
         spaceship.maxSpeed += 100;
@@ -19,10 +27,18 @@ angular.module('app')
     },
     {
       name: 'cooldown',
+      cycle: {
+        rows: 1,
+        columns: 3,
+        size: [17, 17],
+        i: 0,
+        direction: true
+      },
       img: new Image(),
       activate: function(spaceship) {
-        console.log(spaceship.cooldown);
-        spaceship.cooldownTime -= 2;
+        if (spaceship.cooldown > 0) {
+          spaceship.cooldownTime -= 1;
+        }
       }
     },/*
     'side_cannons',
@@ -116,10 +132,8 @@ angular.module('app')
     this.move = function() {
       for (var i in asteroids) {
         var asteroid = asteroids[i];
-        if (!asteroid.explosion) {
-          if (hit(asteroid, this)) {
-            return gameOver();
-          }
+        if (hit(asteroid, this)) {
+          return gameOver();
         }
       }
       this.angle = this.rotation;
@@ -164,72 +178,66 @@ angular.module('app')
     this.img.src = 'asteroids/asteroid' + (Math.round(Math.random() * 6) + 1) + '.png';
 
     this.explode = function() {
-      this.explosion = new Explosion(this);
+      explosions[this.id] = new Explosion(this);
+      return delete asteroids[this.id];
     };
 
     this.move = function() {
-      if (this.explosion) {
-        if (this.explosion.lifespan >= 0) {
-          this.explosion.next();
-        } else {
-          return delete asteroids[this.id];
-        }
-      } else {
-        this.rotation += this.rotationSpeed;
-        if (this.rotation > 360) {
-          this.rotation = this.rotation - 360;
-        } else if (this.rotation < 0) {
-          this.rotation = 360 + this.rotation;
-        }
-        for (var i in shots) {
-          var shot = shots[i];
-          if (hit(shot, this)) {
-            this.explode();
-            $scope.score++;
-            if ($scope.score % 5 === 0) {
-              spawnPowerup();
-            }
-            $scope.$apply();
-            delete shots[i];
-          }
-        }
-        move(this);
+      this.rotation += this.rotationSpeed;
+      if (this.rotation > 360) {
+        this.rotation = this.rotation - 360;
+      } else if (this.rotation < 0) {
+        this.rotation = 360 + this.rotation;
       }
+      for (var i in shots) {
+        var shot = shots[i];
+        if (hit(shot, this)) {
+          this.explode();
+          $scope.score++;
+          if ($scope.score % 5 === 0) {
+            spawnPowerup();
+          }
+          $scope.$apply();
+          delete shots[i];
+        }
+      }
+      move(this);
     };
   }
 
   function Explosion(object) {
-    this.position = object.position;
+    this.position = [object.position[0], object.position[1]];
     this.width = object.width;
     this.height = object.height;
-    this.lifespan = 48;
-    this.row = 0;
-    this.column = 0;
+    this.speed = 0;
+    this.angle = Math.random() * 360;
+    this.cycle = {
+      rows: 6,
+      columns: 8,
+      size: [256, 256],
+      i: 0,
+      direction: true
+    };
+    this.lifespan = 47;
     this.img = explosionImage;
 
-    this.next = function() {
-      ctx.drawImage(this.img, 256 * this.column, 256 * this.row, 256, 256, this.position[0], this.position[1], this.width, this.height);
-      if (this.column < 7) {
-        this.column++;
-      } else {
-        this.column = 0;
-        this.row++;
-      }
+    this.move = function() {
       this.lifespan--;
+      move(this);
     };
   }
 
   function Powerup(id) {
-    this.lifespan = 500;
     this.id = id;
-    this.width = 40;
-    this.height = 40;
-    this.position = getEntryPosition(this.width, this.height);
     this.powerup = powerupTypes[Math.floor(Math.random() * powerupTypes.length)];
+    this.cycle = this.powerup.cycle;
+    this.lifespan = 500;
+    this.height = 40;
+    this.width = Math.round(this.height / this.cycle.size[1] * this.cycle.size[0]);
+    this.position = getEntryPosition(this.width, this.height);
     this.img = this.powerup.img;
-    this.angle = Math.random() * 360;
+    this.angle = 0;
     this.speed = Math.random() * 300 + 2;
-    this.rotation = Math.random() * 360;
     this.move = function() {
       if (this.lifespan <= 0) {
         return delete powerups[this.id];
@@ -261,7 +269,25 @@ angular.module('app')
      ctx.translate(object.position[0], object.position[1]);
      ctx.translate(object.width / 2, object.height / 2);
      ctx.rotate(object.rotation * Math.PI / 180);
-     ctx.drawImage(object.img, -object.width / 2, -object.height / 2, object.width, object.height);
+     if (object.cycle) {
+       var column = object.cycle.i % object.cycle.columns;
+       var row = Math.floor(object.cycle.i / object.cycle.columns);
+       ctx.drawImage(object.img, object.cycle.size[0] * column, object.cycle.size[1] * row, object.cycle.size[0], object.cycle.size[1], -object.width / 2, -object.height / 2, object.width, object.height);
+       if (object.cycle.direction) {
+         object.cycle.i++;
+       } else {
+         object.cycle.i--;
+       }
+       if (object.cycle.i <= 0) {
+         object.cycle.i = 0;
+         object.cycle.direction = true;
+       } else if (object.cycle.i >= object.cycle.columns * object.cycle.rows) {
+         object.cycle.i = object.cycle.columns * object.cycle.rows - 1;
+         object.cycle.direction = false;
+       }
+     } else {
+       ctx.drawImage(object.img, -object.width / 2, -object.height / 2, object.width, object.height);
+     }
      ctx.restore();
   }
 
@@ -369,6 +395,13 @@ angular.module('app')
     }
     for (i in powerups) {
       powerups[i].move();
+    }
+    for (i in explosions) {
+      if (explosions[i].lifespan <= 0) {
+        delete explosions[i];
+      } else {
+        explosions[i].move();
+      }
     }
     spaceship.move();
     evaluateKeys();
