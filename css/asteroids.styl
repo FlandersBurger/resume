@@ -6,4 +6,28 @@
 
 #score {
   position: fixed;
+  margin-top: 10px;
+  border-radius: 3px;
+  background-color: #111111;
+  opacity: 0.7;
+  color: #BBBBBB;
+  font-size:3em;
+}
+
+#announcement {
+  position: fixed;
+  text-align: center;
+  width: 100%;
+  top: 40%;
+  font-size: 4em;
+}
+
+#announcement.ng-hide-remove {
+  -webkit-animation:0.5s zoomInDown ease;
+  animation:0.5s zoomInDown ease;
+}
+
+#announcement.ng-hide-add {
+  -webkit-animation:0.5s zoomOut ease-in;
+  animation:0.5s zoomOut ease-in;
 }

@@ -1,8 +1,12 @@
 angular.module('app')
 .controller('AsteroidsCtrl', function ($scope, AsteroidsSvc) {
 
+  $scope.announce = false;
   var canvas = document.getElementById('asteroids-page');
   var ctx = canvas.getContext('2d');
+  ctx.font = "30px Comic Sans MS";
+  ctx.fillStyle = "red";
+  ctx.textAlign = "center";
   var shots = {};
   var asteroids = {};
   var powerups = {};
@@ -13,6 +17,7 @@ angular.module('app')
   var powerupTypes = [
     {
       name: 'speed',
+      announcement: 'Max Speed ⇧',
       cycle: {
         rows: 1,
         columns: 4,
@@ -27,6 +32,7 @@ angular.module('app')
     },
     {
       name: 'cooldown',
+      announcement: 'Firing Rate ⇧',
       cycle: {
         rows: 1,
         columns: 3,
@@ -243,7 +249,13 @@ angular.module('app')
         return delete powerups[this.id];
       }
       if (hit(spaceship, this)) {
-        console.log('activating');
+        $scope.announce = true;
+        $scope.announcement = this.powerup.announcement;
+        $scope.$apply();
+        setTimeout(function() {
+          $scope.announce = false;
+          $scope.$apply();
+        }, 1000);
         this.powerup.activate(spaceship);
         return delete powerups[this.id];
       }
