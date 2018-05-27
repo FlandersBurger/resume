@@ -16,7 +16,10 @@ var User = db.model('User', {
   emailVerified: { type: Boolean, required: false },
   uid: { type: String, required: false },
   birthDate: { type: Date, required: false },
-  flags: { type: Array, required: false }
+  flags: { type: Array, required: false },
+  highscore: {
+    asteroids: { type: Number, required: false, default: 0 },
+  }
 });
 
 module.exports = User;

@@ -20,7 +20,7 @@ app.use('/api/users', require('./controllers/api/users'));
 app.use('/api/posts', require('./controllers/api/posts'));
 app.use('/api/categories', require('./controllers/api/categories'));
 app.use('/api/email', require('./controllers/api/email'));
-app.use('/api/asteroids', require('./controllers/api/asteroids'));
+app.use('/api/games', require('./controllers/api/games'));
 app.use(require('./controllers/static'));
 
 var port = process.env.PORT || 3000;

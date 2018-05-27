@@ -1,5 +1,5 @@
 angular.module('app')
-.controller('AsteroidsCtrl', function ($scope, AsteroidsSvc) {
+.controller('AsteroidsCtrl', function ($scope, GameSvc) {
 
   $scope.announce = false;
   var canvas = document.getElementById('asteroids-page');
@@ -32,7 +32,7 @@ angular.module('app')
     },
     {
       name: 'cooldown',
-      announcement: 'Firing Rate ⇧',
+      announcement: 'Cooldown ⇩',
       cycle: {
         rows: 1,
         columns: 3,
@@ -45,6 +45,21 @@ angular.module('app')
         if (spaceship.cooldown > 0) {
           spaceship.cooldownTime -= 1;
         }
+      }
+    },
+    {
+      name: 'range',
+      announcement: 'Firing Range ⇧',
+      cycle: {
+        rows: 4,
+        columns: 1,
+        size: [30, 8],
+        i: 0,
+        direction: true
+      },
+      img: new Image(),
+      activate: function(spaceship) {
+        spaceship.range += 5;
       }
     },/*
     'side_cannons',
@@ -67,6 +82,8 @@ angular.module('app')
   window.addEventListener('keyup', function(e) {
       map[e.keyCode || e.which] = false;
   },true);
+
+  $scope.highscore = 0;
 
   function evaluateKeys() {
     if (map[32]) {
@@ -112,6 +129,7 @@ angular.module('app')
   function Spaceship() {
     this.width = 50;
     this.height = 50;
+    this.range = 80;
     this.cannon = {
       x: this.width / 2 - 4.5,
       y: this.height / 2 - this.height * 0.078125
@@ -161,7 +179,7 @@ angular.module('app')
     this.angle = spaceship.angle;
     this.rotation = spaceship.rotation;
     this.speed = spaceship.speed + 500;
-    this.lifespan = 100;
+    this.lifespan = spaceship.range;
     this.img = new Image();
     this.img.src = 'asteroids/shot.png';
 
@@ -230,6 +248,11 @@ angular.module('app')
     this.move = function() {
       this.lifespan--;
       move(this);
+      if (this.cycle.direction) {
+        this.cycle.i++;
+      } else {
+        this.cycle.i--;
+      }
     };
   }
 
@@ -238,12 +261,18 @@ angular.module('app')
     this.powerup = powerupTypes[Math.floor(Math.random() * powerupTypes.length)];
     this.cycle = this.powerup.cycle;
     this.lifespan = 500;
-    this.height = 40;
-    this.width = Math.round(this.height / this.cycle.size[1] * this.cycle.size[0]);
+    if (this.cycle.size[1] > this.cycle.size[0]) {
+      this.height = 40;
+      this.width = Math.round(this.height / this.cycle.size[1] * this.cycle.size[0]);
+    } else {
+      this.width = 40;
+      this.height = Math.round(this.width / this.cycle.size[0] * this.cycle.size[1]);
+    }
     this.position = getEntryPosition(this.width, this.height);
     this.img = this.powerup.img;
     this.angle = Math.random() * 360;
     this.speed = Math.random() * 150 + 50;
+    var delay = 5;
     this.move = function() {
       if (this.lifespan <= 0) {
         return delete powerups[this.id];
@@ -261,6 +290,16 @@ angular.module('app')
       }
       this.lifespan--;
       move(this);
+      if (delay <= 0) {
+        if (this.cycle.direction) {
+          this.cycle.i++;
+        } else {
+          this.cycle.i--;
+        }
+        delay = 5;
+      } else {
+        delay--;
+      }
     };
   }
 
@@ -285,11 +324,7 @@ angular.module('app')
        var column = object.cycle.i % object.cycle.columns;
        var row = Math.floor(object.cycle.i / object.cycle.columns);
        ctx.drawImage(object.img, object.cycle.size[0] * column, object.cycle.size[1] * row, object.cycle.size[0], object.cycle.size[1], -object.width / 2, -object.height / 2, object.width, object.height);
-       if (object.cycle.direction) {
-         object.cycle.i++;
-       } else {
-         object.cycle.i--;
-       }
+
        if (object.cycle.i <= 0) {
          object.cycle.i = 0;
          object.cycle.direction = true;
@@ -311,7 +346,7 @@ angular.module('app')
     do {
       var id = Math.round(Math.random() * 100000000);
       asteroids[id] = new Asteroid(id);
-    } while (i++ <= 10);
+    } while (i++ <= 5);
     $scope.score = 0;
     spawnAsteroid();
   };
@@ -367,10 +402,25 @@ angular.module('app')
       asteroids[i].explode();
     }
     shots = {};
+    if ($scope.loggedIn) {
+      if ($scope.currentUser.highscore.asteroids < $scope.score) {
+        $scope.currentUser.highscore.asteroids = $scope.score;
+        GameSvc.setHighscore('asteroids', $scope.currentUser._id, $scope.score);
+      }
+    } else {
+      if ($scope.highscore < $scope.score) {
+        $scope.highscore = $scope.score;
+      }
+    }
     //spaceship = new Spaceship();
     $scope.score = 0;
     space = Math.floor(Math.random() * spacepics);
     $scope.$apply();
+    i = 0;
+    do {
+      var id = Math.round(Math.random() * 100000000);
+      asteroids[id] = new Asteroid(id);
+    } while (i++ <= 5);
   }
 
 	// Start listening to resize events and
