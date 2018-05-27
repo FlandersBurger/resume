@@ -217,10 +217,11 @@ angular.module('app')
         var shot = shots[i];
         if (hit(shot, this)) {
           this.explode();
-          $scope.score++;
-          if ($scope.score % 5 === 0) {
+          var points = Math.floor((shot.speed - 500) / 10 + 70 - this.width);
+          if (Math.floor((points + $scope.score) / 100) > Math.floor($scope.score / 100)) {
             spawnPowerup();
           }
+          $scope.score += points;
           $scope.$apply();
           delete shots[i];
         }
@@ -260,7 +261,7 @@ angular.module('app')
     this.id = id;
     this.powerup = powerupTypes[Math.floor(Math.random() * powerupTypes.length)];
     this.cycle = this.powerup.cycle;
-    this.lifespan = 500;
+    this.lifespan = 1000;
     if (this.cycle.size[1] > this.cycle.size[0]) {
       this.height = 40;
       this.width = Math.round(this.height / this.cycle.size[1] * this.cycle.size[0]);

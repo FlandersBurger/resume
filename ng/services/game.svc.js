@@ -8,7 +8,6 @@ angular.module('app')
     };
 
     svc.setHighscore = function (game, user, score) {
-      console.log(score);
       return $http.post('/api/games/' + game + '/' + user + '/highscore', {
         score: score
       });
