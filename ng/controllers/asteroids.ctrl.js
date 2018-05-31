@@ -61,13 +61,47 @@ angular.module('app')
       activate: function(spaceship) {
         spaceship.range += 5;
       }
+    },
+    {
+      name: 'shield',
+      announcement: 'Shield',
+      cycle: {
+        rows: 5,
+        columns: 1,
+        size: [19, 19],
+        i: 0,
+        direction: true
+      },
+      img: new Image(),
+      activate: function(spaceship) {
+        spaceship.shield = true;
+      }
+    },
+    {
+      name: 'nuke',
+      announcement: 'Nuke',
+      cycle: {
+        rows: 1,
+        columns: 8,
+        size: [15, 15],
+        i: 0,
+        direction: true
+      },
+      img: new Image(),
+      activate: function(spaceship) {
+        for (var i in asteroids) {
+          asteroids[i].explode();
+        }
+        spawnAsteroids(5);
+      }
     },/*
     'side_cannons',
     'laser',
     'shield',
     'life',
     'missiles',
-    'nuke'*/
+    'nuke'
+    */
   ];
   powerupTypes.forEach(function(powerup, i, array) {
     array[i].img.src = 'asteroids/' + powerup.name + '.png';
@@ -129,6 +163,7 @@ angular.module('app')
   function Spaceship() {
     this.width = 50;
     this.height = 50;
+    this.shield = false;
     this.range = 80;
     this.cannon = {
       x: this.width / 2 - 4.5,
@@ -154,10 +189,25 @@ angular.module('app')
     };
 
     this.move = function() {
+      if (this.shield) {
+        ctx.beginPath();
+        ctx.arc(this.position[0] + this.width / 2, this.position[1] + this.height / 2, 30, 0, 2 * Math.PI);
+        ctx.fillStyle = "rgb(35, 237, 86, 0.5)";
+        ctx.strokeStyle = "rgb(66, 168, 36, 0.8)";
+        ctx.lineWidth = 5;
+        ctx.stroke();
+        ctx.fill();
+      }
       for (var i in asteroids) {
         var asteroid = asteroids[i];
         if (hit(asteroid, this)) {
-          return gameOver();
+          if (this.shield) {
+            this.shield = false;
+            $scope.score += 20;
+            asteroid.explode();
+          } else {
+            return gameOver();
+          }
         }
       }
       this.angle = this.rotation;
@@ -391,6 +441,14 @@ angular.module('app')
     }, 1000);
   }
 
+  function spawnAsteroids(amount) {
+    var i = 0;
+    do {
+      var id = Math.round(Math.random() * 100000000);
+      asteroids[id] = new Asteroid(id);
+    } while (i++ <= amount);
+  }
+
   function spawnPowerup() {
     if (Object.keys(powerups).length < 3) {
       var id = Math.round(Math.random() * 100000000);
@@ -417,11 +475,7 @@ angular.module('app')
     $scope.score = 0;
     space = Math.floor(Math.random() * spacepics);
     $scope.$apply();
-    i = 0;
-    do {
-      var id = Math.round(Math.random() * 100000000);
-      asteroids[id] = new Asteroid(id);
-    } while (i++ <= 5);
+    spawnAsteroids(5);
   }
 
 	// Start listening to resize events and
