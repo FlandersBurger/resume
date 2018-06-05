@@ -120,42 +120,48 @@ angular.module('app')
   $scope.highscore = 0;
 
   function evaluateKeys() {
-    if (map[32]) {
-      //Space
-      if (spaceship.cooldown === 0) {
-        spaceship.shoot();
+    if ($scope.playing) {
+      if (map[32]) {
+        //Space
+        if (spaceship.cooldown === 0) {
+          spaceship.shoot();
+        }
       }
-    }
-    if (map[37]) {
-      //Left Arrow
-      if (spaceship.rotation === 0) {
-        spaceship.rotation = 360;
+      if (map[37]) {
+        //Left Arrow
+        if (spaceship.rotation === 0) {
+          spaceship.rotation = 360;
+        } else {
+          spaceship.rotation -= 3;
+        }
+      }
+      if (map[39]) {
+        //Right Arrow
+        if (spaceship.rotation === 360) {
+          spaceship.rotation = 0;
+        } else {
+          spaceship.rotation += 3;
+        }
+      }
+      if (map[38]) {
+        //Up Arrow
+        if (spaceship.speed <= spaceship.maxSpeed) {
+          spaceship.speed += 5;
+        }
       } else {
-        spaceship.rotation -= 3;
+        if (spaceship.speed > 0) {
+          spaceship.speed--;
+        }
       }
-    }
-    if (map[39]) {
-      //Right Arrow
-      if (spaceship.rotation === 360) {
-        spaceship.rotation = 0;
-      } else {
-        spaceship.rotation += 3;
-      }
-    }
-    if (map[38]) {
-      //Up Arrow
-      if (spaceship.speed <= spaceship.maxSpeed) {
-        spaceship.speed += 5;
+      if (map[40]) {
+        //Down Arrow
+        if (spaceship.speed > 0) {
+          spaceship.speed -= 2;
+        }
       }
     } else {
-      if (spaceship.speed > 0) {
-        spaceship.speed--;
-      }
-    }
-    if (map[40]) {
-      //Down Arrow
-      if (spaceship.speed > 0) {
-        spaceship.speed -= 2;
+      if (map[32]) {
+        start();
       }
     }
   }
@@ -203,7 +209,6 @@ angular.module('app')
         if (hit(asteroid, this)) {
           if (this.shield) {
             this.shield = false;
-            $scope.score += 20;
             asteroid.explode();
           } else {
             return gameOver();
@@ -391,16 +396,16 @@ angular.module('app')
 
   var spaceship;
 
-  $scope.start = function() {
-    spaceship = new Spaceship();
-    var i = 0;
-    do {
-      var id = Math.round(Math.random() * 100000000);
-      asteroids[id] = new Asteroid(id);
-    } while (i++ <= 5);
+  function start() {
+    $scope.playing = true;
     $scope.score = 0;
-    spawnAsteroid();
-  };
+    space = Math.floor(Math.random() * spacepics);
+    $scope.$apply();
+    spaceship = new Spaceship();
+    $scope.score = 0;
+    spawnAsteroids(5);
+    autoSpawn();
+  }
 
   function getEntryPosition(width, height) {
     var gridX = Math.random() * 2;
@@ -431,14 +436,38 @@ angular.module('app')
            (object2.position[1] < object1.position[1] + object1.height);
   }
 
-  function spawnAsteroid() {
+  function autoSpawn() {
     if (Object.keys(asteroids).length < 200) {
       var id = Math.round(Math.random() * 100000000);
       asteroids[id] = new Asteroid(id);
     }
-    setTimeout(function() {
-      spawnAsteroid();
-    }, 1000);
+    if ($scope.playing) {
+      setTimeout(function() {
+        autoSpawn();
+      }, spawnInterval());
+    }
+  }
+
+  function spawnInterval() {
+    if ($scope.score < 1000) {
+      return 1000;
+    } else if ($scope.score < 2000) {
+      return 900;
+    } else if ($scope.score < 3000) {
+      return 800;
+    } else if ($scope.score < 4000) {
+      return 700;
+    } else if ($scope.score < 5000) {
+      return 600;
+    } else if ($scope.score < 6000) {
+      return 500;
+    } else if ($scope.score < 7000) {
+      return 400;
+    } else if ($scope.score < 8000) {
+      return 300;
+    } else {
+      return 200;
+    }
   }
 
   function spawnAsteroids(amount) {
@@ -457,6 +486,7 @@ angular.module('app')
   }
 
   function gameOver() {
+    $scope.playing = false;
     for (var i in asteroids) {
       asteroids[i].explode();
     }
@@ -471,16 +501,10 @@ angular.module('app')
         $scope.highscore = $scope.score;
       }
     }
-    //spaceship = new Spaceship();
-    $scope.score = 0;
-    space = Math.floor(Math.random() * spacepics);
-    $scope.$apply();
-    spawnAsteroids(5);
   }
 
 	// Start listening to resize events and
 	// draw canvas.
-	initialize();
 
 	function initialize() {
 		// Register an event listener to
@@ -497,11 +521,14 @@ angular.module('app')
 	// then draws the new borders accordingly.
 	function resizeCanvas() {
 		canvas.width = window.innerWidth;
-		canvas.height = window.innerHeight - (canvas.width <= 768 ? 55 : 111);
-    requestAnimationFrame(draw);
+		canvas.height = window.innerHeight - (canvas.width <= 768 ? 50 : 105);
 	}
 
-  $scope.start();
+	initialize();
+  requestAnimationFrame(draw);
+
+  var tally = 0;
+  var direction = true;
 
   function draw() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -525,8 +552,31 @@ angular.module('app')
         explosions[i].move();
       }
     }
-    spaceship.move();
     evaluateKeys();
+    if ($scope.playing) {
+      spaceship.move();
+    } else {
+      var gradient = ctx.createLinearGradient(0, 0, canvas.width, 0);
+      gradient.addColorStop('0', 'rgb(' + Math.floor(256 - 256 * tally / 100) + ',' + Math.floor(0 + 256 * tally / 100) + ',' + Math.floor(0 + 256 * tally / 100) + ')');
+      gradient.addColorStop('0.25', 'rgb(' + Math.floor(0 + 256 * tally / 100) + ',' + Math.floor(256 - 256 * tally / 100) + ',' + Math.floor(0 + 256 * tally / 100) + ')');
+      gradient.addColorStop('0.5', 'rgb(' + Math.floor(0 + 256 * tally / 100) + ',' + Math.floor(0 + 256 * tally / 100) + ',' + Math.floor(256 - 256 * tally / 100) + ')');
+      gradient.addColorStop('0.75', 'rgb(' + Math.floor(0 + 256 * tally / 100) + ',' + Math.floor(256 - 256 * tally / 100) + ',' + Math.floor(0 + 256 * tally / 100) + ')');
+      gradient.addColorStop('1.0', 'rgb(' + Math.floor(256 - 256 * tally / 100) + ',' + Math.floor(0 + 256 * tally / 100) + ',' + Math.floor(0 + 256 * tally / 100) + ')');
+      ctx.fillStyle = gradient;
+      ctx.font='60px Monoton';
+      ctx.fillText('Asteroids', canvas.width / 2 - ctx.measureText('Asteroids').width / 2, canvas.height / 2);
+      ctx.font='20px Aldrich';
+      ctx.fillText('Press space to start', canvas.width / 2 - ctx.measureText('Press space to start').width / 2, canvas.height / 2 + 20);
+      ctx.fillText('Designed and developed by Laurent Debacker', canvas.width / 2 - ctx.measureText('Designed and developed by Laurent Debacker').width / 2, canvas.height - 20);
+    }
+    tally += direction ? 1 : -1;
+    if (tally > 100) {
+      tally = 100;
+      direction = false;
+    } else if (tally < 0) {
+      tally = 0;
+      direction = true;
+    }
     requestAnimationFrame(draw);
   }
 
