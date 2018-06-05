@@ -13,8 +13,8 @@ angular.module('app')
   var actions = {
     walk: {
       start: [0, 0],
-      end: [100, 10],
-      steps: 5
+      end: [160, 10],
+      steps: 8
     }
   };
 
