@@ -1,18 +1,17 @@
 angular.module('app')
-.config(function ($stateProvider, $urlRouterProvider, $locationProvider) {
+.config(function ($stateProvider, $urlRouterProvider, $urlServiceProvider, $locationProvider) {
 
   $urlRouterProvider.otherwise('/home');
+  $urlServiceProvider.config.strictMode(false);
 
   $stateProvider
   .state('home', {
     url: '/home',
-    templateUrl: '/home.html',
-    //templateStyleUrl: 'assets/home.css'
+    templateUrl: '/home.html'
   })
   .state('policy', {
     url: '/policy',
-    templateUrl: '/policy.html',
-    //templateStyleUrl: 'assets/home.css'
+    templateUrl: '/policy.html'
   })
   .state('print', {
     url: '/print',
@@ -21,26 +20,22 @@ angular.module('app')
   .state('experience', {
     url: '/experience',
     controller: 'ExperienceCtrl',
-    templateUrl: '/experience.html',
-    //templateStyleUrl: 'assets/experience.css'
+    templateUrl: '/experience.html'
   })
   .state('skills', {
     url: '/skills',
     controller: 'SkillsCtrl',
-    templateUrl: '/skills.html',
-    //templateStyleUrl: 'assets/skills.css'
+    templateUrl: '/skills.html'
   })
   .state('hobbies', {
     url: '/hobbies',
     controller: 'HobbiesCtrl',
-    templateUrl: '/hobbies.html',
-    //templateStyleUrl: 'assets/hobbies.css'
+    templateUrl: '/hobbies.html'
   })
   .state('contact', {
     url: '/contact',
     controller: 'ContactCtrl',
-    templateUrl: '/contact.html',
-    //templateStyleUrl: 'assets/contact.css'
+    templateUrl: '/contact.html'
   })
   .state('workout', {
     url: '/workout',
@@ -55,8 +50,7 @@ angular.module('app')
   .state('profile', {
     url: '/profile',
     controller: 'ProfileCtrl',
-    templateUrl: '/profile.html',
-    //templateStyleUrl: 'assets/contact.css'
+    templateUrl: '/profile.html'
   })
   .state('lists', {
     url: '/lists',

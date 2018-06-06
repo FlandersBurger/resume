@@ -520,6 +520,7 @@ angular.module('app')
 	// Resets the canvas dimensions to match window,
 	// then draws the new borders accordingly.
 	function resizeCanvas() {
+    console.log(window.innerWidth);
 		canvas.width = window.innerWidth;
 		canvas.height = window.innerHeight - (canvas.width <= 768 ? 50 : 105);
 	}
@@ -567,7 +568,7 @@ angular.module('app')
       ctx.fillText('Asteroids', canvas.width / 2 - ctx.measureText('Asteroids').width / 2, canvas.height / 2);
       ctx.font='20px Aldrich';
       ctx.fillText('Press space to start', canvas.width / 2 - ctx.measureText('Press space to start').width / 2, canvas.height / 2 + 20);
-      ctx.fillText('Designed and developed by Laurent Debacker', canvas.width / 2 - ctx.measureText('Designed and developed by Laurent Debacker').width / 2, canvas.height - 20);
+      ctx.fillText('Designed and developed by Laurent Debacker', canvas.width / 2 - ctx.measureText('Designed and developed by Laurent Debacker').width / 2, canvas.height - 30);
     }
     tally += direction ? 1 : -1;
     if (tally > 100) {

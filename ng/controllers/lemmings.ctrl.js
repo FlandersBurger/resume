@@ -13,21 +13,80 @@ angular.module('app')
   var actions = {
     walk: {
       start: [0, 0],
-      end: [160, 10],
-      steps: 8
-    }
+      end: [320, 20],
+      columns: 8,
+      rows: 1,
+      reverse: false
+    },
+    huh: {
+      start: [320, 0],
+      end: [640, 20],
+      columns: 8,
+      rows: 1,
+      reverse: true
+    },
+    fall: {
+      start: [0, 80],
+      end: [160, 100],
+      columns: 4,
+      rows: 1,
+      reverse: false
+    },
+    fly: {
+      start: [160, 80],
+      end: [480, 110],
+      columns: 8,
+      rows: 1,
+      reverse: false
+    },
+    stop: {
+      start: [0, 120],
+      end: [640, 140],
+      columns: 16,
+      rows: 1,
+      reverse: false
+    },
+    climb: {
+      start: [0, 160],
+      end: [640, 185],
+      columns: 16,
+      rows: 1,
+      reverse: false
+    },
+    build: {
+      start: [0, 200],
+      end: [640, 225],
+      columns: 16,
+      rows: 1,
+      reverse: false
+    },
+    punch: {
+      start: [0, 240],
+      end: [640, 300],
+      columns: 16,
+      rows: 2,
+      reverse: false
+    },
+    dig: {
+      start: [0, 320],
+      end: [320, 345],
+      columns: 8,
+      rows: 1,
+      reverse: false
+    },
   };
 
-  function Lemming() {
-    this.position = [canvas.width / 2, canvas.height / 2];
-    this.direction = RIGHT;
+  function Lemming(init) {
+    this.position = [Math.floor(Math.random() * (canvas.width - 200)) + 100, Math.floor(Math.random() * (canvas.height - 200)) + 100];
+    this.direction = Math.random() * 2 > 1 ? LEFT : RIGHT;
     this.act = function(action) {
       this.action = actions[action];
       this.cycle = 0;
-      this.width = (this.action.end[0] - this.action.start[0]) / this.action.steps;
-      this.height = this.action.end[1] - this.action.start[1];
+      this.width = (this.action.end[0] - this.action.start[0]) / this.action.columns;
+      this.height = (this.action.end[1] - this.action.start[1] - (20 * (this.action.rows - 1))) / this.action.rows;
+      this.animation = true;
     };
-    this.act('walk');
+    this.act(init);
     this.move = function() {
       ctx.save();
       ctx.translate(this.position[0], this.position[1]);
@@ -35,18 +94,37 @@ angular.module('app')
       if (this.direction === LEFT) {
         ctx.scale(-1, 1);
       }
-      ctx.drawImage(lemmingsImage, this.width * this.cycle, this.action.start[1], this.width, this.height, 0, 0, 80, 40);
+      var column = this.cycle % this.action.columns;
+      var row = Math.floor(this.cycle / this.action.columns);
+      ctx.drawImage(lemmingsImage, (this.width * column) + this.action.start[0], ((this.height + 20) * row) + this.action.start[1], this.width, this.height, 0, 0, this.width * 2, this.height * 2);
       ctx.restore();
-      this.cycle++;
-      if (this.cycle >= this.action.steps) {
-        this.cycle = 0;
+      if (this.action.reverse) {
+        if (this.animation) {
+          this.cycle++;
+          if (this.cycle >= this.action.columns * this.action.rows) {
+            this.animation = !this.animation;
+            this.cycle--;
+          }
+        } else {
+          this.cycle--;
+          if (this.cycle < 0) {
+            this.animation = !this.animation;
+            this.cycle = 0;
+          }
+        }
+      } else {
+        this.cycle++;
+        if (this.cycle >= this.action.columns * this.action.rows) {
+          this.cycle = 0;
+        }
       }
     };
-    console.log(this);
   }
 
   function spawnLemming() {
-    lemmings[Math.round(Math.random() * 100000000)] = new Lemming();
+    Object.keys(actions).forEach(function(action) {
+      lemmings[Math.round(Math.random() * 100000000)] = new Lemming(action);
+    });
   }
 
 	function initialize() {
