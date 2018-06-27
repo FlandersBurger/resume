@@ -164,14 +164,13 @@ var Game = function(id) {
 };
 
 router.post('/', function (req, res, next) {
-  console.log(req.body.message.chat);
   var msg = {
     id: req.body.message.message_id,
     from: req.body.message.from,
     text: req.body.message.text,
     chat: req.body.message.chat
   };
-  console.log(msg.chat.id + ' - ' + msg.from.first_name + ': ' + msg.text);
+  //console.log(msg.chat.id + ' - ' + msg.from.first_name + ': ' + msg.text);
   if (msg.text === '/start') {
     b.sendMessage(msg.chat.id, 'To start a game, type /newgame');
   } else if (msg.text === '/newgame' && !games[msg.chat.id]) {
