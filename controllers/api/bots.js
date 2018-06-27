@@ -68,7 +68,7 @@ function Bot() {
     });
   };
 
-  bot.sendMessage = function(channel, message) {
+  bot.sendMessage = function(channel, message) {/*
     return new Promise(function (resolve, reject) {
       var url = 'https://api.telegram.org/bot' + TOKEN + '/sendMessage?chat_id=' + channel + '&text=' + message;
       request(encodeURI(url), function (error, r, body) {
@@ -78,7 +78,7 @@ function Bot() {
         if(!response) return;
         resolve();
       });
-    });
+    });*/
   };
 
   bot.getUpdates = function() {
