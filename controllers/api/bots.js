@@ -33,7 +33,6 @@ function Bot() {
       var url = 'https://api.telegram.org/bot' + TOKEN + '/getMe';
       request(url, function (error, r, body) {
         var response = JSON.parse(body).result;
-        console.log(response);
         if(error) return;
         if(!response) return;
         bot.id = response.id || '';
@@ -62,7 +61,6 @@ function Bot() {
       var url = 'https://api.telegram.org/bot' + TOKEN + '/getWebhookInfo';
       request(url, function (error, r, body) {
         var response = JSON.parse(body).result;
-        console.log(response);
         if(error) return;
         if(!response) return;
         resolve();
@@ -73,10 +71,9 @@ function Bot() {
   bot.sendMessage = function(channel, message) {
     return new Promise(function (resolve, reject) {
       var url = 'https://api.telegram.org/bot' + TOKEN + '/sendMessage?chat_id=' + channel + '&text=' + message;
-      console.log(url);
       request(encodeURI(url), function (error, r, body) {
         var response = JSON.parse(body).result;
-        console.log(response);
+        //console.log(response);
         if(error) return;
         if(!response) return;
         resolve();
@@ -112,7 +109,6 @@ function Bot() {
           if (msg.from.id === 500242425) return false;
           return msg.id > bot.lastMsgId;
         }).forEach(function(msg) {
-          console.log(msg);
           bot.lastMsgId = msg.id;
           if (msg.text === '/start') {
             bot.sendMessage(msg.chat.id, 'To start a game, type /newgame');
@@ -190,7 +186,6 @@ router.post('/', function (req, res, next) {
   res.json({ message: 'post ok'});
 });
 router.get('/', function (req, res, next) {
-  console.log(req.body);
   b.sendMessage(msg.chat.id, 'Received Get');
   res.json({ message: 'get ok'});
 });
