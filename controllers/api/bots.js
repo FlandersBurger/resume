@@ -168,10 +168,12 @@ var Game = function(id) {
 router.post('/', function (req, res, next) {
   console.log(req.body);
   b.sendMessage(500242425, 'Received');
+  res.json({ message: 'post ok'});
 });
 router.get('/', function (req, res, next) {
   console.log(req.body);
   b.sendMessage(500242425, 'Received');
+  res.json({ message: 'get ok'});
 });
 
 module.exports = router;
