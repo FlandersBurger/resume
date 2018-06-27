@@ -50,6 +50,7 @@ function Bot() {
     return new Promise(function (resolve, reject) {
       var url = 'https://api.telegram.org/bot' + TOKEN + '/setWebhook?url=https://belgocanadian.com/api/bots';
       request(url, function (error, r, body) {
+        var response = JSON.parse(body).result;
         if(error) return;
         if(!response) return;
         resolve();
@@ -170,7 +171,8 @@ router.post('/', function (req, res, next) {
     text: req.body.message.text,
     chat: req.body.message.chat
   };
-  //console.log(msg.chat.id + ' - ' + msg.from.first_name + ': ' + msg.text);
+  console.log(msg.chat);
+  console.log(msg.chat.id + ' - ' + msg.from.first_name + ': ' + msg.text);
   if (msg.text === '/start') {
     b.sendMessage(msg.chat.id, 'To start a game, type /newgame');
   } else if (msg.text === '/newgame' && !games[msg.chat.id]) {
