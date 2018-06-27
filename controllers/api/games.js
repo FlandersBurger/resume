@@ -6,7 +6,7 @@ var User = require('../../models/user');
 
 var players = [];
 
-console.log(websockets.ids());
+//console.log(websockets.ids());
 
 router.get('/', function (req, res, next) {
 });

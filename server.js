@@ -21,6 +21,8 @@ app.use('/api/posts', require('./controllers/api/posts'));
 app.use('/api/categories', require('./controllers/api/categories'));
 app.use('/api/email', require('./controllers/api/email'));
 app.use('/api/games', require('./controllers/api/games'));
+app.use('/api/bots', require('./controllers/api/bots'));
+
 app.use(require('./controllers/static'));
 
 var port = process.env.PORT || 3000;
