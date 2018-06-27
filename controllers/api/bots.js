@@ -107,8 +107,8 @@ function Bot() {
           }
         }).filter(function(msg) {
           if (!msg.id) return false;
-          //if (msg.chat.id !== 592503547) return false;
-          //if (msg.from.id === 500242425) return false;
+          if (msg.chat.id !== 592503547) return false;
+          if (msg.from.id === 500242425) return false;
           return msg.id > bot.lastMsgId;
         }).forEach(function(msg) {
           console.log(msg);
