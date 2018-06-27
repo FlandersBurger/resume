@@ -54,7 +54,6 @@ function Bot() {
         console.log(response);
         if(error) return;
         if(!response) return;
-        bot.getWebhook();
         resolve();
       });
     });
@@ -186,12 +185,12 @@ router.post('/', function (req, res, next) {
   } else {
 
   }
-  b.sendMessage(500242425, 'Received');
+  b.sendMessage(msg.chat.id, 'Received Post');
   res.json({ message: 'post ok'});
 });
 router.get('/', function (req, res, next) {
   console.log(req.body);
-  b.sendMessage(500242425, 'Received');
+  b.sendMessage(msg.chat.id, 'Received Get');
   res.json({ message: 'get ok'});
 });
 
