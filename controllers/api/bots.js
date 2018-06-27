@@ -167,8 +167,8 @@ router.post('/', function (req, res, next) {
     text: req.body.message.text,
     chat: req.body.message.chat
   };
-  console.log(msg.chat);
   console.log(msg.chat.id + ' - ' + msg.from.first_name + ': ' + msg.text);
+  console.log(games[msg.chat.id]);
   if (msg.text === '/start') {
     b.sendMessage(msg.chat.id, 'To start a game, type /newgame');
   } else if (msg.text === '/newgame' && !games[msg.chat.id]) {
@@ -182,7 +182,7 @@ router.post('/', function (req, res, next) {
   } else {
 
   }
-  b.sendMessage(msg.chat.id, 'Received Post');
+  //b.sendMessage(msg.chat.id, 'Received Post');
   res.json({ message: 'post ok'});
 });
 router.get('/', function (req, res, next) {
