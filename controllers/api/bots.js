@@ -168,7 +168,7 @@ router.post('/', function (req, res, next) {
     chat: req.body.message.chat
   };
   console.log(msg.chat.id + ' - ' + msg.from.first_name + ': ' + msg.text);
-  console.log(typeof games[msg.chat.id]);
+  //console.log(typeof games[msg.chat.id]);
   if (msg.text === '/start') {
     b.sendMessage(msg.chat.id, 'To start a game, type /newgame');
   } else if (msg.text === '/newgame' && !games[msg.chat.id]) {
