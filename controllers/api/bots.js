@@ -169,5 +169,9 @@ router.post('/', function (req, res, next) {
   console.log(req.body);
   b.sendMessage(500242425, 'Received');
 });
+router.get('/', function (req, res, next) {
+  console.log(req.body);
+  b.sendMessage(500242425, 'Received');
+});
 
 module.exports = router;
