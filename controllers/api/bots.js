@@ -199,6 +199,8 @@ var Game = function(id) {
   this.checkRound = function() {
 
   };
+
+  games[msg.chat.id].newRound(5);
 };
 
 function stringifyList(list) {
@@ -245,7 +247,6 @@ router.post('/', function (req, res, next) {
         b.sendMessage(msg.chat.id, 'A game is already in progress');
       } else {
         games[msg.chat.id] = new Game(msg.chat.id);
-        games[msg.chat.id].newRound();
       }
       break;
     case '/stop':
