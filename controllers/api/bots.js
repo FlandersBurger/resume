@@ -99,7 +99,7 @@ function Bot() {
 
   bot.sendMessage = function(channel, message) {
     return new Promise(function (resolve, reject) {
-      var url = 'https://api.telegram.org/bot' + TOKEN + '/sendMessage?chat_id=' + channel + '&text=' + encodeURI(message);
+      var url = 'https://api.telegram.org/bot' + TOKEN + '/sendMessage?chat_id=' + channel + '&text=' + message;
       request(encodeURI(url), function (error, r, body) {
         var response = JSON.parse(body).result;
         //console.log(response);
@@ -145,7 +145,7 @@ var Game = function(id) {
 function stringifyList(list) {
   var str;
   Object.keys(list).forEach(function(item, index) {
-    str += index + ': ' + (item.guesser ? item.value : '') + '/n';
+    str += index + ': ' + (item.guesser ? item.value : '') + '%0A';
   });
   return str;
 }
@@ -179,9 +179,9 @@ router.post('/', function (req, res, next) {
       b.sendMessage(msg.chat.id, msg.text);
       break;
     case '/start':
-      b.sendMessage(msg.chat.id, 'To start a game, type /newgame');
+      b.sendMessage(msg.chat.id, 'To start a game, type %0Aewgame');
       break;
-    case '/newgame':
+    case '%0Aewgame':
       if (games[msg.chat.id]) {
         b.sendMessage(msg.chat.id, 'A game is already in progress');
       } else {
@@ -201,9 +201,9 @@ router.post('/', function (req, res, next) {
         games[msg.chat.id].list.values.forEach(function(item) {
           if (item.value === msg.text.toLowerCase() && !item.guesser) {
             item.guesser = msg.from;
-            b.sendMessage(msg.chat.id, prompts[getLanguage(msg.from.language_code)].guessed(msg.from.first_name, msg.text) + '/n' + stringifyList(games[msg.chat.id].list.values));
+            b.sendMessage(msg.chat.id, prompts[getLanguage(msg.from.language_code)].guessed(msg.from.first_name, msg.text) + '%0A' + stringifyList(games[msg.chat.id].list.values));
           } else if (item.value === msg.text.toLowerCase() && item.guesser) {
-            b.sendMessage(msg.chat.id, item.guesser.first_name + ' already guessed ' + msg.text + '/nToo bad, ' + msg.from.first_name);
+            b.sendMessage(msg.chat.id, item.guesser.first_name + ' already guessed ' + msg.text + '%0AToo bad, ' + msg.from.first_name);
           }
         });
       } else {
