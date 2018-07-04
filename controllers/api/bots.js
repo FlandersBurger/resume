@@ -200,7 +200,7 @@ var Game = function(id) {
 
   };
 
-  games[msg.chat.id].newRound(5);
+  this.newRound(5);
 };
 
 function stringifyList(list) {
