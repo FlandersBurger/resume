@@ -38,16 +38,16 @@ var lists = [
   {
     name: 'Camera Brands',
     values: [
-      { value: 'nikon' },
-      { value: 'canon' },
-      { value: 'sony' },
-      { value: 'pentax' },
-      { value: 'olympus' },
-      { value: 'fujifilm' },
-      { value: 'kodak' },
-      { value: 'leica' },
-      { value: 'panasonic' },
-      { value: 'lumix' }
+      { value: 'Nikon' },
+      { value: 'Canon' },
+      { value: 'Sony' },
+      { value: 'Pentax' },
+      { value: 'Olympus' },
+      { value: 'Fujifilm' },
+      { value: 'Kodak' },
+      { value: 'Leica' },
+      { value: 'Panasonic' },
+      { value: 'Lumix' }
     ]
   },
   {
@@ -154,7 +154,51 @@ b.init(TOKEN).then(function() {
 
 var Game = function(id) {
   this.id = id;
-  this.list = lists[Math.floor(Math.random() * lists.length)];
+  this.list =
+
+  this.newRound = function(timer) {
+    this.list = lists[Math.floor(Math.random() * lists.length)];
+    if (timer === 5) {
+      b.sendMessage(this.id, 'A new round will start in 5');
+      setTimeout(function() {
+        this.startRound(4);
+      }, 1000);
+    } else if (timer > 0) {
+      b.sendMessage(this.id, timer);
+      setTimeout(function() {
+        this.startRound(timer--);
+      }, 1000);
+    } else {
+      b.sendMessage(this.id, this.list.name);
+    }
+  };
+
+  this.hint = function() {
+    for (var i in this.list.values) {
+      var item = this.list.values[i];
+      if (!item.guesser) {
+        b.sendMessage(this.id, item.value.substring(0, 1) + "*".repeat(item.value.length - 1));
+      }
+    }
+  };
+
+  this.guess = function(msg) {
+    for (var i in this.list.values) {
+      item = this.list.values[i];
+      if (item.value.toLowerCase() === msg.text.toLowerCase() && !item.guesser) {
+        item.guesser = msg.from;
+        b.sendMessage(msg.chat.id, prompts[getLanguage(msg.from.language_code)].guessed(msg.from.first_name, msg.text + '\n' + stringifyList(games[msg.chat.id].list.values)));
+        break;
+      } else if (item.value.toLowerCase() === msg.text.toLowerCase() && item.guesser) {
+        b.sendMessage(msg.chat.id, item.guesser.first_name + ' already guessed ' + msg.text + '\nToo bad, ' + msg.from.first_name);
+        break;
+      }
+    }
+  };
+
+  this.checkRound = function() {
+
+  };
 };
 
 function stringifyList(list) {
@@ -166,7 +210,7 @@ function stringifyList(list) {
 }
 
 router.post('/', function (req, res, next) {
-  var msg;
+  var msg, i, item;
   if (!req.body.message) {
     msg = {
       id: '592503547',
@@ -201,29 +245,23 @@ router.post('/', function (req, res, next) {
         b.sendMessage(msg.chat.id, 'A game is already in progress');
       } else {
         games[msg.chat.id] = new Game(msg.chat.id);
-        b.sendMessage(msg.chat.id, 'A new game will start in 5 seconds!');
-        setTimeout(function() {
-          b.sendMessage(msg.chat.id, games[msg.chat.id].list.name);
-        }, 5000);
+        games[msg.chat.id].newRound();
       }
       break;
     case '/stop':
       delete games[msg.chat.id];
       b.sendMessage(msg.chat.id, 'Game stopped');
       break;
+    case '/hint':
+      if (games[msg.chat.id]) {
+        games[msg.chat.id].hint();
+      } else {
+        b.sendMessage(msg.chat.id, 'There is no game in progress');
+      }
+      break;
     default:
       if (games[msg.chat.id]) {
-        for (var i in games[msg.chat.id].list.values) {
-          var item = games[msg.chat.id].list.values[i];
-          if (item.value.toLowerCase() === msg.text.toLowerCase() && !item.guesser) {
-            item.guesser = msg.from;
-            b.sendMessage(msg.chat.id, prompts[getLanguage(msg.from.language_code)].guessed(msg.from.first_name, msg.text + '\n' + stringifyList(games[msg.chat.id].list.values)));
-            break;
-          } else if (item.value.toLowerCase() === msg.text.toLowerCase() && item.guesser) {
-            b.sendMessage(msg.chat.id, item.guesser.first_name + ' already guessed ' + msg.text + '\nToo bad, ' + msg.from.first_name);
-            break;
-          }
-        }
+        games[msg.chat.id].guess(msg);
       } else {
         b.sendMessage(msg.chat.id, 'Huh?');
       }
