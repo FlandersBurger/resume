@@ -180,7 +180,7 @@ router.post('/', function (req, res, next) {
     };
   }
   console.log(msg.id + ' - ' + req.body.message.from.first_name + ': ' + msg.command + ' -> ' + msg.text);
-  switch (msg.text) {
+  switch (msg.command) {
     case '/start':
       b.sendMessage(msg.chat.id, 'To start a game, type /newgame');
       break;
