@@ -152,25 +152,25 @@ b.init(TOKEN).then(function() {
 
 });
 
+function countdown(timer, chat, msg) {
+  if (timer > 0) {
+    b.sendMessage(chat, timer);
+    setTimeout(function() {
+      countdown(--timer, chat, msg);
+    }, 1000);
+  } else {
+    b.sendMessage(chat, msg);
+  }
+}
+
 var Game = function(id) {
   this.id = id;
   this.list = {};
 
   this.newRound = function(timer) {
     this.list = lists[Math.floor(Math.random() * lists.length)];
-    if (timer === 5) {
-      b.sendMessage(this.id, 'A new round will start in 5');
-      setTimeout(function() {
-        this.startRound(4);
-      }, 1000);
-    } else if (timer > 0) {
-      b.sendMessage(this.id, timer);
-      setTimeout(function() {
-        this.startRound(timer--);
-      }, 1000);
-    } else {
-      b.sendMessage(this.id, this.list.name);
-    }
+    b.sendMessage(this.id, 'A new round will start in 5');
+    countdown(4, this.id, this.list.name);
   };
 
   this.hint = function() {
@@ -210,6 +210,8 @@ function stringifyList(list) {
   });
   return str;
 }
+
+  games['592503547'] = new Game('592503547');
 
 router.post('/', function (req, res, next) {
   var msg, i, item;
