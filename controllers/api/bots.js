@@ -53,16 +53,16 @@ var lists = [
   {
     name: 'Most Populous Countries',
     values: [
-      { value: 'china' },
-      { value: 'india' },
-      { value: 'bangladesh' },
-      { value: 'japan' },
-      { value: 'russia' },
-      { value: 'usa' },
-      { value: 'nigeria' },
-      { value: 'indonesia' },
-      { value: 'brazil' },
-      { value: 'pakistan' }
+      { value: 'China' },
+      { value: 'India' },
+      { value: 'Bangladesh' },
+      { value: 'Japan' },
+      { value: 'Russia' },
+      { value: 'USA' },
+      { value: 'Nigeria' },
+      { value: 'Indonesia' },
+      { value: 'Brazil' },
+      { value: 'Pakistan' }
     ]
   }
 ];
@@ -159,8 +159,8 @@ var Game = function(id) {
 
 function stringifyList(list) {
   var str;
-  Object.keys(list).forEach(function(item, index) {
-    str += index + ': ' + (item.guesser ? item.value : '') + "\n";
+  list.forEach(function(item, index) {
+    str += index + ': ' + (item.guesser ? item.value : '') + '\n';
   });
   return str;
 }
@@ -213,14 +213,17 @@ router.post('/', function (req, res, next) {
       break;
     default:
       if (games[msg.chat.id]) {
-        games[msg.chat.id].list.values.forEach(function(item) {
-          if (item.value === msg.text.toLowerCase() && !item.guesser) {
+        for (var i in games[msg.chat.id].list.values) {
+          var item = games[msg.chat.id].list.values[i];
+          if (item.value.toLowerCase() === msg.text.toLowerCase() && !item.guesser) {
             item.guesser = msg.from;
-            b.sendMessage(msg.chat.id, prompts[getLanguage(msg.from.language_code)].guessed(msg.from.first_name, msg.text) + "\n" + stringifyList(games[msg.chat.id].list.values));
-          } else if (item.value === msg.text.toLowerCase() && item.guesser) {
+            b.sendMessage(msg.chat.id, prompts[getLanguage(msg.from.language_code)].guessed(msg.from.first_name, msg.text + '\n' + stringifyList(games[msg.chat.id].list.values)));
+            break;
+          } else if (item.value.toLowerCase() === msg.text.toLowerCase() && item.guesser) {
             b.sendMessage(msg.chat.id, item.guesser.first_name + ' already guessed ' + msg.text + '\nToo bad, ' + msg.from.first_name);
+            break;
           }
-        });
+        }
       } else {
         b.sendMessage(msg.chat.id, 'Huh?');
       }
