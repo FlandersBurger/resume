@@ -161,33 +161,58 @@ var Game = function(id) {
 };
 
 router.post('/', function (req, res, next) {
-  var msg = {
-    id: req.body.message.message_id,
-    from: req.body.message.from,
-    text: req.body.message.text,
-    chat: req.body.message.chat
-  };
-  res.sendStatus(200);
-  console.log(msg.chat.id + ' - ' + msg.from.first_name + ': ' + msg.text);
-  //console.log(typeof games[msg.chat.id]);
-  if (msg.text === '/start') {
-    b.sendMessage(msg.chat.id, 'To start a game, type /newgame');
-  } else if (msg.text === '/newgame' && !games[msg.chat.id]) {
-    games[msg.chat.id] = new Game(msg.chat.id);
-    b.sendMessage(msg.chat.id, bot.list.name);
-  } else if (msg.text === '/newgame' && games[msg.chat.id]) {
-    b.sendMessage(msg.chat.id, 'A game is already in progress');
-  } else if (msg.text === '/stop' && games[msg.chat.id]) {
-    delete games[msg.chat.id];
-    b.sendMessage(msg.chat.id, 'Game stopped');
+  var msg;
+  if (!req.body) {
+    msg = {
+      id: '592503547',
+      from: 'Lau',
+      command: '/error',
+      text: 'No clue what to do',
+      chat: 'test'
+    };
   } else {
-
+    msg = {
+      id: req.body.message.message_id,
+      from: req.body.message.from,
+      command: req.body.message.text.substring(0, req.body.message.text.indexOf(' ') ?  req.body.message.text.length : req.body.message.text.indexOf(' ')),
+      text: req.body.message.text.substring(req.body.message.text.indexOf(' ') + 1),
+      chat: req.body.message.chat
+    };
   }
+  console.log(msg.id + ' - ' + req.body.message.from.first_name + ': ' + msg.command + ' -> ' + msg.text);
+  switch (msg.text) {
+    case '/start':
+      b.sendMessage(msg.chat.id, 'To start a game, type /newgame');
+      break;
+    case '/newgame':
+      if (games[msg.chat.id]) {
+        b.sendMessage(msg.chat.id, 'A game is already in progress');
+      } else {
+        games[msg.chat.id] = new Game(msg.chat.id);
+        b.sendMessage(msg.chat.id, games[msg.chat.id].name);
+      }
+      break;
+    case '/stop':
+      delete games[msg.chat.id];
+      b.sendMessage(msg.chat.id, 'Game stopped');
+      break;
+    default:
+      if (games[msg.chat.id]) {
+
+      } else {
+        b.sendMessage(msg.chat.id, 'Huh?');
+      }
+  }
+  res.sendStatus(200);
   //b.sendMessage(msg.chat.id, 'Received Post');
 });
 router.get('/', function (req, res, next) {
   //b.sendMessage(msg.chat.id, 'Received Get');
   console.log('message received');
+  var str = '/wallet blabla';
+  var command = str.toLowerCase().substring(0, str.indexOf(' '));
+  var text = str.substring(str.indexOf(' ') + 1);
+  console.log(command + text);
   res.json({ message: 'get ok'});
 });
 
