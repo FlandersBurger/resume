@@ -68,7 +68,7 @@ function Bot() {
     });
   };
 
-  bot.sendMessage = function(channel, message) {/*
+  bot.sendMessage = function(channel, message) {
     return new Promise(function (resolve, reject) {
       var url = 'https://api.telegram.org/bot' + TOKEN + '/sendMessage?chat_id=' + channel + '&text=' + message;
       request(encodeURI(url), function (error, r, body) {
@@ -78,7 +78,7 @@ function Bot() {
         if(!response) return;
         resolve();
       });
-    });*/
+    });
   };
 
   bot.getUpdates = function() {
@@ -167,6 +167,7 @@ router.post('/', function (req, res, next) {
     text: req.body.message.text,
     chat: req.body.message.chat
   };
+  res.sendStatus(200);
   console.log(msg.chat.id + ' - ' + msg.from.first_name + ': ' + msg.text);
   //console.log(typeof games[msg.chat.id]);
   if (msg.text === '/start') {
@@ -182,7 +183,6 @@ router.post('/', function (req, res, next) {
   } else {
 
   }
-  res.sendStatus(200);
   //b.sendMessage(msg.chat.id, 'Received Post');
 });
 router.get('/', function (req, res, next) {
