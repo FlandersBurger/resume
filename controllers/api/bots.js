@@ -182,10 +182,12 @@ router.post('/', function (req, res, next) {
   } else {
 
   }
+  res.sendStatus(200);
   //b.sendMessage(msg.chat.id, 'Received Post');
 });
 router.get('/', function (req, res, next) {
-  b.sendMessage(msg.chat.id, 'Received Get');
+  //b.sendMessage(msg.chat.id, 'Received Get');
+  console.log('message received');
   res.json({ message: 'get ok'});
 });
 
