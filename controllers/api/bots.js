@@ -160,7 +160,7 @@ var Game = function(id) {
 function stringifyList(list) {
   var str;
   Object.keys(list).forEach(function(item, index) {
-    str += index + ': ' + (item.guesser ? item.value : '') + '%0A';
+    str += index + ': ' + (item.guesser ? item.value : '') + "\n";
   });
   return str;
 }
@@ -194,7 +194,7 @@ router.post('/', function (req, res, next) {
       b.sendMessage(msg.chat.id, msg.text);
       break;
     case '/start':
-      b.sendMessage(msg.chat.id, 'To start a game, type %0Aewgame');
+      b.sendMessage(msg.chat.id, 'To start a game, type /newgame');
       break;
     case '/newgame':
       if (games[msg.chat.id]) {
@@ -218,7 +218,7 @@ router.post('/', function (req, res, next) {
             item.guesser = msg.from;
             b.sendMessage(msg.chat.id, prompts[getLanguage(msg.from.language_code)].guessed(msg.from.first_name, msg.text) + '%0A' + stringifyList(games[msg.chat.id].list.values));
           } else if (item.value === msg.text.toLowerCase() && item.guesser) {
-            b.sendMessage(msg.chat.id, item.guesser.first_name + ' already guessed ' + msg.text + '%0AToo bad, ' + msg.from.first_name);
+            b.sendMessage(msg.chat.id, item.guesser.first_name + ' already guessed ' + msg.text + "\n" + 'Too bad, ' + msg.from.first_name);
           }
         });
       } else {
