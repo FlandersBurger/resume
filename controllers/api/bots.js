@@ -206,7 +206,9 @@ var Game = function(id) {
       return !item.guesser;
     }).length === 0) {
       var str = '';
-      this.players.sort(function(a, b) {
+      Object.keys(this.players).map(function(key) {
+        return this.players[key];
+      }).sort(function(a, b) {
         return a.score - b.score;
       }).slice(0, 10).forEach(function(player, index) {
         str += (index + 1) + ': ' + player.first_name + '\n';
