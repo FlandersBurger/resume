@@ -204,7 +204,7 @@ var Game = function(id) {
 };
 
 function stringifyList(list) {
-  var str;
+  var str = '';
   list.forEach(function(item, index) {
     str += index + ': ' + (item.guesser ? item.value : '') + '\n';
   });
@@ -228,7 +228,6 @@ router.post('/', function (req, res, next) {
       }
     };
   } else {
-    console.log(req.body.message);
     msg = {
       id: req.body.message.message_id,
       from: req.body.message.from,
