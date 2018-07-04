@@ -189,7 +189,7 @@ router.post('/', function (req, res, next) {
         b.sendMessage(msg.chat.id, 'A game is already in progress');
       } else {
         games[msg.chat.id] = new Game(msg.chat.id);
-        b.sendMessage(msg.chat.id, games[msg.chat.id].name);
+        b.sendMessage(msg.chat.id, games[msg.chat.id].list.name);
       }
       break;
     case '/stop':
