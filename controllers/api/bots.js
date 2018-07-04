@@ -154,7 +154,7 @@ b.init(TOKEN).then(function() {
 
 var Game = function(id) {
   this.id = id;
-  this.list =
+  this.list = {};
 
   this.newRound = function(timer) {
     this.list = lists[Math.floor(Math.random() * lists.length)];
