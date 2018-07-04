@@ -166,6 +166,7 @@ function countdown(timer, chat, msg) {
 var Game = function(id) {
   this.id = id;
   this.list = {};
+  this.players = {};
 
   this.newRound = function(timer) {
     this.list = lists[Math.floor(Math.random() * lists.length)];
@@ -177,16 +178,21 @@ var Game = function(id) {
     for (var i in this.list.values) {
       var item = this.list.values[i];
       if (!item.guesser) {
-        b.sendMessage(this.id, item.value.substring(0, 1) + "*".repeat(item.value.length - 1));
+        b.sendMessage(this.id, item.value.substring(0, 1) + "*".repeat(item.value.length - 2) + item.value.substring(item.value.length - 1));
       }
     }
   };
 
   this.guess = function(msg) {
+    if (!this.players[msg.from.id]) {
+      this.players[msg.from.id] = msg.from;
+      this.players[msg.from.id].score = 0;
+    }
     for (var i in this.list.values) {
       var item = this.list.values[i];
       if (item.value.toLowerCase() === msg.text.toLowerCase() && !item.guesser) {
         item.guesser = msg.from;
+        this.players[msg.from.id].score++;
         b.sendMessage(msg.chat.id, prompts[getLanguage(msg.from.language_code)].guessed(msg.from.first_name, msg.text + '\n' + stringifyList(games[msg.chat.id].list.values)));
         break;
       } else if (item.value.toLowerCase() === msg.text.toLowerCase() && item.guesser) {
@@ -197,7 +203,18 @@ var Game = function(id) {
   };
 
   this.checkRound = function() {
-
+    if (this.list.values.filter(function(item) {
+      return !item.guesser;
+    }).length === 0) {
+      var str = '';
+      this.players.sort(function(a, b) {
+        return a.score - b.score;
+      }).slice(0, 10).forEach(function(player, index) {
+        str += (index + 1) + ': ' + player.first_name + '\n';
+      });
+      b.sendMessage(this.id, str);
+      this.newRound(5);
+    }
   };
 
   this.newRound(5);
@@ -206,12 +223,10 @@ var Game = function(id) {
 function stringifyList(list) {
   var str = '';
   list.forEach(function(item, index) {
-    str += index + ': ' + (item.guesser ? item.value : '') + '\n';
+    str += (index + 1) + ': ' + (item.guesser ? item.value : '') + '\n';
   });
   return str;
 }
-
-  games['592503547'] = new Game('592503547');
 
 router.post('/', function (req, res, next) {
   var msg, i, item;
