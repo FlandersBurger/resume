@@ -174,7 +174,7 @@ router.post('/', function (req, res, next) {
     msg = {
       id: req.body.message.message_id,
       from: req.body.message.from,
-      command: req.body.message.text.substring(0, req.body.message.text.indexOf(' ') ?  req.body.message.text.length : req.body.message.text.indexOf(' ')),
+      command: req.body.message.text.substring(0, req.body.message.text.indexOf(' ') >= 0 ? req.body.message.text.length : req.body.message.text.indexOf(' ')),
       text: req.body.message.text.substring(req.body.message.text.indexOf(' ') + 1),
       chat: req.body.message.chat
     };
