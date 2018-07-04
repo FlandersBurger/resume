@@ -184,7 +184,7 @@ var Game = function(id) {
 
   this.guess = function(msg) {
     for (var i in this.list.values) {
-      item = this.list.values[i];
+      var item = this.list.values[i];
       if (item.value.toLowerCase() === msg.text.toLowerCase() && !item.guesser) {
         item.guesser = msg.from;
         b.sendMessage(msg.chat.id, prompts[getLanguage(msg.from.language_code)].guessed(msg.from.first_name, msg.text + '\n' + stringifyList(games[msg.chat.id].list.values)));
