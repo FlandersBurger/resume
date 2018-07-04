@@ -228,6 +228,7 @@ router.post('/', function (req, res, next) {
       }
     };
   } else {
+    console.log(req.body.message);
     msg = {
       id: req.body.message.message_id,
       from: req.body.message.from,
