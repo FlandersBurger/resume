@@ -165,7 +165,7 @@ router.post('/', function (req, res, next) {
           if (item.value === msg.text.toLowerCase() && !item.guesser) {
             item.guesser = msg.from;
             b.sendMessage(msg.chat.id, msg.from.first_name + ' got ' + msg.text);
-          } else if (item.value === msg.text.toLowerCase() && !item.guesser) {
+          } else if (item.value === msg.text.toLowerCase() && item.guesser) {
             b.sendMessage(msg.chat.id, item.guesser.first_name + ' already guessed ' + msg.text + '/nToo bad, ' + msg.from.first_name);
           }
         });
@@ -178,11 +178,6 @@ router.post('/', function (req, res, next) {
 });
 router.get('/', function (req, res, next) {
   //b.sendMessage(msg.chat.id, 'Received Get');
-  console.log('message received');
-  var str = '/wallet blabla';
-  var command = str.toLowerCase().substring(0, str.indexOf(' '));
-  var text = str.substring(str.indexOf(' ') + 1);
-  console.log(command + text);
   res.json({ message: 'get ok'});
 });
 
