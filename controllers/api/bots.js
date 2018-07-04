@@ -24,8 +24,8 @@ var prompts = {
 
 function getLanguage(language) {
   if (language) {
-    if (prompts[language]) {
-      return language;
+    if (prompts[language.substring(0, 1)]) {
+      return language.substring(0, 1);
     } else {
       return 'en';
     }
@@ -215,7 +215,7 @@ function stringifyList(list) {
 
 router.post('/', function (req, res, next) {
   var msg, i, item;
-  if (!req.body.message) {
+  if (!req.body.message || !req.body.message.text) {
     msg = {
       id: '592503547',
       from: {
