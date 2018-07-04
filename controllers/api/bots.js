@@ -216,9 +216,9 @@ router.post('/', function (req, res, next) {
         games[msg.chat.id].list.values.forEach(function(item) {
           if (item.value === msg.text.toLowerCase() && !item.guesser) {
             item.guesser = msg.from;
-            b.sendMessage(msg.chat.id, prompts[getLanguage(msg.from.language_code)].guessed(msg.from.first_name, msg.text) + '%0A' + stringifyList(games[msg.chat.id].list.values));
+            b.sendMessage(msg.chat.id, prompts[getLanguage(msg.from.language_code)].guessed(msg.from.first_name, msg.text) + "\n" + stringifyList(games[msg.chat.id].list.values));
           } else if (item.value === msg.text.toLowerCase() && item.guesser) {
-            b.sendMessage(msg.chat.id, item.guesser.first_name + ' already guessed ' + msg.text + "\n" + 'Too bad, ' + msg.from.first_name);
+            b.sendMessage(msg.chat.id, item.guesser.first_name + ' already guessed ' + msg.text + '\nToo bad, ' + msg.from.first_name);
           }
         });
       } else {
