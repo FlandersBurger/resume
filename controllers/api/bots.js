@@ -189,7 +189,10 @@ router.post('/', function (req, res, next) {
         b.sendMessage(msg.chat.id, 'A game is already in progress');
       } else {
         games[msg.chat.id] = new Game(msg.chat.id);
-        b.sendMessage(msg.chat.id, games[msg.chat.id].list.name);
+        b.sendMessage(msg.chat.id, 'A new game will start in 5 seconds!');
+        setTimeout(function() {
+          b.sendMessage(msg.chat.id, games[msg.chat.id].list.name);
+        }, 5000);
       }
       break;
     case '/stop':
