@@ -4,6 +4,36 @@ var schedule = require('node-schedule');
 
 var games = {};
 
+var prompts = {
+  en: {
+    guessed: function(user, text) {
+      return user + ' got ' + text;
+    }
+  },
+  fr: {
+    guessed: function(user, text) {
+      return user + ' a trouve ' + text;
+    }
+  },
+  nl: {
+    guessed: function(user, text) {
+      return user + ' heeft ' + text + ' gevonden';
+    }
+  }
+};
+
+function getLanguage(language) {
+  if (language) {
+    if (prompts[language]) {
+      return language;
+    } else {
+      return 'en';
+    }
+  } else {
+    return 'en';
+  }
+}
+
 var lists = [
   {
     name: 'Camera Brands',
@@ -21,7 +51,6 @@ var lists = [
     ]
   }
 ];
-
 
 function Bot() {
   var bot = this;
@@ -70,7 +99,7 @@ function Bot() {
 
   bot.sendMessage = function(channel, message) {
     return new Promise(function (resolve, reject) {
-      var url = 'https://api.telegram.org/bot' + TOKEN + '/sendMessage?chat_id=' + channel + '&text=' + message;
+      var url = 'https://api.telegram.org/bot' + TOKEN + '/sendMessage?chat_id=' + channel + '&text=' + encodeURI(message);
       request(encodeURI(url), function (error, r, body) {
         var response = JSON.parse(body).result;
         //console.log(response);
@@ -112,6 +141,14 @@ var Game = function(id) {
   this.id = id;
   this.list = lists[Math.floor(Math.random() * lists.length)];
 };
+
+function stringifyList(list) {
+  var str;
+  Object.keys(list).forEach(function(item, index) {
+    str += index + ': ' + (item.guesser ? item.value : '') + '/n';
+  });
+  return str;
+}
 
 router.post('/', function (req, res, next) {
   var msg;
@@ -164,7 +201,7 @@ router.post('/', function (req, res, next) {
         games[msg.chat.id].list.values.forEach(function(item) {
           if (item.value === msg.text.toLowerCase() && !item.guesser) {
             item.guesser = msg.from;
-            b.sendMessage(msg.chat.id, msg.from.first_name + ' got ' + msg.text);
+            b.sendMessage(msg.chat.id, prompts[getLanguage(msg.from.language_code)].guessed(msg.from.first_name, msg.text) + '/n' + stringifyList(games[msg.chat.id].list.values));
           } else if (item.value === msg.text.toLowerCase() && item.guesser) {
             b.sendMessage(msg.chat.id, item.guesser.first_name + ' already guessed ' + msg.text + '/nToo bad, ' + msg.from.first_name);
           }
