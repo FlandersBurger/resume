@@ -49,6 +49,21 @@ var lists = [
       { value: 'panasonic' },
       { value: 'lumix' }
     ]
+  },
+  {
+    name: 'Most Populous Countries',
+    values: [
+      { value: 'china' },
+      { value: 'india' },
+      { value: 'bangladesh' },
+      { value: 'japan' },
+      { value: 'russia' },
+      { value: 'usa' },
+      { value: 'nigeria' },
+      { value: 'indonesia' },
+      { value: 'brazil' },
+      { value: 'pakistan' }
+    ]
   }
 ];
 
@@ -181,7 +196,7 @@ router.post('/', function (req, res, next) {
     case '/start':
       b.sendMessage(msg.chat.id, 'To start a game, type %0Aewgame');
       break;
-    case '%0Aewgame':
+    case '/newgame':
       if (games[msg.chat.id]) {
         b.sendMessage(msg.chat.id, 'A game is already in progress');
       } else {
