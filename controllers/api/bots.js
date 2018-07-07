@@ -202,17 +202,25 @@ var Game = function(id) {
   };
 
   this.checkRound = function() {
+    console.log(this.list.values.filter(function(item) {
+      return !item.guesser;
+    }).length);
     if (this.list.values.filter(function(item) {
       return !item.guesser;
     }).length === 0) {
       var str = '';
-      Object.keys(this.players).map(function(key) {
+      var result = Object.keys(this.players).map(function(key) {
         return this.players[key];
-      }).sort(function(a, b) {
+      });
+      console.log(result);
+      result = result.sort(function(a, b) {
         return a.score - b.score;
-      }).slice(0, 10).forEach(function(player, index) {
+      }).slice(0, 10);
+      console.log(result);
+      result.forEach(function(player, index) {
         str += (index + 1) + ': ' + player.first_name + '\n';
       });
+      console.log(result);
       b.sendMessage(this.id, str);
       this.newRound(5);
     }
