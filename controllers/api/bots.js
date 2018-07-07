@@ -64,6 +64,51 @@ var lists = [
       { value: 'Brazil' },
       { value: 'Pakistan' }
     ]
+  },
+  {
+    name: 'Weather Types',
+    values: [
+      { value: 'Rain' },
+      { value: 'Snow' },
+      { value: 'Hail' },
+      { value: 'Fog' },
+      { value: 'Blizzard' },
+      { value: 'Hurricane' },
+      { value: 'Tornado' },
+      { value: 'Typhoon' },
+      { value: 'Sleet' },
+      { value: 'Sun' }
+    ]
+  },
+  {
+    name: 'Things to make with tomatoes',
+    values: [
+      { value: 'Soup' },
+      { value: 'Gazpacho' },
+      { value: 'Salsa' },
+      { value: 'Pizza' },
+      { value: 'Pasta' },
+      { value: 'Juice' },
+      { value: 'Bruschetta' },
+      { value: 'BLT' },
+      { value: 'Chili' },
+      { value: 'Ketchup' }
+    ]
+  },
+  {
+    name: 'Marine Mammals',
+    values: [
+      { value: 'Dolphin' },
+      { value: 'Blue Whale' },
+      { value: 'Killer Whale' },
+      { value: 'Porpoise' },
+      { value: 'Beluga' },
+      { value: 'Seal' },
+      { value: 'Walrus' },
+      { value: 'Sea Lion' },
+      { value: 'Manatee' },
+      { value: 'Narwhal' }
+    ]
   }
 ];
 
@@ -169,7 +214,7 @@ var Game = function(id) {
   this.players = {};
 
   this.newRound = function(timer) {
-    this.list = lists[Math.floor(Math.random() * lists.length)];
+    this.list = JSON.parse(JSON.stringify(lists[Math.floor(Math.random() * lists.length)]));
     b.sendMessage(this.id, 'A new round will start in 5');
     countdown(4, this.id, this.list.name);
   };
