@@ -209,13 +209,17 @@ var Game = function(id) {
       return !item.guesser;
     }).length === 0) {
       var str = '';
-       Object.values(this.players).map(function(player) {
+      var result = Object.values(this.players).map(function(player) {
         return player;
       }).sort(function(a, b) {
         return a.score - b.score;
-      }).slice(0, 10).forEach(function(player, index) {
+      });
+      console.log(result);
+      result = result.slice(0, 10).forEach(function(player, index) {
         str += (index + 1) + ': ' + player.first_name + '\n';
       });
+      console.log(result);
+      console.log(str);
       b.sendMessage(this.id, str);
       this.newRound(5);
     }
