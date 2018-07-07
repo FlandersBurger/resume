@@ -154,8 +154,8 @@ b.init(TOKEN).then(function() {
 
 function countdown(timer, chat, msg) {
   if (timer > 0) {
-    b.sendMessage(chat, timer);
     setTimeout(function() {
+      b.sendMessage(chat, timer);
       countdown(--timer, chat, msg);
     }, 1000);
   } else {
@@ -201,6 +201,18 @@ var Game = function(id) {
     }
   };
 
+  this.getScores = function() {
+    var str = 'Scores:\n';
+    Object.values(this.players).map(function(player) {
+      return player;
+    }).sort(function(a, b) {
+      return a.score - b.score;
+    }).slice(0, 10).forEach(function(player, index) {
+      str += (index + 1) + ': ' + player.first_name + '\n';
+    });
+    b.sendMessage(this.id, str);
+  };
+
   this.checkRound = function() {
     console.log(this.list.values.filter(function(item) {
       return !item.guesser;
@@ -208,20 +220,11 @@ var Game = function(id) {
     if (this.list.values.filter(function(item) {
       return !item.guesser;
     }).length === 0) {
-      var str = '';
-      var result = Object.values(this.players).map(function(player) {
-        return player;
-      }).sort(function(a, b) {
-        return a.score - b.score;
-      });
-      console.log(result);
-      result = result.slice(0, 10).forEach(function(player, index) {
-        str += (index + 1) + ': ' + player.first_name + '\n';
-      });
-      console.log(result);
-      console.log(str);
-      b.sendMessage(this.id, str);
-      this.newRound(5);
+      var str = 'Round over.';
+      this.getScores();
+      setTimeout(function() {
+        this.newRound(5);
+      }, 2000);
     }
   };
 
