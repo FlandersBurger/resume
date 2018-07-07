@@ -2,6 +2,8 @@ var router = require('express').Router();
 var request = require('request');
 var schedule = require('node-schedule');
 
+var List = require('../../models/list');
+
 var games = {};
 
 var prompts = {
@@ -34,84 +36,35 @@ function getLanguage(language) {
   }
 }
 
-var lists = [
-  {
-    name: 'Camera Brands',
-    values: [
-      { value: 'Nikon' },
-      { value: 'Canon' },
-      { value: 'Sony' },
-      { value: 'Pentax' },
-      { value: 'Olympus' },
-      { value: 'Fujifilm' },
-      { value: 'Kodak' },
-      { value: 'Leica' },
-      { value: 'Panasonic' },
-      { value: 'Lumix' }
-    ]
-  },
-  {
-    name: 'Most Populous Countries',
-    values: [
-      { value: 'China' },
-      { value: 'India' },
-      { value: 'Bangladesh' },
-      { value: 'Japan' },
-      { value: 'Russia' },
-      { value: 'USA' },
-      { value: 'Nigeria' },
-      { value: 'Indonesia' },
-      { value: 'Brazil' },
-      { value: 'Pakistan' }
-    ]
-  },
-  {
-    name: 'Weather Types',
-    values: [
-      { value: 'Rain' },
-      { value: 'Snow' },
-      { value: 'Hail' },
-      { value: 'Fog' },
-      { value: 'Blizzard' },
-      { value: 'Hurricane' },
-      { value: 'Tornado' },
-      { value: 'Typhoon' },
-      { value: 'Sleet' },
-      { value: 'Sun' }
-    ]
-  },
-  {
-    name: 'Things to make with tomatoes',
-    values: [
-      { value: 'Soup' },
-      { value: 'Gazpacho' },
-      { value: 'Salsa' },
-      { value: 'Pizza' },
-      { value: 'Pasta' },
-      { value: 'Juice' },
-      { value: 'Bruschetta' },
-      { value: 'BLT' },
-      { value: 'Chili' },
-      { value: 'Ketchup' }
-    ]
-  },
-  {
-    name: 'Marine Mammals',
-    values: [
-      { value: 'Dolphin' },
-      { value: 'Blue Whale' },
-      { value: 'Killer Whale' },
-      { value: 'Porpoise' },
-      { value: 'Beluga' },
-      { value: 'Seal' },
-      { value: 'Walrus' },
-      { value: 'Sea Lion' },
-      { value: 'Manatee' },
-      { value: 'Narwhal' }
-    ]
-  }
-];
+function getList(callback) {
+  List.count().exec(function (err, count) {
 
+    // Get a random entry
+    var random = Math.floor(Math.random() * count);
+
+    // Again query all users but only fetch one offset by our random #
+    List.findOne().skip(random).exec(function (err, result) {
+      return callback(result);
+    });
+  });
+}
+
+getList(function(result) {
+  return result;
+});
+
+List.find()
+.sort('+name')
+.exec(function(err, returnedLists) {
+  if (err) { return next(err); }
+  lists = returnedLists;
+});
+
+/*
+List.collection.insert(lists, function (err, insertedLists) {
+  console.log(insertedLists);
+});
+*/
 function Bot() {
   var bot = this;
 
@@ -209,66 +162,71 @@ function countdown(timer, chat, msg) {
 }
 
 var Game = function(id) {
-  this.id = id;
-  this.list = {};
-  this.players = {};
+  var game = this;
+  game.id = id;
+  game.list = {};
+  game.players = {};
 
-  this.newRound = function(timer) {
-    this.list = JSON.parse(JSON.stringify(lists[Math.floor(Math.random() * lists.length)]));
-    b.sendMessage(this.id, 'A new round will start in 5');
-    countdown(4, this.id, this.list.name);
+  game.newRound = function(timer) {
+    getList(function(list) {
+      game.list = JSON.parse(JSON.stringify(list));
+      b.sendMessage(game.id, 'A new round will start in 5');
+      countdown(4, game.id, game.list.name);
+    });
   };
 
-  this.hint = function() {
-    for (var i in this.list.values) {
-      var item = this.list.values[i];
+  game.hint = function() {
+    for (var i in game.list.values) {
+      var item = game.list.values[i];
       if (!item.guesser) {
-        b.sendMessage(this.id, item.value.substring(0, 1) + "*".repeat(item.value.length - 2) + item.value.substring(item.value.length - 1));
+        b.sendMessage(game.id, item.value.substring(0, 1) + "*".repeat(item.value.length - 2) + item.value.substring(item.value.length - 1));
       }
     }
   };
 
-  this.guess = function(msg) {
-    if (!this.players[msg.from.id]) {
-      this.players[msg.from.id] = msg.from;
-      this.players[msg.from.id].score = 0;
+  game.guess = function(msg) {
+    if (!game.players[msg.from.id]) {
+      game.players[msg.from.id] = msg.from;
+      game.players[msg.from.id].score = 0;
     }
-    for (var i in this.list.values) {
-      var item = this.list.values[i];
+    for (var i in game.list.values) {
+      var item = game.list.values[i];
       if (item.value.toLowerCase() === msg.text.toLowerCase() && !item.guesser) {
         item.guesser = msg.from;
-        this.players[msg.from.id].score++;
+        game.players[msg.from.id].score++;
         b.sendMessage(msg.chat.id, prompts[getLanguage(msg.from.language_code)].guessed(msg.from.first_name, msg.text + '\n' + stringifyList(games[msg.chat.id].list.values)));
-        return this.checkRound();
+        return game.checkRound();
       } else if (item.value.toLowerCase() === msg.text.toLowerCase() && item.guesser) {
         return b.sendMessage(msg.chat.id, item.guesser.first_name + ' already guessed ' + msg.text + '\nToo bad, ' + msg.from.first_name);
       }
     }
   };
 
-  this.getScores = function() {
+  game.getScores = function() {
     var str = 'Scores:\n';
-    Object.values(this.players).map(function(player) {
+    Object.values(game.players).map(function(player) {
       return player;
     }).sort(function(a, b) {
       return a.score - b.score;
     }).slice(0, 10).forEach(function(player, index) {
       str += (index + 1) + ': ' + player.first_name + ' - ' + player.score + '\n';
     });
-    b.sendMessage(this.id, str);
+    b.sendMessage(game.id, str);
   };
 
-  this.checkRound = function() {
-    if (this.list.values.filter(function(item) {
+  game.checkRound = function() {
+    if (game.list.values.filter(function(item) {
       return !item.guesser;
     }).length === 0) {
-      b.sendMessage(this.id, 'Round over.');
-      this.getScores();
-      this.newRound(5);
+      b.sendMessage(game.id, 'Round over.');
+      game.getScores();
+      setTimeout(function() {    
+        game.newRound(5);
+      }, 2000);
     }
   };
 
-  this.newRound(5);
+  game.newRound(5);
 };
 
 function stringifyList(list) {
