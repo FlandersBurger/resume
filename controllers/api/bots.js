@@ -214,9 +214,7 @@ var Game = function(id) {
   this.players = {};
 
   this.newRound = function(timer) {
-    console.log('New round starting');
     this.list = JSON.parse(JSON.stringify(lists[Math.floor(Math.random() * lists.length)]));
-    console.log(this.list);
     b.sendMessage(this.id, 'A new round will start in 5');
     countdown(4, this.id, this.list.name);
   };
@@ -266,9 +264,7 @@ var Game = function(id) {
     }).length === 0) {
       b.sendMessage(this.id, 'Round over.');
       this.getScores();
-      setTimeout(function() {
-        this.newRound(5);
-      }, 2000);
+      this.newRound(5);
     }
   };
 
