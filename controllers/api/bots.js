@@ -36,31 +36,25 @@ function getLanguage(language) {
   }
 }
 
-function getList(callback) {
-  List.count().exec(function (err, count) {
-
-    // Get a random entry
-    var random = Math.floor(Math.random() * count);
-
-    // Again query all users but only fetch one offset by our random #
-    List.findOne().skip(random).exec(function (err, result) {
-      return callback(result);
-    });
-  });
-}
-
-getList(function(result) {
-  return result;
-});
-
-List.find()
-.sort('+name')
-.exec(function(err, returnedLists) {
-  if (err) { return next(err); }
-  lists = returnedLists;
-});
-
 /*
+
+var lists = [
+  {
+    name: '',
+    values: [
+      { value: '' },
+      { value: '' },
+      { value: '' },
+      { value: '' },
+      { value: '' },
+      { value: '' },
+      { value: '' },
+      { value: '' },
+      { value: '' },
+      { value: '' },
+    ]
+  }
+]
 List.collection.insert(lists, function (err, insertedLists) {
   console.log(insertedLists);
 });
@@ -150,6 +144,19 @@ b.init(TOKEN).then(function() {
 
 });
 
+function getList(callback) {
+  List.count().exec(function (err, count) {
+
+    // Get a random entry
+    var random = Math.floor(Math.random() * count);
+
+    // Again query all lists but only fetch one offset by our random #
+    List.findOne().skip(random).exec(function (err, result) {
+      return callback(result);
+    });
+  });
+}
+
 function countdown(timer, chat, msg) {
   if (timer > 0) {
     setTimeout(function() {
@@ -157,7 +164,9 @@ function countdown(timer, chat, msg) {
       countdown(--timer, chat, msg);
     }, 1000);
   } else {
-    b.sendMessage(chat, msg);
+    setTimeout(function() {
+      b.sendMessage(chat, msg);
+    }, 1000);
   }
 }
 
@@ -170,6 +179,7 @@ var Game = function(id) {
   game.newRound = function(timer) {
     getList(function(list) {
       game.list = JSON.parse(JSON.stringify(list));
+      console.log(list);
       b.sendMessage(game.id, 'A new round will start in 5');
       countdown(4, game.id, game.list.name);
     });
@@ -220,7 +230,7 @@ var Game = function(id) {
     }).length === 0) {
       b.sendMessage(game.id, 'Round over.');
       game.getScores();
-      setTimeout(function() {    
+      setTimeout(function() {
         game.newRound(5);
       }, 2000);
     }
