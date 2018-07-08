@@ -3,8 +3,8 @@ angular.module('app')
 
   var svc = this;
 
-  svc.fetch = function () {
-    return $http.get('/api/lists');
+  svc.getLists = function () {
+    return $http.get('/api/bots/lists');
   };
 
 });

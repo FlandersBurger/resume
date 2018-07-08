@@ -1,4 +1,14 @@
-<div id="bots">
-  <h1>{{score}}</h1>
-  <p>({{loggedIn ? currentUser.highscore.asteroids : highscore}})</p>
+<div id="bots-page">
+  <div class="col-md-4" ng-repeat="list in lists">
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <input class="form-control" ng-model="list.name" />
+      </div>
+      <div class="panel-body">
+        <div ng-repeat="value in list.values">    
+          <input class="form-control" ng-model="value.value" />
+        </div>
+      </div>
+    </div>
+  </div>
 </div>
