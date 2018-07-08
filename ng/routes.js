@@ -76,6 +76,11 @@ angular.module('app')
     url: '/lemmings',
     controller: 'LemmingsCtrl',
     templateUrl: 'lemmings.html'
+  })
+  .state('bots', {
+    url: '/bots',
+    controller: 'BotsCtrl',
+    templateUrl: 'bots.html'
   });
 
   $locationProvider.html5Mode({
