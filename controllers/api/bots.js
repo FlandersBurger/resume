@@ -131,7 +131,7 @@ function Bot() {
 
 }
 
-var TOKEN = '500242425:AAHT8jTIn7_NN-V0OiKGYDPmK9vxw2cJgL0';
+var TOKEN = '612900440:AAGwcVhpU23u5wZOO1_9WAgLDm0u-JWnjyk';
 var b = new Bot();
 b.init(TOKEN).then(function() {
   b.introduceYourself();
@@ -217,7 +217,7 @@ var Game = function(id) {
     Object.values(game.players).map(function(player) {
       return player;
     }).sort(function(a, b) {
-      return a.score - b.score;
+      return b.score - a.score;
     }).slice(0, 10).forEach(function(player, index) {
       str += (index + 1) + ': ' + player.first_name + ' - ' + player.score + '\n';
     });
@@ -250,13 +250,14 @@ function stringifyList(list) {
 router.post('/', function (req, res, next) {
   var msg, i, item;
   if (!req.body.message || !req.body.message.text) {
+    console.log(req.body.message);
     msg = {
       id: '592503547',
       from: {
         first_name: 'Bot Error'
       },
       command: '/error',
-      text: 'No clue what to do',
+      text: req.body,
       chat: {
         id: '592503547'
       }
@@ -269,6 +270,9 @@ router.post('/', function (req, res, next) {
       text: req.body.message.text.substring(req.body.message.text.indexOf(' ') + 1),
       chat: req.body.message.chat
     };
+  }
+  if (msg.command.indexOf('@') >= 0) {
+    msg.command = msg.command.substring(0, msg.command.indexOf('@'));
   }
   console.log(msg.id + ' - ' + msg.from.first_name + ': ' + msg.command + ' -> ' + msg.text);
   switch (msg.command) {
@@ -299,8 +303,6 @@ router.post('/', function (req, res, next) {
     default:
       if (games[msg.chat.id]) {
         games[msg.chat.id].guess(msg);
-      } else {
-        b.sendMessage(msg.chat.id, 'Huh?');
       }
   }
   res.sendStatus(200);
