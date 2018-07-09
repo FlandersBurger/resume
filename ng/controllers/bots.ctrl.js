@@ -15,6 +15,8 @@ angular.module('app')
   $scope.addList = function() {
     $scope.lists.unshift({
       name: '',
+      creator: $scope.currentUser._id,
+      date: new Date(),
       values: [
         { value: '' },
         { value: '' },
