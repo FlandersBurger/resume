@@ -121,16 +121,22 @@ angular.module('app')
   if (window.localStorage.user) {
     UserSvc.login(window.localStorage.user)
     .then(function(response) {
-      $scope.loggedIn = true;
-      $scope.currentUser = response.data;
+      login(response.data);
     });
   }
 
   $scope.$on('login', function (_, user) {
-    window.localStorage.user = user._id;
-    $scope.loggedIn = true;
-    $scope.currentUser = user;
+    login(user);
   });
+
+  function login(user) {
+    if (!$scope.loggedIn) {
+      window.localStorage.user = user._id;
+      $scope.loggedIn = true;
+      $scope.currentUser = user;
+      $scope.$broadcast('login');
+    }
+  }
 
   $scope.$on('update', function (_, user) {
     $scope.currentUser = user;

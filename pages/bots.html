@@ -1,12 +1,29 @@
-<div id="bots-page">
-  <div class="col-md-4" ng-repeat="list in lists">
-    <div class="panel panel-default">
-      <div class="panel-heading">
-        <input class="form-control" ng-model="list.name" />
+<div id="bots-page" class="col-md-12">
+  <h1 class="text-danger" ng-show="!loggedIn">You have to be logged in to edit lists</h1>
+  <div ng-show="loggedIn">
+    <div class="col-md-12">
+      <div class="btn btn-default" ng-click="addList()">
+        <i class="fa fa-file-o" aria-hidden="true"></i> New
       </div>
-      <div class="panel-body">
-        <div ng-repeat="value in list.values">    
-          <input class="form-control" ng-model="value.value" />
+    </div>
+    <div class="col-md-4" ng-repeat="list in lists">
+      <div class="panel panel-default">
+        <div class="panel-heading">
+          <input class="form-control" ng-model="list.name" />
+          <h5>By {{list.creator.username}}</h5>
+        </div>
+        <div class="panel-body">
+          <div ng-repeat="value in list.values">
+            <input class="form-control" ng-model="value.value" />
+          </div>
+        </div>
+        <div class="panel-footer">
+          <div class="btn btn-default" ng-click="saveList(list)">
+            <i class="fa fa-save" aria-hidden="true"></i> Save
+          </div>
+          <div class="btn btn-default" ng-click="deleteList(list)">
+            <i class="fa fa-trash-o" aria-hidden="true"></i> Delete
+          </div>
         </div>
       </div>
     </div>
