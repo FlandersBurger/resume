@@ -170,7 +170,7 @@ var Game = function(id) {
 };
 
 function stringifyList(list) {
-  var str = '';
+  var str = list.name + '\n';
   list.forEach(function(item, index) {
     str += (index + 1) + ': ' + (item.guesser ? item.value : '') + '\n';
   });
@@ -210,14 +210,21 @@ router.post('/', function (req, res, next) {
       b.sendMessage(msg.chat.id, msg.text);
       break;
     case '/start':
-      b.sendMessage(msg.chat.id, 'To start a game, type /newgame');
+      b.sendMessage(msg.chat.id, 'To start a game, type /new');
       break;
-    case '/newgame':
+    case '/new':
       if (games[msg.chat.id]) {
         b.sendMessage(msg.chat.id, 'A game is already in progress');
       } else {
         games[msg.chat.id] = new Game(msg.chat.id);
       }
+      break;
+    case '/skip':
+      games[msg.chat.id].getScores();
+      games[msg.chat.id].newRound(5);
+      break;
+    case '/scores':
+      games[msg.chat.id].getScores();
       break;
     case '/stop':
       delete games[msg.chat.id];
