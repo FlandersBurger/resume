@@ -125,12 +125,12 @@ var Game = function(id) {
     }
     for (var i in game.list.values) {
       var item = game.list.values[i];
-      if (item.value.toLowerCase() == msg.text.toLowerCase() && !item.guesser) {
+      if (item.value.replace(/\s/g, '').toLowerCase() == msg.text.replace(/\s/g, '').toLowerCase() && !item.guesser) {
         item.guesser = msg.from;
         game.players[msg.from.id].score++;
         b.sendMessage(msg.chat.id, prompts[getLanguage(msg.from.language_code)].guessed(msg.from.first_name, msg.text + '\n*' + game.list.name + '*\n' + stringifyList(game.list.values)));
         return game.checkRound();
-      } else if (item.value.toLowerCase() == msg.text.toLowerCase() && item.guesser) {
+      } else if (item.value.replace(/\s/g, '').toLowerCase() == msg.text.replace(/\s/g, '').toLowerCase() && item.guesser) {
         return b.sendMessage(msg.chat.id, item.guesser.first_name + ' already guessed ' + msg.text + '\nToo bad, ' + msg.from.first_name);
       }
     }
