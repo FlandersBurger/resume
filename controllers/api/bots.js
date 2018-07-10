@@ -1,4 +1,5 @@
 var router = require('express').Router();
+var mongoose = require('mongoose');
 
 var config = require('../../config');
 
@@ -21,14 +22,14 @@ router.get('/lists/:id', function (req, res, next) {
 });
 
 router.put('/lists', function (req, res, next) {
-  List.findByIdAndUpdate(req.body._id ? req.body._id : null, req.body, { new: true, upsert: true }, function(err, list) {
+  List.findByIdAndUpdate(req.body._id ? req.body._id : new mongoose.Types.ObjectId(), req.body, { new: true, upsert: true }, function(err, list) {
     if (err) return next(err);
     res.json(list);
   });
 });
 
 router.delete('/lists/:id', function (req, res, next) {
-  List.findByIdAndRemove(req.params.id, function(err, list) {
+  List.findByIdAndRemove(null, function(err, list) {
     if (err) return next(err);
     res.sendStatus(200);
   });
