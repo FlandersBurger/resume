@@ -7,14 +7,14 @@
       </div>
     </div>
     <div class="col-md-4" ng-repeat="list in lists">
-      <div class="panel panel-default">
+      <div class="panel" ng-class="{'panel-info': !list._id, 'panel-default': list._id}">
         <div class="panel-heading">
-          <input class="form-control" ng-model="list.name" />
+          <input class="form-control" ng-model="list.name" placeholder="Name of the list" />
           <h5>By {{list.creator.username}}</h5>
         </div>
         <div class="panel-body">
-          <div ng-repeat="value in list.values">
-            <input class="form-control" ng-model="value.value" />
+          <div ng-repeat="value in list.values track by $index">
+            <input class="form-control" ng-model="value.value" placeholder="Value {{$index + 1}}" />
           </div>
         </div>
         <div class="panel-footer">

@@ -128,7 +128,7 @@ var Game = function(id) {
       if (item.value.toLowerCase() == msg.text.toLowerCase() && !item.guesser) {
         item.guesser = msg.from;
         game.players[msg.from.id].score++;
-        b.sendMessage(msg.chat.id, prompts[getLanguage(msg.from.language_code)].guessed(msg.from.first_name, msg.text + '\n' + game.list.name + '\n' + stringifyList(game.list.values)));
+        b.sendMessage(msg.chat.id, prompts[getLanguage(msg.from.language_code)].guessed(msg.from.first_name, msg.text + '\n*' + game.list.name + '*\n' + stringifyList(game.list.values)));
         return game.checkRound();
       } else if (item.value.toLowerCase() == msg.text.toLowerCase() && item.guesser) {
         return b.sendMessage(msg.chat.id, item.guesser.first_name + ' already guessed ' + msg.text + '\nToo bad, ' + msg.from.first_name);
@@ -164,7 +164,7 @@ var Game = function(id) {
 };
 
 function stringifyList(list) {
-  var str = list.name + '\n';
+  var str = '';
   list.forEach(function(item, index) {
     str += (index + 1) + ': ' + (item.guesser ? item.value : '') + '\n';
   });
