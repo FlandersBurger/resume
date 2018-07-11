@@ -99,10 +99,12 @@ var Game = function(id) {
   game.id = id;
   game.list = {};
   game.players = {};
+  game.hints = 0;
 
   game.newRound = function(timer) {
     getList(function(list) {
       game.list = JSON.parse(JSON.stringify(list));
+      game.hints = 0;
       console.log(list);
       b.sendMessage(game.id, 'A new round will start in 5');
       countdown(4, game.id, game.list.name);
@@ -110,12 +112,29 @@ var Game = function(id) {
   };
 
   game.hint = function() {
+    var str = '';
+    b.sendMessage(game.id, game.list.values.forEach(function(value) {
+      if (!value.guesser) {
+        str += value.substring(0, 1);
+        for (var i = game.hints; i < value.length - game.hints; i++) {
+          if (value.charAt(i) !== '') {
+            str += '*';
+          } else {
+            str += ' ';
+          }
+        }
+        str += value.substring(item.value.length - game.hints);
+      }
+    }));
+    game.hints++;
+    /*
     for (var i in game.list.values) {
       var item = game.list.values[i];
       if (!item.guesser) {
         b.sendMessage(game.id, item.value.substring(0, 1) + "*".repeat(item.value.length - 2) + item.value.substring(item.value.length - 1));
       }
     }
+    */
   };
 
   game.guess = function(msg) {
@@ -125,7 +144,7 @@ var Game = function(id) {
     }
     for (var i in game.list.values) {
       var item = game.list.values[i];
-      if (item.value.replace(/\s/g, '').toLowerCase() == msg.text.replace(/\s/g, '').toLowerCase() && !item.guesser) {
+      if (item.value.replace(/\s/g, '').toLowerCase().indexOf(msg.text.replace(/\s/g, '').toLowerCase()) != -1  && !item.guesser) {
         item.guesser = msg.from;
         game.players[msg.from.id].score++;
         b.sendMessage(msg.chat.id, prompts[getLanguage(msg.from.language_code)].guessed(msg.from.first_name, msg.text + '\n*' + game.list.name + '*\n' + stringifyList(game.list.values)));
@@ -137,7 +156,7 @@ var Game = function(id) {
   };
 
   game.getScores = function() {
-    var str = 'Scores:\n';
+    var str = '*Scores*\n';
     Object.values(game.players).map(function(player) {
       return player;
     }).sort(function(a, b) {
