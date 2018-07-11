@@ -117,7 +117,7 @@ var Game = function(id) {
 
   game.hint = function() {
     b.sendMessage(game.id, game.list.values.filter(function(item) {
-      return item.guesser;
+      return !item.guesser;
     }).map(function(item) {
       var str = '';
       str += item.value.substring(0, 1);
