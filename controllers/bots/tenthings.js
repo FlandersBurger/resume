@@ -113,17 +113,17 @@ var Game = function(id) {
 
   game.hint = function() {
     var str = '';
-    b.sendMessage(game.id, game.list.values.forEach(function(value) {
-      if (!value.guesser) {
-        str += value.substring(0, 1);
-        for (var i = game.hints; i < value.length - game.hints; i++) {
-          if (value.charAt(i) !== '') {
+    b.sendMessage(game.id, game.list.values.forEach(function(item) {
+      if (!item.guesser) {
+        str += item.value.substring(0, 1);
+        for (var i = game.hints; i < item.value.length - game.hints; i++) {
+          if (item.value.charAt(i) !== '') {
             str += '*';
           } else {
             str += ' ';
           }
         }
-        str += value.substring(item.value.length - game.hints);
+        str += item.value.substring(item.value.length - game.hints);
       }
     }));
     game.hints++;
