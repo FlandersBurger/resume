@@ -113,7 +113,7 @@ var Game = function(id) {
 
   game.hint = function() {
     var str = '';
-    b.sendMessage(game.id, game.list.values.forEach(function(item) {
+    game.list.values.forEach(function(item) {
       if (!item.guesser) {
         str += item.value.substring(0, 1);
         for (var i = game.hints; i < item.value.length - game.hints; i++) {
@@ -125,8 +125,9 @@ var Game = function(id) {
         }
         str += item.value.substring(item.value.length - game.hints);
       }
-    }));
+    });
     game.hints++;
+    b.sendMessage(game.id, str);
     /*
     for (var i in game.list.values) {
       var item = game.list.values[i];
