@@ -75,7 +75,7 @@ function getList(callback) {
     var random = Math.floor(Math.random() * count);
 
     // Again query all lists but only fetch one offset by our random #
-    List.findOne().skip(random).exec(function (err, result) {
+    List.findOne().populate('creator').skip(random).exec(function (err, result) {
       return callback(result);
     });
   });
@@ -107,27 +107,33 @@ var Game = function(id) {
       game.hints = 0;
       console.log(list);
       b.sendMessage(game.id, 'A new round will start in 5');
-      countdown(4, game.id, game.list.name);
+      if (game.list.creator.username) {
+        countdown(4, game.id, '*' + game.list.name + '* by ' + game.list.creator.username);
+      } else {
+        countdown(4, game.id, '*' + game.list.name + '*');
+      }
     });
   };
 
   game.hint = function() {
-    var str = '';
-    game.list.values.forEach(function(item) {
-      if (!item.guesser) {
-        str += item.value.substring(0, 1);
-        for (var i = game.hints; i < item.value.length - game.hints; i++) {
-          if (item.value.charAt(i) !== '') {
-            str += '*';
-          } else {
-            str += ' ';
-          }
+    b.sendMessage(game.id, game.list.values.filter(function(item) {
+      return item.guesser;
+    }).map(function(item) {
+      var str = '';
+      str += item.value.substring(0, 1);
+      for (var i = game.hints; i < item.value.length - game.hints; i++) {
+        if (item.value.charAt(i) !== '') {
+          str += '*';
+        } else {
+          str += ' ';
         }
-        str += item.value.substring(item.value.length - game.hints);
       }
-    });
+      str += item.value.substring(item.value.length - game.hints);
+      str += '\n';
+      console.log(str);
+      return str;
+    }));
     game.hints++;
-    b.sendMessage(game.id, str);
     /*
     for (var i in game.list.values) {
       var item = game.list.values[i];
