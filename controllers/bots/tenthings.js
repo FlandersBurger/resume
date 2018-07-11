@@ -81,6 +81,27 @@ function getList(callback) {
   });
 }
 
+getList(function(list) {
+  console.log(list);
+  list.values.filter(function(item) {
+    return !item.guesser;
+  }).map(function(item) {
+    var str = '';
+    str += item.value.substring(0, 2);
+    for (var i = 2; i < item.value.length - 2; i++) {
+      if (item.value.charAt(i) !== ' ') {
+        str += '*';
+      } else {
+        str += ' ';
+      }
+    }
+    str += item.value.substring(item.value.length - 2);
+    str += '\n';
+    console.log(str);
+    return str;
+  });
+})
+
 function countdown(timer, chat, msg) {
   if (timer > 0) {
     setTimeout(function() {
@@ -115,12 +136,12 @@ var Game = function(id) {
     });
   };
 
-  game.hint = function() {
-    b.sendMessage(game.id, game.list.values.filter(function(item) {
+  game.hint = function(callback) {
+    callback(game.list.values.filter(function(item) {
       return !item.guesser;
     }).map(function(item) {
       var str = '';
-      str += item.value.substring(0, 1);
+      str += item.value.substring(0, game.hints + 1);
       for (var i = game.hints; i < item.value.length - game.hints; i++) {
         if (item.value.charAt(i) !== '') {
           str += '*';
@@ -130,9 +151,9 @@ var Game = function(id) {
       }
       str += item.value.substring(item.value.length - game.hints);
       str += '\n';
-      console.log(str);
       return str;
     }));
+
     game.hints++;
     /*
     for (var i in game.list.values) {
@@ -252,7 +273,9 @@ router.post('/', function (req, res, next) {
       break;
     case '/hint':
       if (games[msg.chat.id]) {
-        games[msg.chat.id].hint();
+        games[msg.chat.id].hint(function(hints) {
+          b.sendMessage(msg.chat.id, hints);
+        });
       } else {
         b.sendMessage(msg.chat.id, 'There is no game in progress');
       }
