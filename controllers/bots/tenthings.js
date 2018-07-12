@@ -83,10 +83,10 @@ function getList(callback) {
 
 getList(function(list) {
   console.log(list);
+  var str = '';
   list.values.filter(function(item) {
     return !item.guesser;
-  }).map(function(item) {
-    var str = '';
+  }).forEach(function(item) {
     str += item.value.substring(0, 2);
     for (var i = 2; i < item.value.length - 2; i++) {
       if (item.value.charAt(i) !== ' ') {
@@ -97,9 +97,9 @@ getList(function(list) {
     }
     str += item.value.substring(item.value.length - 2);
     str += '\n';
-    console.log(str);
     return str;
   });
+  console.log(str);
 })
 
 function countdown(timer, chat, msg) {
@@ -121,48 +121,56 @@ var Game = function(id) {
   game.list = {};
   game.players = {};
   game.hints = 0;
+  game.hintCooldown = 0;
 
   game.newRound = function(timer) {
     getList(function(list) {
       game.list = JSON.parse(JSON.stringify(list));
       game.hints = 0;
-      console.log(list);
+      game.hintCooldown = 0;
       b.sendMessage(game.id, 'A new round will start in 5');
       if (game.list.creator.username) {
-        countdown(4, game.id, '*' + game.list.name + '* by ' + game.list.creator.username);
+        countdown(4, game.id, '<b>' + game.list.name + '</b> by ' + game.list.creator.username);
       } else {
-        countdown(4, game.id, '*' + game.list.name + '*');
+        countdown(4, game.id, '<b>' + game.list.name + '</b>');
       }
     });
   };
 
-  game.hint = function(callback) {
-    callback(game.list.values.filter(function(item) {
-      return !item.guesser;
-    }).map(function(item) {
-      var str = '';
-      str += item.value.substring(0, game.hints + 1);
-      for (var i = game.hints; i < item.value.length - game.hints; i++) {
-        if (item.value.charAt(i) !== '') {
-          str += '*';
-        } else {
-          str += ' ';
-        }
-      }
-      str += item.value.substring(item.value.length - game.hints);
-      str += '\n';
-      return str;
-    }));
-
-    game.hints++;
-    /*
-    for (var i in game.list.values) {
-      var item = game.list.values[i];
-      if (!item.guesser) {
-        b.sendMessage(game.id, item.value.substring(0, 1) + "*".repeat(item.value.length - 2) + item.value.substring(item.value.length - 1));
-      }
+  game.cooldownHint = function() {
+    if (game.hintCooldown > 0) {
+      game.hintCooldown--;
+      setTimeout(function() {
+        game.cooldownHint();
+      }, 1000);
     }
-    */
+  };
+
+  game.hint = function(callback) {
+    if (game.hintCooldown > 0) {
+      b.sendMessage(game.id, 'Calm down with the hints, wait ' + game.hintCooldown + ' more seconds');
+    } else {
+      var str = '';
+      game.list.values.filter(function(item) {
+        return !item.guesser;
+      }).map(function(item) {
+        str += item.value.substring(0, game.hints + 1);
+        for (var i = game.hints; i < item.value.length - game.hints; i++) {
+          if (item.value.charAt(i) !== ' ') {
+            str += '*';
+          } else {
+            str += ' ';
+          }
+        }
+        str += item.value.substring(item.value.length - game.hints);
+        str += '\n';
+        return str;
+      });
+      callback(str);
+      game.hints++;
+      game.hintCooldown = 10;
+      game.cooldownHint();
+    }
   };
 
   game.guess = function(msg) {
@@ -175,7 +183,7 @@ var Game = function(id) {
       if (item.value.replace(/\s/g, '').toLowerCase().indexOf(msg.text.replace(/\s/g, '').toLowerCase()) != -1  && !item.guesser) {
         item.guesser = msg.from;
         game.players[msg.from.id].score++;
-        b.sendMessage(msg.chat.id, prompts[getLanguage(msg.from.language_code)].guessed(msg.from.first_name, msg.text + '\n*' + game.list.name + '*\n' + stringifyList(game.list.values)));
+        b.sendMessage(msg.chat.id, prompts[getLanguage(msg.from.language_code)].guessed(msg.from.first_name, msg.text + '\n<b>' + game.list.name + '</b>\n' + stringifyList(game.list.values)));
         return game.checkRound();
       } else if (item.value.replace(/\s/g, '').toLowerCase() == msg.text.replace(/\s/g, '').toLowerCase() && item.guesser) {
         return b.sendMessage(msg.chat.id, item.guesser.first_name + ' already guessed ' + msg.text + '\nToo bad, ' + msg.from.first_name);
@@ -184,7 +192,7 @@ var Game = function(id) {
   };
 
   game.getScores = function() {
-    var str = '*Scores*\n';
+    var str = '<b>Scores</b>\n';
     Object.values(game.players).map(function(player) {
       return player;
     }).sort(function(a, b) {
@@ -221,14 +229,13 @@ function stringifyList(list) {
 router.post('/', function (req, res, next) {
   var msg, i, item;
   if (!req.body.message || !req.body.message.text) {
-    console.log(req.body.message);
     msg = {
       id: '592503547',
       from: {
         first_name: 'Bot Error'
       },
       command: '/error',
-      text: req.body,
+      text: JSON.stringify(req.body),
       chat: {
         id: '592503547'
       }
