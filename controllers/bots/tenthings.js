@@ -149,13 +149,15 @@ var Game = function(id) {
   game.hint = function(callback) {
     if (game.hintCooldown > 0) {
       b.sendMessage(game.id, 'Calm down with the hints, wait ' + game.hintCooldown + ' more seconds');
+    } else if (game.hints > 5) {
+      b.sendMessage(game.id, 'What? Another hint? I\'m just gonna ignore that request');
     } else {
       var str = '';
       game.list.values.filter(function(item) {
         return !item.guesser;
       }).map(function(item) {
         str += item.value.substring(0, game.hints + 1);
-        for (var i = game.hints; i < item.value.length - game.hints; i++) {
+        for (var i = game.hints + 1; i < item.value.length - game.hints; i++) {
           if (item.value.charAt(i) !== ' ') {
             str += '*';
           } else {
