@@ -168,6 +168,7 @@ var Game = function(id) {
       b.sendMessage(game.id, 'What? Another hint? I\'m just gonna ignore that request');
     } else {
       var str = '';
+      game.hints++;
       game.list.values.filter(function(item) {
         return !item.guesser;
       }).map(function(item) {
@@ -186,7 +187,6 @@ var Game = function(id) {
         return str;
       });
       callback(str);
-      game.hints++;
       game.hintCooldown = 10;
       game.cooldownHint();
     }
