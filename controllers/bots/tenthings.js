@@ -80,7 +80,7 @@ function getList(callback) {
     });
   });
 }
-
+/*
 getList(function(list) {
   console.log(list);
   var str = '';
@@ -101,6 +101,7 @@ getList(function(list) {
   });
   console.log(str);
 })
+*/
 
 function countdown(timer, chat, msg) {
   if (timer > 0) {
@@ -164,7 +165,9 @@ var Game = function(id) {
             str += ' ';
           }
         }
-        str += item.value.substring(item.value.length - game.hints);
+        if (item.value.length - game.hints > 0) {
+          str += item.value.substring(item.value.length - game.hints);
+        }
         str += '\n';
         return str;
       });
@@ -185,7 +188,7 @@ var Game = function(id) {
       if (item.value.replace(/\s/g, '').toLowerCase().indexOf(msg.text.replace(/\s/g, '').toLowerCase()) != -1  && !item.guesser) {
         item.guesser = msg.from;
         game.players[msg.from.id].score++;
-        b.sendMessage(msg.chat.id, prompts[getLanguage(msg.from.language_code)].guessed(msg.from.first_name, item.value + '\n'));
+        b.sendMessage(msg.chat.id, prompts[getLanguage(msg.from.language_code)].guessed(msg.from.first_name, item.value + '\n' + game.list.values.filter(function(item) { return !item.guesser; }).length + ' answers left.'));
         return game.checkRound();
       } else if (item.value.replace(/\s/g, '').toLowerCase() == msg.text.replace(/\s/g, '').toLowerCase() && item.guesser) {
         return b.sendMessage(msg.chat.id, item.guesser.first_name + ' already guessed ' + msg.text + '\nToo bad, ' + msg.from.first_name);
@@ -205,6 +208,29 @@ var Game = function(id) {
     b.sendMessage(game.id, str);
   };
 
+  game.getList = function(callback) {
+    var str = '';
+    game.list.values.map(function(item, index) {
+      str += index + ': ';
+      if (item.guesser) {
+        str += item.value + ' - <i>' + item.guesser.first_name + '</i>';
+        str += '\n';
+      } else {
+        str += item.value.substring(0, game.hints + 1);
+        for (var i = game.hints + 1; i < item.value.length - game.hints; i++) {
+          if (item.value.charAt(i) !== ' ') {
+            str += '*';
+          } else {
+            str += ' ';
+          }
+        }
+        str += item.value.substring(item.value.length - game.hints);
+        str += '\n';
+      }
+    });
+    callback(str);
+  };
+
   game.checkRound = function() {
     if (game.list.values.filter(function(item) {
       return !item.guesser;
@@ -219,14 +245,6 @@ var Game = function(id) {
 
   game.newRound(5);
 };
-
-function stringifyList(list) {
-  var str = '';
-  list.forEach(function(item, index) {
-    str += (index + 1) + ': ' + (item.guesser ? item.value : '') + '\n';
-  });
-  return str;
-}
 
 router.post('/', function (req, res, next) {
   var msg, i, item;
@@ -277,7 +295,9 @@ router.post('/', function (req, res, next) {
       games[msg.chat.id].getScores();
       break;
     case '/list':
-      b.sendMessage(msg.chat.id, '<b>' + games[msg.chat.id].list.name + '</b> by ' + games[msg.chat.id].list.creator.username + '\n' + stringifyList(games[msg.chat.id].list.values));
+      games[msg.chat.id].getList(function(list) {
+        b.sendMessage(msg.chat.id, '<b>' + games[msg.chat.id].list.name + '</b> by ' + games[msg.chat.id].list.creator.username + '\n' + list);
+      });
       break;
     case '/stop':
       delete games[msg.chat.id];
