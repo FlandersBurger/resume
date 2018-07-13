@@ -185,7 +185,7 @@ var Game = function(id) {
       if (item.value.replace(/\s/g, '').toLowerCase().indexOf(msg.text.replace(/\s/g, '').toLowerCase()) != -1  && !item.guesser) {
         item.guesser = msg.from;
         game.players[msg.from.id].score++;
-        b.sendMessage(msg.chat.id, prompts[getLanguage(msg.from.language_code)].guessed(msg.from.first_name, msg.text + '\n<b>' + game.list.name + '</b>\n' + stringifyList(game.list.values)));
+        b.sendMessage(msg.chat.id, prompts[getLanguage(msg.from.language_code)].guessed(msg.from.first_name, item.value + '\n'));
         return game.checkRound();
       } else if (item.value.replace(/\s/g, '').toLowerCase() == msg.text.replace(/\s/g, '').toLowerCase() && item.guesser) {
         return b.sendMessage(msg.chat.id, item.guesser.first_name + ' already guessed ' + msg.text + '\nToo bad, ' + msg.from.first_name);
@@ -247,7 +247,7 @@ router.post('/', function (req, res, next) {
       id: req.body.message.message_id,
       from: req.body.message.from,
       command: req.body.message.text.substring(0, req.body.message.text.indexOf(' ') < 0 ? req.body.message.text.length : req.body.message.text.indexOf(' ')),
-      text: req.body.message.text.substring(req.body.message.text.indexOf(' ') + 1),
+      text: req.body.message.text,
       chat: req.body.message.chat
     };
   }
@@ -275,6 +275,9 @@ router.post('/', function (req, res, next) {
       break;
     case '/scores':
       games[msg.chat.id].getScores();
+      break;
+    case '/list':
+      b.sendMessage(msg.chat.id, '<b>' + games[msg.chat.id].list.name + '</b> by ' + games[msg.chat.id].list.creator.username + '\n' + stringifyList(games[msg.chat.id].list.values));
       break;
     case '/stop':
       delete games[msg.chat.id];
