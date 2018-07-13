@@ -81,6 +81,20 @@ function getList(callback) {
   });
 }
 /*
+b.sendMessage('592503547', 'Please rate the list', {
+  reply_to_message_id: '592503547',
+  reply_markup: JSON.stringify({
+    inline_keyboard: [[
+      { text: '*', callback_data: '1' },
+      { text: '**', callback_data: '2' },
+      { text: '***', callback_data: '3' },
+      { text: '****', callback_data: '4' },
+      { text: '*****', callback_data: '5' }
+    ]]
+  })
+});
+*/
+/*
 getList(function(list) {
   console.log(list);
   var str = '';
@@ -157,8 +171,8 @@ var Game = function(id) {
       game.list.values.filter(function(item) {
         return !item.guesser;
       }).map(function(item) {
-        str += item.value.substring(0, game.hints + 1);
-        for (var i = game.hints + 1; i < item.value.length - game.hints; i++) {
+        str += item.value.substring(0, game.hints);
+        for (var i = game.hints; i < item.value.length - game.hints; i++) {
           if (item.value.charAt(i) !== ' ') {
             str += '*';
           } else {
@@ -211,20 +225,22 @@ var Game = function(id) {
   game.getList = function(callback) {
     var str = '';
     game.list.values.map(function(item, index) {
-      str += index + ': ';
+      str += (index + 1) + ': ';
       if (item.guesser) {
         str += item.value + ' - <i>' + item.guesser.first_name + '</i>';
         str += '\n';
       } else {
-        str += item.value.substring(0, game.hints + 1);
-        for (var i = game.hints + 1; i < item.value.length - game.hints; i++) {
+        str += item.value.substring(0, game.hints);
+        for (var i = game.hints; i < item.value.length - game.hints; i++) {
           if (item.value.charAt(i) !== ' ') {
             str += '*';
           } else {
             str += ' ';
           }
         }
-        str += item.value.substring(item.value.length - game.hints);
+        if (item.value.length - game.hints > 0) {
+          str += item.value.substring(item.value.length - game.hints);
+        }
         str += '\n';
       }
     });
@@ -245,6 +261,7 @@ var Game = function(id) {
 
   game.newRound(5);
 };
+
 
 router.post('/', function (req, res, next) {
   var msg, i, item;

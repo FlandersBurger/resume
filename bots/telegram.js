@@ -48,7 +48,7 @@ module.exports = function() {
 
   bot.sendMessage = function(channel, message) {
     return new Promise(function (resolve, reject) {
-      var url = 'https://api.telegram.org/bot' + bot.token + '/sendMessage?chat_id=' + channel + '&parse_mode=html&text=' + message;
+      var url = 'https://api.telegram.org/bot' + bot.token + '/sendMessage?chat_id=' + channel + '&disable_notification=true&parse_mode=html&text=' + message;
       request(encodeURI(url), function (error, r, body) {
         var response = JSON.parse(body).result;
         //console.log(response);
