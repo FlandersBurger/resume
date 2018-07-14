@@ -164,7 +164,7 @@ var Game = function(id) {
   game.hint = function(callback) {
     if (game.hintCooldown > 0) {
       b.sendMessage(game.id, 'Calm down with the hints, wait ' + game.hintCooldown + ' more seconds');
-    } else if (game.hints > 5) {
+    } else if (game.hints > 4) {
       b.sendMessage(game.id, 'What? Another hint? I\'m just gonna ignore that request');
     } else {
       var str = '';
@@ -172,16 +172,20 @@ var Game = function(id) {
       game.list.values.filter(function(item) {
         return !item.guesser;
       }).map(function(item) {
-        str += item.value.substring(0, game.hints);
-        for (var i = game.hints; i < item.value.length - game.hints; i++) {
-          if (item.value.charAt(i) !== ' ') {
-            str += '*';
-          } else {
-            str += ' ';
+        if (game.hints * 2 > item.value.length) {
+          str += item.value;
+        } else {
+          str += item.value.substring(0, game.hints);
+          for (var i = game.hints; i < item.value.length - game.hints; i++) {
+            if (item.value.charAt(i) !== ' ') {
+              str += '*';
+            } else {
+              str += ' ';
+            }
           }
-        }
-        if (item.value.length - game.hints > 0) {
-          str += item.value.substring(item.value.length - game.hints);
+          if (item.value.length - game.hints > 0) {
+            str += item.value.substring(item.value.length - game.hints);
+          }
         }
         str += '\n';
         return str;
@@ -230,16 +234,20 @@ var Game = function(id) {
         str += item.value + ' - <i>' + item.guesser.first_name + '</i>';
         str += '\n';
       } else {
-        str += item.value.substring(0, game.hints);
-        for (var i = game.hints; i < item.value.length - game.hints; i++) {
-          if (item.value.charAt(i) !== ' ') {
-            str += '*';
-          } else {
-            str += ' ';
+        if (game.hints * 2 > item.value.length) {
+          str += item.value;
+        } else {
+          str += item.value.substring(0, game.hints);
+          for (var i = game.hints; i < item.value.length - game.hints; i++) {
+            if (item.value.charAt(i) !== ' ') {
+              str += '*';
+            } else {
+              str += ' ';
+            }
           }
-        }
-        if (item.value.length - game.hints > 0) {
-          str += item.value.substring(item.value.length - game.hints);
+          if (item.value.length - game.hints > 0) {
+            str += item.value.substring(item.value.length - game.hints);
+          }
         }
         str += '\n';
       }
