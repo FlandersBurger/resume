@@ -1,5 +1,6 @@
 var router = require('express').Router();
 var schedule = require('node-schedule');
+var _ = require('underscore');
 var FuzzyMatching = require('fuzzy-matching');
 
 var TelegramBot = require('../../bots/telegram');
@@ -101,19 +102,6 @@ getList(function(list) {
 });
 */
 
-function countdown(timer, chat, msg) {
-  if (timer > 0) {
-    setTimeout(function() {
-      b.sendMessage(chat, timer);
-      countdown(--timer, chat, msg);
-    }, 1000);
-  } else {
-    setTimeout(function() {
-      b.sendMessage(chat, msg);
-    }, 1000);
-  }
-}
-
 var Game = function(id) {
   var game = this;
   game.id = id;
@@ -128,12 +116,10 @@ var Game = function(id) {
       game.hints = 0;
       game.hintCooldown = 0;
       game.fuzzyMatch = new FuzzyMatching(game.list.values.map(function(item) { return item.value; }));
-      b.sendMessage(game.id, 'A new round will start in 5');
-      if (game.list.creator.username) {
-        countdown(4, game.id, '<b>' + game.list.name + '</b> by ' + game.list.creator.username);
-      } else {
-        countdown(4, game.id, '<b>' + game.list.name + '</b>');
-      }
+      b.sendMessage(game.id, 'A new round will start in 5 seconds');
+      setTimeout(function() {
+        b.sendMessage(game.id, '<b>' + game.list.name + '</b> by ' + game.list.creator.username);
+      }, 5000);
     });
   };
 
