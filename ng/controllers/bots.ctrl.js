@@ -12,6 +12,10 @@ angular.module('app')
     });
   }
 
+  $scope.selectList = function(list) {
+    $scope.selectedList = list;
+  };
+
   $scope.addList = function() {
     $scope.lists.unshift({
       name: '',
@@ -30,6 +34,7 @@ angular.module('app')
         { value: '' },
       ]
     });
+    $scope.selectedList = $scope.lists[0];
   };
   $scope.saveList = function(list) {
     BotsSvc.saveList(list)

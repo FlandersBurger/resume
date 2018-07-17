@@ -1,12 +1,34 @@
 <div id="bots-page" class="col-md-12">
   <h1 class="text-danger" ng-show="!loggedIn">You have to be logged in to edit lists</h1>
   <div ng-show="loggedIn">
-    <div class="col-md-12">
-      <div class="btn btn-default" ng-click="addList()">
-        <i class="fa fa-file-o" aria-hidden="true"></i> New
+    <div class="col-md-4">
+      <input class="form-control" ng-model="search" placeholder="search"/>
+      <button class="btn btn-default" ng-repeat="list in lists | filter: search | orderBy: 'name'" ng-click="selectList(list)">{{list.name}}</button>
+    </div>
+    <div class="col-md-8">
+      <div class="col-md-12">
+        <div class="btn btn-default" ng-click="addList()">
+          <i class="fa fa-file-o" aria-hidden="true"></i> New
+        </div>
+        <div class="btn btn-default" ng-click="addList(selectedList)" ng-disabled="!selectedList.name">
+          <i class="fa fa-save" aria-hidden="true"></i> Save
+        </div>
+        <div class="btn btn-default" ng-click="deleteList(selectedList)" ng-disabled="!selectedList.name">
+          <i class="fa fa-trash-o" aria-hidden="true"></i> Delete
+        </div>
+      </div>
+      <div class="col-md-12">
+        <input class="form-control" ng-model="selectedList.name" placeholder="Name of the list" />
+        <h5>By {{selectedList.creator.username}}</h5>
+        <div ng-repeat="value in selectedList.values track by $index">
+          <input class="form-control" ng-model="value.value" placeholder="Value {{$index + 1}}" />
+        </div>
+        <div class="btn btn-default" ng-click="selectedList.values.push({ value: '' })">
+          <i class="fa fa-plus" aria-hidden="true"></i> Add Value
+        </div>
       </div>
     </div>
-    <div class="col-md-4" ng-repeat="list in lists">
+    <!--div class="col-md-4" ng-repeat="list in lists">
       <div class="panel" ng-class="{'panel-info': !list._id, 'panel-default': list._id}">
         <div class="panel-heading">
           <input class="form-control" ng-model="list.name" placeholder="Name of the list" />
@@ -26,6 +48,6 @@
           </div>
         </div>
       </div>
-    </div>
+    </div-->
   </div>
 </div>

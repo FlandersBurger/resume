@@ -96,11 +96,26 @@ b.sendMessage('592503547', 'Please rate the list', {
   })
 });
 */
-/*
+
 getList(function(list) {
   console.log(list);
+  list.values = getRandom(list.values, 10);
+  console.log(list.values);
 });
-*/
+
+function getRandom(arr, n) {
+  var result = new Array(n),
+    len = arr.length,
+    taken = new Array(len);
+  if (n > len)
+    throw new RangeError("getRandom: more elements taken than available");
+  while (n--) {
+    var x = Math.floor(Math.random() * len);
+    result[n] = arr[x in taken ? taken[x] : x];
+    taken[x] = --len in taken ? taken[len] : len;
+  }
+  return result;
+}
 
 var Game = function(id) {
   var game = this;
@@ -113,6 +128,7 @@ var Game = function(id) {
   game.newRound = function(timer) {
     getList(function(list) {
       game.list = JSON.parse(JSON.stringify(list));
+      game.list.values = getRandom(game.list.values, 10);
       game.hints = 0;
       game.hintCooldown = 0;
       game.fuzzyMatch = new FuzzyMatching(game.list.values.map(function(item) { return item.value; }));
@@ -177,30 +193,17 @@ var Game = function(id) {
       var match = _.find(game.list.values, function(item) {
         return item.value == matcher.value;
       });
-      console.log(matcher);
       if (!match.guesser) {
         match.guesser = msg.from;
         game.players[msg.from.id].score++;
         b.sendMessage(msg.chat.id, prompts[getLanguage(msg.from.language_code)].guessed(msg.from.first_name, match.value + '\n' + game.list.values.filter(function(item) { return !item.guesser; }).length + ' answers left.'));
-        return game.checkRound();
+        setTimeout(function() {
+          return game.checkRound();
+        }, 500);
       } else {
         return b.sendMessage(msg.chat.id, match.guesser.first_name + ' already guessed ' + msg.text + '\nToo bad, ' + msg.from.first_name);
       }
     }
-    /*
-    for (var i in game.list.values) {
-      var item = game.list.values[i];
-      var match = game.fuzzyMatch.get(msg.text);
-      if (item.value.replace(/\w\s/g, '').toLowerCase().indexOf(msg.text.replace(/\w\s/g, '').toLowerCase()) != -1 && !item.guesser) {
-        item.guesser = msg.from;
-        game.players[msg.from.id].score++;
-        b.sendMessage(msg.chat.id, prompts[getLanguage(msg.from.language_code)].guessed(msg.from.first_name, item.value + '\n' + game.list.values.filter(function(item) { return !item.guesser; }).length + ' answers left.'));
-        return game.checkRound();
-      } else if (item.value.replace(/\s/g, '').toLowerCase() == msg.text.replace(/\s/g, '').toLowerCase() && item.guesser) {
-        return b.sendMessage(msg.chat.id, item.guesser.first_name + ' already guessed ' + msg.text + '\nToo bad, ' + msg.from.first_name);
-      }
-    }
-    */
   };
 
   game.getScores = function() {
@@ -255,7 +258,6 @@ var Game = function(id) {
       }, 2000);
     }
   };
-
   game.newRound(5);
 };
 

@@ -29,7 +29,7 @@ router.put('/lists', function (req, res, next) {
 });
 
 router.delete('/lists/:id', function (req, res, next) {
-  List.findByIdAndRemove(null, function(err, list) {
+  List.findByIdAndRemove(req.params.id, function(err, list) {
     if (err) return next(err);
     res.sendStatus(200);
   });
