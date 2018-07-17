@@ -1,5 +1,6 @@
 var router = require('express').Router();
 var schedule = require('node-schedule');
+var FuzzyMatching = require('fuzzy-matching');
 
 var TelegramBot = require('../../bots/telegram');
 
@@ -97,25 +98,17 @@ b.sendMessage('592503547', 'Please rate the list', {
 /*
 getList(function(list) {
   console.log(list);
-  var str = '';
-  list.values.filter(function(item) {
-    return !item.guesser;
-  }).forEach(function(item) {
-    str += item.value.substring(0, 2);
-    for (var i = 2; i < item.value.length - 2; i++) {
-      if (item.value.charAt(i) !== ' ') {
-        str += '*';
-      } else {
-        str += ' ';
-      }
-    }
-    str += item.value.substring(item.value.length - 2);
-    str += '\n';
-    return str;
-  });
-  console.log(str);
-})
+});
 */
+var fm = new FuzzyMatching(['uruguay', 'sierra leone', 'blt', 'the wizard of oz']);
+
+console.log(fm.get('wizard of oz'));
+console.log(fm.get('uurugay'));
+console.log(fm.get('uruguay'));
+console.log(fm.get('Uruguay'));
+console.log(fm.get('sierra'));
+console.log(fm.get('bl'));
+console.log(fm.get('bltx'));
 
 function countdown(timer, chat, msg) {
   if (timer > 0) {
@@ -143,6 +136,7 @@ var Game = function(id) {
       game.list = JSON.parse(JSON.stringify(list));
       game.hints = 0;
       game.hintCooldown = 0;
+      game.fuzzyMatch = new FuzzyMatching(game.list.values.map(function(item) { return value; }));
       b.sendMessage(game.id, 'A new round will start in 5');
       if (game.list.creator.username) {
         countdown(4, game.id, '<b>' + game.list.name + '</b> by ' + game.list.creator.username);
@@ -201,9 +195,25 @@ var Game = function(id) {
       game.players[msg.from.id] = msg.from;
       game.players[msg.from.id].score = 0;
     }
+    var matcher = game.fuzzyMatch.get(msg.text);
+    if (matcher.distance >= 0.75) {
+      var match = _.find(game.list.values, function(item) {
+        return item.value == matcher.value;
+      });
+      if (!match.guesser) {
+        match.guesser = msg.from;
+        game.players[msg.from.id].score++;
+        b.sendMessage(msg.chat.id, prompts[getLanguage(msg.from.language_code)].guessed(msg.from.first_name, match.value + '\n' + game.list.values.filter(function(item) { return !item.guesser; }).length + ' answers left.'));
+        return game.checkRound();
+      } else {
+        return b.sendMessage(msg.chat.id, match.guesser.first_name + ' already guessed ' + msg.text + '\nToo bad, ' + msg.from.first_name);
+      }
+    }
+    /*
     for (var i in game.list.values) {
       var item = game.list.values[i];
-      if (item.value.replace(/\s/g, '').toLowerCase().indexOf(msg.text.replace(/\s/g, '').toLowerCase()) != -1  && !item.guesser) {
+      var match = game.fuzzyMatch.get(msg.text);
+      if (item.value.replace(/\w\s/g, '').toLowerCase().indexOf(msg.text.replace(/\w\s/g, '').toLowerCase()) != -1 && !item.guesser) {
         item.guesser = msg.from;
         game.players[msg.from.id].score++;
         b.sendMessage(msg.chat.id, prompts[getLanguage(msg.from.language_code)].guessed(msg.from.first_name, item.value + '\n' + game.list.values.filter(function(item) { return !item.guesser; }).length + ' answers left.'));
@@ -212,6 +222,7 @@ var Game = function(id) {
         return b.sendMessage(msg.chat.id, item.guesser.first_name + ' already guessed ' + msg.text + '\nToo bad, ' + msg.from.first_name);
       }
     }
+    */
   };
 
   game.getScores = function() {
