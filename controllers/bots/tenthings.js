@@ -319,6 +319,9 @@ router.post('/', function (req, res, next) {
       delete games[msg.chat.id];
       b.sendMessage(msg.chat.id, 'Game stopped');
       break;
+    case '/suggest':
+      b.sendMessage('592503547', JSON.stringify(msg));
+      break;   
     case '/hint':
       if (games[msg.chat.id]) {
         games[msg.chat.id].hint(function(hints) {
