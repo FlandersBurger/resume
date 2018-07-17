@@ -22,8 +22,10 @@ router.get('/lists/:id', function (req, res, next) {
 });
 
 router.put('/lists', function (req, res, next) {
+  console.log(req.body);
   List.findByIdAndUpdate(req.body._id ? req.body._id : new mongoose.Types.ObjectId(), req.body, { new: true, upsert: true }, function(err, list) {
     if (err) return next(err);
+    console.log(list);
     res.json(list);
   });
 });

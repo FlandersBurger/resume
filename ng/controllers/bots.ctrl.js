@@ -37,15 +37,20 @@ angular.module('app')
     $scope.selectedList = $scope.lists[0];
   };
   $scope.saveList = function(list) {
+    list.values = list.values.filter(function(item) {
+      return item.value;
+    });
     BotsSvc.saveList(list)
     .then(function(response) {
       getLists();
+      $scope.selectList(list);
     });
   };
   $scope.deleteList = function(list) {
     BotsSvc.deleteList(list)
     .then(function(response) {
       getLists();
+      $scope.selectList(list);
     });
   };
 

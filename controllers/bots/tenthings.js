@@ -96,13 +96,13 @@ b.sendMessage('592503547', 'Please rate the list', {
   })
 });
 */
-
+/*
 getList(function(list) {
   console.log(list);
   list.values = getRandom(list.values, 10);
   console.log(list.values);
 });
-
+*/
 function getRandom(arr, n) {
   var result = new Array(n),
     len = arr.length,
@@ -321,7 +321,7 @@ router.post('/', function (req, res, next) {
       break;
     case '/suggest':
       b.sendMessage('592503547', JSON.stringify(msg));
-      break;   
+      break;
     case '/hint':
       if (games[msg.chat.id]) {
         games[msg.chat.id].hint(function(hints) {
