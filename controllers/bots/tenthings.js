@@ -100,15 +100,6 @@ getList(function(list) {
   console.log(list);
 });
 */
-var fm = new FuzzyMatching(['uruguay', 'sierra leone', 'blt', 'the wizard of oz']);
-
-console.log(fm.get('wizard of oz'));
-console.log(fm.get('uurugay'));
-console.log(fm.get('uruguay'));
-console.log(fm.get('Uruguay'));
-console.log(fm.get('sierra'));
-console.log(fm.get('bl'));
-console.log(fm.get('bltx'));
 
 function countdown(timer, chat, msg) {
   if (timer > 0) {
@@ -136,7 +127,7 @@ var Game = function(id) {
       game.list = JSON.parse(JSON.stringify(list));
       game.hints = 0;
       game.hintCooldown = 0;
-      game.fuzzyMatch = new FuzzyMatching(game.list.values.map(function(item) { return value; }));
+      game.fuzzyMatch = new FuzzyMatching(game.list.values.map(function(item) { return item.value; }));
       b.sendMessage(game.id, 'A new round will start in 5');
       if (game.list.creator.username) {
         countdown(4, game.id, '<b>' + game.list.name + '</b> by ' + game.list.creator.username);
@@ -200,6 +191,7 @@ var Game = function(id) {
       var match = _.find(game.list.values, function(item) {
         return item.value == matcher.value;
       });
+      console.log(matcher);
       if (!match.guesser) {
         match.guesser = msg.from;
         game.players[msg.from.id].score++;
