@@ -13,7 +13,7 @@ var admins = [
 ];
 
 router.get('/lists/:id', function (req, res, next) {
-  if (_.find(admins, function(admin) {
+  if (admins.find(function(admin) {
     return admin === req.params.id;
   })) {
     List.find().populate('creator').exec(function(err, result) {
