@@ -5,8 +5,17 @@ var config = require('../../config');
 
 var List = require('../../models/list');
 
+var admins = [
+  '5ae15f14b5f7883ff0497339', //Me
+  '5b4ac81544f3cf615d4d67c6', //Caio
+  '5ae16b2317c46c02144a93a9', //Terrence
+  '5b464a53b1436b72a67b0039', //Val
+];
+
 router.get('/lists/:id', function (req, res, next) {
-  if (req.params.id === '5ae15f14b5f7883ff0497339') {
+  if (_.find(admins, function(admin) {
+    return admin === req.params.id;
+  })) {
     List.find().populate('creator').exec(function(err, result) {
       if (err) return next(err);
       res.json(result);
