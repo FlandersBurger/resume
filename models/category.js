@@ -1,4 +1,4 @@
-var db = require('../db')
+var db = require('../db');
 
 var Category = db.model('Category', {
   name: { type: String, required: true },
@@ -9,6 +9,6 @@ var Category = db.model('Category', {
       name: { type: String, required: false }
     }
   ]
-})
+});
 
-module.exports = Category
+module.exports = Category;

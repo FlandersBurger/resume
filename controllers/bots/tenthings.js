@@ -6,6 +6,7 @@ var FuzzyMatching = require('fuzzy-matching');
 var TelegramBot = require('../../bots/telegram');
 
 var List = require('../../models/list');
+var Game = require('../../models/games/tenthings');
 
 var games = {};
 
@@ -80,6 +81,25 @@ function getList(callback) {
     List.findOne().populate('creator').skip(random).exec(function (err, result) {
       return callback(result);
     });
+  });
+}
+
+function getGame(id) {
+  Game.find({
+    where: { id: id }
+  }).exec(function(err, game) {
+    return game;
+  });
+}
+
+function createGame(id, creator) {
+  var game = new Game({
+    id: id,
+    players: [creator]
+  });
+  game.save(function (err) {
+  if (err) return handleError(err);
+    // saved!
   });
 }
 /*
@@ -287,6 +307,11 @@ router.post('/', function (req, res, next) {
   }
   if (msg.command.indexOf('@') >= 0) {
     msg.command = msg.command.substring(0, msg.command.indexOf('@'));
+  }
+  var g = getGame(msg.chat.id);
+  console.log(g);
+  if (!g) {
+    createGame(msg.chat.id, msg.from);
   }
   console.log(msg.id + ' - ' + msg.from.first_name + ': ' + msg.command + ' -> ' + msg.text);
   switch (msg.command) {
