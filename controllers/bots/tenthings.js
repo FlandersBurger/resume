@@ -84,23 +84,28 @@ function getList(callback) {
   });
 }
 
-function getGame(id) {
+function getGame(id, user) {
   TenThings.findOne({
     chat_id: id
   }).exec(function(err, game) {
     console.log(game);
-    return game;
+    if (!game) {
+      return createGame(id, user);
+    } else {
+      return game;
+    }
   });
 }
 
 function createGame(id, creator) {
   var game = new TenThings({
-    id: id,
+    chat_id: id,
     players: [creator]
   });
   game.save(function (err) {
-  if (err) return handleError(err);
+  if (err) return console.error(err);
     console.log('Game Saved!');
+    return game;
   });
 }
 /*
@@ -309,11 +314,7 @@ router.post('/', function (req, res, next) {
   if (msg.command.indexOf('@') >= 0) {
     msg.command = msg.command.substring(0, msg.command.indexOf('@'));
   }
-  var g = getGame(msg.chat.id);
-  console.log(g);
-  if (!g) {
-    createGame(msg.chat.id, msg.from);
-  }
+  var g = getGame(msg.chat.id, msg.from);
   console.log(msg.id + ' - ' + msg.from.first_name + ': ' + msg.command + ' -> ' + msg.text);
   switch (msg.command) {
     case '/error':
