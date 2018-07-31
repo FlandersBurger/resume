@@ -86,8 +86,9 @@ function getList(callback) {
 
 function getGame(id) {
   Game.findOne({
-    id: id
+    chat_id: id
   }).exec(function(err, game) {
+    console.log(game);
     return game;
   });
 }

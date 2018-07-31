@@ -3,7 +3,7 @@ var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
 
 var TenThings = db.model('TenThings', {
-  id: { type: String, required: true },
+  chat_id: { type: String, required: true },
   players: [
     {
       id: { type: String, required: true },
