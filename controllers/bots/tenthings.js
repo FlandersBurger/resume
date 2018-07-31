@@ -85,8 +85,8 @@ function getList(callback) {
 }
 
 function getGame(id) {
-  Game.find({
-    where: { id: id }
+  Game.findOne({
+    id: id
   }).exec(function(err, game) {
     return game;
   });
