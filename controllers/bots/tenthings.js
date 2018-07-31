@@ -6,7 +6,7 @@ var FuzzyMatching = require('fuzzy-matching');
 var TelegramBot = require('../../bots/telegram');
 
 var List = require('../../models/list');
-var Game = require('../../models/games/tenthings');
+var TenThings = require('../../models/games/tenthings');
 
 var games = {};
 
@@ -85,7 +85,7 @@ function getList(callback) {
 }
 
 function getGame(id) {
-  Game.findOne({
+  TenThings.findOne({
     chat_id: id
   }).exec(function(err, game) {
     console.log(game);
@@ -94,13 +94,13 @@ function getGame(id) {
 }
 
 function createGame(id, creator) {
-  var game = new Game({
+  var game = new TenThings({
     id: id,
     players: [creator]
   });
   game.save(function (err) {
   if (err) return handleError(err);
-    // saved!
+    console.log('Game Saved!');
   });
 }
 /*
