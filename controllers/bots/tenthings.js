@@ -95,8 +95,10 @@ function selectList(tenthings, callback) {
 }
 
 function skipList(list) {
+  console.log(list);
   List.findOne({ _id: list._id }).exec(function (err, foundList) {
     if (err) return console.error(err);
+    console.log(foundList);
     if (!foundList.skips) {
       foundList.skips = 1;
     } else {
@@ -121,7 +123,6 @@ function getGame(id, user) {
     }
   });
 }
-getGame('-271852829');
 
 function createGame(id, creator) {
   var game = new TenThings({
