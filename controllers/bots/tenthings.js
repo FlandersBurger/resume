@@ -80,7 +80,7 @@ function selectList(tenthings, callback) {
     console.log(random + ' / ' + count);
 
     // Again query all lists but only fetch one offset by our random #
-    List.findOne({ _id: { $notIn: tenthings.lists } }).populate('creator').skip(random).exec(function (err, result) {
+    List.findOne({ _id: { $nin: tenthings.lists } }).populate('creator').skip(random).exec(function (err, result) {
       if (!result) {
         tenthings.lists = [];
         tenthings.save();
@@ -199,6 +199,7 @@ var Game = function(tenthings) {
         b.sendMessage(game.id, '<b>' + game.list.name + '</b> by ' + game.list.creator.username);
       }, 5000);
       tenthings.list = game.list;
+      tenthings.hints = 0;
       tenthings.lists.push(game.list._id);
       tenthings.save();
     });
@@ -354,7 +355,7 @@ router.post('/', function (req, res, next) {
   if (msg.command.indexOf('@') >= 0) {
     msg.command = msg.command.substring(0, msg.command.indexOf('@'));
   }
-  notifyAdmin(msg.from);
+  //notifyAdmin(msg.from);
   TenThings.findOne({
     chat_id: msg.chat.id
   }).populate('creator').exec(function(err, existingGame) {
@@ -385,8 +386,8 @@ function evaluateCommand(res, msg, tenthings, isNew) {
     console.log(tenthings);
     games[msg.chat.id] = new Game(tenthings);
   }
-  notifyAdmin(tenthings);
-  notifyAdmin(games[msg.chat.id].list);
+  //notifyAdmin(tenthings);
+  //notifyAdmin(games[msg.chat.id].list);
   console.log(msg.id + ' - ' + msg.from.first_name + ': ' + msg.command + ' -> ' + msg.text);
   switch (msg.command) {
     case '/error':
