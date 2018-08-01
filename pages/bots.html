@@ -2,7 +2,7 @@
   <h1 class="text-danger" ng-show="!loggedIn">You have to be logged in to edit lists</h1>
   <div ng-show="loggedIn">
     <div class="col-md-4">
-      <input class="form-control" ng-model="search" placeholder="search"/>
+      <input class="form-control" ng-model="search" placeholder="Search"/>
       <button class="btn btn-default" ng-repeat="list in lists | filter: search | orderBy: 'name'" ng-click="selectList(list)">{{list.name}}</button>
     </div>
     <div class="col-md-8">
