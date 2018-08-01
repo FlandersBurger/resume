@@ -348,12 +348,12 @@ router.post('/', function (req, res, next) {
   if (msg.command.indexOf('@') >= 0) {
     msg.command = msg.command.substring(0, msg.command.indexOf('@'));
   }
-  notifyAdmin(msg);
+  notifyAdmin(msg.from);
   TenThings.findOne({
     chat_id: msg.chat.id
   }).populate('creator').exec(function(err, existingGame) {
+    console.log(existingGame);
     if (!existingGame) {
-      console.log(msg);
       var newGame = new TenThings({
         chat_id: msg.chat.id
       });
