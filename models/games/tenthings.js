@@ -26,8 +26,8 @@ var TenThings = db.model('TenThings', {
         value: String,
         blurb: String,
         guesser: {
-          id: { type: String, required: true },
-          first_name: { type: String, required: true },
+          id: { type: String, required: false },
+          first_name: { type: String, required: false },
           last_name: { type: String, required: false },
           username: { type: String, required: false },
         }

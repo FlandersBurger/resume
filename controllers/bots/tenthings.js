@@ -95,6 +95,8 @@ function selectList(tenthings, callback) {
 }
 
 function skipList(list) {
+  console.log('the list:');
+  console.log(list);
   List.findOne({ _id: list.id }).exec(function (err, list) {
     list.skips++;
     list.save(function(err) {
