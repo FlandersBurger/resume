@@ -130,6 +130,10 @@ function createGame(id, creator) {
   });
 }
 
+function notifyAdmin(msg) {
+  b.sendMessage('592503547', JSON.stringify(msg));
+}
+
 /*
 b.sendMessage('592503547', 'Please rate the list', {
   reply_to_message_id: '592503547',
@@ -374,6 +378,8 @@ function evaluateCommand(res, msg, tenthings, isNew) {
     console.log(tenthings);
     games[msg.chat.id] = new Game(tenthings);
   }
+  notifyAdmin(tenthings);
+  notifyAdmin(games[msg.chat.id].list);
   console.log(msg.id + ' - ' + msg.from.first_name + ': ' + msg.command + ' -> ' + msg.text);
   switch (msg.command) {
     case '/error':
