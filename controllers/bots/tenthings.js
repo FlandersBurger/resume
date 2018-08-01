@@ -174,6 +174,7 @@ var Game = function(tenthings) {
   game.id = tenthings.chat_id;
   game.list = tenthings.list;
   game.players = {};
+  console.log(tenthings.players);
   tenthings.players.forEach(function(player) {
     game.players[player.id] = player;
   });
@@ -351,7 +352,7 @@ router.post('/', function (req, res, next) {
   notifyAdmin(msg);
   TenThings.findOne({
     chat_id: msg.chat.id
-  }).exec(function(err, existingGame) {
+  }).populate('creator').exec(function(err, existingGame) {
     if (!existingGame) {
       var newGame = new TenThings({
         chat_id: msg.chat.id
