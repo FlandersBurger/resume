@@ -347,6 +347,7 @@ router.post('/', function (req, res, next) {
   if (msg.command.indexOf('@') >= 0) {
     msg.command = msg.command.substring(0, msg.command.indexOf('@'));
   }
+  notifyAdmin(msg);
   TenThings.findOne({
     chat_id: msg.chat.id
   }).exec(function(err, existingGame) {
