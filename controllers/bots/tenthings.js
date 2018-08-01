@@ -178,6 +178,7 @@ var Game = function(tenthings) {
     game.players[player.id] = player;
   });
   game.hints = tenthings.hints;
+  game.fuzzyMatch = new FuzzyMatching(game.list.values.map(function(item) { return item.value; }));
   game.hintCooldown = 0;
 
   game.newRound = function(tenthings, timer) {
