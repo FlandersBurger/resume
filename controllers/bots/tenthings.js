@@ -174,7 +174,6 @@ var Game = function(tenthings) {
   game.id = tenthings.chat_id;
   game.list = tenthings.list;
   game.players = {};
-  console.log(tenthings.players);
   tenthings.players.forEach(function(player) {
     game.players[player.id] = player;
   });
@@ -351,12 +350,12 @@ router.post('/', function (req, res, next) {
   }
   notifyAdmin(msg);
   TenThings.findOne({
-    chat_id: msg.chat.id,
-    players: [msg.from]
+    chat_id: msg.chat.id
   }).populate('creator').exec(function(err, existingGame) {
     if (!existingGame) {
       var newGame = new TenThings({
-        chat_id: msg.chat.id
+        chat_id: msg.chat.id,
+        players: [msg.from]
       });
       newGame.save(function (err) {
       if (err) return console.error(err);
@@ -406,9 +405,14 @@ function evaluateCommand(res, msg, tenthings, isNew) {
       games[msg.chat.id].getScores();
       break;
     case '/list':
-      games[msg.chat.id].getList(function(list) {
-        b.sendMessage(msg.chat.id, '<b>' + games[msg.chat.id].list.name + '</b> by ' + games[msg.chat.id].list.creator.username + '\n' + list);
-      });
+      console.log(games[msg.chat.id]);
+      try {
+        games[msg.chat.id].getList(function(list) {
+          b.sendMessage(msg.chat.id, '<b>' + games[msg.chat.id].list.name + '</b> by ' + games[msg.chat.id].list.creator.username + '\n' + list);
+        });
+      } catch (e) {
+
+      }
       break;
     /*
     case '/stop':
