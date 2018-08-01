@@ -103,7 +103,7 @@ function skipList(list) {
     });
   });
 }
-/*
+
 function getGame(id, user) {
   TenThings.findOne({
     chat_id: id
@@ -116,6 +116,7 @@ function getGame(id, user) {
     }
   });
 }
+getGame('-271852829');
 
 function createGame(id, creator) {
   var game = new TenThings({
@@ -128,7 +129,7 @@ function createGame(id, creator) {
     return game;
   });
 }
-*/
+
 /*
 b.sendMessage('592503547', 'Please rate the list', {
   reply_to_message_id: '592503547',
@@ -176,7 +177,7 @@ var Game = function(tenthings) {
   game.hintCooldown = 0;
 
   game.newRound = function(tenthings, timer) {
-    selectList(tenthings.lists, function(list) {
+    selectList(tenthings, function(list) {
       game.list = JSON.parse(JSON.stringify(list));
       game.list.values = getRandom(game.list.values, 10);
       game.hints = 0;
