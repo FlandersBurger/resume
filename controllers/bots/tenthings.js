@@ -353,9 +353,9 @@ router.post('/', function (req, res, next) {
     chat_id: msg.chat.id
   }).populate('creator').exec(function(err, existingGame) {
     if (!existingGame) {
+      console.log(msg);
       var newGame = new TenThings({
-        chat_id: msg.chat.id,
-        players: [msg.from]
+        chat_id: msg.chat.id
       });
       newGame.save(function (err) {
       if (err) return console.error(err);
