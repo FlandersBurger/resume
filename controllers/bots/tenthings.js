@@ -351,7 +351,8 @@ router.post('/', function (req, res, next) {
   }
   notifyAdmin(msg);
   TenThings.findOne({
-    chat_id: msg.chat.id
+    chat_id: msg.chat.id,
+    players: [msg.from]
   }).populate('creator').exec(function(err, existingGame) {
     if (!existingGame) {
       var newGame = new TenThings({
