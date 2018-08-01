@@ -3,6 +3,7 @@ var schedule = require('node-schedule');
 var _ = require('underscore');
 var FuzzyMatching = require('fuzzy-matching');
 
+var config = require('../../config');
 var TelegramBot = require('../../bots/telegram');
 
 var List = require('../../models/list');
@@ -64,26 +65,45 @@ List.collection.insert(lists, function (err, insertedLists) {
 });
 */
 
-var TOKEN = '612900440:AAGwcVhpU23u5wZOO1_9WAgLDm0u-JWnjyk';
+var TOKEN = config.tokens.telegram.tenthings;
 var b = new TelegramBot();
 b.init(TOKEN).then(function() {
   b.introduceYourself();
   b.setWebhook('tenthings');
 });
 
-function getList(callback) {
+function selectList(tenthings, callback) {
   List.count().exec(function (err, count) {
 
     // Get a random entry
     var random = Math.floor(Math.random() * count);
+    console.log(random + ' / ' + count);
 
     // Again query all lists but only fetch one offset by our random #
-    List.findOne().populate('creator').skip(random).exec(function (err, result) {
-      return callback(result);
+    List.findOne({ _id: { $notIn: tenthings.lists } }).populate('creator').skip(random).exec(function (err, result) {
+      if (!result) {
+        tenthings.lists = [];
+        tenthings.save();
+        List.findOne().populate('creator').skip(random).exec(function (err, result) {
+          return callback(result);
+        });
+      } else {
+        return callback(result);
+      }
     });
   });
 }
 
+function skipList(list) {
+  List.findOne({ _id: list.id }).exec(function (err, list) {
+    list.skips++;
+    list.save(function(err) {
+      if (err) return console.error(err);
+      console.log('"' + list.name + '" skipped!');
+    });
+  });
+}
+/*
 function getGame(id, user) {
   TenThings.findOne({
     chat_id: id
@@ -108,6 +128,7 @@ function createGame(id, creator) {
     return game;
   });
 }
+*/
 /*
 b.sendMessage('592503547', 'Please rate the list', {
   reply_to_message_id: '592503547',
@@ -143,16 +164,19 @@ function getRandom(arr, n) {
   return result;
 }
 
-var Game = function(id) {
+var Game = function(tenthings) {
   var game = this;
-  game.id = id;
-  game.list = {};
+  game.id = tenthings.chat_id;
+  game.list = tenthings.list;
   game.players = {};
-  game.hints = 0;
+  tenthings.players.forEach(function(player) {
+    game.players[player.id] = player;
+  });
+  game.hints = tenthings.hints;
   game.hintCooldown = 0;
 
-  game.newRound = function(timer) {
-    getList(function(list) {
+  game.newRound = function(tenthings, timer) {
+    selectList(tenthings.lists, function(list) {
       game.list = JSON.parse(JSON.stringify(list));
       game.list.values = getRandom(game.list.values, 10);
       game.hints = 0;
@@ -162,6 +186,9 @@ var Game = function(id) {
       setTimeout(function() {
         b.sendMessage(game.id, '<b>' + game.list.name + '</b> by ' + game.list.creator.username);
       }, 5000);
+      tenthings.list = game.list;
+      tenthings.lists.push(game.list._id);
+      tenthings.save();
     });
   };
 
@@ -174,11 +201,11 @@ var Game = function(id) {
     }
   };
 
-  game.hint = function(callback) {
-    if (game.hintCooldown > 0) {
-      b.sendMessage(game.id, 'Calm down with the hints, wait ' + game.hintCooldown + ' more seconds');
-    } else if (game.hints > 4) {
+  game.hint = function(tenthings, callback) {
+    if (game.hints > 5) {
       b.sendMessage(game.id, 'What? Another hint? I\'m just gonna ignore that request');
+    } else if (game.hintCooldown > 0) {
+      b.sendMessage(game.id, 'Calm down with the hints, wait ' + game.hintCooldown + ' more seconds');
     } else {
       var str = '';
       game.hints++;
@@ -206,10 +233,12 @@ var Game = function(id) {
       callback(str);
       game.hintCooldown = 10;
       game.cooldownHint();
+      tenthings.hints = game.hints;
+      tenthings.save();
     }
   };
 
-  game.guess = function(msg) {
+  game.guess = function(tenthings, msg) {
     if (!game.players[msg.from.id]) {
       game.players[msg.from.id] = msg.from;
       game.players[msg.from.id].score = 0;
@@ -224,7 +253,7 @@ var Game = function(id) {
         game.players[msg.from.id].score++;
         b.sendMessage(msg.chat.id, prompts[getLanguage(msg.from.language_code)].guessed(msg.from.first_name, match.value + '\n' + game.list.values.filter(function(item) { return !item.guesser; }).length + ' answers left.'));
         setTimeout(function() {
-          return game.checkRound();
+          return game.checkRound(tenthings);
         }, 500);
       } else {
         return b.sendMessage(msg.chat.id, match.guesser.first_name + ' already guessed ' + msg.text + '\nToo bad, ' + msg.from.first_name);
@@ -273,18 +302,17 @@ var Game = function(id) {
     callback(str);
   };
 
-  game.checkRound = function() {
+  game.checkRound = function(tenthings) {
     if (game.list.values.filter(function(item) {
       return !item.guesser;
     }).length === 0) {
       b.sendMessage(game.id, 'Round over.');
       game.getScores();
       setTimeout(function() {
-        game.newRound(5);
+        game.newRound(tenthings, 5);
       }, 2000);
     }
   };
-  game.newRound(5);
 };
 
 
@@ -314,7 +342,37 @@ router.post('/', function (req, res, next) {
   if (msg.command.indexOf('@') >= 0) {
     msg.command = msg.command.substring(0, msg.command.indexOf('@'));
   }
-  var g = getGame(msg.chat.id, msg.from);
+
+  TenThings.findOne({
+    chat_id: msg.chat.id
+  }).exec(function(err, existingGame) {
+    if (!existingGame) {
+      var newGame = new TenThings({
+        chat_id: id,
+        players: [msg.from]
+      });
+      newGame.save(function (err) {
+      if (err) return console.error(err);
+        console.log('Game Saved!');
+        return evaluateCommand(res, msg, newGame, true);
+      });
+    } else {
+      return evaluateCommand(res, msg, existingGame, false);
+    }
+  });
+  //b.sendMessage(msg.chat.id, 'Received Post');
+});
+
+router.get('/', function (req, res, next) {
+  //b.sendMessage(msg.chat.id, 'Received Get');
+  res.json({ message: 'get ok'});
+});
+
+function evaluateCommand(res, msg, tenthings, isNew) {
+  if (!games[msg.chat.id]) {
+    console.log(tenthings);
+    games[msg.chat.id] = new Game(tenthings);
+  }
   console.log(msg.id + ' - ' + msg.from.first_name + ': ' + msg.command + ' -> ' + msg.text);
   switch (msg.command) {
     case '/error':
@@ -324,15 +382,16 @@ router.post('/', function (req, res, next) {
       b.sendMessage(msg.chat.id, 'To start a game, type /new');
       break;
     case '/new':
-      if (games[msg.chat.id]) {
+      if (!isNew) {
         b.sendMessage(msg.chat.id, 'A game is already in progress');
       } else {
-        games[msg.chat.id] = new Game(msg.chat.id);
+        games[msg.chat.id].newRound(tenthings, 5);
       }
       break;
     case '/skip':
+      skipList(games[msg.chat.id].list);
       games[msg.chat.id].getScores();
-      games[msg.chat.id].newRound(5);
+      games[msg.chat.id].newRound(tenthings, 5);
       break;
     case '/scores':
       games[msg.chat.id].getScores();
@@ -342,16 +401,18 @@ router.post('/', function (req, res, next) {
         b.sendMessage(msg.chat.id, '<b>' + games[msg.chat.id].list.name + '</b> by ' + games[msg.chat.id].list.creator.username + '\n' + list);
       });
       break;
+    /*
     case '/stop':
       delete games[msg.chat.id];
       b.sendMessage(msg.chat.id, 'Game stopped');
       break;
+    */
     case '/suggest':
       b.sendMessage('592503547', JSON.stringify(msg));
       break;
     case '/hint':
       if (games[msg.chat.id]) {
-        games[msg.chat.id].hint(function(hints) {
+        games[msg.chat.id].hint(tenthings, function(hints) {
           b.sendMessage(msg.chat.id, hints);
         });
       } else {
@@ -360,15 +421,10 @@ router.post('/', function (req, res, next) {
       break;
     default:
       if (games[msg.chat.id]) {
-        games[msg.chat.id].guess(msg);
+        games[msg.chat.id].guess(tenthings, msg);
       }
   }
   res.sendStatus(200);
-  //b.sendMessage(msg.chat.id, 'Received Post');
-});
-router.get('/', function (req, res, next) {
-  //b.sendMessage(msg.chat.id, 'Received Get');
-  res.json({ message: 'get ok'});
-});
+}
 
 module.exports = router;

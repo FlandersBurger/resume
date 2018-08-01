@@ -12,5 +12,10 @@ module.exports = {
       user: 'debackerlaurent@gmail.com',
       pass: 'jzhmbjabtpqhwnsl'
     }
+  },
+  tokens: {
+    telegram: {
+      tenthings: '612900440:AAGwcVhpU23u5wZOO1_9WAgLDm0u-JWnjyk'
+    }
   }
 };
