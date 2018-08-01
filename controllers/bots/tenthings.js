@@ -95,11 +95,11 @@ function selectList(tenthings, callback) {
 }
 
 function skipList(list) {
-  console.log('the list:');
-  console.log(list);
-  List.findOne({ _id: list.id }).exec(function (err, list) {
-    list.skips++;
-    list.save(function(err) {
+  List.findOne({ _id: list.id }).exec(function (err, foundList) {
+    if (err) return console.error(err);
+    console.log(foundList);
+    foundList.skips++;
+    foundList.save(function(err) {
       if (err) return console.error(err);
       console.log('"' + list.name + '" skipped!');
     });

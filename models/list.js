@@ -10,7 +10,7 @@ var List = db.model('List', {
     }
   ],
   date: { type: Date, required: true, default: Date.now },
-  skips: { type: Number, required: false, default: 0 },
+  skips: { type: Number, required: true, default: 0 },
   votes: [
       {
       id: { type: String, required: true },
