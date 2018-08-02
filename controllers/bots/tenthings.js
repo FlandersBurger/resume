@@ -73,11 +73,11 @@ b.init(TOKEN).then(function() {
 });
 
 function selectList(tenthings, callback) {
-  List.findAll({ _id: { $nin: tenthings.playedLists } }).populate('creator').exec(function (err, lists) {
+  List.find({ _id: { $nin: tenthings.playedLists } }).populate('creator').exec(function (err, lists) {
     var random = Math.floor(Math.random() * lists.length);
     if (lists.length === 0) {
       tenthings.playedLists = [];
-      List.findAll().populate('creator').exec(function (err, lists) {
+      List.find({}).populate('creator').exec(function (err, lists) {
         random = Math.floor(Math.random() * lists.length);
         return callback(lists[random]);
       });
