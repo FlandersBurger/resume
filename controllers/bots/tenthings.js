@@ -73,24 +73,17 @@ b.init(TOKEN).then(function() {
 });
 
 function selectList(tenthings, callback) {
-  List.count().exec(function (err, count) {
-
-    // Get a random entry
-    var random = Math.floor(Math.random() * count);
-    console.log(random + ' / ' + count);
-
-    // Again query all lists but only fetch one offset by our random #
-    List.findOne({ _id: { $nin: tenthings.lists } }).populate('creator').skip(random).exec(function (err, result) {
-      if (!result) {
-        tenthings.lists = [];
-        tenthings.save();
-        List.findOne().populate('creator').skip(random).exec(function (err, result) {
-          return callback(result);
-        });
-      } else {
-        return callback(result);
-      }
-    });
+  List.findAll({ _id: { $nin: tenthings.playedLists } }).populate('creator').exec(function (err, lists) {
+    var random = Math.floor(Math.random() * lists.length);
+    if (lists.length === 0) {
+      tenthings.playedLists = [];
+      List.findAll().populate('creator').exec(function (err, lists) {
+        random = Math.floor(Math.random() * lists.length);
+        return callback(lists[random]);
+      });
+    } else {
+      return callback(lists[random]);
+    }
   });
 }
 
@@ -197,9 +190,8 @@ var Game = function(tenthings) {
         b.sendMessage(game.id, '<b>' + game.list.name + '</b> by ' + game.list.creator.username);
       }, 5000);
       tenthings.list = game.list;
-      console.log(game.list);
       tenthings.hints = 0;
-      tenthings.lists.push(game.list._id);
+      tenthings.playedLists.push(game.list._id);
       tenthings.save();
     });
   };

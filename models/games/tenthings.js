@@ -14,11 +14,11 @@ var TenThings = db.model('TenThings', {
       score: { type: Number, required: false, default: 0 },
     }
   ],
-  lists: [
+  playedLists: [
     { type: String }
   ],
   list: {
-    id: String,
+    _id: String,
     name: String,
     creator: { type: String, ref: 'User', required: false },
     values: [
