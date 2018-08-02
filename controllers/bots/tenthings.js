@@ -247,16 +247,10 @@ var Game = function(tenthings) {
       game.players[msg.from.id] = msg.from;
       game.players[msg.from.id].score = 0;
     }
-    var player;
     if (!_.find(tenthings.players, function(existingPlayer) {
       return existingPlayer.id == msg.from.id;
     })) {
       tenthings.players.push(msg.from);
-      player = tenthings.players[tenthings.players.length - 1];
-    } else {
-      player = _.find(tenthings.players, function(existingPlayer) {
-        return existingPlayer.id == msg.from.id;
-      });
     }
     var matcher = game.fuzzyMatch.get(msg.text);
     if (matcher.distance >= 0.75) {
@@ -271,7 +265,9 @@ var Game = function(tenthings) {
             item.guesser = match.guesser;
           }
         });
-        player.score = game.players[msg.from.id].score;
+        _.find(tenthings.players, function(existingPlayer) {
+          return existingPlayer.id == msg.from.id;
+        }).score = game.players[msg.from.id].score;
         tenthings.save();
         b.sendMessage(msg.chat.id, prompts[getLanguage(msg.from.language_code)].guessed(msg.from.first_name, match.value + (match.blurb ? '\n<i>' + match.blurb : '</i>') + '\n' + game.list.values.filter(function(item) { return !item.guesser; }).length + ' answers left.'));
         setTimeout(function() {
