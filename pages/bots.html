@@ -23,7 +23,7 @@
         <div class="input-group" ng-repeat="value in selectedList.values track by $index">
           <input class="form-control" ng-model="value.value" placeholder="Value {{$index + 1}}" />
           <span class="input-group-addon"></span>
-          <input class="form-control" ng-model="value.blurb" placeholder="Blurb {{$index + 1}}" />
+          <input class="form-control" ng-model="value.blurb" placeholder="Display after guessing {{value.value}}" />
         </div>
         <div class="btn btn-default" ng-click="selectedList.values.push({ value: '' })">
           <i class="fa fa-plus" aria-hidden="true"></i> Add Value
