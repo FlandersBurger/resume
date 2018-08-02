@@ -248,7 +248,7 @@ var Game = function(tenthings) {
       game.players[msg.from.id].score = 0;
     }
     var player = _.find(tenthings.players, function(existingPlayer) {
-      return existingPlayer.id === match.guesser.id;
+      return existingPlayer.id === msg.from.id;
     });
     if (!player) {
       tenthings.players.push(msg.from);
