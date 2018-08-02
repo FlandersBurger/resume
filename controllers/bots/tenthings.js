@@ -14,19 +14,16 @@ var games = {};
 var prompts = {
   en: {
     guessed: function(user, text) {
-      console.log(user + ' got ' + text);
       return user + ' got ' + text;
     }
   },
   fr: {
     guessed: function(user, text) {
-      console.log(user + ' got ' + text);
       return user + ' a trouve ' + text;
     }
   },
   nl: {
     guessed: function(user, text) {
-      console.log(user + ' got ' + text);
       return user + ' heeft ' + text + ' gevonden';
     }
   }
@@ -263,10 +260,6 @@ var Game = function(tenthings) {
       if (!match.guesser) {
         match.guesser = msg.from;
         game.players[msg.from.id].score++;
-        b.sendMessage(msg.chat.id, prompts[getLanguage(msg.from.language_code)].guessed(msg.from.first_name, match.value + (match.blurb ? '\n<i>' + match.blurb : '</i>') + '\n' + game.list.values.filter(function(item) { return !item.guesser; }).length + ' answers left.'));
-        setTimeout(function() {
-          return game.checkRound(tenthings);
-        }, 500);
         tenthings.list.values.forEach(function(item) {
           if (item.value === match.value) {
             item.guesser = match.guesser;
@@ -277,6 +270,12 @@ var Game = function(tenthings) {
         });
         player.score = game.players[msg.from.id].score;
         tenthings.save();
+        console.log(match);
+        console.log(match.blurb ? '\n<i>' + match.blurb + '</i>' : '');
+        b.sendMessage(msg.chat.id, prompts[getLanguage(msg.from.language_code)].guessed(msg.from.first_name, match.value + (match.blurb ? '\n<i>' + match.blurb + '</i>' : '') + '\n' + game.list.values.filter(function(item) { return !item.guesser; }).length + ' answers left.'));
+        setTimeout(function() {
+          return game.checkRound(tenthings);
+        }, 500);
       } else {
         return b.sendMessage(msg.chat.id, match.guesser.first_name + ' already guessed ' + match.value + '\nToo bad, ' + msg.from.first_name);
       }
