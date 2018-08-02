@@ -95,10 +95,8 @@ function selectList(tenthings, callback) {
 }
 
 function skipList(list) {
-  console.log(list);
   List.findOne({ _id: list._id }).exec(function (err, foundList) {
     if (err) return console.error(err);
-    console.log(foundList);
     if (!foundList.skips) {
       foundList.skips = 1;
     } else {
@@ -199,6 +197,7 @@ var Game = function(tenthings) {
         b.sendMessage(game.id, '<b>' + game.list.name + '</b> by ' + game.list.creator.username);
       }, 5000);
       tenthings.list = game.list;
+      console.log(game.list);
       tenthings.hints = 0;
       tenthings.lists.push(game.list._id);
       tenthings.save();
@@ -256,6 +255,13 @@ var Game = function(tenthings) {
       game.players[msg.from.id] = msg.from;
       game.players[msg.from.id].score = 0;
     }
+    var player = _.find(tenthings.players, function(existingPlayer) {
+      return existingPlayer.id === match.guesser.id;
+    });
+    if (!player) {
+      tenthings.players.push(msg.from);
+      player = tenthings.players[tenthings.players.length - 1];
+    }
     var matcher = game.fuzzyMatch.get(msg.text);
     if (matcher.distance >= 0.75) {
       var match = _.find(game.list.values, function(item) {
@@ -264,12 +270,19 @@ var Game = function(tenthings) {
       if (!match.guesser) {
         match.guesser = msg.from;
         game.players[msg.from.id].score++;
-        b.sendMessage(msg.chat.id, prompts[getLanguage(msg.from.language_code)].guessed(msg.from.first_name, match.value + '\n' + game.list.values.filter(function(item) { return !item.guesser; }).length + ' answers left.'));
+        tenthings.list.values.forEach(function(item) {
+          if (item.value === match.value) {
+            item.guesser = match.guesser;
+          }
+        });
+        player.score = game.players[msg.from.id].score;
+        tenthings.save();
+        b.sendMessage(msg.chat.id, prompts[getLanguage(msg.from.language_code)].guessed(msg.from.first_name, match.value + (match.blurb ? '\n' + match.blurb : '') + '\n' + game.list.values.filter(function(item) { return !item.guesser; }).length + ' answers left.'));
         setTimeout(function() {
           return game.checkRound(tenthings);
         }, 500);
       } else {
-        return b.sendMessage(msg.chat.id, match.guesser.first_name + ' already guessed ' + msg.text + '\nToo bad, ' + msg.from.first_name);
+        return b.sendMessage(msg.chat.id, match.guesser.first_name + ' already guessed ' + match.value + '\nToo bad, ' + msg.from.first_name);
       }
     }
   };

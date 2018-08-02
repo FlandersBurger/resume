@@ -20,8 +20,10 @@
       <div class="col-md-12">
         <input class="form-control" ng-model="selectedList.name" placeholder="Name of the list" />
         <h5>By {{selectedList.creator.username}}</h5>
-        <div ng-repeat="value in selectedList.values track by $index">
+        <div class="input-group" ng-repeat="value in selectedList.values track by $index">
           <input class="form-control" ng-model="value.value" placeholder="Value {{$index + 1}}" />
+          <span class="input-group-addon"></span>
+          <input class="form-control" ng-model="value.blurb" placeholder="Blurb {{$index + 1}}" />
         </div>
         <div class="btn btn-default" ng-click="selectedList.values.push({ value: '' })">
           <i class="fa fa-plus" aria-hidden="true"></i> Add Value
