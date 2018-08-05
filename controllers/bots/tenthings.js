@@ -204,7 +204,7 @@ var Game = function(tenthings) {
   };
 
   game.hint = function(tenthings, callback) {
-    if (game.hints > 5) {
+    if (game.hints >= 5) {
       b.sendMessage(game.id, 'What? Another hint? I\'m just gonna ignore that request');
     } else if (game.hintCooldown > 0) {
       b.sendMessage(game.id, 'Calm down with the hints, wait ' + game.hintCooldown + ' more seconds');
@@ -431,7 +431,7 @@ function evaluateCommand(res, msg, tenthings, isNew) {
       break;
     */
     case '/suggest':
-      b.sendMessage('592503547', JSON.stringify(msg));
+      b.sendMessage('592503547', JSON.stringify((msg.from.username ? msg.from.username : msg.from.first_name) + msg.text));
       break;
     case '/hint':
       if (games[msg.chat.id]) {
