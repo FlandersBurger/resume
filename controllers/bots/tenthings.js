@@ -74,15 +74,14 @@ b.init(TOKEN).then(function() {
 
 function selectList(tenthings, callback) {
   List.find({ _id: { $nin: tenthings.playedLists } }).populate('creator').exec(function (err, lists) {
-    var random = Math.floor(Math.random() * lists.length);
+    console.log(lists);
     if (lists.length === 0) {
       tenthings.playedLists = [];
       List.find({}).populate('creator').exec(function (err, lists) {
-        random = Math.floor(Math.random() * lists.length);
-        return callback(lists[random]);
+        return callback(lists[Math.floor(Math.random() * lists.length)]);
       });
     } else {
-      return callback(lists[random]);
+      return callback(lists[Math.floor(Math.random() * lists.length)]);
     }
   });
 }
@@ -270,8 +269,6 @@ var Game = function(tenthings) {
         });
         player.score = game.players[msg.from.id].score;
         tenthings.save();
-        console.log(match);
-        console.log(match.blurb ? '\n<i>' + match.blurb + '</i>' : '');
         b.sendMessage(msg.chat.id, prompts[getLanguage(msg.from.language_code)].guessed(msg.from.first_name, match.value + (match.blurb ? '\n<i>' + match.blurb + '</i>' : '') + '\n' + game.list.values.filter(function(item) { return !item.guesser; }).length + ' answers left.'));
         setTimeout(function() {
           return game.checkRound(tenthings);
