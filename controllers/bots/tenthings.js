@@ -219,10 +219,10 @@ var Game = function(tenthings) {
         } else {
           str += item.value.substring(0, game.hints);
           for (var i = game.hints; i < item.value.length - game.hints; i++) {
-            if (item.value.charAt(i) !== ' ') {
-              str += '*';
+            if (/[ !@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(item.value.charAt(i))) {
+              str += item.value.charAt(i);
             } else {
-              str += ' ';
+              str += '*';
             }
           }
           if (item.value.length - game.hints > 0) {
