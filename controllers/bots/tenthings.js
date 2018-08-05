@@ -74,7 +74,6 @@ b.init(TOKEN).then(function() {
 
 function selectList(tenthings, callback) {
   List.find({ _id: { $nin: tenthings.playedLists } }).populate('creator').exec(function (err, lists) {
-    console.log(lists);
     if (lists.length === 0) {
       tenthings.playedLists = [];
       List.find({}).populate('creator').exec(function (err, lists) {
