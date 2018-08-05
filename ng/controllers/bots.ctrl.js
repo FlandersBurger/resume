@@ -41,11 +41,15 @@ angular.module('app')
     list.values = list.values.filter(function(item) {
       return item.value;
     });
-    BotsSvc.saveList(list)
-    .then(function(response) {
-      getLists();
-      $scope.selectList(response.data);
-    });
+    if (list.values.length >= 10) {
+      BotsSvc.saveList(list)
+      .then(function(response) {
+        getLists();
+        $scope.selectList(response.data);
+      });
+    } else {
+      alert('Lists must contain 10 or more values!');
+    }
   };
 
   $scope.deleteList = function(list) {
