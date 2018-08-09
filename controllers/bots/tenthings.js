@@ -200,10 +200,9 @@ function newRound(game) {
 }
 
 function hint(game, callback) {
-  console.log(cooldowns[game.id]);
   if (game.hints >= 5) {
     b.sendMessage(game.id, 'What? Another hint? I\'m just gonna ignore that request');
-  } else if (cooldowns[game.id]) {
+  } else if (cooldowns[game.id] && cooldowns[game.id] > 0) {
     b.sendMessage(game.id, 'Calm down with the hints, wait ' + cooldowns[game.id] + ' more seconds');
   } else {
     var str = '';
