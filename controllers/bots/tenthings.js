@@ -263,9 +263,7 @@ function getList(game, callback) {
   var str = '';
   game.list.values.map(function(item, index) {
     str += (index + 1) + ': ';
-    console.log(item);
-    console.log(item.guesser);
-    if (!item.guesser) {
+    if (!item.guesser.first_name) {
       if (game.hints * 2 > item.value.length) {
         str += item.value;
       } else {
