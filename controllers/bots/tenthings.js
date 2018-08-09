@@ -151,7 +151,7 @@ function guess(game, msg) {
     var match = _.find(game.list.values, function(item) {
       return item.value === matcher.value;
     });
-    if (!match.guesser) {
+    if (!match.guesser.first_name) {
       match.guesser = msg.from;
       game.list.values.forEach(function(item) {
         if (item.value === match.value) {
