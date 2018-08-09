@@ -141,7 +141,7 @@ getList(function(list) {
 
 function guess(game, msg) {
   if (!_.find(game.players, function(existingPlayer) {
-    return existingPlayer.id === msg.from.id;
+    return existingPlayer.id == msg.from.id;
   })) {
     game.players.push(msg.from);
   }
@@ -158,9 +158,12 @@ function guess(game, msg) {
           item.guesser = match.guesser;
         }
       });
+      console.log(game.players);
+      console.log(msg.from.id);
       var player = _.find(game.players, function(existingPlayer) {
-        return existingPlayer.id === msg.from.id;
+        return existingPlayer.id == msg.from.id;
       });
+      console.log(player);
       player.score++;
       game.save();
       b.sendMessage(msg.chat.id, prompts[getLanguage(msg.from.language_code)].guessed(msg.from.first_name, match.value + (match.blurb ? '\n<i>' + match.blurb + '</i>' : '') + '\n' + game.list.values.filter(function(item) { return !item.guesser; }).length + ' answers left.'));
@@ -380,7 +383,6 @@ function evaluateCommand(res, msg, game, isNew) {
       getScores(game);
       break;
     case '/list':
-      console.log(game.list.values);
       try {
         getList(game, function(list) {
           b.sendMessage(msg.chat.id, '<b>' + game.list.name + '</b> by ' + game.list.creator.username + '\n' + list);
