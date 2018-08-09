@@ -381,7 +381,7 @@ function evaluateCommand(res, msg, game, isNew) {
       getScores(game);
       break;
     case '/list':
-      console.log(game);
+      console.log(game.list.values);
       try {
         getList(game, function(list) {
           b.sendMessage(msg.chat.id, '<b>' + game.list.name + '</b> by ' + game.list.creator.username + '\n' + list);
