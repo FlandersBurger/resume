@@ -10,7 +10,6 @@ var List = require('../../models/list');
 var TenThings = require('../../models/games/tenthings');
 
 var games = {};
-var commands = [];
 
 var prompts = {
   en: {
@@ -158,15 +157,12 @@ function guess(game, msg) {
           item.guesser = match.guesser;
         }
       });
-      console.log(game.players);
-      console.log(msg.from.id);
       var player = _.find(game.players, function(existingPlayer) {
         return existingPlayer.id == msg.from.id;
       });
-      console.log(player);
       player.score++;
       game.save();
-      b.sendMessage(msg.chat.id, prompts[getLanguage(msg.from.language_code)].guessed(msg.from.first_name, match.value + (match.blurb ? '\n<i>' + match.blurb + '</i>' : '') + '\n' + game.list.values.filter(function(item) { return !item.guesser; }).length + ' answers left.'));
+      b.sendMessage(msg.chat.id, prompts[getLanguage(msg.from.language_code)].guessed(msg.from.first_name, match.value + (match.blurb ? '\n<i>' + match.blurb + '</i>' : '') + '\n' + game.list.values.filter(function(item) { return !item.guesser.first_name; }).length + ' answers left.'));
       setTimeout(function() {
         return checkRound(game);
       }, 500);
@@ -181,7 +177,7 @@ function checkRound(game) {
     return !item.guesser;
   }).length === 0) {
     b.sendMessage(game.id, 'Round over.');
-    game.getScores();
+    getScores(game);
     setTimeout(function() {
       newRound(game);
     }, 2000);
@@ -233,7 +229,9 @@ function hint(game, callback) {
       return str;
     });
     callback(str);
-    games[game.id].hintCooldown = 10;
+    games[game.id] = {
+      hintCooldown: 10
+    };
     cooldownHint(game.id);
     game.save();
   }
