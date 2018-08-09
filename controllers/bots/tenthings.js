@@ -264,6 +264,7 @@ function getList(game, callback) {
   game.list.values.map(function(item, index) {
     str += (index + 1) + ': ';
     console.log(item);
+    console.log(item.guesser);
     if (!item.guesser) {
       if (game.hints * 2 > item.value.length) {
         str += item.value;
