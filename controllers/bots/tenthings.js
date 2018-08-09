@@ -263,7 +263,7 @@ function getList(game, callback) {
   var str = '';
   game.list.values.map(function(item, index) {
     str += (index + 1) + ': ';
-    console.log(item.guesser);
+    console.log(item);
     if (item.guesser) {
       str += item.value + ' - <i>' + item.guesser.first_name + '</i>';
       str += '\n';
