@@ -9,7 +9,7 @@ var TelegramBot = require('../../bots/telegram');
 var List = require('../../models/list');
 var TenThings = require('../../models/games/tenthings');
 
-var games = {};
+var cooldowns = {};
 
 var prompts = {
   en: {
@@ -200,10 +200,11 @@ function newRound(game) {
 }
 
 function hint(game, callback) {
+  console.log(cooldowns[game.id]);
   if (game.hints >= 5) {
     b.sendMessage(game.id, 'What? Another hint? I\'m just gonna ignore that request');
-  } else if (games[game.id] && games[game.id].hintCooldown > 0) {
-    b.sendMessage(game.id, 'Calm down with the hints, wait ' + games[game.id].hintCooldown + ' more seconds');
+  } else if (cooldowns[game.id]) {
+    b.sendMessage(game.id, 'Calm down with the hints, wait ' + cooldowns[game.id] + ' more seconds');
   } else {
     var str = '';
     game.hints++;
@@ -229,22 +230,20 @@ function hint(game, callback) {
       return str;
     });
     callback(str);
-    games[game.id] = {
-      hintCooldown: 10
-    };
+    cooldowns[game.id] = 10;
     cooldownHint(game.id);
     game.save();
   }
 }
 
 function cooldownHint(gameId) {
-  if (games[gameId].hintCooldown > 0) {
-    games[gameId].hintCooldown--;
+  if (cooldowns[gameId] > 0) {
+    cooldowns[gameId]--;
     setTimeout(function() {
       cooldownHint(gameId);
     }, 1000);
   } else {
-    delete games[gameId];
+    delete cooldowns[gameId];
   }
 }
 
