@@ -264,10 +264,7 @@ function getList(game, callback) {
   game.list.values.map(function(item, index) {
     str += (index + 1) + ': ';
     console.log(item);
-    if (item.guesser) {
-      str += item.value + ' - <i>' + item.guesser.first_name + '</i>';
-      str += '\n';
-    } else {
+    if (!item.guesser) {
       if (game.hints * 2 > item.value.length) {
         str += item.value;
       } else {
@@ -283,6 +280,9 @@ function getList(game, callback) {
           str += item.value.substring(item.value.length - game.hints);
         }
       }
+      str += '\n';
+    } else {
+      str += item.value + ' - <i>' + item.guesser.first_name + '</i>';
       str += '\n';
     }
   });
