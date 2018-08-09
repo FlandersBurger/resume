@@ -174,7 +174,7 @@ function guess(game, msg) {
 
 function checkRound(game) {
   if (game.list.values.filter(function(item) {
-    return !item.guesser;
+    return !item.guesser.first_name;
   }).length === 0) {
     b.sendMessage(game.id, 'Round over.');
     getScores(game);
