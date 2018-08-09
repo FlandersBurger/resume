@@ -248,9 +248,7 @@ function cooldownHint(gameId) {
 
 function getScores(game) {
   var str = '<b>Scores</b>\n';
-  Object.values(game.players).map(function(player) {
-    return player;
-  }).sort(function(a, b) {
+  game.players.sort(function(a, b) {
     return b.score - a.score;
   }).slice(0, 10).forEach(function(player, index) {
     str += (index + 1) + ': ' + player.first_name + ' - ' + player.score + '\n';
