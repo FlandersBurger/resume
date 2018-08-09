@@ -208,7 +208,7 @@ function hint(game, callback) {
     var str = '';
     game.hints++;
     game.list.values.filter(function(item) {
-      return !item.guesser;
+      return !item.guesser.first_name;
     }).map(function(item) {
       if (game.hints * 2 > item.value.length) {
         str += item.value;
