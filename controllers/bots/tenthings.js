@@ -190,9 +190,9 @@ function newRound(game) {
     game.list.values = getRandom(game.list.values, 10);
     game.hints = 0;
     game.hintCooldown = 0;
-    b.sendMessage(game.id, 'A new round will start in 5 seconds');
+    b.sendMessage(game.chat_id, 'A new round will start in 5 seconds');
     setTimeout(function() {
-      b.sendMessage(game.id, '<b>' + game.list.name + '</b> by ' + game.list.creator.username);
+      b.sendMessage(game.chat_id, '<b>' + game.list.name + '</b> by ' + game.list.creator.username);
     }, 5000);
     game.playedLists.push(game.list._id);
     game.save();
@@ -201,9 +201,9 @@ function newRound(game) {
 
 function hint(game, callback) {
   if (game.hints >= 5) {
-    b.sendMessage(game.id, 'What? Another hint? I\'m just gonna ignore that request');
+    b.sendMessage(game.chat_id, 'What? Another hint? I\'m just gonna ignore that request');
   } else if (cooldowns[game.id] && cooldowns[game.id] > 0) {
-    b.sendMessage(game.id, 'Calm down with the hints, wait ' + cooldowns[game.id] + ' more seconds');
+    b.sendMessage(game.chat_id, 'Calm down with the hints, wait ' + cooldowns[game.id] + ' more seconds');
   } else {
     var str = '';
     game.hints++;
@@ -255,7 +255,7 @@ function getScores(game) {
   }).slice(0, 10).forEach(function(player, index) {
     str += (index + 1) + ': ' + player.first_name + ' - ' + player.score + '\n';
   });
-  b.sendMessage(game.id, str);
+  b.sendMessage(game.chat_id, str);
 }
 
 function getList(game, callback) {
