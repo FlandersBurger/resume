@@ -10,6 +10,7 @@ var List = require('../../models/list');
 var TenThings = require('../../models/games/tenthings');
 
 var games = {};
+var commands = [];
 
 var prompts = {
   en: {
@@ -100,19 +101,6 @@ function skipList(list) {
   });
 }
 
-function getGame(id, user) {
-  TenThings.findOne({
-    chat_id: id
-  }).exec(function(err, game) {
-    console.log(game);
-    if (!game) {
-      return createGame(id, user);
-    } else {
-      return game;
-    }
-  });
-}
-
 function createGame(id, creator) {
   var game = new TenThings({
     chat_id: id,
@@ -150,6 +138,156 @@ getList(function(list) {
   console.log(list.values);
 });
 */
+
+function guess(game, msg) {
+  if (!_.find(game.players, function(existingPlayer) {
+    return existingPlayer.id === msg.from.id;
+  })) {
+    game.players.push(msg.from);
+  }
+  var fuzzyMatch = new FuzzyMatching(game.list.values.map(function(item) { return item.value; }));
+  var matcher = fuzzyMatch.get(msg.text);
+  if (matcher.distance >= 0.75) {
+    var match = _.find(game.list.values, function(item) {
+      return item.value === matcher.value;
+    });
+    if (!match.guesser) {
+      match.guesser = msg.from;
+      game.list.values.forEach(function(item) {
+        if (item.value === match.value) {
+          item.guesser = match.guesser;
+        }
+      });
+      var player = _.find(game.players, function(existingPlayer) {
+        return existingPlayer.id === msg.from.id;
+      });
+      player.score++;
+      game.save();
+      b.sendMessage(msg.chat.id, prompts[getLanguage(msg.from.language_code)].guessed(msg.from.first_name, match.value + (match.blurb ? '\n<i>' + match.blurb + '</i>' : '') + '\n' + game.list.values.filter(function(item) { return !item.guesser; }).length + ' answers left.'));
+      setTimeout(function() {
+        return checkRound(game);
+      }, 500);
+    } else {
+      return b.sendMessage(msg.chat.id, match.guesser.first_name + ' already guessed ' + match.value + '\nToo bad, ' + msg.from.first_name);
+    }
+  }
+}
+
+function checkRound(game) {
+  if (game.list.values.filter(function(item) {
+    return !item.guesser;
+  }).length === 0) {
+    b.sendMessage(game.id, 'Round over.');
+    game.getScores();
+    setTimeout(function() {
+      newRound(game);
+    }, 2000);
+  }
+}
+
+function newRound(game) {
+  selectList(game, function(list) {
+    game.list = JSON.parse(JSON.stringify(list));
+    game.list.values = getRandom(game.list.values, 10);
+    game.hints = 0;
+    game.hintCooldown = 0;
+    b.sendMessage(game.id, 'A new round will start in 5 seconds');
+    setTimeout(function() {
+      b.sendMessage(game.id, '<b>' + game.list.name + '</b> by ' + game.list.creator.username);
+    }, 5000);
+    game.playedLists.push(game.list._id);
+    game.save();
+  });
+}
+
+function hint(game, callback) {
+  if (game.hints >= 5) {
+    b.sendMessage(game.id, 'What? Another hint? I\'m just gonna ignore that request');
+  } else if (games[game.id] && games[game.id].hintCooldown > 0) {
+    b.sendMessage(game.id, 'Calm down with the hints, wait ' + games[game.id].hintCooldown + ' more seconds');
+  } else {
+    var str = '';
+    game.hints++;
+    game.list.values.filter(function(item) {
+      return !item.guesser;
+    }).map(function(item) {
+      if (game.hints * 2 > item.value.length) {
+        str += item.value;
+      } else {
+        str += item.value.substring(0, game.hints);
+        for (var i = game.hints; i < item.value.length - game.hints; i++) {
+          if (/[ !@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(item.value.charAt(i))) {
+            str += item.value.charAt(i);
+          } else {
+            str += '*';
+          }
+        }
+        if (item.value.length - game.hints > 0) {
+          str += item.value.substring(item.value.length - game.hints);
+        }
+      }
+      str += '\n';
+      return str;
+    });
+    callback(str);
+    games[game.id].hintCooldown = 10;
+    cooldownHint(game.id);
+    game.save();
+  }
+}
+
+function cooldownHint(gameId) {
+  if (games[gameId].hintCooldown > 0) {
+    games[gameId].hintCooldown--;
+    setTimeout(function() {
+      cooldownHint(gameId);
+    }, 1000);
+  } else {
+    delete games[gameId];
+  }
+}
+
+function getScores(game) {
+  var str = '<b>Scores</b>\n';
+  Object.values(game.players).map(function(player) {
+    return player;
+  }).sort(function(a, b) {
+    return b.score - a.score;
+  }).slice(0, 10).forEach(function(player, index) {
+    str += (index + 1) + ': ' + player.first_name + ' - ' + player.score + '\n';
+  });
+  b.sendMessage(game.id, str);
+}
+
+function getList(game, callback) {
+  var str = '';
+  game.list.values.map(function(item, index) {
+    str += (index + 1) + ': ';
+    if (item.guesser) {
+      str += item.value + ' - <i>' + item.guesser.first_name + '</i>';
+      str += '\n';
+    } else {
+      if (game.hints * 2 > item.value.length) {
+        str += item.value;
+      } else {
+        str += item.value.substring(0, game.hints);
+        for (var i = game.hints; i < item.value.length - game.hints; i++) {
+          if (item.value.charAt(i) !== ' ') {
+            str += '*';
+          } else {
+            str += ' ';
+          }
+        }
+        if (item.value.length - game.hints > 0) {
+          str += item.value.substring(item.value.length - game.hints);
+        }
+      }
+      str += '\n';
+    }
+  });
+  callback(str);
+}
+
 function getRandom(arr, n) {
   var result = new Array(n),
     len = arr.length,
@@ -163,175 +301,6 @@ function getRandom(arr, n) {
   }
   return result;
 }
-
-var Game = function(tenthings) {
-  var game = this;
-  game.id = tenthings.chat_id;
-  game.list = tenthings.list;
-  game.players = {};
-  tenthings.players.forEach(function(player) {
-    game.players[player.id] = player;
-  });
-  game.hints = tenthings.hints;
-  game.fuzzyMatch = new FuzzyMatching(game.list.values.map(function(item) { return item.value; }));
-  game.hintCooldown = 0;
-
-  game.newRound = function(tenthings, timer) {
-    selectList(tenthings, function(list) {
-      game.list = JSON.parse(JSON.stringify(list));
-      game.list.values = getRandom(game.list.values, 10);
-      game.hints = 0;
-      game.hintCooldown = 0;
-      game.fuzzyMatch = new FuzzyMatching(game.list.values.map(function(item) { return item.value; }));
-      b.sendMessage(game.id, 'A new round will start in 5 seconds');
-      setTimeout(function() {
-        b.sendMessage(game.id, '<b>' + game.list.name + '</b> by ' + game.list.creator.username);
-      }, 5000);
-      tenthings.list = game.list;
-      tenthings.hints = 0;
-      tenthings.playedLists.push(game.list._id);
-      tenthings.save();
-    });
-  };
-
-  game.cooldownHint = function() {
-    if (game.hintCooldown > 0) {
-      game.hintCooldown--;
-      setTimeout(function() {
-        game.cooldownHint();
-      }, 1000);
-    }
-  };
-
-  game.hint = function(tenthings, callback) {
-    if (game.hints >= 5) {
-      b.sendMessage(game.id, 'What? Another hint? I\'m just gonna ignore that request');
-    } else if (game.hintCooldown > 0) {
-      b.sendMessage(game.id, 'Calm down with the hints, wait ' + game.hintCooldown + ' more seconds');
-    } else {
-      var str = '';
-      game.hints++;
-      game.list.values.filter(function(item) {
-        return !item.guesser;
-      }).map(function(item) {
-        if (game.hints * 2 > item.value.length) {
-          str += item.value;
-        } else {
-          str += item.value.substring(0, game.hints);
-          for (var i = game.hints; i < item.value.length - game.hints; i++) {
-            if (/[ !@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(item.value.charAt(i))) {
-              str += item.value.charAt(i);
-            } else {
-              str += '*';
-            }
-          }
-          if (item.value.length - game.hints > 0) {
-            str += item.value.substring(item.value.length - game.hints);
-          }
-        }
-        str += '\n';
-        return str;
-      });
-      callback(str);
-      game.hintCooldown = 10;
-      game.cooldownHint();
-      tenthings.hints = game.hints;
-      tenthings.save();
-    }
-  };
-
-  game.guess = function(tenthings, msg) {
-    if (!game.players[msg.from.id]) {
-      game.players[msg.from.id] = msg.from;
-      game.players[msg.from.id].score = 0;
-    }
-    if (!_.find(tenthings.players, function(existingPlayer) {
-      return existingPlayer.id == msg.from.id;
-    })) {
-      tenthings.players.push(msg.from);
-    }
-    var matcher = game.fuzzyMatch.get(msg.text);
-    if (matcher.distance >= 0.75) {
-      var match = _.find(game.list.values, function(item) {
-        return item.value == matcher.value;
-      });
-      if (!match.guesser) {
-        match.guesser = msg.from;
-        game.players[msg.from.id].score++;
-        tenthings.list.values.forEach(function(item) {
-          if (item.value === match.value) {
-            item.guesser = match.guesser;
-          }
-        });
-        var player = _.find(tenthings.players, function(existingPlayer) {
-          return existingPlayer.id == msg.from.id;
-        });
-        player.score = game.players[msg.from.id].score;
-        tenthings.save();
-        b.sendMessage(msg.chat.id, prompts[getLanguage(msg.from.language_code)].guessed(msg.from.first_name, match.value + (match.blurb ? '\n<i>' + match.blurb + '</i>' : '') + '\n' + game.list.values.filter(function(item) { return !item.guesser; }).length + ' answers left.'));
-        setTimeout(function() {
-          return game.checkRound(tenthings);
-        }, 500);
-      } else {
-        return b.sendMessage(msg.chat.id, match.guesser.first_name + ' already guessed ' + match.value + '\nToo bad, ' + msg.from.first_name);
-      }
-    }
-  };
-
-  game.getScores = function() {
-    var str = '<b>Scores</b>\n';
-    Object.values(game.players).map(function(player) {
-      return player;
-    }).sort(function(a, b) {
-      return b.score - a.score;
-    }).slice(0, 10).forEach(function(player, index) {
-      str += (index + 1) + ': ' + player.first_name + ' - ' + player.score + '\n';
-    });
-    b.sendMessage(game.id, str);
-  };
-
-  game.getList = function(callback) {
-    var str = '';
-    game.list.values.map(function(item, index) {
-      str += (index + 1) + ': ';
-      if (item.guesser) {
-        str += item.value + ' - <i>' + item.guesser.first_name + '</i>';
-        str += '\n';
-      } else {
-        if (game.hints * 2 > item.value.length) {
-          str += item.value;
-        } else {
-          str += item.value.substring(0, game.hints);
-          for (var i = game.hints; i < item.value.length - game.hints; i++) {
-            if (item.value.charAt(i) !== ' ') {
-              str += '*';
-            } else {
-              str += ' ';
-            }
-          }
-          if (item.value.length - game.hints > 0) {
-            str += item.value.substring(item.value.length - game.hints);
-          }
-        }
-        str += '\n';
-      }
-    });
-    callback(str);
-  };
-
-  game.checkRound = function(tenthings) {
-    if (game.list.values.filter(function(item) {
-      return !item.guesser;
-    }).length === 0) {
-      b.sendMessage(game.id, 'Round over.');
-      game.getScores();
-      setTimeout(function() {
-        game.newRound(tenthings, 5);
-      }, 2000);
-    }
-  };
-};
-
 
 router.post('/', function (req, res, next) {
   var msg, i, item;
@@ -384,11 +353,7 @@ router.get('/', function (req, res, next) {
   res.json({ message: 'get ok'});
 });
 
-function evaluateCommand(res, msg, tenthings, isNew) {
-  if (!games[msg.chat.id]) {
-    console.log(tenthings);
-    games[msg.chat.id] = new Game(tenthings);
-  }
+function evaluateCommand(res, msg, game, isNew) {
   //notifyAdmin(tenthings);
   //notifyAdmin(games[msg.chat.id].list);
   console.log(msg.id + ' - ' + msg.from.first_name + ': ' + msg.command + ' -> ' + msg.text);
@@ -403,22 +368,22 @@ function evaluateCommand(res, msg, tenthings, isNew) {
       if (!isNew) {
         b.sendMessage(msg.chat.id, 'A game is already in progress');
       } else {
-        games[msg.chat.id].newRound(tenthings, 5);
+        newRound(game);
       }
       break;
     case '/skip':
-      skipList(games[msg.chat.id].list);
-      games[msg.chat.id].getScores();
-      games[msg.chat.id].newRound(tenthings, 5);
+      skipList(game.list);
+      getScores(game);
+      newRound(game);
       break;
     case '/scores':
-      games[msg.chat.id].getScores();
+      getScores(game);
       break;
     case '/list':
-      console.log(games[msg.chat.id]);
+      console.log(game);
       try {
-        games[msg.chat.id].getList(function(list) {
-          b.sendMessage(msg.chat.id, '<b>' + games[msg.chat.id].list.name + '</b> by ' + games[msg.chat.id].list.creator.username + '\n' + list);
+        getList(game, function(list) {
+          b.sendMessage(msg.chat.id, '<b>' + game.list.name + '</b> by ' + game.list.creator.username + '\n' + list);
         });
       } catch (e) {
 
@@ -434,18 +399,12 @@ function evaluateCommand(res, msg, tenthings, isNew) {
       b.sendMessage('592503547', JSON.stringify((msg.from.username ? msg.from.username : msg.from.first_name) + msg.text));
       break;
     case '/hint':
-      if (games[msg.chat.id]) {
-        games[msg.chat.id].hint(tenthings, function(hints) {
-          b.sendMessage(msg.chat.id, hints);
-        });
-      } else {
-        b.sendMessage(msg.chat.id, 'There is no game in progress');
-      }
+      hint(game, function(hints) {
+        b.sendMessage(msg.chat.id, hints);
+      });
       break;
     default:
-      if (games[msg.chat.id]) {
-        games[msg.chat.id].guess(tenthings, msg);
-      }
+      guess(game, msg);
   }
   res.sendStatus(200);
 }

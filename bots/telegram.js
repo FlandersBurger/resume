@@ -46,6 +46,8 @@ module.exports = function() {
     });
   };
 
+
+
   bot.sendMessage = function(channel, message) {
     return new Promise(function (resolve, reject) {
       var url = 'https://api.telegram.org/bot' + bot.token + '/sendMessage?chat_id=' + channel + '&disable_notification=true&parse_mode=html&text=' + message;
@@ -69,6 +71,7 @@ module.exports = function() {
 
   bot.introduceYourself = function() {
     console.log('Hello, my name is ' + bot.getName() + '. You can talk to me through my username: @' + bot.username);
+
   };
 
 };
