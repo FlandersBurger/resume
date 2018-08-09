@@ -72,10 +72,10 @@ b.init(TOKEN).then(function() {
   b.setWebhook('tenthings');
 });
 
-function selectList(tenthings, callback) {
-  List.find({ _id: { $nin: tenthings.playedLists } }).populate('creator').exec(function (err, lists) {
+function selectList(game, callback) {
+  List.find({ _id: { $nin: game.playedLists } }).populate('creator').exec(function (err, lists) {
     if (lists.length === 0) {
-      tenthings.playedLists = [];
+      game.playedLists = [];
       List.find({}).populate('creator').exec(function (err, lists) {
         return callback(lists[Math.floor(Math.random() * lists.length)]);
       });
