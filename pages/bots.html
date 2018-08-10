@@ -10,16 +10,28 @@
         <div class="btn btn-default" ng-click="addList()">
           <i class="fa fa-file-o" aria-hidden="true"></i> New
         </div>
-        <div class="btn btn-default" ng-click="saveList(selectedList)" ng-disabled="!selectedList.name">
+        <div class="btn btn-default" ng-click="saveList(selectedList)" ng-disabled="!selectedList">
           <i class="fa fa-save" aria-hidden="true"></i> Save
         </div>
-        <div class="btn btn-default" ng-click="deleteList(selectedList)" ng-disabled="!selectedList.name">
+        <div class="btn btn-default" ng-click="deleteList(selectedList)" ng-disabled="!selectedList">
           <i class="fa fa-trash-o" aria-hidden="true"></i> Delete
         </div>
       </div>
       <div class="col-md-12">
-        <input class="form-control" ng-model="selectedList.name" placeholder="Name of the list" />
+        <input class="form-control" ng-model="selectedList.name" placeholder="Name of the list" ng-disabled="!selectedList" />
         <h5>By {{selectedList.creator.username}}</h5>
+
+        <div class="input-group">
+          <div class="input-group-btn">
+            <div class="dropdown">
+              <button class="btn btn-default dropdown-toggle" type="button" data-toggle="dropdown" ng-disabled="!selectedList">{{selectedList.category ? selectedList.category : 'Category'}}</button>
+              <ul class="dropdown-menu">
+                <li ng-repeat="category in categories"><a href="#" ng-click="selectedList.category = category">{{category}}</a></li>
+              </ul>
+            </div>
+          </div>
+          <input class="form-control" ng-model="selectedList.description" placeholder="Description" ng-disabled="!selectedList" />
+        </div>
         <div class="input-group" ng-repeat="value in selectedList.values track by $index">
           <input class="form-control" ng-model="value.value" placeholder="Value {{$index + 1}}" />
           <span class="input-group-addon"></span>

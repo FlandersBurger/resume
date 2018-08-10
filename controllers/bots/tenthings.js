@@ -144,6 +144,11 @@ function guess(game, msg) {
   })) {
     game.players.push(msg.from);
   }
+  if (!_.find(game.guessers, function(guesser) {
+    return guesser == msg.from.id;
+  })) {
+    game.guessers.push(msg.from.id);
+  }
   var fuzzyMatch = new FuzzyMatching(game.list.values.map(function(item) { return item.value; }));
   var matcher = fuzzyMatch.get(msg.text);
   if (matcher.distance >= 0.75) {
@@ -160,7 +165,7 @@ function guess(game, msg) {
       var player = _.find(game.players, function(existingPlayer) {
         return existingPlayer.id == msg.from.id;
       });
-      player.score++;
+      player.score += game.guessers.length;
       game.save();
       b.sendMessage(msg.chat.id, prompts[getLanguage(msg.from.language_code)].guessed(msg.from.first_name, match.value + (match.blurb ? '\n<i>' + match.blurb + '</i>' : '') + '\n' + game.list.values.filter(function(item) { return !item.guesser.first_name; }).length + ' answers left.'));
       setTimeout(function() {
@@ -186,10 +191,13 @@ function checkRound(game) {
 
 function newRound(game) {
   selectList(game, function(list) {
+    list.plays++;
+    list.save();
     game.list = JSON.parse(JSON.stringify(list));
     game.list.values = getRandom(game.list.values, 10);
     game.hints = 0;
     game.hintCooldown = 0;
+    game.guessers = [];
     b.sendMessage(game.chat_id, 'A new round will start in 5 seconds');
     setTimeout(function() {
       b.sendMessage(game.chat_id, '<b>' + game.list.name + '</b> by ' + game.list.creator.username);
@@ -328,7 +336,7 @@ router.post('/', function (req, res, next) {
   //notifyAdmin(msg.from);
   TenThings.findOne({
     chat_id: msg.chat.id
-  }).populate('creator').exec(function(err, existingGame) {
+  }).populate('list.creator').exec(function(err, existingGame) {
     if (!existingGame) {
       var newGame = new TenThings({
         chat_id: msg.chat.id
@@ -354,13 +362,18 @@ function evaluateCommand(res, msg, game, isNew) {
   //notifyAdmin(tenthings);
   //notifyAdmin(games[msg.chat.id].list);
   console.log(msg.id + ' - ' + msg.from.first_name + ': ' + msg.command + ' -> ' + msg.text);
+  if (game.list.values.length === 0) {
+    newRound(game);
+  }
   switch (msg.command) {
     case '/error':
       b.sendMessage(msg.chat.id, msg.text);
       break;
+    /*
     case '/start':
       b.sendMessage(msg.chat.id, 'To start a game, type /new');
       break;
+    */
     case '/new':
       if (!isNew) {
         b.sendMessage(msg.chat.id, 'A game is already in progress');
@@ -392,7 +405,7 @@ function evaluateCommand(res, msg, game, isNew) {
       break;
     */
     case '/suggest':
-      b.sendMessage('592503547', JSON.stringify((msg.from.username ? msg.from.username : msg.from.first_name) + msg.text));
+      b.sendMessage('592503547', JSON.stringify((msg.from.username ? msg.from.username : msg.from.first_name) + ': ' + msg.text));
       break;
     case '/hint':
       hint(game, function(hints) {

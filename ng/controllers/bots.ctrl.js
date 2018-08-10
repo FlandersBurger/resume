@@ -1,6 +1,21 @@
 angular.module('app')
 .controller('BotsCtrl', function ($scope, BotsSvc) {
 
+  $scope.categories = [
+    'Music',
+    'Television',
+    'Movies',
+    'Geography',
+    'History',
+    'Science',
+    'Gaming',
+    'Sport',
+    'Religion',
+    'Literature',
+    'Misc',
+    'Funny'
+  ];
+
   $scope.$on('login', function (_) {
     getLists();
   });
