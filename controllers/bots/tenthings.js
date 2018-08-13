@@ -310,17 +310,35 @@ function getRandom(arr, n) {
 router.post('/', function (req, res, next) {
   var msg, i, item;
   if (!req.body.message || !req.body.message.text) {
-    msg = {
-      id: '592503547',
-      from: {
-        first_name: 'Bot Error'
-      },
-      command: '/error',
-      text: JSON.stringify(req.body),
-      chat: {
-        id: '592503547'
-      }
-    };
+    if (req.body.new_chat_participant) {
+      msg = {
+        id: req.body.message.chat.id,
+        from: req.body.new_chat_participant,
+        command: '/info',
+        chat: req.body.message.chat
+      };
+    } else if (req.body.group_chat_created) {
+      msg = {
+        id: req.body.message.chat.id,
+        from: req.body.from,
+        command: '/info',
+        chat: req.body.message.chat
+      };
+    } else if (req.body.photo || req.body.emoji || req.body.voice || req.body.animation || req.body.reply_to_message) {
+      //Ignore these messages as they're just chat interactions
+    } else {
+      msg = {
+        id: '592503547',
+        from: {
+          first_name: 'Bot Error'
+        },
+        command: '/error',
+        text: JSON.stringify(req.body),
+        chat: {
+          id: '592503547'
+        }
+      };
+    }
   } else {
     msg = {
       id: req.body.message.message_id,
@@ -368,6 +386,9 @@ function evaluateCommand(res, msg, game, isNew) {
   switch (msg.command) {
     case '/error':
       b.sendMessage(msg.chat.id, msg.text);
+      break;
+    case '/info':
+    b.sendMessage(msg.chat.id, 'Hi ' + (msg.from.username ? msg.from.username : msg.from.first_name) + ',\nMy name is 10 Things and I am a game bot.\nThe game will give you a category and then you answer anything that comes to mind in that category.\nI have a few things you can ask of me, just type a backslash to see the commands.\nIf you want to add your own lists, please go to https://belgocanadian.com/bots\nAnd last but not least if you want to suggest anything (new lists or features) type "\\suggest" followed by your suggestion!\n\nHave fun!');
       break;
     /*
     case '/start':

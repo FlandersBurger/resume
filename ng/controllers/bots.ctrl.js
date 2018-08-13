@@ -9,11 +9,13 @@ angular.module('app')
     'History',
     'Science',
     'Gaming',
-    'Sport',
+    'Sports',
     'Religion',
-    'Literature',
+    'Art and Literature',
     'Misc',
-    'Funny'
+    'Funny',
+    'Food and Drink',
+    'Society'
   ];
 
   $scope.$on('login', function (_) {

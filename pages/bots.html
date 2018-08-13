@@ -26,7 +26,7 @@
             <div class="dropdown">
               <button class="btn btn-default dropdown-toggle" type="button" data-toggle="dropdown" ng-disabled="!selectedList">{{selectedList.category ? selectedList.category : 'Category'}}</button>
               <ul class="dropdown-menu">
-                <li ng-repeat="category in categories"><a href="#" ng-click="selectedList.category = category">{{category}}</a></li>
+                <li ng-repeat="category in categories | orderBy"><a href="#" ng-click="selectedList.category = category">{{category}}</a></li>
               </ul>
             </div>
           </div>
