@@ -243,11 +243,14 @@ function getHint(hints, value) {
           str += '*';
           break;
         case 1:
+        console.log('here');
+        console.log(str);
           if (i === 0) {
             str += value.charAt(i);
           } else {
             str += '*';
           }
+          console.log(str);
           break;
         case 2:
           if (i === 0 || value.charAt(i - 1) === ' ') {
