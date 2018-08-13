@@ -237,6 +237,9 @@ function getHint(hints, value) {
       str += value.charAt(i);
     } else {
       switch (hints) {
+        case 0:
+          str += '*';
+          break;
         case 1:
           if (i === 0) {
             str += value.charAt(i);
@@ -252,21 +255,21 @@ function getHint(hints, value) {
           }
           break;
         case 3:
-          if (i === 0 || value.charAt(i - 1) === ' ' || /[aeiuo]/.test(value.charAt(i))) {
+          if (i === 0 || value.charAt(i - 1) === ' ') {
             str += value.charAt(i);
           } else {
             str += '*';
           }
           break;
         case 4:
-          if (i === 0 || value.charAt(i - 1) === ' ' || /[aeiuo]/.test(value.charAt(i)) || value.charAt(i + 1) === ' ' || i === value.length) {
+          if (i === 0 || value.charAt(i - 1) === ' ' || value.charAt(i + 1) === ' ' || i === value.length) {
             str += value.charAt(i);
           } else {
             str += '*';
           }
           break;
         case 5:
-          if (i === 0 || value.charAt(i - 1) === ' ' || /[aeiuojxqzk]/.test(value.charAt(i)) || value.charAt(i + 1) === ' ' || i === value.length) {
+          if (i === 0 || value.charAt(i - 1) === ' ' || /[aeiuo]/.test(value.charAt(i)) || value.charAt(i + 1) === ' ' || i === value.length) {
             str += value.charAt(i);
           } else {
             str += '*';
@@ -293,11 +296,8 @@ function getHint(hints, value) {
             str += '*';
           }
           break;
-        case 9:
-          str += value.charAt(i);
-          break;
         default:
-          str += '*';
+          str += value.charAt(i);
       }
     }
   }
