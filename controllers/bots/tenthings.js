@@ -232,20 +232,15 @@ function newRound(game) {
 
 function getHint(hints, value) {
   var str = '';
-  console.log(hints);
   for (var i in value) {
     if (/[ !@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(value.charAt(i))) {
       str += value.charAt(i);
     } else {
-      console.log(i + ': ' + value.charAt(i));
       switch (hints) {
         case 0:
           str += '*';
           break;
         case 1:
-        console.log('here');
-        console.log(i);
-        console.log(i == 0);
           if (i == 0) {
             str += value.charAt(i);
           } else {
@@ -260,35 +255,35 @@ function getHint(hints, value) {
           }
           break;
         case 3:
-          if (i == 0 || value.charAt(i - 1) === ' ' || value.charAt(i + 1) === ' ' || i === value.length - 1) {
+          if (i == 0 || value.charAt(i - 1) === ' ' || value.charAt(i + 1) === ' ' || i == value.length - 1) {
             str += value.charAt(i);
           } else {
             str += '*';
           }
           break;
         case 4:
-          if (i == 0 || value.charAt(i - 1) === ' ' || /[aeiuo]/.test(value.charAt(i)) || value.charAt(i + 1) === ' ' || i === value.length - 1) {
+          if (i == 0 || value.charAt(i - 1) === ' ' || /[aeiuo]/.test(value.charAt(i)) || value.charAt(i + 1) === ' ' || i == value.length - 1) {
             str += value.charAt(i);
           } else {
             str += '*';
           }
           break;
         case 5:
-          if (i == 0 || value.charAt(i - 1) === ' ' || /[aeiuojxqzkhfwyv]/.test(value.charAt(i)) || value.charAt(i + 1) === ' ' || i === value.length - 1) {
+          if (i == 0 || value.charAt(i - 1) === ' ' || /[aeiuojxqzkhfwyv]/.test(value.charAt(i)) || value.charAt(i + 1) === ' ' || i == value.length - 1) {
             str += value.charAt(i);
           } else {
             str += '*';
           }
           break;
         case 6:
-          if (i == 0 || value.charAt(i - 1) === ' ' || /[aeiuojxqzkhfwyvcmpb]/.test(value.charAt(i)) || value.charAt(i + 1) === ' ' || i === value.length - 1) {
+          if (i == 0 || value.charAt(i - 1) === ' ' || /[aeiuojxqzkhfwyvcmpb]/.test(value.charAt(i)) || value.charAt(i + 1) === ' ' || i == value.length - 1) {
             str += value.charAt(i);
           } else {
             str += '*';
           }
           break;
         case 7:
-          if (i == 0 || value.charAt(i - 1) === ' ' || /[aeiuojxqzkhfwyvcmpbdg]/.test(value.charAt(i)) || value.charAt(i + 1) === ' ' || i === value.length - 1) {
+          if (i == 0 || value.charAt(i - 1) === ' ' || /[aeiuojxqzkhfwyvcmpbdg]/.test(value.charAt(i)) || value.charAt(i + 1) === ' ' || i == value.length - 1) {
             str += value.charAt(i);
           } else {
             str += '*';
