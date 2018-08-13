@@ -240,41 +240,57 @@ function getHint(hints, value) {
         case 1:
           if (i === 0) {
             str += value.charAt(i);
+          } else {
+            str += '*';
           }
           break;
         case 2:
           if (i === 0 || value.charAt(i - 1) === ' ') {
             str += value.charAt(i);
+          } else {
+            str += '*';
           }
           break;
         case 3:
           if (i === 0 || value.charAt(i - 1) === ' ' || /[aeiuo]/.test(value.charAt(i))) {
             str += value.charAt(i);
+          } else {
+            str += '*';
           }
           break;
         case 4:
           if (i === 0 || value.charAt(i - 1) === ' ' || /[aeiuo]/.test(value.charAt(i)) || value.charAt(i + 1) === ' ' || i === value.length) {
             str += value.charAt(i);
+          } else {
+            str += '*';
           }
           break;
         case 5:
           if (i === 0 || value.charAt(i - 1) === ' ' || /[aeiuojxqzk]/.test(value.charAt(i)) || value.charAt(i + 1) === ' ' || i === value.length) {
             str += value.charAt(i);
+          } else {
+            str += '*';
           }
           break;
         case 6:
           if (i === 0 || value.charAt(i - 1) === ' ' || /[aeiuojxqzkhfwyv]/.test(value.charAt(i)) || value.charAt(i + 1) === ' ' || i === value.length) {
             str += value.charAt(i);
+          } else {
+            str += '*';
           }
           break;
         case 7:
           if (i === 0 || value.charAt(i - 1) === ' ' || /[aeiuojxqzkhfwyvcmpb]/.test(value.charAt(i)) || value.charAt(i + 1) === ' ' || i === value.length) {
             str += value.charAt(i);
+          } else {
+            str += '*';
           }
           break;
         case 8:
           if (i === 0 || value.charAt(i - 1) === ' ' || /[aeiuojxqzkhfwyvcmpbdg]/.test(value.charAt(i)) || value.charAt(i + 1) === ' ' || i === value.length) {
             str += value.charAt(i);
+          } else {
+            str += '*';
           }
           break;
         case 9:
