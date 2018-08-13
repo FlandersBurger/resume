@@ -207,8 +207,66 @@ function newRound(game) {
   });
 }
 
+function getHint(hints, value) {
+  var str = '';
+  for (var i in value) {
+    if (/[ !@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(item.value.charAt(i))) {
+      str += value.charAt(i);
+    } else {
+      switch (hints) {
+        case 1:
+          if (i === 0) {
+            str += value.charAt(i);
+          }
+          break;
+        case 2:
+          if (i === 0 || value.charAt(i - 1) === ' ') {
+            str += value.charAt(i);
+          }
+          break;
+        case 3:
+          if (i === 0 || value.charAt(i - 1) === ' ' || /[aeiuo]/.test(value.charAt(i))) {
+            str += value.charAt(i);
+          }
+          break;
+        case 4:
+          if (i === 0 || value.charAt(i - 1) === ' ' || /[aeiuo]/.test(value.charAt(i)) || value.charAt(i + 1) === ' ' || i === value.length) {
+            str += value.charAt(i);
+          }
+          break;
+        case 5:
+          if (i === 0 || value.charAt(i - 1) === ' ' || /[aeiuojxqzk]/.test(value.charAt(i)) || value.charAt(i + 1) === ' ' || i === value.length) {
+            str += value.charAt(i);
+          }
+          break;
+        case 6:
+          if (i === 0 || value.charAt(i - 1) === ' ' || /[aeiuojxqzkhfwyv]/.test(value.charAt(i)) || value.charAt(i + 1) === ' ' || i === value.length) {
+            str += value.charAt(i);
+          }
+          break;
+        case 7:
+          if (i === 0 || value.charAt(i - 1) === ' ' || /[aeiuojxqzkhfwyvcmpb]/.test(value.charAt(i)) || value.charAt(i + 1) === ' ' || i === value.length) {
+            str += value.charAt(i);
+          }
+          break;
+        case 8:
+          if (i === 0 || value.charAt(i - 1) === ' ' || /[aeiuojxqzkhfwyvcmpbdg]/.test(value.charAt(i)) || value.charAt(i + 1) === ' ' || i === value.length) {
+            str += value.charAt(i);
+          }
+          break;
+        case 9:
+          str += value.charAt(i);
+          break;
+        default:
+          str += '*';
+      }
+    }
+  }
+  return str;
+}
+
 function hint(game, callback) {
-  if (game.hints >= 5) {
+  if (game.hints >= 9) {
     b.sendMessage(game.chat_id, 'What? Another hint? I\'m just gonna ignore that request');
   } else if (cooldowns[game.id] && cooldowns[game.id] > 0) {
     b.sendMessage(game.chat_id, 'Calm down with the hints, wait ' + cooldowns[game.id] + ' more seconds');
@@ -218,6 +276,8 @@ function hint(game, callback) {
     game.list.values.filter(function(item) {
       return !item.guesser.first_name;
     }).map(function(item) {
+      str += getHint(game.hints, item.value);
+      /*
       if (game.hints * 2 > item.value.length) {
         str += item.value;
       } else {
@@ -233,6 +293,7 @@ function hint(game, callback) {
           str += item.value.substring(item.value.length - game.hints);
         }
       }
+      */
       str += '\n';
       return str;
     });
@@ -269,21 +330,7 @@ function getList(game, callback) {
   game.list.values.map(function(item, index) {
     str += (index + 1) + ': ';
     if (!item.guesser.first_name) {
-      if (game.hints * 2 > item.value.length) {
-        str += item.value;
-      } else {
-        str += item.value.substring(0, game.hints);
-        for (var i = game.hints; i < item.value.length - game.hints; i++) {
-          if (item.value.charAt(i) !== ' ') {
-            str += '*';
-          } else {
-            str += ' ';
-          }
-        }
-        if (item.value.length - game.hints > 0) {
-          str += item.value.substring(item.value.length - game.hints);
-        }
-      }
+      str += getHint(game.hints, item.value);
       str += '\n';
     } else {
       str += item.value + ' - <i>' + item.guesser.first_name + '</i>';
@@ -388,7 +435,7 @@ function evaluateCommand(res, msg, game, isNew) {
       b.sendMessage(msg.chat.id, msg.text);
       break;
     case '/info':
-    b.sendMessage(msg.chat.id, 'Hi ' + (msg.from.username ? msg.from.username : msg.from.first_name) + ',\nMy name is 10 Things and I am a game bot.\nThe game will give you a category and then you answer anything that comes to mind in that category.\nI have a few things you can ask of me, just type a backslash to see the commands.\nIf you want to add your own lists, please go to https://belgocanadian.com/bots\nAnd last but not least if you want to suggest anything (new lists or features) type "\\suggest" followed by your suggestion!\n\nHave fun!');
+    b.sendMessage(msg.chat.id, 'Hi ' + (msg.from.username ? msg.from.username : msg.from.first_name) + ',\nMy name is 10 Things and I am a game bot.\nThe game will give you a category and then you answer anything that comes to mind in that category.\nI have a few things you can ask of me, just type a slash (/) to see the commands.\nIf you want to add your own lists, please go to https://belgocanadian.com/bots\nAnd last but not least if you want to suggest anything (new lists or features) type "/suggest" followed by your suggestion!\n\nHave fun!');
       break;
     /*
     case '/start':

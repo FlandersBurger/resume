@@ -15,7 +15,8 @@ angular.module('app')
     'Misc',
     'Funny',
     'Food and Drink',
-    'Society'
+    'Society',
+    'Nature'
   ];
 
   $scope.$on('login', function (_) {
