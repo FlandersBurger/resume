@@ -210,7 +210,7 @@ function newRound(game) {
 function getHint(hints, value) {
   var str = '';
   for (var i in value) {
-    if (/[ !@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(item.value.charAt(i))) {
+    if (/[ !@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(value.charAt(i))) {
       str += value.charAt(i);
     } else {
       switch (hints) {
