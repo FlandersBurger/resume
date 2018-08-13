@@ -236,6 +236,7 @@ function getHint(hints, value) {
     if (/[ !@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(value.charAt(i))) {
       str += value.charAt(i);
     } else {
+      console.log(hints);
       switch (hints) {
         case 0:
           str += '*';
