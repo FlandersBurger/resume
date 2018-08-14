@@ -206,7 +206,10 @@ function checkRound(game) {
   }).length === 0) {
     b.sendMessage(game.id, 'Round over.');
     getList(game, function(list) {
-      b.sendMessage(game.id, '<b>' + game.list.name + '</b> by ' + game.list.creator.username + '\n' + list);
+      var message = '<b>' + game.list.name + '</b> by ' + game.list.creator.username + '\n';
+      message += game.list.category ? 'Category: ' + game.list.category + '\n' : '';
+      message += list;
+      b.sendMessage(msg.chat.id, message);
       getScores(game);
       setTimeout(function() {
         newRound(game);
@@ -501,7 +504,11 @@ function evaluateCommand(res, msg, game, isNew) {
     case '/list':
       try {
         getList(game, function(list) {
-          b.sendMessage(msg.chat.id, '<b>' + game.list.name + '</b> by ' + game.list.creator.username + '\n' + list);
+          var message = '<b>' + game.list.name + '</b> by ' + game.list.creator.username + '\n';
+          message += game.list.category ? 'Category: ' + game.list.category + '\n' : '';
+          message += game.list.description ? '<i>' + game.list.description + '</i>\n' : '';
+          message += list;
+          b.sendMessage(msg.chat.id, message);
         });
       } catch (e) {
 
