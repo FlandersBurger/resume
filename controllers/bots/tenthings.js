@@ -205,10 +205,13 @@ function checkRound(game) {
     return !item.guesser.first_name;
   }).length === 0) {
     b.sendMessage(game.id, 'Round over.');
-    getScores(game);
-    setTimeout(function() {
-      newRound(game);
-    }, 2000);
+    getList(game, function(list) {
+      b.sendMessage(msg.chat.id, '<b>' + game.list.name + '</b> by ' + game.list.creator.username + '\n' + list);
+      getScores(game);
+      setTimeout(function() {
+        newRound(game);
+      }, 2000);
+    });
   }
 }
 
@@ -233,6 +236,7 @@ function newRound(game) {
 function getHint(hints, value) {
   var str = '';
   for (var i in value) {
+    i = parseInt(i);
     if (/[ !@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(value.charAt(i))) {
       str += value.charAt(i);
     } else {
@@ -241,56 +245,56 @@ function getHint(hints, value) {
           str += '*';
           break;
         case 1:
-          if (i == 0) {
+          if (i === 0 || value.charAt(i - 1) === ' ') {
             str += value.charAt(i);
           } else {
             str += '*';
           }
           break;
         case 2:
-          if (i == 0 || i == value.length - 1) {
+          if (i === 0 || value.charAt(i - 1) === ' ' || value.charAt(i + 1) === ' ' || i === value.length - 1) {
             str += value.charAt(i);
           } else {
             str += '*';
           }
           break;
         case 3:
-          if (i == 0 || /[iuo]/.test(value.charAt(i)) || i == value.length - 1) {
+          if (i === 0 || value.charAt(i - 1) === ' ' || value.charAt(i + 1) === ' ' || i === value.length - 1 || /[aeiuo]/.test(value.charAt(i))) {
             str += value.charAt(i);
           } else {
             str += '*';
           }
           break;
         case 4:
-          if (i == 0 || /[aeiuo]/.test(value.charAt(i)) || i == value.length - 1) {
+          if (i === 0 || value.charAt(i - 1) === ' ' || value.charAt(i + 1) === ' ' || i === value.length - 1 || /[aeiuojxqzkhfwyv]/.test(value.charAt(i))) {
             str += value.charAt(i);
           } else {
             str += '*';
           }
           break;
         case 5:
-          if (i == 0 || /[aeiuojxqzkhfwyv]/.test(value.charAt(i)) || i == value.length - 1) {
+          if (i === 0 || value.charAt(i - 1) === ' ' || value.charAt(i + 1) === ' ' || i === value.length - 1 || /[aeiuojxqzkhfwyvcmpb]/.test(value.charAt(i))) {
             str += value.charAt(i);
           } else {
             str += '*';
           }
           break;
         case 6:
-          if (i == 0 || /[aeiuojxqzkhfwyvcmpb]/.test(value.charAt(i)) || i == value.length - 1) {
+          if (i === 0 || value.charAt(i - 1) === ' ' || value.charAt(i + 1) === ' ' || i === value.length - 1 || /[aeiuojxqzkhfwyvcmpbdg]/.test(value.charAt(i))) {
             str += value.charAt(i);
           } else {
             str += '*';
           }
           break;
         case 7:
-          if (i == 0 || /[aeiuojxqzkhfwyvcmpbdg]/.test(value.charAt(i)) || i == value.length - 1) {
+          if (i === 0 || value.charAt(i - 1) === ' ' || value.charAt(i + 1) === ' ' || i === value.length - 1 || /[aeiuojxqzkhfwyvcmpbdgls]/.test(value.charAt(i))) {
             str += value.charAt(i);
           } else {
             str += '*';
           }
           break;
         case 8:
-          if (i == 0 || /[aeiuojxqzkhfwyvcmpbdgls]/.test(value.charAt(i)) || i == value.length - 1) {
+          if (i === 0 || value.charAt(i - 1) === ' ' || value.charAt(i + 1) === ' ' || i === value.length - 1 || /[aeiuojxqzkhfwyvcmpbdglsrt]/.test(value.charAt(i))) {
             str += value.charAt(i);
           } else {
             str += '*';
@@ -305,7 +309,7 @@ function getHint(hints, value) {
 }
 
 function hint(game, callback) {
-  if (game.hints >= 7) {
+  if (game.hints >= 8) {
     b.sendMessage(game.chat_id, 'What? Another hint? I\'m just gonna ignore that request');
   } else if (cooldowns[game.id] && cooldowns[game.id] > 0) {
     b.sendMessage(game.chat_id, 'Calm down with the hints, wait ' + cooldowns[game.id] + ' more seconds');
@@ -316,23 +320,6 @@ function hint(game, callback) {
       return !item.guesser.first_name;
     }).map(function(item) {
       str += getHint(game.hints, item.value);
-      /*
-      if (game.hints * 2 > item.value.length) {
-        str += item.value;
-      } else {
-        str += item.value.substring(0, game.hints);
-        for (var i = game.hints; i < item.value.length - game.hints; i++) {
-          if (/[ !@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(item.value.charAt(i))) {
-            str += item.value.charAt(i);
-          } else {
-            str += '*';
-          }
-        }
-        if (item.value.length - game.hints > 0) {
-          str += item.value.substring(item.value.length - game.hints);
-        }
-      }
-      */
       str += '\n';
       return str;
     });
@@ -396,21 +383,21 @@ function getRandom(arr, n) {
 router.post('/', function (req, res, next) {
   var msg, i, item;
   if (!req.body.message || !req.body.message.text) {
-    if (req.body.new_chat_participant) {
+    if (req.body.message.new_chat_participant) {
       msg = {
         id: req.body.message.chat.id,
-        from: req.body.new_chat_participant,
+        from: req.body.message.new_chat_participant,
         command: '/info',
         chat: req.body.message.chat
       };
-    } else if (req.body.group_chat_created) {
+    } else if (req.body.message.group_chat_created) {
       msg = {
         id: req.body.message.chat.id,
         from: req.body.from,
         command: '/info',
         chat: req.body.message.chat
       };
-    } else if (req.body.photo || req.body.emoji || req.body.voice || req.body.animation || req.body.reply_to_message) {
+    } else if (req.body.message.left_chat_participant || req.body.message.photo || req.body.message.emoji || req.body.message.voice || req.body.message.animation || req.body.message.reply_to_message) {
       //Ignore these messages as they're just chat interactions
     } else {
       msg = {
