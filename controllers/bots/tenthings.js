@@ -382,7 +382,19 @@ function getRandom(arr, n) {
 
 router.post('/', function (req, res, next) {
   var msg, i, item;
-  if (!req.body.message || !req.body.message.text) {
+  if (!req.body.message) {
+    msg = {
+      id: '592503547',
+      from: {
+        first_name: 'Bot Error'
+      },
+      command: '/error',
+      text: JSON.stringify(req.body),
+      chat: {
+        id: '592503547'
+      }
+    };
+  } else if (!req.body.message.text) {
     if (req.body.message.new_chat_participant) {
       msg = {
         id: req.body.message.chat.id,
