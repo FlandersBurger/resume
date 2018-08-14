@@ -382,6 +382,7 @@ function getRandom(arr, n) {
 
 router.post('/', function (req, res, next) {
   var msg, i, item;
+  console.log(req.body);
   if (!req.body.message) {
     msg = {
       id: '592503547',
