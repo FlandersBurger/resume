@@ -209,7 +209,7 @@ function checkRound(game) {
       var message = '<b>' + game.list.name + '</b> by ' + game.list.creator.username + '\n';
       message += game.list.category ? 'Category: ' + game.list.category + '\n' : '';
       message += list;
-      b.sendMessage(msg.chat.id, message);
+      b.sendMessage(game.chat_id, message);
       getScores(game);
       setTimeout(function() {
         newRound(game);
