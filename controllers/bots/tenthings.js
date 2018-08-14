@@ -413,7 +413,7 @@ router.post('/', function (req, res, next) {
       //Ignore these messages as they're just chat interactions
       console.log('Ignoring this message:');
       console.log(req.body);
-      return;
+      return res.sendStatus(200);
     } else {
       msg = {
         id: '592503547',
