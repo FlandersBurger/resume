@@ -206,7 +206,7 @@ function checkRound(game) {
   }).length === 0) {
     b.sendMessage(game.id, 'Round over.');
     getList(game, function(list) {
-      b.sendMessage(msg.chat.id, '<b>' + game.list.name + '</b> by ' + game.list.creator.username + '\n' + list);
+      b.sendMessage(game.id, '<b>' + game.list.name + '</b> by ' + game.list.creator.username + '\n' + list);
       getScores(game);
       setTimeout(function() {
         newRound(game);
