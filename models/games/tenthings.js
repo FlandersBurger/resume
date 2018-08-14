@@ -21,6 +21,8 @@ var TenThings = db.model('TenThings', {
   list: {
     _id: String,
     name: String,
+    description: String,
+    category: String,
     creator: { type: String, ref: 'User', required: false },
     values: [
       {
