@@ -26,7 +26,7 @@ angular.module('app')
             .then(function (response) {
               $scope.$emit('login', response.data);
               $('#modal-login').modal('hide');
-              $location.path('/');
+              //$location.path('/');
             }, function () {
               $scope.$emit('popup', {
                 message: 'Login Failed',

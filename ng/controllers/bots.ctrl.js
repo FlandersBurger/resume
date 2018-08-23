@@ -5,6 +5,7 @@ angular.module('app')
     'Music',
     'Television',
     'Movies',
+    'Entertainment',
     'Geography',
     'History',
     'Science',
@@ -16,7 +17,8 @@ angular.module('app')
     'Funny',
     'Food and Drink',
     'Society',
-    'Nature'
+    'Nature',
+    'Technology'
   ];
 
   $scope.$on('login', function (_) {
