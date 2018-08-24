@@ -116,11 +116,11 @@ function notifyAdmin(msg) {
   b.sendMessage('592503547', JSON.stringify(msg));
 }
 
-/*
+
 b.sendMessage('592503547', 'Please rate the list', {
   reply_to_message_id: '592503547',
   reply_markup: JSON.stringify({
-    inline_keyboard: [[
+    keyboard: [[
       { text: '*', callback_data: '1' },
       { text: '**', callback_data: '2' },
       { text: '***', callback_data: '3' },
@@ -129,7 +129,7 @@ b.sendMessage('592503547', 'Please rate the list', {
     ]]
   })
 });
-*/
+
 /*
 getList(function(list) {
   console.log(list);
@@ -431,6 +431,7 @@ router.post('/', function (req, res, next) {
       };
     }
   } else {
+    console.log(req.body.message.message_id);
     msg = {
       id: req.body.message.message_id,
       from: req.body.message.from,
