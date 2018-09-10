@@ -116,9 +116,18 @@ function notifyAdmin(msg) {
   b.sendMessage('592503547', JSON.stringify(msg));
 }
 
+console.log(JSON.stringify({
+  keyboard: [[
+    { text: '*', callback_data: '1' },
+    { text: '**', callback_data: '2' },
+    { text: '***', callback_data: '3' },
+    { text: '****', callback_data: '4' },
+    { text: '*****', callback_data: '5' }
+  ]]
+}));
 
 b.sendMessage('592503547', 'Please rate the list', {
-  reply_to_message_id: '592503547',
+  //reply_to_message_id: '32936',
   reply_markup: JSON.stringify({
     keyboard: [[
       { text: '*', callback_data: '1' },
@@ -229,7 +238,10 @@ function newRound(game) {
     game.guessers = [];
     b.sendMessage(game.chat_id, 'A new round will start in 5 seconds');
     setTimeout(function() {
-      b.sendMessage(game.chat_id, '<b>' + game.list.name + '</b> by ' + game.list.creator.username);
+      var message = '<b>' + game.list.name + '</b> by ' + game.list.creator.username;
+      message += game.list.category ? 'Category: ' + game.list.category + '\n' : '';
+      message += game.list.description ? '<i>' + game.list.description + '</i>\n' : '';
+      b.sendMessage(game.chat_id, message);
     }, 5000);
     game.playedLists.push(game.list._id);
     game.save();
