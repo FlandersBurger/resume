@@ -239,8 +239,8 @@ function newRound(game) {
     b.sendMessage(game.chat_id, 'A new round will start in 5 seconds');
     setTimeout(function() {
       var message = '<b>' + game.list.name + '</b> by ' + game.list.creator.username;
-      message += game.list.category ? 'Category: ' + game.list.category + '\n' : '';
-      message += game.list.description ? '<i>' + game.list.description + '</i>\n' : '';
+      message += game.list.category ? '\n</i></b>' + game.list.category + '<b><i>' : '';
+      message += game.list.description ? '\n<i>' + game.list.description + '</i>' : '';
       b.sendMessage(game.chat_id, message);
     }, 5000);
     game.playedLists.push(game.list._id);
