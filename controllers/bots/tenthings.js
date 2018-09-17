@@ -236,10 +236,11 @@ function newRound(game) {
     game.hints = 0;
     game.hintCooldown = 0;
     game.guessers = [];
-    b.sendMessage(game.chat_id, 'A new round will start in 5 seconds');
+    var message = 'A new round will start in 5 seconds';
+    message += game.list.category ? '\nCategory: <b>' + game.list.category + '</b>' : '';
+    b.sendMessage(game.chat_id, message);
     setTimeout(function() {
       var message = '<b>' + game.list.name + '</b> by ' + game.list.creator.username;
-      message += game.list.category ? '\n</i></b>' + game.list.category + '<b><i>' : '';
       message += game.list.description ? '\n<i>' + game.list.description + '</i>' : '';
       b.sendMessage(game.chat_id, message);
     }, 5000);
