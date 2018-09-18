@@ -409,7 +409,23 @@ function getRandom(arr, n) {
 
 router.post('/', function (req, res, next) {
   var msg, i, item;
-  if (!req.body.message) {
+  if (req.body.callback_query) {
+    console.log(req.body.callback_query);
+    /*
+    List.findOne({ _id: list._id }).exec(function (err, foundList) {
+      if (err) return console.error(err);
+      if (!foundList.skips) {
+        foundList.skips = 1;
+      } else {
+        foundList.skips++;
+      }
+      foundList.save(function(err) {
+        if (err) return console.error(err);
+        console.log('"' + list.name + '" skipped!');
+      });
+    });
+    */
+  } else if (!req.body.message) {
     msg = {
       id: '592503547',
       from: {
@@ -441,8 +457,6 @@ router.post('/', function (req, res, next) {
       console.log('Ignoring this message:');
       console.log(req.body);
       return res.sendStatus(200);
-    } else if (req.body.callback_query) {
-      console.log(req.body.callback_query);
     } else {
       msg = {
         id: '592503547',
