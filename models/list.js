@@ -14,12 +14,7 @@ var List = db.model('List', {
   date: { type: Date, required: true, default: Date.now },
   plays: { type: Number, required: true, default: 0 },
   skips: { type: Number, required: true, default: 0 },
-  votes: [
-      {
-      id: { type: String, required: true },
-      vote: { type: Boolean, required: true, default: true }
-    }
-  ]
+  score: { type: Number, required: true, default: 0 }
 });
 
 module.exports = List;
