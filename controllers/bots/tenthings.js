@@ -411,19 +411,20 @@ router.post('/', function (req, res, next) {
   var msg, i, item;
   if (req.body.callback_query) {
     var data = JSON.parse(req.body.callback_query.data);
-    console.log(data);
-    List.findOne({ _id: list._id }).exec(function (err, foundList) {
-      if (err) return console.error(err);
-      if (!foundList.score) {
-        foundList.score = parseInt(data.vote);
-      } else {
-        foundList.score += parseInt(data.vote);
-      }
-      foundList.save(function(err) {
+    if (data.type === 'rate') {
+      List.findOne({ _id: data.list }).exec(function (err, foundList) {
         if (err) return console.error(err);
-        console.log('"' + list.name + '" rated!');
+        if (!foundList.score) {
+          foundList.score = parseInt(data.vote);
+        } else {
+          foundList.score += parseInt(data.vote);
+        }
+        foundList.save(function(err) {
+          if (err) return console.error(err);
+          console.log('"' + list.name + '" rated!');
+        });
       });
-    });
+    }
     return res.sendStatus(200);
   } else if (!req.body.message) {
     msg = {
