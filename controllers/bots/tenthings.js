@@ -410,7 +410,8 @@ function getRandom(arr, n) {
 router.post('/', function (req, res, next) {
   var msg, i, item;
   if (req.body.callback_query) {
-    console.log(req.body.callback_query);
+    var data = JSON.parse(req.body.callback_query.data);
+    console.log(data);
     /*
     List.findOne({ _id: list._id }).exec(function (err, foundList) {
       if (err) return console.error(err);
