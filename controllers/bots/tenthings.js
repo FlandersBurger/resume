@@ -116,27 +116,14 @@ function notifyAdmin(msg) {
   b.sendMessage('592503547', JSON.stringify(msg));
 }
 
-console.log(JSON.stringify({
-  keyboard: [[
-    { text: '*', callback_data: '1' },
-    { text: '**', callback_data: '2' },
-    { text: '***', callback_data: '3' },
-    { text: '****', callback_data: '4' },
-    { text: '*****', callback_data: '5' }
-  ]]
-}));
-
-b.sendMessage('592503547', 'Please rate the list', {
+b.sendKeyboard('592503547', 'test', {
   //reply_to_message_id: '32936',
-  reply_markup: JSON.stringify({
-    keyboard: [[
-      { text: '*', callback_data: '1' },
-      { text: '**', callback_data: '2' },
-      { text: '***', callback_data: '3' },
-      { text: '****', callback_data: '4' },
-      { text: '*****', callback_data: '5' }
+  //reply_markup: {
+    inline_keyboard: [[
+      { 'text': '\ud83d\udc4d', 'callback_data': '1' },
+      { 'text': '\ud83d\udc4e', 'callback_data': '2' }
     ]]
-  })
+  //}
 });
 
 /*
@@ -146,6 +133,29 @@ getList(function(list) {
   console.log(list.values);
 });
 */
+
+function rateList(game) {
+  b.sendKeyboard(game.chat_id, 'Did you like ' + '<b>' + game.list.name + '</b>?', {
+    inline_keyboard: [[
+      {
+        'text': '\ud83d\udc4d',
+        'callback_data': JSON.stringify({
+          type: 'rate',
+          list: game.list._id,
+          vote: 1
+        })
+      },
+      {
+        'text': '\ud83d\udc4e',
+        'callback_data': JSON.stringify({
+          type: 'rate',
+          list: game.list._id,
+          vote: -1
+        })
+      }
+    ]]
+  });
+}
 
 function guess(game, msg) {
   if (!_.find(game.players, function(existingPlayer) {
@@ -214,12 +224,13 @@ function checkRound(game) {
     return !item.guesser.first_name;
   }).length === 0) {
     b.sendMessage(game.id, 'Round over.');
+    rateList(game);
     getList(game, function(list) {
       var message = '<b>' + game.list.name + '</b> by ' + game.list.creator.username + '\n';
       message += game.list.category ? 'Category: ' + game.list.category + '\n' : '';
       message += list;
       b.sendMessage(game.chat_id, message);
-      getScores(game);
+      //getScores(game);
       setTimeout(function() {
         newRound(game);
       }, 2000);
@@ -430,6 +441,8 @@ router.post('/', function (req, res, next) {
       console.log('Ignoring this message:');
       console.log(req.body);
       return res.sendStatus(200);
+    } else if (req.body.callback_query) {
+      console.log(req.body.callback_query);
     } else {
       msg = {
         id: '592503547',
