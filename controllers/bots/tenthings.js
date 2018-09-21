@@ -421,7 +421,7 @@ router.post('/', function (req, res, next) {
         }
         foundList.save(function(err) {
           if (err) return console.error(err);
-          console.log('"' + list.name + '" rated!');
+          console.log('"' + foundList.name + '" rated!');
         });
       });
     }
