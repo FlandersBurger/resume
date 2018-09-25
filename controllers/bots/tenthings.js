@@ -517,7 +517,7 @@ router.post('/', function (req, res, next) {
 router.get('/', function (req, res, next) {
   //b.sendMessage(msg.chat.id, 'Received Get');
   //res.json({ message: 'get ok'});
-  console.log(req);
+  console.log(req.query);
   res.sendStatus(200);
 });
 
