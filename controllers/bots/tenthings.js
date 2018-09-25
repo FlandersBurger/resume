@@ -518,7 +518,12 @@ router.get('/', function (req, res, next) {
   //b.sendMessage(msg.chat.id, 'Received Get');
   //res.json({ message: 'get ok'});
   console.log(req.query);
-  res.sendStatus(200);
+  var token = req.query['hub.verify_token'];
+  if (req.query['hub.verify_token'] === config.tokens.facebook.tenthings) {
+    res.status(200).send(req.query['hub.challenge']);
+  } else {
+    res.sendStatus(200);
+  }
 });
 
 function evaluateCommand(res, msg, game, isNew) {
