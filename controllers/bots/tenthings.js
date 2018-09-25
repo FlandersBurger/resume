@@ -516,7 +516,9 @@ router.post('/', function (req, res, next) {
 
 router.get('/', function (req, res, next) {
   //b.sendMessage(msg.chat.id, 'Received Get');
-  res.json({ message: 'get ok'});
+  //res.json({ message: 'get ok'});
+  console.log(req);
+  res.sendStatus(200);
 });
 
 function evaluateCommand(res, msg, game, isNew) {
