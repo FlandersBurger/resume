@@ -230,16 +230,20 @@ function checkRound(game) {
   }).length === 0) {
     b.sendMessage(game.id, 'Round over.');
     getScores(game);
-    rateList(game);
-    getList(game, function(list) {
-      var message = '<b>' + game.list.name + '</b> by ' + game.list.creator.username + '\n';
-      message += game.list.category ? 'Category: ' + game.list.category + '\n' : '';
-      message += list;
-      b.sendMessage(game.chat_id, message);
-      setTimeout(function() {
-        newRound(game);
-      }, 2000);
-    });
+    setTimeout(function () {
+      rateList(game);
+      setTimeout(function () {
+        getList(game, function(list) {
+          var message = '<b>' + game.list.name + '</b> (' + game.list.totalValues + ') by ' + game.list.creator.username + '\n';
+          message += game.list.category ? 'Category: ' + game.list.category + '\n' : '';
+          message += list;
+          b.sendMessage(game.chat_id, message);
+          setTimeout(function() {
+            newRound(game);
+          }, 500);
+        });
+      }, 100);
+    }, 100);
   }
 }
 
@@ -257,7 +261,7 @@ function newRound(game) {
     message += game.list.category ? '\nCategory: <b>' + game.list.category + '</b>' : '';
     b.sendMessage(game.chat_id, message);
     setTimeout(function() {
-      var message = '<b>' + game.list.name + '</b> by ' + game.list.creator.username + ' (' + game.list.totalValues + ')';
+      var message = '<b>' + game.list.name + '</b> (' + game.list.totalValues + ') by ' + game.list.creator.username;
       message += game.list.description ? '\n<i>' + game.list.description + '</i>' : '';
       b.sendMessage(game.chat_id, message);
     }, 5000);
