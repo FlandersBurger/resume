@@ -23,6 +23,7 @@ var TenThings = db.model('TenThings', {
     name: String,
     description: String,
     category: String,
+    totalValues: Number,
     creator: { type: String, ref: 'User', required: false },
     values: [
       {

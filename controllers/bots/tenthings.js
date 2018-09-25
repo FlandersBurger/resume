@@ -186,7 +186,12 @@ function guess(game, msg) {
       });
       player.score += game.guessers.length;
       game.save();
-      b.sendMessage(msg.chat.id, prompts[getLanguage(msg.from.language_code)].guessed(msg.from.first_name, match.value + (match.blurb ? '\n<i>' + match.blurb + '</i>' : '') + '\n' + game.list.values.filter(function(item) { return !item.guesser.first_name; }).length + ' answers left.'));
+      var message = prompts[getLanguage(msg.from.language_code)].guessed(msg.from.first_name, match.value + (match.blurb ? '\n<i>' + match.blurb + '</i>' : ''));
+      var answersLeft = game.list.values.filter(function(item) { return !item.guesser.first_name; }).length;
+      if (answersLeft > 0) {
+        message += '\n' + answersLeft + ' answers left.';
+      }
+      b.sendMessage(msg.chat.id, message);
       setTimeout(function() {
         return checkRound(game);
       }, 500);
@@ -243,6 +248,7 @@ function newRound(game) {
     list.plays++;
     list.save();
     game.list = JSON.parse(JSON.stringify(list));
+    game.list.totalValues = game.list.values.length;
     game.list.values = getRandom(game.list.values, 10);
     game.hints = 0;
     game.hintCooldown = 0;
@@ -251,7 +257,7 @@ function newRound(game) {
     message += game.list.category ? '\nCategory: <b>' + game.list.category + '</b>' : '';
     b.sendMessage(game.chat_id, message);
     setTimeout(function() {
-      var message = '<b>' + game.list.name + '</b> by ' + game.list.creator.username;
+      var message = '<b>' + game.list.name + '</b> by ' + game.list.creator.username + ' (' + game.list.totalValues + ')';
       message += game.list.description ? '\n<i>' + game.list.description + '</i>' : '';
       b.sendMessage(game.chat_id, message);
     }, 5000);
