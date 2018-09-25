@@ -115,17 +115,17 @@ function createGame(id, creator) {
 function notifyAdmin(msg) {
   b.sendMessage('592503547', JSON.stringify(msg));
 }
-
+/*
 b.sendKeyboard('592503547', 'test', {
   //reply_to_message_id: '32936',
   //reply_markup: {
-    inline_keyboard: [[
+    keyboard: [[
       { 'text': '\ud83d\udc4d', 'callback_data': '1' },
       { 'text': '\ud83d\udc4e', 'callback_data': '2' }
     ]]
   //}
 });
-
+*/
 /*
 getList(function(list) {
   console.log(list);
@@ -224,13 +224,13 @@ function checkRound(game) {
     return !item.guesser.first_name;
   }).length === 0) {
     b.sendMessage(game.id, 'Round over.');
+    getScores(game);
     rateList(game);
     getList(game, function(list) {
       var message = '<b>' + game.list.name + '</b> by ' + game.list.creator.username + '\n';
       message += game.list.category ? 'Category: ' + game.list.category + '\n' : '';
       message += list;
       b.sendMessage(game.chat_id, message);
-      //getScores(game);
       setTimeout(function() {
         newRound(game);
       }, 2000);
