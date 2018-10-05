@@ -42,19 +42,18 @@ angular.module('app')
       creator: $scope.currentUser._id,
       date: new Date(),
       values: [
-        { value: '' },
-        { value: '' },
-        { value: '' },
-        { value: '' },
-        { value: '' },
-        { value: '' },
-        { value: '' },
-        { value: '' },
-        { value: '' },
-        { value: '' },
+        { value: '', blurb: '' }
       ]
     });
     $scope.selectedList = $scope.lists[0];
+  };
+
+  $scope.addValue = function() {
+    if ($scope.selectedList.values.length === $scope.selectedList.values.filter(function(value) { return value.value; }).length) {
+      $scope.selectedList.values.push({ value: '', blurb: '' });
+    } else {
+      console.log('not equal');
+    }
   };
 
   $scope.saveList = function(list) {

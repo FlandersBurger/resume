@@ -1,6 +1,9 @@
 <div id="bots-page" class="col-md-12">
   <h1 class="text-danger" ng-show="!loggedIn">You have to be logged in to edit lists</h1>
   <div ng-show="loggedIn">
+    <div class="well well-sm">
+      This page works in conjunction with the <a href="https://t.me/joinchat/I1Di-1MXGXkjhgNPXi6Vfg" target="_blank">Ten Things Telegram Bot</a>
+    </div>
     <div class="col-md-4">
       <input class="form-control" ng-model="search" placeholder="Search"/>
       <button class="btn btn-default" ng-repeat="list in lists | filter: search | orderBy: 'name'" ng-click="selectList(list)">{{list.name}}</button>
@@ -33,7 +36,7 @@
           <input class="form-control" ng-model="selectedList.description" placeholder="Description" ng-disabled="!selectedList" />
         </div>
         <div class="input-group" ng-repeat="value in selectedList.values track by $index">
-          <input class="form-control" ng-model="value.value" placeholder="Value {{$index + 1}}" />
+          <input class="form-control" ng-model="value.value" placeholder="Value {{$index + 1}}" ng-change="addValue()" />
           <span class="input-group-addon"></span>
           <input class="form-control" ng-model="value.blurb" placeholder="Display after guessing {{value.value}}" />
         </div>
