@@ -22,6 +22,30 @@ angular.module('app')
     'Language'
   ];
 
+  $scope.categoryFilters = $scope.categories.map(function(category) { return category; });
+  $scope.categoryFilters.push('All');
+  $scope.categoryFilters.push('Blank');
+  $scope.categoryFilter = 'All';
+
+  $scope.setCategoryFilter = function(category) {
+    $scope.categoryFilter = category;
+  };
+
+  $scope.filteredLists = function() {
+    if (!$scope.lists) return [];
+    return $scope.lists.filter(function(list) {
+      if (!$scope.categoryFilter || $scope.categoryFilter === 'All') {
+        return true;
+      } else {
+        if (list.category) {
+          return list.category === $scope.categoryFilter;
+        } else {
+          return $scope.categoryFilter === 'Blank';
+        }
+      }
+    });
+  };
+
   $scope.$on('login', function (_) {
     getLists();
   });
