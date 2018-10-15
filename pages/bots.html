@@ -32,7 +32,8 @@
       </div>
       <div class="col-md-12">
         <input class="form-control" ng-model="selectedList.name" placeholder="Name of the list" ng-disabled="!selectedList" />
-        <h5>By {{selectedList.creator.username}}</h5>
+        <h5 ng-show="selectedList.creator">By {{selectedList.creator.username}} --- <span ng-show="selectedList.plays">Plays: {{selectedList.plays}} / Skips: {{selectedList.skips}} / Score: {{selectedList.score}}</span></h5>
+
 
         <div class="input-group">
           <div class="input-group-btn">
