@@ -76,6 +76,7 @@ function selectList(game, callback) {
   List.find({ _id: { $nin: game.playedLists } }).populate('creator').exec(function (err, lists) {
     if (lists.length === 0) {
       game.playedLists = [];
+      game.cycles++;
       List.find({}).populate('creator').exec(function (err, lists) {
         return callback(lists[Math.floor(Math.random() * lists.length)]);
       });

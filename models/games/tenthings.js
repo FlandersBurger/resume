@@ -5,6 +5,7 @@ var Schema = mongoose.Schema;
 var TenThings = db.model('TenThings', {
   chat_id: { type: String, required: true },
   hints: { type: Number, required: true, default: 0 },
+  cycles: { type: Number, required: true, default: 0 },
   guessers: [{ type: String, required: true }],
   players: [
     {

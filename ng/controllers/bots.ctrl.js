@@ -18,7 +18,8 @@ angular.module('app')
     'Food and Drink',
     'Society',
     'Nature',
-    'Technology'
+    'Technology',
+    'Language'
   ];
 
   $scope.$on('login', function (_) {
@@ -75,7 +76,7 @@ angular.module('app')
     BotsSvc.deleteList(list)
     .then(function(response) {
       getLists();
-      $scope.selectList(list);
+      $scope.selectedList = {};
     });
   };
 
