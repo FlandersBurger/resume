@@ -30,17 +30,28 @@ angular.module('app')
   $scope.setCategoryFilter = function(category) {
     $scope.categoryFilter = category;
   };
+  $scope.setUserFilter = function(user) {
+    $scope.userFilter = user;
+  };
 
   $scope.filteredLists = function() {
     if (!$scope.lists) return [];
     return $scope.lists.filter(function(list) {
-      if (!$scope.categoryFilter || $scope.categoryFilter === 'All') {
+      if ($scope.categoryFilter === 'All' && $scope.userFilter === 'All') {
         return true;
-      } else {
+      } else if ($scope.categoryFilter !== 'All' && $scope.userFilter === 'All') {
         if (list.category) {
           return list.category === $scope.categoryFilter;
         } else {
           return $scope.categoryFilter === 'Blank';
+        }
+      } else if ($scope.categoryFilter === 'All' && $scope.userFilter !== 'All') {
+        return list.creator.username === $scope.userFilter;
+      } else {
+        if (list.category) {
+          return list.category === $scope.categoryFilter && list.creator.username === $scope.userFilter;
+        } else {
+          return $scope.categoryFilter === 'Blank' && list.creator.username === $scope.userFilter;
         }
       }
     });
@@ -54,6 +65,9 @@ angular.module('app')
     BotsSvc.getLists($scope.currentUser)
     .then(function(response) {
       $scope.lists = response.data;
+      $scope.userFilters = _.uniq($scope.lists.map(function(list) { return list.creator.username; }), function(list) { return list; });
+      $scope.userFilters.push('All');
+      $scope.userFilter = 'All';
     });
   }
 

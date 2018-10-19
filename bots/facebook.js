@@ -35,21 +35,21 @@ module.exports = function() {
 
   bot.sendMessage = function(chat_id, message) {
     var request_body = {
-      "recipient": {
-        "id": chat_id
+      'recipient': {
+        'id': chat_id
       },
-      "message": message
+      'message': message
     };
     request({
-      "uri": "https://graph.facebook.com/v2.6/me/messages",
-      "qs": { "access_token": config.get(config.tokens.facebook.tenthings) },
-      "method": "POST",
-      "json": request_body
+      'uri': 'https://graph.facebook.com/v2.6/me/messages',
+      'qs': { 'access_token': config.get(config.tokens.facebook.tenthings) },
+      'method': 'POST',
+      'json': request_body
     }, function (err, res, body) {
       if (!err) {
         console.log(body);
       } else {
-        console.error("Unable to send message:" + err);
+        console.error('Unable to send message:' + err);
       }
     });
   };

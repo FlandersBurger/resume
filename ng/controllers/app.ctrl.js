@@ -171,5 +171,10 @@ angular.module('app')
     });
   };
 
+  $scope.formatDate = function(date) {
+    var months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+    date = new Date(date);
+    return date.getDate() + "-" + months[date.getMonth()] + "-" + date.getFullYear();
+  };
 
 });
