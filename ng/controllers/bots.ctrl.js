@@ -90,8 +90,6 @@ angular.module('app')
   $scope.addValue = function() {
     if ($scope.selectedList.values.length === $scope.selectedList.values.filter(function(value) { return value.value; }).length) {
       $scope.selectedList.values.push({ value: '', blurb: '' });
-    } else {
-      console.log('not equal');
     }
   };
 
@@ -100,10 +98,15 @@ angular.module('app')
       return item.value;
     });
     if (list.values.length >= 10) {
+      $scope.saving = true;
       BotsSvc.saveList(list)
       .then(function(response) {
         getLists();
         $scope.selectList(response.data);
+        $scope.saving = false;
+      }, function(err) {
+        console.error(err);
+        $scope.saving = false;
       });
     } else {
       alert('Lists must contain 10 or more values!');

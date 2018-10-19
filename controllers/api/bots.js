@@ -33,7 +33,7 @@ router.get('/lists/:id', function (req, res, next) {
 router.put('/lists', function (req, res, next) {
   List.findByIdAndUpdate(req.body._id ? req.body._id : new mongoose.Types.ObjectId(), req.body, { new: true, upsert: true }, function(err, list) {
     if (err) return next(err);
-    List.find({
+    List.findOne({
       _id: list._id
     }).populate('creator').exec(function(err, result) {
       if (err) return next(err);

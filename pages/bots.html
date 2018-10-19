@@ -32,7 +32,7 @@
           <i class="fa fa-file-o" aria-hidden="true"></i> New
         </div>
         <div class="btn btn-default" ng-click="saveList(selectedList)" ng-disabled="!selectedList">
-          <i class="fa fa-save" aria-hidden="true"></i> Save
+          <i class="fa fa-save" ng-class="{ 'fa-save': !saving, 'fa-spin fa-spinner': saving }" aria-hidden="true"></i> Save
         </div>
         <div class="btn btn-default" ng-click="deleteList(selectedList)" ng-disabled="!selectedList">
           <i class="fa fa-trash-o" aria-hidden="true"></i> Delete
