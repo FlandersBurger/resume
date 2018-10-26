@@ -271,76 +271,68 @@ function newRound(game) {
   });
 }
 
+
+function countLetters(string) {
+  var alphabet = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p',
+  'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z'];
+  return alphabet.map(function(letter) {
+    return {
+      letter: letter,
+      count: (string.match(new RegExp('[' + letter + ']','ig')) || []).length
+    };
+  }).filter(function(letter) {
+    return letter.count;
+  }).sort(function(letter1, letter2) {
+    return letter1.count - letter2.count;
+  });
+}
+  /*
+  var string = 'The quick bro"wn f\'ox jump+ed over the lazy dog';
+  string = 'TERA';
+  console.log(getHint(0, string));
+  console.log(getHint(1, string));
+  console.log(getHint(2, string));
+  console.log(getHint(3, string));
+  console.log(getHint(4, string));
+  console.log(getHint(5, string));
+  console.log(getHint(6, string));
+  console.log(getHint(7, string));
+  console.log(getHint(8, string));
+  */
+
+
 function getHint(hints, value) {
+  var letters = countLetters(value);
+  var tester = '';
+  for (var i = 0; i < Math.floor(letters.length * (hints - 2) / 6); i++) {
+    tester += letters[i].letter;
+  }
   var str = '';
-  for (var i in value) {
+  switch (hints) {
+    case 0:
+      return value.replace(new RegExp("[^ !@#$%^&*()_+:{};'\"]", 'gi'), '*');
+    case 1:
+      str = value[0] + value.substring(1, value.length).replace(new RegExp("[^ !@#$%^&*()_+:{};'\"]", 'gi'), '*');
+      break;
+    case 2:
+      str = value[0] + value.substring(1, value.length - 1).replace(new RegExp("[^ !@#$%^&*()_+:{};'\"]", 'gi'), '*') + value[value.length - 1];
+      break;
+    default:
+      str = value[0] + value.substring(1, value.length - 1).replace(new RegExp("[^ !@#$%^&*()_+:{};'\"" +  tester + "]", 'gi'), '*') + value[value.length - 1];
+  }
+  for (i = 1; i < value.length - 2; i++) {
     i = parseInt(i);
-    if (/[ !@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(value.charAt(i))) {
-      str += value.charAt(i);
-    } else {
-      switch (hints) {
-        case 0:
-          str += '*';
-          break;
-        case 1:
-          if (i === 0 || value.charAt(i - 1) === ' ') {
-            str += value.charAt(i);
-          } else {
-            str += '*';
-          }
-          break;
-        case 2:
-          if (i === 0 || value.charAt(i - 1) === ' ' || value.charAt(i + 1) === ' ' || i === value.length - 1) {
-            str += value.charAt(i);
-          } else {
-            str += '*';
-          }
-          break;
-        case 3:
-          if (i === 0 || value.charAt(i - 1) === ' ' || value.charAt(i + 1) === ' ' || i === value.length - 1 || /[aeiuo]/.test(value.charAt(i))) {
-            str += value.charAt(i);
-          } else {
-            str += '*';
-          }
-          break;
-        case 4:
-          if (i === 0 || value.charAt(i - 1) === ' ' || value.charAt(i + 1) === ' ' || i === value.length - 1 || /[aeiuojxqzkhfwyv]/.test(value.charAt(i))) {
-            str += value.charAt(i);
-          } else {
-            str += '*';
-          }
-          break;
-        case 5:
-          if (i === 0 || value.charAt(i - 1) === ' ' || value.charAt(i + 1) === ' ' || i === value.length - 1 || /[aeiuojxqzkhfwyvcmpb]/.test(value.charAt(i))) {
-            str += value.charAt(i);
-          } else {
-            str += '*';
-          }
-          break;
-        case 6:
-          if (i === 0 || value.charAt(i - 1) === ' ' || value.charAt(i + 1) === ' ' || i === value.length - 1 || /[aeiuojxqzkhfwyvcmpbdg]/.test(value.charAt(i))) {
-            str += value.charAt(i);
-          } else {
-            str += '*';
-          }
-          break;
-        case 7:
-          if (i === 0 || value.charAt(i - 1) === ' ' || value.charAt(i + 1) === ' ' || i === value.length - 1 || /[aeiuojxqzkhfwyvcmpbdgls]/.test(value.charAt(i))) {
-            str += value.charAt(i);
-          } else {
-            str += '*';
-          }
-          break;
-        case 8:
-          if (i === 0 || value.charAt(i - 1) === ' ' || value.charAt(i + 1) === ' ' || i === value.length - 1 || /[aeiuojxqzkhfwyvcmpbdglsrt]/.test(value.charAt(i))) {
-            str += value.charAt(i);
-          } else {
-            str += '*';
-          }
-          break;
-        default:
-          str += value.charAt(i);
-      }
+    switch (hints) {
+      case 1:
+        if (i === 0 || value.charAt(i - 1) === ' ') {
+          str = str.substr(0, i) + value.charAt(i) + str.substr(i + 1);
+        }
+        break;
+      default:
+        if (i === 0 || value.charAt(i - 1) === ' ' || value.charAt(i + 1) === ' ' || i === value.length - 1) {
+          str = str.substr(0, i) + value.charAt(i) + str.substr(i + 1);
+        }
+        break;
     }
   }
   return str;
