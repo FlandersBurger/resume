@@ -273,8 +273,8 @@ function newRound(game) {
 
 
 function countLetters(string) {
-  var alphabet = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p',
-  'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z'];
+  var alphabet = ['b', 'c', 'd', 'f', 'g', 'h', 'j', 'k', 'l', 'm', 'n', 'p',
+  'q', 'r', 's', 't', 'v', 'w', 'x', 'y', 'z'];
   return alphabet.map(function(letter) {
     return {
       letter: letter,
@@ -287,7 +287,7 @@ function countLetters(string) {
   });
 }
   /*
-  var string = 'The quick bro"wn f\'ox jump+ed over the lazy dog';
+  var string = 'The qui-ck bro"wn f\'ox jump+ed over the lazy dog';
   string = 'TERA';
   console.log(getHint(0, string));
   console.log(getHint(1, string));
@@ -296,29 +296,31 @@ function countLetters(string) {
   console.log(getHint(4, string));
   console.log(getHint(5, string));
   console.log(getHint(6, string));
-  console.log(getHint(7, string));
-  console.log(getHint(8, string));
   */
 
 
 function getHint(hints, value) {
   var letters = countLetters(value);
   var tester = '';
-  for (var i = 0; i < Math.floor(letters.length * (hints - 2) / 6); i++) {
+  for (var i = 0; i < Math.floor(letters.length * (hints - 2) / 4); i++) {
     tester += letters[i].letter;
   }
   var str = '';
+  var specialCharacters = " !@#$%^&*()_+:{};\\-'\"";
   switch (hints) {
     case 0:
-      return value.replace(new RegExp("[^ !@#$%^&*()_+:{};'\"]", 'gi'), '*');
+      return value.replace(new RegExp('[^' + specialCharacters + ']', 'gi'), '*');
     case 1:
-      str = value[0] + value.substring(1, value.length).replace(new RegExp("[^ !@#$%^&*()_+:{};'\"]", 'gi'), '*');
+      str = value[0] + value.substring(1, value.length).replace(new RegExp('[^' + specialCharacters + ']', 'gi'), '*');
       break;
     case 2:
-      str = value[0] + value.substring(1, value.length - 1).replace(new RegExp("[^ !@#$%^&*()_+:{};'\"]", 'gi'), '*') + value[value.length - 1];
+      str = value[0] + value.substring(1, value.length - 1).replace(new RegExp('[^' + specialCharacters + ']', 'gi'), '*') + value[value.length - 1];
+      break;
+    case 3:
+      str = value[0] + value.substring(1, value.length - 1).replace(new RegExp('[^' + specialCharacters + 'aeiou]', 'gi'), '*') + value[value.length - 1];
       break;
     default:
-      str = value[0] + value.substring(1, value.length - 1).replace(new RegExp("[^ !@#$%^&*()_+:{};'\"" +  tester + "]", 'gi'), '*') + value[value.length - 1];
+      str = value[0] + value.substring(1, value.length - 1).replace(new RegExp('[^' + specialCharacters + 'aeiou' +  tester + ']', 'gi'), '*') + value[value.length - 1];
   }
   for (i = 1; i < value.length - 2; i++) {
     i = parseInt(i);
@@ -339,7 +341,7 @@ function getHint(hints, value) {
 }
 
 function hint(game, callback) {
-  if (game.hints >= 8) {
+  if (game.hints >= 6) {
     b.sendMessage(game.chat_id, 'What? Another hint? I\'m just gonna ignore that request');
   } else if (cooldowns[game.id] && cooldowns[game.id] > 0) {
     b.sendMessage(game.chat_id, 'Calm down with the hints, wait ' + cooldowns[game.id] + ' more seconds');
