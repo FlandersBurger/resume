@@ -314,7 +314,7 @@ function countLetters(string) {
 }
   /*
   var string = 'The qui-ck bro"wn f\'ox jump+ed over the lazy dog';
-  string = 'TERA';
+  //string = 'TERA';
   console.log(getHint(0, string));
   console.log(getHint(1, string));
   console.log(getHint(2, string));
@@ -325,6 +325,7 @@ function countLetters(string) {
   */
 
 
+
 function getHint(hints, value) {
   var letters = countLetters(value);
   var tester = '';
@@ -332,7 +333,7 @@ function getHint(hints, value) {
     tester += letters[i].letter;
   }
   var str = '';
-  var specialCharacters = " !@#$%^&*()_+:{};\\-'\"";
+  var specialCharacters = " !@#$%^&*()_+:.{};\\-'\"";
   switch (hints) {
     case 0:
       return value.replace(new RegExp('[^' + specialCharacters + ']', 'gi'), '*');
@@ -348,8 +349,7 @@ function getHint(hints, value) {
     default:
       str = value[0] + value.substring(1, value.length - 1).replace(new RegExp('[^' + specialCharacters + 'aeiou' +  tester + ']', 'gi'), '*') + value[value.length - 1];
   }
-  for (i in value.length - 2) {
-    i = parseInt(i);
+  for (i = 1; i < value.length - 2; i++) {
     switch (hints) {
       case 1:
         if (i === 0 || value.charAt(i - 1) === ' ') {
