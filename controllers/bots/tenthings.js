@@ -2,6 +2,7 @@ var router = require('express').Router();
 var schedule = require('node-schedule');
 var _ = require('underscore');
 var FuzzyMatching = require('fuzzy-matching');
+var schedule = require('node-schedule');
 
 var config = require('../../config');
 var TelegramBot = require('../../bots/telegram');
@@ -26,8 +27,31 @@ var prompts = {
     guessed: function(user, text) {
       return user + ' heeft ' + text + ' gevonden';
     }
+  },
+  pt: {
+    guessed: function(user, text) {
+      return user + ' adivinhou ' + text;
+    }
   }
 };
+
+//var dailyScore = schedule.scheduleJob('*/10 * * * * *', function() {
+var dailyScore = schedule.scheduleJob('0 0 0 * * *', function() {
+  TenThings.find({ 'players.scoreDaily': { $gt: 0 }})
+  .then(function(games) {
+    games.forEach(function(game) {
+      getDailyScores(game);
+      b.sendMessage(game.chat_id, '<b>' + game.players.sort(function(a, b) {
+        return b.scoreDaily - a.scoreDaily;
+      })[0].first_name + ' won!</b>');
+    });
+    TenThings.updateMany({ 'players.scoreDaily': { $gt: 0 }}, { $set: { 'players.$.scoreDaily': 0 } }, function(err, res) {
+      if (err) {
+        console.error(err);
+      }
+    });
+  });
+});
 
 function getLanguage(language) {
   if (language) {
@@ -215,6 +239,8 @@ function guess(game, msg) {
           return existingPlayer.id == msg.from.id;
         });
         player.score += game.guessers.length;
+        player.scoreDaily += game.guessers.length;
+        game.datePlayed = new Date();
         game.save();
         b.sendMessage(msg.chat.id, prompts[getLanguage(msg.from.language_code)].guessed(msg.from.first_name, match.value + (match.blurb ? '\n<i>' + match.blurb + '</i>' : '') + '\n' + game.list.values.filter(function(item) { return !item.guesser.first_name; }).length + ' answers left.'));
         setTimeout(function() {
@@ -230,7 +256,7 @@ function checkRound(game) {
     return !item.guesser.first_name;
   }).length === 0) {
     b.sendMessage(game.id, 'Round over.');
-    getScores(game);
+    getDailyScores(game);
     setTimeout(function () {
       rateList(game);
       setTimeout(function () {
@@ -322,7 +348,7 @@ function getHint(hints, value) {
     default:
       str = value[0] + value.substring(1, value.length - 1).replace(new RegExp('[^' + specialCharacters + 'aeiou' +  tester + ']', 'gi'), '*') + value[value.length - 1];
   }
-  for (i = 1; i < value.length - 2; i++) {
+  for (i in value.length - 2) {
     i = parseInt(i);
     switch (hints) {
       case 1:
@@ -373,8 +399,18 @@ function cooldownHint(gameId) {
   }
 }
 
+function getDailyScores(game) {
+  var str = '<b>Daily Scores</b>\n';
+  game.players.sort(function(a, b) {
+    return b.scoreDaily - a.scoreDaily;
+  }).forEach(function(player, index) {
+    str += (index + 1) + ': ' + player.first_name + ' - ' + player.scoreDaily + '\n';
+  });
+  b.sendMessage(game.chat_id, str);
+}
+
 function getScores(game) {
-  var str = '<b>Scores</b>\n';
+  var str = '<b>All Time High Scores</b>\n';
   game.players.sort(function(a, b) {
     return b.score - a.score;
   }).slice(0, 10).forEach(function(player, index) {
@@ -582,10 +618,11 @@ function evaluateCommand(res, msg, game, isNew) {
       break;
     case '/skip':
       skipList(game.list);
-      getScores(game);
+      getDailyScores(game);
       newRound(game);
       break;
     case '/scores':
+      getDailyScores(game);
       getScores(game);
       break;
     case '/list':
