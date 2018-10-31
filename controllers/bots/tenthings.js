@@ -210,6 +210,7 @@ function guess(game, msg) {
         return existingPlayer.id == msg.from.id;
       });
       player.score += game.guessers.length;
+      player.scoreDaily += game.guessers.length;
       game.save();
       var message = prompts[getLanguage(msg.from.language_code)].guessed(msg.from.first_name, match.value + (match.blurb ? '\n<i>' + match.blurb + '</i>' : ''));
       var answersLeft = game.list.values.filter(function(item) { return !item.guesser.first_name; }).length;
@@ -240,7 +241,6 @@ function guess(game, msg) {
         });
         player.score += game.guessers.length;
         player.scoreDaily += game.guessers.length;
-        game.datePlayed = new Date();
         game.save();
         b.sendMessage(msg.chat.id, prompts[getLanguage(msg.from.language_code)].guessed(msg.from.first_name, match.value + (match.blurb ? '\n<i>' + match.blurb + '</i>' : '') + '\n' + game.list.values.filter(function(item) { return !item.guesser.first_name; }).length + ' answers left.'));
         setTimeout(function() {
