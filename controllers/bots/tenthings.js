@@ -48,12 +48,10 @@ var dailyScore = schedule.scheduleJob('0 0 0 * * *', function() {
     TenThings.updateMany({ 'players.scoreDaily': { $gt: 0 }}, { $set: { 'players.$[].scoreDaily': 0 } }, function(err, res) {
       if (err) {
         console.error(err);
-        notifyAdmin('update daily score error');
-        notifyAdmin(err);
+        notifyAdmin('update daily score error\n' + err);
       } else {
         console.error(res);
-        notifyAdmin('update daily score success');
-        notifyAdmin(res);
+        notifyAdmin('update daily score success\n' + game.chat_id + ':\n' + JSON.stringify(res));
       }
     });
   }, function(err) {
