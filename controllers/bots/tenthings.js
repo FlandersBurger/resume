@@ -45,11 +45,15 @@ var dailyScore = schedule.scheduleJob('0 0 0 * * *', function() {
         return b.scoreDaily - a.scoreDaily;
       })[0].first_name + ' won!</b>');
     });
-    TenThings.updateMany({ 'players.scoreDaily': { $gt: 0 }}, { $set: { 'players.$.scoreDaily': 0 } }, function(err, res) {
+    TenThings.updateMany({ 'players.scoreDaily': { $gt: 0 }}, { $set: { 'players.$[].scoreDaily': 0 } }, function(err, res) {
       if (err) {
         console.error(err);
         notifyAdmin('update daily score error');
         notifyAdmin(err);
+      } else {
+        console.error(res);
+        notifyAdmin('update daily score success');
+        notifyAdmin(res);
       }
     });
   }, function(err) {
@@ -478,17 +482,21 @@ router.post('/', function (req, res, next) {
     }
     return res.sendStatus(200);
   } else if (!req.body.message) {
-    msg = {
-      id: '592503547',
-      from: {
-        first_name: 'Bot Error'
-      },
-      command: '/error',
-      text: JSON.stringify(req.body),
-      chat: {
-        id: '592503547'
-      }
-    };
+    if (req.body.message.chat.id === '-1001376769922') {
+      res.sendStatus(200);
+    } else {
+      msg = {
+        id: '592503547',
+        from: {
+          first_name: 'Bot Error'
+        },
+        command: '/error',
+        text: JSON.stringify(req.body),
+        chat: {
+          id: '592503547'
+        }
+      };
+    }
   } else if (!req.body.message.text) {
     if (req.body.message.new_chat_participant) {
       msg = {
@@ -504,7 +512,7 @@ router.post('/', function (req, res, next) {
         command: '/info',
         chat: req.body.message.chat
       };
-    } else if (req.body.message.left_chat_participant || req.body.message.photo || req.body.message.emoji || req.body.message.voice || req.body.message.animation || req.body.message.reply_to_message) {
+    } else if (req.body.edited_message || req.body.message.left_chat_participant || req.body.message.photo || req.body.message.emoji || req.body.message.voice || req.body.message.animation || req.body.message.sticker || req.body.message.reply_to_message) {
       //Ignore these messages as they're just chat interactions
       console.log('Ignoring this message:');
       console.log(req.body);
