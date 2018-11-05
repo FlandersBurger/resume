@@ -513,7 +513,7 @@ router.post('/', function (req, res, next) {
       return res.sendStatus(200);
     } else {
       //This group is spamming the bot
-      if (req.body.message.chat.id === '-1001376769922') {
+      if (req.body.message.chat.id === -1001376769922) {
         res.sendStatus(200);
       } else {
         msg = {
