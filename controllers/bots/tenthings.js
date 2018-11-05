@@ -480,21 +480,17 @@ router.post('/', function (req, res, next) {
     }
     return res.sendStatus(200);
   } else if (!req.body.message) {
-    if (req.body.message.chat.id === '-1001376769922') {
-      res.sendStatus(200);
-    } else {
-      msg = {
-        id: '592503547',
-        from: {
-          first_name: 'Bot Error'
-        },
-        command: '/error',
-        text: JSON.stringify(req.body),
-        chat: {
-          id: '592503547'
-        }
-      };
-    }
+    msg = {
+      id: '592503547',
+      from: {
+        first_name: 'Bot Error'
+      },
+      command: '/error',
+      text: JSON.stringify(req.body),
+      chat: {
+        id: '592503547'
+      }
+    };
   } else if (!req.body.message.text) {
     if (req.body.message.new_chat_participant) {
       msg = {
@@ -516,17 +512,22 @@ router.post('/', function (req, res, next) {
       console.log(req.body);
       return res.sendStatus(200);
     } else {
-      msg = {
-        id: '592503547',
-        from: {
-          first_name: 'Bot Error'
-        },
-        command: '/error',
-        text: JSON.stringify(req.body),
-        chat: {
-          id: '592503547'
-        }
-      };
+      //This group is spamming the bot
+      if (req.body.message.chat.id === '-1001376769922') {
+        res.sendStatus(200);
+      } else {
+        msg = {
+          id: '592503547',
+          from: {
+            first_name: 'Bot Error'
+          },
+          command: '/error',
+          text: JSON.stringify(req.body),
+          chat: {
+            id: '592503547'
+          }
+        };
+      }
     }
   } else {
     console.log(req.body.message.message_id);
