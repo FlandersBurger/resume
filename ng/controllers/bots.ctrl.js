@@ -61,12 +61,28 @@ angular.module('app')
     getLists();
   });
 
+  $scope.getCategoryCount = function(category) {
+    if (category === 'All') return $scope.filteredLists().length;
+    if (!$scope.lists) return 0;
+    return $scope.lists.filter(function(list) {
+      return list.category === category && ($scope.userFilter === 'All' || list.creator.username === $scope.userFilter);
+    }).length;
+  };
+
   function getLists() {
     BotsSvc.getLists($scope.currentUser)
     .then(function(response) {
       $scope.lists = response.data;
-      $scope.userFilters = _.uniq($scope.lists.map(function(list) { return list.creator.username; }), function(list) { return list; });
-      $scope.userFilters.push('All');
+      $scope.userFilters = {};
+      $scope.userFilters.All = $scope.lists.length;
+      $scope.userFilters = $scope.lists.sort(function(a, b) {
+        return a.creator.username > b.creator.username;
+      }).reduce(function(users, list) {
+        if (!users[list.creator.username]) users[list.creator.username] = 0;
+        users[list.creator.username]++;
+        return users;
+      }, $scope.userFilters);
+      $scope.userCount = Object.keys($scope.userFilters).length;
       $scope.userFilter = 'All';
     });
   }

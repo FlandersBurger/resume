@@ -47,7 +47,7 @@ var dailyScore = schedule.scheduleJob('0 0 0 * * *', function() {
         return (player1.scoreDaily > player2.scoreDaily) ? player1 : player2;
       });
       b.sendMessage(game.chat_id, '<b>' + winner.first_name + ' won!</b>');
-      TenThings.update({ _id: game._id, 'players._id': winner._id}, {$inc: {'players.$.wins': 1}}, {}, function(err, saved) {
+      TenThings.update({ _id: game._id, 'players._id': winner._id }, { $inc: { 'players.$.wins': 1 } }, {}, function(err, saved) {
         console.log('Win recorded for ' + winner.first_name);
       });
     });

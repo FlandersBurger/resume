@@ -6,19 +6,19 @@
     </div>
     <div class="col-md-4">
       <div class="input-group">
+        <div class="input-group-btn" ng-if="userCount > 1">
+          <div class="dropdown">
+            <button class="btn btn-default dropdown-toggle" type="button" data-toggle="dropdown">{{userFilter ? userFilter : 'User'}}</button>
+            <ul class="dropdown-menu">
+              <li ng-repeat="(key, value) in userFilters"><a href="#" ng-click="setUserFilter(key)">{{key}} ({{value}})</a></li>
+            </ul>
+          </div>
+        </div>
         <div class="input-group-btn">
           <div class="dropdown">
             <button class="btn btn-default dropdown-toggle" type="button" data-toggle="dropdown">{{categoryFilter ? categoryFilter : 'Category'}} ({{filteredLists().length}})</button>
             <ul class="dropdown-menu">
-              <li ng-repeat="category in categoryFilters | orderBy"><a href="#" ng-click="setCategoryFilter(category)">{{category}}</a></li>
-            </ul>
-          </div>
-        </div>
-        <div class="input-group-btn" ng-if="userFilters.length > 1">
-          <div class="dropdown">
-            <button class="btn btn-default dropdown-toggle" type="button" data-toggle="dropdown">{{userFilter ? userFilter : 'User'}}</button>
-            <ul class="dropdown-menu">
-              <li ng-repeat="user in userFilters | orderBy"><a href="#" ng-click="setUserFilter(user)">{{user}}</a></li>
+              <li ng-repeat="category in categoryFilters | orderBy"><a href="#" ng-click="setCategoryFilter(category)">{{category}} ({{getCategoryCount(category)}})</a></li>
             </ul>
           </div>
         </div>

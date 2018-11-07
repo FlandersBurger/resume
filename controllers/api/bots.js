@@ -10,6 +10,7 @@ var admins = [
   '5b4ac81544f3cf615d4d67c6', //Caio
   '5ae16b2317c46c02144a93a9', //Terrence
   '5b464a53b1436b72a67b0039', //Val
+  '5b4cc52744f3cf615d4d699c', //Renan
 ];
 
 router.get('/lists/:id', function (req, res, next) {
