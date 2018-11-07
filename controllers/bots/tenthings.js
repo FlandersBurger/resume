@@ -429,7 +429,7 @@ function getScores(game) {
   game.players.sort(function(a, b) {
     return b.score - a.score;
   }).slice(0, 10).forEach(function(player, index) {
-    str += (index + 1) + ': ' + player.first_name + ' - ' + player.score + '-' + player.plays + '/' + player.wins + '\n';
+    str += (index + 1) + ': ' + player.first_name + ' - ' + player.score + ' - ' + player.plays + '/' + player.wins + '\n';
   });
   b.sendMessage(game.chat_id, str);
 }
