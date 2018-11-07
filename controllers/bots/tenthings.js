@@ -35,17 +35,23 @@ var prompts = {
   }
 };
 
+//'5b6361dcbd0ff6645df5f225'
+
 //var dailyScore = schedule.scheduleJob('*/10 * * * * *', function() {
 var dailyScore = schedule.scheduleJob('0 0 0 * * *', function() {
   TenThings.find({ 'players.scoreDaily': { $gt: 0 }})
   .then(function(games) {
     games.forEach(function(game) {
       getDailyScores(game);
-      b.sendMessage(game.chat_id, '<b>' + game.players.sort(function(a, b) {
-        return b.scoreDaily - a.scoreDaily;
-      })[0].first_name + ' won!</b>');
+      var winner = game.players.reduce(function(player1, player2) {
+        return (player1.scoreDaily > player2.scoreDaily) ? player1 : player2;
+      });
+      b.sendMessage(game.chat_id, '<b>' + winner.first_name + ' won!</b>');
+      TenThings.update({ _id: game._id, 'players._id': winner._id}, {$inc: {'players.$.wins': 1}}, {}, function(err, saved) {
+        console.log('Win recorded for ' + winner.first_name);
+      });
     });
-    TenThings.updateMany({ 'players.scoreDaily': { $gt: 0 }}, { $set: { 'players.$[].scoreDaily': 0 } }, function(err, res) {
+    TenThings.updateMany({ 'players.scoreDaily': { $gt: 0 }}, { $set: { 'players.$[].scoreDaily': 0 }, $inc: { 'players.$[].plays': 1 } }, function(err, res) {
       if (err) {
         console.error(err);
         notifyAdmin('update daily score error\n' + err);
@@ -56,6 +62,7 @@ var dailyScore = schedule.scheduleJob('0 0 0 * * *', function() {
     });
   }, function(err) {
     console.error(err);
+    notifyAdmin('update daily score error\n' + err);
   });
 });
 
@@ -422,7 +429,7 @@ function getScores(game) {
   game.players.sort(function(a, b) {
     return b.score - a.score;
   }).slice(0, 10).forEach(function(player, index) {
-    str += (index + 1) + ': ' + player.first_name + ' - ' + player.score + '\n';
+    str += (index + 1) + ': ' + player.first_name + ' - ' + player.score + '-' + player.plays + '/' + player.wins + '\n';
   });
   b.sendMessage(game.chat_id, str);
 }
@@ -479,7 +486,7 @@ router.post('/', function (req, res, next) {
       });
     }
     return res.sendStatus(200);
-  } else if (!req.body.message) {
+  } else if (!req.body.message && !req.body.edited_message) {
     msg = {
       id: '592503547',
       from: {
