@@ -486,7 +486,9 @@ router.post('/', function (req, res, next) {
       });
     }
     return res.sendStatus(200);
-  } else if (!req.body.message && !req.body.edited_message) {
+  } else if (req.body.edited_message) {
+    return res.sendStatus(200);
+  } else if (!req.body.message) {
     msg = {
       id: '592503547',
       from: {
