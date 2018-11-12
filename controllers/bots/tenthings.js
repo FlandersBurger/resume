@@ -35,7 +35,7 @@ var prompts = {
   }
 };
 
-//'5b6361dcbd0ff6645df5f225'
+//The Group: '5b6361dcbd0ff6645df5f225'  '-1001394022777'
 
 //var dailyScore = schedule.scheduleJob('*/10 * * * * *', function() {
 var dailyScore = schedule.scheduleJob('0 0 0 * * *', function() {
@@ -153,6 +153,10 @@ function createGame(id, creator) {
 function notifyAdmin(msg) {
   b.sendMessage('592503547', JSON.stringify(msg));
 }
+
+b.exportChatInviteLink('-1001394022777').then(function(chat) {
+  console.log(chat);
+});
 /*
 b.sendKeyboard('592503547', 'test', {
   //reply_to_message_id: '32936',
@@ -522,8 +526,22 @@ router.post('/', function (req, res, next) {
       return res.sendStatus(200);
     } else {
       //This group is spamming the bot
-      if (req.body.message.chat.id === -1001376769922 || req.body.edited_message.chat.id === -1001376769922) {
-        res.sendStatus(200);
+      if (req.body.message.chat || req.body.edited_message.chat) {
+        if (req.body.message.chat.id === -1001376769922 || req.body.edited_message.chat.id === -1001376769922) {
+          res.sendStatus(200);
+        } else {
+          msg = {
+            id: '592503547',
+            from: {
+              first_name: 'Bot Error'
+            },
+            command: '/error',
+            text: JSON.stringify(req.body),
+            chat: {
+              id: '592503547'
+            }
+          };
+        }
       } else {
         msg = {
           id: '592503547',

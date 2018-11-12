@@ -34,6 +34,7 @@ module.exports = function() {
       });
     });
   };
+
   bot.getWebhook = function() {
     return new Promise(function (resolve, reject) {
       var url = 'https://api.telegram.org/bot' + bot.token + '/getWebhookInfo';
@@ -58,6 +59,32 @@ module.exports = function() {
         if(error) return;
         if(!response) return;
         resolve();
+      });
+    });
+  };
+
+  bot.getChat = function(channel) {
+    return new Promise(function (resolve, reject) {
+      var url = 'https://api.telegram.org/bot' + bot.token + '/getChat?chat_id=' + channel;
+      request(encodeURI(url), function (error, r, body) {
+        var response = JSON.parse(body).result;
+        //console.log(response);
+        if(error) return;
+        if(!response) return;
+        resolve(response);
+      });
+    });
+  };
+
+  bot.exportChatInviteLink = function(channel) {
+    return new Promise(function (resolve, reject) {
+      var url = 'https://api.telegram.org/bot' + bot.token + '/exportChatInviteLink?chat_id=' + channel;
+      request(encodeURI(url), function (error, r, body) {
+        var response = JSON.parse(body).result;
+        //console.log(response);
+        if(error) return;
+        if(!response) return;
+        resolve(response);
       });
     });
   };
