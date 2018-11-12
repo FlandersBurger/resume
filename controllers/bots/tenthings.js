@@ -526,7 +526,8 @@ router.post('/', function (req, res, next) {
       return res.sendStatus(200);
     } else {
       //This group is spamming the bot
-      if (req.body.message || req.body.edited_message) {
+      /*
+      if (req.body.message || req.body.edited_message)
         if (req.body.message.chat.id === -1001376769922 || req.body.edited_message.chat.id === -1001376769922) {
           res.sendStatus(200);
         } else {
@@ -541,8 +542,8 @@ router.post('/', function (req, res, next) {
               id: '592503547'
             }
           };
-        }
-      } else {
+        //}
+      } else {*/
         msg = {
           id: '592503547',
           from: {
@@ -554,7 +555,7 @@ router.post('/', function (req, res, next) {
             id: '592503547'
           }
         };
-      }
+      //}
     }
   } else {
     console.log(req.body.message.message_id);
