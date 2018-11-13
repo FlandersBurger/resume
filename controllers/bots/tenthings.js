@@ -46,6 +46,7 @@ var dailyScore = schedule.scheduleJob('0 0 0 * * *', function() {
       var winner = game.players.reduce(function(player1, player2) {
         return (player1.scoreDaily > player2.scoreDaily) ? player1 : player2;
       });
+      notifyAdmin(winner);
       b.sendMessage(game.chat_id, '<b>' + winner.first_name + ' won!</b>');
       TenThings.update({ _id: game._id, 'players._id': winner._id }, { $inc: { 'players.$.wins': 1 } }, {}, function(err, saved) {
         console.log('Win recorded for ' + winner.first_name);
@@ -389,16 +390,16 @@ function hint(game, callback) {
   } else if (cooldowns[game.id] && cooldowns[game.id] > 0) {
     b.sendMessage(game.chat_id, 'Calm down with the hints, wait ' + cooldowns[game.id] + ' more seconds');
   } else {
-    var str = '';
     game.hints++;
-    game.list.values.filter(function(item) {
-      return !item.guesser.first_name;
-    }).map(function(item) {
-      str += getHint(game.hints, item.value);
-      str += '\n';
+    callback(game.list.values.reduce(function(str, item, index) {
+      if (!item.guesser.first_name) {
+        str += index + 1;
+        str += ': ';
+        str += getHint(game.hints, item.value);
+        str += '\n';
+      }
       return str;
-    });
-    callback(str);
+    }, ''));
     cooldowns[game.id] = 10;
     cooldownHint(game.id);
     game.save();

@@ -50,7 +50,8 @@ module.exports = function() {
 
 
   bot.sendMessage = function(channel, message) {
-    message = message.replace('&', '%26');
+    message = message.replace(/&/g, '%26');
+    message = message.replace(/"/g, '%22');
     return new Promise(function (resolve, reject) {
       var url = 'https://api.telegram.org/bot' + bot.token + '/sendMessage?chat_id=' + channel + '&disable_notification=true&parse_mode=html&text=' + message;
       request(encodeURI(url), function (error, r, body) {
