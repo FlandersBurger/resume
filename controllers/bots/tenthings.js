@@ -420,6 +420,7 @@ function skip(game, player) {
 }
 
 function skipList(game) {
+  b.sendMessage(game.chat_id, game.list.name + ' skipped!');
   getDailyScores(game);
   newRound(game);
   delete skips[game.id];
@@ -432,7 +433,6 @@ function skipList(game) {
     }
     foundList.save(function(err) {
       if (err) return console.error(err);
-      console.log('"' + game.list.name + '" skipped!');
     });
   });
 }
