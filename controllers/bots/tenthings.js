@@ -408,9 +408,9 @@ function skip(game, player) {
   if (skips[game.id] && skips[game.id].player !== player) {
     skipList(game);
   } else if (skips[game.id] && skips[game.id].player === player) {
-    b.sendMessage(msg.chat.id, 'Get someone else to confirm your skip request!');
+    b.sendMessage(game.chat_id, 'Get someone else to confirm your skip request!');
   } else {
-    b.sendMessage(msg.chat.id, 'Skipping ' + game.list.name + ' in 10 seconds. Type /veto to cancel or /skip to confirm.');
+    b.sendMessage(game.chat_id, 'Skipping ' + game.list.name + ' in 10 seconds. Type /veto to cancel or /skip to confirm.');
     skips[game.id] = {
       timer: 10,
       player: player
