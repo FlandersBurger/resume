@@ -755,7 +755,7 @@ function evaluateCommand(res, msg, game, isNew) {
       var logic = '';
       logic += '1: If an answer is over 90% correct it will immediately be awarded to the guesser\n';
       logic += '2: If an answer is over 75% correct it will be awarded after 2 seconds if no 90% answer is provided\n';
-      logic += '3: Hints are revealed in this order: first letters, last letters, vowels, and the rest. The rest will be revealed from least frequency to most frequency within each word\n';
+      logic += '3: Hints are revealed in this order: first letters, last letters, vowels, and the rest. The rest will be revealed from least frequen to most frequent letter\n';
       logic += '4: There is a 10 second cooldown between asking hints\n';
       logic += '5: A list can be skipped if 2 players /skip it\n';
       logic += '6: If only 1 player skips a list there will be a 10 second cooldown until the list is skipped\n';
