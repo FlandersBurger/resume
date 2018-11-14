@@ -410,7 +410,7 @@ function skip(game, player) {
   } else if (skips[game.id] && skips[game.id].player === player) {
     b.sendMessage(game.chat_id, 'Get someone else to confirm your skip request!');
   } else {
-    b.sendMessage(game.chat_id, 'Skipping ' + game.list.name + ' in 10 seconds. Type /veto to cancel or /skip to confirm.');
+    b.sendMessage(game.chat_id, 'Skipping <b>' + game.list.name + '</b> in 10 seconds.\nType /veto to cancel or /skip to confirm.');
     skips[game.id] = {
       timer: 10,
       player: player
@@ -420,7 +420,7 @@ function skip(game, player) {
 }
 
 function skipList(game) {
-  b.sendMessage(game.chat_id, game.list.name + ' skipped!');
+  b.sendMessage(game.chat_id, '<b>' + game.list.name + '</b> skipped!');
   getDailyScores(game);
   newRound(game);
   delete skips[game.id];
@@ -760,6 +760,7 @@ function evaluateCommand(res, msg, game, isNew) {
       logic += '5: A list can be skipped if 2 players /skip it\n';
       logic += '6: If only 1 player skips a list there will be a 10 second cooldown until the list is skipped\n';
       logic += '7: A skip can be cancelled by anyone by typing /veto\n';
+      b.sendMessage(msg.chat.id, logic);
       break;
     /*
     case '/start':
