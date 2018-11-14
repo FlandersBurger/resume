@@ -11,6 +11,7 @@ var List = require('../../models/list');
 var TenThings = require('../../models/games/tenthings');
 
 var cooldowns = {};
+var skips = {};
 
 var prompts = {
   en: {
@@ -35,7 +36,6 @@ var prompts = {
   }
 };
 
-//The Group: '5b6361dcbd0ff6645df5f225'  '-1001394022777'
 
 //var dailyScore = schedule.scheduleJob('*/10 * * * * *', function() {
 var dailyScore = schedule.scheduleJob('0 0 0 * * *', function() {
@@ -43,13 +43,37 @@ var dailyScore = schedule.scheduleJob('0 0 0 * * *', function() {
   .then(function(games) {
     games.forEach(function(game) {
       getDailyScores(game);
-      var winner = game.players.reduce(function(player1, player2) {
-        return (player1.scoreDaily > player2.scoreDaily) ? player1 : player2;
+      var getHighScore = new Promise(function(resolve, reject) {
+        resolve(game.players.reduce(function(highScore, player) {
+          return (player.scoreDaily > highScore) ? player.scoreDaily : highScore;
+        }, 0));
       });
-      notifyAdmin(winner);
-      b.sendMessage(game.chat_id, '<b>' + winner.first_name + ' won!</b>');
-      TenThings.update({ _id: game._id, 'players._id': winner._id }, { $inc: { 'players.$.wins': 1 } }, {}, function(err, saved) {
-        console.log('Win recorded for ' + winner.first_name);
+      getHighScore.then(function(highScore) {
+        var message = '';
+        var winners = [];
+        game.players.filter(function(player) {
+          return player.scoreDaily === highScore;
+        }).forEach(function(winner, index, array) {
+          winners.push(winner._id);
+          if (index < array.length - 1) {
+            message += winner.first_name + ' & ';
+          } else {
+            message += winner.first_name;
+            notifyAdmin(game.chat_id + ' (' + highScore + '): <b>' + message + ' won!</b>');
+            b.sendMessage(game.chat_id, '<b>' + message + ' won with ' + highScore + ' points!</b>');
+            TenThings.update(
+              {
+                _id: game._id,
+                'players._id': { $in: winners }
+              },
+              { $inc: { 'players.$.wins': 1 } },
+              { multi: true },
+              function(err, saved) {
+                console.log('Win recorded for ' + winners);
+              }
+            );
+          }
+        });
       });
     });
     TenThings.updateMany({ 'players.scoreDaily': { $gt: 0 }}, { $set: { 'players.$[].scoreDaily': 0 }, $inc: { 'players.$[].plays': 1 } }, function(err, res) {
@@ -110,6 +134,62 @@ b.init(TOKEN).then(function() {
   b.setWebhook('tenthings');
 });
 
+//The Group: '5b6361dcbd0ff6645df5f225'  '-1001394022777'
+/*
+TenThings.findOne({ chat_id: '-1001394022777'})
+.then(function(game) {
+  var winner = game.players.reduce(function(player1, player2) {
+    return (player1.scoreDaily > player2.scoreDaily) ? player1 : player2;
+  });
+  notifyAdmin(winner);
+});*/
+/*
+  TenThings.find({ 'players.scoreDaily': { $gt: 0 }})
+  .then(function(games) {
+    games.forEach(function(game) {
+      var getHighScore = new Promise(function(resolve, reject) {
+        resolve(game.players.reduce(function(highScore, player) {
+          return (player.scoreDaily > highScore) ? player.scoreDaily : highScore;
+        }, 0));
+      });
+      getHighScore.then(function(highScore) {
+        var message = '';
+        var winners = [];
+        game.players.filter(function(player) {
+          return player.scoreDaily === highScore;
+        }).forEach(function(winner, index, array) {
+          winners.push(winner._id);
+          if (index < array.length - 1) {
+            message += winner.first_name + ' & ';
+          } else {
+            message += winner.first_name;
+            console.log(message);
+            notifyAdmin(game.chat_id + ' (' + highScore + '): <b>' + message + ' won!</b>');
+            if (game.chat_id === '592503547') {
+              TenThings.update(
+                {
+                  _id: game._id,
+                  'players._id': { $in: winners }
+                },
+                { $inc: { 'players.$.wins': 1 } },
+                { multi: true },
+                function(err, saved) {
+                  console.log('Win recorded for ' + winners);
+                }
+              );
+              getDailyScores(game);
+            }
+          }
+        });
+      });
+
+    });
+  });
+*/
+b.exportChatInviteLink('-1001394022777').then(function(chat) {
+  console.log(chat);
+});
+
 function selectList(game, callback) {
   List.find({ _id: { $nin: game.playedLists } }).populate('creator').exec(function (err, lists) {
     if (lists.length === 0) {
@@ -124,8 +204,11 @@ function selectList(game, callback) {
   });
 }
 
-function skipList(list) {
-  List.findOne({ _id: list._id }).exec(function (err, foundList) {
+function skipList(game) {
+  getDailyScores(game);
+  newRound(game);
+  delete skips[game.id];
+  List.findOne({ _id: game.list._id }).exec(function (err, foundList) {
     if (err) return console.error(err);
     if (!foundList.skips) {
       foundList.skips = 1;
@@ -134,7 +217,7 @@ function skipList(list) {
     }
     foundList.save(function(err) {
       if (err) return console.error(err);
-      console.log('"' + list.name + '" skipped!');
+      console.log('"' + game.list.name + '" skipped!');
     });
   });
 }
@@ -155,9 +238,6 @@ function notifyAdmin(msg) {
   b.sendMessage('592503547', JSON.stringify(msg));
 }
 
-b.exportChatInviteLink('-1001394022777').then(function(chat) {
-  console.log(chat);
-});
 /*
 b.sendKeyboard('592503547', 'test', {
   //reply_to_message_id: '32936',
@@ -384,6 +464,30 @@ function getHint(hints, value) {
   return str;
 }
 
+function skip(game, player) {
+  if (skips[game.id] && skips[game.id].player !== player) {
+    skipList(game);
+  } else {
+    b.sendMessage(msg.chat.id, 'Skipping ' + game.list.name + ' in 10 seconds. Type /veto to cancel.');
+    skips[game.id] = {
+      timer: 10,
+      player: player
+    };
+    cooldownSkip(game);
+  }
+}
+
+function cooldownSkip(game) {
+  if (skips[game.id] > 0) {
+    skips[game.id]--;
+    setTimeout(function() {
+      cooldownSkip(game.id);
+    }, 1000);
+  } else {
+    skipList(game);
+  }
+}
+
 function hint(game, callback) {
   if (game.hints >= 6) {
     b.sendMessage(game.chat_id, 'What? Another hint? I\'m just gonna ignore that request');
@@ -434,7 +538,7 @@ function getScores(game) {
   game.players.sort(function(a, b) {
     return b.score - a.score;
   }).slice(0, 10).forEach(function(player, index) {
-    str += (index + 1) + ': ' + player.first_name + ' - ' + player.score + ' - ' + player.plays + '/' + player.wins + '\n';
+    str += (index + 1) + ': ' + player.first_name + ' - ' + player.score + ' - ' + player.wins + ' wins /' + player.plays + ' played\n';
   });
   b.sendMessage(game.chat_id, str);
 }
@@ -644,7 +748,17 @@ function evaluateCommand(res, msg, game, isNew) {
       b.sendMessage(msg.chat.id, msg.text);
       break;
     case '/info':
-    b.sendMessage(msg.chat.id, 'Hi ' + (msg.from.username ? msg.from.username : msg.from.first_name) + ',\nMy name is 10 Things and I am a game bot.\nThe game will give you a category and then you answer anything that comes to mind in that category.\nI have a few things you can ask of me, just type a slash (/) to see the commands.\nIf you want to add your own lists, please go to https://belgocanadian.com/bots\nAnd last but not least if you want to suggest anything (new lists or features) type "/suggest" followed by your suggestion!\n\nHave fun!');
+      b.sendMessage(msg.chat.id, 'Hi ' + (msg.from.username ? msg.from.username : msg.from.first_name) + ',\nMy name is 10 Things and I am a game bot.\nThe game will give you a category and then you answer anything that comes to mind in that category.\nI have a few things you can ask of me, just type a slash (/) to see the commands.\nIf you want to add your own lists, please go to https://belgocanadian.com/bots\nAnd last but not least if you want to suggest anything (new lists or features) type "/suggest" followed by your suggestion!\n\nHave fun!');
+      break;
+    case '/logic':
+      var logic = '';
+      logic += '1: If an answer is over 90% correct it will immediately be awarded to the guesser\n';
+      logic += '2: If an answer is over 75% correct it will be awarded after 2 seconds if no 90% answer is provided\n';
+      logic += '3: Hints are revealed in this order: first letters, last letters, vowels, and the rest. The rest will be revealed from least frequency to most frequency within each word\n';
+      logic += '4: There is a 10 second cooldown between asking hints\n';
+      logic += '5: A list can be skipped if 2 players /skip it\n';
+      logic += '6: If only 1 player skips a list there will be a 10 second cooldown until the list is skipped\n';
+      logic += '7: A skip can be cancelled by anyone by typing /veto\n';
       break;
     /*
     case '/start':
@@ -659,9 +773,11 @@ function evaluateCommand(res, msg, game, isNew) {
       }
       break;
     case '/skip':
-      skipList(game.list);
-      getDailyScores(game);
-      newRound(game);
+      skip(game, msg.from.id);
+      break;
+    case '/veto':
+      delete skips[game.id];
+      b.sendMessage(msg.chat.id, 'Skip vetoed by ' + (msg.from.username ? msg.from.username : msg.from.first_name));
       break;
     case '/scores':
       getDailyScores(game);
