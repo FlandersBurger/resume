@@ -204,24 +204,6 @@ function selectList(game, callback) {
   });
 }
 
-function skipList(game) {
-  getDailyScores(game);
-  newRound(game);
-  delete skips[game.id];
-  List.findOne({ _id: game.list._id }).exec(function (err, foundList) {
-    if (err) return console.error(err);
-    if (!foundList.skips) {
-      foundList.skips = 1;
-    } else {
-      foundList.skips++;
-    }
-    foundList.save(function(err) {
-      if (err) return console.error(err);
-      console.log('"' + game.list.name + '" skipped!');
-    });
-  });
-}
-
 function createGame(id, creator) {
   var game = new TenThings({
     chat_id: id,
@@ -422,7 +404,71 @@ function countLetters(string) {
   console.log(getHint(6, string));
   */
 
+function skip(game, player) {
+  if (skips[game.id] && skips[game.id].player !== player) {
+    skipList(game);
+  } else if (skips[game.id] && skips[game.id].player === player) {
+    b.sendMessage(msg.chat.id, 'Get someone else to confirm your skip request!');
+  } else {
+    b.sendMessage(msg.chat.id, 'Skipping ' + game.list.name + ' in 10 seconds. Type /veto to cancel or /skip to confirm.');
+    skips[game.id] = {
+      timer: 10,
+      player: player
+    };
+    cooldownSkip(game);
+  }
+}
 
+function skipList(game) {
+  getDailyScores(game);
+  newRound(game);
+  delete skips[game.id];
+  List.findOne({ _id: game.list._id }).exec(function (err, foundList) {
+    if (err) return console.error(err);
+    if (!foundList.skips) {
+      foundList.skips = 1;
+    } else {
+      foundList.skips++;
+    }
+    foundList.save(function(err) {
+      if (err) return console.error(err);
+      console.log('"' + game.list.name + '" skipped!');
+    });
+  });
+}
+
+function cooldownSkip(game) {
+  if (skips[game.id] > 0) {
+    skips[game.id]--;
+    setTimeout(function() {
+      cooldownSkip(game.id);
+    }, 1000);
+  } else {
+    skipList(game);
+  }
+}
+
+function hint(game, callback) {
+  if (game.hints >= 6) {
+    b.sendMessage(game.chat_id, 'What? Another hint? I\'m just gonna ignore that request');
+  } else if (cooldowns[game.id] && cooldowns[game.id] > 0) {
+    b.sendMessage(game.chat_id, 'Calm down with the hints, wait ' + cooldowns[game.id] + ' more seconds');
+  } else {
+    game.hints++;
+    callback(game.list.values.reduce(function(str, item, index) {
+      if (!item.guesser.first_name) {
+        str += index + 1;
+        str += ': ';
+        str += getHint(game.hints, item.value);
+        str += '\n';
+      }
+      return str;
+    }, ''));
+    cooldowns[game.id] = 10;
+    cooldownHint(game.id);
+    game.save();
+  }
+}
 
 function getHint(hints, value) {
   var letters = countLetters(value);
@@ -464,51 +510,6 @@ function getHint(hints, value) {
   return str;
 }
 
-function skip(game, player) {
-  if (skips[game.id] && skips[game.id].player !== player) {
-    skipList(game);
-  } else {
-    b.sendMessage(msg.chat.id, 'Skipping ' + game.list.name + ' in 10 seconds. Type /veto to cancel.');
-    skips[game.id] = {
-      timer: 10,
-      player: player
-    };
-    cooldownSkip(game);
-  }
-}
-
-function cooldownSkip(game) {
-  if (skips[game.id] > 0) {
-    skips[game.id]--;
-    setTimeout(function() {
-      cooldownSkip(game.id);
-    }, 1000);
-  } else {
-    skipList(game);
-  }
-}
-
-function hint(game, callback) {
-  if (game.hints >= 6) {
-    b.sendMessage(game.chat_id, 'What? Another hint? I\'m just gonna ignore that request');
-  } else if (cooldowns[game.id] && cooldowns[game.id] > 0) {
-    b.sendMessage(game.chat_id, 'Calm down with the hints, wait ' + cooldowns[game.id] + ' more seconds');
-  } else {
-    game.hints++;
-    callback(game.list.values.reduce(function(str, item, index) {
-      if (!item.guesser.first_name) {
-        str += index + 1;
-        str += ': ';
-        str += getHint(game.hints, item.value);
-        str += '\n';
-      }
-      return str;
-    }, ''));
-    cooldowns[game.id] = 10;
-    cooldownHint(game.id);
-    game.save();
-  }
-}
 
 function cooldownHint(gameId) {
   if (cooldowns[gameId] > 0) {
