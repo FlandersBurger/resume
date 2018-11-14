@@ -760,7 +760,7 @@ function evaluateCommand(res, msg, game, isNew) {
       logic += '5: A list can be skipped if 2 players /skip it\n';
       logic += '6: If only 1 player skips a list there will be a 10 second cooldown until the list is skipped\n';
       logic += '7: A skip can be cancelled by anyone by typing /veto\n';
-      logic += '8: Every day at midnight (universal time) the daily scoress will be reset and a winner recorded\n';
+      logic += '8: Every day at midnight (universal time) the daily scores will be reset and a winner recorded\n';
       b.sendMessage(msg.chat.id, logic);
       break;
     /*
