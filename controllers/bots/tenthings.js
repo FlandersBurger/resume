@@ -441,7 +441,7 @@ function cooldownSkip(game) {
   if (skips[game.id].timer > 0) {
     skips[game.id].timer--;
     setTimeout(function() {
-      cooldownSkip(game.id);
+      cooldownSkip(game);
     }, 1000);
   } else {
     skipList(game);
