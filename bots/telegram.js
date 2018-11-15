@@ -47,11 +47,8 @@ module.exports = function() {
     });
   };
 
-
-
   bot.sendMessage = function(channel, message) {
-    message = encodeURI(message);
-
+    message = encodeURIComponent(message);
     return new Promise(function (resolve, reject) {
       var url = 'https://api.telegram.org/bot' + bot.token + '/sendMessage?chat_id=' + channel + '&disable_notification=true&parse_mode=html&text=' + message;
       request(url, function (error, r, body) {
