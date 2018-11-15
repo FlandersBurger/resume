@@ -36,9 +36,9 @@ var prompts = {
   }
 };
 
-
 //var dailyScore = schedule.scheduleJob('*/10 * * * * *', function() {
 var dailyScore = schedule.scheduleJob('0 0 0 * * *', function() {
+  notifyAdmin('Score Reset Triggered; ' + new Date());
   TenThings.find({ 'players.scoreDaily': { $gt: 0 }})
   .then(function(games) {
     games.forEach(function(game) {
@@ -76,15 +76,22 @@ var dailyScore = schedule.scheduleJob('0 0 0 * * *', function() {
         });
       });
     });
-    TenThings.updateMany({ 'players.scoreDaily': { $gt: 0 }}, { $set: { 'players.$[].scoreDaily': 0 }, $inc: { 'players.$[].plays': 1 } }, function(err, res) {
-      if (err) {
-        console.error(err);
-        notifyAdmin('update daily score error\n' + err);
-      } else {
-        console.error(res);
-        notifyAdmin('update daily score success\n' + game.chat_id + ':\n' + JSON.stringify(res));
+    TenThings.updateMany(
+      { 'players.scoreDaily': { $gt: 0 }},
+      {
+        $set: { 'players.$[].scoreDaily': 0 },
+        $inc: { 'players.$[].plays': 1 }
+      },
+      function(err, res) {
+        if (err) {
+          console.error(err);
+          notifyAdmin('update daily score error\n' + err);
+        } else {
+          console.error(res);
+          notifyAdmin('update daily score success\n' + game.chat_id + ':\n' + JSON.stringify(res));
+        }
       }
-    });
+    );
   }, function(err) {
     console.error(err);
     notifyAdmin('update daily score error\n' + err);
@@ -133,7 +140,7 @@ b.init(TOKEN).then(function() {
   b.introduceYourself();
   b.setWebhook('tenthings');
 });
-
+notifyAdmin('Started Ten Things');
 //The Group: '5b6361dcbd0ff6645df5f225'  '-1001394022777'
 /*
 TenThings.findOne({ chat_id: '-1001394022777'})

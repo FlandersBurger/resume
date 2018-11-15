@@ -137,5 +137,17 @@ angular.module('app')
     });
   };
 
+  $scope.listButtonClass = function(list) {
+    var values = list.values.length;
+    var blurbs = list.values.filter(function(value) { return value.blurb; }).length;
+    if (values === blurbs) {
+      return 'btn-default';
+    } else if (blurbs === 0) {
+      return 'btn-info';
+    } else {
+      return 'btn-warning';
+    }
+  };
+
 
 });
