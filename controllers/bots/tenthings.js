@@ -140,7 +140,9 @@ b.init(TOKEN).then(function() {
   b.introduceYourself();
   b.setWebhook('tenthings');
 });
-notifyAdmin('Started Ten Things');
+//notifyAdmin('Started Ten Things');
+//b.sendMessage('-1001394022777', "test<a href=\'https://upload.wikimedia.org/wikipedia/commons/thumb/8/89/Regular_Hexagon_Inscribed_in_a_Circle.gif/360px-Regular_Hexagon_Inscribed_in_a_Circle.gif\'>&#8204;</a>\nsome other stuff")
+
 //The Group: '5b6361dcbd0ff6645df5f225'  '-1001394022777'
 /*
 TenThings.findOne({ chat_id: '-1001394022777'})
@@ -299,7 +301,8 @@ function guess(game, msg) {
       player.score += game.guessers.length;
       player.scoreDaily += game.guessers.length;
       game.save();
-      var message = prompts[getLanguage(msg.from.language_code)].guessed(msg.from.first_name, match.value + (match.blurb ? '\n<i>' + match.blurb + '</i>' : ''));
+      var blurb = match.blurb ? (match.blurb.substring(0, 4) === 'http' ? ('<a href="' + match .blurb + '">&#8204;</a>') : ('\n<i>' + match.blurb + '</i>')) : '';
+      var message = prompts[getLanguage(msg.from.language_code)].guessed(msg.from.first_name, match.value + blurb);
       var answersLeft = game.list.values.filter(function(item) { return !item.guesser.first_name; }).length;
       if (answersLeft > 0) {
         message += '\n' + answersLeft + ' answers left.';
