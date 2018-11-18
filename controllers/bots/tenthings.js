@@ -309,7 +309,7 @@ function checkMatch(game, matcher, msg) {
       }
     });
     var player = _.find(game.players, function(existingPlayer) {
-      return existingPlayer.id === msg.from.id;
+      return existingPlayer.id == msg.from.id;
     });
     player.score += game.guessers.length;
     player.scoreDaily += game.guessers.length;
