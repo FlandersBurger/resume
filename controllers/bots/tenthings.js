@@ -286,15 +286,15 @@ function guess(game, msg) {
   var fuzzyMatch = new FuzzyMatching(game.list.values.map(function(item) { return item.value; }));
   var matcher = fuzzyMatch.get(msg.text);
   if (matcher.distance >= 0.9) {
-    checkMatch(game, matcher);
+    checkMatch(game, matcher, msg);
   } else if (matcher.distance >= 0.75) {
     setTimeout(function() {
-      checkMatch(game, matcher);
+      checkMatch(game, matcher, msg);
     }, 2000);
   }
 }
 
-function checkMatch(game, matcher) {
+function checkMatch(game, matcher, msg) {
   var match = _.find(game.list.values, function(item) {
     return item.value === matcher.value;
   });
