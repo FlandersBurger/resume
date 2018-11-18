@@ -300,16 +300,6 @@ function checkMatch(game, matcher, msg) {
   });
   if (!match.guesser.first_name) {
     match.guesser = msg.from;
-    /*
-    console.log(_.find(game.list.values, function(item) {
-      return item.value === matcher.value;
-    }));
-    game.list.values.forEach(function(item) {
-      if (item.value === match.value) {
-        item.guesser = match.guesser;
-      }
-    });
-    */
     var player = _.find(game.players, function(existingPlayer) {
       return existingPlayer.id == msg.from.id;
     });
@@ -325,7 +315,7 @@ function checkMatch(game, matcher, msg) {
     b.sendMessage(msg.chat.id, message);
     setTimeout(function() {
       return checkRound(game);
-    }, 500);
+    }, 200);
   } else {
     return b.sendMessage(msg.chat.id, match.guesser.first_name + ' already guessed ' + match.value + '\nToo bad, ' + msg.from.first_name);
   }
