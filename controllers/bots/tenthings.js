@@ -300,6 +300,7 @@ function checkMatch(game, matcher, msg) {
   });
   if (!match.guesser.first_name) {
     match.guesser = msg.from;
+    /*
     console.log(_.find(game.list.values, function(item) {
       return item.value === matcher.value;
     }));
@@ -308,6 +309,7 @@ function checkMatch(game, matcher, msg) {
         item.guesser = match.guesser;
       }
     });
+    */
     var player = _.find(game.players, function(existingPlayer) {
       return existingPlayer.id == msg.from.id;
     });
