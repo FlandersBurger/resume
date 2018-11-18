@@ -300,16 +300,20 @@ function checkMatch(game, matcher) {
   });
   if (!match.guesser.first_name) {
     match.guesser = msg.from;
+    console.log(_.find(game.list.values, function(item) {
+      return item.value === matcher.value;
+    }));
     game.list.values.forEach(function(item) {
       if (item.value === match.value) {
         item.guesser = match.guesser;
       }
     });
     var player = _.find(game.players, function(existingPlayer) {
-      return existingPlayer.id == msg.from.id;
+      return existingPlayer.id === msg.from.id;
     });
     player.score += game.guessers.length;
     player.scoreDaily += game.guessers.length;
+    game.save();
     var blurb = match.blurb ? (match.blurb.substring(0, 4) === 'http' ? ('<a href="' + match .blurb + '">&#8204;</a>') : ('\n<i>' + match.blurb + '</i>')) : '';
     var message = prompts[getLanguage(msg.from.language_code)].guessed(msg.from.first_name, match.value + blurb);
     var answersLeft = game.list.values.filter(function(item) { return !item.guesser.first_name; }).length;
@@ -317,7 +321,6 @@ function checkMatch(game, matcher) {
       message += '\n' + answersLeft + ' answers left.';
     }
     b.sendMessage(msg.chat.id, message);
-    game.save();
     setTimeout(function() {
       return checkRound(game);
     }, 500);
