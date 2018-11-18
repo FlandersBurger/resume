@@ -110,30 +110,6 @@ function getLanguage(language) {
   }
 }
 
-/*
-
-var lists = [
-  {
-    name: '',
-    values: [
-      { value: '' },
-      { value: '' },
-      { value: '' },
-      { value: '' },
-      { value: '' },
-      { value: '' },
-      { value: '' },
-      { value: '' },
-      { value: '' },
-      { value: '' },
-    ]
-  }
-]
-List.collection.insert(lists, function (err, insertedLists) {
-  console.log(insertedLists);
-});
-*/
-
 var TOKEN = config.tokens.telegram.tenthings;
 var b = new TelegramBot();
 b.init(TOKEN).then(function() {
@@ -153,49 +129,6 @@ TenThings.findOne({ chat_id: '-1001394022777'})
   });
   notifyAdmin(winner);
 });*/
-/*
-  TenThings.find({ 'players.scoreDaily': { $gt: 0 }})
-  .then(function(games) {
-    games.forEach(function(game) {
-      var getHighScore = new Promise(function(resolve, reject) {
-        resolve(game.players.reduce(function(highScore, player) {
-          return (player.scoreDaily > highScore) ? player.scoreDaily : highScore;
-        }, 0));
-      });
-      getHighScore.then(function(highScore) {
-        var message = '';
-        var winners = [];
-        game.players.filter(function(player) {
-          return player.scoreDaily === highScore;
-        }).forEach(function(winner, index, array) {
-          winners.push(winner._id);
-          if (index < array.length - 1) {
-            message += winner.first_name + ' & ';
-          } else {
-            message += winner.first_name;
-            console.log(message);
-            notifyAdmin(game.chat_id + ' (' + highScore + '): <b>' + message + ' won!</b>');
-            if (game.chat_id === '592503547') {
-              TenThings.update(
-                {
-                  _id: game._id,
-                  'players._id': { $in: winners }
-                },
-                { $inc: { 'players.$.wins': 1 } },
-                { multi: true },
-                function(err, saved) {
-                  console.log('Win recorded for ' + winners);
-                }
-              );
-              getDailyScores(game);
-            }
-          }
-        });
-      });
-
-    });
-  });
-*/
 b.exportChatInviteLink('-1001394022777').then(function(chat) {
   console.log(chat);
 });
@@ -241,14 +174,6 @@ b.sendKeyboard('592503547', 'test', {
   //}
 });
 */
-/*
-getList(function(list) {
-  console.log(list);
-  list.values = getRandom(list.values, 10);
-  console.log(list.values);
-});
-*/
-
 function rateList(game) {
   b.sendKeyboard(game.chat_id, 'Did you like ' + '<b>' + game.list.name + '</b>?', {
     inline_keyboard: [[
@@ -372,6 +297,7 @@ function newRound(game) {
 
 
 function countLetters(string) {
+  //Vowels get revealed all at once
   var alphabet = ['b', 'c', 'd', 'f', 'g', 'h', 'j', 'k', 'l', 'm', 'n', 'p',
   'q', 'r', 's', 't', 'v', 'w', 'x', 'y', 'z'];
   return alphabet.map(function(letter) {
