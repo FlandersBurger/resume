@@ -289,7 +289,10 @@ function guess(game, msg) {
     checkMatch(game, matcher, msg);
   } else if (matcher.distance >= 0.75) {
     setTimeout(function() {
-      checkMatch(game, matcher, msg);
+      TenThings.findOne({ _id: game._id })
+      .exec(function(err, existingGame) {
+        checkMatch(existingGame, matcher, msg);
+      });
     }, 2000);
   }
 }
