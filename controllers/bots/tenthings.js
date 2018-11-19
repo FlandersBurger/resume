@@ -3,6 +3,7 @@ var schedule = require('node-schedule');
 var _ = require('underscore');
 var FuzzyMatching = require('fuzzy-matching');
 var schedule = require('node-schedule');
+var kue = require('kue');
 
 var config = require('../../config');
 var TelegramBot = require('../../bots/telegram');
@@ -12,7 +13,44 @@ var TenThings = require('../../models/games/tenthings');
 
 var cooldowns = {};
 var skips = {};
+/*
+var queue = kue.createQueue({
+  redis: {
+    port: 6379,
+    host: 'localhost',
+    auth: config.redisPass,
+    //db: 3, // if provided select a non-default redis db
+  }
+});
 
+function addJob() {
+  var random = Math.floor(Math.random() * 2000);
+  var job = queue.create('guess', {
+    title: random
+  }).removeOnComplete( true ).save(function(err) {
+     if( !err ) console.log( job.id + ': ' + JSON.stringify(job.data) );
+  });
+  setTimeout(function() {
+    addJob();
+  }, random);
+}
+
+addJob();
+queue.on('job complete', function(id, result){
+  kue.Job.get(id, function(err, job){
+    if (err) return;
+    job.remove(function(err){
+      if (err) throw err;
+      console.log('removed completed job #%d', job.id);
+    });
+  });
+});
+
+queue.process('guess', function(job, done){
+  console.log(job.data.title);
+  done();
+});
+*/
 var prompts = {
   en: {
     guessed: function(user, text) {
@@ -118,7 +156,8 @@ b.init(TOKEN).then(function() {
 });
 //notifyAdmin('Started Ten Things');
 //b.sendMessage('-1001394022777', "test<a href=\'https://upload.wikimedia.org/wikipedia/commons/thumb/8/89/Regular_Hexagon_Inscribed_in_a_Circle.gif/360px-Regular_Hexagon_Inscribed_in_a_Circle.gif\'>&#8204;</a>\nsome other stuff")
-//b.sendMessage('592503547', "test<a href=\'https://upload.wikimedia.org/wikipedia/commons/4/47/PNG_transparency_demonstration_1.png\'>&#8204;</a>\nsome other stuff")
+//var url = 'https://upload.wikimedia.org/wikipedia/commons/d/d8/Olympique_Marseille_logo.svg';
+//b.sendMessage('592503547', "test<a href=\'" + url + "\'>&#8204;</a>\nsome other stuff");
 //b.sendMessage('592503547', JSON.stringify(msg));
 //The Group: '5b6361dcbd0ff6645df5f225'  '-1001394022777'
 /*
@@ -129,10 +168,11 @@ TenThings.findOne({ chat_id: '-1001394022777'})
   });
   notifyAdmin(winner);
 });*/
+/*
 b.exportChatInviteLink('-1001394022777').then(function(chat) {
   console.log(chat);
 });
-
+*/
 function selectList(game, callback) {
   List.find({ _id: { $nin: game.playedLists } }).populate('creator').exec(function (err, lists) {
     if (lists.length === 0) {
@@ -146,6 +186,7 @@ function selectList(game, callback) {
     }
   });
 }
+
 
 function createGame(id, creator) {
   var game = new TenThings({
@@ -595,7 +636,6 @@ router.post('/', function (req, res, next) {
   if (msg.command.indexOf('@') >= 0) {
     msg.command = msg.command.substring(0, msg.command.indexOf('@'));
   }
-  //notifyAdmin(msg.from);
   TenThings.findOne({
     chat_id: msg.chat.id
   }).populate('list.creator').exec(function(err, existingGame) {
@@ -612,12 +652,9 @@ router.post('/', function (req, res, next) {
       return evaluateCommand(res, msg, existingGame, false);
     }
   });
-  //b.sendMessage(msg.chat.id, 'Received Post');
 });
 
 router.get('/', function (req, res, next) {
-  //b.sendMessage(msg.chat.id, 'Received Get');
-  //res.json({ message: 'get ok'});
   console.log(req.query);
   var token = req.query['hub.verify_token'];
   if (req.query['hub.verify_token'] === config.tokens.facebook.tenthings) {

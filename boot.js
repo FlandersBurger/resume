@@ -3,9 +3,9 @@ var numCpus = require('os').cpus().length;
 
 cluster.setupMaster({exec: __dirname + '/server.js'});
 
-function workerIds() { return Object.keys(cluster.workers); };
+function workerIds() { return Object.keys(cluster.workers); }
 
-function numWorkers() { return workerIds().length; };
+function numWorkers() { return workerIds().length; }
 
 var stopping = false;
 //Forks workers unless the server is stopping
