@@ -245,7 +245,8 @@ function guess(game, msg) {
     checkMatch(game, matcher, msg);
   } else if (matcher.distance >= 0.75) {
     setTimeout(function() {
-      TenThings.findOne({ _id: game._id })
+      TenThings.findOne({ chat_id: game.chat_id })
+      .populate('list.creator')
       .exec(function(err, existingGame) {
         checkMatch(existingGame, matcher, msg);
       });
@@ -254,8 +255,7 @@ function guess(game, msg) {
 }
 
 function checkMatch(game, matcher, msg) {
-  console.log(matcher);
-  console.log(msg);
+  console.log(game.chat_id);
   if (!_.find(game.players, function(existingPlayer) {
     return existingPlayer.id == msg.from.id;
   })) {
@@ -276,6 +276,7 @@ function checkMatch(game, matcher, msg) {
     });
     player.score += game.guessers.length;
     player.scoreDaily += game.guessers.length;
+    console.log(game.list.values);
     game.save(function(err, savedGame) {
       if (err) {
         notifyAdmin(err);
