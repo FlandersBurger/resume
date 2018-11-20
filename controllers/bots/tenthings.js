@@ -255,7 +255,6 @@ function guess(game, msg) {
 }
 
 function checkMatch(game, matcher, msg) {
-  console.log(game.chat_id);
   if (!_.find(game.players, function(existingPlayer) {
     return existingPlayer.id == msg.from.id;
   })) {
@@ -276,7 +275,6 @@ function checkMatch(game, matcher, msg) {
     });
     player.score += game.guessers.length;
     player.scoreDaily += game.guessers.length;
-    console.log(game.list.values);
     game.save(function(err, savedGame) {
       if (err) {
         notifyAdmin(err);
