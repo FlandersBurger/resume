@@ -239,16 +239,6 @@ function rateList(game) {
 }
 
 function guess(game, msg) {
-  if (!_.find(game.players, function(existingPlayer) {
-    return existingPlayer.id == msg.from.id;
-  })) {
-    game.players.push(msg.from);
-  }
-  if (!_.find(game.guessers, function(guesser) {
-    return guesser == msg.from.id;
-  })) {
-    game.guessers.push(msg.from.id);
-  }
   var fuzzyMatch = new FuzzyMatching(game.list.values.map(function(item) { return item.value; }));
   var matcher = fuzzyMatch.get(msg.text);
   if (matcher.distance >= 0.9) {
@@ -264,6 +254,16 @@ function guess(game, msg) {
 }
 
 function checkMatch(game, matcher, msg) {
+  if (!_.find(game.players, function(existingPlayer) {
+    return existingPlayer.id == msg.from.id;
+  })) {
+    game.players.push(msg.from);
+  }
+  if (!_.find(game.guessers, function(guesser) {
+    return guesser == msg.from.id;
+  })) {
+    game.guessers.push(msg.from.id);
+  }
   var match = _.find(game.list.values, function(item) {
     return item.value === matcher.value;
   });
