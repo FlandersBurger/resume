@@ -245,7 +245,7 @@ function guess(game, msg) {
     checkMatch(game, matcher, msg);
   } else if (matcher.distance >= 0.75) {
     setTimeout(function() {
-      TenThings.findOne({ chat_id: msg.chat.id })
+      TenThings.findOne({ _id: game._id })
       .exec(function(err, existingGame) {
         checkMatch(existingGame, matcher, msg);
       });
@@ -254,7 +254,8 @@ function guess(game, msg) {
 }
 
 function checkMatch(game, matcher, msg) {
-  console.log(game);
+  console.log(matcher);
+  console.log(msg);
   if (!_.find(game.players, function(existingPlayer) {
     return existingPlayer.id == msg.from.id;
   })) {
