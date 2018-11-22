@@ -100,23 +100,37 @@ var dailyScore = schedule.scheduleJob('0 0 0 * * *', function() {
             setTimeout(function() {
               notifyAdmin(game.chat_id + ' (' + highScore + '): <b>' + message + ' won!</b>');
               b.sendMessage(game.chat_id, '<b>' + message + ' won with ' + highScore + ' points!</b>');
+              TenThings.update(
+                {
+                  _id: game._id,
+                  'players._id': { $in: winners }
+                },
+                { $inc: { 'players.$[].wins': 1 } },
+                { multi: true },
+                function(err, saved) {
+                  console.log('Win recorded for ' + winners);
+                }
+              );
+              TenThings.update(
+                {
+                  _id: game._id,
+                  'players.scoreDaily': { $gt: 0 }
+                },
+                {
+                  $inc: { 'players.$[].plays': 1 },
+                  'players.$[].scoreDaily': 0
+                },
+                { multi: true },
+                function(err, saved) {
+                  console.log('Win recorded for ' + winners);
+                }
+              );
             }, index * 50);
-            TenThings.update(
-              {
-                _id: game._id,
-                'players._id': { $in: winners }
-              },
-              { $inc: { 'players.$.wins': 1 } },
-              { multi: true },
-              function(err, saved) {
-                console.log('Win recorded for ' + winners);
-              }
-            );
           }
         });
       });
     });
-
+    /*
     TenThings.find(
       { 'players.scoreDaily': { $gt: 0 }}
     ).exec(function(err, games) {
@@ -130,6 +144,7 @@ var dailyScore = schedule.scheduleJob('0 0 0 * * *', function() {
         game.save();
       });
     });
+    */
   }, function(err) {
     console.error(err);
     notifyAdmin('update daily score error\n' + err);
