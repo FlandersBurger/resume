@@ -89,7 +89,7 @@ function addJob() {
   var job = queue.create('guess', {
     title: random
   }).removeOnComplete( true ).save(function(err) {
-     if( !err ) console.log( jobot.id + ': ' + JSON.stringify(jobot.data) );
+     if( !err ) console.log( job.id + ': ' + JSON.stringify(job.data) );
   });
   setTimeout(function() {
     addJob();
@@ -98,17 +98,17 @@ function addJob() {
 
 addJob();
 queue.on('job complete', function(id, result){
-  kue.Jobot.get(id, function(err, job){
+  kue.Job.get(id, function(err, job){
     if (err) return;
-    jobot.remove(function(err){
+    job.remove(function(err){
       if (err) throw err;
-      console.log('removed completed job #%d', jobot.id);
+      console.log('removed completed job #%d', job.id);
     });
   });
 });
 
 queue.process('guess', function(job, done){
-  console.log(jobot.data.title);
+  console.log(job.data.title);
   done();
 });
 */
@@ -313,7 +313,7 @@ function checkMatch(game, matcher, msg) {
         bot.notifyAdmin(err);
       }
     });
-    var blurb = match.blurb ? (match.blurbot.substring(0, 4) === 'http' ? ('<a href="' + match .blurb + '">&#8204;</a>') : ('\n<i>' + match.blurb + '</i>')) : '';
+    var blurb = match.blurb ? (match.blurb.substring(0, 4) === 'http' ? ('<a href="' + match.blurb + '">&#8204;</a>') : ('\n<i>' + match.blurb + '</i>')) : '';
     var message = translate[getLanguage(msg.from.language_code)].guessed(msg.from.first_name, match.value + blurb);
     var answersLeft = game.list.values.filter(function(item) { return !item.guesser.first_name; }).length;
     if (answersLeft > 0) {
@@ -694,9 +694,9 @@ router.post('/', function (req, res, next) {
 
 router.get('/', function (req, res, next) {
   console.log(req.query);
-  var token = req.query['hubot.verify_token'];
-  if (req.query['hubot.verify_token'] === config.tokens.facebook.tenthings) {
-    res.status(200).send(req.query['hubot.challenge']);
+  var token = req.query['hub.verify_token'];
+  if (req.query['hub.verify_token'] === config.tokens.facebook.tenthings) {
+    res.status(200).send(req.query['hub.challenge']);
   } else {
     res.sendStatus(200);
   }
