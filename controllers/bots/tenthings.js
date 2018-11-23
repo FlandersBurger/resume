@@ -311,9 +311,7 @@ function checkMatch(game, matcher, msg) {
     game.save(function(err, savedGame) {
       if (err) {
         bot.notifyAdmin(err);
-      } else {
-        console.log(savedGame);
-      }
+      } 
     });
     var blurb = match.blurb ? (match.blurbot.substring(0, 4) === 'http' ? ('<a href="' + match .blurb + '">&#8204;</a>') : ('\n<i>' + match.blurb + '</i>')) : '';
     var message = translate[getLanguage(msg.from.language_code)].guessed(msg.from.first_name, match.value + blurb);
