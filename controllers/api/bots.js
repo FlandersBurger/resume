@@ -2,6 +2,7 @@ var router = require('express').Router();
 var mongoose = require('mongoose');
 
 var config = require('../../config');
+var bot = require('../../bots/telegram');
 
 var List = require('../../models/list');
 
@@ -38,6 +39,7 @@ router.put('/lists', function (req, res, next) {
       _id: list._id
     }).populate('creator').exec(function(err, result) {
       if (err) return next(err);
+      bot.notifyAdmin(list.name + ' updated');
       res.json(result);
     });
   });
@@ -46,6 +48,7 @@ router.put('/lists', function (req, res, next) {
 router.delete('/lists/:id', function (req, res, next) {
   List.findByIdAndRemove(req.params.id, function(err, list) {
     if (err) return next(err);
+    bot.notifyAdmin(list.name + ' deleted');
     res.sendStatus(200);
   });
 });

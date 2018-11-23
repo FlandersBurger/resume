@@ -1,6 +1,7 @@
 var request = require('request');
+var config = require('../config');
 
-module.exports = function() {
+function TelegramBot() {
   var bot = this;
 
   bot.lastMsgId = 69;
@@ -60,6 +61,10 @@ module.exports = function() {
     });
   };
 
+  bot.notifyAdmin = function(msg) {
+    b.sendMessage('592503547', JSON.stringify(msg));
+  };
+
   bot.getChat = function(channel) {
     return new Promise(function (resolve, reject) {
       var url = 'https://api.telegram.org/bot' + bot.token + '/getChat?chat_id=' + channel;
@@ -112,4 +117,14 @@ module.exports = function() {
 
   };
 
-};
+
+}
+
+var TOKEN = config.tokens.telegram.tenthings;
+var b = new TelegramBot();
+b.init(TOKEN).then(function() {
+  b.introduceYourself();
+  b.setWebhook('tenthings');
+});
+
+module.exports = b;

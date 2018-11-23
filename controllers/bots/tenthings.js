@@ -6,7 +6,8 @@ var schedule = require('node-schedule');
 var kue = require('kue');
 
 var config = require('../../config');
-var TelegramBot = require('../../bots/telegram');
+var translate = require('../../translate');
+var bot = require('../../bots/telegram');
 
 var List = require('../../models/list');
 var TenThings = require('../../models/games/tenthings');
@@ -44,7 +45,7 @@ TenThings.findOne({ chat_id: '592503547'})
           if (err) {
             console.error(err);
           } else {
-            notifyAdmin(winners)
+            bot.notifyAdmin(winners)
             console.log(saved);
           }
 
@@ -88,7 +89,7 @@ function addJob() {
   var job = queue.create('guess', {
     title: random
   }).removeOnComplete( true ).save(function(err) {
-     if( !err ) console.log( job.id + ': ' + JSON.stringify(job.data) );
+     if( !err ) console.log( jobot.id + ': ' + JSON.stringify(jobot.data) );
   });
   setTimeout(function() {
     addJob();
@@ -97,46 +98,24 @@ function addJob() {
 
 addJob();
 queue.on('job complete', function(id, result){
-  kue.Job.get(id, function(err, job){
+  kue.Jobot.get(id, function(err, job){
     if (err) return;
-    job.remove(function(err){
+    jobot.remove(function(err){
       if (err) throw err;
-      console.log('removed completed job #%d', job.id);
+      console.log('removed completed job #%d', jobot.id);
     });
   });
 });
 
 queue.process('guess', function(job, done){
-  console.log(job.data.title);
+  console.log(jobot.data.title);
   done();
 });
 */
-var prompts = {
-  en: {
-    guessed: function(user, text) {
-      return user + ' got ' + text;
-    }
-  },
-  fr: {
-    guessed: function(user, text) {
-      return user + ' a trouve ' + text;
-    }
-  },
-  nl: {
-    guessed: function(user, text) {
-      return user + ' heeft ' + text + ' gevonden';
-    }
-  },
-  pt: {
-    guessed: function(user, text) {
-      return user + ' adivinhou ' + text;
-    }
-  }
-};
 
 //var dailyScore = schedule.scheduleJob('*/10 * * * * *', function() {
 var dailyScore = schedule.scheduleJob('0 0 0 * * *', function() {
-  notifyAdmin('Score Reset Triggered; ' + new Date());
+  bot.notifyAdmin('Score Reset Triggered; ' + new Date());
   TenThings.find({ 'players.scoreDaily': { $gt: 0 }})
   .then(function(games) {
     games.forEach(function(game) {
@@ -158,8 +137,8 @@ var dailyScore = schedule.scheduleJob('0 0 0 * * *', function() {
           } else {
             message += winner.first_name;
             setTimeout(function() {
-              notifyAdmin(game.chat_id + ' (' + highScore + '): <b>' + message + ' won!</b>');
-              b.sendMessage(game.chat_id, '<b>' + message + ' won with ' + highScore + ' points!</b>');
+              bot.notifyAdmin(game.chat_id + ' (' + highScore + '): <b>' + message + ' won!</b>');
+              bot.sendMessage(game.chat_id, '<b>' + message + ' won with ' + highScore + ' points!</b>');
               TenThings.update(
                 {
                   _id: game._id
@@ -191,15 +170,17 @@ var dailyScore = schedule.scheduleJob('0 0 0 * * *', function() {
     });
   }, function(err) {
     console.error(err);
-    notifyAdmin('update daily score error\n' + err);
+    bot.notifyAdmin('update daily score error\n' + err);
   });
 });
 
 function getLanguage(language) {
+
   if (language) {
-    if (prompts[language.substring(0, 1)]) {
+    if (translate[language.substring(0, 1)]) {
       return language.substring(0, 1);
     } else {
+      bot.notifyAdmin('New language: ' + language);
       return 'en';
     }
   } else {
@@ -207,17 +188,11 @@ function getLanguage(language) {
   }
 }
 
-var TOKEN = config.tokens.telegram.tenthings;
-var b = new TelegramBot();
-b.init(TOKEN).then(function() {
-  b.introduceYourself();
-  b.setWebhook('tenthings');
-});
-//notifyAdmin('Started Ten Things');
-//b.sendMessage('-1001394022777', "test<a href=\'https://upload.wikimedia.org/wikipedia/commons/thumb/8/89/Regular_Hexagon_Inscribed_in_a_Circle.gif/360px-Regular_Hexagon_Inscribed_in_a_Circle.gif\'>&#8204;</a>\nsome other stuff")
+//bot.notifyAdmin('Started Ten Things');
+//bot.sendMessage('-1001394022777', "test<a href=\'https://upload.wikimedia.org/wikipedia/commons/thumb/8/89/Regular_Hexagon_Inscribed_in_a_Circle.gif/360px-Regular_Hexagon_Inscribed_in_a_Circle.gif\'>&#8204;</a>\nsome other stuff")
 //var url = 'https://upload.wikimedia.org/wikipedia/commons/d/d8/Olympique_Marseille_logo.svg';
-//b.sendMessage('592503547', "test<a href=\'" + url + "\'>&#8204;</a>\nsome other stuff");
-//b.sendMessage('592503547', JSON.stringify(msg));
+//bot.sendMessage('592503547', "test<a href=\'" + url + "\'>&#8204;</a>\nsome other stuff");
+//bot.sendMessage('592503547', JSON.stringify(msg));
 //The Group: '5b6361dcbd0ff6645df5f225'  '-1001394022777'
 /*
 TenThings.findOne({ chat_id: '-1001394022777'})
@@ -225,10 +200,10 @@ TenThings.findOne({ chat_id: '-1001394022777'})
   var winner = game.players.reduce(function(player1, player2) {
     return (player1.scoreDaily > player2.scoreDaily) ? player1 : player2;
   });
-  notifyAdmin(winner);
+  bot.notifyAdmin(winner);
 });*/
 /*
-b.exportChatInviteLink('-1001394022777').then(function(chat) {
+bot.exportChatInviteLink('-1001394022777').then(function(chat) {
   console.log(chat);
 });
 */
@@ -259,12 +234,8 @@ function createGame(id, creator) {
   });
 }
 
-function notifyAdmin(msg) {
-  b.sendMessage('592503547', JSON.stringify(msg));
-}
-
 /*
-b.sendKeyboard('592503547', 'test', {
+bot.sendKeyboard('592503547', 'test', {
   //reply_to_message_id: '32936',
   //reply_markup: {
     keyboard: [[
@@ -275,7 +246,7 @@ b.sendKeyboard('592503547', 'test', {
 });
 */
 function rateList(game) {
-  b.sendKeyboard(game.chat_id, 'Did you like ' + '<b>' + game.list.name + '</b>?', {
+  bot.sendKeyboard(game.chat_id, 'Did you like ' + '<b>' + game.list.name + '</b>?', {
     inline_keyboard: [[
       {
         'text': '\ud83d\udc4d',
@@ -339,23 +310,23 @@ function checkMatch(game, matcher, msg) {
     }
     game.save(function(err, savedGame) {
       if (err) {
-        notifyAdmin(err);
+        bot.notifyAdmin(err);
       } else {
         console.log(savedGame);
       }
     });
-    var blurb = match.blurb ? (match.blurb.substring(0, 4) === 'http' ? ('<a href="' + match .blurb + '">&#8204;</a>') : ('\n<i>' + match.blurb + '</i>')) : '';
-    var message = prompts[getLanguage(msg.from.language_code)].guessed(msg.from.first_name, match.value + blurb);
+    var blurb = match.blurb ? (match.blurbot.substring(0, 4) === 'http' ? ('<a href="' + match .blurb + '">&#8204;</a>') : ('\n<i>' + match.blurb + '</i>')) : '';
+    var message = translate[getLanguage(msg.from.language_code)].guessed(msg.from.first_name, match.value + blurb);
     var answersLeft = game.list.values.filter(function(item) { return !item.guesser.first_name; }).length;
     if (answersLeft > 0) {
       message += '\n' + answersLeft + ' answers left.';
     }
-    b.sendMessage(msg.chat.id, message);
+    bot.sendMessage(msg.chat.id, message);
     setTimeout(function() {
       return checkRound(game);
     }, 200);
   } else {
-    return b.sendMessage(msg.chat.id, match.guesser.first_name + ' already guessed ' + match.value + '\nToo bad, ' + msg.from.first_name);
+    return bot.sendMessage(msg.chat.id, match.guesser.first_name + ' already guessed ' + match.value + '\nToo bad, ' + msg.from.first_name);
   }
 }
 
@@ -363,7 +334,7 @@ function checkRound(game) {
   if (game.list.values.filter(function(item) {
     return !item.guesser.first_name;
   }).length === 0) {
-    b.sendMessage(game.id, 'Round over.');
+    bot.sendMessage(game.id, 'Round over.');
     getDailyScores(game);
     setTimeout(function () {
       rateList(game);
@@ -372,7 +343,7 @@ function checkRound(game) {
           var message = '<b>' + game.list.name + '</b> (' + game.list.totalValues + ') by ' + game.list.creator.username + '\n';
           message += game.list.category ? 'Category: ' + game.list.category + '\n' : '';
           message += list;
-          b.sendMessage(game.chat_id, message);
+          bot.sendMessage(game.chat_id, message);
           setTimeout(function() {
             newRound(game);
           }, 500);
@@ -394,11 +365,11 @@ function newRound(game) {
     game.guessers = [];
     var message = 'A new round will start in 5 seconds';
     message += game.list.category ? '\nCategory: <b>' + game.list.category + '</b>' : '';
-    b.sendMessage(game.chat_id, message);
+    bot.sendMessage(game.chat_id, message);
     setTimeout(function() {
       var message = '<b>' + game.list.name + '</b> (' + game.list.totalValues + ') by ' + game.list.creator.username;
       message += game.list.description ? '\n<i>' + game.list.description + '</i>' : '';
-      b.sendMessage(game.chat_id, message);
+      bot.sendMessage(game.chat_id, message);
     }, 5000);
     game.playedLists.push(game.list._id);
     game.save();
@@ -437,9 +408,9 @@ function skip(game, player) {
   if (skips[game.id] && skips[game.id].player !== player) {
     skipList(game);
   } else if (skips[game.id] && skips[game.id].player === player) {
-    b.sendMessage(game.chat_id, 'Get someone else to confirm your skip request!');
+    bot.sendMessage(game.chat_id, 'Get someone else to confirm your skip request!');
   } else {
-    b.sendMessage(game.chat_id, 'Skipping <b>' + game.list.name + '</b> in 10 seconds.\nType /veto to cancel or /skip to confirm.');
+    bot.sendMessage(game.chat_id, 'Skipping <b>' + game.list.name + '</b> in 10 seconds.\nType /veto to cancel or /skip to confirm.');
     skips[game.id] = {
       timer: 10,
       player: player
@@ -449,7 +420,7 @@ function skip(game, player) {
 }
 
 function skipList(game) {
-  b.sendMessage(game.chat_id, '<b>' + game.list.name + '</b> skipped!');
+  bot.sendMessage(game.chat_id, '<b>' + game.list.name + '</b> skipped!');
   getDailyScores(game);
   newRound(game);
   delete skips[game.id];
@@ -479,9 +450,9 @@ function cooldownSkip(game) {
 
 function hint(game, callback) {
   if (game.hints >= 6) {
-    b.sendMessage(game.chat_id, 'What? Another hint? I\'m just gonna ignore that request');
+    bot.sendMessage(game.chat_id, 'What? Another hint? I\'m just gonna ignore that request');
   } else if (cooldowns[game.id] && cooldowns[game.id] > 0) {
-    b.sendMessage(game.chat_id, 'Calm down with the hints, wait ' + cooldowns[game.id] + ' more seconds');
+    bot.sendMessage(game.chat_id, 'Calm down with the hints, wait ' + cooldowns[game.id] + ' more seconds');
   } else {
     game.hints++;
     callback(game.list.values.reduce(function(str, item, index) {
@@ -556,21 +527,21 @@ function getDailyScores(game) {
   game.players.filter(function(player) {
     return player.scoreDaily;
   }).sort(function(a, b) {
-    return b.scoreDaily - a.scoreDaily;
+    return bot.scoreDaily - a.scoreDaily;
   }).forEach(function(player, index) {
     str += (index + 1) + ': ' + player.first_name + ' - ' + player.scoreDaily + '\n';
   });
-  b.sendMessage(game.chat_id, str);
+  bot.sendMessage(game.chat_id, str);
 }
 
 function getScores(game) {
   var str = '<b>All Time High Scores</b>\n';
   game.players.sort(function(a, b) {
-    return b.highScore - a.highScore;
+    return bot.highScore - a.highScore;
   }).slice(0, 10).forEach(function(player, index) {
     str += (index + 1) + ': ' + player.first_name + ' - High ' + player.highScore + (player.plays > 0 ? ' - Avg ' + Math.round(player.score / player.plays) : '')  + ' - ' + player.wins + '/' + player.plays + ' wins\n';
   });
-  b.sendMessage(game.chat_id, str);
+  bot.sendMessage(game.chat_id, str);
 }
 
 function getList(game, callback) {
@@ -725,9 +696,9 @@ router.post('/', function (req, res, next) {
 
 router.get('/', function (req, res, next) {
   console.log(req.query);
-  var token = req.query['hub.verify_token'];
-  if (req.query['hub.verify_token'] === config.tokens.facebook.tenthings) {
-    res.status(200).send(req.query['hub.challenge']);
+  var token = req.query['hubot.verify_token'];
+  if (req.query['hubot.verify_token'] === config.tokens.facebook.tenthings) {
+    res.status(200).send(req.query['hubot.challenge']);
   } else {
     res.sendStatus(200);
   }
@@ -763,18 +734,18 @@ router.post('/webhook', function (req, res) {
 });
 
 function evaluateCommand(res, msg, game, isNew) {
-  //notifyAdmin(tenthings);
-  //notifyAdmin(games[msg.chat.id].list);
+  //bot.notifyAdmin(tenthings);
+  //bot.notifyAdmin(games[msg.chat.id].list);
   console.log(msg.id + ' - ' + msg.from.first_name + ': ' + msg.command + ' -> ' + msg.text);
   if (game.list.values.length === 0) {
     newRound(game);
   }
   switch (msg.command) {
     case '/error':
-      b.sendMessage(msg.chat.id, msg.text);
+      bot.sendMessage(msg.chat.id, msg.text);
       break;
     case '/info':
-      b.sendMessage(msg.chat.id, 'Hi ' + (msg.from.username ? msg.from.username : msg.from.first_name) + ',\nMy name is 10 Things and I am a game bot.\nThe game will give you a category and then you answer anything that comes to mind in that category.\nI have a few things you can ask of me, just type a slash (/) to see the commands.\nIf you want to add your own lists, please go to https://belgocanadian.com/bots\nAnd last but not least if you want to suggest anything (new lists or features) type "/suggest" followed by your suggestion!\n\nHave fun!');
+      bot.sendMessage(msg.chat.id, 'Hi ' + (msg.from.username ? msg.from.username : msg.from.first_name) + ',\nMy name is 10 Things and I am a game bot.\nThe game will give you a category and then you answer anything that comes to mind in that category.\nI have a few things you can ask of me, just type a slash (/) to see the commands.\nIf you want to add your own lists, please go to https://belgocanadian.com/bots\nAnd last but not least if you want to suggest anything (new lists or features) type "/suggest" followed by your suggestion!\n\nHave fun!');
       break;
     case '/logic':
       var logic = '';
@@ -786,16 +757,16 @@ function evaluateCommand(res, msg, game, isNew) {
       logic += '6: If only 1 player skips a list there will be a 10 second cooldown until the list is skipped\n';
       logic += '7: A skip can be cancelled by anyone by typing /veto\n';
       logic += '8: Every day at midnight (universal time) the daily scores will be reset and a winner recorded\n';
-      b.sendMessage(msg.chat.id, logic);
+      bot.sendMessage(msg.chat.id, logic);
       break;
     /*
     case '/start':
-      b.sendMessage(msg.chat.id, 'To start a game, type /new');
+      bot.sendMessage(msg.chat.id, 'To start a game, type /new');
       break;
     */
     case '/new':
       if (!isNew) {
-        b.sendMessage(msg.chat.id, 'A game is already in progress');
+        bot.sendMessage(msg.chat.id, 'A game is already in progress');
       } else {
         newRound(game);
       }
@@ -805,7 +776,7 @@ function evaluateCommand(res, msg, game, isNew) {
       break;
     case '/veto':
       delete skips[game.id];
-      b.sendMessage(msg.chat.id, 'Skip vetoed by ' + (msg.from.username ? msg.from.username : msg.from.first_name));
+      bot.sendMessage(msg.chat.id, 'Skip vetoed by ' + (msg.from.username ? msg.from.username : msg.from.first_name));
       break;
     case '/scores':
       getDailyScores(game);
@@ -818,7 +789,7 @@ function evaluateCommand(res, msg, game, isNew) {
           message += game.list.category ? 'Category: ' + game.list.category + '\n' : '';
           message += game.list.description ? '<i>' + game.list.description + '</i>\n' : '';
           message += list;
-          b.sendMessage(msg.chat.id, message);
+          bot.sendMessage(msg.chat.id, message);
         });
       } catch (e) {
 
@@ -827,15 +798,15 @@ function evaluateCommand(res, msg, game, isNew) {
     /*
     case '/stop':
       delete games[msg.chat.id];
-      b.sendMessage(msg.chat.id, 'Game stopped');
+      bot.sendMessage(msg.chat.id, 'Game stopped');
       break;
     */
     case '/suggest':
-      b.sendMessage('592503547', JSON.stringify((msg.from.username ? msg.from.username : msg.from.first_name) + ': ' + msg.text));
+      bot.sendMessage('592503547', JSON.stringify((msg.from.username ? msg.from.username : msg.from.first_name) + ': ' + msg.text));
       break;
     case '/hint':
       hint(game, function(hints) {
-        b.sendMessage(msg.chat.id, hints);
+        bot.sendMessage(msg.chat.id, hints);
       });
       break;
     default:
