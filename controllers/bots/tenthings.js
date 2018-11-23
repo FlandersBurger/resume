@@ -55,6 +55,25 @@ TenThings.findOne({ chat_id: '592503547'})
 });
 */
 /*
+      TenThings.update(
+        {},
+        {
+          'players.$[].wins': 0,
+          'players.$[].plays': 0,
+          'players.$[].score': 0,
+          'players.$[].scoreDaily': 0
+        },
+        { multi: true },
+        function(err, saved) {
+          if (err) {
+            console.log(err);
+          } else {
+            console.log(saved);
+          }
+        }
+      );
+*/
+/*
 var queue = kue.createQueue({
   redis: {
     port: 6379,
@@ -150,7 +169,9 @@ var dailyScore = schedule.scheduleJob('0 0 0 * * *', function() {
                     'players.$[winner].wins': 1,
                     'players.$[player].plays': 1
                   },
-                  'players.$[player].scoreDaily': 0
+                  $set: {
+                    'players.$[player].scoreDaily': 0
+                  }
                 },
                 {
                   multi: true,
@@ -313,6 +334,9 @@ function checkMatch(game, matcher, msg) {
     });
     player.score += game.guessers.length;
     player.scoreDaily += game.guessers.length;
+    if (player.scoreDaily > player.highScore) {
+      player.highScore = player.scoreDaily;
+    }
     game.save(function(err, savedGame) {
       if (err) {
         notifyAdmin(err);
@@ -542,9 +566,9 @@ function getDailyScores(game) {
 function getScores(game) {
   var str = '<b>All Time High Scores</b>\n';
   game.players.sort(function(a, b) {
-    return b.score - a.score;
+    return b.highScore - a.highScore;
   }).slice(0, 10).forEach(function(player, index) {
-    str += (index + 1) + ': ' + player.first_name + ' - ' + player.score + ' - ' + player.wins + ' wins / ' + player.plays + ' played\n';
+    str += (index + 1) + ': ' + player.first_name + ' - High ' + player.highScore + ' - Avg ' + Math.round(player.score / player.plays)  + ' - ' + player.wins + '/' + player.plays + ' wins\n';
   });
   b.sendMessage(game.chat_id, str);
 }

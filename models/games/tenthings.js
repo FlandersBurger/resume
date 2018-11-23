@@ -14,9 +14,10 @@ var TenThings = db.model('TenThings', {
       last_name: { type: String, required: false },
       username: { type: String, required: false },
       score: { type: Number, required: false, default: 0 },
+      highScore: { type: Number, required: false, default: 0 },
       scoreDaily: { type: Number, required: false, default: 0 },
       plays: { type: Number, required: false, default: 0 },
-      wins: { type: Number, required: false, default: 0 }
+      wins: { type: Number, required: false, default: 0 },
     }
   ],
   playedLists: [
