@@ -783,7 +783,7 @@ function evaluateCommand(res, msg, game, isNew) {
     case '/list':
       try {
         getList(game, function(list) {
-          var message = '<b>' + game.list.name + '</b> by ' + game.list.creator.username + '\n';
+          var message = '<b>' + game.list.name + '</b> (' + game.list.totalValues  + ') by ' + game.list.creator.username + '\n';
           message += game.list.category ? 'Category: ' + game.list.category + '\n' : '';
           message += game.list.description ? '<i>' + game.list.description + '</i>\n' : '';
           message += list;
