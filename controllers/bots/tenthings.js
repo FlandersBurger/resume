@@ -175,10 +175,10 @@ var dailyScore = schedule.scheduleJob('0 0 0 * * *', function() {
 });
 
 function getLanguage(language) {
-
+  language = language.toLowerCase();
   if (language) {
-    if (translate[language.substring(0, 1)]) {
-      return language.substring(0, 1);
+    if (translate[language.substring(0, 2)]) {
+      return language.substring(0, 2);
     } else {
       bot.notifyAdmin('New language: ' + language);
       return 'en';
