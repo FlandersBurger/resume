@@ -14,33 +14,45 @@ var TenThings = require('../../models/games/tenthings');
 var cooldowns = {};
 var skips = {};
 /*
-TenThings.update(
-  {
-    chat_id: '592503547'
-  },
-  {
-    $inc: {
-      'players.$[winner].wins': 1,
-      'players.$[player].plays': 1
-    },
-    'players.$[player].scoreDaily': 0
-  },
-  {
-    multi: true,
-    arrayFilters: [
-      { 'winner.first_name': { $in: ['Laurent'] } },
-      { 'player.scoreDaily': { $gt: 0 } }
-    ]
-  },
-  function(err, saved) {
-    if (err) {
-      console.error(err);
-    } else {
-      console.log(saved);
+TenThings.findOne({ chat_id: '592503547'})
+.exec(function(err, game) {
+  var winners = [];
+  game.players.forEach(function(winner, index, array) {
+    if (winner.scoreDaily > 0) {
+      winners.push(winner._id);
     }
+    if (index === array.length - 1) {
+      TenThings.update(
+        {
+          chat_id: '592503547'
+        },
+        {
+          $inc: {
+            'players.$[winner].wins': 1,
+            'players.$[player].plays': 1
+          },
+          'players.$[player].scoreDaily': 0
+        },
+        {
+          multi: true,
+          arrayFilters: [
+            { 'winner._id': { $in: winners } },
+            { 'player.scoreDaily': { $gt: 0 } }
+          ]
+        },
+        function(err, saved) {
+          if (err) {
+            console.error(err);
+          } else {
+            notifyAdmin(winners)
+            console.log(saved);
+          }
 
-  }
-);
+        }
+      );
+    }
+  });
+});
 */
 /*
 var queue = kue.createQueue({
@@ -156,21 +168,6 @@ var dailyScore = schedule.scheduleJob('0 0 0 * * *', function() {
         });
       });
     });
-    /*
-    TenThings.find(
-      { 'players.scoreDaily': { $gt: 0 }}
-    ).exec(function(err, games) {
-      games.forEach(function(game) {
-        for (var i in game.players) {
-          if (game.players[i].scoreDaily > 0) {
-            game.players[i].scoreDaily = 0;
-            game.players[i].plays++;
-          }
-        }
-        game.save();
-      });
-    });
-    */
   }, function(err) {
     console.error(err);
     notifyAdmin('update daily score error\n' + err);
