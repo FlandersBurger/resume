@@ -311,7 +311,7 @@ function checkMatch(game, matcher, msg) {
     game.save(function(err, savedGame) {
       if (err) {
         bot.notifyAdmin(err);
-      } 
+      }
     });
     var blurb = match.blurb ? (match.blurbot.substring(0, 4) === 'http' ? ('<a href="' + match .blurb + '">&#8204;</a>') : ('\n<i>' + match.blurb + '</i>')) : '';
     var message = translate[getLanguage(msg.from.language_code)].guessed(msg.from.first_name, match.value + blurb);
@@ -408,9 +408,9 @@ function skip(game, player) {
   } else if (skips[game.id] && skips[game.id].player === player) {
     bot.sendMessage(game.chat_id, 'Get someone else to confirm your skip request!');
   } else {
-    bot.sendMessage(game.chat_id, 'Skipping <b>' + game.list.name + '</b> in 10 seconds.\nType /veto to cancel or /skip to confirm.');
+    bot.sendMessage(game.chat_id, 'Skipping <b>' + game.list.name + '</b> in 15 seconds.\nType /veto to cancel or /skip to confirm.');
     skips[game.id] = {
-      timer: 10,
+      timer: 15,
       player: player
     };
     cooldownSkip(game);
