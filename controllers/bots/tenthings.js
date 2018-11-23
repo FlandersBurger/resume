@@ -14,6 +14,32 @@ var TenThings = require('../../models/games/tenthings');
 var cooldowns = {};
 var skips = {};
 /*
+TenThings.find()
+.exec(function(err, games) {
+  games.forEach(function(game, index) {
+    setTimeout(function() {
+      b.sendMessage(game.chat_id, 'Sorry everyone, due to a bug \'ve had to reset the scores\nThanks for playing!\nRemember, if you want to suggest anything to me directly type /suggest followed by your suggestion');
+      notifyAdmin(game.chat_id + ' reset');
+      TenThings.update(
+        {
+          _id: game._id
+        },
+        {
+          'players.$[].wins': 0,
+          'players.$[].plays': 0,
+          'players.$[].score': 0,
+          'players.$[].scoreDaily': 0
+        },
+        { multi: true },
+        function(err, saved) {
+
+        }
+      );
+    }, index * 50);
+  });
+});
+*/
+/*
 var queue = kue.createQueue({
   redis: {
     port: 6379,
@@ -102,23 +128,14 @@ var dailyScore = schedule.scheduleJob('0 0 0 * * *', function() {
               b.sendMessage(game.chat_id, '<b>' + message + ' won with ' + highScore + ' points!</b>');
               TenThings.update(
                 {
-                  _id: game._id,
-                  'players._id': { $in: winners }
-                },
-                { $inc: { 'players.$[].wins': 1 } },
-                { multi: true },
-                function(err, saved) {
-                  console.log('Win recorded for ' + winners);
-                }
-              );
-              TenThings.update(
-                {
-                  _id: game._id,
-                  'players.scoreDaily': { $gt: 0 }
+                  _id: game._id
                 },
                 {
-                  $inc: { 'players.$[].plays': 1 },
-                  'players.$[].scoreDaily': 0
+                  $inc: {
+                    'players.$[{ _id: { $in: winners } }].wins': 1,
+                    'players.$[{scoreDaily: { $gt: 0 } }].plays': 1
+                  },
+                  'players.$[{scoreDaily: { $gt: 0 } }].scoreDaily': 0
                 },
                 { multi: true },
                 function(err, saved) {
