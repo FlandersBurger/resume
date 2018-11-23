@@ -568,7 +568,7 @@ function getScores(game) {
   game.players.sort(function(a, b) {
     return b.highScore - a.highScore;
   }).slice(0, 10).forEach(function(player, index) {
-    str += (index + 1) + ': ' + player.first_name + ' - High ' + player.highScore + ' - Avg ' + Math.round(player.score / player.plays)  + ' - ' + player.wins + '/' + player.plays + ' wins\n';
+    str += (index + 1) + ': ' + player.first_name + ' - High ' + player.highScore + (player.plays > 0 ? ' - Avg ' + Math.round(player.score / player.plays) : '')  + ' - ' + player.wins + '/' + player.plays + ' wins\n';
   });
   b.sendMessage(game.chat_id, str);
 }
