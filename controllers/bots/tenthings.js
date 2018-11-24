@@ -175,8 +175,8 @@ var dailyScore = schedule.scheduleJob('0 0 0 * * *', function() {
 });
 
 function getLanguage(language) {
-  language = language.toLowerCase();
   if (language) {
+    language = language.toLowerCase();
     if (translate[language.substring(0, 2)]) {
       return language.substring(0, 2);
     } else {
