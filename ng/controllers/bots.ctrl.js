@@ -61,6 +61,8 @@ angular.module('app')
     getLists();
   });
 
+  $scope.sortValue = 'name';
+
   $scope.sort = function(sortBy) {
     if ($scope.sortValue === sortBy) {
       $scope.sortDirection = !$scope.sortDirection;
