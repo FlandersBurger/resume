@@ -112,66 +112,68 @@ queue.process('guess', function(job, done){
   done();
 });
 */
-
+console.log(new Date().getHours());
 //var dailyScore = schedule.scheduleJob('*/10 * * * * *', function() {
 var dailyScore = schedule.scheduleJob('0 0 0 * * *', function() {
-  bot.notifyAdmin('Score Reset Triggered; ' + new Date());
-  TenThings.find({ 'players.scoreDaily': { $gt: 0 }})
-  .then(function(games) {
-    games.forEach(function(game) {
-      getDailyScores(game);
-      var getHighScore = new Promise(function(resolve, reject) {
-        resolve(game.players.reduce(function(highScore, player) {
-          return (player.scoreDaily > highScore) ? player.scoreDaily : highScore;
-        }, 0));
-      });
-      getHighScore.then(function(highScore) {
-        var message = '';
-        var winners = [];
-        game.players.filter(function(player) {
-          return player.scoreDaily === highScore;
-        }).forEach(function(winner, index, array) {
-          winners.push(winner._id);
-          if (index < array.length - 1) {
-            message += winner.first_name + ' & ';
-          } else {
-            message += winner.first_name;
-            setTimeout(function() {
-              bot.notifyAdmin(game.chat_id + ' (' + highScore + '): <b>' + message + ' won!</b>');
-              bot.sendMessage(game.chat_id, '<b>' + message + ' won with ' + highScore + ' points!</b>');
-              TenThings.update(
-                {
-                  _id: game._id
-                },
-                {
-                  $inc: {
-                    'players.$[winner].wins': 1,
-                    'players.$[player].plays': 1
+  if (new Date().getHours() === 0) {
+    bot.notifyAdmin('Score Reset Triggered; ' + new Date());
+    TenThings.find({ 'players.scoreDaily': { $gt: 0 }})
+    .then(function(games) {
+      games.forEach(function(game) {
+        getDailyScores(game);
+        var getHighScore = new Promise(function(resolve, reject) {
+          resolve(game.players.reduce(function(highScore, player) {
+            return (player.scoreDaily > highScore) ? player.scoreDaily : highScore;
+          }, 0));
+        });
+        getHighScore.then(function(highScore) {
+          var message = '';
+          var winners = [];
+          game.players.filter(function(player) {
+            return player.scoreDaily === highScore;
+          }).forEach(function(winner, index, array) {
+            winners.push(winner._id);
+            if (index < array.length - 1) {
+              message += winner.first_name + ' & ';
+            } else {
+              message += winner.first_name;
+              setTimeout(function() {
+                bot.notifyAdmin(game.chat_id + ' (' + highScore + '): <b>' + message + ' won!</b>');
+                bot.sendMessage(game.chat_id, '<b>' + message + ' won with ' + highScore + ' points!</b>');
+                TenThings.update(
+                  {
+                    _id: game._id
                   },
-                  $set: {
-                    'players.$[player].scoreDaily': 0
+                  {
+                    $inc: {
+                      'players.$[winner].wins': 1,
+                      'players.$[player].plays': 1
+                    },
+                    $set: {
+                      'players.$[player].scoreDaily': 0
+                    }
+                  },
+                  {
+                    multi: true,
+                    arrayFilters: [
+                      { 'winner._id': { $in: winners } },
+                      { 'player.scoreDaily': { $gt: 0 } }
+                    ]
+                  },
+                  function(err, saved) {
+                    console.log('Win recorded for ' + winners);
                   }
-                },
-                {
-                  multi: true,
-                  arrayFilters: [
-                    { 'winner._id': { $in: winners } },
-                    { 'player.scoreDaily': { $gt: 0 } }
-                  ]
-                },
-                function(err, saved) {
-                  console.log('Win recorded for ' + winners);
-                }
-              );
-            }, index * 50);
-          }
+                );
+              }, index * 50);
+            }
+          });
         });
       });
+    }, function(err) {
+      console.error(err);
+      bot.notifyAdmin('update daily score error\n' + err);
     });
-  }, function(err) {
-    console.error(err);
-    bot.notifyAdmin('update daily score error\n' + err);
-  });
+  }
 });
 
 function getLanguage(language) {
@@ -525,7 +527,7 @@ function getDailyScores(game) {
   game.players.filter(function(player) {
     return player.scoreDaily;
   }).sort(function(a, b) {
-    return bot.scoreDaily - a.scoreDaily;
+    return b.scoreDaily - a.scoreDaily;
   }).forEach(function(player, index) {
     str += (index + 1) + ': ' + player.first_name + ' - ' + player.scoreDaily + '\n';
   });
@@ -535,7 +537,7 @@ function getDailyScores(game) {
 function getScores(game) {
   var str = '<b>All Time High Scores</b>\n';
   game.players.sort(function(a, b) {
-    return bot.highScore - a.highScore;
+    return b.highScore - a.highScore;
   }).slice(0, 10).forEach(function(player, index) {
     str += (index + 1) + ': ' + player.first_name + ' - High ' + player.highScore + (player.plays > 0 ? ' - Avg ' + Math.round(player.score / player.plays) : '')  + ' - ' + player.wins + '/' + player.plays + ' wins\n';
   });
