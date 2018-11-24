@@ -61,6 +61,16 @@ angular.module('app')
     getLists();
   });
 
+  $scope.sort = function(sortBy) {
+    if ($scope.sortValue === sortBy) {
+      $scope.sortDirection = !$scope.sortDirection;
+    } else {
+      $scope.sortValue = sortBy;
+      $scope.sortDirection = true;
+    }
+    $scope.sorter = ($scope.sortDirection ? '+' : '-') + $scope.sortValue;
+  };
+
   $scope.getCategoryCount = function(category) {
     if (category === 'All') return $scope.filteredLists().length;
     if (!$scope.lists) return 0;
@@ -103,9 +113,10 @@ angular.module('app')
     $scope.selectedList = $scope.lists[0];
   };
 
-  $scope.addValue = function() {
+  $scope.addValue = function(index) {
     if ($scope.selectedList.values.length === $scope.selectedList.values.filter(function(value) { return value.value; }).length) {
-      $scope.selectedList.values.push({ value: '', blurb: '' });
+      $scope.selectedList.values.unshift({ value: '', blurb: '' });
+      $('#value' + index).focus();
     }
   };
 

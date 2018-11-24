@@ -112,9 +112,9 @@ queue.process('guess', function(job, done){
   done();
 });
 */
-console.log(new Date().getHours());
 //var dailyScore = schedule.scheduleJob('*/10 * * * * *', function() {
 var dailyScore = schedule.scheduleJob('0 0 0 * * *', function() {
+  console.log(new Date().getHours());
   if (new Date().getHours() === 0) {
     bot.notifyAdmin('Score Reset Triggered; ' + new Date());
     TenThings.find({ 'players.scoreDaily': { $gt: 0 }})
@@ -173,6 +173,8 @@ var dailyScore = schedule.scheduleJob('0 0 0 * * *', function() {
       console.error(err);
       bot.notifyAdmin('update daily score error\n' + err);
     });
+  } else {
+    notifyAdmin('Schedule incorrectly triggered: ' + new Date());
   }
 });
 
