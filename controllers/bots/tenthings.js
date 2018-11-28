@@ -15,47 +15,6 @@ var TenThings = require('../../models/games/tenthings');
 var cooldowns = {};
 var skips = {};
 /*
-TenThings.findOne({ chat_id: '592503547'})
-.exec(function(err, game) {
-  var winners = [];
-  game.players.forEach(function(winner, index, array) {
-    if (winner.scoreDaily > 0) {
-      winners.push(winner._id);
-    }
-    if (index === array.length - 1) {
-      TenThings.update(
-        {
-          chat_id: '592503547'
-        },
-        {
-          $inc: {
-            'players.$[winner].wins': 1,
-            'players.$[player].plays': 1
-          },
-          'players.$[player].scoreDaily': 0
-        },
-        {
-          multi: true,
-          arrayFilters: [
-            { 'winner._id': { $in: winners } },
-            { 'player.scoreDaily': { $gt: 0 } }
-          ]
-        },
-        function(err, saved) {
-          if (err) {
-            console.error(err);
-          } else {
-            bot.notifyAdmin(winners)
-            console.log(saved);
-          }
-
-        }
-      );
-    }
-  });
-});
-*/
-/*
       TenThings.update(
         {},
         {
@@ -179,6 +138,8 @@ var dailyScore = schedule.scheduleJob('0 0 0 * * *', function() {
 });
 
 function getLanguage(language) {
+  return 'en';
+  /*
   if (language) {
     language = language.toLowerCase();
     if (translate[language.substring(0, 2)]) {
@@ -190,6 +151,7 @@ function getLanguage(language) {
   } else {
     return 'en';
   }
+  */
 }
 
 //bot.notifyAdmin('Started Ten Things');
