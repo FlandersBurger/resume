@@ -39,7 +39,7 @@ router.put('/lists', function (req, res, next) {
       _id: list._id
     }).populate('creator').exec(function(err, result) {
       if (err) return next(err);
-      bot.notifyAdmin(list.name + ' updated');
+      bot.notifyAdmin(list.name + (req.body._id ? ' updated' : ' created'));
       res.json(result);
     });
   });
