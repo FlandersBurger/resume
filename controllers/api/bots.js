@@ -33,13 +33,13 @@ router.get('/lists/:id', function (req, res, next) {
 });
 
 router.put('/lists', function (req, res, next) {
-  List.findByIdAndUpdate(req.body._id ? req.body._id : new mongoose.Types.ObjectId(), req.body, { new: true, upsert: true }, function(err, list) {
+  List.findByIdAndUpdate(req.body.list._id ? req.body.list._id : new mongoose.Types.ObjectId(), req.body.list, { new: true, upsert: true }, function(err, list) {
     if (err) return next(err);
     List.findOne({
       _id: list._id
     }).populate('creator').exec(function(err, result) {
       if (err) return next(err);
-      bot.notifyAdmin(list.name + (req.body._id ? ' updated' : ' created'));
+      bot.notifyAdmin(list.name + (req.body._id ? ' updated by ' : ' created by ') + user.username);
       res.json(result);
     });
   });

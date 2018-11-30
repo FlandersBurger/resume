@@ -21,6 +21,26 @@ angular.module('app')
     'Technology',
     'Language'
   ];
+  $scope.keyDown = function (e) {
+    e = e || window.event;
+    switch (e.keyCode) {
+      case 9:
+        if ($("#new-blurb").is(":focus")) {
+          $scope.addValue();
+        }
+        break;
+      case 13:
+        if ($("#new-blurb").is(":focus")) {
+          $scope.addValue();
+        } else if ($("#new-blurb").is(":focus")) {
+          $('#new-value').focus();
+        }
+        break;
+      default:
+
+    }
+    // use e.keyCode
+  };
 
   $scope.categoryFilters = $scope.categories.map(function(category) { return category; });
   $scope.categoryFilters.push('All');
@@ -115,11 +135,9 @@ angular.module('app')
     $scope.selectedList = $scope.lists[0];
   };
 
-  $scope.addValue = function(index) {
-    if ($scope.selectedList.values.length === $scope.selectedList.values.filter(function(value) { return value.value; }).length) {
-      $scope.selectedList.values.unshift({ value: '', blurb: '' });
-      $('#value' + index).focus();
-    }
+  $scope.addValue = function() {
+    $scope.selectedList.values.unshift($scope.newItem);
+    $('#new-value').focus();
   };
 
   $scope.saveList = function(list) {
@@ -128,7 +146,7 @@ angular.module('app')
     });
     if (list.values.length >= 10) {
       $scope.saving = true;
-      BotsSvc.saveList(list)
+      BotsSvc.saveList($scope.currentUser, list)
       .then(function(response) {
         getLists();
         $scope.selectList(response.data);

@@ -7,10 +7,13 @@ angular.module('app')
     return $http.get('/api/bots/lists/' + user._id);
   };
 
-  svc.saveList = function (list) {
-    return $http.put('/api/bots/lists', list);
+  svc.saveList = function (user, list) {
+    return $http.put('/api/bots/lists', {
+      user: user,
+      list: list
+    });
   };
-  
+
   svc.deleteList = function (list) {
     return $http.delete('/api/bots/lists/' + list._id);
   };

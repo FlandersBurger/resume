@@ -1,4 +1,4 @@
-<div id="bots-page" class="col-md-12">
+<div id="bots-page" class="col-md-12" ng-keydown="keyDown($event)">
   <h1 class="text-danger" ng-show="!loggedIn">You have to be logged in to edit lists</h1>
   <div ng-show="loggedIn">
     <div class="well well-sm">
@@ -37,7 +37,7 @@
         </div>
       </div>
       <input class="form-control" ng-model="search" placeholder="Search"/>
-      <button class="btn" ng-class="listButtonClass(list)" ng-repeat="list in filteredLists() | filter: search | orderBy: sorter" ng-click="selectList(list)">{{list.name}} ({{list.values.length}})</button>
+      <button class="btn btn-sm" ng-class="listButtonClass(list)" ng-repeat="list in filteredLists() | filter: search | orderBy: sorter" ng-click="selectList(list)">{{list.name}} ({{list.values.length}})</button>
     </div>
     <div class="col-md-8">
       <div class="col-md-12">
@@ -54,13 +54,8 @@
       <div class="col-md-12">
         <div class="input-group">
           <input class="form-control" ng-model="selectedList.name" placeholder="List Name" ng-disabled="!selectedList" />
-          <span class="input-group-addon"></span>
-          <input class="form-control" ng-model="selectedList.description" placeholder="List Description" ng-disabled="!selectedList" />
-        </div>
-        <h5 ng-show="selectedList.creator">By {{selectedList.creator.username}} on {{formatDate(selectedList.date)}} --- <span ng-show="selectedList.plays">Plays: {{selectedList.plays}} / Skips: {{selectedList.skips}} / Score: {{selectedList.score}}</span></h5>
-        <div>
 
-          <div class="btn-group">
+          <div class="input-group-btn">
             <div class="dropdown">
               <button class="btn btn-default dropdown-toggle" type="button" data-toggle="dropdown" ng-disabled="!selectedList">{{selectedList.category ? selectedList.category : 'Category'}}</button>
               <ul class="dropdown-menu">
@@ -68,14 +63,24 @@
               </ul>
             </div>
           </div>
-          <div class="btn btn-default" ng-click="selectedList.values.unshift({ value: '', blurb: '' })" ng-disabled="!selectedList">
-            <i class="fa fa-plus" aria-hidden="true"></i> Add Value
-          </div>
+          <input class="form-control" ng-model="selectedList.description" placeholder="List Description" ng-disabled="!selectedList" />
         </div>
-        <div class="input-group" ng-repeat="value in selectedList.values track by $index">
-          <input id="value{{$index}}" class="form-control" ng-model="value.value" placeholder="Value {{selectedList.values.length - $index}}" ng-change="addValue($index + 1)" />
+        <h5 ng-show="selectedList.creator">By {{selectedList.creator.username}} on {{formatDate(selectedList.date)}} --- <span ng-show="selectedList.plays">Plays: {{selectedList.plays}} / Skips: {{selectedList.skips}} / Score: {{selectedList.score}}</span></h5>
+        <div>
+
+          <!--div class="btn btn-default" ng-click="selectedList.values.unshift({ value: '', blurb: '' })" ng-disabled="!selectedList">
+            <i class="fa fa-plus" aria-hidden="true"></i> Add Value
+          </div-->
+        </div>
+        <div class="input-group">
+          <input id="new-value" class="form-control" ng-model="newItem.value" placeholder="Value {{selectedList.values.length + 1}}" />
           <span class="input-group-addon"></span>
-          <input class="form-control" ng-model="value.blurb" placeholder="Display after guessing {{value.value}}" />
+          <input id="new-blurb" class="form-control" ng-model="newItem.blurb" placeholder="Display after guessing {{newItem.value}}" />
+        </div>
+        <div class="input-group" ng-repeat="item in selectedList.values | orderBy: 'value'">
+          <input id="value{{$index}}" class="form-control" ng-model="item.value" placeholder="Value {{selectedList.values.length - $index}}" />
+          <span class="input-group-addon"></span>
+          <input class="form-control" ng-model="item.blurb" placeholder="Display after guessing {{item.value}}" />
         </div>
       </div>
     </div>
