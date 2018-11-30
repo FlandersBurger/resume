@@ -301,18 +301,18 @@ function checkRound(game) {
     bot.sendMessage(game.id, 'Round over.');
     getDailyScores(game);
     setTimeout(function () {
-      rateList(game);
-      setTimeout(function () {
-        getList(game, function(list) {
-          var message = '<b>' + game.list.name + '</b> (' + game.list.totalValues + ') by ' + game.list.creator.username + '\n';
-          message += game.list.category ? 'Category: ' + game.list.category + '\n' : '';
-          message += list;
-          bot.sendMessage(game.chat_id, message);
+      getList(game, function(list) {
+        var message = '<b>' + game.list.name + '</b> (' + game.list.totalValues + ') by ' + game.list.creator.username + '\n';
+        message += game.list.category ? 'Category: ' + game.list.category + '\n' : '';
+        message += list;
+        bot.sendMessage(game.chat_id, message);
+        setTimeout(function () {
+          rateList(game);
           setTimeout(function() {
             newRound(game);
-          }, 500);
-        });
-      }, 100);
+          }, 100);
+        }, 100);
+      });
     }, 100);
   }
 }
