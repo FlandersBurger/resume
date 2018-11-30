@@ -75,7 +75,7 @@
         <div class="input-group">
           <input id="new-value" class="form-control" ng-model="newItem.value" ng-disabled="!selectedList" placeholder="Value {{selectedList.values.length + 1}}" />
           <div class="input-group-btn">
-            <button class="btn" ng-click="addValue()">Add</button>
+            <button class="btn" ng-click="addValue()" ng-disabled="!selectedList">Add</button>
           </div>
           <input id="new-blurb" class="form-control" ng-model="newItem.blurb" ng-disabled="!selectedList" placeholder="Display after guessing {{newItem.value}}" />
         </div>
