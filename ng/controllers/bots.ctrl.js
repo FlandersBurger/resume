@@ -26,7 +26,9 @@ angular.module('app')
     switch (e.keyCode) {
       case 9:
         if ($("#new-blurb").is(":focus")) {
-          $scope.addValue();
+          setTimeout(function() {
+            $scope.addValue();
+          }, 100);
         }
         break;
       case 13:
@@ -128,15 +130,15 @@ angular.module('app')
       name: '',
       creator: $scope.currentUser._id,
       date: new Date(),
-      values: [
-        { value: '', blurb: '' }
-      ]
+      values: []
     });
     $scope.selectedList = $scope.lists[0];
   };
 
   $scope.addValue = function() {
-    $scope.selectedList.values.unshift($scope.newItem);
+    $scope.selectedList.values.unshift(JSON.parse(JSON.stringify($scope.newItem)));
+    $scope.newItem.value = '';
+    $scope.newItem.blurb = '';
     $('#new-value').focus();
   };
 
