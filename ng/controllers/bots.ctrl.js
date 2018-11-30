@@ -28,7 +28,7 @@ angular.module('app')
         if ($("#new-blurb").is(":focus")) {
           setTimeout(function() {
             $scope.addValue();
-          }, 100);
+          }, 200);
         }
         break;
       case 13:
@@ -140,6 +140,9 @@ angular.module('app')
     $scope.newItem.value = '';
     $scope.newItem.blurb = '';
     $('#new-value').focus();
+    if ($scope.selectedList.values.length >= 10) {
+      $scope.saveList($scope.selectedList);
+    }
   };
 
   $scope.saveList = function(list) {
@@ -173,12 +176,14 @@ angular.module('app')
   $scope.listButtonClass = function(list) {
     var values = list.values.length;
     var blurbs = list.values.filter(function(value) { return value.blurb; }).length;
-    if (values === blurbs) {
+    if (values === blurbs && list.description) {
       return 'btn-default';
-    } else if (blurbs === 0) {
+    } else if (blurbs === 0 && !list.description) {
+      return 'btn-warning';
+    } else if (blurbs === 0 && list.description) {
       return 'btn-info';
     } else {
-      return 'btn-warning';
+      return 'btn-primary';
     }
   };
 

@@ -79,6 +79,7 @@
           </div>
           <input id="new-blurb" class="form-control" ng-model="newItem.blurb" placeholder="Display after guessing {{newItem.value}}" />
         </div>
+        <hr />
         <div class="input-group" ng-repeat="item in selectedList.values | orderBy: 'value'">
           <input id="value{{$index}}" class="form-control" ng-model="item.value" placeholder="Value {{selectedList.values.length - $index}}" />
           <span class="input-group-addon"></span>
