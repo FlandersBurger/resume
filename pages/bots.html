@@ -73,11 +73,11 @@
           </div-->
         </div>
         <div class="input-group">
-          <input id="new-value" class="form-control" ng-model="newItem.value" placeholder="Value {{selectedList.values.length + 1}}" />
+          <input id="new-value" class="form-control" ng-model="newItem.value" ng-disabled="!selectedList" placeholder="Value {{selectedList.values.length + 1}}" />
           <div class="input-group-btn">
             <button class="btn" ng-click="addValue()">Add</button>
           </div>
-          <input id="new-blurb" class="form-control" ng-model="newItem.blurb" placeholder="Display after guessing {{newItem.value}}" />
+          <input id="new-blurb" class="form-control" ng-model="newItem.blurb" ng-disabled="!selectedList" placeholder="Display after guessing {{newItem.value}}" />
         </div>
         <hr />
         <div class="input-group" ng-repeat="item in selectedList.values | orderBy: 'value'">
