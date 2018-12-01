@@ -133,7 +133,7 @@ var dailyScore = schedule.scheduleJob('0 0 0 * * *', function() {
       bot.notifyAdmin('update daily score error\n' + err);
     });
   } else {
-    notifyAdmin('Schedule incorrectly triggered: ' + new Date());
+    bot.notifyAdmin('Schedule incorrectly triggered: ' + new Date());
   }
 });
 

@@ -37,7 +37,7 @@
         </div>
       </div>
       <input class="form-control" ng-model="search" placeholder="Search"/>
-      <button class="btn btn-sm" ng-class="listButtonClass(list)" ng-repeat="list in filteredLists() | filter: search | orderBy: sorter" ng-click="selectList(list)">{{list.name}} ({{list.values.length}})</button>
+      <button class="btn btn-sm" ng-class="listButtonClass(list)" ng-repeat="list in filteredLists() | filter: search | orderBy: sorter | limitTo: 30" ng-click="selectList(list)">{{list.name}} ({{list.values.length}})</button>
     </div>
     <div class="col-md-8">
       <div class="col-md-12">
@@ -74,10 +74,10 @@
         </div>
         <div class="input-group">
           <input id="new-value" class="form-control" ng-model="newItem.value" ng-disabled="!selectedList" placeholder="Value {{selectedList.values.length + 1}}" />
+          <input id="new-blurb" class="form-control" ng-model="newItem.blurb" ng-disabled="!selectedList" placeholder="Display after guessing {{newItem.value}}" />
           <div class="input-group-btn">
             <button class="btn" ng-click="addValue()" ng-disabled="!selectedList">Add</button>
           </div>
-          <input id="new-blurb" class="form-control" ng-model="newItem.blurb" ng-disabled="!selectedList" placeholder="Display after guessing {{newItem.value}}" />
         </div>
         <hr />
         <div class="input-group" ng-repeat="item in selectedList.values | orderBy: 'value'">

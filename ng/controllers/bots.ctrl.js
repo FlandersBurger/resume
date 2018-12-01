@@ -28,7 +28,7 @@ angular.module('app')
         if ($("#new-blurb").is(":focus")) {
           setTimeout(function() {
             $scope.addValue();
-          }, 200);
+          }, 100);
         }
         break;
       case 13:
@@ -136,13 +136,15 @@ angular.module('app')
   };
 
   $scope.addValue = function() {
-    $scope.selectedList.values.unshift(JSON.parse(JSON.stringify($scope.newItem)));
-    $scope.newItem.value = '';
-    $scope.newItem.blurb = '';
-    $('#new-value').focus();
-    if ($scope.selectedList.values.length >= 10) {
-      $scope.saveList($scope.selectedList);
+    if ($scope.newItem.value) {
+      $scope.selectedList.values.unshift(JSON.parse(JSON.stringify($scope.newItem)));
+      $scope.newItem.value = '';
+      $scope.newItem.blurb = '';
+      if ($scope.selectedList.values.length >= 10) {
+        $scope.saveList($scope.selectedList);
+      }
     }
+    $('#new-value').focus();
   };
 
   $scope.saveList = function(list) {
