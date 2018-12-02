@@ -37,7 +37,7 @@
         </div>
       </div>
       <input class="form-control" ng-model="search" placeholder="Search"/>
-      <button class="btn btn-sm" ng-class="listButtonClass(list)" ng-repeat="list in filteredLists() | filter: search | orderBy: sorter | limitTo: 30" ng-click="selectList(list)">{{list.name}} ({{list.values.length}})</button>
+      <button class="btn btn-sm" ng-class="listButtonClass(list)" ng-repeat="list in filteredLists() | filter: search | orderBy: sorter | limitTo: 50" ng-click="selectList(list)">{{list.name}} ({{list.values.length}})</button>
     </div>
     <div class="col-md-8">
       <div class="col-md-12">
