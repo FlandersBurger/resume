@@ -503,8 +503,13 @@ function getScores(game) {
   game.players.sort(function(a, b) {
     return b.highScore - a.highScore;
   }).slice(0, 10).forEach(function(player, index) {
-    str += (index + 1) + ': ' + player.first_name + ' - High ' + player.highScore + (player.plays > 0 ? ' - Avg ' + Math.round(player.score / player.plays) : '')  + ' - ' + player.wins + '/' + player.plays + ' wins\n';
+    str += (index + 1) + ': ' + player.first_name;
+    str += ' - T ' + player.score;
+    str += ' H ' + player.highScore;
+    str += (player.plays > 0 ? ' A ' + Math.round(player.score / player.plays) : '');
+    str += ' W ' + player.wins + '/' + player.plays + ' \n';
   });
+  str += 'T = Total, H = High Score, A = Average, W = Win ratio';
   bot.sendMessage(game.chat_id, str);
 }
 
