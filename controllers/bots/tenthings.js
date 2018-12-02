@@ -504,10 +504,10 @@ function getScores(game) {
     return b.highScore - a.highScore;
   }).slice(0, 10).forEach(function(player, index) {
     str += (index + 1) + ': ' + player.first_name;
-    str += ' - T ' + player.score;
-    str += ' H ' + player.highScore;
-    str += (player.plays > 0 ? ' A ' + Math.round(player.score / player.plays) : '');
-    str += ' W ' + player.wins + '/' + player.plays + ' \n';
+    str += ' - <b>T</b>' + player.score;
+    str += ' <b>H</b>' + player.highScore;
+    str += (player.plays > 0 ? ' <b>A</b>' + Math.round(player.score / player.plays) : '');
+    str += ' <b>W</b>' + player.wins + '/' + player.plays + ' \n';
   });
   str += 'T = Total, H = High Score, A = Average, W = Win ratio';
   bot.sendMessage(game.chat_id, str);
