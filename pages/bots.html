@@ -24,7 +24,7 @@
         </div>
         <div class="btn-group">
           <div class="dropdown">
-            <button class="btn btn-default dropdown-toggle" type="button" data-toggle="dropdown">Order by</button>
+            <button class="btn btn-default dropdown-toggle" type="button" data-toggle="dropdown">Order by {{sortValue}} {{(sortDirection ? 'descending' : 'ascending')}}</button>
             <ul class="dropdown-menu">
               <li><a href="#" ng-click="sort('name')">Name {{sortValue === 'name' ? (sortDirection ? 'Descending' : 'Ascending') : 'Ascending'}}</a></li>
               <li><a href="#" ng-click="sort('date')">Date {{sortValue === 'date' ? (sortDirection ? 'Descending' : 'Ascending') : 'Ascending'}}</a></li>

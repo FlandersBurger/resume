@@ -73,7 +73,6 @@ queue.process('guess', function(job, done){
 */
 //var dailyScore = schedule.scheduleJob('*/10 * * * * *', function() {
 var dailyScore = schedule.scheduleJob('0 0 0 * * *', function() {
-  console.log(new Date().getHours());
   if (new Date().getHours() === 0) {
     bot.notifyAdmin('Score Reset Triggered; ' + new Date());
     TenThings.find({ 'players.scoreDaily': { $gt: 0 }})
@@ -290,7 +289,25 @@ function checkMatch(game, matcher, msg) {
       return checkRound(game);
     }, 200);
   } else {
-    return bot.sendMessage(msg.chat.id, match.guesser.first_name + ' already guessed ' + match.value + '\nToo bad, ' + msg.from.first_name);
+    return bot.sendMessage(msg.chat.id, alreadyGot(match.value, msg.from.first_name, match.guesser.first_name));
+  }
+}
+
+function alreadyGot(match, loser, winner) {
+  var random = Math.floor(Math.random() * 5);
+  switch (random) {
+    case 0:
+      return winner + ' already got ' + match + ', too bad ' + loser;
+    case 1:
+      return winner + ' beat you to '  + match + ', ' + loser;
+    case 2:
+      return match + ' denied by ' + winner + ', ' + loser;
+    case 3:
+      return loser + ' was pwned, ' + winner + ' guessed ' + match;
+    case 4:
+      return loser + ' got schooled by ' + winner + '\'s ' + match + ' answer';
+    default:
+      return winner + ' already got ' + match + ', too bad ' + loser;
   }
 }
 
@@ -723,7 +740,7 @@ function evaluateCommand(res, msg, game, isNew) {
       logic += '3: Hints are revealed in this order: first letters, last letters, vowels, and the rest. The rest will be revealed from least frequent to most frequent letter\n';
       logic += '4: There is a 10 second cooldown between asking hints\n';
       logic += '5: A list can be skipped if 2 players /skip it\n';
-      logic += '6: If only 1 player skips a list there will be a 10 second cooldown until the list is skipped\n';
+      logic += '6: If only 1 player skips a list there will be a 15 second cooldown until the list is skipped\n';
       logic += '7: A skip can be cancelled by anyone by typing /veto\n';
       logic += '8: Every day at midnight (universal time) the daily scores will be reset and a winner recorded\n';
       bot.sendMessage(msg.chat.id, logic);

@@ -55,7 +55,20 @@ function TelegramBot() {
       request(url, function (error, r, body) {
         if(error) return;
         if(!response) return;
-        var response = JSON.parse(body).result;
+        resolve();
+      });
+    });
+  };
+
+  bot.kick = function(channel, user, minutes) {
+    if (!minutes) minutes = 1;
+    var date = new Date();
+    date.setTime(date.getTime() + (minutes * 60 * 1000));
+    date = Math.floor(date / 1000);
+    return new Promise(function (resolve, reject) {
+      var url = 'https://api.telegram.org/bot' + bot.token + '/kickChatMember?chat_id=' + channel + '&user_id=' + user + '&until_date=' + date;
+      request(url, function (error, r, body) {
+        if(error) return;
         resolve();
       });
     });

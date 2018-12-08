@@ -34,8 +34,8 @@ angular.module('app')
       case 13:
         if ($("#new-blurb").is(":focus")) {
           $scope.addValue();
-        } else if ($("#new-blurb").is(":focus")) {
-          $('#new-value').focus();
+        } else if ($("#new-value").is(":focus")) {
+          $('#new-blurb').focus();
         }
         break;
       default:
