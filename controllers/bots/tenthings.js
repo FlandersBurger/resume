@@ -459,6 +459,7 @@ function getHint(hints, value) {
   }
   var str = '';
   var specialCharacters = " !@#$%^&*()_+:.{};\\-'\"";
+  var vowels = "aeiouÀ-ÖØ-öø-ÿ";
   switch (hints) {
     case 0:
       return value.replace(new RegExp('[^' + specialCharacters + ']', 'gi'), '*');
@@ -469,10 +470,10 @@ function getHint(hints, value) {
       str = value[0] + value.substring(1, value.length - 1).replace(new RegExp('[^' + specialCharacters + ']', 'gi'), '*') + value[value.length - 1];
       break;
     case 3:
-      str = value[0] + value.substring(1, value.length - 1).replace(new RegExp('[^' + specialCharacters + 'aeiou]', 'gi'), '*') + value[value.length - 1];
+      str = value[0] + value.substring(1, value.length - 1).replace(new RegExp('[^' + specialCharacters + vowels + ']', 'gi'), '*') + value[value.length - 1];
       break;
     default:
-      str = value[0] + value.substring(1, value.length - 1).replace(new RegExp('[^' + specialCharacters + 'aeiou' +  tester + ']', 'gi'), '*') + value[value.length - 1];
+      str = value[0] + value.substring(1, value.length - 1).replace(new RegExp('[^' + specialCharacters + vowels +  tester + ']', 'gi'), '*') + value[value.length - 1];
   }
   for (i = 1; i < value.length - 2; i++) {
     switch (hints) {
