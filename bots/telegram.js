@@ -119,7 +119,6 @@ function TelegramBot() {
 
   bot.introduceYourself = function() {
     console.log('Hello, my name is ' + bot.getName() + '. You can talk to me through my username: @' + bot.username);
-
   };
 }
 

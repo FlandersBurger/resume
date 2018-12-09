@@ -543,6 +543,7 @@ function getList(game, callback) {
       str += '\n';
     }
   });
+  console.log(str);
   callback(str);
 }
 
