@@ -776,10 +776,11 @@ function evaluateCommand(res, msg, game, isNew) {
           message += game.list.category ? 'Category: ' + game.list.category + '\n' : '';
           message += game.list.description ? '<i>' + game.list.description + '</i>\n' : '';
           message += list;
+          console.log(message);
           bot.sendMessage(msg.chat.id, message);
         });
       } catch (e) {
-        console.log(e);
+        console.error(e);
       }
       break;
     /*
