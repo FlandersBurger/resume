@@ -543,7 +543,6 @@ function getList(game, callback) {
       str += '\n';
     }
   });
-  console.log(str);
   callback(str);
 }
 
@@ -780,7 +779,7 @@ function evaluateCommand(res, msg, game, isNew) {
           bot.sendMessage(msg.chat.id, message);
         });
       } catch (e) {
-
+        console.log(e);
       }
       break;
     /*
