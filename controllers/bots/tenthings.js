@@ -774,7 +774,8 @@ function evaluateCommand(res, msg, game, isNew) {
         getList(game, function(list) {
           var message = '<b>' + game.list.name + '</b> (' + game.list.totalValues  + ') by ' + game.list.creator.username + '\n';
           message += game.list.category ? 'Category: ' + game.list.category + '\n' : '';
-          message += game.list.description ? '<i>' + game.list.description + '</i>\n' : '';
+          message += game.list.description ? (game.list.description.indexOf('href') >= 0 ? game.list.description : '<i>' + game.list.description + '</i>') : '';
+          message += '\n';
           message += list;
           console.log(message);
           bot.sendMessage(msg.chat.id, message);
