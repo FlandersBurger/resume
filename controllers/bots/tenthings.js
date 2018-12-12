@@ -770,10 +770,13 @@ function evaluateCommand(res, msg, game, isNew) {
       getScores(game);
       break;
     case '/stats':
-      var message = game.players.length + ' players\n';
-      message += 'Cycled through all lists ' + game.cycles + ' times\n';
-      message += game.playedLists.length + ' list played in current cycle';
-      bot.sendMessage(msg.chat.id, message);
+      List.find().exec(function(err, lists) {
+        var message = 'Started ' + game.date + '\n';
+        message += game.players.length + ' players\n';
+        message += 'Cycled through all lists ' + game.cycles + ' times\n';
+        message += game.playedLists.length + ' lists played out of ' + lists.length + ' in current cycle';
+        bot.sendMessage(msg.chat.id, message);
+      });
       break;
     case '/list':
       try {
