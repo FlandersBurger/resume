@@ -773,6 +773,7 @@ function evaluateCommand(res, msg, game, isNew) {
       var message = game.players.length + ' players\n';
       message += 'Cycled through all lists ' + game.cycles + ' times\n';
       message += game.playedLists.length + ' list played in current cycle';
+      bot.sendMessage(msg.chat.id, message);
       break;
     case '/list':
       try {
