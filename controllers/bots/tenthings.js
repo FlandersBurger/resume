@@ -769,6 +769,11 @@ function evaluateCommand(res, msg, game, isNew) {
       getDailyScores(game);
       getScores(game);
       break;
+    case '/stats':
+      var message = game.players.length + ' players\n';
+      message += 'Cycled through all lists ' + game.cycles + ' times\n';
+      message += game.playedLists.length + ' list played in current cycle';
+      break;
     case '/list':
       try {
         getList(game, function(list) {
@@ -777,7 +782,6 @@ function evaluateCommand(res, msg, game, isNew) {
           message += game.list.description ? (game.list.description.indexOf('href') >= 0 ? game.list.description : '<i>' + game.list.description + '</i>') : '';
           message += '\n';
           message += list;
-          console.log(message);
           bot.sendMessage(msg.chat.id, message);
         });
       } catch (e) {
