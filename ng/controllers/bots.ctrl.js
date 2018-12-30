@@ -83,8 +83,6 @@ angular.module('app')
     getLists();
   });
 
-  $scope.sortValue = 'name';
-  $scope.sortDirection = true;
 
   $scope.sort = function(sortBy) {
     if ($scope.sortValue === sortBy) {
@@ -95,6 +93,10 @@ angular.module('app')
     }
     $scope.sorter = ($scope.sortDirection ? '+' : '-') + $scope.sortValue;
   };
+
+  $scope.sortValue = 'date';
+  $scope.sortDirection = true;
+  $scope.sort('date');
 
   $scope.getCategoryCount = function(category) {
     if (category === 'All') return $scope.filteredLists().length;
