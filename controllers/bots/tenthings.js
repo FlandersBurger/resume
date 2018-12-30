@@ -468,7 +468,6 @@ function getHint(hints, value) {
       tester += letters[i].letter;
     }
   }
-  console.log(tester + ' -> ' + value);
   var str = '';
   var specialCharacters = " !@#$%^&*()_+:.{};\\-'\"";
   var vowels = "aeiouÀ-ÖØ-öø-ÿ";
@@ -548,7 +547,7 @@ function getList(game, callback) {
   game.list.values.map(function(item, index) {
     str += (index + 1) + ': ';
     if (!item.guesser.first_name) {
-      str += getHint(game.hints, item.value);
+      str += '<b>' + getHint(game.hints, item.value) + '</b>';
       str += '\n';
     } else {
       str += item.value + ' - <i>' + item.guesser.first_name + '</i>';
