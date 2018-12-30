@@ -363,6 +363,7 @@ function countLetters(string) {
   var alphabet = ['b', 'c', 'd', 'f', 'g', 'h', 'j', 'k', 'l', 'm', 'n', 'p',
   'q', 'r', 's', 't', 'v', 'w', 'x', 'y', 'z'];
   return alphabet.map(function(letter) {
+    string = string.substring(1, string.length - 1);
     return {
       letter: letter,
       count: (string.match(new RegExp('[' + letter + ']','ig')) || []).length
@@ -453,16 +454,22 @@ function hint(game, callback) {
 
 function getHint(hints, value) {
   var i = 0;
-  var letters = countLetters(value);
   var tester = '';
-  var revealCount = Math.floor(letters.length * (hints - 2) / 4);
-  revealCount = revealCount < hints - 2 ? hints - 2 < letters.length - 1 ? hints - 2 : letters.length - 1 : revealCount;
-  console.log(revealCount + ' -> ' + value);
-  console.log(letters);
-  for (i = 0; i < revealCount; i++) {
-    tester += letters[i].letter;
+  if (hints > 3) {
+    var croppedValue;
+    for (i = 1; i < value.length - 2; i++) {
+      if (value.charAt(i - 1) !== ' ' && value.charAt(i + 1) !== ' ') {
+        croppedValue += value.charAt(i);
+      }
+    }
+    console.log(croppedValue);
+    var letters = countLetters(croppedValue);
+    var revealCount = Math.floor(letters.length * (hints - 2) / 4);
+    revealCount = revealCount < hints - 2 ? hints - 2 < letters.length - 1 ? hints - 2 : letters.length - 1 : revealCount;
+    for (i = 0; i < revealCount; i++) {
+      tester += letters[i].letter;
+    }
   }
-  console.log(tester);
   var str = '';
   var specialCharacters = " !@#$%^&*()_+:.{};\\-'\"";
   var vowels = "aeiouÀ-ÖØ-öø-ÿ";
