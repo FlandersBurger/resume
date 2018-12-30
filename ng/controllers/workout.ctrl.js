@@ -2,7 +2,15 @@ angular.module('app')
 .controller('WorkoutCtrl', function ($scope) {
 
   $scope.timeRemaining = 0;
+  $scope.timeExercising = 30;
+  $scope.timeResting = 15;
   $scope.rest = false;
+
+  var sounds = {
+    on: new Audio('on.wav'),
+    off: new Audio('off.wav')
+  };
+
 
   var exercises = [
     {name: 'Jumping Jacks', split: false},
@@ -19,11 +27,12 @@ angular.module('app')
     {name: 'Side Plank', split: true}
   ];
 
-    var exercising;
+  var exercising;
 
   $scope.workout = function() {
+    var time = $scope.timeExercising + $scope.timeResting;
     if (!$scope.timeRemaining) {
-      $scope.timeRemaining = exercises.length * 45;
+      $scope.timeRemaining = exercises.length * time;
       exercising = setInterval(function() {
         $scope.timeRemaining--;
         if ($scope.timeRemaining === 0) {
@@ -34,10 +43,15 @@ angular.module('app')
           $scope.$apply();
           return clearInterval(exercising);
         }
-        var currentExercise = Math.floor($scope.timeRemaining / 45);
-        var timer = $scope.timeRemaining - currentExercise * 45;
-        $scope.timer = timer > 30 ? timer - 30 : timer;
-        if (timer > 30) {
+        var currentExercise = Math.floor($scope.timeRemaining / time);
+        var timer = $scope.timeRemaining - currentExercise * time;
+        $scope.timer = timer > $scope.timeExercising ? timer - $scope.timeExercising : timer;
+        if (timer === $scope.timeExercising) {
+          sounds.on.play();
+        } else if (timer === 0) {
+          sounds.off.play();
+        }
+        if (timer > $scope.timeExercising) {
           $scope.rest = true;
         } else {
           $scope.rest = false;

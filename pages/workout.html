@@ -1,11 +1,15 @@
 <div id="workout-page doodle-page" class="container">
   <div class="well well-lg">
+    <label>Excerice Time</label>
+    <input class="form-control" ng-model="timeExercising" ng-disabled="timeRemaining"/>
+    <label>Rest Time</label>
+    <input class="form-control" ng-model="timeResting" ng-disabled="timeRemaining"/>
     <button class="btn btn-default" ng-click="workout()">
       {{ timeRemaining ? 'Stop' : 'Start' }} Workout
     </button>
   </div>
   <h1 class="display-2">{{timer}}</h1>
   <h2 class="display-3">{{rest ? 'Next up: ' : ''}}{{exercise.name}}</h2>
-  <h2 ng-show="exercise.split && !rest">{{timer < 15 ? 'Right' : 'Left'}}</h2>
-  <img class="img-div" ng-src="/exercises/{{exercise.name}}.gif" ng-show="rest" />
+  <h2 ng-show="exercise.split && !rest">{{timer < timeExercising / 2 ? 'Right' : 'Left'}}</h2>
+  <img class="img-div" ng-src="/exercises/{{exercise.name}}.gif" ng-show="!rest" />
 </div>

@@ -84,6 +84,7 @@ angular.module('app')
   });
 
   $scope.sortValue = 'name';
+  $scope.sortDirection = true;
 
   $scope.sort = function(sortBy) {
     if ($scope.sortValue === sortBy) {

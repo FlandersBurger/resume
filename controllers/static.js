@@ -5,6 +5,7 @@ var path = require('path');
 router.use(express.static(__dirname + '/../assets'));
 router.use(express.static(__dirname + '/../resources'));
 router.use(express.static(__dirname + '/../images'));
+router.use(express.static(__dirname + '/../sounds'));
 router.use(express.static(__dirname + '/../pages'));
 router.use(express.static(__dirname + '/../data'));
 
