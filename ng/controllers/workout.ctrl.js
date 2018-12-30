@@ -8,7 +8,8 @@ angular.module('app')
 
   var sounds = {
     on: new Audio('on.wav'),
-    off: new Audio('off.wav')
+    off: new Audio('off.wav'),
+    switch: new Audio('switch.wav'),
   };
 
 
@@ -50,17 +51,19 @@ angular.module('app')
         var currentExercise = Math.floor($scope.timeRemaining / excerciseTime);
         var timer = $scope.timeRemaining - currentExercise * excerciseTime;
         $scope.timer = timer > $scope.timeExercising ? timer - $scope.timeExercising : timer;
-        if (timer === $scope.timeExercising) {
-          sounds.on.play();
-        } else if (timer === 0) {
-          sounds.off.play();
-        }
         if (timer > $scope.timeExercising) {
           $scope.rest = true;
         } else {
           $scope.rest = false;
         }
         $scope.exercise = exercises[exercises.length - currentExercise - 1];
+        if (timer === $scope.timeExercising) {
+          sounds.on.play();
+        } else if (timer === 0) {
+          sounds.off.play();
+        } else if ($scope.exercise.split && timer === Math.floor($scope.timeExercising / 2)) {
+          sounds.switch.play();
+        }
         $scope.$apply();
       }, 1000);
     } else {
