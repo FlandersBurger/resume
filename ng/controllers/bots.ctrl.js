@@ -123,6 +123,8 @@ angular.module('app')
   }
 
   $scope.selectList = function(list) {
+    console.log(list.creator._id);
+    console.log($scope.currentUser._id);
     $scope.selectedList = list;
   };
 
@@ -138,6 +140,7 @@ angular.module('app')
 
   $scope.addValue = function() {
     if ($scope.newItem.value) {
+      $scope.newItem.creator = $scope.currentUser._id;
       $scope.selectedList.values.unshift(JSON.parse(JSON.stringify($scope.newItem)));
       $scope.newItem.value = '';
       $scope.newItem.blurb = '';
@@ -148,7 +151,12 @@ angular.module('app')
     $('#new-value').focus();
   };
 
+  $scope.reportList = function(list) {
+    BotsSvc.saveList($scope.currentUser, list);
+  };
+
   $scope.saveList = function(list) {
+    list.modifyDate = new Date();
     list.values = list.values.filter(function(item) {
       return item.value;
     });

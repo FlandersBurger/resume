@@ -4,7 +4,7 @@ angular.module('app')
   var svc = this;
 
   svc.getLists = function (user) {
-    return $http.get('/api/bots/lists/' + user._id);
+    return $http.get('/api/bots/lists');
   };
 
   svc.saveList = function (user, list) {
@@ -12,6 +12,10 @@ angular.module('app')
       user: user,
       list: list
     });
+  };
+
+  svc.reportList = function (user, list) {
+    $http.put('/api/bots/lists/' + list._id + '/report/' + user._id);
   };
 
   svc.deleteList = function (list) {
