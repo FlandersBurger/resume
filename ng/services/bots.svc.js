@@ -15,7 +15,7 @@ angular.module('app')
   };
 
   svc.reportList = function (user, list) {
-    $http.put('/api/bots/lists/' + list._id + '/report/' + user._id);
+    $http.get('/api/bots/lists/' + list._id + '/report/' + user._id);
   };
 
   svc.deleteList = function (list) {

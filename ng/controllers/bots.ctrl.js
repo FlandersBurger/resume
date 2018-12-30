@@ -152,7 +152,7 @@ angular.module('app')
   };
 
   $scope.reportList = function(list) {
-    BotsSvc.saveList($scope.currentUser, list);
+    BotsSvc.reportList($scope.currentUser, list);
   };
 
   $scope.saveList = function(list) {

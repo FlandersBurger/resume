@@ -50,8 +50,8 @@
         <div class="btn btn-default" ng-click="deleteList(selectedList)" ng-disabled="!selectedList || (!currentUser.admin && selectedList.creator._id !== currentUser._id)">
           <i class="fa fa-trash-o" aria-hidden="true"></i> Delete
         </div>
-        <div class="btn btn-default" ng-click="reportList(selectedList)">
-          <i class="fa fa-trash-o" aria-hidden="true"></i> Report
+        <div class="btn btn-default" ng-click="reportList(selectedList)" ng-hide="!selectedList || selectedList.creator._id === currentUser._id">
+          <i class="fa fa-bug" aria-hidden="true"></i> Report
         </div>
       </div>
       <div class="col-md-12">
