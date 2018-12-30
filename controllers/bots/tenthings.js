@@ -452,14 +452,16 @@ function hint(game, callback) {
 }
 
 function getHint(hints, value) {
+  var i = 0;
   var letters = countLetters(value);
   var tester = '';
   var revealCount = Math.floor(letters.length * (hints - 2) / 4);
   revealCount = revealCount < hints - 2 ? hints - 2 < letters.length - 1 ? hints - 2 : letters.length - 1 : revealCount;
   console.log(revealCount + ' -> ' + value);
-  for (var i in revealCount) {
+  for (i in revealCount - 1) {
     tester += letters[i].letter;
   }
+  console.log(tester);
   var str = '';
   var specialCharacters = " !@#$%^&*()_+:.{};\\-'\"";
   var vowels = "aeiouÀ-ÖØ-öø-ÿ";
