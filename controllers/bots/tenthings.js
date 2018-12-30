@@ -462,7 +462,6 @@ function getHint(hints, value) {
         croppedValue += value.charAt(i);
       }
     }
-    console.log(croppedValue);
     var letters = countLetters(croppedValue);
     var revealCount = Math.floor(letters.length * (hints - 2) / 4);
     revealCount = revealCount < hints - 2 ? hints - 2 < letters.length - 1 ? hints - 2 : letters.length - 1 : revealCount;
@@ -470,6 +469,7 @@ function getHint(hints, value) {
       tester += letters[i].letter;
     }
   }
+  console.log(tester + ' -> ' + value);
   var str = '';
   var specialCharacters = " !@#$%^&*()_+:.{};\\-'\"";
   var vowels = "aeiouÀ-ÖØ-öø-ÿ";
