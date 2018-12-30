@@ -456,7 +456,7 @@ function getHint(hints, value) {
   var i = 0;
   var tester = '';
   if (hints > 3) {
-    var croppedValue;
+    var croppedValue = '';
     for (i = 1; i < value.length - 2; i++) {
       if (value.charAt(i - 1) !== ' ' && value.charAt(i + 1) !== ' ') {
         croppedValue += value.charAt(i);
