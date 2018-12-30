@@ -3,7 +3,7 @@ angular.module('app')
 
   $scope.timeRemaining = 0;
   $scope.timeExercising = 30;
-  $scope.timeResting = 15;
+  $scope.timeResting = 10;
   $scope.rest = false;
 
   var sounds = {
@@ -29,10 +29,14 @@ angular.module('app')
 
   var exercising;
 
+  $scope.progress = function() {
+    return (exercises.length - Math.floor($scope.timeRemaining / ($scope.timeExercising + $scope.timeResting))) + '/' + exercises.length;
+  };
+
   $scope.workout = function() {
-    var time = $scope.timeExercising + $scope.timeResting;
+    var excerciseTime = $scope.timeExercising + $scope.timeResting;
     if (!$scope.timeRemaining) {
-      $scope.timeRemaining = exercises.length * time;
+      $scope.timeRemaining = exercises.length * excerciseTime;
       exercising = setInterval(function() {
         $scope.timeRemaining--;
         if ($scope.timeRemaining === 0) {
@@ -43,8 +47,8 @@ angular.module('app')
           $scope.$apply();
           return clearInterval(exercising);
         }
-        var currentExercise = Math.floor($scope.timeRemaining / time);
-        var timer = $scope.timeRemaining - currentExercise * time;
+        var currentExercise = Math.floor($scope.timeRemaining / excerciseTime);
+        var timer = $scope.timeRemaining - currentExercise * excerciseTime;
         $scope.timer = timer > $scope.timeExercising ? timer - $scope.timeExercising : timer;
         if (timer === $scope.timeExercising) {
           sounds.on.play();
