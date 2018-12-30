@@ -457,7 +457,7 @@ function getHint(hints, value) {
   if (hints > 3) {
     var croppedValue = '';
     for (i = 1; i < value.length - 2; i++) {
-      if (value.charAt(i - 1) !== ' ' && value.charAt(i + 1) !== ' ') {
+      if (i === 1 || (value.charAt(i - 1) !== ' ' && value.charAt(i + 1) !== ' ') || i === value.length - 2) {
         croppedValue += value.charAt(i);
       }
     }
