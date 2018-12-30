@@ -456,6 +456,7 @@ function getHint(hints, value) {
   var tester = '';
   var revealCount = Math.floor(letters.length * (hints - 2) / 4);
   revealCount = revealCount < hints - 2 ? hints - 2 < letters.length - 1 ? hints - 2 : letters.length - 1 : revealCount;
+  console.log(revealCount + ' -> ' + value);
   for (var i in revealCount) {
     tester += letters[i].letter;
   }
