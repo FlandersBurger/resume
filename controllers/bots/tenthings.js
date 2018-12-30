@@ -462,7 +462,7 @@ function getHint(hints, value) {
       }
     }
     var letters = countLetters(croppedValue);
-    var revealCount = Math.floor(letters.length * (hints - 2) / 4);
+    var revealCount = Math.floor(letters.length * (hints - 3) / 4);
     revealCount = revealCount < hints - 3 ? hints - 3 < letters.length ? hints - 3 : letters.length : revealCount;
     for (i = 0; i < revealCount; i++) {
       tester += letters[i].letter;
