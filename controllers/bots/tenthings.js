@@ -363,7 +363,6 @@ function countLetters(string) {
   var alphabet = ['b', 'c', 'd', 'f', 'g', 'h', 'j', 'k', 'l', 'm', 'n', 'p',
   'q', 'r', 's', 't', 'v', 'w', 'x', 'y', 'z'];
   return alphabet.map(function(letter) {
-    string = string.substring(1, string.length - 1);
     return {
       letter: letter,
       count: (string.match(new RegExp('[' + letter + ']','ig')) || []).length
@@ -463,6 +462,7 @@ function getHint(hints, value) {
       }
     }
     var letters = countLetters(croppedValue);
+    console.log(letters);
     var revealCount = Math.floor(letters.length * (hints - 2) / 4);
     revealCount = revealCount < hints - 2 ? hints - 2 < letters.length - 1 ? hints - 2 : letters.length - 1 : revealCount;
     for (i = 0; i < revealCount; i++) {
