@@ -454,7 +454,9 @@ function hint(game, callback) {
 function getHint(hints, value) {
   var letters = countLetters(value);
   var tester = '';
-  for (var i = 0; i < Math.floor(letters.length * (hints - 2) / 4); i++) {
+  var revealCount = Math.floor(letters.length * (hints - 2) / 4);
+  revealCount = revealCount < hints - 2 ? hints - 2 < letters.length - 1 ? hints - 2 : letters.length - 1 : revealCount;
+  for (var i in revealCount) {
     tester += letters[i].letter;
   }
   var str = '';
@@ -473,7 +475,7 @@ function getHint(hints, value) {
       str = value[0] + value.substring(1, value.length - 1).replace(new RegExp('[^' + specialCharacters + vowels + ']', 'gi'), '*') + value[value.length - 1];
       break;
     default:
-      str = value[0] + value.substring(1, value.length - 1).replace(new RegExp('[^' + specialCharacters + vowels +  tester + ']', 'gi'), '*') + value[value.length - 1];
+      str = value[0] + value.substring(1, value.length - 1).replace(new RegExp('[^' + specialCharacters + vowels + tester + ']', 'gi'), '*') + value[value.length - 1];
   }
   for (i = 1; i < value.length - 2; i++) {
     switch (hints) {
