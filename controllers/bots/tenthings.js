@@ -734,7 +734,8 @@ function evaluateCommand(res, msg, game, isNew) {
       bot.sendMessage(msg.chat.id, msg.text);
       break;
     case '/info':
-      bot.sendMessage(msg.chat.id, 'Hi ' + (msg.from.username ? msg.from.username : msg.from.first_name) + ',\nMy name is 10 Things and I am a game bot.\nThe game will give you a category and then you answer anything that comes to mind in that category.\nI have a few things you can ask of me, just type a slash (/) to see the commands.\nIf you want to add your own lists, please go to https://belgocanadian.com/bots\nAnd last but not least if you want to suggest anything (new lists or features) type "/suggest" followed by your suggestion!\n\nHave fun!');
+      bot.sendMessage(msg.chat.id, 'Hi ' + msg.from.first_name + ',\nMy name is 10 Things and I am a game bot.\nThe game will give you a category and then you answer anything that comes to mind in that category.\nI have a few things you can ask of me, just type a slash (/) to see the commands.\nIf you want to add your own lists, please go to https://belgocanadian.com/bots\nAnd last but not least if you want to suggest anything (new lists or features) type "/suggest" followed by your suggestion!\n\nHave fun!');
+        bot.sendMessage(msg.chat.id, 'Hi ' + msg.from.first_name + ',\nMy name is 10 Things and I am a game bot.\nThe game will give you a category and then you answer anything that comes to mind in that category.\nI have a few things you can ask of me, just type a slash (/) to see the commands.\nIf you want to add your own lists, please go to https://belgocanadian.com/bots\nAnd last but not least if you want to suggest anything (new lists or features) type "/suggest" followed by your suggestion!\n\nHave fun!');
       break;
     case '/logic':
       var logic = '';
@@ -765,7 +766,7 @@ function evaluateCommand(res, msg, game, isNew) {
       break;
     case '/veto':
       delete skips[game.id];
-      bot.sendMessage(msg.chat.id, 'Skip vetoed by ' + (msg.from.username ? msg.from.username : msg.from.first_name));
+      bot.sendMessage(msg.chat.id, 'Skip vetoed by ' + msg.from.first_name);
       break;
     case '/scores':
       getDailyScores(game);
@@ -805,6 +806,8 @@ function evaluateCommand(res, msg, game, isNew) {
       break;
     case '/hint':
       hint(game, function(hints) {
+        var message = '<b>' + game.list.name + '</b>';
+        message += hints;
         bot.sendMessage(msg.chat.id, hints);
       });
       break;
