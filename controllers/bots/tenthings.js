@@ -806,9 +806,9 @@ function evaluateCommand(res, msg, game, isNew) {
       break;
     case '/hint':
       hint(game, function(hints) {
-        var message = '<b>' + game.list.name + '</b>';
+        var message = '<b>' + game.list.name + '</b>\n';
         message += hints;
-        bot.sendMessage(msg.chat.id, hints);
+        bot.sendMessage(msg.chat.id, message);
       });
       break;
     default:
