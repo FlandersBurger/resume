@@ -173,7 +173,10 @@ bot.exportChatInviteLink('-1001394022777').then(function(chat) {
 });
 */
 function selectList(game, callback) {
-  List.find({ _id: { $nin: game.playedLists } }).populate('creator').exec(function (err, lists) {
+  List.find({ _id: { $nin: game.playedLists } })
+  .populate('creator')
+  .exec(function (err, lists) {
+    if (err) return notifyAdmin(err);
     if (lists.length === 0) {
       game.playedLists = [];
       game.cycles++;
@@ -419,13 +422,17 @@ function skipList(game) {
 }
 
 function cooldownSkip(game) {
-  if (skips[game.id].timer > 0) {
-    skips[game.id].timer--;
-    setTimeout(function() {
-      cooldownSkip(game);
-    }, 1000);
-  } else {
+  if (!skips[game.id]) {
     skipList(game);
+  } else {
+    if (skips[game.id].timer > 0) {
+      skips[game.id].timer--;
+      setTimeout(function() {
+        cooldownSkip(game);
+      }, 1000);
+    } else {
+      skipList(game);
+    }
   }
 }
 
@@ -469,7 +476,7 @@ function getHint(hints, value) {
     }
   }
   var str = '';
-  var specialCharacters = " !@#$%^&*()_+:.{};\\-'\"";
+  var specialCharacters = " !@#$%^&*()_+:.{};/\\-'`\"";
   var vowels = "aeiouÀ-ÖØ-öø-ÿ";
   switch (hints) {
     case 0:
