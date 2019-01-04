@@ -791,7 +791,12 @@ function evaluateCommand(res, msg, game, isNew) {
       break;
     case '/stats':
       List.find().exec(function(err, lists) {
-        var categories = lists.reduce(function(cats, list) {
+        var player = _.find(game.players, function(existingPlayer) {
+          return existingPlayer.id == msg.from.id;
+        });
+        var categories = lists.sort(function(list1, list2) {
+          return list1.category > list2.category;
+        }).reduce(function(cats, list) {
           if (!cats[list.category]) {
             cats[list.category] = 0;
           }
@@ -799,12 +804,19 @@ function evaluateCommand(res, msg, game, isNew) {
           return cats;
         }, {});
         console.log(categories);
-        var message = 'Started ' + game.date + '\n';
+        var message = '<b>Game Stats</b>\n';
+        message += 'Started ' + game.date + '\n';
         message += game.players.length + ' players\n';
         message += 'Cycled through all lists ' + game.cycles + ' times\n';
-        message += game.playedLists.length + ' lists played out of ' + lists.length + ' in current cycle';
+        message += game.playedLists.length + ' of ' + lists.length + ' lists played in current cycle';
+        message += '<b>Personal Stats</b> for ' + player.first_name + '\n';
+        message += 'High Score: ' + player.highscore + '\n';
+        message += player.wins + ' wins out of ' + player.plays + ' days played\n';
+        message += 'Correct answers given: ' + player.answers + '\n';
+        message += 'Correct answers snubbed: ' + player.snubs + '\n';
+        message += '<b>List Stats</b>\n';
         for (var key in categories) {
-          message += key + ': ' + categories[key] + '\n';
+          message += key + ': ' + categories[key] + ' lists\n';
         }
         bot.sendMessage(msg.chat.id, message);
       });
