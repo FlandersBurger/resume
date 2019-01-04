@@ -360,11 +360,11 @@ function newRound(game) {
     list.plays++;
     list.save();
     for (var i in game.guessers) {
-      var player = _.find(game.players, function (player) {
-        return player.id == game.guessers[i].id;
-      });
-      if (player) {
-        player.lists++;
+      for (var j in game.players) {
+        if (game.players[j].id == game.guessers[i]) {
+          game.players[j].lists++;
+          break;
+        }
       }
     }
     game.list = JSON.parse(JSON.stringify(list));
@@ -836,6 +836,7 @@ function evaluateCommand(res, msg, game, player, isNew) {
         message += 'Hints asked: ' + player.hints + '\n';
         message += 'Suggestions given: ' + player.suggestions + '\n';
         message += 'Lists played: ' + player.lists + '\n';
+        message += 'Lists skipped: ' + player.skips + '\n';
         /*
         var categories = lists.sort(function(list1, list2) {
           return list1.category > list2.category;
