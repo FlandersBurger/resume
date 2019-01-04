@@ -791,7 +791,7 @@ function evaluateCommand(res, msg, game, isNew) {
       break;
     case '/stats':
       List.find().exec(function(err, lists) {
-        var categories = lists.reduce(function(list, cats) {
+        var categories = lists.reduce(function(cats, list) {
           if (!cats[list.category]) {
             cats[list.category] = 0;
           }
