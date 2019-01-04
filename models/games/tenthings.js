@@ -22,6 +22,7 @@ var TenThings = db.model('TenThings', {
       lists: { type: Number, required: false, default: 0 },
       hints: { type: Number, required: false, default: 0 },
       snubs: { type: Number, required: false, default: 0 },
+      skips: { type: Number, required: false, default: 0 },
       suggestions: { type: Number, required: false, default: 0 },
     }
   ],
