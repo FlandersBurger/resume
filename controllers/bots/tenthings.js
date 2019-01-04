@@ -795,7 +795,8 @@ function evaluateCommand(res, msg, game, isNew) {
           if (!cats[list.category]) {
             cats[list.category] = 0;
           }
-          return cats[list.category]++;
+          cats[list.category]++;
+          return cats;
         }, {});
         console.log(categories);
         var message = 'Started ' + game.date + '\n';
