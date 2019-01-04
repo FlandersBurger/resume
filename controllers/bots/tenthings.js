@@ -828,8 +828,11 @@ function evaluateCommand(res, msg, game, player, isNew) {
         message += game.players.length + ' players\n';
         message += 'Cycled through all lists ' + game.cycles + ' times\n';
         message += game.playedLists.length + ' of ' + lists.length + ' lists played in current cycle\n';
-        message += '<b>Personal Stats</b> for ' + player.first_name + '\n';
+
+        message += '<b>Personal Stats for ' + player.first_name + '</b>\n';
+        message += 'Total Score: ' + player.score + '\n';
         message += 'High Score: ' + player.highScore + '\n';
+        message += 'Average Score: ' + Math.round(player.score / player.plays);
         message += player.wins + ' wins out of ' + player.plays + ' days played\n';
         message += 'Correct answers given: ' + player.answers + '\n';
         message += 'Correct answers snubbed: ' + player.snubs + '\n';
