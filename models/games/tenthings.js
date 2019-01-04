@@ -18,6 +18,8 @@ var TenThings = db.model('TenThings', {
       scoreDaily: { type: Number, required: false, default: 0 },
       plays: { type: Number, required: false, default: 0 },
       wins: { type: Number, required: false, default: 0 },
+      answers: { type: Number, required: false, default: 0 },
+      snubs: { type: Number, required: false, default: 0 },
     }
   ],
   playedLists: [
