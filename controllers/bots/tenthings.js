@@ -355,16 +355,14 @@ function checkRound(game) {
   }
 }
 
-function findPlayer(player1, player2) {
-  return player1.id == player2.id;
-}
-
 function newRound(game) {
   selectList(game, function(list) {
     list.plays++;
     list.save();
     for (var i in game.guessers) {
-      var player = _.find(game.players, findPlayer(player, game.guessers[i]));
+      var player = _.find(game.players, function (player) {
+        return player.id == game.guessers[i].id;
+      });
       if (player) {
         player.lists++;
       }
