@@ -71,6 +71,7 @@ queue.process('guess', function(job, done){
   done();
 });
 */
+
 //var dailyScore = schedule.scheduleJob('*/10 * * * * *', function() {
 var dailyScore = schedule.scheduleJob('0 0 0 * * *', function() {
   if (new Date().getHours() === 0) {
@@ -134,6 +135,21 @@ var dailyScore = schedule.scheduleJob('0 0 0 * * *', function() {
   } else {
     bot.notifyAdmin('Schedule incorrectly triggered: ' + new Date());
   }
+  TenThings.find({ 'players.highScore': { $gt: 0 } })
+  .then(function(games) {
+    var ids = games.map(function(game) {
+      return game._id;
+    });
+    if (ids.length > 0) {
+      TenThings.find({ '_id': { $nin: ids }, 'date': { $lt: new Date() - 60*60*1000*30 } })
+      .then(function(staleGames) {
+        staleGames.forEach(function(game) {
+          game.remove();
+        });
+        if (staleGames.length > 0) notifyAdmin(staleGames.length + ' stale games deleted');
+      });
+    }
+  });
 });
 
 function getLanguage(language) {
@@ -808,9 +824,9 @@ function evaluateCommand(res, msg, game, isNew) {
         message += 'Started ' + game.date + '\n';
         message += game.players.length + ' players\n';
         message += 'Cycled through all lists ' + game.cycles + ' times\n';
-        message += game.playedLists.length + ' of ' + lists.length + ' lists played in current cycle';
+        message += game.playedLists.length + ' of ' + lists.length + ' lists played in current cycle\n';
         message += '<b>Personal Stats</b> for ' + player.first_name + '\n';
-        message += 'High Score: ' + player.highscore + '\n';
+        message += 'High Score: ' + player.highScore + '\n';
         message += player.wins + ' wins out of ' + player.plays + ' days played\n';
         message += 'Correct answers given: ' + player.answers + '\n';
         message += 'Correct answers snubbed: ' + player.snubs + '\n';
