@@ -797,6 +797,7 @@ function evaluateCommand(res, msg, game, isNew) {
           }
           return cats[list.category]++;
         }, {});
+        console.log(categories);
         var message = 'Started ' + game.date + '\n';
         message += game.players.length + ' players\n';
         message += 'Cycled through all lists ' + game.cycles + ' times\n';
