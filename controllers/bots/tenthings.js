@@ -478,7 +478,7 @@ function getHint(hints, value) {
     }
   }
   var str = '';
-  var specialCharacters = "\\\\ !@#$%^&*()_+:.{};/-'`\"";
+  var specialCharacters = "\\\ !@#$%^&*()_+:.{};/-'`\"";
   var vowels = "aeiouÀ-ÖØ-öø-ÿ";
   switch (hints) {
     case 0:
