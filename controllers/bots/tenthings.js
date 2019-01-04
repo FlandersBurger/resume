@@ -398,9 +398,9 @@ function newRound(game) {
   console.log(getHint(6, string));
   */
 
-function skip(game) {
+function skip(game, player) {
   if (skips[game.id] && skips[game.id].player !== player) {
-    skipList(game, player);
+    skipList(game);
   } else if (skips[game.id] && skips[game.id].player === player) {
     bot.sendMessage(game.chat_id, 'Get someone else to confirm your skip request!');
   } else {
