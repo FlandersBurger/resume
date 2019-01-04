@@ -378,22 +378,6 @@ function newRound(game) {
   });
 }
 
-
-function countLetters(string) {
-  //Vowels get revealed all at once
-  var alphabet = ['b', 'c', 'd', 'f', 'g', 'h', 'j', 'k', 'l', 'm', 'n', 'p',
-  'q', 'r', 's', 't', 'v', 'w', 'x', 'y', 'z'];
-  return alphabet.map(function(letter) {
-    return {
-      letter: letter,
-      count: (string.match(new RegExp('[' + letter + ']','ig')) || []).length
-    };
-  }).filter(function(letter) {
-    return letter.count;
-  }).sort(function(letter1, letter2) {
-    return letter1.count - letter2.count;
-  });
-}
   /*
   var string = 'The qui-ck bro"wn f\'ox jump+ed over the lazy dog';
   //string = 'TERA';
@@ -454,6 +438,22 @@ function cooldownSkip(game) {
   }
 }
 
+function countLetters(string) {
+  //Vowels get revealed all at once
+  var alphabet = ['b', 'c', 'd', 'f', 'g', 'h', 'j', 'k', 'l', 'm', 'n', 'p',
+  'q', 'r', 's', 't', 'v', 'w', 'x', 'y', 'z'];
+  return alphabet.map(function(letter) {
+    return {
+      letter: letter,
+      count: (string.match(new RegExp('[' + letter + ']','ig')) || []).length
+    };
+  }).filter(function(letter) {
+    return letter.count;
+  }).sort(function(letter1, letter2) {
+    return letter1.count - letter2.count;
+  });
+}
+
 function hint(game, callback) {
   if (game.hints >= 6) {
     bot.sendMessage(game.chat_id, 'What? Another hint? I\'m just gonna ignore that request');
@@ -482,7 +482,7 @@ function getHint(hints, value) {
   if (hints > 3) {
     var croppedValue = '';
     for (i = 1; i < value.length - 1; i++) {
-      if (i === 1 || (value.charAt(i - 1) !== ' ' && value.charAt(i + 1) !== ' ') || i === value.length - 2) {
+      if (i === 1 || (/[ -]/.test(value.charAt(i - 1)) && /[ -]/.test(value.charAt(i + 1))) || i === value.length - 2) {
         croppedValue += value.charAt(i);
       }
     }
@@ -514,12 +514,12 @@ function getHint(hints, value) {
   for (i = 1; i < value.length - 2; i++) {
     switch (hints) {
       case 1:
-        if (i === 0 || value.charAt(i - 1) === ' ') {
+        if (i === 0 || /[ -]/.test(value.charAt(i - 1))) {
           str = str.substr(0, i) + value.charAt(i) + str.substr(i + 1);
         }
         break;
       default:
-        if (i === 0 || value.charAt(i - 1) === ' ' || value.charAt(i + 1) === ' ' || i === value.length - 1) {
+        if (i === 0 || /[ -]/.test(value.charAt(i - 1)) || /[ -]/.test(value.charAt(i + 1)) || i === value.length - 1) {
           str = str.substr(0, i) + value.charAt(i) + str.substr(i + 1);
         }
         break;
