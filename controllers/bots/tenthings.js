@@ -390,9 +390,9 @@ function newRound(game) {
   console.log(getHint(6, string));
   */
 
-function skip(game, player) {
+function skip(game) {
   if (skips[game.id] && skips[game.id].player !== player) {
-    skipList(game);
+    skipList(game, player);
   } else if (skips[game.id] && skips[game.id].player === player) {
     bot.sendMessage(game.chat_id, 'Get someone else to confirm your skip request!');
   } else {
@@ -454,13 +454,14 @@ function countLetters(string) {
   });
 }
 
-function hint(game, callback) {
+function hint(game, player, callback) {
   if (game.hints >= 6) {
     bot.sendMessage(game.chat_id, 'What? Another hint? I\'m just gonna ignore that request');
   } else if (cooldowns[game.id] && cooldowns[game.id] > 0) {
     bot.sendMessage(game.chat_id, 'Calm down with the hints, wait ' + cooldowns[game.id] + ' more seconds');
   } else {
     game.hints++;
+    player.hints++;
     callback(game.list.values.reduce(function(str, item, index) {
       if (!item.guesser.first_name) {
         str += index + 1;
@@ -704,15 +705,20 @@ router.post('/', function (req, res, next) {
   }).populate('list.creator').exec(function(err, existingGame) {
     if (!existingGame) {
       var newGame = new TenThings({
-        chat_id: msg.chat.id
+        chat_id: msg.chat.id,
+        players: [msg.from]
       });
       newGame.save(function (err) {
       if (err) return console.error(err);
         console.log('Game Saved!');
-        return evaluateCommand(res, msg, newGame, true);
+        var player = newGame.players[0];
+        return evaluateCommand(res, msg, newGame, player, true);
       });
     } else {
-      return evaluateCommand(res, msg, existingGame, false);
+      var player = _.find(existingGame.players, function(existingPlayer) {
+        return existingPlayer.id == msg.from.id;
+      });
+      return evaluateCommand(res, msg, existingGame, player, false);
     }
   });
 });
@@ -756,7 +762,7 @@ router.post('/webhook', function (req, res) {
   }
 });
 
-function evaluateCommand(res, msg, game, isNew) {
+function evaluateCommand(res, msg, game, player, isNew) {
   //bot.notifyAdmin(tenthings);
   //bot.notifyAdmin(games[msg.chat.id].list);
   console.log(msg.id + ' - ' + msg.from.first_name + ': ' + msg.command + ' -> ' + msg.text);
@@ -795,6 +801,8 @@ function evaluateCommand(res, msg, game, isNew) {
       }
       break;
     case '/skip':
+      player.skips++;
+      game.save();
       skip(game, msg.from.id);
       break;
     case '/veto':
@@ -807,19 +815,6 @@ function evaluateCommand(res, msg, game, isNew) {
       break;
     case '/stats':
       List.find().exec(function(err, lists) {
-        var player = _.find(game.players, function(existingPlayer) {
-          return existingPlayer.id == msg.from.id;
-        });
-        var categories = lists.sort(function(list1, list2) {
-          return list1.category > list2.category;
-        }).reduce(function(cats, list) {
-          if (!cats[list.category]) {
-            cats[list.category] = 0;
-          }
-          cats[list.category]++;
-          return cats;
-        }, {});
-        console.log(categories);
         var message = '<b>Game Stats</b>\n';
         message += 'Started ' + game.date + '\n';
         message += game.players.length + ' players\n';
@@ -830,10 +825,21 @@ function evaluateCommand(res, msg, game, isNew) {
         message += player.wins + ' wins out of ' + player.plays + ' days played\n';
         message += 'Correct answers given: ' + player.answers + '\n';
         message += 'Correct answers snubbed: ' + player.snubs + '\n';
+        /*
+        var categories = lists.sort(function(list1, list2) {
+          return list1.category > list2.category;
+        }).reduce(function(cats, list) {
+          if (!cats[list.category]) {
+            cats[list.category] = 0;
+          }
+          cats[list.category]++;
+          return cats;
+        }, {});
         message += '<b>List Stats</b>\n';
         for (var key in categories) {
           message += key + ': ' + categories[key] + ' lists\n';
         }
+        */
         bot.sendMessage(msg.chat.id, message);
       });
       break;
@@ -858,10 +864,12 @@ function evaluateCommand(res, msg, game, isNew) {
       break;
     */
     case '/suggest':
+      player.suggestions++;
+      game.save();
       bot.sendMessage('592503547', JSON.stringify((msg.from.username ? msg.from.username : msg.from.first_name) + ': ' + msg.text));
       break;
     case '/hint':
-      hint(game, function(hints) {
+      hint(game, player, function(hints) {
         var message = '<b>' + game.list.name + '</b>\n';
         message += hints;
         bot.sendMessage(msg.chat.id, message);
