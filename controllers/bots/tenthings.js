@@ -355,10 +355,20 @@ function checkRound(game) {
   }
 }
 
+function findPlayer(player1, player2) {
+  return player1.id == player2.id;
+}
+
 function newRound(game) {
   selectList(game, function(list) {
     list.plays++;
     list.save();
+    for (var i in game.guessers) {
+      var player = _.find(game.players, findPlayer(player, game.guessers[i]));
+      if (player) {
+        player.lists++;
+      }
+    }
     game.list = JSON.parse(JSON.stringify(list));
     game.list.totalValues = game.list.values.length;
     game.list.values = getRandom(game.list.values, 10);
@@ -825,6 +835,9 @@ function evaluateCommand(res, msg, game, player, isNew) {
         message += player.wins + ' wins out of ' + player.plays + ' days played\n';
         message += 'Correct answers given: ' + player.answers + '\n';
         message += 'Correct answers snubbed: ' + player.snubs + '\n';
+        message += 'Hints asked: ' + player.hints + '\n';
+        message += 'Suggestions given: ' + player.suggestions + '\n';
+        message += 'Lists played: ' + player.lists + '\n';
         /*
         var categories = lists.sort(function(list1, list2) {
           return list1.category > list2.category;
