@@ -832,7 +832,7 @@ function evaluateCommand(res, msg, game, player, isNew) {
         message += '<b>Personal Stats for ' + player.first_name + '</b>\n';
         message += 'Total Score: ' + player.score + '\n';
         message += 'High Score: ' + player.highScore + '\n';
-        message += 'Average Score: ' + Math.round(player.score / player.plays);
+        message += 'Average Score: ' + Math.round(player.score / player.plays) + '\n';
         message += player.wins + ' wins out of ' + player.plays + ' days played\n';
         message += 'Correct answers given: ' + player.answers + '\n';
         message += 'Correct answers snubbed: ' + player.snubs + '\n';
