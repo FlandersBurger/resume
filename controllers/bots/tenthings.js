@@ -269,11 +269,6 @@ function guess(game, msg) {
 }
 
 function checkMatch(game, matcher, msg) {
-  if (!_.find(game.players, function(existingPlayer) {
-    return existingPlayer.id == msg.from.id;
-  })) {
-    game.players.push(msg.from);
-  }
   if (!_.find(game.guessers, function(guesser) {
     return guesser == msg.from.id;
   })) {
@@ -743,8 +738,10 @@ router.post('/', function (req, res, next) {
       var player = _.find(existingGame.players, function(existingPlayer) {
         return existingPlayer.id == msg.from.id;
       });
-      console.log(existingGame.players);
-      console.log(msg.from.id);
+      if (!players) {
+        existingGame.players.push(msg.from);
+        player = existingGame.players[existingGame.players.length - 1];
+      }
       return evaluateCommand(res, msg, existingGame, player, false);
     }
   });
