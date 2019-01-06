@@ -491,10 +491,11 @@ function getHint(hints, value) {
   if (hints > 3) {
     var croppedValue = '';
     for (i = 1; i < value.length - 1; i++) {
-      if (i === 1 || (/[ -]/.test(value.charAt(i - 1)) && /[ -]/.test(value.charAt(i + 1))) || i === value.length - 2) {
+      if (!/[ -]/.test(value.charAt(i - 1)) && !/[ -]/.test(value.charAt(i + 1))) {
         croppedValue += value.charAt(i);
       }
     }
+    console.log(croppedValue);
     var letters = countLetters(croppedValue);
     var revealCount = Math.floor(letters.length * (hints - 3) / 4);
     revealCount = revealCount < hints - 3 ? hints - 3 < letters.length ? hints - 3 : letters.length : revealCount;
@@ -536,7 +537,6 @@ function getHint(hints, value) {
   }
   return str;
 }
-
 
 function cooldownHint(gameId) {
   if (cooldowns[gameId] > 0) {
