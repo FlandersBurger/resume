@@ -338,7 +338,7 @@ function alreadyGot(match, loser, winner) {
       case 1:
         return match + ', ' + loser.first_name + '? I think I\'m having a deja-vu';
       case 2:
-        return 'Are you doing ok ' + loser.first_name + '? You already said' + match;
+        return 'Are you doing ok ' + loser.first_name + '? You already said ' + match;
       case 3:
         return loser.first_name + ' was pwned by theirself with ' + match;
       case 4:
