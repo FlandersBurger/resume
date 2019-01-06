@@ -738,7 +738,7 @@ router.post('/', function (req, res, next) {
       var player = _.find(existingGame.players, function(existingPlayer) {
         return existingPlayer.id == msg.from.id;
       });
-      if (!players) {
+      if (!player) {
         existingGame.players.push(msg.from);
         player = existingGame.players[existingGame.players.length - 1];
       }
