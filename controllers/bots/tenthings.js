@@ -895,9 +895,13 @@ function evaluateCommand(res, msg, game, player, isNew) {
       break;
     */
     case '/suggest':
-      player.suggestions++;
-      game.save();
-      bot.sendMessage('592503547', JSON.stringify((msg.from.username ? msg.from.username : msg.from.first_name) + ': ' + msg.text));
+      if (msg.text) {
+        player.suggestions++;
+        game.save();
+        bot.sendMessage('592503547', JSON.stringify((msg.from.username ? msg.from.username : msg.from.first_name) + ': ' + msg.text));
+      } else {
+        bot.sendMessage(msg.chat.id, 'You didn\'t suggest anything ' + msg.from.first_name + '. Add your message after /suggest');
+      }
       break;
     case '/hint':
       hint(game, player, function(hints) {
