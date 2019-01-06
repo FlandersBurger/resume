@@ -305,7 +305,7 @@ function checkMatch(game, matcher, msg) {
     }, 200);
   } else {
     player.snubs++;
-    bot.sendMessage(msg.chat.id, alreadyGot(match.value, msg.from.first_name, match.guesser.first_name));
+    bot.sendMessage(msg.chat.id, alreadyGot(match.value, msg.from, match.guesser));
   }
   game.save(function(err, savedGame) {
     if (err) {
@@ -316,19 +316,36 @@ function checkMatch(game, matcher, msg) {
 
 function alreadyGot(match, loser, winner) {
   var random = Math.floor(Math.random() * 5);
-  switch (random) {
-    case 0:
-      return winner + ' already got ' + match + ', too bad ' + loser;
-    case 1:
-      return winner + ' beat you to '  + match + ', ' + loser;
-    case 2:
-      return match + ' denied by ' + winner + ', ' + loser;
-    case 3:
-      return loser + ' was pwned, ' + winner + ' guessed ' + match;
-    case 4:
-      return loser + ' got schooled by ' + winner + '\'s ' + match + ' answer';
-    default:
-      return winner + ' already got ' + match + ', too bad ' + loser;
+  if (loser.id != winner.id) {
+    switch (random) {
+      case 0:
+        return 'Too slow, ' + loser.first_name + '. ' + winner.first_name + ' said ' + match + ' ages ago.';
+      case 1:
+        return winner.first_name + ' beat you to '  + match + ', ' + loser.first_name;
+      case 2:
+        return match + ' denied by ' + winner.first_name + ', ' + loser.first_name;
+      case 3:
+        return loser.first_name + ' was pwned, ' + winner.first_name + ' guessed ' + match;
+      case 4:
+        return loser.first_name + ' got schooled by ' + winner.first_name + '\'s ' + match + ' answer';
+      default:
+        return winner.first_name + ' already got ' + match + ', too bad ' + loser.first_name;
+    }
+  } else {
+    switch (random) {
+      case 0:
+        return loser.first_name + ' losing it, they already answered ' + match;
+      case 1:
+        return match + ', ' + loser.first_name + '? I think I\'m having a deja-vu';
+      case 2:
+        return 'Are you doing ok ' + loser.first_name + '? You already said' + match;
+      case 3:
+        return loser.first_name + ' was pwned by theirself with ' + match;
+      case 4:
+        return loser.first_name + ' suffers from short term memory loss, cough, ' + match + '';
+      default:
+        return loser.first_name + ' already got ' + match + ', too bad, um..., ' + loser.first_name;
+    }
   }
 }
 
@@ -337,7 +354,6 @@ function checkRound(game) {
     return !item.guesser.first_name;
   }).length === 0) {
     bot.sendMessage(game.id, 'Round over.');
-    getDailyScores(game);
     setTimeout(function () {
       getList(game, function(list) {
         var message = '<b>' + game.list.name + '</b> (' + game.list.totalValues + ') by ' + game.list.creator.username + '\n';
@@ -345,13 +361,14 @@ function checkRound(game) {
         message += list;
         bot.sendMessage(game.chat_id, message);
         setTimeout(function () {
+          getDailyScores(game);
           rateList(game);
           setTimeout(function() {
             newRound(game);
-          }, 100);
-        }, 100);
+          }, 1000);
+        }, 2000);
       });
-    }, 100);
+    }, 2000);
   }
 }
 
@@ -373,14 +390,14 @@ function newRound(game) {
     game.hints = 0;
     game.hintCooldown = 0;
     game.guessers = [];
-    var message = 'A new round will start in 5 seconds';
+    var message = 'A new round will start in 3 seconds';
     message += game.list.category ? '\nCategory: <b>' + game.list.category + '</b>' : '';
     bot.sendMessage(game.chat_id, message);
     setTimeout(function() {
       var message = '<b>' + game.list.name + '</b> (' + game.list.totalValues + ') by ' + game.list.creator.username;
       message += game.list.description ? '\n<i>' + game.list.description + '</i>' : '';
       bot.sendMessage(game.chat_id, message);
-    }, 5000);
+    }, 3000);
     game.playedLists.push(game.list._id);
     game.save();
   });
@@ -488,6 +505,7 @@ function hint(game, player, callback) {
 function getHint(hints, value) {
   var i = 0;
   var tester = '';
+  //3 -> the 3 first hints reveal other stuff
   if (hints > 3) {
     var croppedValue = '';
     for (i = 1; i < value.length - 1; i++) {
@@ -495,7 +513,6 @@ function getHint(hints, value) {
         croppedValue += value.charAt(i);
       }
     }
-    console.log(croppedValue);
     var letters = countLetters(croppedValue);
     var revealCount = Math.floor(letters.length * (hints - 3) / 4);
     revealCount = revealCount < hints - 3 ? hints - 3 < letters.length ? hints - 3 : letters.length : revealCount;
