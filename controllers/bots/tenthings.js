@@ -743,6 +743,8 @@ router.post('/', function (req, res, next) {
       var player = _.find(existingGame.players, function(existingPlayer) {
         return existingPlayer.id == msg.from.id;
       });
+      console.log(existingGame.players);
+      console.log(msg.from.id);
       return evaluateCommand(res, msg, existingGame, player, false);
     }
   });
