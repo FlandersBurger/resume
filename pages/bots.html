@@ -84,7 +84,7 @@
         <hr />
         <div class="input-group" ng-repeat="item in selectedList.values | orderBy: 'value'">
           <input id="value{{$index}}" class="form-control" ng-model="item.value" placeholder="Value {{selectedList.values.length - $index}}" ng-disabled="!currentUser.admin && selectedList.creator._id !== currentUser._id && item.creator !== currentUser._id" />
-          <span class="input-group-addon"></span>
+          <span class="input-group-addon"><img ng-src="{{item.blurb}}" ng-if="item.blurb.substring(0, 4) === 'http'"/></span>
           <input class="form-control" ng-model="item.blurb" placeholder="Display after guessing {{item.value}}" ng-disabled="!currentUser.admin && selectedList.creator._id !== currentUser._id && item.creator !== currentUser._id" />
         </div>
       </div>
