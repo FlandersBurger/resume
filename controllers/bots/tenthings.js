@@ -848,7 +848,7 @@ function evaluateCommand(res, msg, game, player, isNew) {
       List.find().exec(function(err, lists) {
         console.log(game.list);
         var gameList = _.find(lists, function(list) {
-          return list._id === game.list._id;
+          return list._id == game.list._id;
         });
         console.log(gameList);
         var message = '<b>Game Stats</b>\n';
