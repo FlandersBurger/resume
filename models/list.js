@@ -16,7 +16,10 @@ var List = db.model('List', {
   modifyDate: { type: Date, required: true, default: Date.now },
   plays: { type: Number, required: true, default: 0 },
   skips: { type: Number, required: true, default: 0 },
-  score: { type: Number, required: true, default: 0 }
+  score: { type: Number, required: true, default: 0 },
+  voters: [
+    { type: String }
+  ]
 });
 
 module.exports = List;

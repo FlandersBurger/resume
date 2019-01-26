@@ -4,6 +4,7 @@ var _ = require('underscore');
 var FuzzyMatching = require('fuzzy-matching');
 var schedule = require('node-schedule');
 var kue = require('kue');
+var moment = require('moment');
 
 var config = require('../../config');
 var translate = require('../../translate');
@@ -196,6 +197,7 @@ function selectList(game, callback) {
     if (lists.length === 0) {
       game.playedLists = [];
       game.cycles++;
+      bot.sendMessage(game.chat_id, 'All lists have been played, a new cycle will now start.');
       List.find({}).populate('creator').exec(function (err, lists) {
         return callback(lists[Math.floor(Math.random() * lists.length)]);
       });
@@ -628,15 +630,20 @@ router.post('/', function (req, res, next) {
     if (data.type === 'rate') {
       List.findOne({ _id: data.list }).exec(function (err, foundList) {
         if (err) return console.error(err);
-        if (!foundList.score) {
-          foundList.score = parseInt(data.vote);
-        } else {
-          foundList.score += parseInt(data.vote);
+        if (!_.find(foundList.voters, function(voter) {
+          return voter === req.body.from.id;
+        })) {
+          foundList.voters.push(req.body.from.id);
+          if (!foundList.score) {
+            foundList.score = parseInt(data.vote);
+          } else {
+            foundList.score += parseInt(data.vote);
+          }
+          foundList.save(function(err) {
+            if (err) return console.error(err);
+            console.log('"' + foundList.name + '" rated!');
+          });
         }
-        foundList.save(function(err) {
-          if (err) return console.error(err);
-          console.log('"' + foundList.name + '" rated!');
-        });
       });
     }
     return res.sendStatus(200);
@@ -839,11 +846,23 @@ function evaluateCommand(res, msg, game, player, isNew) {
       break;
     case '/stats':
       List.find().exec(function(err, lists) {
+        var gameList = _.find(list, function(list) {
+          return list._id === game.list._id;
+        });
         var message = '<b>Game Stats</b>\n';
         message += 'Started ' + game.date + '\n';
         message += game.players.length + ' players\n';
         message += 'Cycled through all lists ' + game.cycles + ' times\n';
         message += game.playedLists.length + ' of ' + lists.length + ' lists played in current cycle\n';
+
+        message += '<b>List Stats for ' + gameList.name + '</b>\n';
+        message += 'Score: ' + gameList.score + '\n';
+        message += 'Votes: ' + gameList.voters.length + '\n';
+        message += 'Values: ' + gameList.values.length + '\n';
+        message += 'Plays: ' + gameList.plays + '\n';
+        message += 'Skips: ' + gameList.skips + '\n';
+        message += 'Created on' + moment(gameList.date).format("DD-MMM-YYYY") + '\n';
+        message += 'Modified on' + moment(gameList.modifyDate).format("DD-MMM-YYYY") + '\n';
 
         message += '<b>Personal Stats for ' + player.first_name + '</b>\n';
         message += 'Total Score: ' + player.score + '\n';
@@ -895,12 +914,10 @@ function evaluateCommand(res, msg, game, player, isNew) {
       break;
     */
     case '/suggest':
-    console.log('Suggestion: ');
-      console.log(msg.text.substring(8, msg.text.length));
       if (msg.text.substring(8, msg.text.length).replace(/\s/g,'')) {
         player.suggestions++;
         game.save();
-        bot.sendMessage('592503547', JSON.stringify((msg.from.username ? msg.from.username : msg.from.first_name) + ': ' + msg.text));
+        bot.sendMessage('592503547', JSON.stringify((msg.from.username ? msg.from.username : msg.from.first_name) + ': ' + msg.text.substring(8, msg.text.length)));
       } else {
         bot.sendMessage(msg.chat.id, 'You didn\'t suggest anything ' + msg.from.first_name + '. Add your message after /suggest');
       }
