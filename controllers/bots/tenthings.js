@@ -846,7 +846,7 @@ function evaluateCommand(res, msg, game, player, isNew) {
       break;
     case '/stats':
       List.find().exec(function(err, lists) {
-        var gameList = _.find(list, function(list) {
+        var gameList = _.find(lists, function(list) {
           return list._id === game.list._id;
         });
         var message = '<b>Game Stats</b>\n';
