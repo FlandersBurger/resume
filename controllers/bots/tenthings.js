@@ -863,8 +863,8 @@ function evaluateCommand(res, msg, game, player, isNew) {
           message += 'Values: ' + gameList.values.length + '\n';
           message += 'Plays: ' + gameList.plays + '\n';
           message += 'Skips: ' + gameList.skips + '\n';
-          message += 'Created on' + moment(gameList.date).format("DD-MMM-YYYY") + '\n';
-          message += 'Modified on' + moment(gameList.modifyDate).format("DD-MMM-YYYY") + '\n';
+          message += 'Created on: ' + moment(gameList.date).format("DD-MMM-YYYY") + '\n';
+          message += 'Modified on: ' + moment(gameList.modifyDate).format("DD-MMM-YYYY") + '\n';
         }
         message += '<b>Personal Stats for ' + player.first_name + '</b>\n';
         message += 'Total Score: ' + player.score + '\n';
