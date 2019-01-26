@@ -1,5 +1,6 @@
 var router = require('express').Router();
 var mongoose = require('mongoose');
+var request = require('request');
 
 var config = require('../../config');
 var bot = require('../../bots/telegram');
@@ -14,6 +15,12 @@ var admins = [
   '5b464a53b1436b72a67b0039', //Val
   '5b4cc52744f3cf615d4d699c', //Renan
 ];
+
+request('https://en.wikipedia.org/w/api.php?action=query&titles=Canada&format=json&prop=images', function (error, response, body) {
+  console.log('error:', error); // Print the error if one occurred
+  console.log('statusCode:', response && response.statusCode); // Print the response status code if a response was received
+  console.log('body:', body); // Print the HTML for the Google homepage.
+});
 
 router.get('/lists', function (req, res, next) {
   List.find().populate('creator').exec(function(err, result) {
@@ -33,6 +40,8 @@ router.get('/lists/:id/report/:user', function (req, res, next) {
     });
   });
 });
+
+
 
 router.put('/lists', function (req, res, next) {
   var yesterday = new Date();

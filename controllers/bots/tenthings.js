@@ -895,7 +895,8 @@ function evaluateCommand(res, msg, game, player, isNew) {
       break;
     */
     case '/suggest':
-      if (msg.text) {
+      console.log(msg.text);
+      if (msg.text.replace(/\s/g,'')) {
         player.suggestions++;
         game.save();
         bot.sendMessage('592503547', JSON.stringify((msg.from.username ? msg.from.username : msg.from.first_name) + ': ' + msg.text));
