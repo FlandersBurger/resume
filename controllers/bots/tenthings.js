@@ -846,24 +846,26 @@ function evaluateCommand(res, msg, game, player, isNew) {
       break;
     case '/stats':
       List.find().exec(function(err, lists) {
+        console.log(game.list);
         var gameList = _.find(lists, function(list) {
           return list._id === game.list._id;
         });
+        console.log(gameList);
         var message = '<b>Game Stats</b>\n';
         message += 'Started ' + game.date + '\n';
         message += game.players.length + ' players\n';
         message += 'Cycled through all lists ' + game.cycles + ' times\n';
         message += game.playedLists.length + ' of ' + lists.length + ' lists played in current cycle\n';
-
-        message += '<b>List Stats for ' + gameList.name + '</b>\n';
-        message += 'Score: ' + gameList.score + '\n';
-        message += 'Votes: ' + gameList.voters.length + '\n';
-        message += 'Values: ' + gameList.values.length + '\n';
-        message += 'Plays: ' + gameList.plays + '\n';
-        message += 'Skips: ' + gameList.skips + '\n';
-        message += 'Created on' + moment(gameList.date).format("DD-MMM-YYYY") + '\n';
-        message += 'Modified on' + moment(gameList.modifyDate).format("DD-MMM-YYYY") + '\n';
-
+        if (gameList) {
+          message += '<b>List Stats for ' + gameList.name + '</b>\n';
+          message += 'Score: ' + gameList.score + '\n';
+          message += 'Votes: ' + gameList.voters.length + '\n';
+          message += 'Values: ' + gameList.values.length + '\n';
+          message += 'Plays: ' + gameList.plays + '\n';
+          message += 'Skips: ' + gameList.skips + '\n';
+          message += 'Created on' + moment(gameList.date).format("DD-MMM-YYYY") + '\n';
+          message += 'Modified on' + moment(gameList.modifyDate).format("DD-MMM-YYYY") + '\n';
+        }
         message += '<b>Personal Stats for ' + player.first_name + '</b>\n';
         message += 'Total Score: ' + player.score + '\n';
         message += 'High Score: ' + player.highScore + '\n';
