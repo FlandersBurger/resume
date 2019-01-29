@@ -446,9 +446,7 @@ function skipList(game) {
 }
 
 function cooldownSkip(game) {
-  if (!skips[game.id]) {
-    skipList(game);
-  } else {
+  if (skips[game.id]) {
     if (skips[game.id].timer > 0) {
       skips[game.id].timer--;
       setTimeout(function() {
@@ -676,7 +674,7 @@ router.post('/', function (req, res, next) {
         command: '/info',
         chat: req.body.message.chat
       };
-    } else if (req.body.edited_message || req.body.message.left_chat_participant || req.body.message.photo || req.body.message.emoji || req.body.message.voice || req.body.message.animation || req.body.message.sticker || req.body.message.reply_to_message) {
+    } else if (req.body.edited_message || req.body.message.left_chat_participant || req.body.message.photo || req.body.message.video || req.body.message.emoji || req.body.message.voice || req.body.message.animation || req.body.message.sticker || req.body.message.reply_to_message) {
       //Ignore these messages as they're just chat interactions
       console.log('Ignoring this message:');
       console.log(req.body);
