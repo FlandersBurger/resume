@@ -5,6 +5,7 @@ var FuzzyMatching = require('fuzzy-matching');
 var schedule = require('node-schedule');
 var kue = require('kue');
 var moment = require('moment');
+var request = require('request');
 
 var config = require('../../config');
 var translate = require('../../translate');
