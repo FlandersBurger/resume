@@ -294,7 +294,7 @@ function checkMatch(game, matcher, msg) {
     if (match.blurb) {
       guessed(game, msg, match.value, (match.blurb.substring(0, 4) === 'http' ? ('<a href="' + match.blurb + '">&#8204;</a>') : ('\n<i>' + match.blurb + '</i>')));
     } else {
-      request('https://en.wikipedia.org/w/api.php?action=opensearch&search=' + encodeURIComponent(match.value), function (error, response, body) {
+      request('https://en.wikipedia.org/w/api.php?action=opensearch&search=' + encodeURIComponent(match.value), function (err, response, body) {
         if (err) {
           guessed(game, msg, match.value, '');
         } else {
