@@ -299,7 +299,9 @@ function checkMatch(game, matcher, msg) {
           guessed(game, msg, match.value, '');
         } else {
           try {
-            var results = JSON.parse(body)[2];
+            var results = JSON.parse(body)[2].filter(function(result) {
+              return result;
+            });
             guessed(game, msg, match.value, '\n<i>' + results[Math.floor(Math.random()*results.length)] + '</i>');
           } catch (e) {
             guessed(game, msg, match.value, '');
