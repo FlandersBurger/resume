@@ -674,43 +674,35 @@ router.post('/', function (req, res, next) {
         command: '/info',
         chat: req.body.message.chat
       };
-    } else if (req.body.edited_message || req.body.message.left_chat_participant || req.body.message.photo || req.body.message.video || req.body.message.emoji || req.body.message.voice || req.body.message.animation || req.body.message.sticker || req.body.message.reply_to_message) {
+    } else if (
+      req.body.edited_message ||
+      req.body.message.left_chat_participant ||
+      req.body.message.photo ||
+      req.body.message.video ||
+      req.body.message.video_note ||
+      req.body.message.emoji ||
+      req.body.message.voice ||
+      req.body.message.animation ||
+      req.body.message.sticker ||
+      req.body.message.reply_to_message ||
+      req.body.message.migrate_to_chat_id
+    ) {
       //Ignore these messages as they're just chat interactions
       console.log('Ignoring this message:');
-      console.log(req.body);
+      console.log(req.body.message);
       return res.sendStatus(200);
     } else {
-      //This group is spamming the bot
-      /*
-      if (req.body.message || req.body.edited_message)
-        if (req.body.message.chat.id === -1001376769922 || req.body.edited_message.chat.id === -1001376769922) {
-          res.sendStatus(200);
-        } else {
-          msg = {
-            id: '592503547',
-            from: {
-              first_name: 'Bot Error'
-            },
-            command: '/error',
-            text: JSON.stringify(req.body),
-            chat: {
-              id: '592503547'
-            }
-          };
-        //}
-      } else {*/
-        msg = {
-          id: '592503547',
-          from: {
-            first_name: 'Bot Error'
-          },
-          command: '/error',
-          text: JSON.stringify(req.body),
-          chat: {
-            id: '592503547'
-          }
-        };
-      //}
+      msg = {
+        id: '592503547',
+        from: {
+          first_name: 'Bot Error'
+        },
+        command: '/error',
+        text: JSON.stringify(req.body),
+        chat: {
+          id: '592503547'
+        }
+      };
     }
   } else {
     console.log(req.body.message.message_id);
@@ -898,8 +890,7 @@ function evaluateCommand(res, msg, game, player, isNew) {
         getList(game, function(list) {
           var message = '<b>' + game.list.name + '</b> (' + game.list.totalValues  + ') by ' + game.list.creator.username + '\n';
           message += game.list.category ? 'Category: ' + game.list.category + '\n' : '';
-          message += game.list.description ? (game.list.description.indexOf('href') >= 0 ? game.list.description : '<i>' + game.list.description + '</i>') : '';
-          message += '\n';
+          message += game.list.description ? (game.list.description.indexOf('href') >= 0 ? game.list.description : '<i>' + game.list.description + '</i>\n') : '';
           message += list;
           bot.sendMessage(msg.chat.id, message);
         });
