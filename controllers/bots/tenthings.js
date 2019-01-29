@@ -300,7 +300,7 @@ function checkMatch(game, matcher, msg) {
         } else {
           try {
             var results = JSON.parse(body)[2];
-            guessed(game, msg, match.value, results[Math.floor(Math.random()*results.length)]);
+            guessed(game, msg, match.value, '\n<i>' + results[Math.floor(Math.random()*results.length)] + '</i>');
           } catch (e) {
             guessed(game, msg, match.value, '');
           }
