@@ -16,12 +16,6 @@ var admins = [
   '5b4cc52744f3cf615d4d699c', //Renan
 ];
 
-request('https://en.wikipedia.org/w/api.php?action=query&titles=Canada&format=json&prop=images', function (error, response, body) {
-  console.log('error:', error); // Print the error if one occurred
-  console.log('statusCode:', response && response.statusCode); // Print the response status code if a response was received
-  console.log('body:', body); // Print the HTML for the Google homepage.
-});
-
 router.get('/lists', function (req, res, next) {
   List.find().populate('creator').exec(function(err, result) {
     if (err) return next(err);

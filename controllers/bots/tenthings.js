@@ -290,13 +290,22 @@ function checkMatch(game, matcher, msg) {
     if (player.scoreDaily > player.highScore) {
       player.highScore = player.scoreDaily;
     }
-    var blurb = match.blurb ? (match.blurb.substring(0, 4) === 'http' ? ('<a href="' + match.blurb + '">&#8204;</a>') : ('\n<i>' + match.blurb + '</i>')) : '';
-    var message = translate[getLanguage(msg.from.language_code)].guessed(msg.from.first_name, match.value + blurb);
-    var answersLeft = game.list.values.filter(function(item) { return !item.guesser.first_name; }).length;
-    if (answersLeft > 0) {
-      message += '\n' + answersLeft + ' answers left.';
+    if (match.blurb) {
+      guessed(game, msg, match.value, (match.blurb.substring(0, 4) === 'http' ? ('<a href="' + match.blurb + '">&#8204;</a>') : ('\n<i>' + match.blurb + '</i>')));
+    } else {
+      request('https://en.wikipedia.org/w/api.php?action=opensearch&search=' + encodeURIComponent(match.value), function (error, response, body) {
+        if (err) {
+          guessed(game, msg, match.value, '');
+        } else {
+          try {
+            var results = JSON.parse(body)[2];
+            guessed(game, msg, match.value, results[Math.floor(Math.random()*results.length)]);
+          } catch (e) {
+            guessed(game, msg, match.value, '');
+          }
+        }
+      });
     }
-    bot.sendMessage(msg.chat.id, message);
     setTimeout(function() {
       return checkRound(game);
     }, 200);
@@ -309,6 +318,15 @@ function checkMatch(game, matcher, msg) {
       bot.notifyAdmin(err);
     }
   });
+}
+
+function guessed(game, msg, value, blurb) {
+  var message = translate[getLanguage(msg.from.language_code)].guessed(msg.from.first_name, value + blurb);
+  var answersLeft = game.list.values.filter(function(item) { return !item.guesser.first_name; }).length;
+  if (answersLeft > 0) {
+    message += '\n' + answersLeft + ' answers left.';
+  }
+  bot.sendMessage(msg.chat.id, message);
 }
 
 function alreadyGot(match, loser, winner) {
