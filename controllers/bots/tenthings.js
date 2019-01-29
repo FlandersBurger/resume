@@ -302,7 +302,11 @@ function checkMatch(game, matcher, msg) {
             var results = JSON.parse(body)[2].filter(function(result) {
               return result;
             });
-            guessed(game, msg, match.value, '\n<i>' + results[Math.floor(Math.random()*results.length)] + '</i>');
+            if (results.length > 0) {
+              guessed(game, msg, match.value, '\n<i>' + results[Math.floor(Math.random()*results.length)] + '</i>');
+            } else {
+              guessed(game, msg, match.value, '');
+            }
           } catch (e) {
             guessed(game, msg, match.value, '');
           }
