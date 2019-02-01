@@ -19,7 +19,9 @@ angular.module('app')
     'Society',
     'Nature',
     'Technology',
-    'Language'
+    'Language',
+    'Business',
+    'Internet'
   ];
   $scope.keyDown = function (e) {
     e = e || window.event;
