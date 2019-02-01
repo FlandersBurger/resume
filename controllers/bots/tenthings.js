@@ -303,7 +303,7 @@ function checkMatch(game, matcher, msg) {
               return result;
             });
             if (results.length > 0) {
-              guessed(game, msg, match.value, '\n<i>' + results[Math.floor(Math.random()*results.length)] + '</i>');
+              guessed(game, msg, match.value, '\n<i>' + results[0/*Math.floor(Math.random()*results.length)*/] + '</i>');
             } else {
               guessed(game, msg, match.value, '');
             }
