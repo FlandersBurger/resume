@@ -73,6 +73,11 @@ function TelegramBot() {
     b.sendMessage('592503547', JSON.stringify(msg));
   };
 
+  bot.notifyAdmins = function(msg) {
+    b.sendMessage('592503547', JSON.stringify(msg));
+    b.sendMessage('50070949', JSON.stringify(msg));
+  };
+
   bot.getChat = function(channel) {
     return new Promise(function (resolve, reject) {
       var url = 'https://api.telegram.org/bot' + bot.token + '/getChat?chat_id=' + channel;
@@ -127,6 +132,11 @@ var b = new TelegramBot();
 b.init(TOKEN).then(function() {
   b.introduceYourself();
   b.setWebhook('tenthings');
+
+    b.getChat('-1001273020973')
+    .then(function(response) {
+      console.log(response);
+    });
 });
 
 module.exports = b;
