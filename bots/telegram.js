@@ -132,11 +132,6 @@ var b = new TelegramBot();
 b.init(TOKEN).then(function() {
   b.introduceYourself();
   b.setWebhook('tenthings');
-
-    b.getChat('-1001273020973')
-    .then(function(response) {
-      console.log(response);
-    });
 });
 
 module.exports = b;
