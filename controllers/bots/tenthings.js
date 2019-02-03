@@ -287,8 +287,8 @@ function checkMatch(game, matcher, msg) {
   if (!match.guesser.first_name) {
     match.guesser = msg.from;
     player.answers++;
-    var score = Math.ceil((MAXHINTS - game.hints - 1 + game.guessers.length) * matcher.distance);
-    var accuracy = (matcher.distance * 100).toFixed(2) + '%';
+    var score = Math.ceil((MAXHINTS - game.hints + game.guessers.length) * matcher.distance);
+    var accuracy = (matcher.distance * 100).toFixed(0) + '%';
     player.score += score;
     player.scoreDaily += score;
     if (player.scoreDaily > player.highScore) {
