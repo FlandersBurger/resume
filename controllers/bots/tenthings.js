@@ -13,6 +13,7 @@ var bot = require('../../bots/telegram');
 
 var List = require('../../models/list');
 var TenThings = require('../../models/games/tenthings');
+var MAXHINTS = 6;
 
 var cooldowns = {};
 var skips = {};
@@ -286,29 +287,31 @@ function checkMatch(game, matcher, msg) {
   if (!match.guesser.first_name) {
     match.guesser = msg.from;
     player.answers++;
-    player.score += game.guessers.length;
-    player.scoreDaily += game.guessers.length;
+    var score = Math.ceil((MAXHINTS - game.hints - 1 + game.guessers.length) * matcher.distance);
+    var accuracy = (matcher.distance * 100).toFixed(2) + '%';
+    player.score += score;
+    player.scoreDaily += score;
     if (player.scoreDaily > player.highScore) {
       player.highScore = player.scoreDaily;
     }
     if (match.blurb) {
-      guessed(game, msg, match.value, (match.blurb.substring(0, 4) === 'http' ? ('<a href="' + match.blurb + '">&#8204;</a>') : ('\n<i>' + match.blurb + '</i>')));
+      guessed(game, msg, match.value, (match.blurb.substring(0, 4) === 'http' ? ('<a href="' + match.blurb + '">&#8204;</a>') : ('\n<i>' + match.blurb + '</i>')), score, accuracy);
     } else {
       request('https://en.wikipedia.org/w/api.php?action=opensearch&search=' + encodeURIComponent(match.value), function (err, response, body) {
         if (err) {
-          guessed(game, msg, match.value, '');
+          guessed(game, msg, match.value, '', score, accuracy);
         } else {
           try {
             var results = JSON.parse(body)[2].filter(function(result) {
               return result;
             });
             if (results.length > 0) {
-              guessed(game, msg, match.value, '\n<i>' + results[0/*Math.floor(Math.random()*results.length)*/] + '</i>');
+              guessed(game, msg, match.value, '\n<i>' + results[0/*Math.floor(Math.random()*results.length)*/] + '</i>', score, accuracy);
             } else {
-              guessed(game, msg, match.value, '');
+              guessed(game, msg, match.value, '', score, accuracy);
             }
           } catch (e) {
-            guessed(game, msg, match.value, '');
+            guessed(game, msg, match.value, '', score, accuracy);
           }
         }
       });
@@ -327,8 +330,9 @@ function checkMatch(game, matcher, msg) {
   });
 }
 
-function guessed(game, msg, value, blurb) {
+function guessed(game, msg, value, blurb, score, accuracy) {
   var message = translate[getLanguage(msg.from.language_code)].guessed(msg.from.first_name, value + blurb);
+  message += '\n+' + score + ' points (' + accuracy + ')';
   var answersLeft = game.list.values.filter(function(item) { return !item.guesser.first_name; }).length;
   if (answersLeft > 0) {
     message += '\n' + answersLeft + ' answers left.';
@@ -500,7 +504,7 @@ function countLetters(string) {
 }
 
 function hint(game, player, callback) {
-  if (game.hints >= 6) {
+  if (game.hints >= MAXHINTS) {
     bot.sendMessage(game.chat_id, 'What? Another hint? I\'m just gonna ignore that request');
   } else if (cooldowns[game.id] && cooldowns[game.id] > 0) {
     bot.sendMessage(game.chat_id, 'Calm down with the hints, wait ' + cooldowns[game.id] + ' more seconds');
@@ -541,7 +545,7 @@ function getHint(hints, value) {
     }
   }
   var str = '';
-  var specialCharacters = "\\\\/ !@#$%^&*()_+:.{};\\-'``\"";
+  var specialCharacters = "\\\\/ !@#$%^&*()_+:.{},;\\-'``\"";
   var vowels = "aeiouÀ-ÖØ-öø-ÿ";
   switch (hints) {
     case 0:
@@ -826,12 +830,13 @@ function evaluateCommand(res, msg, game, player, isNew) {
       var logic = '';
       logic += '1: If an answer is over 90% correct it will immediately be awarded to the guesser\n';
       logic += '2: If an answer is over 75% correct it will be awarded after 2 seconds if no 90% answer is provided\n';
-      logic += '3: Hints are revealed in this order: first letters, last letters, vowels, and the rest. The rest will be revealed from least frequent to most frequent letter\n';
-      logic += '4: There is a 10 second cooldown between asking hints\n';
-      logic += '5: A list can be skipped if 2 players /skip it\n';
-      logic += '6: If only 1 player skips a list there will be a 15 second cooldown until the list is skipped\n';
-      logic += '7: A skip can be cancelled by anyone by typing /veto\n';
-      logic += '8: Every day at midnight (universal time) the daily scores will be reset and a winner recorded\n';
+      logic += '3: Points scored rounded up = (Max hints [' + MAXHINTS + '] - hints asked + # of current players) * answer accuracy %\n';
+      logic += '4: Hints are revealed in this order: first letters, last letters, vowels, and the rest. The rest will be revealed from least frequent to most frequent letter\n';
+      logic += '5: There is a 10 second cooldown between asking hints\n';
+      logic += '6: A list can be skipped if 2 players /skip it\n';
+      logic += '7: If only 1 player skips a list there will be a 15 second cooldown until the list is skipped\n';
+      logic += '8: A skip can be cancelled by anyone by typing /veto\n';
+      logic += '9: Every day at midnight (universal time) the daily scores will be reset and a winner recorded\n';
       bot.sendMessage(msg.chat.id, logic);
       break;
     /*
