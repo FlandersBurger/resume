@@ -714,7 +714,9 @@ router.post('/', function (req, res, next) {
       req.body.message.animation ||
       req.body.message.sticker ||
       req.body.message.reply_to_message ||
-      req.body.message.migrate_to_chat_id
+      req.body.message.migrate_to_chat_id ||
+      req.body.message.pinned_message ||
+      req.body.message.new_chat_title
     ) {
       //Ignore these messages as they're just chat interactions
       console.log('Ignoring this message:');
@@ -938,7 +940,7 @@ function evaluateCommand(res, msg, game, player, isNew) {
       if (msg.text.substring(8, msg.text.length).replace(/\s/g,'')) {
         player.suggestions++;
         game.save();
-        bot.sendMessage('592503547', JSON.stringify((msg.from.username ? msg.from.username : msg.from.first_name) + ': ' + msg.text.substring(8, msg.text.length)));
+        bot.notifyAdmins(JSON.stringify((msg.from.username ? msg.from.username : msg.from.first_name) + ': ' + msg.text.substring(8, msg.text.length)));
       } else {
         bot.sendMessage(msg.chat.id, 'You didn\'t suggest anything ' + msg.from.first_name + '. Add your message after /suggest');
       }

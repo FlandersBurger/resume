@@ -30,7 +30,7 @@ router.get('/lists/:id/report/:user', function (req, res, next) {
   .exec(function(err, list) {
     User.findOne({ _id: req.params.user })
     .exec(function(err, user) {
-      bot.notifyAdmin('Check: ' + list.name + ' reported by ' + user.username);
+      bot.notifyAdmins('Check: ' + list.name + ' reported by ' + user.username);
     });
   });
 });
@@ -47,9 +47,9 @@ router.put('/lists', function (req, res, next) {
     }).populate('creator').exec(function(err, result) {
       if (err) return next(err);
       if (!req.body.list._id) {
-        bot.notifyAdmin(list.name + ' created by ' + req.body.user.username);
+        bot.notifyAdmins(list.name + ' created by ' + req.body.user.username);
       } else if (result.date < yesterday) {
-        bot.notifyAdmin(list.name + ' updated by ' + req.body.user.username);
+        bot.notifyAdmins(list.name + ' updated by ' + req.body.user.username);
       }
       res.json(result);
     });
@@ -59,7 +59,7 @@ router.put('/lists', function (req, res, next) {
 router.delete('/lists/:id', function (req, res, next) {
   List.findByIdAndRemove(req.params.id, function(err, list) {
     if (err) return next(err);
-    bot.notifyAdmin(list.name + ' deleted');
+    bot.notifyAdmins(list.name + ' deleted');
     res.sendStatus(200);
   });
 });
