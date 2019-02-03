@@ -657,19 +657,24 @@ router.post('/', function (req, res, next) {
     if (data.type === 'rate') {
       List.findOne({ _id: data.list }).exec(function (err, foundList) {
         if (err) return console.error(err);
-        if (!_.find(foundList.voters, function(voter) {
-          return voter === req.body.from.id;
-        })) {
-          foundList.voters.push(req.body.from.id);
-          if (!foundList.score) {
-            foundList.score = parseInt(data.vote);
-          } else {
-            foundList.score += parseInt(data.vote);
+        try {
+          if (!_.find(foundList.voters, function(voter) {
+            return voter === req.body.from.id;
+          })) {
+            foundList.voters.push(req.body.from.id);
+            if (!foundList.score) {
+              foundList.score = parseInt(data.vote);
+            } else {
+              foundList.score += parseInt(data.vote);
+            }
+            foundList.save(function(err) {
+              if (err) return console.error(err);
+              console.log('"' + foundList.name + '" rated!');
+            });
           }
-          foundList.save(function(err) {
-            if (err) return console.error(err);
-            console.log('"' + foundList.name + '" rated!');
-          });
+        } catch (e) {
+          console.error(e);
+          console.log(req.body);
         }
       });
     }
