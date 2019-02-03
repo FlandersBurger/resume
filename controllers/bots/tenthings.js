@@ -100,7 +100,7 @@ var dailyScore = schedule.scheduleJob('0 0 0 * * *', function() {
             } else {
               message += winner.first_name;
               setTimeout(function() {
-                bot.notifyAdmin(game.chat_id + ' (' + highScore + '): <b>' + message + ' won!</b>');
+                bot.notifyAdmin(game.chat_id + ' (' + highScore + '): <b>' + message + ' won!</b>\n' + '<a href="https://t.me/tenthings">Ten Things Supergroup</a>');
                 bot.sendMessage(game.chat_id, '<b>' + message + ' won with ' + highScore + ' points!</b>');
                 TenThings.update(
                   {
