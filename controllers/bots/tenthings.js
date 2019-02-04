@@ -14,6 +14,7 @@ var bot = require('../../bots/telegram');
 var List = require('../../models/list');
 var TenThings = require('../../models/games/tenthings');
 var MAXHINTS = 6;
+var SUPERGROUP = '-1001394022777';
 
 var cooldowns = {};
 var skips = {};
@@ -74,7 +75,16 @@ queue.process('guess', function(job, done){
   done();
 });
 */
-
+/*
+TenThings.find()
+.then(function(games) {
+  games.forEach(function(game) {
+    if (game.chat_id !== SUPERGROUP) {
+      bot.sendMessage(game.chat_id, 'Come join us in the <a href="https://t.me/tenthings">Ten Things Supergroup</a>!');
+    }
+  });
+});
+*/
 //var dailyScore = schedule.scheduleJob('*/10 * * * * *', function() {
 var dailyScore = schedule.scheduleJob('0 0 0 * * *', function() {
   if (new Date().getHours() === 0) {
@@ -100,8 +110,11 @@ var dailyScore = schedule.scheduleJob('0 0 0 * * *', function() {
             } else {
               message += winner.first_name;
               setTimeout(function() {
-                bot.notifyAdmin(game.chat_id + ' (' + highScore + '): <b>' + message + ' won!</b>\n' + '<a href="https://t.me/tenthings">Ten Things Supergroup</a>');
+                bot.notifyAdmin(game.chat_id + ' (' + highScore + '): <b>' + message + ' won!</b>');
                 bot.sendMessage(game.chat_id, '<b>' + message + ' won with ' + highScore + ' points!</b>');
+                if (game.chat_id !== SUPERGROUP) {
+                  bot.sendMessage(game.chat_id, 'Come join us in the <a href="https://t.me/tenthings">Ten Things Supergroup</a>!');
+                }
                 TenThings.update(
                   {
                     _id: game._id
