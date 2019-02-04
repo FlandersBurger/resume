@@ -300,7 +300,7 @@ function checkMatch(game, matcher, msg) {
   if (!match.guesser.first_name) {
     match.guesser = msg.from;
     player.answers++;
-    var score = Math.round((MAXHINTS - game.hints + game.guessers.length) * (matcher.distance - 0.5) * 2);
+    var score = Math.round((MAXHINTS - game.hints + game.guessers.length) * (matcher.distance - 0.7) * 10 / 3);
     var accuracy = (matcher.distance * 100).toFixed(0) + '%';
     player.score += score;
     player.scoreDaily += score;
@@ -845,7 +845,7 @@ function evaluateCommand(res, msg, game, player, isNew) {
       var logic = '';
       logic += '1: If an answer is over 90% correct it will immediately be awarded to the guesser\n';
       logic += '2: If an answer is over 75% correct it will be awarded after 2 seconds if no 90% answer is provided\n';
-      logic += '3: Points scored = (Max hints [' + MAXHINTS + '] - hints asked + # of current players) * (answer accuracy % - 0.5) * 2\n';
+      logic += '3: Points scored = (Max hints [' + MAXHINTS + '] - hints asked + # of current players) * (answer accuracy % - 0.7) * 10 / 3\n';
       logic += '4: Hints are revealed in this order: first letters, last letters, vowels, and the rest. The rest will be revealed from least frequent to most frequent letter\n';
       logic += '5: There is a 10 second cooldown between asking hints\n';
       logic += '6: A list can be skipped if 2 players /skip it\n';
