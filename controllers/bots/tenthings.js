@@ -85,6 +85,7 @@ TenThings.find()
   });
 });
 */
+
 //var dailyScore = schedule.scheduleJob('*/10 * * * * *', function() {
 var dailyScore = schedule.scheduleJob('0 0 0 * * *', function() {
   if (new Date().getHours() === 0) {
@@ -344,8 +345,9 @@ function checkMatch(game, matcher, msg) {
 }
 
 function guessed(game, msg, value, blurb, score, accuracy) {
-  var message = translate[getLanguage(msg.from.language_code)].guessed(msg.from.first_name, value + blurb);
-  message += '\n+' + score + ' points (' + accuracy + ')';
+  var message = '<b>' + translate[getLanguage(msg.from.language_code)].guessed(msg.from.first_name, value) + '</b>';
+  message += blurb;
+  message += '\n<code>+' + score + ' points (' + accuracy + ')</code>';
   var answersLeft = game.list.values.filter(function(item) { return !item.guesser.first_name; }).length;
   if (answersLeft > 0) {
     message += '\n' + answersLeft + ' answers left.';
@@ -434,12 +436,16 @@ function newRound(game) {
     bot.sendMessage(game.chat_id, message);
     setTimeout(function() {
       var message = '<b>' + game.list.name + '</b> (' + game.list.totalValues + ') by ' + game.list.creator.username;
-      message += game.list.description ? '\n<i>' + game.list.description + '</i>' : '';
+      message += game.list.description ? '\n<i>' + angleBrackets(game.list.description) + '</i>' : '';
       bot.sendMessage(game.chat_id, message);
     }, 3000);
     game.playedLists.push(game.list._id);
     game.save();
   });
+}
+
+function angleBrackets(str) {
+  return str.replace('<','&lt;').replace('>','&gt;');
 }
 
   /*
@@ -938,7 +944,7 @@ function evaluateCommand(res, msg, game, player, isNew) {
         getList(game, function(list) {
           var message = '<b>' + game.list.name + '</b> (' + game.list.totalValues  + ') by ' + game.list.creator.username + '\n';
           message += game.list.category ? 'Category: ' + game.list.category + '\n' : '';
-          message += game.list.description ? (game.list.description.indexOf('href') >= 0 ? game.list.description : '<i>' + game.list.description + '</i>\n') : '';
+          message += game.list.description ? (game.list.description.indexOf('href') >= 0 ? game.list.description : '<i>' + angleBrackets(game.list.description) + '</i>\n') : '';
           message += list;
           bot.sendMessage(msg.chat.id, message);
         });
