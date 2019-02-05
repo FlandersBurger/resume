@@ -295,7 +295,7 @@ function checkMatch(game, matcher, msg) {
     game.guessers.push(msg.from.id);
   }
   var match = _.find(game.list.values, function(item) {
-    return item.value === matcher.value;
+    return item.value.replace(new RegExp('[' + SPECIAL_CHARACTERS + ']', 'gi'), '') === matcher.value;
   });
   var player = _.find(game.players, function(existingPlayer) {
     return existingPlayer.id == msg.from.id;
