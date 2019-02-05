@@ -15,6 +15,7 @@ var List = require('../../models/list');
 var TenThings = require('../../models/games/tenthings');
 var MAXHINTS = 6;
 var SUPERGROUP = '-1001394022777';
+var SPECIAL_CHARACTERS = "\\\\/ !@#$%^&*()_+:.{},;\\-'``\"";
 
 var cooldowns = {};
 var skips = {};
@@ -272,8 +273,8 @@ function rateList(game) {
 }
 
 function guess(game, msg) {
-  var fuzzyMatch = new FuzzyMatching(game.list.values.map(function(item) { return item.value; }));
-  var matcher = fuzzyMatch.get(msg.text);
+  var fuzzyMatch = new FuzzyMatching(game.list.values.map(function(item) { return item.value.replace(new RegExp('[' + SPECIAL_CHARACTERS + ']', 'gi'), ''); }));
+  var matcher = fuzzyMatch.get(msg.text.replace(new RegExp('[' + SPECIAL_CHARACTERS + ']', 'gi'), ''));
   if (matcher.distance >= 0.9) {
     checkMatch(game, matcher, msg);
   } else if (matcher.distance >= 0.75) {
@@ -565,22 +566,21 @@ function getHint(hints, value) {
     }
   }
   var str = '';
-  var specialCharacters = "\\\\/ !@#$%^&*()_+:.{},;\\-'``\"";
   var vowels = "aeiouÀ-ÖØ-öø-ÿ";
   switch (hints) {
     case 0:
-      return value.replace(new RegExp('[^' + specialCharacters + ']', 'gi'), '*');
+      return value.replace(new RegExp('[^' + SPECIAL_CHARACTERS + ']', 'gi'), '*');
     case 1:
-      str = value[0] + value.substring(1, value.length).replace(new RegExp('[^' + specialCharacters + ']', 'gi'), '*');
+      str = value[0] + value.substring(1, value.length).replace(new RegExp('[^' + SPECIAL_CHARACTERS + ']', 'gi'), '*');
       break;
     case 2:
-      str = value[0] + value.substring(1, value.length - 1).replace(new RegExp('[^' + specialCharacters + ']', 'gi'), '*') + value[value.length - 1];
+      str = value[0] + value.substring(1, value.length - 1).replace(new RegExp('[^' + SPECIAL_CHARACTERS + ']', 'gi'), '*') + value[value.length - 1];
       break;
     case 3:
-      str = value[0] + value.substring(1, value.length - 1).replace(new RegExp('[^' + specialCharacters + vowels + ']', 'gi'), '*') + value[value.length - 1];
+      str = value[0] + value.substring(1, value.length - 1).replace(new RegExp('[^' + SPECIAL_CHARACTERS + vowels + ']', 'gi'), '*') + value[value.length - 1];
       break;
     default:
-      str = value[0] + value.substring(1, value.length - 1).replace(new RegExp('[^' + specialCharacters + vowels + tester + ']', 'gi'), '*') + value[value.length - 1];
+      str = value[0] + value.substring(1, value.length - 1).replace(new RegExp('[^' + SPECIAL_CHARACTERS + vowels + tester + ']', 'gi'), '*') + value[value.length - 1];
   }
   for (i = 1; i < value.length - 2; i++) {
     switch (hints) {
