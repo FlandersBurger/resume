@@ -316,7 +316,7 @@ function checkMatch(game, matcher, msg) {
         } else {
           try {
             var results = JSON.parse(body)[2].filter(function(result) {
-              return result;
+              return result && result.indexOf('may refer to') < 0;
             });
             if (results.length > 0) {
               guessed(game, msg, match.value, '\n<i>' + results[0/*Math.floor(Math.random()*results.length)*/] + '</i>', score, accuracy);
@@ -891,6 +891,7 @@ function evaluateCommand(res, msg, game, player, isNew) {
         message += game.players.length + ' players\n';
         message += 'Cycled through all lists ' + game.cycles + ' times\n';
         message += game.playedLists.length + ' of ' + lists.length + ' lists played in current cycle\n';
+        message += '\n';
         if (gameList) {
           message += '<b>List Stats for ' + gameList.name + '</b>\n';
           message += 'Score: ' + gameList.score + '\n';
@@ -898,8 +899,10 @@ function evaluateCommand(res, msg, game, player, isNew) {
           message += 'Values: ' + gameList.values.length + '\n';
           message += 'Plays: ' + gameList.plays + '\n';
           message += 'Skips: ' + gameList.skips + '\n';
+          message += 'Created by: ' + gameList.creator.username + '\n';
           message += 'Created on: ' + moment(gameList.date).format("DD-MMM-YYYY") + '\n';
           message += 'Modified on: ' + moment(gameList.modifyDate).format("DD-MMM-YYYY") + '\n';
+          message += '\n';
         }
         message += '<b>Personal Stats for ' + player.first_name + '</b>\n';
         message += 'Total Score: ' + player.score + '\n';
