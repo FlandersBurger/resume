@@ -887,7 +887,7 @@ function evaluateCommand(res, msg, game, player, isNew) {
       getScores(game);
       break;
     case '/stats':
-      List.find().exec(function(err, lists) {
+      List.find().populate('creator').exec(function(err, lists) {
         console.log(game.list);
         var gameList = _.find(lists, function(list) {
           return list._id == game.list._id;
@@ -964,6 +964,7 @@ function evaluateCommand(res, msg, game, player, isNew) {
         player.suggestions++;
         game.save();
         bot.notifyAdmins(JSON.stringify((msg.from.username ? msg.from.username : msg.from.first_name) + ': ' + msg.text.substring(8, msg.text.length)));
+        bot.sendMessage(msg.chat.id, 'Suggestion noted, ' + msg.from.first_name + '!');
       } else {
         bot.sendMessage(msg.chat.id, 'You didn\'t suggest anything ' + msg.from.first_name + '. Add your message after /suggest');
       }
