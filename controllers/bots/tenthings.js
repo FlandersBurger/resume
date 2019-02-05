@@ -205,6 +205,7 @@ bot.exportChatInviteLink('-1001394022777').then(function(chat) {
   console.log(chat);
 });
 */
+
 function selectList(game, callback) {
   List.find({ _id: { $nin: game.playedLists } })
   .populate('creator')
@@ -347,7 +348,7 @@ function checkMatch(game, matcher, msg) {
 function guessed(game, msg, value, blurb, score, accuracy) {
   var message = '<b>' + translate[getLanguage(msg.from.language_code)].guessed(msg.from.first_name, value) + '</b>';
   message += blurb;
-  message += '\n<code>+' + score + ' points (' + accuracy + ')</code>';
+  message += '\n<pre>+' + score + ' points (' + accuracy + ')</pre>';
   var answersLeft = game.list.values.filter(function(item) { return !item.guesser.first_name; }).length;
   if (answersLeft > 0) {
     message += '\n' + answersLeft + ' answers left.';
