@@ -898,7 +898,7 @@ function evaluateCommand(res, msg, game, player, isNew) {
         message += 'Started ' + game.date + '\n';
         message += game.players.length + ' players\n';
         message += 'Cycled through all lists ' + game.cycles + ' times\n';
-        message += 'Last cycled: ' + moment(game.lastCycleDate).format("DD-MMM-YYYY");
+        message += gmae.cycles ? 'Last cycled: ' + moment(game.lastCycleDate).format("DD-MMM-YYYY") : '';
         message += game.playedLists.length + ' of ' + lists.length + ' lists played in current cycle\n';
         message += '\n';
         if (gameList) {
