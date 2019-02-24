@@ -73,10 +73,18 @@ function TelegramBot() {
     b.sendMessage('592503547', JSON.stringify(msg));
   };
 
+  bot.getAdmins = function() {
+    return [
+      '592503547', //Laurent
+      '50070949', //Caio
+      '55229200' //Renan
+    ];
+  };
+
   bot.notifyAdmins = function(msg) {
-    b.sendMessage('592503547', JSON.stringify(msg)); //Laurent
-    b.sendMessage('50070949', JSON.stringify(msg)); //Caio
-    b.sendMessage('55229200', JSON.stringify(msg)); //Renan
+    bot.getAdmins().forEach(function(admin) {
+      b.sendMessage(admin, JSON.stringify(msg));
+    });
   };
 
   bot.getChat = function(channel) {

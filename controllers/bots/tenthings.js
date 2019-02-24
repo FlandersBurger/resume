@@ -215,6 +215,7 @@ function selectList(game, callback) {
     if (lists.length === 0) {
       game.playedLists = [];
       game.cycles++;
+      game.lastCycleDate = Date.now;
       bot.sendMessage(game.chat_id, 'All lists have been played, a new cycle will now start.');
       List.find({}).populate('creator').exec(function (err, lists) {
         return callback(lists[Math.floor(Math.random() * lists.length)]);
@@ -897,6 +898,7 @@ function evaluateCommand(res, msg, game, player, isNew) {
         message += 'Started ' + game.date + '\n';
         message += game.players.length + ' players\n';
         message += 'Cycled through all lists ' + game.cycles + ' times\n';
+        message += 'Last cycled: ' + moment(game.lastCycleDate).format("DD-MMM-YYYY");
         message += game.playedLists.length + ' of ' + lists.length + ' lists played in current cycle\n';
         message += '\n';
         if (gameList) {

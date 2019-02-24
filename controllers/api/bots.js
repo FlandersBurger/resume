@@ -1,12 +1,14 @@
 var router = require('express').Router();
 var mongoose = require('mongoose');
 var request = require('request');
+var _ = require('underscore');
 
 var config = require('../../config');
 var bot = require('../../bots/telegram');
 
 var List = require('../../models/list');
 var User = require('../../models/user');
+var TenThings = require('../../models/games/tenthings');
 
 var admins = [
   //'5ae15f14b5f7883ff0497339', //Me
@@ -48,6 +50,16 @@ router.put('/lists', function (req, res, next) {
       if (err) return next(err);
       if (!req.body.list._id) {
         bot.notifyAdmins(list.name + ' created by ' + req.body.user.username);
+        TenThings.find({}).select('chat_id')
+        .then(function(games) {
+          games.filter(function(game) {
+            return !_.find(bot.getAdmins(), function(admin) {
+              return admin === game.chat_id;
+            });
+          }).forEach(function(game) {
+            bot.sendMessage(game.chat_id, 'New list created: <b>' + list.name + '</b>');
+          });
+        });
       } else if (result.date < yesterday) {
         bot.notifyAdmins(list.name + ' updated by ' + req.body.user.username);
       }

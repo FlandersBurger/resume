@@ -6,6 +6,7 @@ var TenThings = db.model('TenThings', {
   chat_id: { type: String, required: true },
   hints: { type: Number, required: true, default: 0 },
   cycles: { type: Number, required: true, default: 0 },
+  lastCycleDate: { type: Date, required: true, default: Date.now },
   guessers: [{ type: String, required: true }],
   players: [
     {
