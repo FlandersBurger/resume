@@ -89,7 +89,7 @@ TenThings.find()
 
 //var dailyScore = schedule.scheduleJob('*/10 * * * * *', function() {
 var dailyScore = schedule.scheduleJob('0 0 0 * * *', function() {
-  if (new Date().getHours() === 0) {
+  if (new Date(Date.UTC()).getHours() === 0) {
     bot.notifyAdmin('Score Reset Triggered; ' + new Date());
     TenThings.find({ 'players.scoreDaily': { $gt: 0 }})
     .then(function(games) {
@@ -320,10 +320,10 @@ function checkMatch(game, matcher, msg) {
         } else {
           try {
             var results = JSON.parse(body)[2].filter(function(result) {
-              return result && result.indexOf('may refer to') < 0;
+              return result && result.indexOf('refer to:') < 0 && result.indexOf('refers to:') < 0;
             });
             if (results.length > 0) {
-              guessed(game, msg, match.value, '\n<i>' + results[0/*Math.floor(Math.random()*results.length)*/] + '</i>', score, accuracy);
+              guessed(game, msg, match.value, '\nRandom Wiki:\n<i> ' + results[0/*Math.floor(Math.random()*results.length)*/] + '</i>', score, accuracy);
             } else {
               guessed(game, msg, match.value, '', score, accuracy);
             }
@@ -727,6 +727,7 @@ router.post('/', function (req, res, next) {
     } else if (
       req.body.edited_message ||
       req.body.message.left_chat_participant ||
+      req.body.message.game ||
       req.body.message.photo ||
       req.body.message.video ||
       req.body.message.video_note ||
