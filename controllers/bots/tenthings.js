@@ -89,7 +89,7 @@ TenThings.find()
 
 //var dailyScore = schedule.scheduleJob('*/10 * * * * *', function() {
 var dailyScore = schedule.scheduleJob('0 0 0 * * *', function() {
-  if (new Date(Date.UTC()).getHours() === 0) {
+  if (new Date().getHours() === 0) {
     bot.notifyAdmin('Score Reset Triggered; ' + new Date());
     TenThings.find({ 'players.scoreDaily': { $gt: 0 }})
     .then(function(games) {
