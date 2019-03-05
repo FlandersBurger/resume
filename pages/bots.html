@@ -6,6 +6,9 @@
     </div>
     <div class="col-md-4">
       <div class="btn-group">
+        <button class="btn btn-default" ng-click="getLists()">
+          <i class="fa fa-refresh" ng-class="{ 'fa-spin': loading }" aria-hidden="true"></i>
+        </button>
         <div class="btn-group" ng-if="userCount > 1">
           <div class="dropdown">
             <button class="btn btn-default dropdown-toggle" type="button" data-toggle="dropdown">{{userFilter ? userFilter : 'User'}}</button>

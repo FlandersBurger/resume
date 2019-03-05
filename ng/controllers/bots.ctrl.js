@@ -82,7 +82,7 @@ angular.module('app')
   };
 
   $scope.$on('login', function (_) {
-    getLists();
+    $scope.getLists();
   });
 
 
@@ -108,7 +108,8 @@ angular.module('app')
     }).length;
   };
 
-  function getLists() {
+  $scope.getLists = function() {
+    $scope.loading = true;
     BotsSvc.getLists($scope.currentUser)
     .then(function(response) {
       $scope.lists = response.data;
@@ -123,8 +124,9 @@ angular.module('app')
       }, $scope.userFilters);
       $scope.userCount = Object.keys($scope.userFilters).length;
       $scope.userFilter = 'All';
+      $scope.loading = false;
     });
-  }
+  };
 
   $scope.selectList = function(list) {
     console.log(list.creator._id);
@@ -168,7 +170,7 @@ angular.module('app')
       $scope.saving = true;
       BotsSvc.saveList($scope.currentUser, list)
       .then(function(response) {
-        getLists();
+        $scope.getLists();
         $scope.selectList(response.data);
         $scope.saving = false;
       }, function(err) {
@@ -183,7 +185,7 @@ angular.module('app')
   $scope.deleteList = function(list) {
     BotsSvc.deleteList(list)
     .then(function(response) {
-      getLists();
+      $scope.getLists();
       $scope.selectedList = {};
     });
   };
