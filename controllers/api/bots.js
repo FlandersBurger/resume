@@ -49,6 +49,7 @@ router.put('/lists', function (req, res, next) {
     }).populate('creator').exec(function(err, result) {
       if (err) return next(err);
       if (!req.body.list._id) {
+        console.log(list.name + ' created by ' + req.body.user.username);
         bot.notifyAdmins(list.name + ' created by ' + req.body.user.username);
         TenThings.find({}).select('chat_id')
         .then(function(games) {
@@ -56,8 +57,10 @@ router.put('/lists', function (req, res, next) {
             return !_.find(bot.getAdmins(), function(admin) {
               return admin === game.chat_id;
             });
-          }).forEach(function(game) {
-            bot.sendMessage(game.chat_id, 'New list created: <b>' + list.name + '</b>');
+          }).forEach(function(game, index) {
+            setTimeout(function() {
+              bot.sendMessage(game.chat_id, 'New list created: <b>' + list.name + '</b>');
+            }, index * 100);
           });
         });
       } else if (result.date < yesterday) {

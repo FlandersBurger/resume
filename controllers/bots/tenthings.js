@@ -738,7 +738,8 @@ router.post('/', function (req, res, next) {
       req.body.message.reply_to_message ||
       req.body.message.migrate_to_chat_id ||
       req.body.message.pinned_message ||
-      req.body.message.new_chat_title
+      req.body.message.new_chat_title ||
+      req.body.message.new_chat_photo
     ) {
       //Ignore these messages as they're just chat interactions
       console.log('Ignoring this message:');
