@@ -353,7 +353,7 @@ function guessed(game, msg, value, blurb, score, accuracy) {
   message += '\n<pre>+' + score + ' points (' + accuracy + ')</pre>';
   var answersLeft = game.list.values.filter(function(item) { return !item.guesser.first_name; }).length;
   if (answersLeft > 0) {
-    message += '\n' + answersLeft + ' answers left.';
+    message += '\n' + answersLeft + ' answer' + (answersLeft > 1 ? 's' : '') + ' left.';
   }
   bot.sendMessage(msg.chat.id, message);
 }
