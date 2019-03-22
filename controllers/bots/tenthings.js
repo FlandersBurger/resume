@@ -797,9 +797,11 @@ router.post('/', function (req, res, next) {
         });
       } catch (e) {
         console.error('New player');
-        existingGame.players.push(msg.from);
-        player = existingGame.players[existingGame.players.length - 1];
       } finally {
+        if (!player) {        
+          existingGame.players.push(msg.from);
+          player = existingGame.players[existingGame.players.length - 1];
+        }
         return evaluateCommand(res, msg, existingGame, player, false);
       }
     }
