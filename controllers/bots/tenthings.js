@@ -534,7 +534,9 @@ function hint(game, player, callback) {
     bot.sendMessage(game.chat_id, 'Calm down with the hints, wait ' + cooldowns[game.id] + ' more seconds');
   } else {
     game.hints++;
-    player.hints++;
+    if (player) {
+      player.hints++;
+    }
     callback(game.list.values.reduce(function(str, item, index) {
       if (!item.guesser.first_name) {
         str += index + 1;
@@ -847,7 +849,6 @@ function evaluateCommand(res, msg, game, player, isNew) {
   //bot.notifyAdmin(tenthings);
   //bot.notifyAdmin(games[msg.chat.id].list);
   try {
-
     console.log(msg.id + ' - ' + msg.from.first_name + ': ' + msg.command + ' -> ' + msg.text);
   } catch (e) {
     console.error('msg without a first_name?');
