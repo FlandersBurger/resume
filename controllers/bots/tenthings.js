@@ -846,7 +846,13 @@ router.post('/webhook', function (req, res) {
 function evaluateCommand(res, msg, game, player, isNew) {
   //bot.notifyAdmin(tenthings);
   //bot.notifyAdmin(games[msg.chat.id].list);
-  console.log(msg.id + ' - ' + msg.from.first_name + ': ' + msg.command + ' -> ' + msg.text);
+  try {
+
+    console.log(msg.id + ' - ' + msg.from.first_name + ': ' + msg.command + ' -> ' + msg.text);
+  } catch (e) {
+    console.error('msg without a first_name?');
+    console.error(msg);
+  }
   if (game.list.values.length === 0) {
     newRound(game);
   }
