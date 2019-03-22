@@ -187,7 +187,7 @@ function getLanguage(language) {
   */
 }
 
-//bot.notifyAdmin('Started Ten Things');
+bot.notifyAdmin('Started Ten Things');
 //bot.sendMessage('-1001394022777', "test<a href=\'https://upload.wikimedia.org/wikipedia/commons/thumb/8/89/Regular_Hexagon_Inscribed_in_a_Circle.gif/360px-Regular_Hexagon_Inscribed_in_a_Circle.gif\'>&#8204;</a>\nsome other stuff")
 //var url = 'https://upload.wikimedia.org/wikipedia/commons/d/d8/Olympique_Marseille_logo.svg';
 //bot.sendMessage('592503547', "test<a href=\'" + url + "\'>&#8204;</a>\nsome other stuff");
@@ -786,14 +786,18 @@ router.post('/', function (req, res, next) {
         return evaluateCommand(res, msg, newGame, player, true);
       });
     } else {
-      var player = _.find(existingGame.players, function(existingPlayer) {
-        return existingPlayer.id == msg.from.id;
-      });
-      if (!player) {
+      var player;
+      try {
+        player = _.find(existingGame.players, function(existingPlayer) {
+          return existingPlayer.id == msg.from.id;
+        });
+      } catch (e) {
+        console.error('New player');
         existingGame.players.push(msg.from);
         player = existingGame.players[existingGame.players.length - 1];
+      } finally {
+        return evaluateCommand(res, msg, existingGame, player, false);
       }
-      return evaluateCommand(res, msg, existingGame, player, false);
     }
   });
 });
