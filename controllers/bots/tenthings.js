@@ -852,6 +852,8 @@ function evaluateCommand(res, msg, game, player, isNew) {
   } catch (e) {
     console.error('msg without a first_name?');
     console.error(msg);
+
+    res.sendStatus(200);
   }
   if (game.list.values.length === 0) {
     newRound(game);
