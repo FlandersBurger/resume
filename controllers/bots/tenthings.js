@@ -892,7 +892,12 @@ function evaluateCommand(res, msg, game, player, isNew) {
       }
       break;
     case '/skip':
-      player.skips++;
+      if (player) {
+        player.skips++;
+      } else {
+        console.error('Error in game: ' + game.id);
+        console.error('From: ' + msg.from);
+      }
       game.save();
       skip(game, msg.from.id);
       break;
