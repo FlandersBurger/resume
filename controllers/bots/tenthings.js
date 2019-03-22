@@ -421,10 +421,12 @@ function newRound(game) {
     list.plays++;
     list.save();
     for (var i in game.guessers) {
-      for (var j in game.players) {
-        if (game.players[j].id == game.guessers[i]) {
-          game.players[j].lists++;
-          break;
+      if (game.players.length > 0) {
+        for (var j in game.players) {
+          if (game.players[j].id == game.guessers[i]) {
+            game.players[j].lists++;
+            break;
+          }
         }
       }
     }
