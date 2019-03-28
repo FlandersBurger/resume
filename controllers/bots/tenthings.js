@@ -734,6 +734,7 @@ router.post('/', function (req, res, next) {
       req.body.message.game ||
       req.body.message.photo ||
       req.body.message.video ||
+      req.body.message.audio ||
       req.body.message.video_note ||
       req.body.message.emoji ||
       req.body.message.voice ||
@@ -743,7 +744,8 @@ router.post('/', function (req, res, next) {
       req.body.message.migrate_to_chat_id ||
       req.body.message.pinned_message ||
       req.body.message.new_chat_title ||
-      req.body.message.new_chat_photo
+      req.body.message.new_chat_photo ||
+      req.body.message.document
     ) {
       //Ignore these messages as they're just chat interactions
       console.log('Ignoring this message:');
@@ -798,7 +800,7 @@ router.post('/', function (req, res, next) {
       } catch (e) {
         console.error('New player');
       } finally {
-        if (!player) {        
+        if (!player) {
           existingGame.players.push(msg.from);
           player = existingGame.players[existingGame.players.length - 1];
         }
