@@ -48,19 +48,6 @@ var queue = kue.createQueue({
   }
 });
 
-function addGuess(game, msg) {
-  var guess = queue.create('guess', {
-    game: game,
-    msg: msg
-  }).removeOnComplete( true ).save(function(err) {
-     if( !err ) console.log(game.id + ' - Guess evaluated: "' + msg.text + '" by '+ msg.from.first_name);
-  });
-  /*
-  setTimeout(function() {
-    addJob();
-  }, random);
-  */
-}
 
 //addJob();
 /*
@@ -76,9 +63,15 @@ queue.on('job complete', function(id, result){
   });
 });
 */
-queue.process('guess', function(job, done){
-  guess(job.data.game, job.data.msg);
-  done();
+queue.process('guess', function(guess, done) {
+  var guessing = new Promise(function(resolve, reject) {
+    processGuess(guess.data);
+  });
+  guessing().then(function() {
+    done();
+  }, function() {
+    done();
+  });
 });
 
 /*
@@ -278,39 +271,56 @@ function rateList(game) {
   });
 }
 
-function guess(game, msg) {
+function queueGuess(game, msg) {
   var fuzzyMatch = new FuzzyMatching(game.list.values.map(function(item) { return item.value.replace(new RegExp('[' + SPECIAL_CHARACTERS + ']', 'gi'), ''); }));
-  var matcher = fuzzyMatch.get(msg.text.replace(new RegExp('[' + SPECIAL_CHARACTERS + ']', 'gi'), ''));
-  if (matcher.distance >= 0.9) {
-    checkMatch(game, matcher, msg);
-  } else if (matcher.distance >= 0.75) {
+  var guess = {
+    game: game,
+    msg: msg,
+    match: fuzzyMatch.get(msg.text.replace(new RegExp('[' + SPECIAL_CHARACTERS + ']', 'gi'), ''))
+  };
+  guess.match.index = _.findIndex(game.list.values, function(item) {
+    return item.value.replace(new RegExp('[' + SPECIAL_CHARACTERS + ']', 'gi'), '') === guess.match.value;
+  });
+  console.log(guess);
+  if (guess.match.distance >= 0.9) {
+    queueingGuess(guess);
+  } else if (guess.match.distance >= 0.75) {
     setTimeout(function() {
-      TenThings.findOne({ chat_id: game.chat_id })
-      .populate('list.creator')
-      .exec(function(err, existingGame) {
-        checkMatch(existingGame, matcher, msg);
-      });
+      queueingGuess(guess);
     }, 2000);
   }
 }
 
-function checkMatch(game, matcher, msg) {
+function queueingGuess(guess) {
+  queue.create('guess', guess).removeOnComplete( true ).save(function(err) {
+    if( !err ) console.log(guess.game.id + ' - Guess evaluated: "' + guess.msg.text + '" by '+ guess.msg.from.first_name);
+  });
+}
+
+
+function processGuess(guess) {
+  TenThings.findOne({ chat_id: guess.game.chat_id })
+  .populate('list.creator')
+  .exec(function(err, game) {
+    checkGuess(game, guess, guess.msg);
+  });
+}
+
+function checkGuess(game, guess, msg) {
   if (!_.find(game.guessers, function(guesser) {
     return guesser == msg.from.id;
   })) {
     game.guessers.push(msg.from.id);
   }
-  var match = _.find(game.list.values, function(item) {
-    return item.value.replace(new RegExp('[' + SPECIAL_CHARACTERS + ']', 'gi'), '') === matcher.value;
-  });
+  var match = game.list.values[guess.match.index];
   var player = _.find(game.players, function(existingPlayer) {
     return existingPlayer.id == msg.from.id;
   });
   if (!match.guesser.first_name) {
     match.guesser = msg.from;
     player.answers++;
-    var score = Math.round((MAXHINTS - game.hints + game.guessers.length) * (matcher.distance - 0.6) * 2.5);
-    var accuracy = (matcher.distance * 100).toFixed(0) + '%';
+    var score = Math.round((MAXHINTS - game.hints + game.guessers.length) * (guess.match.distance - 0.6) * 2.5);
+    var accuracy = (guess.match.distance * 100).toFixed(0) + '%';
     player.score += score;
     player.scoreDaily += score;
     if (player.scoreDaily > player.highScore) {
@@ -1006,7 +1016,7 @@ function evaluateCommand(res, msg, game, player, isNew) {
       });
       break;
     default:
-      addGuess(game, msg);
+      queueGuess(game, msg);
   }
   res.sendStatus(200);
 }
