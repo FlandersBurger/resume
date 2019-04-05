@@ -264,14 +264,13 @@ function rateList(game) {
 function queueGuess(game, msg) {
   var fuzzyMatch = new FuzzyMatching(game.list.values.map(function(item) { return item.value.replace(new RegExp('[' + SPECIAL_CHARACTERS + ']', 'gi'), ''); }));
   var guess = {
-    game: game,
+    game: game.chat_id,
     msg: msg,
     match: fuzzyMatch.get(msg.text.replace(new RegExp('[' + SPECIAL_CHARACTERS + ']', 'gi'), ''))
   };
   guess.match.index = _.findIndex(game.list.values, function(item) {
     return item.value.replace(new RegExp('[' + SPECIAL_CHARACTERS + ']', 'gi'), '') === guess.match.value;
   });
-  console.log(guess);
   if (guess.match.distance >= 0.9) {
     queueingGuess(guess);
   } else if (guess.match.distance >= 0.75) {
@@ -300,7 +299,7 @@ queue.process('guess', function(guess, done) {
 });
 
 function processGuess(guess) {
-  TenThings.findOne({ chat_id: guess.game.chat_id })
+  TenThings.findOne({ chat_id: guess.game })
   .populate('list.creator')
   .exec(function(err, game) {
     checkGuess(game, guess, guess.msg);
