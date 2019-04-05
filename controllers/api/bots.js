@@ -19,9 +19,25 @@ var admins = [
 ];
 
 router.get('/lists', function (req, res, next) {
-  List.find().populate('creator').exec(function(err, result) {
+  List.find().populate('creator', 'username').exec(function(err, result) {
     if (err) return next(err);
-    res.json(result);
+    var lists = result.map(function(list) {
+      return {
+        _id: list._id,
+        plays: list.plays,
+        skips: list.skips,
+        score: list.score,
+        values: list.values.length,
+        blurbs: list.values.filter(function(value) { return value.blurb; }).length,
+        date: list.date,
+        modifyDate: list.modifyDate,
+        creator: list.creator.username,
+        name: list.name,
+        description: list.description,
+        category: list.category,
+      };
+    });
+    res.json(lists);
   });
 });
 
@@ -34,6 +50,16 @@ router.get('/lists/:id/report/:user', function (req, res, next) {
     .exec(function(err, user) {
       bot.notifyAdmins('Check: ' + list.name + ' reported by ' + user.username);
     });
+  });
+});
+
+router.get('/lists/:id', function (req, res, next) {
+  List.findOne({
+    _id: req.params.id
+  })
+  .populate('creator')
+  .exec(function(err, list) {
+    res.json(list);
   });
 });
 

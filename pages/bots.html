@@ -34,17 +34,17 @@
               <li><a href="#" ng-click="sort('skips')">Skips {{sortValue === 'skips' ? (sortDirection ? 'Descending' : 'Ascending') : 'Ascending'}}</a></li>
               <li><a href="#" ng-click="sort('plays')">Plays {{sortValue === 'plays' ? (sortDirection ? 'Descending' : 'Ascending') : 'Ascending'}}</a></li>
               <li><a href="#" ng-click="sort('score')">Score {{sortValue === 'score' ? (sortDirection ? 'Descending' : 'Ascending') : 'Ascending'}}</a></li>
-              <li><a href="#" ng-click="sort('values.length')">Values {{sortValue === 'values.length' ? (sortDirection ? 'Descending' : 'Ascending') : 'Ascending'}}</a></li>
+              <li><a href="#" ng-click="sort('values')">Values {{sortValue === 'values' ? (sortDirection ? 'Descending' : 'Ascending') : 'Ascending'}}</a></li>
             </ul>
           </div>
         </div>
       </div>
       <input class="form-control" ng-model="search" placeholder="Search"/>
-      <button class="btn btn-sm" ng-class="listButtonClass(list)" ng-repeat="list in filteredLists() | filter: search | orderBy: sorter | limitTo: 100" ng-click="selectList(list)">{{list.name}} ({{list.values.length}})</button>
+      <button class="btn btn-sm" ng-class="listButtonClass(list)" ng-repeat="list in filteredLists() | filter: search | orderBy: sorter | limitTo: 100" ng-click="selectList(list)">{{list.name}} ({{list.values}})</button>
     </div>
     <div class="col-md-8">
       <div class="col-md-12">
-        <div class="btn btn-default" ng-click="addList()">
+        <div class="btn btn-default" ng-click="addList()" ng-disabled="selectedList && !selectedList._id">
           <i class="fa fa-file-o" aria-hidden="true"></i> New
         </div>
         <div class="btn btn-default" ng-click="saveList(selectedList)" ng-disabled="!selectedList">

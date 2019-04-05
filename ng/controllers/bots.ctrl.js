@@ -70,12 +70,12 @@ angular.module('app')
           return $scope.categoryFilter === 'Blank';
         }
       } else if ($scope.categoryFilter === 'All' && $scope.userFilter !== 'All') {
-        return list.creator.username === $scope.userFilter;
+        return list.creator === $scope.userFilter;
       } else {
         if (list.category) {
-          return list.category === $scope.categoryFilter && list.creator.username === $scope.userFilter;
+          return list.category === $scope.categoryFilter && list.creator === $scope.userFilter;
         } else {
-          return $scope.categoryFilter === 'Blank' && list.creator.username === $scope.userFilter;
+          return $scope.categoryFilter === 'Blank' && list.creator === $scope.userFilter;
         }
       }
     });
@@ -113,13 +113,14 @@ angular.module('app')
     BotsSvc.getLists($scope.currentUser)
     .then(function(response) {
       $scope.lists = response.data;
+      console.log($scope.lists[0]);
       $scope.userFilters = {};
       $scope.userFilters.All = $scope.lists.length;
       $scope.userFilters = $scope.lists.sort(function(a, b) {
-        return a.creator.username > b.creator.username;
+        return a.creator > b.creator;
       }).reduce(function(users, list) {
-        if (!users[list.creator.username]) users[list.creator.username] = 0;
-        users[list.creator.username]++;
+        if (!users[list.creator]) users[list.creator] = 0;
+        users[list.creator]++;
         return users;
       }, $scope.userFilters);
       $scope.userCount = Object.keys($scope.userFilters).length;
@@ -129,19 +130,26 @@ angular.module('app')
   };
 
   $scope.selectList = function(list) {
-    console.log(list.creator._id);
-    console.log($scope.currentUser._id);
-    $scope.selectedList = list;
+    BotsSvc.getList(list)
+    .then(function(response) {
+      $scope.selectedList = response.data;
+      console.log($scope.selectedList);
+    });
   };
 
   $scope.addList = function() {
-    $scope.lists.unshift({
-      name: '',
-      creator: $scope.currentUser._id,
-      date: new Date(),
-      values: []
-    });
-    $scope.selectedList = $scope.lists[0];
+    var newList = _.find($scope.lists, function(list) { return !list._id; });
+    if (!newList) {
+      $scope.lists.unshift({
+        name: '',
+        creator: $scope.currentUser._id,
+        date: new Date(),
+        values: []
+      });
+      $scope.selectedList = $scope.lists[0];
+    } else {
+      $scope.selectedList = newList;
+    }
   };
 
   $scope.addValue = function() {
@@ -183,16 +191,23 @@ angular.module('app')
   };
 
   $scope.deleteList = function(list) {
-    BotsSvc.deleteList(list)
-    .then(function(response) {
-      $scope.getLists();
-      $scope.selectedList = {};
-    });
+    if (!list._id) {
+      $scope.lists = $scope.lists.filter(function(list) { return list._id; });
+      $scope.selectedList = null;
+    } else {
+      if (confirm('Are you sure you want to delete this list?')) {  
+        BotsSvc.deleteList(list)
+        .then(function(response) {
+          $scope.getLists();
+          $scope.selectedList = null;
+        });
+      }
+    }
   };
 
   $scope.listButtonClass = function(list) {
-    var values = list.values.length;
-    var blurbs = list.values.filter(function(value) { return value.blurb; }).length;
+    var values = list.values;
+    var blurbs = list.blurbs;
     if (values === blurbs && list.description) {
       return 'btn-default';
     } else if (blurbs === 0 && !list.description) {
