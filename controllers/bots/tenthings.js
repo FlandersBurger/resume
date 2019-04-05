@@ -63,16 +63,6 @@ queue.on('job complete', function(id, result){
   });
 });
 */
-queue.process('guess', function(guess, done) {
-  var guessing = new Promise(function(resolve, reject) {
-    processGuess(guess.data);
-  });
-  guessing().then(function() {
-    done();
-  }, function() {
-    done();
-  });
-});
 
 /*
 TenThings.find()
@@ -297,6 +287,17 @@ function queueingGuess(guess) {
   });
 }
 
+queue.process('guess', function(guess, done) {
+  var guessing = new Promise(function(resolve, reject) {
+    processGuess(guess.data);
+    resolve();
+  });
+  guessing.then(function() {
+    done();
+  }, function() {
+    done();
+  });
+});
 
 function processGuess(guess) {
   TenThings.findOne({ chat_id: guess.game.chat_id })
