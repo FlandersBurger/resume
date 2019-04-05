@@ -38,7 +38,7 @@ var skips = {};
         }
       );
 */
-/*
+
 var queue = kue.createQueue({
   redis: {
     port: 6379,
@@ -48,20 +48,25 @@ var queue = kue.createQueue({
   }
 });
 
-function addJob() {
-  var random = Math.floor(Math.random() * 2000);
-  var job = queue.create('guess', {
-    title: random
+function addGuess(game, msg) {
+  var guess = queue.create('guess', {
+    game: game,
+    msg: msg
   }).removeOnComplete( true ).save(function(err) {
-     if( !err ) console.log( job.id + ': ' + JSON.stringify(job.data) );
+     if( !err ) console.log(game.id + ' - Guess evaluated: "' + msg.text + '" by '+ msg.from.first_name);
   });
+  /*
   setTimeout(function() {
     addJob();
   }, random);
+  */
 }
 
-addJob();
+//addJob();
+/*
 queue.on('job complete', function(id, result){
+  console.log('Job done:' + id);
+  console.log('------------');
   kue.Job.get(id, function(err, job){
     if (err) return;
     job.remove(function(err){
@@ -70,12 +75,12 @@ queue.on('job complete', function(id, result){
     });
   });
 });
-
+*/
 queue.process('guess', function(job, done){
-  console.log(job.data.title);
+  guess(job.data.game, job.data.msg);
   done();
 });
-*/
+
 /*
 TenThings.find()
 .then(function(games) {
@@ -765,7 +770,6 @@ router.post('/', function (req, res, next) {
       };
     }
   } else {
-    console.log(req.body.message.message_id);
     msg = {
       id: req.body.message.message_id,
       from: req.body.message.from,
@@ -852,12 +856,9 @@ router.post('/webhook', function (req, res) {
 function evaluateCommand(res, msg, game, player, isNew) {
   //bot.notifyAdmin(tenthings);
   //bot.notifyAdmin(games[msg.chat.id].list);
-  try {
-    console.log(msg.id + ' - ' + msg.from.first_name + ': ' + msg.command + ' -> ' + msg.text);
-  } catch (e) {
+  if (!msg.from.first_name) {
     console.error('msg without a first_name?');
     console.error(msg);
-
     res.sendStatus(200);
   }
   if (game.list.values.length === 0) {
@@ -1005,7 +1006,7 @@ function evaluateCommand(res, msg, game, player, isNew) {
       });
       break;
     default:
-      guess(game, msg);
+      addGuess(game, msg);
   }
   res.sendStatus(200);
 }
