@@ -687,6 +687,8 @@ function getRandom(arr, n) {
 }
 
 function stats(type, game) {
+
+  console.log('stats -> ' + type);
   var message = '';
   switch (type) {
     case 'game':
@@ -760,7 +762,7 @@ router.post('/', function (req, res, next) {
         }
       });
     } else if (data.type === 'stats') {
-      stats(data.level);
+      stats(data.level, data.game);
     }
     return res.sendStatus(200);
   } else if (req.body.edited_message) {
@@ -974,6 +976,7 @@ function evaluateCommand(res, msg, game, player, isNew) {
       getScores(game);
       break;
     case '/stats':
+    console.log('here');
       bot.sendKeyboard(game.chat_id, 'Which stats would you like?', {
         inline_keyboard: [[
           {
