@@ -686,6 +686,53 @@ function getRandom(arr, n) {
   return result;
 }
 
+function stats(type, game) {
+  var message = '';
+  switch (type) {
+    case 'game':
+      message = '<b>Game Stats</b>\n';
+      message += 'Started ' + game.date + '\n';
+      message += game.players.length + ' players\n';
+      message += 'Cycled through all lists ' + game.cycles + ' times\n';
+      message += game.cycles ? 'Last cycled: ' + moment(game.lastCycleDate).format("DD-MMM-YYYY") + '\n' : '';
+      message += game.playedLists.length + ' of ' + lists.length + ' lists played in current cycle\n';
+      message += '\n';
+      bot.sendMessage(game.chat_id, message);
+      break;
+    case 'personal':
+      message += '<b>Personal Stats for ' + player.first_name + '</b>\n';
+      message += 'Total Score: ' + player.score + '\n';
+      message += 'High Score: ' + player.highScore + '\n';
+      message += 'Average Score: ' + Math.round(player.score / player.plays) + '\n';
+      message += player.wins + ' wins out of ' + player.plays + ' days played\n';
+      message += 'Correct answers given: ' + player.answers + '\n';
+      message += 'Correct answers snubbed: ' + player.snubs + '\n';
+      message += 'Hints asked: ' + player.hints + '\n';
+      message += 'Suggestions given: ' + player.suggestions + '\n';
+      message += 'Lists played: ' + player.lists + '\n';
+      message += 'Lists skipped: ' + player.skips + '\n';
+      bot.sendMessage(game.chat_id, message);
+      break;
+    case 'list':
+      List.findOne({ _id: game.list._id }).populate('creator').exec(function(err, gameList) {
+        message += '<b>List Stats for ' + gameList.name + '</b>\n';
+        message += 'Score: ' + gameList.score + '\n';
+        message += 'Votes: ' + gameList.voters.length + '\n';
+        message += 'Values: ' + gameList.values.length + '\n';
+        message += 'Plays: ' + gameList.plays + '\n';
+        message += 'Skips: ' + gameList.skips + '\n';
+        message += 'Created by: ' + gameList.creator.username + '\n';
+        message += 'Created on: ' + moment(gameList.date).format("DD-MMM-YYYY") + '\n';
+        message += 'Modified on: ' + moment(gameList.modifyDate).format("DD-MMM-YYYY") + '\n';
+        message += '\n';
+        bot.sendMessage(game.chat_id, message);
+      });
+      break;
+    default:
+      bot.sendMessage(game.chat_id, 'Something');
+  }
+}
+
 router.post('/', function (req, res, next) {
   if (req.body.object === 'page') {
     res.status(200).send('EVENT_RECEIVED');
@@ -712,6 +759,8 @@ router.post('/', function (req, res, next) {
           });
         }
       });
+    } else if (data.type === 'stats') {
+      stats(data.level);
     }
     return res.sendStatus(200);
   } else if (req.body.edited_message) {
@@ -925,58 +974,33 @@ function evaluateCommand(res, msg, game, player, isNew) {
       getScores(game);
       break;
     case '/stats':
-      List.find().populate('creator').exec(function(err, lists) {
-        console.log(game.list);
-        var gameList = _.find(lists, function(list) {
-          return list._id == game.list._id;
-        });
-        console.log(gameList);
-        var message = '<b>Game Stats</b>\n';
-        message += 'Started ' + game.date + '\n';
-        message += game.players.length + ' players\n';
-        message += 'Cycled through all lists ' + game.cycles + ' times\n';
-        message += game.cycles ? 'Last cycled: ' + moment(game.lastCycleDate).format("DD-MMM-YYYY") + '\n' : '';
-        message += game.playedLists.length + ' of ' + lists.length + ' lists played in current cycle\n';
-        message += '\n';
-        if (gameList) {
-          message += '<b>List Stats for ' + gameList.name + '</b>\n';
-          message += 'Score: ' + gameList.score + '\n';
-          message += 'Votes: ' + gameList.voters.length + '\n';
-          message += 'Values: ' + gameList.values.length + '\n';
-          message += 'Plays: ' + gameList.plays + '\n';
-          message += 'Skips: ' + gameList.skips + '\n';
-          message += 'Created by: ' + gameList.creator.username + '\n';
-          message += 'Created on: ' + moment(gameList.date).format("DD-MMM-YYYY") + '\n';
-          message += 'Modified on: ' + moment(gameList.modifyDate).format("DD-MMM-YYYY") + '\n';
-          message += '\n';
-        }
-        message += '<b>Personal Stats for ' + player.first_name + '</b>\n';
-        message += 'Total Score: ' + player.score + '\n';
-        message += 'High Score: ' + player.highScore + '\n';
-        message += 'Average Score: ' + Math.round(player.score / player.plays) + '\n';
-        message += player.wins + ' wins out of ' + player.plays + ' days played\n';
-        message += 'Correct answers given: ' + player.answers + '\n';
-        message += 'Correct answers snubbed: ' + player.snubs + '\n';
-        message += 'Hints asked: ' + player.hints + '\n';
-        message += 'Suggestions given: ' + player.suggestions + '\n';
-        message += 'Lists played: ' + player.lists + '\n';
-        message += 'Lists skipped: ' + player.skips + '\n';
-        /*
-        var categories = lists.sort(function(list1, list2) {
-          return list1.category > list2.category;
-        }).reduce(function(cats, list) {
-          if (!cats[list.category]) {
-            cats[list.category] = 0;
+      bot.sendKeyboard(game.chat_id, 'Which stats would you like?', {
+        inline_keyboard: [[
+          {
+            'text': 'This Game',
+            'callback_data': JSON.stringify({
+              type: 'stats',
+              level: 'game',
+              game: game
+            })
+          },
+          {
+            'text': 'My Stats',
+            'callback_data': JSON.stringify({
+              type: 'stats',
+              level: 'personal',
+              game: game
+            })
+          },
+          {
+            'text': 'List',
+            'callback_data': JSON.stringify({
+              type: 'stats',
+              level: 'list',
+              game: game
+            })
           }
-          cats[list.category]++;
-          return cats;
-        }, {});
-        message += '<b>List Stats</b>\n';
-        for (var key in categories) {
-          message += key + ': ' + categories[key] + ' lists\n';
-        }
-        */
-        bot.sendMessage(msg.chat.id, message);
+        ]]
       });
       break;
     case '/list':
