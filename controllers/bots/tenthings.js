@@ -412,7 +412,7 @@ function checkRound(game) {
   if (game.list.values.filter(function(item) {
     return !item.guesser.first_name;
   }).length === 0) {
-    bot.sendMessage(game.id, 'Round over.');
+    bot.sendMessage(game.chat_id, 'Round over.');
     setTimeout(function () {
       getList(game, function(list) {
         var message = '<b>' + game.list.name + '</b> (' + game.list.totalValues + ') by ' + game.list.creator.username + '\n';
@@ -686,20 +686,23 @@ function getRandom(arr, n) {
   return result;
 }
 
-function stats(type, game) {
+function stats(data) {
 
   console.log('stats -> ' + type);
+  console.log(data);
   var message = '';
-  switch (type) {
+  switch (data.type) {
     case 'game':
-      message = '<b>Game Stats</b>\n';
-      message += 'Started ' + game.date + '\n';
-      message += game.players.length + ' players\n';
-      message += 'Cycled through all lists ' + game.cycles + ' times\n';
-      message += game.cycles ? 'Last cycled: ' + moment(game.lastCycleDate).format("DD-MMM-YYYY") + '\n' : '';
-      message += game.playedLists.length + ' of ' + lists.length + ' lists played in current cycle\n';
-      message += '\n';
-      bot.sendMessage(game.chat_id, message);
+      TenThings.findOne({ chat_id: data.game }).then(function(game) {
+        message = '<b>Game Stats</b>\n';
+        message += 'Started ' + game.date + '\n';
+        message += game.players.length + ' players\n';
+        message += 'Cycled through all lists ' + game.cycles + ' times\n';
+        message += game.cycles ? 'Last cycled: ' + moment(game.lastCycleDate).format("DD-MMM-YYYY") + '\n' : '';
+        message += game.playedLists.length + ' of ' + lists.length + ' lists played in current cycle\n';
+        message += '\n';
+        bot.sendMessage(game.chat_id, message);
+      });
       break;
     case 'personal':
       message += '<b>Personal Stats for ' + player.first_name + '</b>\n';
@@ -762,7 +765,7 @@ router.post('/', function (req, res, next) {
         }
       });
     } else if (data.type === 'stats') {
-      stats(data.level, data.game);
+      stats(data);
     }
     return res.sendStatus(200);
   } else if (req.body.edited_message) {
@@ -984,7 +987,8 @@ function evaluateCommand(res, msg, game, player, isNew) {
             'callback_data': JSON.stringify({
               type: 'stats',
               level: 'game',
-              game: game
+              game: msg.chat.id,
+              id: msg.chat.id
             })
           },
           {
@@ -992,7 +996,8 @@ function evaluateCommand(res, msg, game, player, isNew) {
             'callback_data': JSON.stringify({
               type: 'stats',
               level: 'personal',
-              game: game
+              game: msg.chat.id,
+              id: player._id
             })
           },
           {
@@ -1000,7 +1005,8 @@ function evaluateCommand(res, msg, game, player, isNew) {
             'callback_data': JSON.stringify({
               type: 'stats',
               level: 'list',
-              game: game
+              game: msg.chat.id,
+              id: game.list._id
             })
           }
         ]]
