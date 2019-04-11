@@ -711,22 +711,26 @@ function stats(data) {
         break;
       case 'p':
       console.log(id);
-        var player = _.find(game.players, function(existingPlayer) {
-          console.log(existingPlayer.id);
-          return existingPlayer.id == id;
+        var findPlayer = new Promise(function(resolve, error) {
+          resolve(_.find(game.players, function(existingPlayer) {
+            console.log(existingPlayer.id);
+            return existingPlayer.id == id;
+          }));
         });
-        message += '<b>Personal Stats for ' + player.first_name + '</b>\n';
-        message += 'Total Score: ' + player.score + '\n';
-        message += 'High Score: ' + player.highScore + '\n';
-        message += 'Average Score: ' + Math.round(player.score / player.plays) + '\n';
-        message += player.wins + ' wins out of ' + player.plays + ' days played\n';
-        message += 'Correct answers given: ' + player.answers + '\n';
-        message += 'Correct answers snubbed: ' + player.snubs + '\n';
-        message += 'Hints asked: ' + player.hints + '\n';
-        message += 'Suggestions given: ' + player.suggestions + '\n';
-        message += 'Lists played: ' + player.lists + '\n';
-        message += 'Lists skipped: ' + player.skips + '\n';
-        bot.sendMessage(game.chat_id, message);
+        findPlayer().then(function(player) {
+          message += '<b>Personal Stats for ' + player.first_name + '</b>\n';
+          message += 'Total Score: ' + player.score + '\n';
+          message += 'High Score: ' + player.highScore + '\n';
+          message += 'Average Score: ' + Math.round(player.score / player.plays) + '\n';
+          message += player.wins + ' wins out of ' + player.plays + ' days played\n';
+          message += 'Correct answers given: ' + player.answers + '\n';
+          message += 'Correct answers snubbed: ' + player.snubs + '\n';
+          message += 'Hints asked: ' + player.hints + '\n';
+          message += 'Suggestions given: ' + player.suggestions + '\n';
+          message += 'Lists played: ' + player.lists + '\n';
+          message += 'Lists skipped: ' + player.skips + '\n';
+          bot.sendMessage(game.chat_id, message);
+        });
         break;
       case 'l':
         List.findOne({ _id: id }).populate('creator').exec(function(err, gameList) {
