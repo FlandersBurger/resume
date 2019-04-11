@@ -717,7 +717,7 @@ function stats(data) {
             return existingPlayer.id == id;
           }));
         });
-        findPlayer().then(function(player) {
+        findPlayer.then(function(player) {
           message += '<b>Personal Stats for ' + player.first_name + '</b>\n';
           message += 'Total Score: ' + player.score + '\n';
           message += 'High Score: ' + player.highScore + '\n';
