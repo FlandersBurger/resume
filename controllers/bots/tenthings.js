@@ -994,13 +994,11 @@ function evaluateCommand(res, msg, game, player, isNew) {
       }));
       countBytes(JSON.stringify({
         type: 'stats',
-        gm: game.chat_id,
-        id: 'p_' + player._id
+        id: game.chat_id + '_p_' + player._id
       }));
       countBytes(JSON.stringify({
         type: 'stats',
-        gm: game.chat_id,
-        id: 'l_' + game.list._id
+        id: game.chat_id + '_l_' + game.list._id
       }));
       bot.sendKeyboard(game.chat_id, 'Which stats would you like?', {
         inline_keyboard: [
@@ -1009,16 +1007,14 @@ function evaluateCommand(res, msg, game, player, isNew) {
               'text': 'This Game',
               'callback_data': JSON.stringify({
                 type: 'stats',
-                gm: game.chat_id,
-                id: 'g_' + game.chat_id
+                id: game.chat_id + '_g_' + game.chat_id
               })
             },
             {
               'text': 'My Stats',
               'callback_data': JSON.stringify({
                 type: 'stats',
-                gm: game.chat_id,
-                id: 'p_' + player._id
+                id: game.chat_id + '_p_' + player._id
               })
             }
           ],
@@ -1027,8 +1023,7 @@ function evaluateCommand(res, msg, game, player, isNew) {
               'text': 'List',
               'callback_data': JSON.stringify({
                 type: 'stats',
-                gm: game.chat_id,
-                id: 'l_' + game.list._id
+                id: game.chat_id + '_l_' + game.list._id
               })
             }
           ]
