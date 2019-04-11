@@ -689,7 +689,6 @@ function getRandom(arr, n) {
 function stats(data) {
 
   console.log('stats -> ' + type);
-  console.log(data);
   data = data.id.split('_');
   console.log(data);
   var game_id = data[0];
@@ -711,7 +710,9 @@ function stats(data) {
         });
         break;
       case 'p':
+      console.log(id);
         var player = _.find(game.players, function(existingPlayer) {
+          console.log(existingPlayer.id);
           return existingPlayer.id == id;
         });
         message += '<b>Personal Stats for ' + player.first_name + '</b>\n';
