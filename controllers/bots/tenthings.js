@@ -917,12 +917,9 @@ router.post('/webhook', function (req, res) {
   }
 });
 
-console.log(encodeURI(JSON.stringify({
-  type: 'stats',
-  lvl: 'gm',
-  gm: -1001394022777,
-  id: 55229200
-})).split(/%..|./).length - 1);
+function countBytes(s) {
+  console.log(encodeURI(s).split(/%..|./).length - 1);
+}
 
 function evaluateCommand(res, msg, game, player, isNew) {
   //bot.notifyAdmin(tenthings);
@@ -986,7 +983,24 @@ function evaluateCommand(res, msg, game, player, isNew) {
       getScores(game);
       break;
     case '/stats':
-    console.log('here');
+      countBytes(JSON.stringify({
+        type: 'stats',
+        lvl: 'gm',
+        gm: game.chat_id,
+        id: game.chat_id
+      }));
+      countBytes(JSON.stringify({
+        type: 'stats',
+        lvl: 'ply',
+        gm: game.chat_id,
+        id: player._id
+      }));
+      countBytes(JSON.stringify({
+        type: 'stats',
+        lvl: 'lst',
+        gm: game.chat_id,
+        id: game.list._id
+      }));
       bot.sendKeyboard(game.chat_id, 'Which stats would you like?', {
         inline_keyboard: [
           [
@@ -1010,7 +1024,7 @@ function evaluateCommand(res, msg, game, player, isNew) {
             }
           ],
           [
-              {
+            {
               'text': 'List',
               'callback_data': JSON.stringify({
                 type: 'stats',
