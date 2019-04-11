@@ -780,7 +780,7 @@ router.post('/', function (req, res, next) {
           });
         }
       });
-    } else if (data.type === 'stats') {
+    } else if (data.type === 'stat') {
       stats(data);
     }
     return res.sendStatus(200);
@@ -1017,14 +1017,14 @@ function evaluateCommand(res, msg, game, player, isNew) {
             {
               'text': 'Game Stats',
               'callback_data': JSON.stringify({
-                type: 'stats',
+                type: 'stat',
                 id: game.chat_id + '_g_' + game.chat_id
               })
             },
             {
               'text': 'My Stats',
               'callback_data': JSON.stringify({
-                type: 'stats',
+                type: 'stat',
                 id: game.chat_id + '_p_' + player._id
               })
             }
@@ -1033,7 +1033,7 @@ function evaluateCommand(res, msg, game, player, isNew) {
             {
               'text': 'List Stats',
               'callback_data': JSON.stringify({
-                type: 'stats',
+                type: 'stat',
                 id: game.chat_id + '_l_' + game.list._id
               })
             }
