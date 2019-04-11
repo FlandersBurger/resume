@@ -714,7 +714,7 @@ function stats(data) {
         var findPlayer = new Promise(function(resolve, reject) {
           console.log(game.players);
           var player = _.find(game.players, function(existingPlayer) {
-            return existingPlayer.id == id;
+            return existingPlayer._id == id;
           });
           resolve(player);
         });
