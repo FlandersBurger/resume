@@ -992,20 +992,15 @@ function evaluateCommand(res, msg, game, player, isNew) {
         gm: game.chat_id,
         id: game.chat_id
       }));
-      console.log(game.chat_id);
-      console.log(player._id);
-      console.log(game.list._id);
       countBytes(JSON.stringify({
         type: 'stats',
-        lvl: 'ply',
         gm: game.chat_id,
-        id: player._id
+        id: 'p_' + player._id
       }));
       countBytes(JSON.stringify({
         type: 'stats',
-        lvl: 'lst',
         gm: game.chat_id,
-        id: game.list._id
+        id: 'l_' + game.list._id
       }));
       bot.sendKeyboard(game.chat_id, 'Which stats would you like?', {
         inline_keyboard: [
@@ -1014,18 +1009,16 @@ function evaluateCommand(res, msg, game, player, isNew) {
               'text': 'This Game',
               'callback_data': JSON.stringify({
                 type: 'stats',
-                lvl: 'gm',
                 gm: game.chat_id,
-                id: game.chat_id
+                id: 'g_' + game.chat_id
               })
             },
             {
               'text': 'My Stats',
               'callback_data': JSON.stringify({
                 type: 'stats',
-                lvl: 'ply',
                 gm: game.chat_id,
-                id: player._id
+                id: 'p_' + player._id
               })
             }
           ],
@@ -1034,9 +1027,8 @@ function evaluateCommand(res, msg, game, player, isNew) {
               'text': 'List',
               'callback_data': JSON.stringify({
                 type: 'stats',
-                lvl: 'lst',
                 gm: game.chat_id,
-                id: game.list._id
+                id: 'l_' + game.list._id
               })
             }
           ]
