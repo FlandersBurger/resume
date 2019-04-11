@@ -690,9 +690,14 @@ function stats(data) {
 
   console.log('stats -> ' + type);
   console.log(data);
+  data = data.split('_');
+  console.log(data);
+  var game = data[0];
+  var type = data[1];
+  var id = data[2];
   var message = '';
-  switch (data.type) {
-    case 'gm':
+  switch (type) {
+    case 'g':
       TenThings.findOne({ chat_id: data.gm }).then(function(game) {
         message = '<b>Game Stats</b>\n';
         message += 'Started ' + game.date + '\n';
@@ -704,7 +709,7 @@ function stats(data) {
         bot.sendMessage(game.chat_id, message);
       });
       break;
-    case 'ply':
+    case 'p':
       message += '<b>Personal Stats for ' + player.first_name + '</b>\n';
       message += 'Total Score: ' + player.score + '\n';
       message += 'High Score: ' + player.highScore + '\n';
@@ -718,7 +723,7 @@ function stats(data) {
       message += 'Lists skipped: ' + player.skips + '\n';
       bot.sendMessage(game.chat_id, message);
       break;
-    case 'lst':
+    case 'l':
       List.findOne({ _id: data.id }).populate('creator').exec(function(err, gameList) {
         message += '<b>List Stats for ' + gameList.name + '</b>\n';
         message += 'Score: ' + gameList.score + '\n';
@@ -1004,7 +1009,7 @@ function evaluateCommand(res, msg, game, player, isNew) {
         inline_keyboard: [
           [
             {
-              'text': 'This Game',
+              'text': 'Game Stats',
               'callback_data': JSON.stringify({
                 type: 'stats',
                 id: game.chat_id + '_g_' + game.chat_id
@@ -1020,7 +1025,7 @@ function evaluateCommand(res, msg, game, player, isNew) {
           ],
           [
             {
-              'text': 'List',
+              'text': 'List Stats',
               'callback_data': JSON.stringify({
                 type: 'stats',
                 id: game.chat_id + '_l_' + game.list._id
