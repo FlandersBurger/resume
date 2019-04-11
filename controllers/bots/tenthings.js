@@ -999,6 +999,18 @@ function evaluateCommand(res, msg, game, player, isNew) {
       getScores(game);
       break;
     case '/stats':
+      countBytes({
+        type: 'stats',
+        id: game.chat_id + '_g_' + game.chat_id
+      })
+      countBytes({
+        type: 'stats',
+        id: game.chat_id + '_p_' + player._id
+      })
+      countBytes({
+        type: 'stats',
+        id: game.chat_id + '_l_' + game.list._id
+      })
       bot.sendKeyboard(game.chat_id, 'Which stats would you like?', {
         inline_keyboard: [
           [
