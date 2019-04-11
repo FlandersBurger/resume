@@ -699,14 +699,16 @@ function stats(data) {
   TenThings.findOne({ chat_id: game_id }).then(function(game) {
     switch (type) {
       case 'g':
-        message = '<b>Game Stats</b>\n';
-        message += 'Started ' + game.date + '\n';
-        message += game.players.length + ' players\n';
-        message += 'Cycled through all lists ' + game.cycles + ' times\n';
-        message += game.cycles ? 'Last cycled: ' + moment(game.lastCycleDate).format("DD-MMM-YYYY") + '\n' : '';
-        message += game.playedLists.length + ' of ' + lists.length + ' lists played in current cycle\n';
-        message += '\n';
-        bot.sendMessage(game.chat_id, message);
+        List.find().exec(function(err, lists) {
+          message = '<b>Game Stats</b>\n';
+          message += 'Started ' + game.date + '\n';
+          message += game.players.length + ' players\n';
+          message += 'Cycled through all lists ' + game.cycles + ' times\n';
+          message += game.cycles ? 'Last cycled: ' + moment(game.lastCycleDate).format("DD-MMM-YYYY") + '\n' : '';
+          message += game.playedLists.length + ' of ' + lists.length + ' lists played in current cycle\n';
+          message += '\n';
+          bot.sendMessage(game.chat_id, message);
+        });
         break;
       case 'p':
         var player = _.find(game.players, function(existingPlayer) {
@@ -991,23 +993,6 @@ function evaluateCommand(res, msg, game, player, isNew) {
       getScores(game);
       break;
     case '/stats':
-    console.log(game.chat_id);
-    console.log(player._id);
-    console.log(game.list._id);
-      countBytes(JSON.stringify({
-        type: 'stats',
-        lvl: 'gm',
-        gm: game.chat_id,
-        id: game.chat_id
-      }));
-      countBytes(JSON.stringify({
-        type: 'stats',
-        id: game.chat_id + '_p_' + player._id
-      }));
-      countBytes(JSON.stringify({
-        type: 'stats',
-        id: game.chat_id + '_l_' + game.list._id
-      }));
       bot.sendKeyboard(game.chat_id, 'Which stats would you like?', {
         inline_keyboard: [
           [
