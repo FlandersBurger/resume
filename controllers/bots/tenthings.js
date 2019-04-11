@@ -687,10 +687,7 @@ function getRandom(arr, n) {
 }
 
 function stats(data) {
-
-  console.log('stats -> ' + type);
   data = data.id.split('_');
-  console.log(data);
   var game_id = data[0];
   var type = data[1];
   var id = data[2];
@@ -699,7 +696,18 @@ function stats(data) {
     switch (type) {
       case 'players':
         var keyboard = [];
-        game.players.forEach(function(player, index) {
+        game.players.sort(function(a, b) {
+          var nameA = a.first_name.toUpperCase(); // ignore upper and lowercase
+          var nameB = b.first_name.toUpperCase(); // ignore upper and lowercase
+          if (nameA < nameB) {
+            return -1;
+          }
+          if (nameA > nameB) {
+            return 1;
+          }
+          // names must be equal
+          return 0;
+        }).forEach(function(player, index) {
           if (index % 3 === 0) {
             keyboard.push([
               {
