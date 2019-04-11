@@ -711,11 +711,12 @@ function stats(data) {
         break;
       case 'p':
       console.log(id);
-        var findPlayer = new Promise(function(resolve, error) {
-          resolve(_.find(game.players, function(existingPlayer) {
-            console.log(existingPlayer.id);
+        var findPlayer = new Promise(function(resolve, reject) {
+          console.log(game.players);
+          var player = _.find(game.players, function(existingPlayer) {
             return existingPlayer.id == id;
-          }));
+          });
+          resolve(player);
         });
         findPlayer.then(function(player) {
           message += '<b>Personal Stats for ' + player.first_name + '</b>\n';
