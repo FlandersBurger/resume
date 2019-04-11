@@ -983,12 +983,18 @@ function evaluateCommand(res, msg, game, player, isNew) {
       getScores(game);
       break;
     case '/stats':
+    console.log(game.chat_id);
+    console.log(player._id);
+    console.log(game.list._id);
       countBytes(JSON.stringify({
         type: 'stats',
         lvl: 'gm',
         gm: game.chat_id,
         id: game.chat_id
       }));
+      console.log(game.chat_id);
+      console.log(player._id);
+      console.log(game.list._id);
       countBytes(JSON.stringify({
         type: 'stats',
         lvl: 'ply',
