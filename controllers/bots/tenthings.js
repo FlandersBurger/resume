@@ -697,6 +697,35 @@ function stats(data) {
   var message = '';
   TenThings.findOne({ chat_id: game_id }).then(function(game) {
     switch (type) {
+      case 'players':
+        var keyboard = [];
+        game.players.forEach(function(player, index) {
+          if (index % 3 === 0) {
+            keyboard.push([
+              {
+                'text': player.first_name,
+                'callback_data': JSON.stringify({
+                  type: 'stat',
+                  id: game.chat_id + '_p_' + player._id
+                })
+              }
+            ]);
+          } else {
+            keyboard[Math.floor(index / 3)].push(
+              {
+                'text': player.first_name,
+                'callback_data': JSON.stringify({
+                  type: 'stat',
+                  id: game.chat_id + '_p_' + player._id
+                })
+              }
+            );
+          }
+        });
+        bot.sendKeyboard(game.chat_id, 'Which player?', {
+          inline_keyboard: keyboard
+        });
+        break;
       case 'g':
         List.find().exec(function(err, lists) {
           message = '<b>Game Stats</b>\n';
@@ -710,7 +739,6 @@ function stats(data) {
         });
         break;
       case 'p':
-      console.log(id);
         var findPlayer = new Promise(function(resolve, reject) {
           console.log(game.players);
           var player = _.find(game.players, function(existingPlayer) {
@@ -999,18 +1027,6 @@ function evaluateCommand(res, msg, game, player, isNew) {
       getScores(game);
       break;
     case '/stats':
-      countBytes(JSON.stringify({
-        type: 'stats',
-        id: game.chat_id + '_g_' + game.chat_id
-      }));
-      countBytes(JSON.stringify({
-        type: 'stats',
-        id: game.chat_id + '_p_' + player._id
-      }));
-      countBytes(JSON.stringify({
-        type: 'stats',
-        id: game.chat_id + '_l_' + game.list._id
-      }));
       bot.sendKeyboard(game.chat_id, 'Which stats would you like?', {
         inline_keyboard: [
           [
@@ -1022,19 +1038,26 @@ function evaluateCommand(res, msg, game, player, isNew) {
               })
             },
             {
-              'text': 'My Stats',
+              'text': 'List Stats',
               'callback_data': JSON.stringify({
                 type: 'stat',
-                id: game.chat_id + '_p_' + player._id
+                id: game.chat_id + '_l_' + game.list._id
               })
             }
           ],
           [
             {
-              'text': 'List Stats',
+              'text': 'My Stats',
               'callback_data': JSON.stringify({
                 type: 'stat',
-                id: game.chat_id + '_l_' + game.list._id
+                id: game.chat_id + '_p_' + player._id
+              })
+            },
+            {
+              'text': 'Player Stats',
+              'callback_data': JSON.stringify({
+                type: 'stat',
+                id: game.chat_id + '_players'
               })
             }
           ]
