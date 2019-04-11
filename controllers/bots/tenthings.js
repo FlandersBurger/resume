@@ -692,8 +692,8 @@ function stats(data) {
   console.log(data);
   var message = '';
   switch (data.type) {
-    case 'game':
-      TenThings.findOne({ chat_id: data.game }).then(function(game) {
+    case 'gm':
+      TenThings.findOne({ chat_id: data.gm }).then(function(game) {
         message = '<b>Game Stats</b>\n';
         message += 'Started ' + game.date + '\n';
         message += game.players.length + ' players\n';
@@ -704,7 +704,7 @@ function stats(data) {
         bot.sendMessage(game.chat_id, message);
       });
       break;
-    case 'personal':
+    case 'ply':
       message += '<b>Personal Stats for ' + player.first_name + '</b>\n';
       message += 'Total Score: ' + player.score + '\n';
       message += 'High Score: ' + player.highScore + '\n';
@@ -718,8 +718,8 @@ function stats(data) {
       message += 'Lists skipped: ' + player.skips + '\n';
       bot.sendMessage(game.chat_id, message);
       break;
-    case 'list':
-      List.findOne({ _id: game.list._id }).populate('creator').exec(function(err, gameList) {
+    case 'lst':
+      List.findOne({ _id: data.id }).populate('creator').exec(function(err, gameList) {
         message += '<b>List Stats for ' + gameList.name + '</b>\n';
         message += 'Score: ' + gameList.score + '\n';
         message += 'Votes: ' + gameList.voters.length + '\n';
@@ -917,6 +917,13 @@ router.post('/webhook', function (req, res) {
   }
 });
 
+console.log(encodeURI(JSON.stringify({
+  type: 'stats',
+  lvl: 'gm',
+  gm: -1001394022777,
+  id: 55229200
+})).split(/%..|./).length - 1);
+
 function evaluateCommand(res, msg, game, player, isNew) {
   //bot.notifyAdmin(tenthings);
   //bot.notifyAdmin(games[msg.chat.id].list);
@@ -981,35 +988,39 @@ function evaluateCommand(res, msg, game, player, isNew) {
     case '/stats':
     console.log('here');
       bot.sendKeyboard(game.chat_id, 'Which stats would you like?', {
-        inline_keyboard: [[
-          {
-            'text': 'This Game',
-            'callback_data': JSON.stringify({
-              type: 'stats',
-              level: 'game',
-              game: msg.chat.id,
-              id: msg.chat.id
-            })
-          },
-          {
-            'text': 'My Stats',
-            'callback_data': JSON.stringify({
-              type: 'stats',
-              level: 'personal',
-              game: msg.chat.id,
-              id: player._id
-            })
-          },
-          {
-            'text': 'List',
-            'callback_data': JSON.stringify({
-              type: 'stats',
-              level: 'list',
-              game: msg.chat.id,
-              id: game.list._id
-            })
-          }
-        ]]
+        inline_keyboard: [
+          [
+            {
+              'text': 'This Game',
+              'callback_data': JSON.stringify({
+                type: 'stats',
+                lvl: 'gm',
+                gm: game.chat_id,
+                id: game.chat_id
+              })
+            },
+            {
+              'text': 'My Stats',
+              'callback_data': JSON.stringify({
+                type: 'stats',
+                lvl: 'ply',
+                gm: game.chat_id,
+                id: player._id
+              })
+            }
+          ],
+          [
+              {
+              'text': 'List',
+              'callback_data': JSON.stringify({
+                type: 'stats',
+                lvl: 'lst',
+                gm: game.chat_id,
+                id: game.list._id
+              })
+            }
+          ]
+        ]
       });
       break;
     case '/list':
