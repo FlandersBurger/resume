@@ -690,7 +690,7 @@ function stats(data) {
 
   console.log('stats -> ' + type);
   console.log(data);
-  data = data.split('_');
+  data = data.id.split('_');
   console.log(data);
   var game = data[0];
   var type = data[1];
