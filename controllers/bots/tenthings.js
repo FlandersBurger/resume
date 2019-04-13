@@ -369,6 +369,8 @@ function guessed(game, msg, value, blurb, score, accuracy) {
   var answersLeft = game.list.values.filter(function(item) { return !item.guesser.first_name; }).length;
   if (answersLeft > 0) {
     message += '\n' + answersLeft + ' answer' + (answersLeft > 1 ? 's' : '') + ' left.';
+  } else {
+    message += '\nRound over.';
   }
   bot.sendMessage(msg.chat.id, message);
 }
@@ -412,7 +414,6 @@ function checkRound(game) {
   if (game.list.values.filter(function(item) {
     return !item.guesser.first_name;
   }).length === 0) {
-    bot.sendMessage(game.chat_id, 'Round over.');
     setTimeout(function () {
       getList(game, function(list) {
         var message = '<b>' + game.list.name + '</b> (' + game.list.totalValues + ') by ' + game.list.creator.username + '\n';
