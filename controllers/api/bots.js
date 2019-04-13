@@ -27,7 +27,7 @@ router.get('/lists', function (req, res, next) {
         plays: list.plays,
         skips: list.skips,
         score: list.score,
-        values: list.values.length,
+        answers: list.values.length,
         blurbs: list.values.filter(function(value) { return value.blurb; }).length,
         date: list.date,
         modifyDate: list.modifyDate,

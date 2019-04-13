@@ -144,7 +144,8 @@ angular.module('app')
         name: '',
         creator: $scope.currentUser._id,
         date: new Date(),
-        values: []
+        values: [],
+        answers: 0
       });
       $scope.selectedList = $scope.lists[0];
     } else {
@@ -156,6 +157,7 @@ angular.module('app')
     if ($scope.newItem.value) {
       $scope.newItem.creator = $scope.currentUser._id;
       $scope.selectedList.values.unshift(JSON.parse(JSON.stringify($scope.newItem)));
+      $scope.selectedList.answers++;
       $scope.newItem.value = '';
       $scope.newItem.blurb = '';
       if ($scope.selectedList.values.length >= 10) {
@@ -195,7 +197,7 @@ angular.module('app')
       $scope.lists = $scope.lists.filter(function(list) { return list._id; });
       $scope.selectedList = null;
     } else {
-      if (confirm('Are you sure you want to delete this list?')) {  
+      if (confirm('Are you sure you want to delete this list?')) {
         BotsSvc.deleteList(list)
         .then(function(response) {
           $scope.getLists();
