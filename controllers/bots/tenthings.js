@@ -318,6 +318,7 @@ function checkGuess(game, guess, msg) {
   });
   if (!match.guesser.first_name) {
     match.guesser = msg.from;
+    if (!player.answers) player.answers = 0;
     player.answers++;
     var score = Math.round((MAXHINTS - game.hints + game.guessers.length) * (guess.match.distance - 0.6) * 2.5);
     var accuracy = (guess.match.distance * 100).toFixed(0) + '%';
