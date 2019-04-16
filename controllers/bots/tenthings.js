@@ -317,7 +317,6 @@ function checkGuess(game, guess, msg) {
     return existingPlayer.id == msg.from.id;
   });
   if (!player) {
-    bot.notifyAdmin(JSON.stringify(game));
     bot.notifyAdmin(JSON.stringify(guess));
     return console.error('Something wrong with this guess:\n' + JSON.stringify(guess));
 
@@ -923,10 +922,12 @@ router.post('/', function (req, res, next) {
       player = _.find(existingGame.players, function(existingPlayer) {
         return existingPlayer.id == msg.from.id;
       });
+      console.log(player);
       if (!player) {
         existingGame.players.push(msg.from);
         player = existingGame.players[existingGame.players.length - 1];
       }
+      console.log(player);
       return evaluateCommand(res, msg, existingGame, player, false);
     }
   });
