@@ -74,7 +74,37 @@ TenThings.find()
   });
 });
 */
-
+var newLists = schedule.scheduleJob('0 0 12 * * *', function() {
+  if (new Date().getHours() === 12) {
+    List.find({
+      $or: [
+        {
+          date: { $gt: moment().subtract(1, 'days') }
+        }
+      ]
+    })
+    .then(function(lists) {
+      var message = '<b>New lists created today</b>';
+      lists.forEach(function(list) {
+        message += '\n- ' + list.name;
+      });
+      TenThings.find({}).select('chat_id')
+      .then(function(games) {
+        games.filter(function(game) {
+          return !_.find(bot.getAdmins(), function(admin) {
+            return admin === game.chat_id;
+          });
+        }).forEach(function(game, index) {
+          setTimeout(function() {
+            bot.sendMessage(game.chat_id, message);
+          }, index * 50);
+        });
+      });
+    });
+  } else {
+    bot.notifyAdmin('New lists incorrectly triggered: ' + new Date());
+  }
+});
 //var dailyScore = schedule.scheduleJob('*/10 * * * * *', function() {
 var dailyScore = schedule.scheduleJob('0 0 0 * * *', function() {
   if (new Date().getHours() === 0) {
