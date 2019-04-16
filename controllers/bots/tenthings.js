@@ -317,6 +317,7 @@ function checkGuess(game, guess, msg) {
     return existingPlayer.id == msg.from.id;
   });
   if (!player) {
+    bot.notifyAdmin(JSON.stringify(game));
     bot.notifyAdmin(JSON.stringify(guess));
     return console.error('Something wrong with this guess:\n' + JSON.stringify(guess));
 
