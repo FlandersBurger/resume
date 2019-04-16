@@ -922,13 +922,19 @@ router.post('/', function (req, res, next) {
       player = _.find(existingGame.players, function(existingPlayer) {
         return existingPlayer.id == msg.from.id;
       });
-      console.log(player);
       if (!player) {
         existingGame.players.push(msg.from);
         player = existingGame.players[existingGame.players.length - 1];
+        existingGame.save(function(err) {
+          if (err) {
+            console.error(err);
+          } else {
+            return evaluateCommand(res, msg, existingGame, player, false);
+          }
+        })
+      } else {
+        return evaluateCommand(res, msg, existingGame, player, false);
       }
-      console.log(player);
-      return evaluateCommand(res, msg, existingGame, player, false);
     }
   });
 });
