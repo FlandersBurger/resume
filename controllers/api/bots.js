@@ -1,6 +1,7 @@
 var router = require('express').Router();
 var mongoose = require('mongoose');
 var request = require('request');
+var moment = require('moment');
 var _ = require('underscore');
 
 var config = require('../../config');
@@ -63,7 +64,35 @@ router.get('/lists/:id', function (req, res, next) {
   });
 });
 
-
+List.find({
+  $or: [
+    {
+      date: { $gt: moment().subtract(1, 'days'), $lte: moment()}
+    }
+  ]
+})
+.then(function(lists) {
+  var message = 'New lists created today: ';
+  lists.forEach(function(list) {
+    message += '\n- ' + list.name;
+  });
+  console.log(message);
+  TenThings.find({}).select('chat_id')
+  .then(function(games) {
+    games.filter(function(game) {
+      return !_.find(bot.getAdmins(), function(admin) {
+        return admin === game.chat_id;
+      });
+    }).forEach(function(game, index) {
+      //console.log('New list created: <b>' + list.name + '</b>');
+      /*
+      setTimeout(function() {
+        bot.sendMessage(game.chat_id, 'New list created: <b>' + list.name + '</b>');
+      }, index * 100);
+      */
+    });
+  });
+});
 
 router.put('/lists', function (req, res, next) {
   var yesterday = new Date();
@@ -77,6 +106,7 @@ router.put('/lists', function (req, res, next) {
       if (!req.body.list._id) {
         console.log(list.name + ' created by ' + req.body.user.username);
         bot.notifyAdmins(list.name + ' created by ' + req.body.user.username);
+        /*
         TenThings.find({}).select('chat_id')
         .then(function(games) {
           games.filter(function(game) {
@@ -89,6 +119,7 @@ router.put('/lists', function (req, res, next) {
             }, index * 100);
           });
         });
+        */
       } else if (result.date < yesterday) {
         bot.notifyAdmins(list.name + ' updated by ' + req.body.user.username);
       }
