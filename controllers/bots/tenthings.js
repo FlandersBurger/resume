@@ -307,7 +307,7 @@ function processGuess(guess) {
 }
 
 function checkGuess(game, guess, msg) {
-  if (!_.find(game.guessers, function(guesser) {
+  if (!_.some(game.guessers, function(guesser) {
     return guesser == msg.from.id;
   })) {
     game.guessers.push(msg.from.id);
@@ -316,9 +316,13 @@ function checkGuess(game, guess, msg) {
   var player = _.find(game.players, function(existingPlayer) {
     return existingPlayer.id == msg.from.id;
   });
+  if (!player) {
+    bot.notifyAdmin(JSON.stringify(guess));
+    return console.error('Something wrong with this guess:\n' + JSON.stringify(guess));
+
+  }
   if (!match.guesser.first_name) {
     match.guesser = msg.from;
-    if (!player.answers) player.answers = 0;
     player.answers++;
     var score = Math.round((MAXHINTS - game.hints + game.guessers.length) * (guess.match.distance - 0.6) * 2.5);
     var accuracy = (guess.match.distance * 100).toFixed(0) + '%';
@@ -915,19 +919,14 @@ router.post('/', function (req, res, next) {
       });
     } else {
       var player;
-      try {
-        player = _.find(existingGame.players, function(existingPlayer) {
-          return existingPlayer.id == msg.from.id;
-        });
-      } catch (e) {
-        console.error('New player');
-      } finally {
-        if (!player) {
-          existingGame.players.push(msg.from);
-          player = existingGame.players[existingGame.players.length - 1];
-        }
-        return evaluateCommand(res, msg, existingGame, player, false);
+      player = _.find(existingGame.players, function(existingPlayer) {
+        return existingPlayer.id == msg.from.id;
+      });
+      if (!player) {
+        existingGame.players.push(msg.from);
+        player = existingGame.players[existingGame.players.length - 1];
       }
+      return evaluateCommand(res, msg, existingGame, player, false);
     }
   });
 });
