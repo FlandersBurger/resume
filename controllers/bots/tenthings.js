@@ -677,7 +677,7 @@ function getScores(gameId, scoreType) {
         game.players.sort(function(a, b) {
           return b.highScore - a.highScore;
         }).slice(0, 10).forEach(function(player, index) {
-          str += (index + 1) + ': ' + player.first_name + ': ' + player.highScore;
+          str += (index + 1) + ': ' + player.first_name + ': ' + player.highScore + '\n';
         });
         bot.sendMessage(game.chat_id, str);
         break;
@@ -686,7 +686,7 @@ function getScores(gameId, scoreType) {
         game.players.sort(function(a, b) {
           return (b.plays === 0 ? 0 : b.score / b.plays) - (a.plays === 0 ? 0 : a.score / a.plays);
         }).slice(0, 10).forEach(function(player, index) {
-          str += (index + 1) + ': ' + player.first_name + ': ' + player.wins + '/' + player.plays + '(' + (Math.round(player.wins / player.plays * 100) / 100) + '%)';
+          str += (index + 1) + ': ' + player.first_name + ': ' + player.wins + '/' + player.plays + '(' + (Math.round(player.wins / player.plays * 100) / 100) + '%)\n';
         });
         break;
       case 'ts':
@@ -694,7 +694,7 @@ function getScores(gameId, scoreType) {
         game.players.sort(function(a, b) {
           return b.score - a.score;
         }).slice(0, 10).forEach(function(player, index) {
-          str += (index + 1) + ': ' + player.first_name + ': ' + player.score;
+          str += (index + 1) + ': ' + player.first_name + ': ' + player.score + '\n';
         });
         break;
       case 'ta':
@@ -702,7 +702,7 @@ function getScores(gameId, scoreType) {
         game.players.sort(function(a, b) {
           return (b.plays === 0 ? 0 : b.score / b.plays) - (a.plays === 0 ? 0 : a.score / a.plays);
         }).slice(0, 10).forEach(function(player, index) {
-          str += (index + 1) + ': ' + player.first_name + ': ' + Math.round(player.plays === 0 ? 0 : player.score / player.plays);
+          str += (index + 1) + ': ' + player.first_name + ': ' + Math.round(player.plays === 0 ? 0 : player.score / player.plays) + '\n';
         });
         break;
       default:
