@@ -74,7 +74,37 @@ TenThings.find()
   });
 });
 */
-
+var newLists = schedule.scheduleJob('0 0 12 * * *', function() {
+  if (new Date().getHours() === 12) {
+    List.find({
+      $or: [
+        {
+          date: { $gt: moment().subtract(1, 'days') }
+        }
+      ]
+    })
+    .then(function(lists) {
+      var message = '<b>New lists created today</b>';
+      lists.forEach(function(list) {
+        message += '\n- ' + list.name;
+      });
+      TenThings.find({}).select('chat_id')
+      .then(function(games) {
+        games.filter(function(game) {
+          return !_.find(bot.getAdmins(), function(admin) {
+            return admin === game.chat_id;
+          });
+        }).forEach(function(game, index) {
+          setTimeout(function() {
+            bot.sendMessage(game.chat_id, message);
+          }, index * 50);
+        });
+      });
+    });
+  } else {
+    bot.notifyAdmin('New lists incorrectly triggered: ' + new Date());
+  }
+});
 //var dailyScore = schedule.scheduleJob('*/10 * * * * *', function() {
 var dailyScore = schedule.scheduleJob('0 0 0 * * *', function() {
   if (new Date().getHours() === 0) {
@@ -307,7 +337,7 @@ function processGuess(guess) {
 }
 
 function checkGuess(game, guess, msg) {
-  if (!_.find(game.guessers, function(guesser) {
+  if (!_.some(game.guessers, function(guesser) {
     return guesser == msg.from.id;
   })) {
     game.guessers.push(msg.from.id);
@@ -316,6 +346,11 @@ function checkGuess(game, guess, msg) {
   var player = _.find(game.players, function(existingPlayer) {
     return existingPlayer.id == msg.from.id;
   });
+  if (!player) {
+    bot.notifyAdmin(JSON.stringify(guess));
+    return console.error('Something wrong with this guess:\n' + JSON.stringify(guess));
+
+  }
   if (!match.guesser.first_name) {
     match.guesser = msg.from;
     player.answers++;
@@ -947,17 +982,20 @@ router.post('/', function (req, res, next) {
       });
     } else {
       var player;
-      try {
-        player = _.find(existingGame.players, function(existingPlayer) {
-          return existingPlayer.id == msg.from.id;
-        });
-      } catch (e) {
-        console.error('New player');
-      } finally {
-        if (!player) {
-          existingGame.players.push(msg.from);
-          player = existingGame.players[existingGame.players.length - 1];
-        }
+      player = _.find(existingGame.players, function(existingPlayer) {
+        return existingPlayer.id == msg.from.id;
+      });
+      if (!player) {
+        existingGame.players.push(msg.from);
+        player = existingGame.players[existingGame.players.length - 1];
+        existingGame.save(function(err) {
+          if (err) {
+            console.error(err);
+          } else {
+            return evaluateCommand(res, msg, existingGame, player, false);
+          }
+        })
+      } else {
         return evaluateCommand(res, msg, existingGame, player, false);
       }
     }
