@@ -669,7 +669,7 @@ function cooldownHint(gameId) {
 function getScores(gameId, scoreType) {
   TenThings.findOne({
     chat_id: gameId
-  }).exec(function(err, game) {
+  }).select('players').exec(function(err, game) {
     var str = '';
     switch (scoreType) {
       case 'td':
@@ -715,7 +715,6 @@ function getScores(gameId, scoreType) {
     }
   });
 }
-
 
 function getDailyScores(game) {
   var str = '<b>Daily Scores</b>\n';
