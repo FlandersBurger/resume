@@ -1028,6 +1028,8 @@ router.post('/', function (req, res, next) {
         existingGame.save(function(err) {
           if (err) {
             console.error(err);
+            console.log(player);
+            res.sendStatus(200);
           } else {
             return evaluateCommand(res, msg, existingGame, player, false);
           }
