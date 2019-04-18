@@ -680,18 +680,16 @@ function getScores(gameId, scoreType) {
         }).slice(0, 10).forEach(function(player, index) {
           str += (index + 1) + ': ' + player.first_name + ': ' + player.highScore + '\n';
         });
-        bot.sendMessage(game.chat_id, str);
+        bot.sendMessage(gameId, str);
         break;
       case 'tr':
         str = '<b>Top Win Ratio</b>\n';
-        console.log(str);
         game.players.sort(function(a, b) {
           return (b.plays === 0 ? 0 : b.score / b.plays) - (a.plays === 0 ? 0 : a.score / a.plays);
         }).slice(0, 10).forEach(function(player, index) {
           str += (index + 1) + ': ' + player.first_name + ': ' + player.wins + '/' + player.plays + '(' + (Math.round(player.plays === 0 ? 0 : player.wins / player.plays * 100) / 100) + '%)\n';
-
-          console.log(str);
         });
+        bot.sendMessage(gameId, str);
         break;
       case 'ts':
         str = '<b>Top Overall Score</b>\n';
@@ -700,9 +698,8 @@ function getScores(gameId, scoreType) {
           return b.score - a.score;
         }).slice(0, 10).forEach(function(player, index) {
           str += (index + 1) + ': ' + player.first_name + ': ' + player.score + '\n';
-
-          console.log(str);
         });
+        bot.sendMessage(gameId, str);
         break;
       case 'ta':
         str = '<b>Top Average Daily Score</b>\n';
@@ -711,6 +708,7 @@ function getScores(gameId, scoreType) {
         }).slice(0, 10).forEach(function(player, index) {
           str += (index + 1) + ': ' + player.first_name + ': ' + Math.round(player.plays === 0 ? 0 : player.score / player.plays) + '\n';
         });
+        bot.sendMessage(gameId, str);
         break;
       default:
         getDailyScores(game);
