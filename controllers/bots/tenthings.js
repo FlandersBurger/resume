@@ -672,7 +672,7 @@ function getScores(gameId, scoreType) {
   }).exec(function(err, game) {
     var str = '';
     switch (scoreType) {
-      case 'topDaily':
+      case 'td':
         str = '<b>Top Daily Scores</b>\n';
         game.players.sort(function(a, b) {
           return b.highScore - a.highScore;
@@ -681,7 +681,7 @@ function getScores(gameId, scoreType) {
         });
         bot.sendMessage(game.chat_id, str);
         break;
-      case 'topRatio':
+      case 'tr':
         str = '<b>Top Win Ratio</b>\n';
         game.players.sort(function(a, b) {
           return (b.plays === 0 ? 0 : b.score / b.plays) - (a.plays === 0 ? 0 : a.score / a.plays);
@@ -689,7 +689,7 @@ function getScores(gameId, scoreType) {
           str += (index + 1) + ': ' + player.first_name + ': ' + player.wins + '/' + player.plays + '(' + (Math.round(player.wins / player.plays * 100) / 100) + '%)';
         });
         break;
-      case 'topScore':
+      case 'ts':
         str = '<b>Top Overall Score</b>\n';
         game.players.sort(function(a, b) {
           return b.score - a.score;
@@ -697,7 +697,7 @@ function getScores(gameId, scoreType) {
           str += (index + 1) + ': ' + player.first_name + ': ' + player.score;
         });
         break;
-      case 'topAverage':
+      case 'ta':
         str = '<b>Top Average Daily Score</b>\n';
         game.players.sort(function(a, b) {
           return (b.plays === 0 ? 0 : b.score / b.plays) - (a.plays === 0 ? 0 : a.score / a.plays);
@@ -886,7 +886,7 @@ router.post('/', function (req, res, next) {
     } else if (data.type === 'stat') {
       stats(data);
     } else if (data.type === 'score') {
-      getScores(req.body.message.chat.id, data.id);
+      getScores(data.game, data.id);
     }
     return res.sendStatus(200);
   } else if (req.body.edited_message) {
@@ -1110,14 +1110,16 @@ function evaluateCommand(res, msg, game, player, isNew) {
               'text': 'Daily Score',
               'callback_data': JSON.stringify({
                 type: 'score',
-                id: 'daily'
+                id: 'd',
+                game: msg.chat.id
               })
             },
             {
               'text': 'Top Daily Score',
               'callback_data': JSON.stringify({
                 type: 'score',
-                id: 'topDaily'
+                id: 'td',
+                game: msg.chat.id
               })
             }
           ],
@@ -1126,14 +1128,16 @@ function evaluateCommand(res, msg, game, player, isNew) {
               'text': 'Top Win Ratio',
               'callback_data': JSON.stringify({
                 type: 'score',
-                id: 'topRatio'
+                id: 'tr',
+                game: msg.chat.id
               })
             },
             {
               'text': 'Top Overall Score',
               'callback_data': JSON.stringify({
                 type: 'score',
-                id: 'topScore'
+                id: 'ts',
+                game: msg.chat.id
               })
             }
           ],
@@ -1142,7 +1146,8 @@ function evaluateCommand(res, msg, game, player, isNew) {
               'text': 'Top Average',
               'callback_data': JSON.stringify({
                 type: 'score',
-                id: 'topAverage'
+                id: 'ta',
+                game: msg.chat.id
               })
             }
           ]
