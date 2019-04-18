@@ -885,7 +885,7 @@ router.post('/', function (req, res, next) {
       });
     } else if (data.type === 'stat') {
       stats(data);
-    } else if (date.type === 'score') {
+    } else if (data.type === 'score') {
       getScores(msg.chat.id, data.id);
     }
     return res.sendStatus(200);
@@ -994,7 +994,7 @@ router.post('/', function (req, res, next) {
           } else {
             return evaluateCommand(res, msg, existingGame, player, false);
           }
-        })
+        });
       } else {
         return evaluateCommand(res, msg, existingGame, player, false);
       }
