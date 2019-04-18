@@ -1029,6 +1029,7 @@ router.post('/', function (req, res, next) {
           if (err) {
             console.error(err);
             console.log(player);
+            console.log(msg.from);
             res.sendStatus(200);
           } else {
             return evaluateCommand(res, msg, existingGame, player, false);
