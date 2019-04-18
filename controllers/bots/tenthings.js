@@ -674,6 +674,7 @@ function getScores(gameId, scoreType) {
     switch (scoreType) {
       case 'td':
         str = '<b>Top Daily Scores</b>\n';
+        console.log(str);
         game.players.sort(function(a, b) {
           return b.highScore - a.highScore;
         }).slice(0, 10).forEach(function(player, index) {
@@ -683,18 +684,24 @@ function getScores(gameId, scoreType) {
         break;
       case 'tr':
         str = '<b>Top Win Ratio</b>\n';
+        console.log(str);
         game.players.sort(function(a, b) {
           return (b.plays === 0 ? 0 : b.score / b.plays) - (a.plays === 0 ? 0 : a.score / a.plays);
         }).slice(0, 10).forEach(function(player, index) {
-          str += (index + 1) + ': ' + player.first_name + ': ' + player.wins + '/' + player.plays + '(' + (Math.round(player.wins / player.plays * 100) / 100) + '%)\n';
+          str += (index + 1) + ': ' + player.first_name + ': ' + player.wins + '/' + player.plays + '(' + (Math.round(player.plays === 0 ? 0 : player.wins / player.plays * 100) / 100) + '%)\n';
+
+          console.log(str);
         });
         break;
       case 'ts':
         str = '<b>Top Overall Score</b>\n';
+        console.log(str);
         game.players.sort(function(a, b) {
           return b.score - a.score;
         }).slice(0, 10).forEach(function(player, index) {
           str += (index + 1) + ': ' + player.first_name + ': ' + player.score + '\n';
+
+          console.log(str);
         });
         break;
       case 'ta':
