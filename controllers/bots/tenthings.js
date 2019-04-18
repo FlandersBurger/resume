@@ -687,7 +687,7 @@ function getScores(gameId, scoreType) {
         game.players.sort(function(a, b) {
           return (b.plays === 0 ? 0 : b.score / b.plays) - (a.plays === 0 ? 0 : a.score / a.plays);
         }).slice(0, 10).forEach(function(player, index) {
-          str += (index + 1) + ': ' + player.first_name + ': ' + player.wins + '/' + player.plays + '(' + (Math.round(player.plays === 0 ? 0 : player.wins / player.plays * 100) / 100) + '%)\n';
+          str += (index + 1) + ': ' + player.first_name + ': ' + player.wins + '/' + player.plays + ' (' + (Math.round(player.plays === 0 ? 0 : player.wins / player.plays)) + '%)\n';
         });
         bot.sendMessage(gameId, str);
         break;
