@@ -886,7 +886,7 @@ router.post('/', function (req, res, next) {
     } else if (data.type === 'stat') {
       stats(data);
     } else if (data.type === 'score') {
-      getScores(msg.chat.id, data.id);
+      getScores(req.body.message.chat.id, data.id);
     }
     return res.sendStatus(200);
   } else if (req.body.edited_message) {
