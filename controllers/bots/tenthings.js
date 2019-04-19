@@ -182,7 +182,7 @@ var dailyScore = schedule.scheduleJob('0 0 0 * * *', function() {
         staleGames.forEach(function(game) {
           game.remove();
         });
-        if (staleGames.length > 0) notifyAdmin(staleGames.length + ' stale games deleted');
+        if (staleGames.length > 0) bot.notifyAdmin(staleGames.length + ' stale games deleted');
       });
     }
   });
@@ -233,7 +233,7 @@ function selectList(game, callback) {
     if (lists.length === 0) {
       game.playedLists = [];
       game.cycles++;
-      game.lastCycleDate = Date.now;
+      game.lastCycleDate = moment();
       bot.sendMessage(game.chat_id, 'All lists have been played, a new cycle will now start.');
       List.find({}).populate('creator').exec(function (err, lists) {
         return callback(lists[Math.floor(Math.random() * lists.length)]);
