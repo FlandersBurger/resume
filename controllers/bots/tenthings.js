@@ -267,10 +267,13 @@ function selectList(game, callback) {
       game.playedLists = [];
       game.cycles++;
       game.lastCycleDate = moment();
-      bot.sendMessage(game.chat_id, 'All lists have been played, a new cycle will now start.');
-      List.find({}).populate('creator').exec(function (err, lists) {
-        return callback(lists[Math.floor(Math.random() * lists.length)]);
-      });
+      game.save(function (err) {
+        if (err) return bot.notifyAdmin(JSON.stringify(err));
+        bot.sendMessage(game.chat_id, 'All lists have been played, a new cycle will now start.');
+        List.find({}).populate('creator').exec(function (err, lists) {
+          return callback(lists[Math.floor(Math.random() * lists.length)]);
+        });
+      })
     } else {
       return callback(lists[Math.floor(Math.random() * lists.length)]);
     }
