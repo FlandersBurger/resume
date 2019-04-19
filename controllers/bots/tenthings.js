@@ -105,6 +105,39 @@ var newLists = schedule.scheduleJob('0 0 12 * * *', function() {
     bot.notifyAdmin('New lists incorrectly triggered: ' + new Date());
   }
 });
+
+var modifiedLists = schedule.scheduleJob('0 5 12 * * *', function() {
+  if (new Date().getHours() === 12) {
+    List.find({
+      $or: [
+        {
+          modifyDate: { $gt: moment().subtract(1, 'days') },
+          date: { $lt: moment().subtract(1, 'days') }
+        }
+      ]
+    })
+    .then(function(lists) {
+      var message = '<b>Lists updated today</b>';
+      lists.forEach(function(list) {
+        message += '\n- ' + list.name;
+      });
+      TenThings.find({}).select('chat_id')
+      .then(function(games) {
+        games.filter(function(game) {
+          return !_.find(bot.getAdmins(), function(admin) {
+            return admin === game.chat_id;
+          });
+        }).forEach(function(game, index) {
+          setTimeout(function() {
+            bot.sendMessage(game.chat_id, message);
+          }, index * 50);
+        });
+      });
+    });
+  } else {
+    bot.notifyAdmin('New lists incorrectly triggered: ' + new Date());
+  }
+});
 //var dailyScore = schedule.scheduleJob('*/10 * * * * *', function() {
 var dailyScore = schedule.scheduleJob('0 0 0 * * *', function() {
   if (new Date().getHours() === 0) {
@@ -666,6 +699,56 @@ function cooldownHint(gameId) {
   }
 }
 
+function getScores(gameId, scoreType) {
+  TenThings.findOne({
+    chat_id: gameId
+  }).select('players').exec(function(err, game) {
+    var str = '';
+    switch (scoreType) {
+      case 'td':
+        str = '<b>Top Daily Scores</b>\n';
+        console.log(str);
+        game.players.sort(function(a, b) {
+          return b.highScore - a.highScore;
+        }).slice(0, 10).forEach(function(player, index) {
+          str += (index + 1) + ': ' + player.first_name + ': ' + player.highScore + '\n';
+        });
+        bot.sendMessage(gameId, str);
+        break;
+      case 'tr':
+        str = '<b>Top Win Ratio</b>\n';
+        game.players.sort(function(a, b) {
+          return (b.plays === 0 ? 0 : b.wins / b.plays) - (a.plays === 0 ? 0 : a.wins / a.plays);
+        }).slice(0, 10).forEach(function(player, index) {
+          str += (index + 1) + ': ' + player.first_name + ': ' + player.wins + '/' + player.plays + ' (' + (Math.round(player.plays === 0 ? 0 : player.wins / player.plays * 10000) / 100) + '%)\n';
+        });
+        bot.sendMessage(gameId, str);
+        break;
+      case 'ts':
+        str = '<b>Top Overall Score</b>\n';
+        console.log(str);
+        game.players.sort(function(a, b) {
+          return b.score - a.score;
+        }).slice(0, 10).forEach(function(player, index) {
+          str += (index + 1) + ': ' + player.first_name + ': ' + player.score + '\n';
+        });
+        bot.sendMessage(gameId, str);
+        break;
+      case 'ta':
+        str = '<b>Top Average Daily Score</b>\n';
+        game.players.sort(function(a, b) {
+          return (b.plays === 0 ? 0 : b.score / b.plays) - (a.plays === 0 ? 0 : a.score / a.plays);
+        }).slice(0, 10).forEach(function(player, index) {
+          str += (index + 1) + ': ' + player.first_name + ': ' + Math.round(player.plays === 0 ? 0 : player.score / player.plays) + '\n';
+        });
+        bot.sendMessage(gameId, str);
+        break;
+      default:
+        getDailyScores(game);
+    }
+  });
+}
+
 function getDailyScores(game) {
   var str = '<b>Daily Scores</b>\n';
   game.players.filter(function(player) {
@@ -675,21 +758,6 @@ function getDailyScores(game) {
   }).forEach(function(player, index) {
     str += (index + 1) + ': ' + player.first_name + ' - ' + player.scoreDaily + '\n';
   });
-  bot.sendMessage(game.chat_id, str);
-}
-
-function getScores(game) {
-  var str = '<b>All Time High Scores</b>\n';
-  game.players.sort(function(a, b) {
-    return b.highScore - a.highScore;
-  }).slice(0, 10).forEach(function(player, index) {
-    str += (index + 1) + ': ' + player.first_name;
-    str += ' - <b>T</b>' + player.score;
-    str += ' <b>H</b>' + player.highScore;
-    str += (player.plays > 0 ? ' <b>A</b>' + Math.round(player.score / player.plays) : '');
-    str += ' <b>W</b>' + player.wins + '/' + player.plays + ' \n';
-  });
-  str += 'T = Total, H = High Score, A = Average, W = Win ratio';
   bot.sendMessage(game.chat_id, str);
 }
 
@@ -854,6 +922,8 @@ router.post('/', function (req, res, next) {
       });
     } else if (data.type === 'stat') {
       stats(data);
+    } else if (data.type === 'score') {
+      getScores(data.game, data.id);
     }
     return res.sendStatus(200);
   } else if (req.body.edited_message) {
@@ -958,10 +1028,13 @@ router.post('/', function (req, res, next) {
         existingGame.save(function(err) {
           if (err) {
             console.error(err);
+            console.log(player);
+            console.log(msg.from);
+            res.sendStatus(200);
           } else {
             return evaluateCommand(res, msg, existingGame, player, false);
           }
-        })
+        });
       } else {
         return evaluateCommand(res, msg, existingGame, player, false);
       }
@@ -1070,8 +1143,56 @@ function evaluateCommand(res, msg, game, player, isNew) {
       bot.sendMessage(msg.chat.id, 'Skip vetoed by ' + msg.from.first_name);
       break;
     case '/scores':
-      getDailyScores(game);
-      getScores(game);
+      bot.sendKeyboard(game.chat_id, 'Which scores would you like?', {
+        inline_keyboard: [
+          [
+            {
+              'text': 'Daily Score',
+              'callback_data': JSON.stringify({
+                type: 'score',
+                id: 'd',
+                game: msg.chat.id
+              })
+            },
+            {
+              'text': 'Top Daily Score',
+              'callback_data': JSON.stringify({
+                type: 'score',
+                id: 'td',
+                game: msg.chat.id
+              })
+            }
+          ],
+          [
+            {
+              'text': 'Top Win Ratio',
+              'callback_data': JSON.stringify({
+                type: 'score',
+                id: 'tr',
+                game: msg.chat.id
+              })
+            },
+            {
+              'text': 'Top Overall Score',
+              'callback_data': JSON.stringify({
+                type: 'score',
+                id: 'ts',
+                game: msg.chat.id
+              })
+            }
+          ],
+          [
+            {
+              'text': 'Top Average',
+              'callback_data': JSON.stringify({
+                type: 'score',
+                id: 'ta',
+                game: msg.chat.id
+              })
+            }
+          ]
+        ]
+      });
       break;
     case '/stats':
       bot.sendKeyboard(game.chat_id, 'Which stats would you like?', {
