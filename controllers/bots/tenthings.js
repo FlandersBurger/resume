@@ -578,10 +578,12 @@ function skip(game, player) {
 
 function skipList(game) {
   game.list.values.forEach(function(item, index) {
-    this[index].guesser.first_name = 'Not guessed';
+    if (!this[index].guesser) {
+      this[index].guesser.first_name = 'Not guessed';
+    }
   }, game.list.values);
   getList(game, function(list) {
-    var message = '<b>' + game.list.name + '</b> skipped!'
+    var message = '<b>' + game.list.name + '</b> skipped!\n'
     message += game.list.category ? 'Category: ' + game.list.category + '\n' : '';
     message += list;
     bot.sendMessage(game.chat_id, message);
