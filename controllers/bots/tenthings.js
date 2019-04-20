@@ -487,24 +487,29 @@ function checkRound(game) {
   }).length === 0) {
     setTimeout(function () {
       getList(game, function(list) {
-        var message = '<b>' + game.list.name + '</b> (' + game.list.totalValues + ') by ' + game.list.creator.username + '\n';
-        message += game.list.category ? 'Category: ' + game.list.category + '\n' : '';
-        message += list;
-        message += '<b>Stats for ' + game.list.name + '</b>\n';
-        message += 'Plays: ' + game.list.plays + '\n';
-        message += 'Skips: ' + game.list.skips + '\n';
-        message += 'Hints: ' + game.list.hints + '\n';
-        message += 'Created on: ' + moment(game.list.date).format("DD-MMM-YYYY") + '\n';
-        message += 'Modified on: ' + moment(game.list.modifyDate).format("DD-MMM-YYYY") + '\n';
-        message += '\n';
-        bot.sendMessage(game.chat_id, message);
-        setTimeout(function () {
-          getDailyScores(game);
-          rateList(game);
-          setTimeout(function() {
-            newRound(game);
-          }, 1000);
-        }, 2000);
+        List.findOne({ _id: game.list._id }).exec(function(err, foundList) {
+          var message = '<b>' + game.list.name + '</b> by ' + game.list.creator.username + '\n';
+          message += game.list.category ? 'Category: ' + game.list.category + '\n' : '';
+          message += list;
+          message += '<b>Stats for ' + game.list.name + '</b>\n';
+          message += 'Score: ' + foundList.score + '\n';
+          message += 'Votes: ' + foundList.voters.length + '\n';
+          message += 'Values: ' + foundList.values.length + '\n';
+          message += 'Plays: ' + foundList.plays + '\n';
+          message += 'Skips: ' + foundList.skips + '\n';
+          message += 'Hints: ' + foundList.hints + '\n';
+          message += 'Created on: ' + moment(foundList.date).format("DD-MMM-YYYY") + '\n';
+          message += 'Modified on: ' + moment(foundList.modifyDate).format("DD-MMM-YYYY") + '\n';
+          message += '\n';
+          bot.sendMessage(game.chat_id, message);
+          setTimeout(function () {
+            getDailyScores(game);
+            rateList(game);
+            setTimeout(function() {
+              newRound(game);
+            }, 1000);
+          }, 2000);
+        })
       });
     }, 2000);
   }
