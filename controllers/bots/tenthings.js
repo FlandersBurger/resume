@@ -491,8 +491,6 @@ function checkRound(game) {
         message += game.list.category ? 'Category: ' + game.list.category + '\n' : '';
         message += list;
         message += '<b>Stats for ' + game.list.name + '</b>\n';
-        message += 'Score: ' + game.list.score + '\n';
-        message += 'Votes: ' + game.list.voters.length + '\n';
         message += 'Plays: ' + game.list.plays + '\n';
         message += 'Skips: ' + game.list.skips + '\n';
         message += 'Hints: ' + game.list.hints + '\n';
@@ -584,7 +582,6 @@ function skipList(game) {
   }, game.list.values);
   getList(game, function(list) {
     var message = '<b>' + game.list.name + '</b> skipped!\n'
-    message += game.list.category ? 'Category: ' + game.list.category + '\n' : '';
     message += list;
     bot.sendMessage(game.chat_id, message);
     getDailyScores(game);
