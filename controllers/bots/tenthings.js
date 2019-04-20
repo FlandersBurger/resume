@@ -348,7 +348,7 @@ function queueGuess(game, msg) {
 
 function queueingGuess(guess) {
   queue.create('guess', guess).removeOnComplete( true ).save(function(err) {
-    if( !err ) console.log(guess.game.id + ' - Guess evaluated: "' + guess.msg.text + '" by '+ guess.msg.from.first_name);
+    if( !err ) console.log(guess.game + ' - Guess evaluated: "' + guess.msg.text + '" by '+ guess.msg.from.first_name);
   });
 }
 
