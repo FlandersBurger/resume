@@ -589,8 +589,6 @@ function skipList(game) {
     var message = '<b>' + game.list.name + '</b> skipped!\n'
     message += list;
     bot.sendMessage(game.chat_id, message);
-    getDailyScores(game);
-    newRound(game);
     delete skips[game.id];
     List.findOne({ _id: game.list._id }).exec(function (err, foundList) {
       if (err) return console.error(err);
@@ -600,6 +598,8 @@ function skipList(game) {
       foundList.skips++;
       foundList.save(function(err) {
         if (err) return console.error(err);
+        getDailyScores(game);
+        newRound(game);
       });
     });
   });
