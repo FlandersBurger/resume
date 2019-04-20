@@ -490,6 +490,15 @@ function checkRound(game) {
         var message = '<b>' + game.list.name + '</b> (' + game.list.totalValues + ') by ' + game.list.creator.username + '\n';
         message += game.list.category ? 'Category: ' + game.list.category + '\n' : '';
         message += list;
+        message += '<b>Stats for ' + game.list.name + '</b>\n';
+        message += 'Score: ' + game.list.score + '\n';
+        message += 'Votes: ' + game.list.voters.length + '\n';
+        message += 'Plays: ' + game.list.plays + '\n';
+        message += 'Skips: ' + game.list.skips + '\n';
+        message += 'Hints: ' + game.list.hints + '\n';
+        message += 'Created on: ' + moment(game.list.date).format("DD-MMM-YYYY") + '\n';
+        message += 'Modified on: ' + moment(game.list.modifyDate).format("DD-MMM-YYYY") + '\n';
+        message += '\n';
         bot.sendMessage(game.chat_id, message);
         setTimeout(function () {
           getDailyScores(game);
@@ -568,19 +577,23 @@ function skip(game, player) {
 }
 
 function skipList(game) {
-  bot.sendMessage(game.chat_id, '<b>' + game.list.name + '</b> skipped!');
-  getDailyScores(game);
-  newRound(game);
-  delete skips[game.id];
-  List.findOne({ _id: game.list._id }).exec(function (err, foundList) {
-    if (err) return console.error(err);
-    if (!foundList.skips) {
-      foundList.skips = 1;
-    } else {
-      foundList.skips++;
-    }
-    foundList.save(function(err) {
+  getList(game, function(list) {
+    var message = '<b>' + game.list.name + '</b> skipped!'
+    message += game.list.category ? 'Category: ' + game.list.category + '\n' : '';
+    message += list;
+    bot.sendMessage(game.chat_id, message);
+    getDailyScores(game);
+    newRound(game);
+    delete skips[game.id];
+    List.findOne({ _id: game.list._id }).exec(function (err, foundList) {
       if (err) return console.error(err);
+      if (!foundList.skips) {
+        foundList.skips = 0;
+      }
+      foundList.skips++;
+      foundList.save(function(err) {
+        if (err) return console.error(err);
+      });
     });
   });
 }
@@ -636,6 +649,13 @@ function hint(game, player, callback) {
     cooldowns[game.id] = 10;
     cooldownHint(game.id);
     game.save();
+    List.findOne({ _id: game.list._id }).exec(function (err, list) {
+      if (!list.hints) {
+        list.hints = 0;
+      }
+      list.hints++;
+      list.save();
+    })
   }
 }
 
@@ -884,6 +904,7 @@ function stats(data) {
           message += 'Values: ' + gameList.values.length + '\n';
           message += 'Plays: ' + gameList.plays + '\n';
           message += 'Skips: ' + gameList.skips + '\n';
+          message += 'Hints: ' + game.list.hints + '\n';
           message += 'Created by: ' + gameList.creator.username + '\n';
           message += 'Created on: ' + moment(gameList.date).format("DD-MMM-YYYY") + '\n';
           message += 'Modified on: ' + moment(gameList.modifyDate).format("DD-MMM-YYYY") + '\n';
