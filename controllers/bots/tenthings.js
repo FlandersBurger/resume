@@ -578,7 +578,7 @@ function skip(game, player) {
 
 function skipList(game) {
   game.list.values.forEach(function(item, index) {
-    if (!this[index].guesser) {
+    if (!item.guesser.first_name) {
       this[index].guesser.first_name = 'Not guessed';
     }
   }, game.list.values);
