@@ -577,6 +577,9 @@ function skip(game, player) {
 }
 
 function skipList(game) {
+  game.list.values.forEach(function(item, index) {
+    this[index].guesser.first_name = 'Not guessed';
+  }, game.list.values);
   getList(game, function(list) {
     var message = '<b>' + game.list.name + '</b> skipped!'
     message += game.list.category ? 'Category: ' + game.list.category + '\n' : '';
@@ -786,7 +789,7 @@ function getDailyScores(game) {
 
 function getList(game, callback) {
   var str = '';
-  game.list.values.map(function(item, index) {
+  game.list.values.forEach(function(item, index) {
     str += (index + 1) + ': ';
     if (!item.guesser.first_name) {
       str += '<b>' + getHint(game.hints, item.value) + '</b>';
