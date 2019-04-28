@@ -15,6 +15,7 @@ var List = db.model('List', {
   date: { type: Date, required: true, default: Date.now },
   modifyDate: { type: Date, required: true, default: Date.now },
   plays: { type: Number, required: true, default: 0 },
+  hints: { type: Number, required: true, default: 0 },
   skips: { type: Number, required: true, default: 0 },
   score: { type: Number, required: true, default: 0 },
   voters: [

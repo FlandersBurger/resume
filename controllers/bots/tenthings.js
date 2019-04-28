@@ -219,7 +219,7 @@ var dailyScore = schedule.scheduleJob('0 0 0 * * *', function() {
         staleGames.forEach(function(game) {
           game.remove();
         });
-        if (staleGames.length > 0) notifyAdmin(staleGames.length + ' stale games deleted');
+        if (staleGames.length > 0) bot.notifyAdmin(staleGames.length + ' stale games deleted');
       });
     }
   });
@@ -270,11 +270,14 @@ function selectList(game, callback) {
     if (lists.length === 0) {
       game.playedLists = [];
       game.cycles++;
-      game.lastCycleDate = Date.now;
-      bot.sendMessage(game.chat_id, 'All lists have been played, a new cycle will now start.');
-      List.find({}).populate('creator').exec(function (err, lists) {
-        return callback(lists[Math.floor(Math.random() * lists.length)]);
-      });
+      game.lastCycleDate = moment();
+      game.save(function (err) {
+        if (err) return bot.notifyAdmin(JSON.stringify(err));
+        bot.sendMessage(game.chat_id, 'All lists have been played, a new cycle will now start.');
+        List.find({}).populate('creator').exec(function (err, lists) {
+          return callback(lists[Math.floor(Math.random() * lists.length)]);
+        });
+      })
     } else {
       return callback(lists[Math.floor(Math.random() * lists.length)]);
     }
@@ -349,7 +352,7 @@ function queueGuess(game, msg) {
 
 function queueingGuess(guess) {
   queue.create('guess', guess).removeOnComplete( true ).save(function(err) {
-    if( !err ) console.log(guess.game.id + ' - Guess evaluated: "' + guess.msg.text + '" by '+ guess.msg.from.first_name);
+    if( !err ) console.log(guess.game + ' - Guess evaluated: "' + guess.msg.text + '" by '+ guess.msg.from.first_name);
   });
 }
 
@@ -488,17 +491,29 @@ function checkRound(game) {
   }).length === 0) {
     setTimeout(function () {
       getList(game, function(list) {
-        var message = '<b>' + game.list.name + '</b> (' + game.list.totalValues + ') by ' + game.list.creator.username + '\n';
-        message += game.list.category ? 'Category: ' + game.list.category + '\n' : '';
-        message += list;
-        bot.sendMessage(game.chat_id, message);
-        setTimeout(function () {
-          getDailyScores(game);
-          rateList(game);
-          setTimeout(function() {
-            newRound(game);
-          }, 1000);
-        }, 2000);
+        List.findOne({ _id: game.list._id }).exec(function(err, foundList) {
+          var message = '<b>' + game.list.name + '</b> by ' + game.list.creator.username + '\n';
+          message += game.list.category ? 'Category: ' + game.list.category + '\n' : '';
+          message += list;
+          message += '<b>Stats for ' + game.list.name + '</b>\n';
+          message += 'Score: ' + foundList.score + '\n';
+          message += 'Votes: ' + foundList.voters.length + '\n';
+          message += 'Values: ' + foundList.values.length + '\n';
+          message += 'Plays: ' + foundList.plays + '\n';
+          message += 'Skips: ' + foundList.skips + '\n';
+          message += 'Hints: ' + foundList.hints + '\n';
+          message += 'Created on: ' + moment(foundList.date).format("DD-MMM-YYYY") + '\n';
+          message += 'Modified on: ' + moment(foundList.modifyDate).format("DD-MMM-YYYY") + '\n';
+          message += '\n';
+          bot.sendMessage(game.chat_id, message);
+          setTimeout(function () {
+            getDailyScores(game);
+            rateList(game);
+            setTimeout(function() {
+              newRound(game);
+            }, 1000);
+          }, 2000);
+        })
       });
     }, 2000);
   }
@@ -569,19 +584,27 @@ function skip(game, player) {
 }
 
 function skipList(game) {
-  bot.sendMessage(game.chat_id, '<b>' + game.list.name + '</b> skipped!');
-  getDailyScores(game);
-  newRound(game);
-  delete skips[game.id];
-  List.findOne({ _id: game.list._id }).exec(function (err, foundList) {
-    if (err) return console.error(err);
-    if (!foundList.skips) {
-      foundList.skips = 1;
-    } else {
-      foundList.skips++;
+  game.list.values.forEach(function(item, index) {
+    if (!item.guesser.first_name) {
+      this[index].guesser.first_name = 'Not guessed';
     }
-    foundList.save(function(err) {
+  }, game.list.values);
+  getList(game, function(list) {
+    var message = '<b>' + game.list.name + '</b> skipped!\n'
+    message += list;
+    bot.sendMessage(game.chat_id, message);
+    delete skips[game.id];
+    List.findOne({ _id: game.list._id }).exec(function (err, foundList) {
       if (err) return console.error(err);
+      if (!foundList.skips) {
+        foundList.skips = 0;
+      }
+      foundList.skips++;
+      foundList.save(function(err) {
+        if (err) return console.error(err);
+        getDailyScores(game);
+        newRound(game);
+      });
     });
   });
 }
@@ -637,6 +660,13 @@ function hint(game, player, callback) {
     cooldowns[game.id] = 10;
     cooldownHint(game.id);
     game.save();
+    List.findOne({ _id: game.list._id }).exec(function (err, list) {
+      if (!list.hints) {
+        list.hints = 0;
+      }
+      list.hints++;
+      list.save();
+    })
   }
 }
 
@@ -767,7 +797,7 @@ function getDailyScores(game) {
 
 function getList(game, callback) {
   var str = '';
-  game.list.values.map(function(item, index) {
+  game.list.values.forEach(function(item, index) {
     str += (index + 1) + ': ';
     if (!item.guesser.first_name) {
       str += '<b>' + getHint(game.hints, item.value) + '</b>';
@@ -885,6 +915,7 @@ function stats(data) {
           message += 'Values: ' + gameList.values.length + '\n';
           message += 'Plays: ' + gameList.plays + '\n';
           message += 'Skips: ' + gameList.skips + '\n';
+          message += 'Hints: ' + game.list.hints + '\n';
           message += 'Created by: ' + gameList.creator.username + '\n';
           message += 'Created on: ' + moment(gameList.date).format("DD-MMM-YYYY") + '\n';
           message += 'Modified on: ' + moment(gameList.modifyDate).format("DD-MMM-YYYY") + '\n';
@@ -1032,6 +1063,9 @@ router.post('/', function (req, res, next) {
         existingGame.save(function(err) {
           if (err) {
             console.error(err);
+            console.log(player);
+            console.log(msg.from);
+            res.sendStatus(200);
           } else {
             return evaluateCommand(res, msg, existingGame, player, false);
           }
