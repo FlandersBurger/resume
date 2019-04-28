@@ -84,22 +84,24 @@ var newLists = schedule.scheduleJob('0 0 12 * * *', function() {
       ]
     })
     .then(function(lists) {
-      var message = '<b>New lists created today</b>';
-      lists.forEach(function(list) {
-        message += '\n- ' + list.name;
-      });
-      TenThings.find({}).select('chat_id')
-      .then(function(games) {
-        games.filter(function(game) {
-          return !_.find(bot.getAdmins(), function(admin) {
-            return admin === game.chat_id;
-          });
-        }).forEach(function(game, index) {
-          setTimeout(function() {
-            bot.sendMessage(game.chat_id, message);
-          }, index * 50);
+      if (lists.length > 0) {
+        var message = '<b>New lists created today</b>';
+        lists.forEach(function(list) {
+          message += '\n- ' + list.name;
         });
-      });
+        TenThings.find({}).select('chat_id')
+        .then(function(games) {
+          games.filter(function(game) {
+            return !_.find(bot.getAdmins(), function(admin) {
+              return admin === game.chat_id;
+            });
+          }).forEach(function(game, index) {
+            setTimeout(function() {
+              bot.sendMessage(game.chat_id, message);
+            }, index * 50);
+          });
+        });
+      }
     });
   } else {
     bot.notifyAdmin('New lists incorrectly triggered: ' + new Date());
@@ -117,22 +119,24 @@ var modifiedLists = schedule.scheduleJob('0 5 12 * * *', function() {
       ]
     })
     .then(function(lists) {
-      var message = '<b>Lists updated today</b>';
-      lists.forEach(function(list) {
-        message += '\n- ' + list.name;
-      });
-      TenThings.find({}).select('chat_id')
-      .then(function(games) {
-        games.filter(function(game) {
-          return !_.find(bot.getAdmins(), function(admin) {
-            return admin === game.chat_id;
-          });
-        }).forEach(function(game, index) {
-          setTimeout(function() {
-            bot.sendMessage(game.chat_id, message);
-          }, index * 50);
+      if (lists.length > 0) {
+        var message = '<b>Lists updated today</b>';
+        lists.forEach(function(list) {
+          message += '\n- ' + list.name;
         });
-      });
+        TenThings.find({}).select('chat_id')
+        .then(function(games) {
+          games.filter(function(game) {
+            return !_.find(bot.getAdmins(), function(admin) {
+              return admin === game.chat_id;
+            });
+          }).forEach(function(game, index) {
+            setTimeout(function() {
+              bot.sendMessage(game.chat_id, message);
+            }, index * 50);
+          });
+        });
+      }
     });
   } else {
     bot.notifyAdmin('New lists incorrectly triggered: ' + new Date());
