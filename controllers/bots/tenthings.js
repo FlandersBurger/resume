@@ -936,19 +936,22 @@ function stats(data) {
         listsStats(game, {score: 1}, 'score', 'Least Popular Lists');
         break;
       case 'skippers':
-        playerStats(game, {skips: -1}, 'skips', 'Most Skips');
+        playerStats(game, {skips: -1}, 'skips', 'Most Skips Requested');
         break;
       case 'answers':
         playerStats(game, {answers: -1}, 'answers', 'Most Correct Answers');
         break;
       case 'snubs':
-        playerStats(game, {snubs: -1}, 'snubs', 'Most Snubbed');
+        playerStats(game, {snubs: -1}, 'snubs', 'Most Snubs');
         break;
       case 'hinters':
         playerStats(game, {hints: -1}, 'hints', 'Most Hints Asked');
         break;
       case 'plays':
         playerStats(game, {plays: -1}, 'plays', 'Most Games Played');
+        break;
+      case 'wins':
+        playerStats(game, {wins: -1}, 'wins', 'Most Wins');
         break;
       default:
         bot.sendMessage(game.chat_id, 'Something');
@@ -1395,6 +1398,22 @@ function evaluateCommand(res, msg, game, player, isNew) {
               'callback_data': JSON.stringify({
                 type: 'stat',
                 id: game.chat_id + '_snubs'
+              })
+            }
+          ],
+          [
+            {
+              'text': 'Most Hints Asked',
+              'callback_data': JSON.stringify({
+                type: 'stat',
+                id: game.chat_id + '_hints'
+              })
+            },
+            {
+              'text': 'Most Wins',
+              'callback_data': JSON.stringify({
+                type: 'stat',
+                id: game.chat_id + '_wins'
               })
             }
           ],
