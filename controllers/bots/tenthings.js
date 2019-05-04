@@ -923,11 +923,55 @@ function stats(data) {
           bot.sendMessage(game.chat_id, message);
         });
         break;
+      case 'mostskipped':
+        List.find().sort({skips: -1}).limit(10).exec(function(err, lists) {
+          message = '<b>Most Skipped Lists</b>\n';
+          lists.forEach(function(list, index) {
+            message += (index + 1) + '. ' + list.name + ' (' + list.skips + ')' + '\n';
+          });
+          bot.sendMessage(game.chat_id, message);
+        });
+        break;
+      case 'mostplayed':
+        List.find().sort({plays: -1}).limit(10).exec(function(err, lists) {
+          message = '<b>Most Played Lists</b>\n';
+          lists.forEach(function(list, index) {
+            message += (index + 1) + '. ' + list.name + ' (' + list.plays + ')' + '\n';
+          });
+          bot.sendMessage(game.chat_id, message);
+        });
+        break;
+      case 'mostpopular':
+        List.find().sort({score: -1}).limit(10).exec(function(err, lists) {
+          message = '<b>Most Popular Lists</b>\n';
+          lists.forEach(function(list, index) {
+            message += (index + 1) + '. ' + list.name + ' (' + list.score + ')' + '\n';
+          });
+          bot.sendMessage(game.chat_id, message);
+        });
+        break;
+      case 'leastpopular':
+        List.find().sort({score: 1}).limit(10).exec(function(err, lists) {
+          message = '<b>Least Popular Lists</b>\n';
+          lists.forEach(function(list, index) {
+            message += (index + 1) + '. ' + list.name + ' (' + list.score + ')' + '\n';
+          });
+          bot.sendMessage(game.chat_id, message);
+        });
+        break;
       default:
         bot.sendMessage(game.chat_id, 'Something');
     }
   });
 }
+
+  List.find().sort({score: -1}).limit(10).exec(function(err, lists) {
+    message = '<b>Most skipped lists</b>\n';
+    lists.forEach(function(list, index) {
+      message += (index + 1) + '. ' + list.name + ' (' + list.score + ')' + '\n';
+    });
+    console.log(message);
+  });
 
 router.post('/', function (req, res, next) {
   if (req.body.object === 'page') {
@@ -1263,7 +1307,39 @@ function evaluateCommand(res, msg, game, player, isNew) {
                 id: game.chat_id + '_players'
               })
             }
-          ]
+          ],
+          [
+            {
+              'text': 'Most Skipped Lists',
+              'callback_data': JSON.stringify({
+                type: 'stat',
+                id: game.chat_id + '_mostskipped'
+              })
+            },
+            {
+              'text': 'Most Played Lists',
+              'callback_data': JSON.stringify({
+                type: 'stat',
+                id: game.chat_id + '_mostplayed'
+              })
+            }
+          ],
+          [
+            {
+              'text': 'Least Popular Lists by Votes',
+              'callback_data': JSON.stringify({
+                type: 'stat',
+                id: game.chat_id + '_leastpopular'
+              })
+            },
+            {
+              'text': 'Most Popular Lists by Votes',
+              'callback_data': JSON.stringify({
+                type: 'stat',
+                id: game.chat_id + '_mostpopular'
+              })
+            }
+          ],
         ]
       });
       break;
