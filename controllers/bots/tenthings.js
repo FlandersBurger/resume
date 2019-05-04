@@ -924,40 +924,31 @@ function stats(data) {
         });
         break;
       case 'mostskipped':
-        List.find().sort({skips: -1}).limit(10).exec(function(err, lists) {
-          message = '<b>Most Skipped Lists</b>\n';
-          lists.forEach(function(list, index) {
-            message += (index + 1) + '. ' + list.name + ' (' + list.skips + ')' + '\n';
-          });
-          bot.sendMessage(game.chat_id, message);
-        });
+        listsStats(game, {skips: -1}, 'score', 'Most Skipped Lists');
         break;
       case 'mostplayed':
-        List.find().sort({plays: -1}).limit(10).exec(function(err, lists) {
-          message = '<b>Most Played Lists</b>\n';
-          lists.forEach(function(list, index) {
-            message += (index + 1) + '. ' + list.name + ' (' + list.plays + ')' + '\n';
-          });
-          bot.sendMessage(game.chat_id, message);
-        });
+        listsStats(game, {plays: -1}, 'score', 'Most Played Lists');
         break;
       case 'mostpopular':
-        List.find().sort({score: -1}).limit(10).exec(function(err, lists) {
-          message = '<b>Most Popular Lists</b>\n';
-          lists.forEach(function(list, index) {
-            message += (index + 1) + '. ' + list.name + ' (' + list.score + ')' + '\n';
-          });
-          bot.sendMessage(game.chat_id, message);
-        });
+        listsStats(game, {score: -1}, 'score', 'Most Popular Lists');
         break;
       case 'leastpopular':
-        List.find().sort({score: 1}).limit(10).exec(function(err, lists) {
-          message = '<b>Least Popular Lists</b>\n';
-          lists.forEach(function(list, index) {
-            message += (index + 1) + '. ' + list.name + ' (' + list.score + ')' + '\n';
-          });
-          bot.sendMessage(game.chat_id, message);
-        });
+        listsStats(game, {score: 1}, 'score', 'Least Popular Lists');
+        break;
+      case 'skippers':
+        playerStats(game, {skips: -1}, 'skips', 'Most Skips');
+        break;
+      case 'answers':
+        playerStats(game, {answers: -1}, 'answers', 'Most Correct Answers');
+        break;
+      case 'snubs':
+        playerStats(game, {snubs: -1}, 'snubs', 'Most Snubbed');
+        break;
+      case 'hinters':
+        playerStats(game, {hints: -1}, 'hints', 'Most Hints Asked');
+        break;
+      case 'plays':
+        playerStats(game, {plays: -1}, 'plays', 'Most Games Played');
         break;
       default:
         bot.sendMessage(game.chat_id, 'Something');
@@ -965,13 +956,48 @@ function stats(data) {
   });
 }
 
-  List.find().sort({score: -1}).limit(10).exec(function(err, lists) {
-    message = '<b>Most skipped lists</b>\n';
+function listsStats(game, sorter, field, title) {
+  List.find().sort(sorter).limit(10).exec(function(err, lists) {
+    var message = '<b>' + title + '</b>\n';
     lists.forEach(function(list, index) {
-      message += (index + 1) + '. ' + list.name + ' (' + list.score + ')' + '\n';
+      message += (index + 1) + '. ' + list.name + ' (' + list[field] + ')' + '\n';
     });
-    console.log(message);
+    bot.sendMessage(game.chat_id, message);
   });
+}
+
+function playerStats(game, sorter, field, title) {
+  var message = '<b>' + title + '</b>\n';
+  game.players.sort(function(a, b) {
+    return b[field] - a[field];
+  }).slice(0, 10).forEach(function(player, index) {
+    message += (index + 1) + '. ' + player.first_name + ' (' + player[field] + ')' + '\n';
+  });
+  bot.sendMessage(game.chat_id, message);
+}
+
+function tenThingsStats(game, sorter, field, title) {
+  TenThings.aggregate([
+    { $unwind:'$players' },
+    { $group: {
+      '_id': { _id:'$players._id', first_name:'$players.first_name' },
+      'score': { $sum:'$players.score' },
+      'plays': { $sum:'$players.plays' },
+      'wins': { $sum:'$players.wins' },
+      'answers': { $sum:'$players.answers' },
+      'snubs': { $sum:'$players.snubs' },
+      'hints': { $sum:'$players.hints' },
+      'skips': { $sum:'$players.skips' }
+    }},
+  ]).sort(sorter).limit(10).exec(function(err, players) {
+    if (err) console.error(err);
+    console.log(result);
+    message = '<b>' + title + '</b>\n';
+    players.forEach(function(player, index) {
+      message += (index + 1) + '. ' + player.first_name + ' (' + player[field] + ')' + '\n';
+    });
+  });
+}
 
 router.post('/', function (req, res, next) {
   if (req.body.object === 'page') {
@@ -1337,6 +1363,38 @@ function evaluateCommand(res, msg, game, player, isNew) {
               'callback_data': JSON.stringify({
                 type: 'stat',
                 id: game.chat_id + '_mostpopular'
+              })
+            }
+          ],
+          [
+            {
+              'text': 'Most Skips Requested',
+              'callback_data': JSON.stringify({
+                type: 'stat',
+                id: game.chat_id + '_skippers'
+              })
+            },
+            {
+              'text': 'Most Correct Answers',
+              'callback_data': JSON.stringify({
+                type: 'stat',
+                id: game.chat_id + '_answers'
+              })
+            }
+          ],
+          [
+            {
+              'text': 'Most Days Played',
+              'callback_data': JSON.stringify({
+                type: 'stat',
+                id: game.chat_id + '_plays'
+              })
+            },
+            {
+              'text': 'Most Snubs',
+              'callback_data': JSON.stringify({
+                type: 'stat',
+                id: game.chat_id + '_snubs'
               })
             }
           ],
