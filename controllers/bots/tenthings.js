@@ -944,7 +944,7 @@ function stats(data) {
       case 'snubs':
         playerStats(game, {snubs: -1}, 'snubs', 'Most Snubs');
         break;
-      case 'hinters':
+      case 'hints':
         playerStats(game, {hints: -1}, 'hints', 'Most Hints Asked');
         break;
       case 'plays':
@@ -960,7 +960,7 @@ function stats(data) {
 }
 
 function listsStats(game, sorter, field, title) {
-  List.find().sort(sorter).limit(10).exec(function(err, lists) {
+  List.find().sort(sorter).limit(20).exec(function(err, lists) {
     var message = '<b>' + title + '</b>\n';
     lists.forEach(function(list, index) {
       message += (index + 1) + '. ' + list.name + ' (' + list[field] + ')' + '\n';
@@ -973,7 +973,7 @@ function playerStats(game, sorter, field, title) {
   var message = '<b>' + title + '</b>\n';
   game.players.sort(function(a, b) {
     return b[field] - a[field];
-  }).slice(0, 10).forEach(function(player, index) {
+  }).slice(0, 20).forEach(function(player, index) {
     message += (index + 1) + '. ' + player.first_name + ' (' + player[field] + ')' + '\n';
   });
   bot.sendMessage(game.chat_id, message);
