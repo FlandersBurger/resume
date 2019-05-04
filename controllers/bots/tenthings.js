@@ -924,10 +924,10 @@ function stats(data) {
         });
         break;
       case 'mostskipped':
-        listsStats(game, {skips: -1}, 'score', 'Most Skipped Lists');
+        listsStats(game, {skips: -1}, 'skips', 'Most Skipped Lists');
         break;
       case 'mostplayed':
-        listsStats(game, {plays: -1}, 'score', 'Most Played Lists');
+        listsStats(game, {plays: -1}, 'plays', 'Most Played Lists');
         break;
       case 'mostpopular':
         listsStats(game, {score: -1}, 'score', 'Most Popular Lists');
