@@ -128,5 +128,35 @@ module.exports = {
     message += 'Lists played: ' + player.lists + '\n';
     message += 'Lists skipped: ' + player.skips + '\n';
     return message;
+  },
+  streak: function(streak) {  
+    switch (streak) {
+      case 1:
+        return '\nNew streaker!';
+      case 2:
+        return '\nDouble-tap';
+      case 3:
+        return '\nTurkey';
+      case 5:
+        return '\nAnswer Spree';
+      case 10:
+        return '\nTen Ten Things';
+      case 15:
+        return '\nMega Spree';
+      case 20:
+        return '\nUltra Spree';
+      case 25:
+        return '\nM-M-M-Monster Spree';
+      case 30:
+        return '\nLudicrous Spree';
+      case 40:
+        return '\nDominating';
+      case 50:
+        return '\nUnstoppable';
+      case 100:
+        return '\nGod-Like';
+      default:
+        return '';
+    }
   }
 };
