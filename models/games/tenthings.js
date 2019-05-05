@@ -8,6 +8,7 @@ var TenThings = db.model('TenThings', {
   cycles: { type: Number, required: true, default: 0 },
   lastCycleDate: { type: Date, required: true, default: Date.now },
   guessers: [{ type: String, required: true }],
+  streaker: { type: String, required: false },
   players: [
     {
       id: { type: String, required: true },
@@ -25,7 +26,8 @@ var TenThings = db.model('TenThings', {
       snubs: { type: Number, required: false, default: 0 },
       skips: { type: Number, required: false, default: 0 },
       suggestions: { type: Number, required: false, default: 0 },
-      streak: { type: Number, required: false, default: 0 },
+      bestStreak: { type: Number, required: false, default: 0 },
+      currentStreak: { type: Number, required: false, default: 0 },
     }
   ],
   playedLists: [
