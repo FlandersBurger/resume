@@ -458,7 +458,7 @@ function checkRound(game) {
           message += messages.listStats(foundList);
           bot.sendMessage(game.chat_id, message);
           setTimeout(function () {
-            getDailyScores(game);
+            getDailyScores(game, 5);
             rateList(game);
             setTimeout(function() {
               newRound(game);
@@ -553,7 +553,7 @@ function skipList(game) {
       foundList.skips++;
       foundList.save(function(err) {
         if (err) return console.error(err);
-        getDailyScores(game);
+        getDailyScores(game, 5);
         newRound(game);
       });
     });
@@ -734,11 +734,11 @@ function getScores(gameId, scoreType) {
   });
 }
 
-function getDailyScores(game) {
+function getDailyScores(game, limit) {
   var str = '<b>Daily Scores</b>\n';
   game.players.filter(function(player) {
     return player.scoreDaily;
-  }).sort(function(a, b) {
+  }).slice(0, limit ? limit : game.players.length).sort(function(a, b) {
     return b.scoreDaily - a.scoreDaily;
   }).forEach(function(player, index) {
     str += (index + 1) + ': ' + player.first_name + ' - ' + player.scoreDaily + '\n';
