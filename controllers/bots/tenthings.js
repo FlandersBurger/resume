@@ -875,11 +875,11 @@ function stats(data) {
       case 'g':
         List.find().exec(function(err, lists) {
           message = '<b>Game Stats</b>\n';
-          message += 'Started ' + game.date + '\n';
+          message += 'Started ' + moment(game.date).format("DD-MMM-YYYY") + '\n';
           message += game.players.length + ' players\n';
           message += 'Cycled through all lists ' + game.cycles + ' times\n';
           message += game.cycles ? 'Last cycled: ' + moment(game.lastCycleDate).format("DD-MMM-YYYY") + '\n' : '';
-          message += game.playedLists.length + ' of ' + lists.length + ' lists played in current cycle\n';
+          message += game.playedLists.length + ' of ' + lists.length + ' lists played (' + Math.round(game.playedLists.length / lists.length) + '%)\n';
           message += '\n';
           bot.sendMessage(game.chat_id, message);
         });
