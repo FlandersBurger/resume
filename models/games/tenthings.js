@@ -25,6 +25,7 @@ var TenThings = db.model('TenThings', {
       snubs: { type: Number, required: false, default: 0 },
       skips: { type: Number, required: false, default: 0 },
       suggestions: { type: Number, required: false, default: 0 },
+      streak: { type: Number, required: false, default: 0 },
     }
   ],
   playedLists: [

@@ -10,6 +10,8 @@ var request = require('request');
 var config = require('../../config');
 var translate = require('../../translate');
 var bot = require('../../bots/telegram');
+
+var messages = require('./tenthings/messages');
 var keyboards = require('./tenthings/keyboards');
 
 var List = require('../../models/list');
@@ -278,7 +280,7 @@ function selectList(game, callback) {
         List.find({}).populate('creator').exec(function (err, lists) {
           return callback(lists[Math.floor(Math.random() * lists.length)]);
         });
-      })
+      });
     } else {
       return callback(lists[Math.floor(Math.random() * lists.length)]);
     }
@@ -410,7 +412,7 @@ function checkGuess(game, guess, msg) {
     }, 200);
   } else {
     player.snubs++;
-    bot.sendMessage(msg.chat.id, alreadyGot(match.value, msg.from, match.guesser));
+    bot.sendMessage(msg.chat.id, messages.alreadyGuessed(match.value, msg.from, match.guesser));
   }
   game.save(function(err, savedGame) {
     if (err) {
@@ -420,7 +422,7 @@ function checkGuess(game, guess, msg) {
 }
 
 function guessed(game, msg, value, blurb, score, accuracy) {
-  var message = '<b>' + translate[getLanguage(msg.from.language_code)].guessed(msg.from.first_name, value) + '</b>';
+  var message = messages.guessed(msg.from.first_name, value);
   message += blurb;
   message += '\n<pre>+' + score + ' points (' + accuracy + ')</pre>';
   var answersLeft = game.list.values.filter(function(item) { return !item.guesser.first_name; }).length;
@@ -430,41 +432,6 @@ function guessed(game, msg, value, blurb, score, accuracy) {
     message += '\nRound over.';
   }
   bot.sendMessage(msg.chat.id, message);
-}
-
-function alreadyGot(match, loser, winner) {
-  var random = Math.floor(Math.random() * 5);
-  if (loser.id != winner.id) {
-    switch (random) {
-      case 0:
-        return 'Too slow, ' + loser.first_name + '. ' + winner.first_name + ' said ' + match + ' ages ago.';
-      case 1:
-        return winner.first_name + ' beat you to '  + match + ', ' + loser.first_name;
-      case 2:
-        return match + ' denied by ' + winner.first_name + ', ' + loser.first_name;
-      case 3:
-        return loser.first_name + ' was pwned, ' + winner.first_name + ' guessed ' + match;
-      case 4:
-        return loser.first_name + ' got schooled by ' + winner.first_name + '\'s ' + match + ' answer';
-      default:
-        return winner.first_name + ' already got ' + match + ', too bad ' + loser.first_name;
-    }
-  } else {
-    switch (random) {
-      case 0:
-        return loser.first_name + ' losing it, they already answered ' + match;
-      case 1:
-        return match + ', ' + loser.first_name + '? I think I\'m having a deja-vu';
-      case 2:
-        return 'Are you doing ok ' + loser.first_name + '? You already said ' + match;
-      case 3:
-        return loser.first_name + ' was pwned by theirself with ' + match;
-      case 4:
-        return loser.first_name + ' suffers from short term memory loss, cough, ' + match + '';
-      default:
-        return loser.first_name + ' already got ' + match + ', too bad, um..., ' + loser.first_name;
-    }
-  }
 }
 
 function checkRound(game) {
@@ -477,16 +444,7 @@ function checkRound(game) {
           var message = '<b>' + game.list.name + '</b> by ' + game.list.creator.username + '\n';
           message += game.list.category ? 'Category: ' + game.list.category + '\n' : '';
           message += list;
-          message += '<b>Stats for ' + game.list.name + '</b>\n';
-          message += 'Score: ' + foundList.score + '\n';
-          message += 'Votes: ' + foundList.voters.length + '\n';
-          message += 'Values: ' + foundList.values.length + '\n';
-          message += 'Plays: ' + foundList.plays + '\n';
-          message += 'Skips: ' + foundList.skips + '\n';
-          message += 'Hints: ' + foundList.hints + '\n';
-          message += 'Created on: ' + moment(foundList.date).format("DD-MMM-YYYY") + '\n';
-          message += 'Modified on: ' + moment(foundList.modifyDate).format("DD-MMM-YYYY") + '\n';
-          message += '\n';
+          message += messages.listStats(foundList);
           bot.sendMessage(game.chat_id, message);
           setTimeout(function () {
             getDailyScores(game);
@@ -495,7 +453,7 @@ function checkRound(game) {
               newRound(game);
             }, 1000);
           }, 2000);
-        })
+        });
       });
     }, 2000);
   }
@@ -572,7 +530,7 @@ function skipList(game) {
     }
   }, game.list.values);
   getList(game, function(list) {
-    var message = '<b>' + game.list.name + '</b> skipped!\n'
+    var message = '<b>' + game.list.name + '</b> skipped!\n';
     message += list;
     bot.sendMessage(game.chat_id, message);
     delete skips[game.id];
@@ -648,7 +606,7 @@ function hint(game, player, callback) {
       }
       list.hints++;
       list.save();
-    })
+    });
   }
 }
 
@@ -875,34 +833,12 @@ function stats(data) {
           resolve(player);
         });
         findPlayer.then(function(player) {
-          message += '<b>Personal Stats for ' + player.first_name + '</b>\n';
-          message += 'Total Score: ' + player.score + '\n';
-          message += 'High Score: ' + player.highScore + '\n';
-          message += 'Average Score: ' + Math.round(player.score / player.plays) + '\n';
-          message += player.wins + ' wins out of ' + player.plays + ' days played\n';
-          message += 'Correct answers given: ' + player.answers + '\n';
-          message += 'Correct answers snubbed: ' + player.snubs + '\n';
-          message += 'Hints asked: ' + player.hints + '\n';
-          message += 'Suggestions given: ' + player.suggestions + '\n';
-          message += 'Lists played: ' + player.lists + '\n';
-          message += 'Lists skipped: ' + player.skips + '\n';
-          bot.sendMessage(game.chat_id, message);
+          bot.sendMessage(game.chat_id, messages.playerStats(player));
         });
         break;
       case 'l':
         List.findOne({ _id: id }).populate('creator').exec(function(err, gameList) {
-          message += '<b>List Stats for ' + gameList.name + '</b>\n';
-          message += 'Score: ' + gameList.score + '\n';
-          message += 'Votes: ' + gameList.voters.length + '\n';
-          message += 'Values: ' + gameList.values.length + '\n';
-          message += 'Plays: ' + gameList.plays + '\n';
-          message += 'Skips: ' + gameList.skips + '\n';
-          message += 'Hints: ' + game.list.hints + '\n';
-          message += 'Created by: ' + gameList.creator.username + '\n';
-          message += 'Created on: ' + moment(gameList.date).format("DD-MMM-YYYY") + '\n';
-          message += 'Modified on: ' + moment(gameList.modifyDate).format("DD-MMM-YYYY") + '\n';
-          message += '\n';
-          bot.sendMessage(game.chat_id, message);
+          bot.sendMessage(game.chat_id, messages.listStats(gameList));
         });
         break;
       case 'mostskipped':
@@ -1191,20 +1127,10 @@ function evaluateCommand(res, msg, game, player, isNew) {
       bot.sendMessage(msg.chat.id, msg.text);
       break;
     case '/info':
-      bot.sendMessage(msg.chat.id, 'Hi ' + msg.from.first_name + ',\nMy name is 10 Things and I am a game bot.\nThe game will give you a category and then you answer anything that comes to mind in that category.\nI have a few things you can ask of me, just type a slash (/) to see the commands.\nIf you want to add your own lists, please go to https://belgocanadian.com/bots\nAnd last but not least if you want to suggest anything (new lists or features) type "/suggest" followed by your suggestion!\n\nHave fun!');
+      bot.sendMessage(msg.chat.id, messages.introduction(msg.from.first_name));
       break;
     case '/logic':
-      var logic = '';
-      logic += '1: If an answer is over 90% correct it will immediately be awarded to the guesser\n';
-      logic += '2: If an answer is over 75% correct it will be awarded after 2 seconds if no 90% answer is provided\n';
-      logic += '3: Points scored = (Max hints [' + MAXHINTS + '] - hints asked + # of current players) * (answer accuracy % - 0.6) * 2.5\n';
-      logic += '4: Hints are revealed in this order: first letters, last letters, vowels, and the rest. The rest will be revealed from least frequent to most frequent letter\n';
-      logic += '5: There is a 10 second cooldown between asking hints\n';
-      logic += '6: A list can be skipped if 2 players /skip it\n';
-      logic += '7: If only 1 player skips a list there will be a 15 second cooldown until the list is skipped\n';
-      logic += '8: A skip can be cancelled by anyone by typing /veto\n';
-      logic += '9: Every day at midnight (universal time) the daily scores will be reset and a winner recorded\n';
-      bot.sendMessage(msg.chat.id, logic);
+      bot.sendMessage(msg.chat.id, messages.logic());
       break;
     /*
     case '/start':
