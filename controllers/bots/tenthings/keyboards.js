@@ -47,7 +47,7 @@ module.exports = {
       ]
     };
   },
-  stats: function(game) {
+  stats: function(game, player) {
     return {
       inline_keyboard: [
         [{

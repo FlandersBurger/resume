@@ -1236,7 +1236,7 @@ function evaluateCommand(res, msg, game, player, isNew) {
       bot.sendKeyboard(game.chat_id, 'Which scores would you like?', keyboards.scores(game));
       break;
     case '/stats':
-      bot.sendKeyboard(game.chat_id, 'Which stats would you like?', keyboards.stats(game));
+      bot.sendKeyboard(game.chat_id, 'Which stats would you like?', keyboards.stats(game, player));
       break;
     case '/list':
       try {
