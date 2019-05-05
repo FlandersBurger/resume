@@ -155,6 +155,14 @@ module.exports = {
             })
           }
         ],
+        [{
+            'text': 'Best Streak',
+            'callback_data': JSON.stringify({
+              type: 'stat',
+              id: game.chat_id + '_streak'
+            })
+          }
+        ],
       ]
     };
   },

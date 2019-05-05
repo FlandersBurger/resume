@@ -381,6 +381,17 @@ function checkGuess(game, guess, msg) {
     var accuracy = (guess.match.distance * 100).toFixed(0) + '%';
     player.score += score;
     player.scoreDaily += score;
+    if (!game.streak || game.streak.player != player.id) {
+      game.streak = {
+        player: player.id,
+        count: 1
+      };
+    } else {
+      game.streak.count++;
+    }
+    if (player.streak < game.streak.count) {
+      player.streak = game.streak.count;
+    }
     if (player.scoreDaily > player.highScore) {
       player.highScore = player.scoreDaily;
     }
@@ -869,6 +880,9 @@ function stats(data) {
         break;
       case 'wins':
         playerStats(game, {wins: -1}, 'wins', 'Most Wins');
+        break;
+      case 'streak':
+        playerStats(game, {bestStreak: -1}, 'streak', 'Best Streak');
         break;
       default:
         bot.sendMessage(game.chat_id, 'Something');
