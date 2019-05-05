@@ -172,6 +172,10 @@ module.exports = {
         return '\n--- I\'m not actually German btw ---';
       case 250:
         return '\n--- Ok, this must be a solo chat or you\'re just that good ---';
+      case 251:
+        return '\n--- I\'m gonna shut up now, good luck on your voyage! ---';
+      case 252:
+        return '\n--- And thanks for being an awesome player! ---';
       default:
         return '';
     }
