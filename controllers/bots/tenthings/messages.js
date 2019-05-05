@@ -75,7 +75,7 @@ module.exports = {
         case 5:
           return 'You got majorly snubbed by ' + winner.first_name + ' for ' + match + ', ' + loser.first_name;
         case 6:
-          return winner.first_name + ' showed ' + loser.first_name + 'who\s the boss with ' + match;
+          return winner.first_name + ' showed ' + loser.first_name + ' who\'s the boss with ' + match;
         default:
           return winner.first_name + ' already got ' + match + ', too bad ' + loser.first_name;
       }
@@ -158,6 +158,20 @@ module.exports = {
         return '\n--- God-Like ---';
       case 100:
         return '\n--- Ten Ten Ten Things Things Things ---';
+      case 150:
+        return '\n--- I guess you\'re competing against yourself ---';
+      case 151:
+        return '\n--- You know you can make your own lists? ---';
+      case 152:
+        return '\n--- Go to https://belgocanadian.com/bots ---';
+      case 180:
+        return '\n--- ONE HUNDRED AND EIGHTY! ---';
+      case 200:
+        return '\n--- Zwei Hunderd Bitte und Danke Schon! ---';
+      case 201:
+        return '\n--- I\'m not actually German btw ---';
+      case 250:
+        return '\n--- Ok, this must be a solo chat or you\'re just that good ---';
       default:
         return '';
     }
