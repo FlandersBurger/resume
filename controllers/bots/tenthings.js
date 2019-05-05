@@ -10,7 +10,7 @@ var request = require('request');
 var config = require('../../config');
 var translate = require('../../translate');
 var bot = require('../../bots/telegram');
-var keyboards = require('/tenthings/keyboards');
+var keyboards = require('./tenthings/keyboards');
 
 var List = require('../../models/list');
 var TenThings = require('../../models/games/tenthings');
@@ -310,7 +310,7 @@ bot.sendKeyboard('592503547', 'test', {
 });
 */
 function rateList(game) {
-  bot.sendKeyboard(game.chat_id, 'Did you like ' + '<b>' + game.list.name + '</b>?', keyboards.like);
+  bot.sendKeyboard(game.chat_id, 'Did you like ' + '<b>' + game.list.name + '</b>?', keyboards.like(game));
 }
 
 function queueGuess(game, msg) {
@@ -1233,10 +1233,10 @@ function evaluateCommand(res, msg, game, player, isNew) {
       bot.sendMessage(msg.chat.id, 'Skip vetoed by ' + msg.from.first_name);
       break;
     case '/scores':
-      bot.sendKeyboard(game.chat_id, 'Which scores would you like?', keyboards.scores);
+      bot.sendKeyboard(game.chat_id, 'Which scores would you like?', keyboards.scores(game));
       break;
     case '/stats':
-      bot.sendKeyboard(game.chat_id, 'Which stats would you like?', keyboards.stats);
+      bot.sendKeyboard(game.chat_id, 'Which stats would you like?', keyboards.stats(game));
       break;
     case '/list':
       try {

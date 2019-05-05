@@ -1,7 +1,7 @@
 var redis = require('redis');
+var config = require('./config');
 var url = process.env.REDISTOGO_URL || 'redis://localhost:' + config.redis.port;
 var host = require('url').parse(url);
-var config = require('./config');
 
 function newClient() {
   var client = redis.createClient(host.port, host.hostname);
