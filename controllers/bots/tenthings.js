@@ -818,7 +818,7 @@ function stats(data) {
           message += game.players.length + ' players\n';
           message += 'Cycled through all lists ' + game.cycles + ' times\n';
           message += game.cycles ? 'Last cycled: ' + moment(game.lastCycleDate).format("DD-MMM-YYYY") + '\n' : '';
-          message += game.playedLists.length + ' of ' + lists.length + ' lists played (' + Math.round(game.playedLists.length / lists.length) + '%)\n';
+          message += game.playedLists.length + ' of ' + lists.length + ' lists played (' + Math.round(game.playedLists.length / lists.length * 100).toFixed(0) + '%)\n';
           message += '\n';
           bot.sendMessage(game.chat_id, message);
         });
