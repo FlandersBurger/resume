@@ -130,9 +130,10 @@ module.exports = {
     return message;
   },
   streak: function(streak) {
-    console.log('streak:' + streak);  
+    console.log(typeof streak);
     switch (streak) {
       case 1:
+        console.log('returning one');
         return '\nNew streaker!';
       case 2:
         return '\nDouble-tap';
@@ -157,6 +158,7 @@ module.exports = {
       case 100:
         return '\nGod-Like';
       default:
+        console.log('returning default');
         return '';
     }
   }

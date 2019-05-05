@@ -433,7 +433,6 @@ function checkGuess(game, guess, msg) {
 
 function guessed(game, msg, value, blurb, score, accuracy) {
   var message = messages.guessed(value, msg.from.first_name);
-  console.log(messages.streak(game.streak.count));
   message += messages.streak(game.streak.count);
   message += blurb;
   message += '\n<pre>+' + score + ' points (' + accuracy + ')</pre>';
