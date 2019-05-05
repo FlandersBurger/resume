@@ -129,7 +129,8 @@ module.exports = {
     message += 'Lists skipped: ' + player.skips + '\n';
     return message;
   },
-  streak: function(streak) {  
+  streak: function(streak) {
+    console.log('streak:' + streak);  
     switch (streak) {
       case 1:
         return '\nNew streaker!';
