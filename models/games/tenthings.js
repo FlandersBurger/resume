@@ -10,7 +10,7 @@ var TenThings = db.model('TenThings', {
   guessers: [{ type: String, required: true }],
   streak: {
     player: { type: String, required: false },
-    count: { type: String, required: false },
+    count: { type: Number, required: false },
   },
   players: [
     {
