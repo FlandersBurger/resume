@@ -8,7 +8,6 @@ var moment = require('moment');
 var request = require('request');
 
 var config = require('../../config');
-var translate = require('../../translate');
 var bot = require('../../bots/telegram');
 
 var messages = require('./tenthings/messages');
