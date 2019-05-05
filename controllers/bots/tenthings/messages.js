@@ -127,38 +127,38 @@ module.exports = {
     message += 'Suggestions given: ' + player.suggestions + '\n';
     message += 'Lists played: ' + player.lists + '\n';
     message += 'Lists skipped: ' + player.skips + '\n';
+    message += 'Best answer streak: ' + player.streak + '\n';
     return message;
   },
   streak: function(streak) {
-    console.log(typeof streak);
     switch (streak) {
       case 1:
-        console.log('returning one');
-        return '\nNew streaker!';
+        return '\n--- New streaker! ---';
       case 2:
-        return '\nDouble-tap';
+        return '\n--- Double-tap ---';
       case 3:
-        return '\nTurkey';
+        return '\n--- Turkey ---';
       case 5:
-        return '\nAnswer Spree';
+        return '\n--- Answer Spree ---';
       case 10:
-        return '\nTen Ten Things';
+        return '\n--- Ten Ten Things Things ---';
       case 15:
-        return '\nMega Spree';
+        return '\n--- Mega Spree ---';
       case 20:
-        return '\nUltra Spree';
+        return '\n--- Ultra Spree ---';
       case 25:
-        return '\nM-M-M-Monster Spree';
+        return '\n--- M-M-M-Monster Spree ---';
       case 30:
-        return '\nLudicrous Spree';
+        return '\n--- Ludicrous Spree ---';
       case 40:
-        return '\nDominating';
+        return '\n--- Dominating ---';
       case 50:
-        return '\nUnstoppable';
+        return '\n--- Unstoppable ---';
+      case 75:
+        return '\n--- God-Like ---';
       case 100:
-        return '\nGod-Like';
+        return '\n--- Ten Ten Ten Things Things Things ---';
       default:
-        console.log('returning default');
         return '';
     }
   }
