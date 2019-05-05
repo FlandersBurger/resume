@@ -436,7 +436,6 @@ function guessed(game, msg, value, blurb, score, accuracy) {
   message += messages.streak(game.streak);
   message += blurb;
   message += '\n<pre>+' + score + ' points (' + accuracy + ')</pre>';
-  message += '\n<pre>+' + score + ' points (' + accuracy + ')</pre>';
   var answersLeft = game.list.values.filter(function(item) { return !item.guesser.first_name; }).length;
   if (answersLeft > 0) {
     message += '\n' + answersLeft + ' answer' + (answersLeft > 1 ? 's' : '') + ' left.';
