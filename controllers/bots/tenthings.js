@@ -1043,6 +1043,10 @@ router.post('/', function (req, res, next) {
   if (msg.command.indexOf('@') >= 0) {
     msg.command = msg.command.substring(0, msg.command.indexOf('@'));
   }
+  if (!msg.from) {
+    console.log(req.body.message);
+    return res.sendStatus(200);
+  }
   TenThings.findOne({
     chat_id: msg.chat.id
   }).populate('list.creator').exec(function(err, existingGame) {
