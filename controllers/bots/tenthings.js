@@ -1064,6 +1064,10 @@ router.post('/', function (req, res, next) {
     } else {
       var player;
       player = _.find(existingGame.players, function(existingPlayer) {
+        if (!existingPlayer.id) {
+            console.log('Empty Player!');
+            console.log(existingGame)
+        }
         return existingPlayer.id == msg.from.id;
       });
       if (!player) {
