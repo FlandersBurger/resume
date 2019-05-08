@@ -1064,18 +1064,12 @@ router.post('/', function (req, res, next) {
     } else {
       var player;
       player = _.find(existingGame.players, function(existingPlayer) {
-        if (!existingPlayer.id) {
+        if (!existingPlayer) {
             console.log('Empty Player!');
             console.log(existingGame);
+            return false;
         }
-        try {
-            return existingPlayer.id == msg.from.id;
-        } catch (e) {
-            console.error(e);
-            console.log(existingGame);
-        } finally {
-              return false;
-        }
+        return existingPlayer.id == msg.from.id;
       });
       if (!player) {
         existingGame.players.push(msg.from);
