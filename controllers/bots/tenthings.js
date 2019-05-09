@@ -740,6 +740,7 @@ function getDailyScores(game, limit) {
     return b.scoreDaily - a.scoreDaily;
   }).slice(0, limit ? limit : game.players.length).reduce(function(str, player, index) {
     str += (index + 1) + ': ' + player.first_name + ' - ' + player.scoreDaily + '\n';
+    return str;
   }, '<b>Daily Scores</b>\n');
   bot.sendMessage(game.chat_id, message);
 }
