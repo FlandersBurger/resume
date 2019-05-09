@@ -734,25 +734,19 @@ function getScores(gameId, scoreType) {
 }
 
 function getDailyScores(game, limit) {
-  var str = '<b>Daily Scores</b>\n';
-  if (limit) {
-    game.players.filter(function(player) {
+  var makeDailyScores = new Promise(function(resolve, reject) {
+    var str = game.players.filter(function(player) {
       return player.scoreDaily;
     }).sort(function(a, b) {
       return b.scoreDaily - a.scoreDaily;
-    }).slice(0, limit).forEach(function(player, index) {
+    }).slice(0, limit ? limit : game.players.length).reduce(function(str, player, index) {
       str += (index + 1) + ': ' + player.first_name + ' - ' + player.scoreDaily + '\n';
-    });
-  } else {
-    game.players.filter(function(player) {
-      return player.scoreDaily;
-    }).sort(function(a, b) {
-      return b.scoreDaily - a.scoreDaily;
-    }).forEach(function(player, index) {
-      str += (index + 1) + ': ' + player.first_name + ' - ' + player.scoreDaily + '\n';
-    });
-  }
-  bot.sendMessage(game.chat_id, str);
+    }, '<b>Daily Scores</b>\n');
+    resolve(str);
+  });
+  makeDailyScores.then(function(message) {
+    bot.sendMessage(game.chat_id, message);
+  });
 }
 
 function getList(game, callback) {
