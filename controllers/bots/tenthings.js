@@ -734,7 +734,6 @@ function getScores(gameId, scoreType) {
 }
 
 function getDailyScores(game, limit) {
-  console.log('here');
   var str = '<b>Daily Scores</b>\n';
   game.players.filter(function(player) {
     return player.scoreDaily;
@@ -743,6 +742,7 @@ function getDailyScores(game, limit) {
   }).slice(0, limit ? limit : game.players.length).forEach(function(player, index) {
     str += (index + 1) + ': ' + player.first_name + ' - ' + player.scoreDaily + '\n';
   });
+  console.log(str);
   bot.sendMessage(game.chat_id, str);
 }
 
