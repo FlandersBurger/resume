@@ -734,6 +734,7 @@ function getScores(gameId, scoreType) {
 }
 
 function getDailyScores(game, limit) {
+  console.log('here');
   var str = '<b>Daily Scores</b>\n';
   game.players.filter(function(player) {
     return player.scoreDaily;
