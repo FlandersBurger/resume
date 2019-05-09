@@ -742,6 +742,8 @@ function getDailyScores(game, limit) {
     str += (index + 1) + ': ' + player.first_name + ' - ' + player.scoreDaily + '\n';
     return str;
   }, '<b>Daily Scores</b>\n');
+  console.log(message);
+  console.log(game);
   bot.sendMessage(game.chat_id, message);
 }
 
