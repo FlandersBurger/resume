@@ -8,8 +8,10 @@ var moment = require('moment');
 var request = require('request');
 
 var config = require('../../config');
-var translate = require('../../translate');
 var bot = require('../../bots/telegram');
+
+var messages = require('./tenthings/messages');
+var keyboards = require('./tenthings/keyboards');
 
 var List = require('../../models/list');
 var TenThings = require('../../models/games/tenthings');
@@ -41,9 +43,9 @@ var skips = {};
 
 var queue = kue.createQueue({
   redis: {
-    port: 6379,
+    port: config.redis.port,
     host: 'localhost',
-    auth: config.redisPass,
+    auth: config.redis.password,
     //db: 3, // if provided select a non-default redis db
   }
 });
@@ -84,22 +86,24 @@ var newLists = schedule.scheduleJob('0 0 12 * * *', function() {
       ]
     })
     .then(function(lists) {
-      var message = '<b>New lists created today</b>';
-      lists.forEach(function(list) {
-        message += '\n- ' + list.name;
-      });
-      TenThings.find({}).select('chat_id')
-      .then(function(games) {
-        games.filter(function(game) {
-          return !_.find(bot.getAdmins(), function(admin) {
-            return admin === game.chat_id;
-          });
-        }).forEach(function(game, index) {
-          setTimeout(function() {
-            bot.sendMessage(game.chat_id, message);
-          }, index * 50);
+      if (lists.length > 0) {
+        var message = '<b>New lists created today</b>';
+        lists.forEach(function(list) {
+          message += '\n- ' + list.name;
         });
-      });
+        TenThings.find({}).select('chat_id')
+        .then(function(games) {
+          games.filter(function(game) {
+            return !_.find(bot.getAdmins(), function(admin) {
+              return admin === game.chat_id;
+            });
+          }).forEach(function(game, index) {
+            setTimeout(function() {
+              bot.sendMessage(game.chat_id, message);
+            }, index * 50);
+          });
+        });
+      }
     });
   } else {
     bot.notifyAdmin('New lists incorrectly triggered: ' + new Date());
@@ -117,22 +121,24 @@ var modifiedLists = schedule.scheduleJob('0 5 12 * * *', function() {
       ]
     })
     .then(function(lists) {
-      var message = '<b>Lists updated today</b>';
-      lists.forEach(function(list) {
-        message += '\n- ' + list.name;
-      });
-      TenThings.find({}).select('chat_id')
-      .then(function(games) {
-        games.filter(function(game) {
-          return !_.find(bot.getAdmins(), function(admin) {
-            return admin === game.chat_id;
-          });
-        }).forEach(function(game, index) {
-          setTimeout(function() {
-            bot.sendMessage(game.chat_id, message);
-          }, index * 50);
+      if (lists.length > 0) {
+        var message = '<b>Lists updated today</b>';
+        lists.forEach(function(list) {
+          message += '\n- ' + list.name;
         });
-      });
+        TenThings.find({}).select('chat_id')
+        .then(function(games) {
+          games.filter(function(game) {
+            return !_.find(bot.getAdmins(), function(admin) {
+              return admin === game.chat_id;
+            });
+          }).forEach(function(game, index) {
+            setTimeout(function() {
+              bot.sendMessage(game.chat_id, message);
+            }, index * 50);
+          });
+        });
+      }
     });
   } else {
     bot.notifyAdmin('New lists incorrectly triggered: ' + new Date());
@@ -273,7 +279,7 @@ function selectList(game, callback) {
         List.find({}).populate('creator').exec(function (err, lists) {
           return callback(lists[Math.floor(Math.random() * lists.length)]);
         });
-      })
+      });
     } else {
       return callback(lists[Math.floor(Math.random() * lists.length)]);
     }
@@ -305,26 +311,7 @@ bot.sendKeyboard('592503547', 'test', {
 });
 */
 function rateList(game) {
-  bot.sendKeyboard(game.chat_id, 'Did you like ' + '<b>' + game.list.name + '</b>?', {
-    inline_keyboard: [[
-      {
-        'text': '\ud83d\udc4d',
-        'callback_data': JSON.stringify({
-          type: 'rate',
-          list: game.list._id,
-          vote: 1
-        })
-      },
-      {
-        'text': '\ud83d\udc4e',
-        'callback_data': JSON.stringify({
-          type: 'rate',
-          list: game.list._id,
-          vote: -1
-        })
-      }
-    ]]
-  });
+  bot.sendKeyboard(game.chat_id, 'Did you like ' + '<b>' + game.list.name + '</b>?', keyboards.like(game));
 }
 
 function queueGuess(game, msg) {
@@ -393,6 +380,17 @@ function checkGuess(game, guess, msg) {
     var accuracy = (guess.match.distance * 100).toFixed(0) + '%';
     player.score += score;
     player.scoreDaily += score;
+    if (!game.streak || game.streak.player != player.id) {
+      game.streak = {
+        player: player.id,
+        count: 1
+      };
+    } else {
+      game.streak.count++;
+    }
+    if (player.streak < game.streak.count) {
+      player.streak = game.streak.count;
+    }
     if (player.scoreDaily > player.highScore) {
       player.highScore = player.scoreDaily;
     }
@@ -423,7 +421,7 @@ function checkGuess(game, guess, msg) {
     }, 200);
   } else {
     player.snubs++;
-    bot.sendMessage(msg.chat.id, alreadyGot(match.value, msg.from, match.guesser));
+    bot.sendMessage(msg.chat.id, messages.alreadyGuessed(match.value, msg.from, match.guesser));
   }
   game.save(function(err, savedGame) {
     if (err) {
@@ -433,7 +431,8 @@ function checkGuess(game, guess, msg) {
 }
 
 function guessed(game, msg, value, blurb, score, accuracy) {
-  var message = '<b>' + translate[getLanguage(msg.from.language_code)].guessed(msg.from.first_name, value) + '</b>';
+  var message = messages.guessed(value, msg.from.first_name);
+  message += messages.streak(game.streak.count);
   message += blurb;
   message += '\n<pre>+' + score + ' points (' + accuracy + ')</pre>';
   var answersLeft = game.list.values.filter(function(item) { return !item.guesser.first_name; }).length;
@@ -443,41 +442,6 @@ function guessed(game, msg, value, blurb, score, accuracy) {
     message += '\nRound over.';
   }
   bot.sendMessage(msg.chat.id, message);
-}
-
-function alreadyGot(match, loser, winner) {
-  var random = Math.floor(Math.random() * 5);
-  if (loser.id != winner.id) {
-    switch (random) {
-      case 0:
-        return 'Too slow, ' + loser.first_name + '. ' + winner.first_name + ' said ' + match + ' ages ago.';
-      case 1:
-        return winner.first_name + ' beat you to '  + match + ', ' + loser.first_name;
-      case 2:
-        return match + ' denied by ' + winner.first_name + ', ' + loser.first_name;
-      case 3:
-        return loser.first_name + ' was pwned, ' + winner.first_name + ' guessed ' + match;
-      case 4:
-        return loser.first_name + ' got schooled by ' + winner.first_name + '\'s ' + match + ' answer';
-      default:
-        return winner.first_name + ' already got ' + match + ', too bad ' + loser.first_name;
-    }
-  } else {
-    switch (random) {
-      case 0:
-        return loser.first_name + ' losing it, they already answered ' + match;
-      case 1:
-        return match + ', ' + loser.first_name + '? I think I\'m having a deja-vu';
-      case 2:
-        return 'Are you doing ok ' + loser.first_name + '? You already said ' + match;
-      case 3:
-        return loser.first_name + ' was pwned by theirself with ' + match;
-      case 4:
-        return loser.first_name + ' suffers from short term memory loss, cough, ' + match + '';
-      default:
-        return loser.first_name + ' already got ' + match + ', too bad, um..., ' + loser.first_name;
-    }
-  }
 }
 
 function checkRound(game) {
@@ -490,25 +454,16 @@ function checkRound(game) {
           var message = '<b>' + game.list.name + '</b> by ' + game.list.creator.username + '\n';
           message += game.list.category ? 'Category: ' + game.list.category + '\n' : '';
           message += list;
-          message += '<b>Stats for ' + game.list.name + '</b>\n';
-          message += 'Score: ' + foundList.score + '\n';
-          message += 'Votes: ' + foundList.voters.length + '\n';
-          message += 'Values: ' + foundList.values.length + '\n';
-          message += 'Plays: ' + foundList.plays + '\n';
-          message += 'Skips: ' + foundList.skips + '\n';
-          message += 'Hints: ' + foundList.hints + '\n';
-          message += 'Created on: ' + moment(foundList.date).format("DD-MMM-YYYY") + '\n';
-          message += 'Modified on: ' + moment(foundList.modifyDate).format("DD-MMM-YYYY") + '\n';
-          message += '\n';
+          message += messages.listStats(foundList);
           bot.sendMessage(game.chat_id, message);
           setTimeout(function () {
-            getDailyScores(game);
+            getDailyScores(game, 5);
             rateList(game);
             setTimeout(function() {
               newRound(game);
             }, 1000);
           }, 2000);
-        })
+        });
       });
     }, 2000);
   }
@@ -585,7 +540,7 @@ function skipList(game) {
     }
   }, game.list.values);
   getList(game, function(list) {
-    var message = '<b>' + game.list.name + '</b> skipped!\n'
+    var message = '<b>' + game.list.name + '</b> skipped!\n';
     message += list;
     bot.sendMessage(game.chat_id, message);
     delete skips[game.id];
@@ -597,7 +552,7 @@ function skipList(game) {
       foundList.skips++;
       foundList.save(function(err) {
         if (err) return console.error(err);
-        getDailyScores(game);
+        getDailyScores(game, 5);
         newRound(game);
       });
     });
@@ -661,7 +616,7 @@ function hint(game, player, callback) {
       }
       list.hints++;
       list.save();
-    })
+    });
   }
 }
 
@@ -778,13 +733,13 @@ function getScores(gameId, scoreType) {
   });
 }
 
-function getDailyScores(game) {
+function getDailyScores(game, limit) {
   var str = '<b>Daily Scores</b>\n';
   game.players.filter(function(player) {
     return player.scoreDaily;
   }).sort(function(a, b) {
     return b.scoreDaily - a.scoreDaily;
-  }).forEach(function(player, index) {
+  }).slice(0, limit ? limit : game.players.length).forEach(function(player, index) {
     str += (index + 1) + ': ' + player.first_name + ' - ' + player.scoreDaily + '\n';
   });
   bot.sendMessage(game.chat_id, str);
@@ -870,11 +825,11 @@ function stats(data) {
       case 'g':
         List.find().exec(function(err, lists) {
           message = '<b>Game Stats</b>\n';
-          message += 'Started ' + game.date + '\n';
+          message += 'Started ' + moment(game.date).format("DD-MMM-YYYY") + '\n';
           message += game.players.length + ' players\n';
           message += 'Cycled through all lists ' + game.cycles + ' times\n';
           message += game.cycles ? 'Last cycled: ' + moment(game.lastCycleDate).format("DD-MMM-YYYY") + '\n' : '';
-          message += game.playedLists.length + ' of ' + lists.length + ' lists played in current cycle\n';
+          message += game.playedLists.length + ' of ' + lists.length + ' lists played (' + Math.round(game.playedLists.length / lists.length * 100).toFixed(0) + '%)\n';
           message += '\n';
           bot.sendMessage(game.chat_id, message);
         });
@@ -888,39 +843,93 @@ function stats(data) {
           resolve(player);
         });
         findPlayer.then(function(player) {
-          message += '<b>Personal Stats for ' + player.first_name + '</b>\n';
-          message += 'Total Score: ' + player.score + '\n';
-          message += 'High Score: ' + player.highScore + '\n';
-          message += 'Average Score: ' + Math.round(player.score / player.plays) + '\n';
-          message += player.wins + ' wins out of ' + player.plays + ' days played\n';
-          message += 'Correct answers given: ' + player.answers + '\n';
-          message += 'Correct answers snubbed: ' + player.snubs + '\n';
-          message += 'Hints asked: ' + player.hints + '\n';
-          message += 'Suggestions given: ' + player.suggestions + '\n';
-          message += 'Lists played: ' + player.lists + '\n';
-          message += 'Lists skipped: ' + player.skips + '\n';
-          bot.sendMessage(game.chat_id, message);
+          bot.sendMessage(game.chat_id, messages.playerStats(player));
         });
         break;
       case 'l':
         List.findOne({ _id: id }).populate('creator').exec(function(err, gameList) {
-          message += '<b>List Stats for ' + gameList.name + '</b>\n';
-          message += 'Score: ' + gameList.score + '\n';
-          message += 'Votes: ' + gameList.voters.length + '\n';
-          message += 'Values: ' + gameList.values.length + '\n';
-          message += 'Plays: ' + gameList.plays + '\n';
-          message += 'Skips: ' + gameList.skips + '\n';
-          message += 'Hints: ' + game.list.hints + '\n';
-          message += 'Created by: ' + gameList.creator.username + '\n';
-          message += 'Created on: ' + moment(gameList.date).format("DD-MMM-YYYY") + '\n';
-          message += 'Modified on: ' + moment(gameList.modifyDate).format("DD-MMM-YYYY") + '\n';
-          message += '\n';
-          bot.sendMessage(game.chat_id, message);
+          bot.sendMessage(game.chat_id, messages.listStats(gameList));
         });
+        break;
+      case 'mostskipped':
+        listsStats(game, {skips: -1}, 'skips', 'Most Skipped Lists');
+        break;
+      case 'mostplayed':
+        listsStats(game, {plays: -1}, 'plays', 'Most Played Lists');
+        break;
+      case 'mostpopular':
+        listsStats(game, {score: -1}, 'score', 'Most Popular Lists');
+        break;
+      case 'leastpopular':
+        listsStats(game, {score: 1}, 'score', 'Least Popular Lists');
+        break;
+      case 'skippers':
+        playerStats(game, {skips: -1}, 'skips', 'Most Skips Requested');
+        break;
+      case 'answers':
+        playerStats(game, {answers: -1}, 'answers', 'Most Correct Answers');
+        break;
+      case 'snubs':
+        playerStats(game, {snubs: -1}, 'snubs', 'Most Snubs');
+        break;
+      case 'hints':
+        playerStats(game, {hints: -1}, 'hints', 'Most Hints Asked');
+        break;
+      case 'plays':
+        playerStats(game, {plays: -1}, 'plays', 'Most Games Played');
+        break;
+      case 'wins':
+        playerStats(game, {wins: -1}, 'wins', 'Most Wins');
+        break;
+      case 'streak':
+        playerStats(game, {bestStreak: -1}, 'streak', 'Best Streak');
         break;
       default:
         bot.sendMessage(game.chat_id, 'Something');
     }
+  });
+}
+
+function listsStats(game, sorter, field, title) {
+  List.find().sort(sorter).limit(20).exec(function(err, lists) {
+    var message = '<b>' + title + '</b>\n';
+    lists.forEach(function(list, index) {
+      message += (index + 1) + '. ' + list.name + ' (' + list[field] + ')' + '\n';
+    });
+    bot.sendMessage(game.chat_id, message);
+  });
+}
+
+function playerStats(game, sorter, field, title) {
+  var message = '<b>' + title + '</b>\n';
+  game.players.sort(function(a, b) {
+    return b[field] - a[field];
+  }).slice(0, 20).forEach(function(player, index) {
+    message += (index + 1) + '. ' + player.first_name + ' (' + player[field] + ')' + '\n';
+  });
+  bot.sendMessage(game.chat_id, message);
+}
+
+function tenThingsStats(game, sorter, field, title) {
+  TenThings.aggregate([
+    { $unwind:'$players' },
+    { $group: {
+      '_id': { _id:'$players._id', first_name:'$players.first_name' },
+      'score': { $sum:'$players.score' },
+      'plays': { $sum:'$players.plays' },
+      'wins': { $sum:'$players.wins' },
+      'answers': { $sum:'$players.answers' },
+      'snubs': { $sum:'$players.snubs' },
+      'hints': { $sum:'$players.hints' },
+      'skips': { $sum:'$players.skips' }
+    }},
+  ]).sort(sorter).limit(10).exec(function(err, players) {
+    if (err) console.error(err);
+    console.log(result);
+    message = '<b>' + title + '</b>\n';
+    players.forEach(function(player, index) {
+      message += (index + 1) + '. ' + player.first_name + ' (' + player[field] + ')' + '\n';
+    });
   });
 }
 
@@ -1033,6 +1042,10 @@ router.post('/', function (req, res, next) {
   if (msg.command.indexOf('@') >= 0) {
     msg.command = msg.command.substring(0, msg.command.indexOf('@'));
   }
+  if (!msg.from.id) {
+    console.log(req.body.message);
+    return res.sendStatus(200);
+  }
   TenThings.findOne({
     chat_id: msg.chat.id
   }).populate('list.creator').exec(function(err, existingGame) {
@@ -1050,6 +1063,11 @@ router.post('/', function (req, res, next) {
     } else {
       var player;
       player = _.find(existingGame.players, function(existingPlayer) {
+        if (!existingPlayer) {
+            console.log('Empty Player!');
+            console.log(existingGame);
+            return false;
+        }
         return existingPlayer.id == msg.from.id;
       });
       if (!player) {
@@ -1131,20 +1149,10 @@ function evaluateCommand(res, msg, game, player, isNew) {
       bot.sendMessage(msg.chat.id, msg.text);
       break;
     case '/info':
-      bot.sendMessage(msg.chat.id, 'Hi ' + msg.from.first_name + ',\nMy name is 10 Things and I am a game bot.\nThe game will give you a category and then you answer anything that comes to mind in that category.\nI have a few things you can ask of me, just type a slash (/) to see the commands.\nIf you want to add your own lists, please go to https://belgocanadian.com/bots\nAnd last but not least if you want to suggest anything (new lists or features) type "/suggest" followed by your suggestion!\n\nHave fun!');
+      bot.sendMessage(msg.chat.id, messages.introduction(msg.from.first_name));
       break;
     case '/logic':
-      var logic = '';
-      logic += '1: If an answer is over 90% correct it will immediately be awarded to the guesser\n';
-      logic += '2: If an answer is over 75% correct it will be awarded after 2 seconds if no 90% answer is provided\n';
-      logic += '3: Points scored = (Max hints [' + MAXHINTS + '] - hints asked + # of current players) * (answer accuracy % - 0.6) * 2.5\n';
-      logic += '4: Hints are revealed in this order: first letters, last letters, vowels, and the rest. The rest will be revealed from least frequent to most frequent letter\n';
-      logic += '5: There is a 10 second cooldown between asking hints\n';
-      logic += '6: A list can be skipped if 2 players /skip it\n';
-      logic += '7: If only 1 player skips a list there will be a 15 second cooldown until the list is skipped\n';
-      logic += '8: A skip can be cancelled by anyone by typing /veto\n';
-      logic += '9: Every day at midnight (universal time) the daily scores will be reset and a winner recorded\n';
-      bot.sendMessage(msg.chat.id, logic);
+      bot.sendMessage(msg.chat.id, messages.logic());
       break;
     /*
     case '/start':
@@ -1173,94 +1181,10 @@ function evaluateCommand(res, msg, game, player, isNew) {
       bot.sendMessage(msg.chat.id, 'Skip vetoed by ' + msg.from.first_name);
       break;
     case '/scores':
-      bot.sendKeyboard(game.chat_id, 'Which scores would you like?', {
-        inline_keyboard: [
-          [
-            {
-              'text': 'Daily Score',
-              'callback_data': JSON.stringify({
-                type: 'score',
-                id: 'd',
-                game: msg.chat.id
-              })
-            },
-            {
-              'text': 'Top Daily Score',
-              'callback_data': JSON.stringify({
-                type: 'score',
-                id: 'td',
-                game: msg.chat.id
-              })
-            }
-          ],
-          [
-            {
-              'text': 'Top Win Ratio',
-              'callback_data': JSON.stringify({
-                type: 'score',
-                id: 'tr',
-                game: msg.chat.id
-              })
-            },
-            {
-              'text': 'Top Overall Score',
-              'callback_data': JSON.stringify({
-                type: 'score',
-                id: 'ts',
-                game: msg.chat.id
-              })
-            }
-          ],
-          [
-            {
-              'text': 'Top Average',
-              'callback_data': JSON.stringify({
-                type: 'score',
-                id: 'ta',
-                game: msg.chat.id
-              })
-            }
-          ]
-        ]
-      });
+      bot.sendKeyboard(game.chat_id, 'Which scores would you like?', keyboards.scores(game));
       break;
     case '/stats':
-      bot.sendKeyboard(game.chat_id, 'Which stats would you like?', {
-        inline_keyboard: [
-          [
-            {
-              'text': 'Game Stats',
-              'callback_data': JSON.stringify({
-                type: 'stat',
-                id: game.chat_id + '_g_' + game.chat_id
-              })
-            },
-            {
-              'text': 'List Stats',
-              'callback_data': JSON.stringify({
-                type: 'stat',
-                id: game.chat_id + '_l_' + game.list._id
-              })
-            }
-          ],
-          [
-            {
-              'text': 'My Stats',
-              'callback_data': JSON.stringify({
-                type: 'stat',
-                id: game.chat_id + '_p_' + player._id
-              })
-            },
-            {
-              'text': 'Player Stats',
-              'callback_data': JSON.stringify({
-                type: 'stat',
-                id: game.chat_id + '_players'
-              })
-            }
-          ]
-        ]
-      });
+      bot.sendKeyboard(game.chat_id, 'Which stats would you like?', keyboards.stats(game, player));
       break;
     case '/list':
       try {

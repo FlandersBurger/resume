@@ -137,6 +137,11 @@ angular.module('app')
     });
   };
 
+  $scope.selectCategory = function(category) {
+    $scope.selectedList.category = category;
+    $scope.selectingCategory = false;
+  };
+
   $scope.addList = function() {
     var newList = _.find($scope.lists, function(list) { return !list._id; });
     if (!newList) {
