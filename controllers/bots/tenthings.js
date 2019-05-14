@@ -372,7 +372,6 @@ function checkGuess(game, guess, msg) {
   if (!player) {
     bot.notifyAdmin(JSON.stringify(guess));
     return console.error('Something wrong with this guess:\n' + JSON.stringify(guess));
-
   }
   if (!match.guesser.first_name) {
     match.guesser = msg.from;
@@ -687,7 +686,7 @@ function cooldownHint(gameId) {
 function getScores(gameId, scoreType) {
   TenThings.findOne({
     chat_id: gameId
-  }).select('players').exec(function(err, game) {
+  }).select('players chat_id').exec(function(err, game) {
     var str = '';
     switch (scoreType) {
       case 'td':
@@ -735,15 +734,15 @@ function getScores(gameId, scoreType) {
 }
 
 function getDailyScores(game, limit) {
-  var str = '<b>Daily Scores</b>\n';
-  game.players.filter(function(player) {
+  var message = game.players.filter(function(player) {
     return player.scoreDaily;
   }).sort(function(a, b) {
     return b.scoreDaily - a.scoreDaily;
-  }).slice(0, limit ? limit : game.players.length).forEach(function(player, index) {
+  }).slice(0, limit ? limit : game.players.length).reduce(function(str, player, index) {
     str += (index + 1) + ': ' + player.first_name + ' - ' + player.scoreDaily + '\n';
-  });
-  bot.sendMessage(game.chat_id, str);
+    return str;
+  }, '<b>Daily Scores</b>\n');
+  bot.sendMessage(game.chat_id, message);
 }
 
 function getList(game, callback) {
@@ -1043,6 +1042,10 @@ router.post('/', function (req, res, next) {
   if (msg.command.indexOf('@') >= 0) {
     msg.command = msg.command.substring(0, msg.command.indexOf('@'));
   }
+  if (!msg.from.id) {
+    console.log(req.body.message);
+    return res.sendStatus(200);
+  }
   TenThings.findOne({
     chat_id: msg.chat.id
   }).populate('list.creator').exec(function(err, existingGame) {
@@ -1060,6 +1063,11 @@ router.post('/', function (req, res, next) {
     } else {
       var player;
       player = _.find(existingGame.players, function(existingPlayer) {
+        if (!existingPlayer) {
+            console.log('Empty Player!');
+            console.log(existingGame);
+            return false;
+        }
         return existingPlayer.id == msg.from.id;
       });
       if (!player) {

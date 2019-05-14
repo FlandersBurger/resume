@@ -1,4 +1,5 @@
 var moment = require('moment');
+var MAXHINTS = 6;
 
 module.exports = {
   introduction: function(player) {
