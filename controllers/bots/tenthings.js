@@ -396,23 +396,23 @@ function checkGuess(game, guess, msg) {
       player.highScore = player.scoreDaily;
     }
     if (match.blurb) {
-      guessed(game, msg, match.value, (match.blurb.substring(0, 4) === 'http' ? ('<a href="' + match.blurb + '">&#8204;</a>') : ('\n<i>' + match.blurb + '</i>')), score, accuracy);
+      guessed(game, player, msg, match.value, (match.blurb.substring(0, 4) === 'http' ? ('<a href="' + match.blurb + '">&#8204;</a>') : ('\n<i>' + match.blurb + '</i>')), score, accuracy);
     } else {
       request('https://en.wikipedia.org/w/api.php?action=opensearch&search=' + encodeURIComponent(match.value), function (err, response, body) {
         if (err) {
-          guessed(game, msg, match.value, '', score, accuracy);
+          guessed(game, player, msg, match.value, '', score, accuracy);
         } else {
           try {
             var results = JSON.parse(body)[2].filter(function(result) {
               return result && result.indexOf('refer to:') < 0 && result.indexOf('refers to:') < 0;
             });
             if (results.length > 0) {
-              guessed(game, msg, match.value, '\nRandom Wiki:\n<i> ' + results[0/*Math.floor(Math.random()*results.length)*/] + '</i>', score, accuracy);
+              guessed(game, player, msg, match.value, '\nRandom Wiki:\n<i> ' + results[0/*Math.floor(Math.random()*results.length)*/] + '</i>', score, accuracy);
             } else {
-              guessed(game, msg, match.value, '', score, accuracy);
+              guessed(game, player, msg, match.value, '', score, accuracy);
             }
           } catch (e) {
-            guessed(game, msg, match.value, '', score, accuracy);
+            guessed(game, player, msg, match.value, '', score, accuracy);
           }
         }
       });
@@ -431,11 +431,11 @@ function checkGuess(game, guess, msg) {
   });
 }
 
-function guessed(game, msg, value, blurb, score, accuracy) {
+function guessed(game, player, msg, value, blurb, score, accuracy) {
   var message = messages.guessed(value, msg.from.first_name);
   message += messages.streak(game.streak.count);
   message += blurb;
-  message += '\n<pre>+' + score + ' points (' + accuracy + ')</pre>';
+  message += '\n<pre>' + (player.scoreDaily - score) + ' + ' + score + ' points (' + accuracy + ')</pre>';
   var answersLeft = game.list.values.filter(function(item) { return !item.guesser.first_name; }).length;
   if (answersLeft > 0) {
     message += '\n' + answersLeft + ' answer' + (answersLeft > 1 ? 's' : '') + ' left.';
