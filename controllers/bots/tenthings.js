@@ -1209,7 +1209,7 @@ function evaluateCommand(res, msg, game, player, isNew) {
       if (msg.text.substring(8, msg.text.length).replace(/\s/g,'')) {
         player.suggestions++;
         game.save();
-        bot.notifyAdmins(JSON.stringify((msg.from.username ? msg.from.username : msg.from.first_name) + ': ' + msg.text.substring(8, msg.text.length)));
+        bot.notifyAdmins('<b>Suggestion</b>\n' + msg.text.substring(8, msg.text.length) + '\n<i>' + (msg.from.username ? msg.from.username : msg.from.first_name) + '</i>');
         bot.sendMessage(msg.chat.id, 'Suggestion noted, ' + msg.from.first_name + '!');
       } else {
         bot.sendMessage(msg.chat.id, 'You didn\'t suggest anything ' + msg.from.first_name + '. Add your message after /suggest');

@@ -177,7 +177,6 @@ angular.module('app')
   };
 
   $scope.saveList = function(list) {
-    list.modifyDate = new Date();
     list.values = list.values.filter(function(item) {
       return item.value;
     });

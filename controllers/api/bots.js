@@ -17,6 +17,7 @@ var admins = [
   '5ae16b2317c46c02144a93a9', //Terrence
   '5b464a53b1436b72a67b0039', //Val
   '5b4cc52744f3cf615d4d699c', //Renan
+  '5cd6d3a4597a396941793afe', //Maria
 ];
 
 router.get('/lists', function (req, res, next) {
@@ -68,6 +69,8 @@ router.get('/lists/:id', function (req, res, next) {
 router.put('/lists', function (req, res, next) {
   var yesterday = new Date();
   yesterday.setDate(yesterday.getDate() - 1);
+  var previousModifyDate = req.body.list.modifyDate;
+  req.body.list.modifyDate = new Date();
   List.findByIdAndUpdate(req.body.list._id ? req.body.list._id : new mongoose.Types.ObjectId(), req.body.list, { new: true, upsert: true }, function(err, list) {
     if (err) return next(err);
     List.findOne({
@@ -75,9 +78,8 @@ router.put('/lists', function (req, res, next) {
     }).populate('creator').exec(function(err, result) {
       if (err) return next(err);
       if (!req.body.list._id) {
-        console.log(list.name + ' created by ' + req.body.user.username);
         bot.notifyAdmins(list.name + ' created by ' + req.body.user.username);
-      } else if (result.date < yesterday) {
+      } else if (previousModifyDate < yesterday) {
         bot.notifyAdmins(list.name + ' updated by ' + req.body.user.username);
       }
       res.json(result);

@@ -83,7 +83,7 @@ function TelegramBot() {
 
   bot.notifyAdmins = function(msg) {
     bot.getAdmins().forEach(function(admin) {
-      b.sendMessage(admin, JSON.stringify(msg));
+      b.sendMessage(admin, msg);
     });
   };
 
