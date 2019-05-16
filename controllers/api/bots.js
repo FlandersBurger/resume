@@ -78,9 +78,9 @@ router.put('/lists', function (req, res, next) {
     }).populate('creator').exec(function(err, result) {
       if (err) return next(err);
       if (!req.body.list._id) {
-        bot.notifyAdmins(list.name + ' created by ' + req.body.user.username);
+        bot.notifyAdmins('<b>' + list.name + '</b> created by <i>' + req.body.user.username + '</i>');
       } else if (previousModifyDate < yesterday) {
-        bot.notifyAdmins(list.name + ' updated by ' + req.body.user.username);
+        bot.notifyAdmins('<b>' + list.name + '</b> updated by <i>' + req.body.user.username + '</i>');
       }
       res.json(result);
     });

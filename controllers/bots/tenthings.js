@@ -41,6 +41,14 @@ var skips = {};
       );
 */
 
+TenThings.findOne({ chat_id: SUPERGROUP }).exec(function(err, game) {
+  if (game) {
+    console.log(game.players.filter(function(player) {
+      return player.lastPlayDate < moment().subtract(1, 'months');
+    }));
+  }
+});
+
 var queue = kue.createQueue({
   redis: {
     port: config.redis.port,
@@ -147,7 +155,7 @@ var modifiedLists = schedule.scheduleJob('0 5 12 * * *', function() {
 //var dailyScore = schedule.scheduleJob('*/10 * * * * *', function() {
 var dailyScore = schedule.scheduleJob('0 0 0 * * *', function() {
   if (new Date().getHours() === 0) {
-    bot.notifyAdmin('Score Reset Triggered; ' + new Date());
+    bot.notifyAdmin('Score Reset Triggered; ' + moment().format('DD-MMM-YYYY'));
     TenThings.find({ 'players.scoreDaily': { $gt: 0 }})
     .then(function(games) {
       games.forEach(function(game) {
@@ -376,6 +384,7 @@ function checkGuess(game, guess, msg) {
   if (!match.guesser.first_name) {
     match.guesser = msg.from;
     player.answers++;
+    player.lastPlayDate = moment();
     var score = Math.round((MAXHINTS - game.hints + game.guessers.length) * (guess.match.distance - 0.6) * 2.5);
     var accuracy = (guess.match.distance * 100).toFixed(0) + '%';
     player.score += score;
@@ -994,9 +1003,18 @@ router.post('/', function (req, res, next) {
         command: '/info',
         chat: req.body.message.chat
       };
+    } else if (req.body.message.left_chat_participant) {
+      TenThings.findOne({
+        chat_id: req.body.message.chat.id
+      }).select('players').exec(function(err, game) {
+        game.players = game.players.filter(function(player) {
+          return player.id != req.body.message.left_chat_participant.id;
+        });
+        game.save();
+        return res.sendStatus(200);
+      });
     } else if (
       req.body.edited_message ||
-      req.body.message.left_chat_participant ||
       req.body.message.game ||
       req.body.message.photo ||
       req.body.message.video ||
@@ -1064,9 +1082,9 @@ router.post('/', function (req, res, next) {
       var player;
       player = _.find(existingGame.players, function(existingPlayer) {
         if (!existingPlayer) {
-            console.log('Empty Player!');
-            console.log(existingGame);
-            return false;
+          console.log('Empty Player!');
+          console.log(existingGame);
+          return false;
         }
         return existingPlayer.id == msg.from.id;
       });
@@ -1209,7 +1227,7 @@ function evaluateCommand(res, msg, game, player, isNew) {
       if (msg.text.substring(8, msg.text.length).replace(/\s/g,'')) {
         player.suggestions++;
         game.save();
-        bot.notifyAdmins('<b>Suggestion</b>\n' + msg.text.substring(8, msg.text.length) + '\n<i>' + (msg.from.username ? msg.from.username : msg.from.first_name) + '</i>');
+        bot.notifyAdmins('<b>Suggestion</b>\n' + msg.text.substring(9, msg.text.length) + '\n<i>' + (msg.from.username ? msg.from.username : msg.from.first_name) + '</i>');
         bot.sendMessage(msg.chat.id, 'Suggestion noted, ' + msg.from.first_name + '!');
       } else {
         bot.sendMessage(msg.chat.id, 'You didn\'t suggest anything ' + msg.from.first_name + '. Add your message after /suggest');
