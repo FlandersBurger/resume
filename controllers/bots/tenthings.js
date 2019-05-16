@@ -40,7 +40,7 @@ var skips = {};
         }
       );
 */
-
+/*
 TenThings.findOne({ chat_id: SUPERGROUP }).exec(function(err, game) {
   if (game) {
     console.log(game.players.filter(function(player) {
@@ -48,7 +48,7 @@ TenThings.findOne({ chat_id: SUPERGROUP }).exec(function(err, game) {
     }));
   }
 });
-
+*/
 var queue = kue.createQueue({
   redis: {
     port: config.redis.port,
