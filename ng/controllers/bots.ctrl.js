@@ -98,6 +98,7 @@ angular.module('app')
 
   $scope.sortValue = 'date';
   $scope.sortDirection = true;
+  $scope.sortList = 'value';
   $scope.sort('date');
 
   $scope.getCategoryCount = function(category) {

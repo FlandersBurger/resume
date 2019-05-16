@@ -106,7 +106,7 @@ var newLists = schedule.scheduleJob('0 0 12 * * *', function() {
       }
     });
   } else {
-    bot.notifyAdmin('New lists incorrectly triggered: ' + new Date());
+    bot.notifyAdmin('New lists incorrectly triggered: ' + moment().format("DD-MMM-YYYY hh:mm"));
   }
 });
 
@@ -141,7 +141,7 @@ var modifiedLists = schedule.scheduleJob('0 5 12 * * *', function() {
       }
     });
   } else {
-    bot.notifyAdmin('New lists incorrectly triggered: ' + new Date());
+    bot.notifyAdmin('New lists incorrectly triggered: ' + moment().format("DD-MMM-YYYY hh:mm"));
   }
 });
 //var dailyScore = schedule.scheduleJob('*/10 * * * * *', function() {
@@ -244,7 +244,7 @@ function getLanguage(language) {
   */
 }
 
-bot.notifyAdmin('Started Ten Things');
+bot.notifyAdmin('<b>Started Ten Things</b>');
 //bot.sendMessage('-1001394022777', "test<a href=\'https://upload.wikimedia.org/wikipedia/commons/thumb/8/89/Regular_Hexagon_Inscribed_in_a_Circle.gif/360px-Regular_Hexagon_Inscribed_in_a_Circle.gif\'>&#8204;</a>\nsome other stuff")
 //var url = 'https://upload.wikimedia.org/wikipedia/commons/d/d8/Olympique_Marseille_logo.svg';
 //bot.sendMessage('592503547', "test<a href=\'" + url + "\'>&#8204;</a>\nsome other stuff");
@@ -268,7 +268,7 @@ function selectList(game, callback) {
   List.find({ _id: { $nin: game.playedLists } })
   .populate('creator')
   .exec(function (err, lists) {
-    if (err) return notifyAdmin(err);
+    if (err) return notifyAdmin(JSON.stringify(err));
     if (lists.length === 0) {
       game.playedLists = [];
       game.cycles++;
@@ -425,7 +425,7 @@ function checkGuess(game, guess, msg) {
   }
   game.save(function(err, savedGame) {
     if (err) {
-      bot.notifyAdmin(err);
+      bot.notifyAdmin(JSON.stringify(err));
     }
   });
 }

@@ -56,6 +56,9 @@
         <div class="btn btn-default" ng-click="reportList(selectedList)" ng-hide="!selectedList || selectedList.creator._id === currentUser._id">
           <i class="fa fa-bug" aria-hidden="true"></i> Report
         </div>
+        <div class="btn btn-default" ng-click="sortList = sortList === 'value' ? 'blurb' : 'value'" ng-hide="!selectedList">
+          <i class="fa fa-sort-amount-down" aria-hidden="true"></i> Sort by {{sortList === 'value' ? 'blurb' : 'value'}}
+        </div>
       </div>
       <div class="col-md-12">
         <div class="input-group">
@@ -83,7 +86,7 @@
           </div>
         </div>
         <hr />
-        <div class="input-group" ng-repeat="item in selectedList.values | orderBy: 'value'">
+        <div class="input-group" ng-repeat="item in selectedList.values | orderBy: sortList">
           <input id="value{{$index}}" class="form-control" ng-model="item.value" placeholder="Value {{selectedList.values.length - $index}}" ng-disabled="!currentUser.admin && selectedList.creator._id !== currentUser._id && item.creator !== currentUser._id" />
           <span class="input-group-addon"><img ng-src="{{item.blurb}}" ng-if="item.blurb.substring(0, 4) === 'http'"/></span>
           <input class="form-control" ng-model="item.blurb" placeholder="Display after guessing {{item.value}}" ng-disabled="!currentUser.admin && selectedList.creator._id !== currentUser._id && item.creator !== currentUser._id" />

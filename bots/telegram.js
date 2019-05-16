@@ -70,7 +70,7 @@ function TelegramBot() {
   };
 
   bot.notifyAdmin = function(msg) {
-    b.sendMessage('592503547', JSON.stringify(msg));
+    b.sendMessage('592503547', msg);
   };
 
   bot.getAdmins = function() {
