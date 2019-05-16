@@ -31,7 +31,8 @@ var TenThings = db.model('TenThings', {
       suggestions: { type: Number, required: false, default: 0 },
       streak: { type: Number, required: false, default: 0 },
       playStreak: { type: Number, required: false, default: 0 },
-      lastPlayDate: { type: Date, required: false, default: new Date(2019, 5, 15) }, //Date when lastPlayDate was implemented
+      maxPlayStreak: { type: Number, required: false, default: 0 },
+      lastPlayDate: { type: Date, required: false, default: new Date(2019, 5, 15).valueOf() }, //Date when lastPlayDate was implemented
     }
   ],
   playedLists: [

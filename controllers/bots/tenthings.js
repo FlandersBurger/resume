@@ -216,7 +216,7 @@ var dailyScore = schedule.scheduleJob('0 0 0 * * *', function() {
       bot.notifyAdmin('update daily score error\n' + err);
     });
   } else {
-    bot.notifyAdmin('Schedule incorrectly triggered: ' + new Date());
+    bot.notifyAdmin('Schedule incorrectly triggered: ' + moment().format('DD-MMM-YYYY'));
   }
   TenThings.find({ 'players.highScore': { $gt: 0 } })
   .then(function(games) {
@@ -224,7 +224,7 @@ var dailyScore = schedule.scheduleJob('0 0 0 * * *', function() {
       return game._id;
     });
     if (ids.length > 0) {
-      TenThings.find({ '_id': { $nin: ids }, 'date': { $lt: new Date() - 60*60*1000*30 } })
+      TenThings.find({ '_id': { $nin: ids }, 'date': { $lt: moment().subtract(30, 'days') } })
       .then(function(staleGames) {
         staleGames.forEach(function(game) {
           game.remove();
@@ -1008,6 +1008,9 @@ router.post('/', function (req, res, next) {
         chat_id: req.body.message.chat.id
       }).select('players').exec(function(err, game) {
         game.players = game.players.filter(function(player) {
+          if (player.id == req.body.message.left_chat_participant.id) {
+            bot.notifyAdmin('Removing ' + player.first_name + ' from ' + req.body.message.chat.id);
+          }
           return player.id != req.body.message.left_chat_participant.id;
         });
         game.save();
