@@ -1060,7 +1060,7 @@ router.post('/', function (req, res, next) {
       chat: req.body.message.chat
     };
   }
-      if (!msg) return res.sendStatus(200);
+      if (!msg) return;
   if (msg.command.indexOf('@') >= 0) {
     msg.command = msg.command.substring(0, msg.command.indexOf('@'));
   }
