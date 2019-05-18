@@ -1060,6 +1060,7 @@ router.post('/', function (req, res, next) {
       chat: req.body.message.chat
     };
   }
+      if (!msg.command) return res.sendStatus(200);
   if (msg.command.indexOf('@') >= 0) {
     msg.command = msg.command.substring(0, msg.command.indexOf('@'));
   }
@@ -1165,6 +1166,7 @@ function evaluateCommand(res, msg, game, player, isNew) {
   if (game.list.values.length === 0) {
     newRound(game);
   }
+      if (!msg.command) return res.sendStatus(200);
   switch (msg.command) {
     case '/error':
       bot.sendMessage(msg.chat.id, msg.text);
