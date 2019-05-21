@@ -59,6 +59,27 @@ var queue = kue.createQueue({
 });
 
 
+TenThings.find({})
+.then(function(games) {
+  games.filter(function(game) {
+    return _.some(game.players, function(player) {
+      return player.playStreak > player.bestPlayStreak;
+    });
+  }).forEach(function(game) {
+    game.players = game.players.map(function(player) {
+      if (player.playStreak  > player.bestPlayStreak) {
+        player.bestPlayStreak = player.playStreak;
+      }
+      return player;
+    });
+    console.log(game);
+    game.save(function(err, saved, rows) {
+      console.log(err);
+      console.log(rows);
+      console.log(saved);
+    });
+  });
+});
 //addJob();
 /*
 queue.on('job complete', function(id, result){
@@ -189,17 +210,20 @@ var dailyScore = schedule.scheduleJob('0 0 0 * * *', function() {
                   {
                     $inc: {
                       'players.$[winner].wins': 1,
-                      'players.$[player].plays': 1
+                      'players.$[player].plays': 1,
+                      'players.$[player].playStreak': 1,
                     },
                     $set: {
-                      'players.$[player].scoreDaily': 0
+                      'players.$[player].scoreDaily': 0,
+                      'players.$[idler].playStreak': 0
                     }
                   },
                   {
                     multi: true,
                     arrayFilters: [
                       { 'winner._id': { $in: winners } },
-                      { 'player.scoreDaily': { $gt: 0 } }
+                      { 'player.scoreDaily': { $gt: 0 } },
+                      { 'idler.scoreDaily': 0 }
                     ]
                   },
                   function(err, saved) {
@@ -415,7 +439,7 @@ function checkGuess(game, guess, msg) {
               return result && result.indexOf('refer to:') < 0 && result.indexOf('refers to:') < 0;
             });
             if (results.length > 0) {
-              guessed(game, player, msg, match.value, '\nRandom Wiki:\n<i> ' + results[0/*Math.floor(Math.random()*results.length)*/] + '</i>', score, accuracy);
+              guessed(game, player, msg, match.value, '\nRandom Wiki:\n<i>' + results[0/*Math.floor(Math.random()*results.length)*/] + '</i>', score, accuracy);
             } else {
               guessed(game, player, msg, match.value, '', score, accuracy);
             }
@@ -902,7 +926,9 @@ function stats(data) {
 function listsStats(game, sorter, field, title) {
   List.find().sort(sorter).limit(20).exec(function(err, lists) {
     var message = '<b>' + title + '</b>\n';
-    lists.forEach(function(list, index) {
+    lists.sort(function(a, b) {
+      return b[field] - a[field];
+    }).forEach(function(list, index) {
       message += (index + 1) + '. ' + list.name + ' (' + list[field] + ')' + '\n';
     });
     bot.sendMessage(game.chat_id, message);

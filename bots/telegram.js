@@ -77,7 +77,8 @@ function TelegramBot() {
     return [
       '592503547', //Laurent
       '50070949', //Caio
-      '55229200' //Renan
+      '55229200', //Renan
+      '672106107', //Maria
     ];
   };
 
