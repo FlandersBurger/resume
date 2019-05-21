@@ -12,6 +12,7 @@ var bot = require('../../bots/telegram');
 
 var messages = require('./tenthings/messages');
 var keyboards = require('./tenthings/keyboards');
+//var stats = require('./tenthings/stats');
 
 var List = require('../../models/list');
 var TenThings = require('../../models/games/tenthings');
@@ -59,27 +60,6 @@ var queue = kue.createQueue({
 });
 
 
-TenThings.find({})
-.then(function(games) {
-  games.filter(function(game) {
-    return _.some(game.players, function(player) {
-      return player.playStreak > player.bestPlayStreak;
-    });
-  }).forEach(function(game) {
-    game.players = game.players.map(function(player) {
-      if (player.playStreak  > player.bestPlayStreak) {
-        player.bestPlayStreak = player.playStreak;
-      }
-      return player;
-    });
-    console.log(game);
-    game.save(function(err, saved, rows) {
-      console.log(err);
-      console.log(rows);
-      console.log(saved);
-    });
-  });
-});
 //addJob();
 /*
 queue.on('job complete', function(id, result){
@@ -173,6 +153,7 @@ var modifiedLists = schedule.scheduleJob('0 5 12 * * *', function() {
     bot.notifyAdmin('New lists incorrectly triggered: ' + moment().format("DD-MMM-YYYY hh:mm"));
   }
 });
+
 //var dailyScore = schedule.scheduleJob('*/10 * * * * *', function() {
 var dailyScore = schedule.scheduleJob('0 0 0 * * *', function() {
   if (new Date().getHours() === 0) {
@@ -240,8 +221,9 @@ var dailyScore = schedule.scheduleJob('0 0 0 * * *', function() {
       bot.notifyAdmin('update daily score error\n' + err);
     });
   } else {
-    bot.notifyAdmin('Schedule incorrectly triggered: ' + moment().format('DD-MMM-YYYY'));
+    bot.notifyAdmin('Schedule incorrectly triggered: ' + moment().format('DD-MMM-YYYY hh:mm'));
   }
+  //Delete stale games
   TenThings.find({ 'players.highScore': { $gt: 0 } })
   .then(function(games) {
     var ids = games.map(function(game) {
@@ -259,6 +241,26 @@ var dailyScore = schedule.scheduleJob('0 0 0 * * *', function() {
   });
 });
 
+
+var playStreak = schedule.scheduleJob('0 0 1 * * *', function() {
+  //Update play streaks
+  TenThings.find({ $expr: { $gt: [ '$players.playStreak' , '$players.maxPlayStreak' ] } })
+  .select('players.playStreak players.maxPlayStreak')
+  .then(function(games) {
+    if (games.length > 0) bot.notifyAdmin(games.length + ' game streaks updated');
+    games.forEach(function(game) {
+      for (var i = 0; i < game.players.length; i++) {
+        var player = game.players[i];
+        if (player.playStreak > player.maxPlayStreak) {
+          player.maxPlayStreak = player.playStreak;
+        }
+      }
+      game.save(function(err, saved, rows) {
+        if (err) console.error(err);
+      });
+    });
+  });
+});
 function getLanguage(language) {
   return 'en';
   /*
@@ -716,7 +718,13 @@ function cooldownHint(gameId) {
   }
 }
 
-function getScores(gameId, scoreType) {
+function getScores(game_id, scoreType) {
+  /*
+  stats('score', game_id, scoreType)
+  .then(function(str) {
+    bot.sendMessage(game_id, str);
+  });
+  */
   TenThings.findOne({
     chat_id: gameId
   }).select('players chat_id').exec(function(err, game) {
@@ -869,7 +877,6 @@ function stats(data) {
         break;
       case 'p':
         var findPlayer = new Promise(function(resolve, reject) {
-          console.log(game.players);
           var player = _.find(game.players, function(existingPlayer) {
             return existingPlayer._id == id;
           });
@@ -914,8 +921,11 @@ function stats(data) {
       case 'wins':
         playerStats(game, {wins: -1}, 'wins', 'Most Wins');
         break;
-      case 'streak':
-        playerStats(game, {bestStreak: -1}, 'streak', 'Best Streak');
+      case 'astreak':
+        playerStats(game, {streak: -1}, 'streak', 'Best Answer Streak');
+        break;
+      case 'pstreak':
+        playerStats(game, {maxPlayStreak: -1}, 'maxPlayStreak', 'Best Play Streak');
         break;
       default:
         bot.sendMessage(game.chat_id, 'Something');
@@ -956,7 +966,9 @@ function tenThingsStats(game, sorter, field, title) {
       'answers': { $sum:'$players.answers' },
       'snubs': { $sum:'$players.snubs' },
       'hints': { $sum:'$players.hints' },
-      'skips': { $sum:'$players.skips' }
+      'skips': { $sum:'$players.skips' },
+      'answerStreaks': { $max:'$players.streak' },
+      'playStreaks': { $max:'$players.maxPlayStreak' }
     }},
   ]).sort(sorter).limit(10).exec(function(err, players) {
     if (err) console.error(err);
@@ -1040,8 +1052,8 @@ router.post('/', function (req, res, next) {
           return player.id != req.body.message.left_chat_participant.id;
         });
         game.save();
-        return res.sendStatus(200);
       });
+      return res.sendStatus(200);
     } else if (
       req.body.edited_message ||
       req.body.message.game ||
@@ -1086,7 +1098,6 @@ router.post('/', function (req, res, next) {
       chat: req.body.message.chat
     };
   }
-      if (!msg) return;
   if (msg.command.indexOf('@') >= 0) {
     msg.command = msg.command.substring(0, msg.command.indexOf('@'));
   }
@@ -1192,7 +1203,6 @@ function evaluateCommand(res, msg, game, player, isNew) {
   if (game.list.values.length === 0) {
     newRound(game);
   }
-      if (!msg.command) return res.sendStatus(200);
   switch (msg.command) {
     case '/error':
       bot.sendMessage(msg.chat.id, msg.text);

@@ -156,10 +156,17 @@ module.exports = {
           }
         ],
         [{
-            'text': 'Best Streak',
+            'text': 'Best Answer Streak',
             'callback_data': JSON.stringify({
               type: 'stat',
-              id: game.chat_id + '_streak'
+              id: game.chat_id + '_astreak'
+            })
+          },
+          {
+            'text': 'Best Play Streak',
+            'callback_data': JSON.stringify({
+              type: 'stat',
+              id: game.chat_id + '_pstreak'
             })
           }
         ],
