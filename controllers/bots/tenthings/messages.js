@@ -60,7 +60,7 @@ module.exports = {
     return message;
   },
   alreadyGuessed: function(match, loser, winner) {
-    var random = Math.floor(Math.random() * 8);
+    var random = Math.floor(Math.random() * 9);
     if (loser.id != winner.id) {
       switch (random) {
         case 0:
@@ -79,6 +79,8 @@ module.exports = {
           return winner.first_name + ' showed ' + loser.first_name + ' who\'s the boss with ' + match;
         case 7:
           return 'Nobody puts ' + winner.first_name + ' in the corner ' + loser.first_name + ' (' + match + ')';
+        case 8:
+          return 'What if I told you that ' + winner.first_name + ' already said ' + match + ', ' + loser.first_name;
         default:
           return winner.first_name + ' already got ' + match + ', too bad ' + loser.first_name;
       }
@@ -100,6 +102,8 @@ module.exports = {
           return 'Great job ' + loser.first_name + ', you just schooled yourself with ' + match;
         case 7:
           return 'Um, I already said you got ' + match + ', ' + loser.first_name;
+        case 8:
+          return loser.first_name + ' tried to cheat with ' + match + ' and failed';
         default:
           return loser.first_name + ' already got ' + match + ', too bad, um..., ' + loser.first_name;
       }

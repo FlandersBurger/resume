@@ -1012,8 +1012,6 @@ router.post('/', function (req, res, next) {
       getScores(data.game, data.id);
     }
     return res.sendStatus(200);
-  } else if (req.body.edited_message) {
-    return res.sendStatus(200);
   } else if (!req.body.message) {
     msg = {
       id: '592503547',
@@ -1054,8 +1052,10 @@ router.post('/', function (req, res, next) {
         game.save();
       });
       return res.sendStatus(200);
+    } else if (req.body.edited_message) {
+      bot.sendMessage(req.body.message.chat.id, 'You can\'t just edit your answers! I\'m watching you!');
+      return res.sendStatus(200);
     } else if (
-      req.body.edited_message ||
       req.body.message.game ||
       req.body.message.photo ||
       req.body.message.video ||
