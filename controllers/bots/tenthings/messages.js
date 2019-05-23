@@ -60,7 +60,7 @@ module.exports = {
     return message;
   },
   alreadyGuessed: function(match, loser, winner) {
-    var random = Math.floor(Math.random() * 7);
+    var random = Math.floor(Math.random() * 8);
     if (loser.id != winner.id) {
       switch (random) {
         case 0:
@@ -77,6 +77,8 @@ module.exports = {
           return 'You got majorly snubbed by ' + winner.first_name + ' for ' + match + ', ' + loser.first_name;
         case 6:
           return winner.first_name + ' showed ' + loser.first_name + ' who\'s the boss with ' + match;
+        case 7:
+          return 'Nobody puts ' + winner.first_name + ' in the corner ' + loser.first_name + ' (' + match + ')';
         default:
           return winner.first_name + ' already got ' + match + ', too bad ' + loser.first_name;
       }
@@ -96,6 +98,8 @@ module.exports = {
           return 'Own goal delivered by ' + loser.first_name + ' for ' + match;
         case 6:
           return 'Great job ' + loser.first_name + ', you just schooled yourself with ' + match;
+        case 7:
+          return 'Um, I already said you got ' + match + ', ' + loser.first_name;
         default:
           return loser.first_name + ' already got ' + match + ', too bad, um..., ' + loser.first_name;
       }
@@ -132,17 +136,28 @@ module.exports = {
     return message;
   },
   streak: function(streak) {
+    var messages, random;
     switch (streak) {
       case 1:
-        return '\n--- New streaker! ---';
+        messages = ['New streaker', 'New kid on the block', 'Spree killer', 'Streak Denied', 'From the ashes'];
+        random = Math.floor(Math.random() * messages.length);
+        return '\n--- ' + messages[random] + '! ---';
       case 2:
-        return '\n--- Double-tap ---';
+        messages = ['Double Tap', 'Twofold', 'Double Down', 'Double Whammy', 'Double Dip', 'Double or Nothing'];
+        random = Math.floor(Math.random() * messages.length);
+        return '\n--- ' + messages[random] + ' ---';
       case 3:
-        return '\n--- Turkey ---';
+        messages = ['Turkey', 'Threesome', 'Hat Trick', 'Triple Whammy', 'Ménage à trois', 'Holy Trinity'];
+        random = Math.floor(Math.random() * messages.length);
+        return '\n--- ' + messages[random] + ' ---';
       case 5:
-        return '\n--- Answer Spree ---';
+        messages = ['Answer Spree', 'Abraham Lincoln', 'Lustrum', 'Cinque'];
+        random = Math.floor(Math.random() * messages.length);
+        return '\n--- ' + messages[random] + ' ---';
       case 10:
-        return '\n--- Ten Ten Things Things ---';
+        messages = ['Ten Ten Things Things', 'Tenfold', 'Tenacious', 'Alexander Hamilton'];
+        random = Math.floor(Math.random() * messages.length);
+        return '\n--- ' + messages[random] + ' ---';
       case 15:
         return '\n--- Mega Spree ---';
       case 20:
@@ -158,7 +173,9 @@ module.exports = {
       case 75:
         return '\n--- God-Like ---';
       case 100:
-        return '\n--- Ten Ten Ten Things Things Things ---';
+        messages = ['Ten Ten Ten Things Things Things', 'ONE HUNDRED', 'Tenacious'];
+        random = Math.floor(Math.random() * messages.length);
+        return '\n--- ' + messages[random] + ' ---';
       case 150:
         return '\n--- I guess you\'re competing against yourself ---';
       case 151:

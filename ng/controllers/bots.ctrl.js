@@ -204,7 +204,7 @@ angular.module('app')
   function flash(element) {
     var color = $(element).css("background-color");
     $(element).animate({
-      backgroundColor: "#aa0000"
+      backgroundColor: "#FA8072"
     }, 100, function() {
       $(element).animate({
         backgroundColor: color
