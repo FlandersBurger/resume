@@ -725,6 +725,7 @@ function getScores(data) {
     bot.sendMessage(game_id, str);
   });
   */
+  console.log(data);
   data = data.id.split('_');
   var game_id = data[0];
   var type = data[1];
