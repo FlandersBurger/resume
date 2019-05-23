@@ -1104,9 +1104,15 @@ router.post('/', function (req, res, next) {
   if (msg.command.indexOf('@') >= 0) {
     msg.command = msg.command.substring(0, msg.command.indexOf('@'));
   }
-  if (!msg.from.id) {
-    console.log(req.body.message);
-    return res.sendStatus(200);
+  try {
+        if (!msg.from.id) {
+          console.log(req.body.message);
+          return res.sendStatus(200);
+        }
+  } catch (e) {
+      console.error(e);
+      console.log(req.body.message);
+      return res.sendStatus(200);
   }
   TenThings.findOne({
     chat_id: msg.chat.id
