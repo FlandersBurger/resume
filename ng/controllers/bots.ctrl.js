@@ -166,7 +166,7 @@ angular.module('app')
       $scope.selectedList.answers++;
       $scope.newItem.value = '';
       $scope.newItem.blurb = '';
-      if ($scope.selectedList.values.length >= 10) {
+      if ($scope.selectedList.values.length >= 10 && $scope.selectedList.name && $scope.selectedList.category) {
         $scope.saveList($scope.selectedList);
       }
     }
@@ -181,7 +181,7 @@ angular.module('app')
     list.values = list.values.filter(function(item) {
       return item.value;
     });
-    if (list.values.length >= 10) {
+    if (list.values.length >= 10 && list.name && list.category) {
       $scope.saving = true;
       BotsSvc.saveList($scope.currentUser, list)
       .then(function(response) {
@@ -192,10 +192,25 @@ angular.module('app')
         console.error(err);
         $scope.saving = false;
       });
-    } else {
+    } else if (list.values.length < 10) {
       alert('Lists must contain 10 or more values!');
+    } else if (!list.name) {
+      flash('#list-name');
+    } else {
+      flash('#list-category');
     }
   };
+
+  function flash(element) {
+    var color = $(element).css("background-color");
+    $(element).animate({
+      backgroundColor: "#aa0000"
+    }, 100, function() {
+      $(element).animate({
+        backgroundColor: color
+      }, 100);
+    });
+  }
 
   $scope.deleteList = function(list) {
     if (!list._id) {

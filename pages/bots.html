@@ -62,16 +62,16 @@
       </div>
       <div class="col-md-12">
         <div class="input-group">
-          <input class="form-control" ng-model="selectedList.name" placeholder="List Name" ng-disabled="!selectedList || (!currentUser.admin && selectedList.creator._id !== currentUser._id)" />
+          <input class="form-control" id="list-name" ng-model="selectedList.name" placeholder="List Name" ng-disabled="!selectedList || (!currentUser.admin && selectedList.creator._id !== currentUser._id)" />
           <div class="input-group-btn">
-            <button class="btn btn-default" type="button" ng-click="selectingCategory = !selectingCategory" ng-disabled="!selectedList || (!currentUser.admin && selectedList.creator._id !== currentUser._id)">{{selectedList.category ? selectedList.category : 'Category'}}</button>
+            <button class="btn btn-default" id="list-category" type="button" ng-click="selectingCategory = !selectingCategory" ng-disabled="!selectedList || (!currentUser.admin && selectedList.creator._id !== currentUser._id)">{{selectedList.category ? selectedList.category : 'Category'}}</button>
           </div>
           <input class="form-control" ng-model="selectedList.description" placeholder="List Description" ng-disabled="!selectedList || (!currentUser.admin && selectedList.creator._id !== currentUser._id)" />
         </div>
         <div id="category-select" ng-show="selectingCategory">
           <button class="btn btn-sm btn-default" ng-repeat="category in categories | orderBy" ng-click="selectCategory(category)">{{category}}</button>
         </div>
-        <h5 ng-show="selectedList.creator">By {{selectedList.creator.username}} on {{formatDate(selectedList.date)}} --- <span ng-show="selectedList.plays">Plays: {{selectedList.plays}} / Skips: {{selectedList.skips}} / Score: {{selectedList.score}}</span></h5>
+        <h5 ng-show="selectedList.creator">By {{selectedList.creator.username}} on {{formatDate(selectedList.date)}} --- <span ng-show="selectedList.plays">Plays: {{selectedList.plays}} / Skips: {{selectedList.skips}} / Score: {{selectedList.score}} / Hints: {{selectedList.hints}}</span></h5>
         <div>
 
           <!--div class="btn btn-default" ng-click="selectedList.values.unshift({ value: '', blurb: '' })" ng-disabled="!selectedList">
