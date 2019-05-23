@@ -728,6 +728,7 @@ function getScores(data) {
   data = data.id.split('_');
   var game_id = data[0];
   var type = data[1];
+  console.log(data);
   TenThings.findOne({
     chat_id: game_id
   }).select('players chat_id').exec(function(err, game) {
