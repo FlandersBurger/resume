@@ -62,7 +62,7 @@
       </div>
       <div class="col-md-12">
         <div class="input-group">
-          <input class="form-control" id="list-name" ng-model="selectedList.name" placeholder="List Name" ng-disabled="!selectedList || (!currentUser.admin && selectedList.creator._id !== currentUser._id)" />
+          <input class="form-control" id="list-name" ng-model="selectedList.name" ng-change="search = selectedList.name" ng-blur="search = ''" placeholder="List Name" ng-disabled="!selectedList || (!currentUser.admin && selectedList.creator._id !== currentUser._id)" />
           <div class="input-group-btn">
             <button class="btn btn-default" id="list-category" type="button" ng-click="selectingCategory = !selectingCategory" ng-disabled="!selectedList || (!currentUser.admin && selectedList.creator._id !== currentUser._id)">{{selectedList.category ? selectedList.category : 'Category'}}</button>
           </div>

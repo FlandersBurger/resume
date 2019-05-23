@@ -6,16 +6,14 @@ module.exports = {
             'text': 'Daily Score',
             'callback_data': JSON.stringify({
               type: 'score',
-              id: 'd',
-              game: game.chat_id
+              id: game.chat_id + '_d'
             })
           },
           {
             'text': 'Top Daily Score',
             'callback_data': JSON.stringify({
               type: 'score',
-              id: 'td',
-              game: game.chat_id
+              id: game.chat_id + '_td'
             })
           }
         ],
@@ -23,16 +21,14 @@ module.exports = {
             'text': 'Top Win Ratio',
             'callback_data': JSON.stringify({
               type: 'score',
-              id: 'tr',
-              game: game.chat_id
+              id: game.chat_id + '_tr'
             })
           },
           {
             'text': 'Top Overall Score',
             'callback_data': JSON.stringify({
               type: 'score',
-              id: 'ts',
-              game: game.chat_id
+              id: game.chat_id + '_ts'
             })
           }
         ],
@@ -40,8 +36,7 @@ module.exports = {
           'text': 'Top Average',
           'callback_data': JSON.stringify({
             type: 'score',
-            id: 'ta',
-            game: game.chat_id
+            id: game.chat_id + '_ta'
           })
         }]
       ]

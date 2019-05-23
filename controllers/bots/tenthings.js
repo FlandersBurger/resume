@@ -718,18 +718,21 @@ function cooldownHint(gameId) {
   }
 }
 
-function getScores(game_id, scoreType) {
+function getScores(data) {
   /*
   stats('score', game_id, scoreType)
   .then(function(str) {
     bot.sendMessage(game_id, str);
   });
   */
+  data = data.id.split('_');
+  var game_id = data[0];
+  var type = data[1];
   TenThings.findOne({
-    chat_id: gameId
+    chat_id: game_id
   }).select('players chat_id').exec(function(err, game) {
     var str = '';
-    switch (scoreType) {
+    switch (type) {
       case 'td':
         str = '<b>Top Daily Scores</b>\n';
         console.log(str);
@@ -738,7 +741,7 @@ function getScores(game_id, scoreType) {
         }).slice(0, 10).forEach(function(player, index) {
           str += (index + 1) + ': ' + player.first_name + ': ' + player.highScore + '\n';
         });
-        bot.sendMessage(gameId, str);
+        bot.sendMessage(game_id, str);
         break;
       case 'tr':
         str = '<b>Top Win Ratio</b>\n';
@@ -747,7 +750,7 @@ function getScores(game_id, scoreType) {
         }).slice(0, 10).forEach(function(player, index) {
           str += (index + 1) + ': ' + player.first_name + ': ' + player.wins + '/' + player.plays + ' (' + (Math.round(player.plays === 0 ? 0 : player.wins / player.plays * 10000) / 100) + '%)\n';
         });
-        bot.sendMessage(gameId, str);
+        bot.sendMessage(game_id, str);
         break;
       case 'ts':
         str = '<b>Top Overall Score</b>\n';
@@ -757,7 +760,7 @@ function getScores(game_id, scoreType) {
         }).slice(0, 10).forEach(function(player, index) {
           str += (index + 1) + ': ' + player.first_name + ': ' + player.score + '\n';
         });
-        bot.sendMessage(gameId, str);
+        bot.sendMessage(game_id, str);
         break;
       case 'ta':
         str = '<b>Top Average Daily Score</b>\n';
@@ -766,7 +769,7 @@ function getScores(game_id, scoreType) {
         }).slice(0, 10).forEach(function(player, index) {
           str += (index + 1) + ': ' + player.first_name + ': ' + Math.round(player.plays === 0 ? 0 : player.score / player.plays) + '\n';
         });
-        bot.sendMessage(gameId, str);
+        bot.sendMessage(game_id, str);
         break;
       default:
         getDailyScores(game);
@@ -815,7 +818,7 @@ function getRandom(arr, n) {
   return result;
 }
 
-function stats(data) {
+function getStats(data) {
   data = data.id.split('_');
   var game_id = data[0];
   var type = data[1];
@@ -1007,9 +1010,9 @@ router.post('/', function (req, res, next) {
         }
       });
     } else if (data.type === 'stat') {
-      stats(data);
+      getStats(data);
     } else if (data.type === 'score') {
-      getScores(data.game, data.id);
+      getScores(data);
     }
     return res.sendStatus(200);
   } else if (!req.body.message) {
