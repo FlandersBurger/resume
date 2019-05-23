@@ -143,7 +143,16 @@ module.exports = {
     var messages, random;
     switch (streak) {
       case 1:
-        messages = ['New streaker', 'New kid on the block', 'Spree killer', 'Streak Denied', 'From the ashes'];
+        messages = [
+          'New streaker',
+          'New kid on the block',
+          'Spree killer',
+          'Streak Denied',
+          'From the ashes',
+          'Out with the old',
+          'New sheriff in town',
+          'Streak Thief'
+        ];
         random = Math.floor(Math.random() * messages.length);
         return '\n--- ' + messages[random] + '! ---';
       case 2:
@@ -155,7 +164,7 @@ module.exports = {
         random = Math.floor(Math.random() * messages.length);
         return '\n--- ' + messages[random] + ' ---';
       case 5:
-        messages = ['Answer Spree', 'Abraham Lincoln', 'Lustrum', 'Cinque'];
+        messages = ['Answer Spree', 'Abraham Lincoln', 'Lustrum', 'Cinque', 'Like a Boss'];
         random = Math.floor(Math.random() * messages.length);
         return '\n--- ' + messages[random] + ' ---';
       case 10:
