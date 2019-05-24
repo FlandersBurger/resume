@@ -143,7 +143,7 @@ b.init(TOKEN).then(function() {
   b.setWebhook('tenthings').then(function(body) {
        console.log(body);
     b.getWebhook().then(function(body) {
-       console.log(body;
+       console.log(body);
         b.introduceYourself();
     });
   });
