@@ -153,7 +153,7 @@ var b = new TelegramBot();
 b.init(TOKEN).then(function() {
   b.setWebhook('tenthings').then(function(body) {
        console.log(JSON.parse(body));
-    b.deleteWebhook();
+    //b.deleteWebhook();
     b.getWebhook().then(function(body) {
       
        console.log(JSON.parse(body));
