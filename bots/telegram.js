@@ -26,7 +26,7 @@ function TelegramBot() {
 
   bot.setWebhook = function(api) {
     return new Promise(function (resolve, reject) {
-      var url = 'https://api.telegram.org/bot' + bot.token + '/setWebhook?url=https://belgocanadian.com/bots/' + api;
+      var url = 'https://api.telegram.org/beta/bot' + bot.token + '/setWebhook?url=https://belgocanadian.com/bots/' + api;
       request(url, function (error, r, body) {
         if(error) return console.error(error);
         resolve(body);
