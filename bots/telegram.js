@@ -47,7 +47,7 @@ function TelegramBot() {
   
   bot.deleteWebhook = function() {
     return new Promise(function (resolve, reject) {
-      var url = 'https://api.telegram.org/beta/bot' + bot.token + '/deleteWebhook;
+      var url = 'https://api.telegram.org/beta/bot' + bot.token + '/deleteWebhook';
       request(url, function (error, r, body) {
         if(error) return;
         resolve(body);
