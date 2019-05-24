@@ -44,6 +44,16 @@ function TelegramBot() {
       });
     });
   };
+  
+  bot.deleteWebhook = function() {
+    return new Promise(function (resolve, reject) {
+      var url = 'https://api.telegram.org/beta/bot' + bot.token + '/deleteWebhook;
+      request(url, function (error, r, body) {
+        if(error) return;
+        resolve(body);
+      });
+    });
+  };
 
   bot.sendMessage = function(channel, message) {
     message = encodeURIComponent(message);
@@ -143,6 +153,7 @@ var b = new TelegramBot();
 b.init(TOKEN).then(function() {
   b.setWebhook('tenthings').then(function(body) {
        console.log(JSON.parse(body));
+    b.deleteWebhook();
     b.getWebhook().then(function(body) {
       
        console.log(JSON.parse(body));
