@@ -1207,7 +1207,9 @@ function evaluateCommand(res, msg, game, player, isNew) {
   if (!msg.from.first_name) {
     console.error('msg without a first_name?');
     console.error(msg);
-    res.sendStatus(200);
+    return res.sendStatus(200);
+  } else {
+      res.sendStatus(200);
   }
   if (game.list.values.length === 0) {
     newRound(game);
@@ -1293,7 +1295,6 @@ function evaluateCommand(res, msg, game, player, isNew) {
     default:
       queueGuess(game, msg);
   }
-  res.sendStatus(200);
 }
 
 module.exports = router;
