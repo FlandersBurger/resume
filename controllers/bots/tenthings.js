@@ -984,6 +984,7 @@ function tenThingsStats(game, sorter, field, title) {
 }
 
 router.post('/', function (req, res, next) {
+      console.log('Ten Things Post');
   if (req.body.object === 'page') {
     res.status(200).send('EVENT_RECEIVED');
     return console.log(req.body);
@@ -1104,6 +1105,7 @@ router.post('/', function (req, res, next) {
   if (msg.command.indexOf('@') >= 0) {
     msg.command = msg.command.substring(0, msg.command.indexOf('@'));
   }
+      console.log(msg);
   try {
         if (!msg.from.id) {
           console.log(req.body.message);
