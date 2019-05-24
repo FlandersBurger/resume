@@ -141,9 +141,9 @@ var TOKEN = config.tokens.telegram.tenthings;
 var b = new TelegramBot();
 b.init(TOKEN).then(function() {
   b.setWebhook('tenthings').then(function(body) {
-    console.log(body);
+       console.log(JSON.stringify(body, null, 2));
     b.getWebhook().then(function(body) {
-       console.log(body);
+       console.log(JSON.stringify(body, null, 2));
         b.introduceYourself();
     });
   });
