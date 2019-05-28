@@ -33,6 +33,7 @@
               <li><a href="#" ng-click="sort('date')">Date {{sortValue === 'date' ? (sortDirection ? 'Descending' : 'Ascending') : 'Ascending'}}</a></li>
               <li><a href="#" ng-click="sort('skips')">Skips {{sortValue === 'skips' ? (sortDirection ? 'Descending' : 'Ascending') : 'Ascending'}}</a></li>
               <li><a href="#" ng-click="sort('plays')">Plays {{sortValue === 'plays' ? (sortDirection ? 'Descending' : 'Ascending') : 'Ascending'}}</a></li>
+              <li><a href="#" ng-click="sort('hints')">Hints {{sortValue === 'hints' ? (sortDirection ? 'Descending' : 'Ascending') : 'Ascending'}}</a></li>
               <li><a href="#" ng-click="sort('score')">Score {{sortValue === 'score' ? (sortDirection ? 'Descending' : 'Ascending') : 'Ascending'}}</a></li>
               <li><a href="#" ng-click="sort('answers')">Answers {{sortValue === 'answers' ? (sortDirection ? 'Descending' : 'Ascending') : 'Ascending'}}</a></li>
             </ul>
@@ -50,7 +51,7 @@
         <div class="btn btn-default" ng-click="saveList(selectedList)" ng-disabled="!selectedList">
           <i class="fa fa-save" ng-class="{ 'fa-save': !saving, 'fa-spin fa-spinner': saving }" aria-hidden="true"></i> Save
         </div>
-        <div class="btn btn-danger" ng-click="deleteList(selectedList)" ng-disabled="!selectedList || (!currentUser.admin && selectedList.creator._id !== currentUser._id)">
+        <div class="btn btn-danger" ng-click="deleteList(selectedList)" ng-disabled="!selectedList || (!currentUser.admin && selectedList.creator._id !== currentUser._id && selectedList._id)">
           <i class="fa fa-trash-o" aria-hidden="true"></i> Delete
         </div>
         <div class="btn btn-default" ng-click="reportList(selectedList)" ng-hide="!selectedList || selectedList.creator._id === currentUser._id">
@@ -62,16 +63,16 @@
       </div>
       <div class="col-md-12">
         <div class="input-group">
-          <input class="form-control" ng-model="selectedList.name" placeholder="List Name" ng-disabled="!selectedList || (!currentUser.admin && selectedList.creator._id !== currentUser._id)" />
+          <input class="form-control" id="list-name" ng-model="selectedList.name" ng-change="search = selectedList.name" ng-blur="search = ''" placeholder="List Name" ng-disabled="!selectedList || (!currentUser.admin && selectedList.creator._id !== currentUser._id && selectedList._id)" />
           <div class="input-group-btn">
-            <button class="btn btn-default" type="button" ng-click="selectingCategory = !selectingCategory" ng-disabled="!selectedList || (!currentUser.admin && selectedList.creator._id !== currentUser._id)">{{selectedList.category ? selectedList.category : 'Category'}}</button>
+            <button class="btn btn-default" id="list-category" type="button" ng-click="selectingCategory = !selectingCategory" ng-disabled="!selectedList || (!currentUser.admin && selectedList.creator._id !== currentUser._id && selectedList._id)">{{selectedList.category ? selectedList.category : 'Category'}}</button>
           </div>
-          <input class="form-control" ng-model="selectedList.description" placeholder="List Description" ng-disabled="!selectedList || (!currentUser.admin && selectedList.creator._id !== currentUser._id)" />
+          <input class="form-control" ng-model="selectedList.description" placeholder="List Description" ng-disabled="!selectedList || (!currentUser.admin && selectedList.creator._id !== currentUser._id && selectedList._id)" />
         </div>
         <div id="category-select" ng-show="selectingCategory">
           <button class="btn btn-sm btn-default" ng-repeat="category in categories | orderBy" ng-click="selectCategory(category)">{{category}}</button>
         </div>
-        <h5 ng-show="selectedList.creator">By {{selectedList.creator.username}} on {{formatDate(selectedList.date)}} --- <span ng-show="selectedList.plays">Plays: {{selectedList.plays}} / Skips: {{selectedList.skips}} / Score: {{selectedList.score}}</span></h5>
+        <h5 ng-show="selectedList.creator">By {{selectedList.creator.username}} on {{formatDate(selectedList.date)}} --- <span ng-show="selectedList.plays">Plays: {{selectedList.plays}} / Skips: {{selectedList.skips}} / Score: {{selectedList.score}} / Hints: {{selectedList.hints}}</span></h5>
         <div>
 
           <!--div class="btn btn-default" ng-click="selectedList.values.unshift({ value: '', blurb: '' })" ng-disabled="!selectedList">
@@ -79,10 +80,10 @@
           </div-->
         </div>
         <div class="input-group">
-          <input id="new-value" class="form-control" ng-model="newItem.value" ng-disabled="!selectedList" placeholder="Value {{selectedList.values.length + 1}}" />
-          <input id="new-blurb" class="form-control" ng-model="newItem.blurb" ng-disabled="!selectedList" placeholder="Display after guessing {{newItem.value}}" />
+          <input id="new-value" class="form-control" ng-model="newItem.value" ng-disabled="!selectedList || !selectedList.name" placeholder="Value {{selectedList.values.length + 1}}" />
+          <input id="new-blurb" class="form-control" ng-model="newItem.blurb" ng-disabled="!selectedList || !selectedList.name" placeholder="Display after guessing {{newItem.value}}" />
           <div class="input-group-btn">
-            <button class="btn" ng-click="addValue()" ng-disabled="!selectedList">Add</button>
+            <button class="btn" ng-click="addValue()" ng-disabled="!selectedList || !selectedList.name">Add</button>
           </div>
         </div>
         <hr />

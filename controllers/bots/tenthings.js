@@ -718,18 +718,21 @@ function cooldownHint(gameId) {
   }
 }
 
-function getScores(game_id, scoreType) {
+function getScores(data) {
   /*
   stats('score', game_id, scoreType)
   .then(function(str) {
     bot.sendMessage(game_id, str);
   });
   */
+  data = data.id.split('_');
+  var game_id = data[0];
+  var type = data[1];
   TenThings.findOne({
-    chat_id: gameId
+    chat_id: game_id
   }).select('players chat_id').exec(function(err, game) {
     var str = '';
-    switch (scoreType) {
+    switch (type) {
       case 'td':
         str = '<b>Top Daily Scores</b>\n';
         console.log(str);
@@ -738,7 +741,7 @@ function getScores(game_id, scoreType) {
         }).slice(0, 10).forEach(function(player, index) {
           str += (index + 1) + ': ' + player.first_name + ': ' + player.highScore + '\n';
         });
-        bot.sendMessage(gameId, str);
+        bot.sendMessage(game_id, str);
         break;
       case 'tr':
         str = '<b>Top Win Ratio</b>\n';
@@ -747,7 +750,7 @@ function getScores(game_id, scoreType) {
         }).slice(0, 10).forEach(function(player, index) {
           str += (index + 1) + ': ' + player.first_name + ': ' + player.wins + '/' + player.plays + ' (' + (Math.round(player.plays === 0 ? 0 : player.wins / player.plays * 10000) / 100) + '%)\n';
         });
-        bot.sendMessage(gameId, str);
+        bot.sendMessage(game_id, str);
         break;
       case 'ts':
         str = '<b>Top Overall Score</b>\n';
@@ -757,7 +760,7 @@ function getScores(game_id, scoreType) {
         }).slice(0, 10).forEach(function(player, index) {
           str += (index + 1) + ': ' + player.first_name + ': ' + player.score + '\n';
         });
-        bot.sendMessage(gameId, str);
+        bot.sendMessage(game_id, str);
         break;
       case 'ta':
         str = '<b>Top Average Daily Score</b>\n';
@@ -766,7 +769,7 @@ function getScores(game_id, scoreType) {
         }).slice(0, 10).forEach(function(player, index) {
           str += (index + 1) + ': ' + player.first_name + ': ' + Math.round(player.plays === 0 ? 0 : player.score / player.plays) + '\n';
         });
-        bot.sendMessage(gameId, str);
+        bot.sendMessage(game_id, str);
         break;
       default:
         getDailyScores(game);
@@ -815,7 +818,7 @@ function getRandom(arr, n) {
   return result;
 }
 
-function stats(data) {
+function getStats(data) {
   data = data.id.split('_');
   var game_id = data[0];
   var type = data[1];
@@ -981,6 +984,7 @@ function tenThingsStats(game, sorter, field, title) {
 }
 
 router.post('/', function (req, res, next) {
+      console.log('Ten Things Post');
   if (req.body.object === 'page') {
     res.status(200).send('EVENT_RECEIVED');
     return console.log(req.body);
@@ -1007,12 +1011,10 @@ router.post('/', function (req, res, next) {
         }
       });
     } else if (data.type === 'stat') {
-      stats(data);
+      getStats(data);
     } else if (data.type === 'score') {
-      getScores(data.game, data.id);
+      getScores(data);
     }
-    return res.sendStatus(200);
-  } else if (req.body.edited_message) {
     return res.sendStatus(200);
   } else if (!req.body.message) {
     msg = {
@@ -1042,6 +1044,7 @@ router.post('/', function (req, res, next) {
         chat: req.body.message.chat
       };
     } else if (req.body.message.left_chat_participant) {
+      /*
       TenThings.findOne({
         chat_id: req.body.message.chat.id
       }).select('players').exec(function(err, game) {
@@ -1053,9 +1056,12 @@ router.post('/', function (req, res, next) {
         });
         game.save();
       });
+      */
+      return res.sendStatus(200);
+    } else if (req.body.edited_message) {
+      bot.sendMessage(req.body.message.chat.id, 'You can\'t just edit your answers! I\'m watching you!');
       return res.sendStatus(200);
     } else if (
-      req.body.edited_message ||
       req.body.message.game ||
       req.body.message.photo ||
       req.body.message.video ||
@@ -1101,9 +1107,16 @@ router.post('/', function (req, res, next) {
   if (msg.command.indexOf('@') >= 0) {
     msg.command = msg.command.substring(0, msg.command.indexOf('@'));
   }
-  if (!msg.from.id) {
-    console.log(req.body.message);
-    return res.sendStatus(200);
+      console.log(msg);
+  try {
+        if (!msg.from.id) {
+          console.log(req.body.message);
+          return res.sendStatus(200);
+        }
+  } catch (e) {
+      console.error(e);
+      console.log(req.body.message);
+      return res.sendStatus(200);
   }
   TenThings.findOne({
     chat_id: msg.chat.id
@@ -1198,7 +1211,9 @@ function evaluateCommand(res, msg, game, player, isNew) {
   if (!msg.from.first_name) {
     console.error('msg without a first_name?');
     console.error(msg);
-    res.sendStatus(200);
+    return res.sendStatus(200);
+  } else {
+      res.sendStatus(200);
   }
   if (game.list.values.length === 0) {
     newRound(game);
@@ -1284,7 +1299,6 @@ function evaluateCommand(res, msg, game, player, isNew) {
     default:
       queueGuess(game, msg);
   }
-  res.sendStatus(200);
 }
 
 module.exports = router;
