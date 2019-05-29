@@ -12,8 +12,8 @@ function TelegramBot() {
       var url = 'https://api.telegram.org/bot' + bot.token + '/getMe';
       request(url, function (error, r, body) {
         var response = JSON.parse(body).result;
-        if(error) return;
-        if(!response) return;
+        if (error) return;
+        if (!response) return;
         bot.id = response.id || '';
         bot.first_name = response.first_name || '';
         bot.last_name = response.last_name || '';
@@ -29,7 +29,7 @@ function TelegramBot() {
       //var url = 'https://api.telegram.org/beta/bot' + bot.token + '/setWebhook?url=https://belgocanadian.com/bots/' + api;
       var url = 'https://api.telegram.org/bot' + bot.token + '/setWebhook?url=https://belgocanadian.com/bots/' + api;
       request(url, function (error, r, body) {
-        if(error) return console.error(error);
+        if (error) return console.error(error);
         resolve(body);
       });
     });
@@ -39,17 +39,17 @@ function TelegramBot() {
     return new Promise(function (resolve, reject) {
       var url = 'https://api.telegram.org/bot' + bot.token + '/getWebhookInfo';
       request(url, function (error, r, body) {
-        if(error) return;
+        if (error) return;
         resolve(body);
       });
     });
   };
-  
+
   bot.deleteWebhook = function() {
     return new Promise(function (resolve, reject) {
       var url = 'https://api.telegram.org/beta/bot' + bot.token + '/deleteWebhook';
       request(url, function (error, r, body) {
-        if(error) return;
+        if (error) return;
         resolve(body);
       });
     });
@@ -60,7 +60,7 @@ function TelegramBot() {
     return new Promise(function (resolve, reject) {
       var url = 'https://api.telegram.org/bot' + bot.token + '/sendMessage?chat_id=' + channel + '&disable_notification=true&parse_mode=html&text=' + message;
       request(url, function (error, r, body) {
-        if(error) return;
+        if (error) return;
         resolve();
       });
     });
@@ -74,7 +74,7 @@ function TelegramBot() {
     return new Promise(function (resolve, reject) {
       var url = 'https://api.telegram.org/bot' + bot.token + '/kickChatMember?chat_id=' + channel + '&user_id=' + user + '&until_date=' + date;
       request(url, function (error, r, body) {
-        if(error) return;
+        if (error) return;
         resolve();
       });
     });
@@ -105,8 +105,8 @@ function TelegramBot() {
       request(encodeURI(url), function (error, r, body) {
         var response = JSON.parse(body).result;
         //console.log(response);
-        if(error) return;
-        if(!response) return;
+        if (error) return;
+        if (!response) return;
         resolve(response);
       });
     });
@@ -118,9 +118,20 @@ function TelegramBot() {
       request(encodeURI(url), function (error, r, body) {
         var response = JSON.parse(body).result;
         //console.log(response);
-        if(error) return;
-        if(!response) return;
+        if (error) return;
+        if (!response) return;
         resolve(response);
+      });
+    });
+  };
+
+  bot.getChatMember = function(channel, user_id) {
+    return new Promise(function (resolve, reject) {
+      var url = 'https://api.telegram.org/bot' + bot.token + '/getChatMember?chat_id=' + channel + '&user_id=' + user_id;
+      request(url, function (error, r, body) {
+        if (error) return reject(error);
+        var response = JSON.parse(body).result;
+        resolve(!(!response || ['restricted', 'left', 'kicked'].indexOf(response.status) > -1));
       });
     });
   };
@@ -129,7 +140,7 @@ function TelegramBot() {
     return new Promise(function (resolve, reject) {
       var url = 'https://api.telegram.org/bot' + bot.token + '/sendMessage?chat_id=' + channel + '&disable_notification=true&parse_mode=html&text=' + message + '&reply_markup=' + JSON.stringify(keyboard);
       request(encodeURI(url), function (error, r, body) {
-        if(error) return;
+        if (error) return;
         resolve();
       });
     });
@@ -155,7 +166,7 @@ b.init(TOKEN).then(function() {
        console.log(JSON.parse(body));
     //b.deleteWebhook();
     b.getWebhook().then(function(body) {
-      
+
        console.log(JSON.parse(body));
 
         b.introduceYourself();

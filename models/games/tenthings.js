@@ -33,6 +33,7 @@ var TenThings = db.model('TenThings', {
       playStreak: { type: Number, required: true, default: 0 },
       maxPlayStreak: { type: Number, required: true, default: 0 },
       lastPlayDate: { type: Date, required: false, default: new Date(2019, 5, 15).valueOf() }, //Date when lastPlayDate was implemented
+      present: { type: Boolean, required: true, default: true }
     }
   ],
   playedLists: [

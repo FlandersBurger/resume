@@ -42,12 +42,37 @@ var skips = {};
       );
 */
 /*
-TenThings.findOne({ chat_id: SUPERGROUP }).exec(function(err, game) {
-  if (game) {
-    console.log(game.players.filter(function(player) {
-      return player.lastPlayDate < moment().subtract(1, 'months');
-    }));
-  }
+  bot.getChatMember(SUPERGROUP, "592503547")
+  .then(function(present) {
+    console.log(present);
+  });*/
+  /*
+TenThings.find({}).select('chat_id players').exec(function(err, games) {
+
+  games.forEach(function(game, gameIndex) {
+      game.players.forEach(function(player, index, array) {
+        setTimeout(function() {
+          bot.getChatMember(game.chat_id, player.id)
+          .then(function(present) {
+            if (present) {
+              console.log(player.first_name + ' present');
+              player.present = true;
+            } else {
+              console.log(player.first_name + ' absent');
+              player.present = false;
+            }
+            if (index === array.length - 1) {
+              game.save(function(err, saved) {
+                if (err) return console.error(err);
+              });
+            }
+          }, function(error) {
+            console.error(error);
+          });
+        }, index * 50 * gameIndex);
+      });
+  });
+
 });
 */
 var queue = kue.createQueue({
@@ -950,7 +975,9 @@ function listsStats(game, sorter, field, title) {
 
 function playerStats(game, sorter, field, title) {
   var message = '<b>' + title + '</b>\n';
-  game.players.sort(function(a, b) {
+  game.players.filter(function(player) {
+    return player.present;
+  }).sort(function(a, b) {
     return b[field] - a[field];
   }).slice(0, 20).forEach(function(player, index) {
     message += (index + 1) + '. ' + player.first_name + ' (' + player[field] + ')' + '\n';
@@ -984,7 +1011,6 @@ function tenThingsStats(game, sorter, field, title) {
 }
 
 router.post('/', function (req, res, next) {
-      console.log('Ten Things Post');
   if (req.body.object === 'page') {
     res.status(200).send('EVENT_RECEIVED');
     return console.log(req.body);
@@ -1044,19 +1070,19 @@ router.post('/', function (req, res, next) {
         chat: req.body.message.chat
       };
     } else if (req.body.message.left_chat_participant) {
-      /*
+
       TenThings.findOne({
         chat_id: req.body.message.chat.id
       }).select('players').exec(function(err, game) {
-        game.players = game.players.filter(function(player) {
-          if (player.id == req.body.message.left_chat_participant.id) {
-            bot.notifyAdmin('Removing ' + player.first_name + ' from ' + req.body.message.chat.id);
-          }
-          return player.id != req.body.message.left_chat_participant.id;
+        var player = _.find(game.players, function(existingPlayer) {
+          return existingPlayer.id == req.body.message.left_chat_participant.id;
         });
-        game.save();
+        if (player) {
+          player.present = false;
+          game.save();
+        }
       });
-      */
+
       return res.sendStatus(200);
     } else if (req.body.edited_message) {
       bot.sendMessage(req.body.message.chat.id, 'You can\'t just edit your answers! I\'m watching you!');
@@ -1156,6 +1182,17 @@ router.post('/', function (req, res, next) {
           }
         });
       } else {
+        TenThings.findOne({
+          chat_id: req.body.message.chat.id
+        }).select('players').exec(function(err, game) {
+          var player = _.find(game.players, function(existingPlayer) {
+            return existingPlayer.id == msg.from.id;
+          });
+          if (player) {
+            player.present = true;
+            game.save();
+          }
+        });
         return evaluateCommand(res, msg, existingGame, player, false);
       }
     }
