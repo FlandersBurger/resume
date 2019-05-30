@@ -162,15 +162,15 @@ function TelegramBot() {
 var TOKEN = config.tokens.telegram.tenthings;
 var b = new TelegramBot();
 b.init(TOKEN).then(function() {
-  b.setWebhook('tenthings').then(function(body) {
-       console.log(JSON.parse(body));
     //b.deleteWebhook();
-    b.getWebhook().then(function(body) {
-
-       console.log(JSON.parse(body));
-
+  b.getWebhook().then(function(body) {
+    if (JSON.parse(body).result && 'https://belgocanadian.com/bots/tenthings' === JSON.parse(body).result.url) {
+      console.log('Webhook Set');
+    } else {
+      b.setWebhook('tenthings').then(function(body) {
         b.introduceYourself();
-    });
+      });
+    }
   });
 });
 
