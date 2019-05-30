@@ -932,28 +932,28 @@ function getStats(data) {
         listsStats(game, {score: 1}, 'score', 'Least Popular Lists');
         break;
       case 'skippers':
-        playerStats(game, {skips: -1}, 'skips', 'Most Skips Requested');
+        playerStats(game, {skips: -1}, 'skips', 'p', 'Most Skips Requested');
         break;
       case 'answers':
-        playerStats(game, {answers: -1}, 'answers', 'Most Correct Answers');
+        playerStats(game, {answers: -1}, 'answers', 'p', 'Most Correct Answers');
         break;
       case 'snubs':
-        playerStats(game, {snubs: -1}, 'snubs', 'Most Snubs');
+        playerStats(game, {snubs: -1}, 'snubs', 'a', 'Most Snubs');
         break;
       case 'hints':
-        playerStats(game, {hints: -1}, 'hints', 'Most Hints Asked');
+        playerStats(game, {hints: -1}, 'hints', 'a', 'Most Hints Asked');
         break;
       case 'plays':
-        playerStats(game, {plays: -1}, 'plays', 'Most Games Played');
+        playerStats(game, {plays: -1}, 'plays', '', 'Most Games Played');
         break;
       case 'wins':
-        playerStats(game, {wins: -1}, 'wins', 'Most Wins');
+        playerStats(game, {wins: -1}, 'wins', 'p', 'Most Wins');
         break;
       case 'astreak':
-        playerStats(game, {streak: -1}, 'streak', 'Best Answer Streak');
+        playerStats(game, {streak: -1}, 'streak', '', 'Best Answer Streak');
         break;
       case 'pstreak':
-        playerStats(game, {maxPlayStreak: -1}, 'maxPlayStreak', 'Best Play Streak');
+        playerStats(game, {maxPlayStreak: -1}, 'maxPlayStreak', '', 'Best Play Streak');
         break;
       default:
         bot.sendMessage(game.chat_id, 'Something');
@@ -973,14 +973,18 @@ function listsStats(game, sorter, field, title) {
   });
 }
 
-function playerStats(game, sorter, field, title) {
+function playerStats(game, sorter, field, divisor, title) {
   var message = '<b>' + title + '</b>\n';
   game.players.filter(function(player) {
     return player.present;
   }).sort(function(a, b) {
-    return b[field] - a[field];
+    if (divisor) {
+      return b[field] / (divisor === 'a' ? b.answers : b.plays) - a[field] / (divisor === 'a' ? b.answers : b.plays);
+    } else {
+      return b[field] - a[field];
+    }
   }).slice(0, 20).forEach(function(player, index) {
-    message += (index + 1) + '. ' + player.first_name + ' (' + player[field] + ')' + '\n';
+    message += (index + 1) + '. ' + player.first_name + ' (' + Math.round(player[field] / (divisor ? divisor === 'a' ? player.answers / 100 : player.plays / 100 : 1) * 100) / 100 + (divisor ? '%' : '') + ')' + '\n';
   });
   bot.sendMessage(game.chat_id, message);
 }
