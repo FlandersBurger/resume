@@ -83,12 +83,12 @@ angular.module('app')
     templateUrl: 'bots.html'
   })
   .state('quiz-google', {
-    url: '/google-quiz',
+    url: '/google',
     controller: 'QuizGoogleCtrl',
     templateUrl: 'quizzes/google.html'
   })
   .state('quiz-logos', {
-    url: '/logos-quiz',
+    url: '/logos',
     controller: 'QuizLogosCtrl',
     templateUrl: 'quizzes/logos.html'
   });
