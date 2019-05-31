@@ -761,7 +761,7 @@ function getScores(data) {
       case 'td':
         str = '<b>Top Daily Scores</b>\n';
         console.log(str);
-        game.players.sort(function(a, b) {
+        game.players.filter(function(player) { return player.present; }).sort(function(a, b) {
           return b.highScore - a.highScore;
         }).slice(0, 10).forEach(function(player, index) {
           str += (index + 1) + ': ' + player.first_name + ': ' + player.highScore + '\n';
@@ -770,7 +770,7 @@ function getScores(data) {
         break;
       case 'tr':
         str = '<b>Top Win Ratio</b>\n';
-        game.players.sort(function(a, b) {
+        game.players.filter(function(player) { return player.present; }).sort(function(a, b) {
           return (b.plays === 0 ? 0 : b.wins / b.plays) - (a.plays === 0 ? 0 : a.wins / a.plays);
         }).slice(0, 10).forEach(function(player, index) {
           str += (index + 1) + ': ' + player.first_name + ': ' + player.wins + '/' + player.plays + ' (' + (Math.round(player.plays === 0 ? 0 : player.wins / player.plays * 10000) / 100) + '%)\n';
@@ -780,7 +780,7 @@ function getScores(data) {
       case 'ts':
         str = '<b>Top Overall Score</b>\n';
         console.log(str);
-        game.players.sort(function(a, b) {
+        game.players.filter(function(player) { return player.present; }).sort(function(a, b) {
           return b.score - a.score;
         }).slice(0, 10).forEach(function(player, index) {
           str += (index + 1) + ': ' + player.first_name + ': ' + player.score + '\n';
@@ -789,7 +789,7 @@ function getScores(data) {
         break;
       case 'ta':
         str = '<b>Top Average Daily Score</b>\n';
-        game.players.sort(function(a, b) {
+        game.players.filter(function(player) { return player.present; }).sort(function(a, b) {
           return (b.plays === 0 ? 0 : b.score / b.plays) - (a.plays === 0 ? 0 : a.score / a.plays);
         }).slice(0, 10).forEach(function(player, index) {
           str += (index + 1) + ': ' + player.first_name + ': ' + Math.round(player.plays === 0 ? 0 : player.score / player.plays) + '\n';
@@ -932,28 +932,28 @@ function getStats(data) {
         listsStats(game, {score: 1}, 'score', 'Least Popular Lists');
         break;
       case 'skippers':
-        playerStats(game, {skips: -1}, 'skips', 'l', 'Most Skips Requested');
+        playerStats(game, 'skips', 'lists', 1, 'Most Skips Requested');
         break;
       case 'answers':
-        playerStats(game, {answers: -1}, 'answers', 'l', 'Most Correct Answers');
+        playerStats(game, 'answers', 'lists', 0.1, 'Most Correct Answers');
         break;
       case 'snubs':
-        playerStats(game, {snubs: -1}, 'snubs', 'a', 'Most Snubs');
+        playerStats(game, 'snubs', 'answers', 1, 'Most Snubs');
         break;
       case 'hints':
-        playerStats(game, {hints: -1}, 'hints', 'l', 'Most Hints Asked');
+        playerStats(game, 'hints', 'lists', 1, 'Most Hints Asked');
         break;
       case 'plays':
-        playerStats(game, {plays: -1}, 'plays', '', 'Most Games Played');
+        playerStats(game, 'plays', '', 1, 'Most Games Played');
         break;
       case 'wins':
-        playerStats(game, {wins: -1}, 'wins', 'l', 'Most Wins');
+        playerStats(game, 'wins', 'lists', 1, 'Most Wins');
         break;
       case 'astreak':
-        playerStats(game, {streak: -1}, 'streak', '', 'Best Answer Streak');
+        playerStats(game, 'streak', '', 1, 'Best Answer Streak');
         break;
       case 'pstreak':
-        playerStats(game, {maxPlayStreak: -1}, 'maxPlayStreak', '', 'Best Play Streak');
+        playerStats(game, 'maxPlayStreak', '', 1, 'Best Play Streak');
         break;
       default:
         bot.sendMessage(game.chat_id, 'Something');
@@ -973,18 +973,18 @@ function listsStats(game, sorter, field, title) {
   });
 }
 
-function playerStats(game, sorter, field, divisor, title) {
+function playerStats(game, field, divisor, ratio, title) {
   var message = '<b>' + title + '</b>\n';
   game.players.filter(function(player) {
     return player.present;
   }).sort(function(a, b) {
     if (divisor) {
-      return b[field] / (divisor === 'a' ? b.answers : b.lists) - a[field] / (divisor === 'a' ? a.answers : a.lists);
+      return b[field] / b[divisor] - a[field] / a[divisor];
     } else {
       return b[field] - a[field];
     }
   }).slice(0, 20).forEach(function(player, index) {
-    message += (index + 1) + '. ' + player.first_name + ' (' + Math.round(player[field] / (divisor ? divisor === 'a' ? player.answers / 100 : player.lists / 100 : 1) * 100) / 100 + (divisor ? '%' : '') + ')' + '\n';
+    message += (index + 1) + '. ' + player.first_name + ' (' + Math.round(player[field] * ratio / (divisor ? player[divisor] / 100 : 1) * 100) / 100 + (divisor ? '%' : '') + ')' + '\n';
   });
   bot.sendMessage(game.chat_id, message);
 }
