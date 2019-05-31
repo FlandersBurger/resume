@@ -932,22 +932,22 @@ function getStats(data) {
         listsStats(game, {score: 1}, 'score', 'Least Popular Lists');
         break;
       case 'skippers':
-        playerStats(game, {skips: -1}, 'skips', 'p', 'Most Skips Requested');
+        playerStats(game, {skips: -1}, 'skips', 'l', 'Most Skips Requested');
         break;
       case 'answers':
-        playerStats(game, {answers: -1}, 'answers', 'p', 'Most Correct Answers');
+        playerStats(game, {answers: -1}, 'answers', 'l', 'Most Correct Answers');
         break;
       case 'snubs':
         playerStats(game, {snubs: -1}, 'snubs', 'a', 'Most Snubs');
         break;
       case 'hints':
-        playerStats(game, {hints: -1}, 'hints', 'a', 'Most Hints Asked');
+        playerStats(game, {hints: -1}, 'hints', 'l', 'Most Hints Asked');
         break;
       case 'plays':
         playerStats(game, {plays: -1}, 'plays', '', 'Most Games Played');
         break;
       case 'wins':
-        playerStats(game, {wins: -1}, 'wins', 'p', 'Most Wins');
+        playerStats(game, {wins: -1}, 'wins', 'l', 'Most Wins');
         break;
       case 'astreak':
         playerStats(game, {streak: -1}, 'streak', '', 'Best Answer Streak');
@@ -979,12 +979,12 @@ function playerStats(game, sorter, field, divisor, title) {
     return player.present;
   }).sort(function(a, b) {
     if (divisor) {
-      return b[field] / (divisor === 'a' ? b.answers : b.plays) - a[field] / (divisor === 'a' ? b.answers : b.plays);
+      return b[field] / (divisor === 'a' ? b.answers : b.lists) - a[field] / (divisor === 'a' ? a.answers : a.lists);
     } else {
       return b[field] - a[field];
     }
   }).slice(0, 20).forEach(function(player, index) {
-    message += (index + 1) + '. ' + player.first_name + ' (' + Math.round(player[field] / (divisor ? divisor === 'a' ? player.answers / 100 : player.plays / 100 : 1) * 100) / 100 + (divisor ? '%' : '') + ')' + '\n';
+    message += (index + 1) + '. ' + player.first_name + ' (' + Math.round(player[field] / (divisor ? divisor === 'a' ? player.answers / 100 : player.lists / 100 : 1) * 100) / 100 + (divisor ? '%' : '') + ')' + '\n';
   });
   bot.sendMessage(game.chat_id, message);
 }
