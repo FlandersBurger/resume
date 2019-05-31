@@ -979,12 +979,12 @@ function playerStats(game, field, divisor, ratio, title) {
     return player.present;
   }).sort(function(a, b) {
     if (divisor) {
-      return b[field] / b[divisor] - a[field] / a[divisor];
+      return b[field] / (b[divisor] ? b[divisor] : 1) - a[field] / (a[divisor] ? a[divisor] : 1);
     } else {
       return b[field] - a[field];
     }
   }).slice(0, 20).forEach(function(player, index) {
-    message += (index + 1) + '. ' + player.first_name + ' (' + Math.round(player[field] * ratio / (divisor ? player[divisor] / 100 : 1) * 100) / 100 + (divisor ? '%' : '') + ')' + '\n';
+    message += (index + 1) + '. ' + player.first_name + ' (' + Math.round(player[field] * ratio / (divisor ? (player[divisor] ? player[divisor] : 1) / 100 : 1) * 100) / 100 + (divisor ? '%' : '') + ')' + '\n';
   });
   bot.sendMessage(game.chat_id, message);
 }
