@@ -269,7 +269,7 @@ var dailyScore = schedule.scheduleJob('0 0 0 * * *', function() {
 
 var playStreak = schedule.scheduleJob('0 0 1 * * *', function() {
   //Update play streaks
-  TenThings.find({ $expr: { $gt: [ '$players.playStreak' , '$players.maxPlayStreak' ] } })
+  TenThings.find({ '$players.playStreak': { $gt: 0 } })
   .select('players.playStreak players.maxPlayStreak')
   .then(function(games) {
     if (games.length > 0) bot.notifyAdmin(games.length + ' game streaks updated');
