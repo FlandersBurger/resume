@@ -244,9 +244,9 @@ angular.module('app')
   $scope.searchListNames = function() {
     if ($scope.search && !$scope.savedSearch) {
       $scope.savedSearch = $scope.search;
-      $scope.search = $selectedList.name;
+      $scope.search = $scope.selectedList.name;
     } else if ($scope.search) {
-      $scope.search = $selectedList.name;
+      $scope.search = $scope.selectedList.name;
     }
   };
 
