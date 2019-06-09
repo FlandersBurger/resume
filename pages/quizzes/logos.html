@@ -1,0 +1,7 @@
+<div id="quiz-logos-page">
+  <h1>Pixelated Logos</h1>
+  <div  class="panel panel-default" ng-repeat="image in images track by $index">
+    <div class="panel-heading">{{$index + 1}}</div>
+    <div class="panel-body"><img class="img-responsive img-rounded" ng-src="logos/{{image}}" /></div>
+  </div>
+</div>

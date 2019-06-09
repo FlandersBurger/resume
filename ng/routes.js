@@ -81,6 +81,16 @@ angular.module('app')
     url: '/bots',
     controller: 'BotsCtrl',
     templateUrl: 'bots.html'
+  })
+  .state('quiz-google', {
+    url: '/google',
+    controller: 'QuizGoogleCtrl',
+    templateUrl: 'quizzes/google.html'
+  })
+  .state('quiz-logos', {
+    url: '/logos',
+    controller: 'QuizLogosCtrl',
+    templateUrl: 'quizzes/logos.html'
   });
 
   $locationProvider.html5Mode({

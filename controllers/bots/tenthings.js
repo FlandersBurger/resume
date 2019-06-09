@@ -42,12 +42,37 @@ var skips = {};
       );
 */
 /*
-TenThings.findOne({ chat_id: SUPERGROUP }).exec(function(err, game) {
-  if (game) {
-    console.log(game.players.filter(function(player) {
-      return player.lastPlayDate < moment().subtract(1, 'months');
-    }));
-  }
+  bot.getChatMember(SUPERGROUP, "592503547")
+  .then(function(present) {
+    console.log(present);
+  });*/
+  /*
+TenThings.find({}).select('chat_id players').exec(function(err, games) {
+
+  games.forEach(function(game, gameIndex) {
+      game.players.forEach(function(player, index, array) {
+        setTimeout(function() {
+          bot.getChatMember(game.chat_id, player.id)
+          .then(function(present) {
+            if (present) {
+              console.log(player.first_name + ' present');
+              player.present = true;
+            } else {
+              console.log(player.first_name + ' absent');
+              player.present = false;
+            }
+            if (index === array.length - 1) {
+              game.save(function(err, saved) {
+                if (err) return console.error(err);
+              });
+            }
+          }, function(error) {
+            console.error(error);
+          });
+        }, index * 50 * gameIndex);
+      });
+  });
+
 });
 */
 var queue = kue.createQueue({
@@ -244,7 +269,7 @@ var dailyScore = schedule.scheduleJob('0 0 0 * * *', function() {
 
 var playStreak = schedule.scheduleJob('0 0 1 * * *', function() {
   //Update play streaks
-  TenThings.find({ $expr: { $gt: [ '$players.playStreak' , '$players.maxPlayStreak' ] } })
+  TenThings.find({ 'players.playStreak': { $gt: 0 } })
   .select('players.playStreak players.maxPlayStreak')
   .then(function(games) {
     if (games.length > 0) bot.notifyAdmin(games.length + ' game streaks updated');
@@ -736,7 +761,7 @@ function getScores(data) {
       case 'td':
         str = '<b>Top Daily Scores</b>\n';
         console.log(str);
-        game.players.sort(function(a, b) {
+        game.players.filter(function(player) { return player.present; }).sort(function(a, b) {
           return b.highScore - a.highScore;
         }).slice(0, 10).forEach(function(player, index) {
           str += (index + 1) + ': ' + player.first_name + ': ' + player.highScore + '\n';
@@ -745,7 +770,7 @@ function getScores(data) {
         break;
       case 'tr':
         str = '<b>Top Win Ratio</b>\n';
-        game.players.sort(function(a, b) {
+        game.players.filter(function(player) { return player.present; }).sort(function(a, b) {
           return (b.plays === 0 ? 0 : b.wins / b.plays) - (a.plays === 0 ? 0 : a.wins / a.plays);
         }).slice(0, 10).forEach(function(player, index) {
           str += (index + 1) + ': ' + player.first_name + ': ' + player.wins + '/' + player.plays + ' (' + (Math.round(player.plays === 0 ? 0 : player.wins / player.plays * 10000) / 100) + '%)\n';
@@ -755,7 +780,7 @@ function getScores(data) {
       case 'ts':
         str = '<b>Top Overall Score</b>\n';
         console.log(str);
-        game.players.sort(function(a, b) {
+        game.players.filter(function(player) { return player.present; }).sort(function(a, b) {
           return b.score - a.score;
         }).slice(0, 10).forEach(function(player, index) {
           str += (index + 1) + ': ' + player.first_name + ': ' + player.score + '\n';
@@ -764,7 +789,7 @@ function getScores(data) {
         break;
       case 'ta':
         str = '<b>Top Average Daily Score</b>\n';
-        game.players.sort(function(a, b) {
+        game.players.filter(function(player) { return player.present; }).sort(function(a, b) {
           return (b.plays === 0 ? 0 : b.score / b.plays) - (a.plays === 0 ? 0 : a.score / a.plays);
         }).slice(0, 10).forEach(function(player, index) {
           str += (index + 1) + ': ' + player.first_name + ': ' + Math.round(player.plays === 0 ? 0 : player.score / player.plays) + '\n';
@@ -907,28 +932,28 @@ function getStats(data) {
         listsStats(game, {score: 1}, 'score', 'Least Popular Lists');
         break;
       case 'skippers':
-        playerStats(game, {skips: -1}, 'skips', 'Most Skips Requested');
+        playerStats(game, 'skips', 'lists', 1, 'Most Skips Requested');
         break;
       case 'answers':
-        playerStats(game, {answers: -1}, 'answers', 'Most Correct Answers');
+        playerStats(game, 'answers', 'lists', 0.1, 'Most Correct Answers');
         break;
       case 'snubs':
-        playerStats(game, {snubs: -1}, 'snubs', 'Most Snubs');
+        playerStats(game, 'snubs', 'answers', 1, 'Most Snubs');
         break;
       case 'hints':
-        playerStats(game, {hints: -1}, 'hints', 'Most Hints Asked');
+        playerStats(game, 'hints', 'lists', 1, 'Most Hints Asked');
         break;
       case 'plays':
-        playerStats(game, {plays: -1}, 'plays', 'Most Games Played');
+        playerStats(game, 'plays', '', 1, 'Most Games Played');
         break;
       case 'wins':
-        playerStats(game, {wins: -1}, 'wins', 'Most Wins');
+        playerStats(game, 'wins', 'lists', 1, 'Most Wins');
         break;
       case 'astreak':
-        playerStats(game, {streak: -1}, 'streak', 'Best Answer Streak');
+        playerStats(game, 'streak', '', 1, 'Best Answer Streak');
         break;
       case 'pstreak':
-        playerStats(game, {maxPlayStreak: -1}, 'maxPlayStreak', 'Best Play Streak');
+        playerStats(game, 'maxPlayStreak', '', 1, 'Best Play Streak');
         break;
       default:
         bot.sendMessage(game.chat_id, 'Something');
@@ -948,12 +973,18 @@ function listsStats(game, sorter, field, title) {
   });
 }
 
-function playerStats(game, sorter, field, title) {
+function playerStats(game, field, divisor, ratio, title) {
   var message = '<b>' + title + '</b>\n';
-  game.players.sort(function(a, b) {
-    return b[field] - a[field];
+  game.players.filter(function(player) {
+    return player.present;
+  }).sort(function(a, b) {
+    if (divisor) {
+      return b[field] / (b[divisor] ? b[divisor] : 1) - a[field] / (a[divisor] ? a[divisor] : 1);
+    } else {
+      return b[field] - a[field];
+    }
   }).slice(0, 20).forEach(function(player, index) {
-    message += (index + 1) + '. ' + player.first_name + ' (' + player[field] + ')' + '\n';
+    message += (index + 1) + '. ' + player.first_name + ' (' + Math.round(player[field] * ratio / (divisor ? (player[divisor] ? player[divisor] : 1) / 100 : 1) * 100) / 100 + (divisor ? '%' : '') + ')' + '\n';
   });
   bot.sendMessage(game.chat_id, message);
 }
@@ -984,7 +1015,6 @@ function tenThingsStats(game, sorter, field, title) {
 }
 
 router.post('/', function (req, res, next) {
-      console.log('Ten Things Post');
   if (req.body.object === 'page') {
     res.status(200).send('EVENT_RECEIVED');
     return console.log(req.body);
@@ -1044,19 +1074,19 @@ router.post('/', function (req, res, next) {
         chat: req.body.message.chat
       };
     } else if (req.body.message.left_chat_participant) {
-      /*
+
       TenThings.findOne({
         chat_id: req.body.message.chat.id
       }).select('players').exec(function(err, game) {
-        game.players = game.players.filter(function(player) {
-          if (player.id == req.body.message.left_chat_participant.id) {
-            bot.notifyAdmin('Removing ' + player.first_name + ' from ' + req.body.message.chat.id);
-          }
-          return player.id != req.body.message.left_chat_participant.id;
+        var player = _.find(game.players, function(existingPlayer) {
+          return existingPlayer.id == req.body.message.left_chat_participant.id;
         });
-        game.save();
+        if (player) {
+          player.present = false;
+          game.save();
+        }
       });
-      */
+
       return res.sendStatus(200);
     } else if (req.body.edited_message) {
       bot.sendMessage(req.body.message.chat.id, 'You can\'t just edit your answers! I\'m watching you!');
@@ -1156,9 +1186,23 @@ router.post('/', function (req, res, next) {
           }
         });
       } else {
+<<<<<<< HEAD
         player.first_name = msg.from.first_name;
         player.last_name = msg.from.last_name;
         player.username = msg.from.username;
+=======
+        TenThings.findOne({
+          chat_id: req.body.message.chat.id
+        }).select('players').exec(function(err, game) {
+          var player = _.find(game.players, function(existingPlayer) {
+            return existingPlayer.id == msg.from.id;
+          });
+          if (player) {
+            player.present = true;
+            game.save();
+          }
+        });
+>>>>>>> 814be6b4d5e942760936007ff075f95373879877
         return evaluateCommand(res, msg, existingGame, player, false);
       }
     }
