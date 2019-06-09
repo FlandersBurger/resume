@@ -1193,7 +1193,6 @@ router.post('/', function (req, res, next) {
             return existingPlayer.id == msg.from.id;
           });
           if (player) {
-
             player.first_name = msg.from.first_name;
             player.last_name = msg.from.last_name;
             player.username = msg.from.username;
