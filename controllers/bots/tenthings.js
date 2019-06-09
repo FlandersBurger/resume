@@ -1186,11 +1186,6 @@ router.post('/', function (req, res, next) {
           }
         });
       } else {
-<<<<<<< HEAD
-        player.first_name = msg.from.first_name;
-        player.last_name = msg.from.last_name;
-        player.username = msg.from.username;
-=======
         TenThings.findOne({
           chat_id: req.body.message.chat.id
         }).select('players').exec(function(err, game) {
@@ -1198,11 +1193,14 @@ router.post('/', function (req, res, next) {
             return existingPlayer.id == msg.from.id;
           });
           if (player) {
+
+            player.first_name = msg.from.first_name;
+            player.last_name = msg.from.last_name;
+            player.username = msg.from.username;
             player.present = true;
             game.save();
           }
         });
->>>>>>> 814be6b4d5e942760936007ff075f95373879877
         return evaluateCommand(res, msg, existingGame, player, false);
       }
     }
