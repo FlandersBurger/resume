@@ -1156,6 +1156,9 @@ router.post('/', function (req, res, next) {
           }
         });
       } else {
+        player.first_name = msg.from.first_name;
+        player.last_name = msg.from.last_name;
+        player.username = msg.from.username;
         return evaluateCommand(res, msg, existingGame, player, false);
       }
     }
