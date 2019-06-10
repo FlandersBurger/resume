@@ -185,7 +185,7 @@ var dailyScore = schedule.scheduleJob('0 0 0 * * *', function() {
     bot.notifyAdmin('Score Reset Triggered; ' + moment().format('DD-MMM-YYYY'));
     TenThings.find({ 'players.scoreDaily': { $gt: 0 }})
     .then(function(games) {
-      games.forEach(function(game) {
+      var players = games.reduce(function(players, game) {
         getDailyScores(game);
         var getHighScore = new Promise(function(resolve, reject) {
           resolve(game.players.reduce(function(highScore, player) {
@@ -204,7 +204,6 @@ var dailyScore = schedule.scheduleJob('0 0 0 * * *', function() {
             } else {
               message += winner.first_name;
               setTimeout(function() {
-                bot.notifyAdmin(game.chat_id + ' (' + highScore + '): <b>' + message + ' won!</b>');
                 bot.sendMessage(game.chat_id, '<b>' + message + ' won with ' + highScore + ' points!</b>');
                 if (game.chat_id !== SUPERGROUP) {
                   bot.sendMessage(game.chat_id, 'Come join us in the <a href="https://t.me/tenthings">Ten Things Supergroup</a>!');
@@ -240,7 +239,9 @@ var dailyScore = schedule.scheduleJob('0 0 0 * * *', function() {
             }
           });
         });
-      });
+        return players + game.players.length;
+      }, 0);
+      bot.notifyAdmins(games.length + ' games played today with ' + players + ' players.');
     }, function(err) {
       console.error(err);
       bot.notifyAdmin('update daily score error\n' + err);
@@ -425,6 +426,10 @@ function processGuess(guess) {
 
 function checkGuess(game, guess, msg) {
   return new Promise(function(resolve, reject) {
+    if (skips[game.id]) {
+      delete skips[game.id];
+      bot.sendMessage(msg.chat.id, 'Skip vetoed by ' + msg.from.first_name + ' giving a correct answer');
+    }
     if (!_.some(game.guessers, function(guesser) {
       return guesser == msg.from.id;
     })) {
