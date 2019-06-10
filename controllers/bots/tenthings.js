@@ -1196,17 +1196,10 @@ router.post('/', function (req, res, next) {
           }
         });
       } else {
-        TenThings.findOne({
-          chat_id: req.body.message.chat.id
-        }).select('players').exec(function(err, game) {
-          var player = _.find(game.players, function(existingPlayer) {
-            return existingPlayer.id == msg.from.id;
-          });
-          if (player) {
-            player.present = true;
-            game.save();
-          }
-        });
+        player.first_name = msg.from.first_name;
+        player.last_name = msg.from.last_name;
+        player.username = msg.from.username;
+        player.present = true;
         return evaluateCommand(res, msg, existingGame, player, false);
       }
     }
