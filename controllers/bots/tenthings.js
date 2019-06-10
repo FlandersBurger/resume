@@ -399,11 +399,8 @@ function queueingGuess(guess) {
 }
 
 queue.process('guess', function(guess, done) {
-  var guessing = new Promise(function(resolve, reject) {
-    processGuess(guess.data);
-    resolve();
-  });
-  guessing.then(function() {
+  processGuess(guess.data)
+  .then(function() {
     done();
   }, function() {
     done();
@@ -411,82 +408,95 @@ queue.process('guess', function(guess, done) {
 });
 
 function processGuess(guess) {
-  TenThings.findOne({ chat_id: guess.game })
-  .populate('list.creator')
-  .exec(function(err, game) {
-    checkGuess(game, guess, guess.msg);
+  return new Promise(function(resolve, reject) {
+    TenThings.findOne({ chat_id: guess.game })
+    .populate('list.creator')
+    .exec(function(err, game) {
+      if (err) return reject();
+      checkGuess(game, guess, guess.msg)
+      .then(function() {
+        resolve();
+      }, function() {
+        reject();
+      });
+    });
   });
 }
 
 function checkGuess(game, guess, msg) {
-  if (!_.some(game.guessers, function(guesser) {
-    return guesser == msg.from.id;
-  })) {
-    game.guessers.push(msg.from.id);
-  }
-  var match = game.list.values[guess.match.index];
-  var player = _.find(game.players, function(existingPlayer) {
-    return existingPlayer.id == msg.from.id;
-  });
-  if (!player) {
-    bot.notifyAdmin(JSON.stringify(guess));
-    return console.error('Something wrong with this guess:\n' + JSON.stringify(guess));
-  }
-  if (!match.guesser.first_name) {
-    match.guesser = msg.from;
-    player.answers++;
-    player.lastPlayDate = moment();
-    var score = Math.round((MAXHINTS - game.hints + game.guessers.length) * (guess.match.distance - 0.6) * 2.5);
-    var accuracy = (guess.match.distance * 100).toFixed(0) + '%';
-    player.score += score;
-    player.scoreDaily += score;
-    if (!game.streak || game.streak.player != player.id) {
-      game.streak = {
-        player: player.id,
-        count: 1
-      };
-    } else {
-      game.streak.count++;
+  return new Promise(function(resolve, reject) {
+    if (!_.some(game.guessers, function(guesser) {
+      return guesser == msg.from.id;
+    })) {
+      game.guessers.push(msg.from.id);
     }
-    if (player.streak < game.streak.count) {
-      player.streak = game.streak.count;
+    var match = game.list.values[guess.match.index];
+    var player = _.find(game.players, function(existingPlayer) {
+      return existingPlayer.id == msg.from.id;
+    });
+    if (!player) {
+      bot.notifyAdmin(JSON.stringify(guess));
+      console.error('Something wrong with this guess:\n' + JSON.stringify(guess));
+      return resolve();
     }
-    if (player.scoreDaily > player.highScore) {
-      player.highScore = player.scoreDaily;
-    }
-    if (match.blurb) {
-      guessed(game, player, msg, match.value, (match.blurb.substring(0, 4) === 'http' ? ('<a href="' + match.blurb + '">&#8204;</a>') : ('\n<i>' + match.blurb + '</i>')), score, accuracy);
-    } else {
-      request('https://en.wikipedia.org/w/api.php?action=opensearch&search=' + encodeURIComponent(match.value), function (err, response, body) {
-        if (err) {
-          guessed(game, player, msg, match.value, '', score, accuracy);
-        } else {
-          try {
-            var results = JSON.parse(body)[2].filter(function(result) {
-              return result && result.indexOf('refer to:') < 0 && result.indexOf('refers to:') < 0;
-            });
-            if (results.length > 0) {
-              guessed(game, player, msg, match.value, '\nRandom Wiki:\n<i>' + results[0/*Math.floor(Math.random()*results.length)*/] + '</i>', score, accuracy);
-            } else {
+    if (!match.guesser.first_name) {
+      match.guesser = msg.from;
+      player.answers++;
+      player.lastPlayDate = moment();
+      var score = Math.round((MAXHINTS - game.hints + game.guessers.length) * (guess.match.distance - 0.6) * 2.5);
+      var accuracy = (guess.match.distance * 100).toFixed(0) + '%';
+      player.score += score;
+      player.scoreDaily += score;
+      if (!game.streak || game.streak.player != player.id) {
+        game.streak = {
+          player: player.id,
+          count: 1
+        };
+      } else {
+        game.streak.count++;
+      }
+      if (player.streak < game.streak.count) {
+        player.streak = game.streak.count;
+      }
+      if (player.scoreDaily > player.highScore) {
+        player.highScore = player.scoreDaily;
+      }
+      if (match.blurb) {
+        guessed(game, player, msg, match.value, (match.blurb.substring(0, 4) === 'http' ? ('<a href="' + match.blurb + '">&#8204;</a>') : ('\n<i>' + match.blurb + '</i>')), score, accuracy);
+      } else {
+        request('https://en.wikipedia.org/w/api.php?action=opensearch&search=' + encodeURIComponent(match.value), function (err, response, body) {
+          if (err) {
+            guessed(game, player, msg, match.value, '', score, accuracy);
+          } else {
+            try {
+              var results = JSON.parse(body)[2].filter(function(result) {
+                return result && result.indexOf('refer to:') < 0 && result.indexOf('refers to:') < 0;
+              });
+              if (results.length > 0) {
+                guessed(game, player, msg, match.value, '\nRandom Wiki:\n<i>' + results[0/*Math.floor(Math.random()*results.length)*/] + '</i>', score, accuracy);
+              } else {
+                guessed(game, player, msg, match.value, '', score, accuracy);
+              }
+            } catch (e) {
               guessed(game, player, msg, match.value, '', score, accuracy);
             }
-          } catch (e) {
-            guessed(game, player, msg, match.value, '', score, accuracy);
           }
-        }
-      });
+        });
+      }
+      setTimeout(function() {
+        return checkRound(game);
+      }, 200);
+    } else {
+      player.snubs++;
+      bot.sendMessage(msg.chat.id, messages.alreadyGuessed(match.value, msg.from, match.guesser));
     }
-    setTimeout(function() {
-      return checkRound(game);
-    }, 200);
-  } else {
-    player.snubs++;
-    bot.sendMessage(msg.chat.id, messages.alreadyGuessed(match.value, msg.from, match.guesser));
-  }
-  game.save(function(err, savedGame) {
-    if (err) {
-      bot.notifyAdmin(JSON.stringify(err));
-    }
+    game.save(function(err, savedGame) {
+      if (err) {
+        bot.notifyAdmin(JSON.stringify(err));
+        return reject();
+      }
+      resolve();
+    });
   });
 }
 
