@@ -1295,8 +1295,12 @@ function evaluateCommand(res, msg, game, player, isNew) {
       skip(game, msg.from.id);
       break;
     case '/veto':
-      delete skips[game.id];
-      bot.sendMessage(msg.chat.id, 'Skip vetoed by ' + msg.from.first_name);
+      if (skips[game.id]) {
+        delete skips[game.id];
+        bot.sendMessage(msg.chat.id, 'Skip vetoed by ' + msg.from.first_name);
+      } else {
+        bot.sendMessage(msg.chat.id, 'I can\'t find a skip request, ' + msg.from.first_name);
+      }
       break;
     case '/scores':
       bot.sendKeyboard(game.chat_id, 'Which scores would you like?', keyboards.scores(game));
