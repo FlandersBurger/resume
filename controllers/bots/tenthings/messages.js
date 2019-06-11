@@ -140,7 +140,7 @@ module.exports = {
     return message;
   },
   streak: function(streak) {
-    var messages, random;
+    var messages;
     switch (streak) {
       case 1:
         messages = [
@@ -150,65 +150,118 @@ module.exports = {
           'Streak Denied',
           'From the ashes',
           'Out with the old',
+          'In with the new',
           'New sheriff in town',
-          'Streak Thief'
+          'Streak Thief',
+          'My turn',
+
         ];
-        random = Math.floor(Math.random() * messages.length);
-        return '\n--- ' + messages[random] + '! ---';
+        break;
       case 2:
-        messages = ['Double Tap', 'Twofold', 'Double Down', 'Double Whammy', 'Double Dip', 'Double or Nothing'];
-        random = Math.floor(Math.random() * messages.length);
-        return '\n--- ' + messages[random] + ' ---';
+        messages = [
+          'Double Tap',
+          'Twofold',
+          'Double Down',
+          'Double Whammy',
+          'Double Dip',
+          'Double or Nothing',
+        ];
+        break;
       case 3:
-        messages = ['Turkey', 'Threesome', 'Hat Trick', 'Triple Whammy', 'Ménage à trois', 'Holy Trinity'];
-        random = Math.floor(Math.random() * messages.length);
-        return '\n--- ' + messages[random] + ' ---';
+        messages = [
+          'Turkey',
+          'Threesome',
+          'Hat Trick',
+          'Triple Whammy',
+          'Ménage à trois',
+          'Holy Trinity'
+        ];
+        break;
+      case 4:
+        messages = [
+          'Double Double',
+          'Quattro Formaggi',
+          'Quattro Stagioni',
+          'FORE!',
+          'Homerun',
+          'Fantastic'
+        ];
+        break;
       case 5:
-        messages = ['Answer Spree', 'Abraham Lincoln', 'Lustrum', 'Cinque', 'Like a Boss'];
-        random = Math.floor(Math.random() * messages.length);
-        return '\n--- ' + messages[random] + ' ---';
+        messages = [
+          'Answer Spree',
+          'Abraham Lincoln',
+          'Lustrum',
+          'Cinque',
+          'Like a Boss'
+        ];
+        break;
       case 10:
-        messages = ['Ten Ten Things Things', 'Tenfold', 'Tenacious', 'Alexander Hamilton'];
-        random = Math.floor(Math.random() * messages.length);
-        return '\n--- ' + messages[random] + ' ---';
+        messages = [
+          'Ten Ten Things Things',
+          'Tenfold',
+          'Tenacious',
+          'Alexander Hamilton'
+        ];
+        break;
       case 15:
-        return '\n--- Mega Spree ---';
+        messages = ['Mega Spree'];
+        break;
       case 20:
-        return '\n--- Ultra Spree ---';
+        messages = ['Ultra Spree'];
+        break;
       case 25:
-        return '\n--- M-M-M-Monster Spree ---';
+        messages = ['M-M-M-Monster Spree'];
+        break;
       case 30:
-        return '\n--- Ludicrous Spree ---';
+        messages = ['Ludicrous Spree'];
+        break;
       case 40:
-        return '\n--- Dominating ---';
+        messages = ['Dominating'];
+        break;
       case 50:
-        return '\n--- Unstoppable ---';
+        messages = [
+          'Unstoppable',
+          'Fiddy',
+          'Ulysses S. Grant',
+        ];
+        break;
       case 75:
-        return '\n--- God-Like ---';
+        messages = ['God-Like'];
+        break;
       case 100:
         messages = ['Ten Ten Ten Things Things Things', 'ONE HUNDRED', 'Tenacious'];
-        random = Math.floor(Math.random() * messages.length);
-        return '\n--- ' + messages[random] + ' ---';
+        break;
       case 150:
-        return '\n--- I guess you\'re competing against yourself ---';
+        messages = ['I guess you\'re competing against yourself']'];
+        break;
       case 151:
-        return '\n--- You know you can make your own lists? ---';
+        messages = ['You know you can make your own lists?'];
+        break;
       case 152:
-        return '\n--- Go to https://belgocanadian.com/bots ---';
+        messages = ['Go to https://belgocanadian.com/bots'];
+        break;
       case 180:
-        return '\n--- ONE HUNDRED AND EIGHTY! ---';
+        messages = ['ONE HUNDRED AND EIGHTY!'];
+        break;
       case 200:
-        return '\n--- Zwei Hunderd Bitte und Danke Schon! ---';
+        messages = ['Zwei Hunderd Bitte und Danke Schon!'];
+        break;
       case 201:
-        return '\n--- I\'m not actually German btw ---';
+        messages = ['I\'m not actually German btw'];
+        break;
       case 250:
-        return '\n--- Ok, this must be a solo chat or you\'re just that good ---';
+        messages = ['Ok, this must be a solo chat or you\'re just that good'];
+        break;
       case 251:
-        return '\n--- I\'m gonna shut up now, good luck on your voyage! ---';
+        messages = ['I\'m gonna shut up now, good luck on your voyage!'];
+        break;
       case 252:
-        return '\n--- And thanks for being an awesome player! ---';
+        messages = ['And thanks for being an awesome player'];
+        break;
       default:
         return '';
     }
+    return '--- ' + messages[Math.floor(Math.random() * messages.length)] + ' ---';
   }
 };
