@@ -233,7 +233,7 @@ module.exports = {
         messages = ['Ten Ten Ten Things Things Things', 'ONE HUNDRED', 'Tenacious'];
         break;
       case 150:
-        messages = ['I guess you\'re competing against yourself']'];
+        messages = ['I guess you\'re competing against yourself'];
         break;
       case 151:
         messages = ['You know you can make your own lists?'];
