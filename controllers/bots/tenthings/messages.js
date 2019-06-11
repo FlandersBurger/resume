@@ -262,6 +262,6 @@ module.exports = {
       default:
         return '';
     }
-    return '--- ' + messages[Math.floor(Math.random() * messages.length)] + ' ---';
+    return '\n--- ' + messages[Math.floor(Math.random() * messages.length)] + ' ---';
   }
 };
