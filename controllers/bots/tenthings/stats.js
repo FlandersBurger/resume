@@ -1,4 +1,5 @@
 var bot = require('../../../bots/telegram');
+var messages = require('./messages');
 
 var List = require('../../../models/list');
 var TenThings = require('../../../models/games/tenthings');
