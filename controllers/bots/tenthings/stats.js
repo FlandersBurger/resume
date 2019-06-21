@@ -1,3 +1,4 @@
+var _ = require('underscore');
 var moment = require('moment');
 
 var bot = require('../../../bots/telegram');
