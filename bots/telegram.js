@@ -146,6 +146,16 @@ function TelegramBot() {
     });
   };
 
+  bot.sendPhoto = function(channel, photo) {
+    return new Promise(function (resolve, reject) {
+      var url = 'https://api.telegram.org/bot' + bot.token + '/sendPhoto?chat_id=' + channel + '&photo=' + photo;
+      request(encodeURI(url), function (error, r, body) {
+        if (error) return;
+        resolve();
+      });
+    });
+  };
+
   bot.getChatMember = function(chat_id, user_id) {
     return new Promise(function (resolve, reject) {
       var url = 'https://api.telegram.org/bot' + bot.token + '/getChatMember?chat_id='+chat_id+'&user_id='+user_id;
