@@ -1,7 +1,7 @@
-var bot = require('../../bots/telegram');
+var bot = require('../../../bots/telegram');
 
-var List = require('../../models/list');
-var TenThings = require('../../models/games/tenthings');
+var List = require('../../../models/list');
+var TenThings = require('../../../models/games/tenthings');
 
 exports.getScores = function(data) {
   /*
