@@ -1,3 +1,5 @@
+var moment = require('moment');
+
 var bot = require('../../../bots/telegram');
 var messages = require('./messages');
 
