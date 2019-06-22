@@ -24,7 +24,7 @@ app.use('/api/games', require('./controllers/api/games'));
 app.use('/api/bots', require('./controllers/api/bots'));
 app.use('/api/files', require('./controllers/api/files'));
 
-app.use('/bots/tenthings', require('./controllers/bots/tenthings'));
+app.use('/bots/tenthings', require('./controllers/bots/tenthings/main'));
 
 app.use(require('./controllers/static'));
 
