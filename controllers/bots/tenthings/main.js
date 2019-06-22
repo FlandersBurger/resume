@@ -7,15 +7,16 @@ var kue = require('kue');
 var moment = require('moment');
 var request = require('request');
 
-var config = require('../../config');
-var bot = require('../../bots/telegram');
+var config = require('../../../config');
+var bot = require('../../../bots/telegram');
 
-var messages = require('./tenthings/messages');
-var keyboards = require('./tenthings/keyboards');
-var stats = require('./tenthings/stats');
+var messages = require('./messages');
+var keyboards = require('./keyboards');
+var stats = require('./stats');
 
-var List = require('../../models/list');
-var TenThings = require('../../models/games/tenthings');
+var List = require('../../../models/list');
+var TenThings = require('../../../models/games/tenthings');
+
 var MAXHINTS = 6;
 var SUPERGROUP = '-1001394022777';
 var SPECIAL_CHARACTERS = "\\\\/ !@#$%^&*()_+:.{},;\\-'``\"";
