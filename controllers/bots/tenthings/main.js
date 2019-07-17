@@ -817,7 +817,7 @@ router.post('/', function (req, res, next) {
         }
       });
     } else if (data.type === 'stat') {
-      stats.getStats(data);
+      stats.getStats(data, req.body.callback_query.from.id);
     } else if (data.type === 'score') {
       stats.getScores(data);
     }

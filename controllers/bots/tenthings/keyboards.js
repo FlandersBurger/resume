@@ -64,7 +64,7 @@ module.exports = {
             'text': 'My Stats',
             'callback_data': JSON.stringify({
               type: 'stat',
-              id: game.chat_id + '_p_' + player._id
+              id: game.chat_id + '_p_'
             })
           },
           {

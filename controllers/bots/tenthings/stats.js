@@ -80,7 +80,7 @@ function getDailyScores(game, limit) {
 
 exports.getDailyScores = getDailyScores;
 
-exports.getStats = function(data) {
+exports.getStats = function(data, requestor) {
   data = data.id.split('_');
   var game_id = data[0];
   var type = data[1];
@@ -143,7 +143,7 @@ exports.getStats = function(data) {
       case 'p':
         var findPlayer = new Promise(function(resolve, reject) {
           var player = _.find(game.players, function(existingPlayer) {
-            return existingPlayer._id == id;
+            return existingPlayer._id == (id ? id : requestor);
           });
           resolve(player);
         });
