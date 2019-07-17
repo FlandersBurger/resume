@@ -19,7 +19,7 @@ var TenThings = require('../../../models/games/tenthings');
 
 var MAXHINTS = 6;
 var SUPERGROUP = '-1001394022777';
-var SPECIAL_CHARACTERS = "\\\\/ !@#$%^&*()_+:.{},;\\-'``\"";
+var SPECIAL_CHARACTERS = "\\\\/ !?@#$%^&*()_+:.{},;\\-'``\"";
 
 var cooldowns = {};
 var skips = {};

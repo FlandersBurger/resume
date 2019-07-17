@@ -66,7 +66,7 @@ exports.getScores = function(data) {
   });
 };
 
-exports.getDailyScores = function(game, limit) {
+function getDailyScores(game, limit) {
   var message = game.players.filter(function(player) {
     return player.scoreDaily;
   }).sort(function(a, b) {
@@ -76,8 +76,9 @@ exports.getDailyScores = function(game, limit) {
     return str;
   }, '<b>' + (limit ? 'Top ' + limit + ' ' : '') + 'Daily Scores</b>' + '\n');
   bot.sendMessage(game.chat_id, message);
-};
+}
 
+exports.getDailyScores = getDailyScores;
 
 exports.getStats = function(data) {
   data = data.id.split('_');
