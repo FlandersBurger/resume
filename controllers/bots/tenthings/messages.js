@@ -137,6 +137,10 @@ module.exports = {
     message += 'Lists played: ' + player.lists + '\n';
     message += 'Lists skipped: ' + player.skips + '\n';
     message += 'Best answer streak: ' + player.streak + '\n';
+    message += 'Current play streak: ' + player.playStreak + '\n';
+    message += 'Best play streak: ' + player.maxPlayStreak + '\n';
+    message += 'Current no hint streak: ' + player.hintStreak + '\n';
+    message += 'Best no hint streak: ' + player.maxHintStreak + '\n';
     return message;
   },
   streak: function(streak) {

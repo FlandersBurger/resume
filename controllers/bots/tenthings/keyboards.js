@@ -45,7 +45,8 @@ module.exports = {
   stats: function(game, player) {
     return {
       inline_keyboard: [
-        [{
+        [
+          {
             'text': 'Game Stats',
             'callback_data': JSON.stringify({
               type: 'stat',
@@ -60,7 +61,8 @@ module.exports = {
             })
           }
         ],
-        [{
+        [
+          {
             'text': 'My Stats',
             'callback_data': JSON.stringify({
               type: 'stat',
@@ -75,7 +77,8 @@ module.exports = {
             })
           }
         ],
-        [{
+        [
+          {
             'text': 'Most Skipped Lists',
             'callback_data': JSON.stringify({
               type: 'stat',
@@ -90,7 +93,8 @@ module.exports = {
             })
           }
         ],
-        [{
+        [
+          {
             'text': 'Least Popular Lists by Votes',
             'callback_data': JSON.stringify({
               type: 'stat',
@@ -105,7 +109,8 @@ module.exports = {
             })
           }
         ],
-        [{
+        [
+          {
             'text': 'Most Skips Requested',
             'callback_data': JSON.stringify({
               type: 'stat',
@@ -120,7 +125,8 @@ module.exports = {
             })
           }
         ],
-        [{
+        [
+          {
             'text': 'Most Days Played',
             'callback_data': JSON.stringify({
               type: 'stat',
@@ -135,7 +141,8 @@ module.exports = {
             })
           }
         ],
-        [{
+        [
+          {
             'text': 'Most Hints Asked',
             'callback_data': JSON.stringify({
               type: 'stat',
@@ -150,7 +157,8 @@ module.exports = {
             })
           }
         ],
-        [{
+        [
+          {
             'text': 'Best Answer Streak',
             'callback_data': JSON.stringify({
               type: 'stat',
@@ -164,6 +172,22 @@ module.exports = {
               id: game.chat_id + '_pstreak'
             })
           }
+        ],
+        [
+          {
+            'text': 'Best No Hint Streak',
+            'callback_data': JSON.stringify({
+              type: 'stat',
+              id: game.chat_id + '_hstreak'
+            })
+          },/*
+          {
+            'text': 'Best Play Streak',
+            'callback_data': JSON.stringify({
+              type: 'stat',
+              id: game.chat_id + '_pstreak'
+            })
+          }*/
         ],
       ]
     };

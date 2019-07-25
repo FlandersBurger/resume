@@ -454,6 +454,11 @@ function checkGuess(game, guess, msg) {
       var accuracy = (guess.match.distance * 100).toFixed(0) + '%';
       player.score += score;
       player.scoreDaily += score;
+      if (game.hints === 0) {
+        player.hintStreak++;
+      } else {
+        player.hintStreak = 0;
+      }
       if (!game.streak || game.streak.player != player.id) {
         game.streak = {
           player: player.id,
@@ -467,6 +472,9 @@ function checkGuess(game, guess, msg) {
       }
       if (player.scoreDaily > player.highScore) {
         player.highScore = player.scoreDaily;
+      }
+      if (player.maxHintStreak < game.hintStreak) {
+        player.maxHintStreak = game.hintStreak;
       }
       if (match.blurb) {
         guessed(game, player, msg, match.value, (match.blurb.substring(0, 4) === 'http' ? ('<a href="' + match.blurb + '">&#8204;</a>') : ('\n<i>' + match.blurb + '</i>')), score, accuracy);

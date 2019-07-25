@@ -192,6 +192,9 @@ exports.getStats = function(data, requestor) {
       case 'pstreak':
         playerStats(game, 'maxPlayStreak', '', 1, 'Best Play Streak');
         break;
+      case 'hstreak':
+        playerStats(game, 'maxHintStreak', '', 1, 'No Hint Streak');
+        break;
       default:
         bot.sendMessage(game.chat_id, 'Something');
     }
