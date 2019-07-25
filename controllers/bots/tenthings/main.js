@@ -43,7 +43,7 @@ var skips = {};
       );
 */
 /*
-  bot.getChatMember(SUPERGROUP, "592503547")
+  bot.getChatMember(SUPERGROUP, config.masterChat)
   .then(function(present) {
     console.log(present);
   });*/
@@ -128,15 +128,13 @@ var newLists = schedule.scheduleJob('0 0 12 * * *', function() {
         });
         TenThings.find({}).select('chat_id')
         .then(function(games) {
-          games.filter(function(game) {
+          bot.notifyAll(games.filter(function(game) {
             return !_.find(bot.getAdmins(), function(admin) {
               return admin === game.chat_id;
             });
-          }).forEach(function(game, index) {
-            setTimeout(function() {
-              bot.sendMessage(game.chat_id, message);
-            }, index * 50);
-          });
+          }).map(function(game) {
+            return game.chat_id;
+          }), message);
         });
       }
     });
@@ -163,15 +161,13 @@ var modifiedLists = schedule.scheduleJob('0 5 12 * * *', function() {
         });
         TenThings.find({}).select('chat_id')
         .then(function(games) {
-          games.filter(function(game) {
+          bot.notifyAll(games.filter(function(game) {
             return !_.find(bot.getAdmins(), function(admin) {
               return admin === game.chat_id;
             });
-          }).forEach(function(game, index) {
-            setTimeout(function() {
-              bot.sendMessage(game.chat_id, message);
-            }, index * 50);
-          });
+          }).map(function(game) {
+            return game.chat_id;
+          }), message);
         });
       }
     });
@@ -179,7 +175,7 @@ var modifiedLists = schedule.scheduleJob('0 5 12 * * *', function() {
     bot.notifyAdmin('New lists incorrectly triggered: ' + moment().format("DD-MMM-YYYY hh:mm"));
   }
 });
-//bot.sendPhoto('592503547', 'https://m.media-amazon.com/images/M/MV5BNmE1OWI2ZGItMDUyOS00MmU5LWE0MzUtYTQ0YzA1YTE5MGYxXkEyXkFqcGdeQXVyMDM5ODIyNw@@._V1._SX40_CR0,0,40,54_.jpg')
+//bot.sendPhoto(config.masterChat, 'https://m.media-amazon.com/images/M/MV5BNmE1OWI2ZGItMDUyOS00MmU5LWE0MzUtYTQ0YzA1YTE5MGYxXkEyXkFqcGdeQXVyMDM5ODIyNw@@._V1._SX40_CR0,0,40,54_.jpg')
 
 //var dailyScore = schedule.scheduleJob('*/10 * * * * *', function() {
 var dailyScore = schedule.scheduleJob('0 0 0 * * *', function() {
@@ -309,8 +305,8 @@ function getLanguage(language) {
 bot.notifyAdmin('<b>Started Ten Things</b>');
 //bot.sendMessage('-1001394022777', "test<a href=\'https://upload.wikimedia.org/wikipedia/commons/thumb/8/89/Regular_Hexagon_Inscribed_in_a_Circle.gif/360px-Regular_Hexagon_Inscribed_in_a_Circle.gif\'>&#8204;</a>\nsome other stuff")
 //var url = 'https://upload.wikimedia.org/wikipedia/commons/d/d8/Olympique_Marseille_logo.svg';
-//bot.sendMessage('592503547', "test<a href=\'" + url + "\'>&#8204;</a>\nsome other stuff");
-//bot.sendMessage('592503547', JSON.stringify(msg));
+//bot.sendMessage(config.masterChat, "test<a href=\'" + url + "\'>&#8204;</a>\nsome other stuff");
+//bot.sendMessage(config.masterChat, JSON.stringify(msg));
 //The Group: '5b6361dcbd0ff6645df5f225'  '-1001394022777'
 /*
 TenThings.findOne({ chat_id: '-1001394022777'})
@@ -362,7 +358,7 @@ function createGame(id, creator) {
 }
 
 /*
-bot.sendKeyboard('592503547', 'test', {
+bot.sendKeyboard(config.masterChat, 'test', {
   //reply_to_message_id: '32936',
   //reply_markup: {
     keyboard: [[
@@ -624,6 +620,9 @@ function skipList(game) {
       this[index].guesser.first_name = 'Not guessed';
     }
   }, game.list.values);
+  game.players.forEach(function(item, index) {
+    this[index].hintStreak = 0;
+  }, game.players);
   getList(game, function(list) {
     var message = '<b>' + game.list.name + '</b> skipped!\n';
     message += list;
@@ -832,14 +831,14 @@ router.post('/', function (req, res, next) {
     return res.sendStatus(200);
   } else if (!req.body.message) {
     msg = {
-      id: '592503547',
+      id: config.masterChat,
       from: {
         first_name: 'Bot Error'
       },
       command: '/error',
       text: JSON.stringify(req.body),
       chat: {
-        id: '592503547'
+        id: config.masterChat
       }
     };
   } else if (!req.body.message.text) {
@@ -898,14 +897,14 @@ router.post('/', function (req, res, next) {
       return res.sendStatus(200);
     } else {
       msg = {
-        id: '592503547',
+        id: config.masterChat,
         from: {
           first_name: 'Bot Error'
         },
         command: '/error',
         text: JSON.stringify(req.body),
         chat: {
-          id: '592503547'
+          id: config.masterChat
         }
       };
     }
@@ -1117,6 +1116,16 @@ function evaluateCommand(res, msg, game, player, isNew) {
         message += hints;
         bot.sendMessage(msg.chat.id, message);
       });
+      break;
+    case '/notify':
+      if (msg.chat.id === config.masterChat) {
+        TenThings.find({}).select('chat_id')
+        .then(function(games) {
+          bot.notifyAll(games.map(function(game) {
+            return game.chat_id;
+          }), msg);
+        });
+      }
       break;
     default:
       queueGuess(game, msg);

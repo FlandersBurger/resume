@@ -22,7 +22,8 @@ module.exports = {
     message += rule++ + ': There is a 10 second cooldown between asking hints\n';
     message += rule++ + ': A list can be skipped if 2 players /skip it\n';
     message += rule++ + ': If only 1 player skips a list there will be a 15 second cooldown until the list is skipped\n';
-    message += rule++ + ': A skip can be cancelled by anyone by typing /veto\n';
+    message += rule++ + ': "No Hint" streaks will be reset when a list is skipped\n';
+    message += rule++ + ': A skip can be cancelled by anyone by typing /veto or a correct answer\n';
     message += rule++ + ': Every day at midnight (universal time) the daily scores will be reset and a winner recorded\n';
     return message;
   },
