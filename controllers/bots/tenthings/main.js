@@ -469,8 +469,8 @@ function checkGuess(game, guess, msg) {
       if (player.scoreDaily > player.highScore) {
         player.highScore = player.scoreDaily;
       }
-      if (player.maxHintStreak < game.hintStreak) {
-        player.maxHintStreak = game.hintStreak;
+      if (player.maxHintStreak < player.hintStreak) {
+        player.maxHintStreak = player.hintStreak;
       }
       if (match.blurb) {
         guessed(game, player, msg, match.value, (match.blurb.substring(0, 4) === 'http' ? ('<a href="' + match.blurb + '">&#8204;</a>') : ('\n<i>' + match.blurb + '</i>')), score, accuracy);
@@ -1119,13 +1119,11 @@ function evaluateCommand(res, msg, game, player, isNew) {
       break;
     case '/notify':
       if (msg.chat.id === config.masterChat) {
-        console.log('mass message');
-        console.log(msg);
         TenThings.find({}).select('chat_id')
         .then(function(games) {
           bot.notifyAll(games.map(function(game) {
             return game.chat_id;
-          }), msg.text);
+          }), msg.text.substring(8, msg.text.length).replace(/\s/g,''));
         });
       }
       break;
