@@ -209,7 +209,7 @@ exports.getStats = function(data, requestor) {
 
 function listsStats(game, field, divisor, ratio, title, sorter) {
   var message = '<b>' + title + '</b>\n';
-  List.find({ plays: { $gt: 0 } }).sort(sorter).limit(20).exec(function(err, lists) {
+  List.find({ plays: { $gt: 0 } }).limit(20).exec(function(err, lists) {
     lists.sort(function(a, b) {
       if (divisor) {
         return (b[field] / (b[divisor] ? b[divisor] : 1) - a[field] / (a[divisor] ? a[divisor] : 1)) * sorter;
