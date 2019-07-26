@@ -108,7 +108,7 @@ exports.getStats = function(data, requestor) {
                 'text': player.first_name,
                 'callback_data': JSON.stringify({
                   type: 'stat',
-                  id: game.chat_id + '_p_' + player._id
+                  id: game.chat_id + '_p_' + player.id
                 })
               }
             ]);
@@ -118,7 +118,7 @@ exports.getStats = function(data, requestor) {
                 'text': player.first_name,
                 'callback_data': JSON.stringify({
                   type: 'stat',
-                  id: game.chat_id + '_p_' + player._id
+                  id: game.chat_id + '_p_' + player.id
                 })
               }
             );
@@ -141,12 +141,9 @@ exports.getStats = function(data, requestor) {
         });
         break;
       case 'p':
-      console.log('checking my stats');
-      console.log('id:' + id);
-      console.log('requestor' + requestor);
         var findPlayer = new Promise(function(resolve, reject) {
           var player = _.find(game.players, function(existingPlayer) {
-            return existingPlayer._id == (id ? id : requestor);
+            return existingPlayer.id == (id ? id : requestor);
           });
           resolve(player);
         });
