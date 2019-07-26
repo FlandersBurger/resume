@@ -183,10 +183,14 @@ var dailyScore = schedule.scheduleJob('0 0 0 * * *', function() {
     bot.notifyAdmin('Score Reset Triggered; ' + moment().format('DD-MMM-YYYY'));
     TenThings.find({ 'players.scoreDaily': { $gt: 0 }})
     .then(function(games) {
+      var uniquePlayers = [];
       var players = games.reduce(function(players, game) {
         stats.getDailyScores(game);
         var getHighScore = new Promise(function(resolve, reject) {
           resolve(game.players.reduce(function(highScore, player) {
+            if (uniquePlayers.indexOf(player.id) < 0) {
+              uniquePlayers.push(player.id);
+            }
             return (player.scoreDaily > highScore) ? player.scoreDaily : highScore;
           }, 0));
         });
@@ -239,10 +243,10 @@ var dailyScore = schedule.scheduleJob('0 0 0 * * *', function() {
         });
         return players + game.players.length;
       }, 0);
-      bot.notifyAdmins(games.length + ' games played today with ' + players + ' players.');
+      bot.notifyAdmins(games.length + ' games played today with ' + players + ' players of which ' + uniquePlayers.length + ' unique');
     }, function(err) {
       console.error(err);
-      bot.notifyAdmin('update daily score error\n' + err);
+      bot.notifyAdmin('Update daily score error\n' + err);
     });
   } else {
     bot.notifyAdmin('Schedule incorrectly triggered: ' + moment().format('DD-MMM-YYYY hh:mm'));

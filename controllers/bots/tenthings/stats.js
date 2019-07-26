@@ -157,43 +157,49 @@ exports.getStats = function(data, requestor) {
         });
         break;
       case 'mostskipped':
-        listsStats(game, {skips: -1}, 'skips', 'Most Skipped Lists');
+        listsStats(game, 'skips', 'plays', 1, 'Most Skipped Lists', 1);
+        break;
+      case 'mosthinted':
+        listsStats(game, 'hints', 'plays', 1, 'Most Skipped Lists', 1);
+        break;
+      case 'leasthinted':
+        listsStats(game, 'hints', 'plays', 1, 'Most Skipped Lists', -1);
         break;
       case 'mostplayed':
-        listsStats(game, {plays: -1}, 'plays', 'Most Played Lists');
+        listsStats(game, 'plays', '', 1, 'Most Played Lists', 1);
         break;
       case 'mostpopular':
-        listsStats(game, {score: -1}, 'score', 'Most Popular Lists');
+        listsStats(game, 'score', '', 1, 'Most Popular Lists', 1);
         break;
       case 'leastpopular':
-        listsStats(game, {score: 1}, 'score', 'Least Popular Lists');
+        listsStats(game, 'score', '', 1, 'Most Popular Lists', -1);
         break;
       case 'skippers':
-        playerStats(game, 'skips', 'lists', 1, 'Most Skips Requested');
+        playerStats(game, 'skips', 'lists', 1, 'Most Skips Requested', 1);
         break;
       case 'answers':
-        playerStats(game, 'answers', 'lists', 0.1, 'Most Correct Answers');
+        playerStats(game, 'answers', 'lists', 0.1, 'Most Correct Answers', 1);
         break;
       case 'snubs':
-        playerStats(game, 'snubs', 'answers', 1, 'Most Snubs');
+        playerStats(game, 'snubs', 'answers', 1, 'Most Snubs', 1);
         break;
       case 'hints':
-        playerStats(game, 'hints', 'lists', 1, 'Most Hints Asked');
+        playerStats(game, 'hints', 'lists', 1, 'Most Hints Asked', 1);
         break;
       case 'plays':
-        playerStats(game, 'plays', '', 1, 'Most Games Played');
+        playerStats(game, 'plays', '', 1, 'Most Games Played', 1);
         break;
       case 'wins':
-        playerStats(game, 'wins', 'lists', 1, 'Most Wins');
+        playerStats(game, 'wins', 'lists', 1, 'Most Wins', 1);
         break;
       case 'astreak':
-        playerStats(game, 'streak', '', 1, 'Best Answer Streak');
+        playerStats(game, 'streak', '', 1, 'Best Answer Streak', 1);
         break;
       case 'pstreak':
-        playerStats(game, 'maxPlayStreak', '', 1, 'Best Play Streak');
+        playerStats(game, 'maxPlayStreak', '', 1, 'Best Play Streak', 1);
         break;
       case 'hstreak':
-        playerStats(game, 'maxHintStreak', '', 1, 'No Hint Streak');
+        playerStats(game, 'maxHintStreak', '', 1, 'No Hint Streak', 1);
         break;
       default:
         bot.sendMessage(game.chat_id, 'Something');
@@ -201,27 +207,31 @@ exports.getStats = function(data, requestor) {
   });
 };
 
-function listsStats(game, sorter, field, title) {
-  List.find().sort(sorter).limit(20).exec(function(err, lists) {
-    var message = '<b>' + title + '</b>\n';
+function listsStats(game, field, divisor, ratio, title, sorter) {
+  var message = '<b>' + title + '</b>\n';
+  List.find({ plays: { $gt: 0 } }).sort(sorter).limit(20).exec(function(err, lists) {
     lists.sort(function(a, b) {
-      return b[field] - a[field];
+      if (divisor) {
+        return (b[field] / (b[divisor] ? b[divisor] : 1) - a[field] / (a[divisor] ? a[divisor] : 1)) * sorter;
+      } else {
+        return (b[field] - a[field]) * sorter;
+      }
     }).forEach(function(list, index) {
-      message += (index + 1) + '. ' + list.name + ' (' + list[field] + ')' + '\n';
+      message += (index + 1) + '. ' + list.name + ' (' + Math.round(list[field] * ratio / (divisor ? (list[divisor] ? list[divisor] : 1) / 100 : 1) * 100) / 100 + (divisor ? '%' : '') + ')' + '\n';
     });
     bot.sendMessage(game.chat_id, message);
   });
 }
 
-function playerStats(game, field, divisor, ratio, title) {
+function playerStats(game, field, divisor, ratio, title, sorter) {
   var message = '<b>' + title + '</b>\n';
   game.players.filter(function(player) {
     return player.present;
   }).sort(function(a, b) {
     if (divisor) {
-      return b[field] / (b[divisor] ? b[divisor] : 1) - a[field] / (a[divisor] ? a[divisor] : 1);
+      return (b[field] / (b[divisor] ? b[divisor] : 1) - a[field] / (a[divisor] ? a[divisor] : 1)) * sorter;
     } else {
-      return b[field] - a[field];
+      return (b[field] - a[field]) * sorter;
     }
   }).slice(0, 20).forEach(function(player, index) {
     message += (index + 1) + '. ' + player.first_name + ' (' + Math.round(player[field] * ratio / (divisor ? (player[divisor] ? player[divisor] : 1) / 100 : 1) * 100) / 100 + (divisor ? '%' : '') + ')' + '\n';
