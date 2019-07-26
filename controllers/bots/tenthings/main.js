@@ -1119,11 +1119,13 @@ function evaluateCommand(res, msg, game, player, isNew) {
       break;
     case '/notify':
       if (msg.chat.id === config.masterChat) {
+        console.log('mass message');
+        console.log(msg);
         TenThings.find({}).select('chat_id')
         .then(function(games) {
           bot.notifyAll(games.map(function(game) {
             return game.chat_id;
-          }), msg);
+          }), msg.text);
         });
       }
       break;
