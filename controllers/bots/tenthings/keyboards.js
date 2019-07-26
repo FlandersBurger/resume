@@ -167,6 +167,29 @@ module.exports = {
               type: 'score',
               id: 'ta'
             })
+          },
+          {
+            'text': 'Best No Hint Streak',
+            'callback_data': JSON.stringify({
+              type: 'stat',
+              id: 'hstreak'
+            })
+          }
+        ],
+        [
+          {
+            'text': 'Best Answer Streak',
+            'callback_data': JSON.stringify({
+              type: 'stat',
+              id: 'astreak'
+            })
+          },
+          {
+            'text': 'Best Play Streak',
+            'callback_data': JSON.stringify({
+              type: 'stat',
+              id: 'pstreak'
+            })
           }
         ],
         [
@@ -214,31 +237,6 @@ module.exports = {
             'callback_data': JSON.stringify({
               type: 'stat',
               id: 'wins'
-            })
-          }
-        ],
-        [
-          {
-            'text': 'Best Answer Streak',
-            'callback_data': JSON.stringify({
-              type: 'stat',
-              id: 'astreak'
-            })
-          },
-          {
-            'text': 'Best Play Streak',
-            'callback_data': JSON.stringify({
-              type: 'stat',
-              id: 'pstreak'
-            })
-          }
-        ],
-        [
-          {
-            'text': 'Best No Hint Streak',
-            'callback_data': JSON.stringify({
-              type: 'stat',
-              id: 'hstreak'
             })
           }
         ],
