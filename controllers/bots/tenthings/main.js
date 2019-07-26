@@ -828,9 +828,9 @@ router.post('/', function (req, res, next) {
         }
       });
     } else if (data.type === 'stats') {
-      console.log(req.body);
+      console.log(req.body.callback_query);
       TenThings.findOne({
-        chat_id: req.body.message.chat.id
+        chat_id: req.body.callback_query.message.chat.id
       }).select('chat_id list').exec(function(err, game) {
         switch (data.data) {
           case 'list':
