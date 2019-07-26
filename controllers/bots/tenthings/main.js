@@ -827,6 +827,25 @@ router.post('/', function (req, res, next) {
           });
         }
       });
+    } else if (data.type === 'stats') {
+      TenThings.findOne({
+        chat_id: req.body.message.chat.id
+      }).select('chat_id list').exec(function(err, game) {
+        switch (data.data) {
+          case 'list':        
+            bot.sendKeyboard(game.chat_id, '<b>List Stats</b>', keyboards.stats_list(game));
+            break;
+          case 'player':
+            bot.sendKeyboard(game.chat_id, '<b>Player Stats</b>', keyboards.stats_player(game));
+            break;
+          case 'global':
+            bot.sendMessage(game.chat_id, 'Coming Soon');
+            break;
+          case 'game':
+            bot.sendKeyboard(game.chat_id, '<b>Game Stats</b>', keyboards.stats_game(game));
+            break;
+        }
+      });
     } else if (data.type === 'stat') {
       stats.getStats(data, req.body.callback_query.from.id);
     } else if (data.type === 'score') {
@@ -861,7 +880,6 @@ router.post('/', function (req, res, next) {
         chat: req.body.message.chat
       };
     } else if (req.body.message.left_chat_participant) {
-
       TenThings.findOne({
         chat_id: req.body.message.chat.id
       }).select('players').exec(function(err, game) {
@@ -1079,11 +1097,8 @@ function evaluateCommand(res, msg, game, player, isNew) {
         bot.sendMessage(msg.chat.id, 'I can\'t find a skip request, ' + msg.from.first_name);
       }
       break;
-    case '/scores':
-      bot.sendKeyboard(game.chat_id, 'Which scores would you like?', keyboards.scores(game));
-      break;
     case '/stats':
-      bot.sendKeyboard(game.chat_id, 'Which stats would you like?', keyboards.stats(game, player));
+      bot.sendKeyboard(game.chat_id, 'Which stats would you like?', keyboards.stats());
       break;
     case '/list':
       try {

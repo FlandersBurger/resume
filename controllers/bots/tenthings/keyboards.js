@@ -1,92 +1,55 @@
 module.exports = {
-  scores: function(game) {
-    return {
-      inline_keyboard: [
-        [{
-            'text': 'Daily Score',
-            'callback_data': JSON.stringify({
-              type: 'score',
-              id: game.chat_id + '_d'
-            })
-          },
-          {
-            'text': 'Top Daily Score',
-            'callback_data': JSON.stringify({
-              type: 'score',
-              id: game.chat_id + '_td'
-            })
-          }
-        ],
-        [{
-            'text': 'Top Win Ratio',
-            'callback_data': JSON.stringify({
-              type: 'score',
-              id: game.chat_id + '_tr'
-            })
-          },
-          {
-            'text': 'Top Overall Score',
-            'callback_data': JSON.stringify({
-              type: 'score',
-              id: game.chat_id + '_ts'
-            })
-          }
-        ],
-        [{
-          'text': 'Top Average',
-          'callback_data': JSON.stringify({
-            type: 'score',
-            id: game.chat_id + '_ta'
-          })
-        }]
-      ]
-    };
-  },
-  stats: function(game, player) {
+  stats: function() {
     return {
       inline_keyboard: [
         [
-          {
-            'text': 'Game Stats',
-            'callback_data': JSON.stringify({
-              type: 'stat',
-              id: game.chat_id + '_g_' + game.chat_id
-            })
-          },
           {
             'text': 'List Stats',
             'callback_data': JSON.stringify({
-              type: 'stat',
-              id: game.chat_id + '_l_' + game.list._id
-            })
-          }
-        ],
-        [
-          {
-            'text': 'My Stats',
-            'callback_data': JSON.stringify({
-              type: 'stat',
-              id: game.chat_id + '_p_'
+              type: 'stats',
+              data: 'list'
             })
           },
           {
             'text': 'Player Stats',
             'callback_data': JSON.stringify({
-              type: 'stat',
-              id: game.chat_id + '_players'
+              type: 'stats',
+              data: 'player'
             })
-          }
+          },
         ],
         [
           {
-            'text': 'Most Skipped Lists',
+            'text': 'Global Stats',
+            'callback_data': JSON.stringify({
+              type: 'stats',
+              data: 'global'
+            })
+          },
+          {
+            'text': 'Game Stats',
+            'callback_data': JSON.stringify({
+              type: 'stats',
+              data: 'game'
+            })
+          },
+        ]
+      ]
+    };
+  },
+  stats_list: function(game) {
+    return {
+        inline_keyboard: [
+        [
+          {
+            'text': 'Most Skipped',
             'callback_data': JSON.stringify({
               type: 'stat',
               id: game.chat_id + '_mostskipped'
             })
           },
           {
-            'text': 'Least Skipped Lists',
+            'text': 'Least Skipped',
             'callback_data': JSON.stringify({
               type: 'stat',
               id: game.chat_id + '_leastskipped'
@@ -95,14 +58,14 @@ module.exports = {
         ],
         [
           {
-            'text': 'Most Hinted Lists',
+            'text': 'Most Hints Asked',
             'callback_data': JSON.stringify({
               type: 'stat',
               id: game.chat_id + '_mosthinted'
             })
           },
           {
-            'text': 'Least Hinted Lists',
+            'text': 'Least Hints Asked',
             'callback_data': JSON.stringify({
               type: 'stat',
               id: game.chat_id + '_leasthinted'
@@ -122,6 +85,100 @@ module.exports = {
             'callback_data': JSON.stringify({
               type: 'stat',
               id: game.chat_id + '_mostpopular'
+            })
+          }
+        ],
+        [
+          {
+            'text': 'Most Played Lists',
+            'callback_data': JSON.stringify({
+              type: 'stat',
+              id: game.chat_id + '_mostplayed'
+            })
+          }
+        ]
+      ]
+    };
+  },
+  stats_player: function(game) {
+    return {
+      inline_keyboard: [
+        [
+          {
+            'text': 'My Stats',
+            'callback_data': JSON.stringify({
+              type: 'stat',
+              id: game.chat_id + '_p_'
+            })
+          },
+          {
+            'text': 'Other Player Stats',
+            'callback_data': JSON.stringify({
+              type: 'stat',
+              id: game.chat_id + '_players'
+            })
+          }
+        ],
+        [
+          {
+            'text': 'Daily Score',
+            'callback_data': JSON.stringify({
+              type: 'score',
+              id: game.chat_id + '_d'
+            })
+          },
+          {
+            'text': 'Top Daily Score',
+            'callback_data': JSON.stringify({
+              type: 'score',
+              id: game.chat_id + '_td'
+            })
+          }
+        ],
+        [
+          {
+            'text': 'Top Win Ratio',
+            'callback_data': JSON.stringify({
+              type: 'score',
+              id: game.chat_id + '_tr'
+            })
+          },
+          {
+            'text': 'Top Overall Score',
+            'callback_data': JSON.stringify({
+              type: 'score',
+              id: game.chat_id + '_ts'
+            })
+          }
+        ],
+        [
+          {
+            'text': 'Top Average',
+            'callback_data': JSON.stringify({
+              type: 'score',
+              id: game.chat_id + '_ta'
+            })
+          }
+        ]
+      ]
+    };
+  },
+  stats_game: function(game) {
+    return {
+      inline_keyboard: [
+        [
+          {
+            'text': 'This game',
+            'callback_data': JSON.stringify({
+              type: 'stat',
+              id: game.chat_id + '_g_' + game.chat_id
+            })
+          },
+          {
+            'text': game.list.name,
+            'callback_data': JSON.stringify({
+              type: 'stat',
+              id: game.chat_id + '_l_' + game.list._id
             })
           }
         ],
@@ -195,13 +252,6 @@ module.exports = {
             'callback_data': JSON.stringify({
               type: 'stat',
               id: game.chat_id + '_hstreak'
-            })
-          },
-          {
-            'text': 'Most Played Lists',
-            'callback_data': JSON.stringify({
-              type: 'stat',
-              id: game.chat_id + '_mostplayed'
             })
           }
         ],

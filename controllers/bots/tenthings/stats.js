@@ -160,13 +160,13 @@ exports.getStats = function(data, requestor) {
         listsStats(game, 'skips', 'plays', 1, 'Most Skipped Lists', 1);
         break;
       case 'leastskipped':
-        listsStats(game, 'skips', 'plays', 1, 'Most Skipped Lists', -1);
+        listsStats(game, 'skips', 'plays', 1, 'Least Skipped Lists', -1);
         break;
       case 'mosthinted':
-        listsStats(game, 'hints', 'plays', 1, 'Most Hinted Lists', 1);
+        listsStats(game, 'hints', 'plays', 1/6, 'Most Hinted Lists', 1);
         break;
       case 'leasthinted':
-        listsStats(game, 'hints', 'plays', 1, 'Least Hinted Lists', -1);
+        listsStats(game, 'hints', 'plays', 1/6, 'Least Hinted Lists', -1);
         break;
       case 'mostplayed':
         listsStats(game, 'plays', '', 1, 'Most Played Lists', 1);
