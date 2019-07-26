@@ -828,11 +828,12 @@ router.post('/', function (req, res, next) {
         }
       });
     } else if (data.type === 'stats') {
+      console.log(req.body);
       TenThings.findOne({
         chat_id: req.body.message.chat.id
       }).select('chat_id list').exec(function(err, game) {
         switch (data.data) {
-          case 'list':        
+          case 'list':
             bot.sendKeyboard(game.chat_id, '<b>List Stats</b>', keyboards.stats_list(game));
             break;
           case 'player':
