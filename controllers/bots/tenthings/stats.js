@@ -7,16 +7,13 @@ var messages = require('./messages');
 var List = require('../../../models/list');
 var TenThings = require('../../../models/games/tenthings');
 
-exports.getScores = function(data) {
+exports.getScores = function(game_id, type) {
   /*
   stats('score', game_id, scoreType)
   .then(function(str) {
     bot.sendMessage(game_id, str);
   });
   */
-  data = data.id.split('_');
-  var game_id = data[0];
-  var type = data[1];
   TenThings.findOne({
     chat_id: game_id
   }).select('players chat_id').exec(function(err, game) {
@@ -80,13 +77,12 @@ function getDailyScores(game, limit) {
 
 exports.getDailyScores = getDailyScores;
 
-exports.getStats = function(data, requestor) {
+exports.getStats = function(chat_id, data, requestor) {
   data = data.id.split('_');
-  var game_id = data[0];
-  var type = data[1];
-  var id = data[2];
+  var type = data[0];
+  var id = data[1];
   var message = '';
-  TenThings.findOne({ chat_id: game_id }).then(function(game) {
+  TenThings.findOne({ chat_id: chat_id }).then(function(game) {
     switch (type) {
       case 'players':
         var keyboard = [];
@@ -108,7 +104,7 @@ exports.getStats = function(data, requestor) {
                 'text': player.first_name,
                 'callback_data': JSON.stringify({
                   type: 'stat',
-                  id: game.chat_id + '_p_' + player.id
+                  id: 'p_' + player.id
                 })
               }
             ]);
@@ -118,7 +114,7 @@ exports.getStats = function(data, requestor) {
                 'text': player.first_name,
                 'callback_data': JSON.stringify({
                   type: 'stat',
-                  id: game.chat_id + '_p_' + player.id
+                  id: 'p_' + player.id
                 })
               }
             );
