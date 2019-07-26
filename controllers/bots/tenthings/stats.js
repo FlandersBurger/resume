@@ -159,11 +159,14 @@ exports.getStats = function(data, requestor) {
       case 'mostskipped':
         listsStats(game, 'skips', 'plays', 1, 'Most Skipped Lists', 1);
         break;
+      case 'leastskipped':
+        listsStats(game, 'skips', 'plays', 1, 'Most Skipped Lists', -1);
+        break;
       case 'mosthinted':
-        listsStats(game, 'hints', 'plays', 1, 'Most Skipped Lists', 1);
+        listsStats(game, 'hints', 'plays', 1, 'Most Hinted Lists', 1);
         break;
       case 'leasthinted':
-        listsStats(game, 'hints', 'plays', 1, 'Most Skipped Lists', -1);
+        listsStats(game, 'hints', 'plays', 1, 'Least Hinted Lists', -1);
         break;
       case 'mostplayed':
         listsStats(game, 'plays', '', 1, 'Most Played Lists', 1);
@@ -172,7 +175,7 @@ exports.getStats = function(data, requestor) {
         listsStats(game, 'score', '', 1, 'Most Popular Lists', 1);
         break;
       case 'leastpopular':
-        listsStats(game, 'score', '', 1, 'Most Popular Lists', -1);
+        listsStats(game, 'score', '', 1, 'Least Popular Lists', -1);
         break;
       case 'skippers':
         playerStats(game, 'skips', 'lists', 1, 'Most Skips Requested', 1);
@@ -209,14 +212,14 @@ exports.getStats = function(data, requestor) {
 
 function listsStats(game, field, divisor, ratio, title, sorter) {
   var message = '<b>' + title + '</b>\n';
-  List.find({ plays: { $gt: 0 } }).limit(20).exec(function(err, lists) {
+  List.find({ plays: { $gt: 0 } }).exec(function(err, lists) {
     lists.sort(function(a, b) {
       if (divisor) {
         return (b[field] / (b[divisor] ? b[divisor] : 1) - a[field] / (a[divisor] ? a[divisor] : 1)) * sorter;
       } else {
         return (b[field] - a[field]) * sorter;
       }
-    }).forEach(function(list, index) {
+    }).slice(0, 20).forEach(function(list, index) {
       message += (index + 1) + '. ' + list.name + ' (' + Math.round(list[field] * ratio / (divisor ? (list[divisor] ? list[divisor] : 1) / 100 : 1) * 100) / 100 + (divisor ? '%' : '') + ')' + '\n';
     });
     bot.sendMessage(game.chat_id, message);

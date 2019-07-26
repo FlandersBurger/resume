@@ -86,10 +86,10 @@ module.exports = {
             })
           },
           {
-            'text': 'Most Played Lists',
+            'text': 'Least Skipped Lists',
             'callback_data': JSON.stringify({
               type: 'stat',
-              id: game.chat_id + '_mostplayed'
+              id: game.chat_id + '_leastskipped'
             })
           }
         ],
@@ -196,14 +196,14 @@ module.exports = {
               type: 'stat',
               id: game.chat_id + '_hstreak'
             })
-          },/*
+          },
           {
-            'text': 'Most Hinted Lists',
+            'text': 'Most Played Lists',
             'callback_data': JSON.stringify({
               type: 'stat',
               id: game.chat_id + '_mostplayed'
             })
-          }*/
+          }
         ],
       ]
     };
