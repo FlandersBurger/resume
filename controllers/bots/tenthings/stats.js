@@ -141,6 +141,9 @@ exports.getStats = function(data, requestor) {
         });
         break;
       case 'p':
+      console.log('checking my stats');
+      console.log(id);
+      console.log(requestor);
         var findPlayer = new Promise(function(resolve, reject) {
           var player = _.find(game.players, function(existingPlayer) {
             return existingPlayer._id == (id ? id : requestor);
