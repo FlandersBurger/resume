@@ -183,7 +183,7 @@ exports.getStats = function(chat_id, data, requestor) {
         playerStats(game, 'snubs', 'answers', 1, 'Most Snubs', 1);
         break;
       case 'hints':
-        playerStats(game, 'hints', 'lists', 1, 'Most Hints Asked', 1);
+        playerStats(game, 'hints', 'lists', 1/6, 'Most Hints Asked', 1);
         break;
       case 'plays':
         playerStats(game, 'plays', '', 1, 'Most Games Played', 1);

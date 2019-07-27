@@ -603,29 +603,32 @@ function angleBrackets(str) {
   console.log(getHint(6, string));
   */
 
-function skip(game, player) {
-  if (skips[game.id] && skips[game.id].player !== player) {
+function skip(game, skipper) {
+  if (skips[game.id] && skips[game.id].player !== skipper) {
     skipList(game);
-  } else if (skips[game.id] && skips[game.id].player === player) {
+  } else if (skips[game.id] && skips[game.id].player === skipper) {
     bot.sendMessage(game.chat_id, 'Get someone else to confirm your skip request!');
   } else {
     bot.sendMessage(game.chat_id, 'Skipping <b>' + game.list.name + '</b> in 15 seconds.\nType /veto to cancel or /skip to confirm.');
     skips[game.id] = {
       timer: 15,
-      player: player
+      player: skipper
     };
     cooldownSkip(game);
   }
 }
 
-function skipList(game) {
+function skipList(game, skipper) {
   game.list.values.forEach(function(item, index) {
     if (!item.guesser.first_name) {
       this[index].guesser.first_name = 'Not guessed';
     }
   }, game.list.values);
-  game.players.forEach(function(item, index) {
-    this[index].hintStreak = 0;
+  game.players.forEach(function(player, index) {
+    //Hint streaks will be reset for people that skipped the list
+    if (player.id === skips[game.id].player || player.id === skipper) {
+      this[index].hintStreak = 0;
+    }
   }, game.players);
   getList(game, function(list) {
     var message = '<b>' + game.list.name + '</b> skipped!\n';
