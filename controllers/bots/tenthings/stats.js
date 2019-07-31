@@ -135,25 +135,25 @@ exports.getStats = function(chat_id, data, requestor) {
           }, []);
           message = '<b>Global Stats</b>\n';
           message += 'Highest Overall Score: ' + allPlayers.reduce(function(score, player) {
-            return score > player.highScore ? score : player.highScore;
+            return player.highScore ? score > player.highScore ? score : player.highScore : score;
           }, 0) + '\n';
           message += 'Highest Score Today: ' + allPlayers.reduce(function(score, player) {
-            return score > player.scoreDaily ? score : player.scoreDaily;
+            return player.scoreDaily ? score > player.scoreDaily ? score : player.scoreDaily : score;
           }, 0) + '\n';
           message += 'Best Answer Streak: ' + allPlayers.reduce(function(score, player) {
-            return score > player.streak ? score : player.streak;
+            return player.streak ? score > player.streak ? score : player.streak : score;
           }, 0) + '\n';
           message += 'Best Play Streak: ' + allPlayers.reduce(function(score, player) {
-            return score > player.maxPlayStreak ? score : player.maxPlayStreak;
+            return player.maxPlayStreak ? score > player.maxPlayStreak ? score : player.maxPlayStreak : score;
           }, 0) + '\n';
           message += 'Best No Hint Streak: ' + allPlayers.reduce(function(score, player) {
-            return score > player.maxHintStreak ? score : player.maxHintStreak;
+            return player.maxHintStreak ? score > player.maxHintStreak ? score : player.maxHintStreak : score;
           }, 0) + '\n';
           message += allPlayers.filter(function(player) {
             return player.scoreDaily;
           }).length + ' out of ' + allPlayers.length + ' players played today\n';
           message += 'Collectively cycled through all lists ' + games.reduce(function(count, game) {
-            return count + game.cycles;
+            return count + (game.cycles ? game.cycles : 0);
           }, 0) + ' times\n';
           message += '\n';
           bot.sendMessage(game.chat_id, message);
