@@ -11,7 +11,7 @@ var bot = require('../../../bots/telegram');
 var messages = require('./messages');
 var keyboards = require('./keyboards');
 var stats = require('./stats');
-var stats = require('./jobs');
+var jobs = require('./jobs');
 
 var List = require('../../../models/list');
 var TenThings = require('../../../models/games/tenthings');
