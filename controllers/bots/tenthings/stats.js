@@ -126,7 +126,7 @@ exports.getStats = function(chat_id, data, requestor) {
         break;
       case 'global':
         TenThings
-        .find({ 'players.present': true})
+        .find({ 'players.present': true })
         .lean()
         .exec(function(err, games) {
           if (err) return console.error(err);
@@ -163,7 +163,26 @@ exports.getStats = function(chat_id, data, requestor) {
         List.find().exec(function(err, lists) {
           message = '<b>Game Stats</b>\n';
           message += 'Started ' + moment(game.date).format("DD-MMM-YYYY") + '\n';
-          message += game.players.length + ' players\n';
+          message += 'Highest Overall Score: ' + game.players.reduce(function(score, player) {
+            return player.highScore ? score > player.highScore ? score : player.highScore : score;
+          }, 0) + '\n';
+          message += 'Highest Score Today: ' + game.players.reduce(function(score, player) {
+            return player.scoreDaily ? score > player.scoreDaily ? score : player.scoreDaily : score;
+          }, 0) + '\n';
+          message += 'Best Answer Streak: ' + game.players.reduce(function(score, player) {
+            return player.streak ? score > player.streak ? score : player.streak : score;
+          }, 0) + '\n';
+          message += 'Best Play Streak: ' + game.players.reduce(function(score, player) {
+            return player.maxPlayStreak ? score > player.maxPlayStreak ? score : player.maxPlayStreak : score;
+          }, 0) + '\n';
+          message += 'Best No Hint Streak: ' + game.players.reduce(function(score, player) {
+            return player.maxHintStreak ? score > player.maxHintStreak ? score : player.maxHintStreak : score;
+          }, 0) + '\n';
+          message += game.players.filter(function(player) {
+            return player.scoreDaily;
+          }).length + ' out of ' + game.players.filter(function(player) {
+            return player.present;
+          }).length + ' players played today\n';
           message += 'Cycled through all lists ' + game.cycles + ' times\n';
           message += game.cycles ? 'Last cycled: ' + moment(game.lastCycleDate).format("DD-MMM-YYYY") + '\n' : '';
           message += game.playedLists.length + ' of ' + lists.length + ' lists played (' + Math.round(game.playedLists.length / lists.length * 100).toFixed(0) + '%)\n';
