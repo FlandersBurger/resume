@@ -7,18 +7,19 @@ var kue = require('kue');
 var moment = require('moment');
 var request = require('request');
 
-var config = require('../../config');
-var bot = require('../../bots/telegram');
+var config = require('../../../config');
+var bot = require('../../../bots/telegram');
 
-var messages = require('./tenthings/messages');
-var keyboards = require('./tenthings/keyboards');
-//var stats = require('./tenthings/stats');
+var messages = require('./messages');
+var keyboards = require('./keyboards');
+var stats = require('./stats');
 
-var List = require('../../models/list');
-var TenThings = require('../../models/games/tenthings');
+var List = require('../../../models/list');
+var TenThings = require('../../../models/games/tenthings');
+
 var MAXHINTS = 6;
 var SUPERGROUP = '-1001394022777';
-var SPECIAL_CHARACTERS = "\\\\/ !@#$%^&*()_+:.{},;\\-'``\"";
+var SPECIAL_CHARACTERS = "\\\\/ !?@#$%^&*()_+:.{},;\\-'``\"";
 
 var cooldowns = {};
 var skips = {};
@@ -42,7 +43,7 @@ var skips = {};
       );
 */
 /*
-  bot.getChatMember(SUPERGROUP, "592503547")
+  bot.getChatMember(SUPERGROUP, config.masterChat)
   .then(function(present) {
     console.log(present);
   });*/
@@ -127,15 +128,13 @@ var newLists = schedule.scheduleJob('0 0 12 * * *', function() {
         });
         TenThings.find({}).select('chat_id')
         .then(function(games) {
-          games.filter(function(game) {
+          bot.notifyAll(games.filter(function(game) {
             return !_.find(bot.getAdmins(), function(admin) {
               return admin === game.chat_id;
             });
-          }).forEach(function(game, index) {
-            setTimeout(function() {
-              bot.sendMessage(game.chat_id, message);
-            }, index * 50);
-          });
+          }).map(function(game) {
+            return game.chat_id;
+          }), message);
         });
       }
     });
@@ -162,15 +161,13 @@ var modifiedLists = schedule.scheduleJob('0 5 12 * * *', function() {
         });
         TenThings.find({}).select('chat_id')
         .then(function(games) {
-          games.filter(function(game) {
+          bot.notifyAll(games.filter(function(game) {
             return !_.find(bot.getAdmins(), function(admin) {
               return admin === game.chat_id;
             });
-          }).forEach(function(game, index) {
-            setTimeout(function() {
-              bot.sendMessage(game.chat_id, message);
-            }, index * 50);
-          });
+          }).map(function(game) {
+            return game.chat_id;
+          }), message);
         });
       }
     });
@@ -178,6 +175,7 @@ var modifiedLists = schedule.scheduleJob('0 5 12 * * *', function() {
     bot.notifyAdmin('New lists incorrectly triggered: ' + moment().format("DD-MMM-YYYY hh:mm"));
   }
 });
+//bot.sendPhoto(config.masterChat, 'https://m.media-amazon.com/images/M/MV5BNmE1OWI2ZGItMDUyOS00MmU5LWE0MzUtYTQ0YzA1YTE5MGYxXkEyXkFqcGdeQXVyMDM5ODIyNw@@._V1._SX40_CR0,0,40,54_.jpg')
 
 //var dailyScore = schedule.scheduleJob('*/10 * * * * *', function() {
 var dailyScore = schedule.scheduleJob('0 0 0 * * *', function() {
@@ -185,10 +183,14 @@ var dailyScore = schedule.scheduleJob('0 0 0 * * *', function() {
     bot.notifyAdmin('Score Reset Triggered; ' + moment().format('DD-MMM-YYYY'));
     TenThings.find({ 'players.scoreDaily': { $gt: 0 }})
     .then(function(games) {
+      var uniquePlayers = [];
       var players = games.reduce(function(players, game) {
-        getDailyScores(game);
+        stats.getDailyScores(game);
         var getHighScore = new Promise(function(resolve, reject) {
           resolve(game.players.reduce(function(highScore, player) {
+            if (uniquePlayers.indexOf(player.id) < 0) {
+              uniquePlayers.push(player.id);
+            }
             return (player.scoreDaily > highScore) ? player.scoreDaily : highScore;
           }, 0));
         });
@@ -241,10 +243,10 @@ var dailyScore = schedule.scheduleJob('0 0 0 * * *', function() {
         });
         return players + game.players.length;
       }, 0);
-      bot.notifyAdmins(games.length + ' games played today with ' + players + ' players.');
+      bot.notifyAdmins(games.length + ' games played today with ' + players + ' players of which ' + uniquePlayers.length + ' unique');
     }, function(err) {
       console.error(err);
-      bot.notifyAdmin('update daily score error\n' + err);
+      bot.notifyAdmin('Update daily score error\n' + err);
     });
   } else {
     bot.notifyAdmin('Schedule incorrectly triggered: ' + moment().format('DD-MMM-YYYY hh:mm'));
@@ -307,8 +309,8 @@ function getLanguage(language) {
 bot.notifyAdmin('<b>Started Ten Things</b>');
 //bot.sendMessage('-1001394022777', "test<a href=\'https://upload.wikimedia.org/wikipedia/commons/thumb/8/89/Regular_Hexagon_Inscribed_in_a_Circle.gif/360px-Regular_Hexagon_Inscribed_in_a_Circle.gif\'>&#8204;</a>\nsome other stuff")
 //var url = 'https://upload.wikimedia.org/wikipedia/commons/d/d8/Olympique_Marseille_logo.svg';
-//bot.sendMessage('592503547', "test<a href=\'" + url + "\'>&#8204;</a>\nsome other stuff");
-//bot.sendMessage('592503547', JSON.stringify(msg));
+//bot.sendMessage(config.masterChat, "test<a href=\'" + url + "\'>&#8204;</a>\nsome other stuff");
+//bot.sendMessage(config.masterChat, JSON.stringify(msg));
 //The Group: '5b6361dcbd0ff6645df5f225'  '-1001394022777'
 /*
 TenThings.findOne({ chat_id: '-1001394022777'})
@@ -360,7 +362,7 @@ function createGame(id, creator) {
 }
 
 /*
-bot.sendKeyboard('592503547', 'test', {
+bot.sendKeyboard(config.masterChat, 'test', {
   //reply_to_message_id: '32936',
   //reply_markup: {
     keyboard: [[
@@ -452,6 +454,11 @@ function checkGuess(game, guess, msg) {
       var accuracy = (guess.match.distance * 100).toFixed(0) + '%';
       player.score += score;
       player.scoreDaily += score;
+      if (game.hints === 0) {
+        player.hintStreak++;
+      } else {
+        player.hintStreak = 0;
+      }
       if (!game.streak || game.streak.player != player.id) {
         game.streak = {
           player: player.id,
@@ -465,6 +472,9 @@ function checkGuess(game, guess, msg) {
       }
       if (player.scoreDaily > player.highScore) {
         player.highScore = player.scoreDaily;
+      }
+      if (player.maxHintStreak < player.hintStreak) {
+        player.maxHintStreak = player.hintStreak;
       }
       if (match.blurb) {
         guessed(game, player, msg, match.value, (match.blurb.substring(0, 4) === 'http' ? ('<a href="' + match.blurb + '">&#8204;</a>') : ('\n<i>' + match.blurb + '</i>')), score, accuracy);
@@ -532,7 +542,7 @@ function checkRound(game) {
           message += messages.listStats(foundList);
           bot.sendMessage(game.chat_id, message);
           setTimeout(function () {
-            getDailyScores(game, 5);
+            stats.getDailyScores(game, 5);
             rateList(game);
             setTimeout(function() {
               newRound(game);
@@ -593,27 +603,33 @@ function angleBrackets(str) {
   console.log(getHint(6, string));
   */
 
-function skip(game, player) {
-  if (skips[game.id] && skips[game.id].player !== player) {
+function skip(game, skipper) {
+  if (skips[game.id] && skips[game.id].player !== skipper) {
     skipList(game);
-  } else if (skips[game.id] && skips[game.id].player === player) {
+  } else if (skips[game.id] && skips[game.id].player === skipper) {
     bot.sendMessage(game.chat_id, 'Get someone else to confirm your skip request!');
   } else {
     bot.sendMessage(game.chat_id, 'Skipping <b>' + game.list.name + '</b> in 15 seconds.\nType /veto to cancel or /skip to confirm.');
     skips[game.id] = {
       timer: 15,
-      player: player
+      player: skipper
     };
     cooldownSkip(game);
   }
 }
 
-function skipList(game) {
+function skipList(game, skipper) {
   game.list.values.forEach(function(item, index) {
     if (!item.guesser.first_name) {
       this[index].guesser.first_name = 'Not guessed';
     }
   }, game.list.values);
+  game.players.forEach(function(player, index) {
+    //Hint streaks will be reset for people that skipped the list
+    if (player.id === skips[game.id].player || player.id === skipper) {
+      this[index].hintStreak = 0;
+    }
+  }, game.players);
   getList(game, function(list) {
     var message = '<b>' + game.list.name + '</b> skipped!\n';
     message += list;
@@ -627,7 +643,7 @@ function skipList(game) {
       foundList.skips++;
       foundList.save(function(err) {
         if (err) return console.error(err);
-        getDailyScores(game, 5);
+        stats.getDailyScores(game, 5);
         newRound(game);
       });
     });
@@ -758,76 +774,6 @@ function cooldownHint(gameId) {
   }
 }
 
-function getScores(data) {
-  /*
-  stats('score', game_id, scoreType)
-  .then(function(str) {
-    bot.sendMessage(game_id, str);
-  });
-  */
-  data = data.id.split('_');
-  var game_id = data[0];
-  var type = data[1];
-  TenThings.findOne({
-    chat_id: game_id
-  }).select('players chat_id').exec(function(err, game) {
-    var str = '';
-    switch (type) {
-      case 'td':
-        str = '<b>Top Daily Scores</b>\n';
-        console.log(str);
-        game.players.filter(function(player) { return player.present; }).sort(function(a, b) {
-          return b.highScore - a.highScore;
-        }).slice(0, 10).forEach(function(player, index) {
-          str += (index + 1) + ': ' + player.first_name + ': ' + player.highScore + '\n';
-        });
-        bot.sendMessage(game_id, str);
-        break;
-      case 'tr':
-        str = '<b>Top Win Ratio</b>\n';
-        game.players.filter(function(player) { return player.present; }).sort(function(a, b) {
-          return (b.plays === 0 ? 0 : b.wins / b.plays) - (a.plays === 0 ? 0 : a.wins / a.plays);
-        }).slice(0, 10).forEach(function(player, index) {
-          str += (index + 1) + ': ' + player.first_name + ': ' + player.wins + '/' + player.plays + ' (' + (Math.round(player.plays === 0 ? 0 : player.wins / player.plays * 10000) / 100) + '%)\n';
-        });
-        bot.sendMessage(game_id, str);
-        break;
-      case 'ts':
-        str = '<b>Top Overall Score</b>\n';
-        console.log(str);
-        game.players.filter(function(player) { return player.present; }).sort(function(a, b) {
-          return b.score - a.score;
-        }).slice(0, 10).forEach(function(player, index) {
-          str += (index + 1) + ': ' + player.first_name + ': ' + player.score + '\n';
-        });
-        bot.sendMessage(game_id, str);
-        break;
-      case 'ta':
-        str = '<b>Top Average Daily Score</b>\n';
-        game.players.filter(function(player) { return player.present; }).sort(function(a, b) {
-          return (b.plays === 0 ? 0 : b.score / b.plays) - (a.plays === 0 ? 0 : a.score / a.plays);
-        }).slice(0, 10).forEach(function(player, index) {
-          str += (index + 1) + ': ' + player.first_name + ': ' + Math.round(player.plays === 0 ? 0 : player.score / player.plays) + '\n';
-        });
-        bot.sendMessage(game_id, str);
-        break;
-      default:
-        getDailyScores(game);
-    }
-  });
-}
-
-function getDailyScores(game, limit) {
-  var message = game.players.filter(function(player) {
-    return player.scoreDaily;
-  }).sort(function(a, b) {
-    return b.scoreDaily - a.scoreDaily;
-  }).slice(0, limit ? limit : game.players.length).reduce(function(str, player, index) {
-    str += (index + 1) + ': ' + player.first_name + ' - ' + player.scoreDaily + '\n';
-    return str;
-  }, '<b>Daily Scores</b>\n');
-  bot.sendMessage(game.chat_id, message);
-}
 
 function getList(game, callback) {
   var str = '';
@@ -858,177 +804,6 @@ function getRandom(arr, n) {
   return result;
 }
 
-function getStats(data) {
-  data = data.id.split('_');
-  var game_id = data[0];
-  var type = data[1];
-  var id = data[2];
-  var message = '';
-  TenThings.findOne({ chat_id: game_id }).then(function(game) {
-    switch (type) {
-      case 'players':
-        var keyboard = [];
-        game.players.sort(function(a, b) {
-          var nameA = a.first_name.toUpperCase(); // ignore upper and lowercase
-          var nameB = b.first_name.toUpperCase(); // ignore upper and lowercase
-          if (nameA < nameB) {
-            return -1;
-          }
-          if (nameA > nameB) {
-            return 1;
-          }
-          // names must be equal
-          return 0;
-        }).forEach(function(player, index) {
-          if (index % 3 === 0) {
-            keyboard.push([
-              {
-                'text': player.first_name,
-                'callback_data': JSON.stringify({
-                  type: 'stat',
-                  id: game.chat_id + '_p_' + player._id
-                })
-              }
-            ]);
-          } else {
-            keyboard[Math.floor(index / 3)].push(
-              {
-                'text': player.first_name,
-                'callback_data': JSON.stringify({
-                  type: 'stat',
-                  id: game.chat_id + '_p_' + player._id
-                })
-              }
-            );
-          }
-        });
-        bot.sendKeyboard(game.chat_id, 'Which player?', {
-          inline_keyboard: keyboard
-        });
-        break;
-      case 'g':
-        List.find().exec(function(err, lists) {
-          message = '<b>Game Stats</b>\n';
-          message += 'Started ' + moment(game.date).format("DD-MMM-YYYY") + '\n';
-          message += game.players.length + ' players\n';
-          message += 'Cycled through all lists ' + game.cycles + ' times\n';
-          message += game.cycles ? 'Last cycled: ' + moment(game.lastCycleDate).format("DD-MMM-YYYY") + '\n' : '';
-          message += game.playedLists.length + ' of ' + lists.length + ' lists played (' + Math.round(game.playedLists.length / lists.length * 100).toFixed(0) + '%)\n';
-          message += '\n';
-          bot.sendMessage(game.chat_id, message);
-        });
-        break;
-      case 'p':
-        var findPlayer = new Promise(function(resolve, reject) {
-          var player = _.find(game.players, function(existingPlayer) {
-            return existingPlayer._id == id;
-          });
-          resolve(player);
-        });
-        findPlayer.then(function(player) {
-          bot.sendMessage(game.chat_id, messages.playerStats(player));
-        });
-        break;
-      case 'l':
-        List.findOne({ _id: id }).populate('creator').exec(function(err, gameList) {
-          bot.sendMessage(game.chat_id, messages.listStats(gameList));
-        });
-        break;
-      case 'mostskipped':
-        listsStats(game, {skips: -1}, 'skips', 'Most Skipped Lists');
-        break;
-      case 'mostplayed':
-        listsStats(game, {plays: -1}, 'plays', 'Most Played Lists');
-        break;
-      case 'mostpopular':
-        listsStats(game, {score: -1}, 'score', 'Most Popular Lists');
-        break;
-      case 'leastpopular':
-        listsStats(game, {score: 1}, 'score', 'Least Popular Lists');
-        break;
-      case 'skippers':
-        playerStats(game, 'skips', 'lists', 1, 'Most Skips Requested');
-        break;
-      case 'answers':
-        playerStats(game, 'answers', 'lists', 0.1, 'Most Correct Answers');
-        break;
-      case 'snubs':
-        playerStats(game, 'snubs', 'answers', 1, 'Most Snubs');
-        break;
-      case 'hints':
-        playerStats(game, 'hints', 'lists', 1, 'Most Hints Asked');
-        break;
-      case 'plays':
-        playerStats(game, 'plays', '', 1, 'Most Games Played');
-        break;
-      case 'wins':
-        playerStats(game, 'wins', 'lists', 1, 'Most Wins');
-        break;
-      case 'astreak':
-        playerStats(game, 'streak', '', 1, 'Best Answer Streak');
-        break;
-      case 'pstreak':
-        playerStats(game, 'maxPlayStreak', '', 1, 'Best Play Streak');
-        break;
-      default:
-        bot.sendMessage(game.chat_id, 'Something');
-    }
-  });
-}
-
-function listsStats(game, sorter, field, title) {
-  List.find().sort(sorter).limit(20).exec(function(err, lists) {
-    var message = '<b>' + title + '</b>\n';
-    lists.sort(function(a, b) {
-      return b[field] - a[field];
-    }).forEach(function(list, index) {
-      message += (index + 1) + '. ' + list.name + ' (' + list[field] + ')' + '\n';
-    });
-    bot.sendMessage(game.chat_id, message);
-  });
-}
-
-function playerStats(game, field, divisor, ratio, title) {
-  var message = '<b>' + title + '</b>\n';
-  game.players.filter(function(player) {
-    return player.present;
-  }).sort(function(a, b) {
-    if (divisor) {
-      return b[field] / (b[divisor] ? b[divisor] : 1) - a[field] / (a[divisor] ? a[divisor] : 1);
-    } else {
-      return b[field] - a[field];
-    }
-  }).slice(0, 20).forEach(function(player, index) {
-    message += (index + 1) + '. ' + player.first_name + ' (' + Math.round(player[field] * ratio / (divisor ? (player[divisor] ? player[divisor] : 1) / 100 : 1) * 100) / 100 + (divisor ? '%' : '') + ')' + '\n';
-  });
-  bot.sendMessage(game.chat_id, message);
-}
-
-function tenThingsStats(game, sorter, field, title) {
-  TenThings.aggregate([
-    { $unwind:'$players' },
-    { $group: {
-      '_id': { _id:'$players._id', first_name:'$players.first_name' },
-      'score': { $sum:'$players.score' },
-      'plays': { $sum:'$players.plays' },
-      'wins': { $sum:'$players.wins' },
-      'answers': { $sum:'$players.answers' },
-      'snubs': { $sum:'$players.snubs' },
-      'hints': { $sum:'$players.hints' },
-      'skips': { $sum:'$players.skips' },
-      'answerStreaks': { $max:'$players.streak' },
-      'playStreaks': { $max:'$players.maxPlayStreak' }
-    }},
-  ]).sort(sorter).limit(10).exec(function(err, players) {
-    if (err) console.error(err);
-    console.log(result);
-    message = '<b>' + title + '</b>\n';
-    players.forEach(function(player, index) {
-      message += (index + 1) + '. ' + player.first_name + ' (' + player[field] + ')' + '\n';
-    });
-  });
-}
-
 router.post('/', function (req, res, next) {
   if (req.body.object === 'page') {
     res.status(200).send('EVENT_RECEIVED');
@@ -1055,22 +830,42 @@ router.post('/', function (req, res, next) {
           });
         }
       });
+    } else if (data.type === 'stats') {
+      console.log(req.body.callback_query);
+      TenThings.findOne({
+        chat_id: req.body.callback_query.message.chat.id
+      }).select('chat_id list').exec(function(err, game) {
+        switch (data.data) {
+          case 'list':
+            bot.sendKeyboard(game.chat_id, '<b>List Stats</b>', keyboards.stats_list(game));
+            break;
+          case 'player':
+            bot.sendKeyboard(game.chat_id, '<b>Player Stats</b>', keyboards.stats_player(game));
+            break;
+          case 'global':
+            bot.sendMessage(game.chat_id, 'Coming Soon');
+            break;
+          case 'game':
+            bot.sendKeyboard(game.chat_id, '<b>Game Stats</b>', keyboards.stats_game(game));
+            break;
+        }
+      });
     } else if (data.type === 'stat') {
-      getStats(data);
+      stats.getStats(req.body.callback_query.message.chat.id, data, req.body.callback_query.from.id);
     } else if (data.type === 'score') {
-      getScores(data);
+      stats.getScores(req.body.callback_query.message.chat.id, data.id);
     }
     return res.sendStatus(200);
   } else if (!req.body.message) {
     msg = {
-      id: '592503547',
+      id: config.masterChat,
       from: {
         first_name: 'Bot Error'
       },
       command: '/error',
       text: JSON.stringify(req.body),
       chat: {
-        id: '592503547'
+        id: config.masterChat
       }
     };
   } else if (!req.body.message.text) {
@@ -1089,7 +884,6 @@ router.post('/', function (req, res, next) {
         chat: req.body.message.chat
       };
     } else if (req.body.message.left_chat_participant) {
-
       TenThings.findOne({
         chat_id: req.body.message.chat.id
       }).select('players').exec(function(err, game) {
@@ -1129,14 +923,14 @@ router.post('/', function (req, res, next) {
       return res.sendStatus(200);
     } else {
       msg = {
-        id: '592503547',
+        id: config.masterChat,
         from: {
           first_name: 'Bot Error'
         },
         command: '/error',
         text: JSON.stringify(req.body),
         chat: {
-          id: '592503547'
+          id: config.masterChat
         }
       };
     }
@@ -1307,11 +1101,8 @@ function evaluateCommand(res, msg, game, player, isNew) {
         bot.sendMessage(msg.chat.id, 'I can\'t find a skip request, ' + msg.from.first_name);
       }
       break;
-    case '/scores':
-      bot.sendKeyboard(game.chat_id, 'Which scores would you like?', keyboards.scores(game));
-      break;
     case '/stats':
-      bot.sendKeyboard(game.chat_id, 'Which stats would you like?', keyboards.stats(game, player));
+      bot.sendKeyboard(game.chat_id, '<b>Stats</b>', keyboards.stats(game.chat_id));
       break;
     case '/list':
       try {
@@ -1348,6 +1139,16 @@ function evaluateCommand(res, msg, game, player, isNew) {
         message += hints;
         bot.sendMessage(msg.chat.id, message);
       });
+      break;
+    case '/notify':
+      if (msg.chat.id === config.masterChat) {
+        TenThings.find({}).select('chat_id')
+        .then(function(games) {
+          bot.notifyAll(games.map(function(game) {
+            return game.chat_id;
+          }), msg.text.substring(8, msg.text.length).replace(/\s/g,''));
+        });
+      }
       break;
     default:
       queueGuess(game, msg);

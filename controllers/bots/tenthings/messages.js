@@ -22,7 +22,8 @@ module.exports = {
     message += rule++ + ': There is a 10 second cooldown between asking hints\n';
     message += rule++ + ': A list can be skipped if 2 players /skip it\n';
     message += rule++ + ': If only 1 player skips a list there will be a 15 second cooldown until the list is skipped\n';
-    message += rule++ + ': A skip can be cancelled by anyone by typing /veto\n';
+    message += rule++ + ': "No Hint" streaks will be reset when a list is skipped\n';
+    message += rule++ + ': A skip can be cancelled by anyone by typing /veto or a correct answer\n';
     message += rule++ + ': Every day at midnight (universal time) the daily scores will be reset and a winner recorded\n';
     return message;
   },
@@ -137,6 +138,10 @@ module.exports = {
     message += 'Lists played: ' + player.lists + '\n';
     message += 'Lists skipped: ' + player.skips + '\n';
     message += 'Best answer streak: ' + player.streak + '\n';
+    message += 'Current play streak: ' + player.playStreak + '\n';
+    message += 'Best play streak: ' + player.maxPlayStreak + '\n';
+    message += 'Current no hint streak: ' + player.hintStreak + '\n';
+    message += 'Best no hint streak: ' + player.maxHintStreak + '\n';
     return message;
   },
   streak: function(streak) {
@@ -154,7 +159,11 @@ module.exports = {
           'New sheriff in town',
           'Streak Thief',
           'My turn',
-
+          'New blood',
+          'A breath of fresh air',
+          'Back to square one',
+          'Shaking things up',
+          'Numero Uno'
         ];
         break;
       case 2:
@@ -165,6 +174,12 @@ module.exports = {
           'Double Whammy',
           'Double Dip',
           'Double or Nothing',
+          'A Tale of Two Answers',
+          'Double Header',
+          'On the double',
+          'Doublethink',
+          'Snake Eyes',
+          'Peas in a Pod'
         ];
         break;
       case 3:
@@ -174,7 +189,10 @@ module.exports = {
           'Hat Trick',
           'Triple Whammy',
           'Ménage à trois',
-          'Holy Trinity'
+          'Holy Trinity',
+          'A Charm',
+          'A Crowd',
+          'Three Cheers'
         ];
         break;
       case 4:
@@ -184,7 +202,10 @@ module.exports = {
           'Quattro Stagioni',
           'FORE!',
           'Homerun',
-          'Fantastic'
+          'Fantastic',
+          'Two plus Two is Four',
+          'Quads',
+          'Clover'
         ];
         break;
       case 5:
@@ -193,7 +214,28 @@ module.exports = {
           'Abraham Lincoln',
           'Lustrum',
           'Cinque',
-          'Like a Boss'
+          'Like a Boss',
+          'Yahtzee',
+          'High-Five',
+          'Take Five'
+        ];
+        break;
+      case 7:
+        messages = [
+          'James Bond',
+          'Lucky Number Seven',
+          'Seven Year Itch'
+        ];
+        break;
+      case 8:
+        messages = [
+          '8-ball',
+        ];
+        break;
+      case 9:
+        messages = [
+          'Cloud Nine',
+          'Dressed to the Nines'
         ];
         break;
       case 10:
@@ -201,14 +243,26 @@ module.exports = {
           'Ten Ten Things Things',
           'Tenfold',
           'Tenacious',
-          'Alexander Hamilton'
+          'Alexander Hamilton',
+          'Double Digits',
+          'Downing Street',
+          'Perfect Ten'
         ];
         break;
+      case 11:
+        messages = ['11th Hour'];
+        break;
+      case 12:
+        messages = ['Dozen'];
+        break;
       case 15:
-        messages = ['Mega Spree'];
+        messages = ['Mega Spree', '15 Minutes of Fame'];
         break;
       case 20:
         messages = ['Ultra Spree'];
+        break;
+      case 22:
+        messages = ['Cath-22'];
         break;
       case 25:
         messages = ['M-M-M-Monster Spree'];
@@ -217,7 +271,7 @@ module.exports = {
         messages = ['Ludicrous Spree'];
         break;
       case 40:
-        messages = ['Dominating'];
+        messages = ['Dominating', 'Forty Winks'];
         break;
       case 50:
         messages = [
@@ -230,7 +284,14 @@ module.exports = {
         messages = ['God-Like'];
         break;
       case 100:
-        messages = ['Ten Ten Ten Things Things Things', 'ONE HUNDRED', 'Tenacious'];
+        messages = [
+          'Ten Ten Ten Things Things Things',
+          'ONE HUNDRED',
+          'Tenacious',
+          'Triple Digits',
+          'Fifty-Fifty',
+          'One in a Hundred'
+        ];
         break;
       case 150:
         messages = ['I guess you\'re competing against yourself'];
@@ -258,6 +319,12 @@ module.exports = {
         break;
       case 252:
         messages = ['And thanks for being an awesome player'];
+        break;
+      case 1000:
+        messages = ['One in a Thousand'];
+        break;
+      case 1000000:
+        messages = ['One in a Million', 'Holy Shite, A Million Answers'];
         break;
       default:
         return '';

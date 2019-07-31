@@ -88,21 +88,24 @@ function TelegramBot() {
   };
 
   bot.notifyAdmin = function(msg) {
-    b.sendMessage('592503547', msg);
+    b.sendMessage(config.masterChat, msg);
   };
 
   bot.getAdmins = function() {
-    return [
-      '592503547', //Laurent
-      '50070949', //Caio
-      '55229200', //Renan
-      '672106107', //Maria
-    ];
+    return config.adminChats;
   };
 
   bot.notifyAdmins = function(msg) {
     bot.getAdmins().forEach(function(admin) {
       b.sendMessage(admin, msg);
+    });
+  };
+
+  bot.notifyAll = function(channels, message) {
+    channels.forEach(function(channel, index) {
+      setTimeout(function() {
+        bot.sendMessage(channel, message);
+      }, index * 50);
     });
   };
 
@@ -146,6 +149,16 @@ function TelegramBot() {
   bot.sendKeyboard = function(channel, message, keyboard) {
     return new Promise(function (resolve, reject) {
       var url = 'https://api.telegram.org/bot' + bot.token + '/sendMessage?chat_id=' + channel + '&disable_notification=true&parse_mode=html&text=' + message + '&reply_markup=' + JSON.stringify(keyboard);
+      request(encodeURI(url), function (error, r, body) {
+        if (error) return;
+        resolve();
+      });
+    });
+  };
+
+  bot.sendPhoto = function(channel, photo) {
+    return new Promise(function (resolve, reject) {
+      var url = 'https://api.telegram.org/bot' + bot.token + '/sendPhoto?chat_id=' + channel + '&photo=' + photo;
       request(encodeURI(url), function (error, r, body) {
         if (error) return;
         resolve();

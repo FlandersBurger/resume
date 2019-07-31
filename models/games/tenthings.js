@@ -30,6 +30,8 @@ var TenThings = db.model('TenThings', {
       streak: { type: Number, required: false, default: 0 },
       playStreak: { type: Number, required: true, default: 0 },
       maxPlayStreak: { type: Number, required: true, default: 0 },
+      hintStreak: { type: Number, required: true, default: 0 },
+      maxHintStreak: { type: Number, required: true, default: 0 },
       lastPlayDate: { type: Date, required: false, default: new Date(2019, 5, 15).valueOf() }, //Date when lastPlayDate was implemented
       present: { type: Boolean, required: true, default: true }
     }
