@@ -1,6 +1,4 @@
 var db = require('../../db');
-var mongoose = require('mongoose');
-var Schema = mongoose.Schema;
 
 var TenThings = db.model('TenThings', {
   chat_id: { type: String, required: true },

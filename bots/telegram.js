@@ -66,6 +66,13 @@ function TelegramBot() {
     });
   };
 
+  bot.broadcast = function (channels, message) {
+    return Promise.all(channels.map(function (channel) {
+      return bot.sendMessage(channel, message)
+    }));
+  }
+
+
   bot.kick = function(channel, user, minutes) {
     if (!minutes) minutes = 1;
     var date = new Date();

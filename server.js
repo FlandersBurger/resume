@@ -1,17 +1,17 @@
-var express = require('express');
-var bodyParser = require('body-parser');
-var logger = require('morgan');
-var admin = require('firebase-admin');
-var websocket = require('./websockets');
+const express = require('express');
+const bodyParser = require('body-parser');
+const logger = require('morgan');
+const admin = require('firebase-admin');
+const websocket = require('./websockets');
 
-var serviceAccount = require('./keys/resume-172205-firebase-adminsdk-r34t7-0028c702be.json');
+const serviceAccount = require('./keys/resume-172205-firebase-adminsdk-r34t7-0028c702be.json');
 
 admin.initializeApp({
   credential: admin.credential.cert(serviceAccount),
   databaseURL: 'https://resume-172205.firebaseio.com'
 });
 
-var app = express();
+const app = express();
 app.use(bodyParser.json());
 app.use(logger('dev'));
 
@@ -28,9 +28,9 @@ app.use('/bots/tenthings', require('./controllers/bots/tenthings'));
 
 app.use(require('./controllers/static'));
 
-var port = process.env.PORT || 3000;
+const port = process.env.PORT || 3000;
 
-var server = app.listen(port, function () {
+const server = app.listen(port, function () {
   console.log('Server ', process.pid ,' listening on', port);
 });
 
