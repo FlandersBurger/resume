@@ -126,25 +126,20 @@ exports.getStats = function(chat_id, data, requestor) {
         break;
       case 'global':
         TenThings
-        .find()
+        .find({ 'players.present': true})
         .lean()
         .exec(function(err, games) {
           if (err) return console.error(err);
           var allPlayers = games.reduce(function(allPlayers, game, index) {
             return allPlayers.concat(game.players);
           }, []);
-          var highestScore, highestScoreDaily;
-          allPlayers.forEach(function(player) {
-            if (player.highScore > highestScore) {
-              highestScore = player.highScore
-            }
-            if (player.scoreDaily > highestScoreDaily) {
-              highestScoreDaily = player.scoreDaily
-            }
-          })
           message = '<b>Global Stats</b>\n';
-          message += 'Highest Overall Score: ' + highestScore + '\n';
-          message += 'Highest Score Today: ' + highestScoreDaily + '\n';
+          message += 'Highest Overall Score: ' + allPlayers.reduce(function(score, player) {
+            return score > player.highScore ? score : player.highScore;
+          }, 0) + '\n';
+          message += 'Highest Score Today: ' + allPlayers.reduce(function(score, player) {
+            return score > player.scoreDaily ? score : player.scoreDaily;
+          }, 0) + '\n';
           message += allPlayers.filter(function(player) {
             return player.scoreDaily;
           }).length + ' out of ' + allPlayers.length + ' players played today\n';

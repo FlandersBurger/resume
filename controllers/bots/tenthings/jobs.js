@@ -8,6 +8,25 @@ var bot = require('../../../bots/telegram');
 var List = require('../../../models/list');
 var TenThings = require('../../../models/games/tenthings');
 
+
+setTimeout(function() {
+  console.log('starting');
+    TenThings
+    .find({ 'players.scoreDaily': { $gt: 0 } })
+    .lean()
+    .exec(function(err, games) {
+      if (err) return console.error(err);
+        console.log('got the games');
+      var allPlayers = games.reduce(function(allPlayers, game, index) {
+        return allPlayers.concat(game.players.filter(function(player) {
+          return player.scoreDaily;
+        }));
+      }, []);
+      console.log(allPlayers);
+
+    });
+}, 5000);
+
 var newLists = schedule.scheduleJob('0 0 12 * * *', function() {
   if (new Date().getHours() === 12) {
     List.find({
