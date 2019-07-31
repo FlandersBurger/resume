@@ -22,8 +22,8 @@ module.exports = {
           {
             'text': 'Global Stats',
             'callback_data': JSON.stringify({
-              type: 'stats',
-              data: 'global'
+              type: 'stat',
+              id: 'global'
             })
           },
           {

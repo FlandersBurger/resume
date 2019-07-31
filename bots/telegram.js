@@ -72,7 +72,6 @@ function TelegramBot() {
     }));
   }
 
-
   bot.kick = function(channel, user, minutes) {
     if (!minutes) minutes = 1;
     var date = new Date();

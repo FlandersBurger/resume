@@ -30,34 +30,6 @@ module.exports = {
   guessed: function(match, player) {
     var message = '';
     message += '<b>' + player + ' got ' + match + '</b> ';
-    /*
-    var random = Math.floor(Math.random() * 7);
-    switch (random) {
-      case 0:
-        message += '<i>Like a boss</i>';
-        break;
-      case 1:
-        message += '<i>Oh yeah!</i>';
-        break;
-      case 2:
-        message += '<i></i>';
-        break;
-      case 3:
-        message += '<i></i>';
-        break;
-      case 4:
-        message += '<i></i>';
-        break;
-      case 5:
-        message += '<i></i>';
-        break;
-      case 6:
-        message += '<i></i>';
-        break;
-      default:
-        message += '<i></i>';
-    }
-    */
     return message;
   },
   alreadyGuessed: function(match, loser, winner) {
