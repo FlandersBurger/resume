@@ -140,9 +140,21 @@ exports.getStats = function(chat_id, data, requestor) {
           message += 'Highest Score Today: ' + allPlayers.reduce(function(score, player) {
             return score > player.scoreDaily ? score : player.scoreDaily;
           }, 0) + '\n';
+          message += 'Best Answer Streak: ' + allPlayers.reduce(function(score, player) {
+            return score > player.streak ? score : player.streak;
+          }, 0) + '\n';
+          message += 'Best Play Streak: ' + allPlayers.reduce(function(score, player) {
+            return score > player.maxPlayStreak ? score : player.maxPlayStreak;
+          }, 0) + '\n';
+          message += 'Best No Hint Streak: ' + allPlayers.reduce(function(score, player) {
+            return score > player.maxHintStreak ? score : player.maxHintStreak;
+          }, 0) + '\n';
           message += allPlayers.filter(function(player) {
             return player.scoreDaily;
           }).length + ' out of ' + allPlayers.length + ' players played today\n';
+          message += 'Collectively cycled through all lists ' + games.reduce(function(count, game) {
+            return count + game.cycles;
+          }, 0) + ' times\n';
           message += '\n';
           bot.sendMessage(game.chat_id, message);
         });
