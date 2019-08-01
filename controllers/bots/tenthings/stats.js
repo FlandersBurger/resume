@@ -149,10 +149,19 @@ exports.getStats = function(chat_id, data, requestor) {
           message += 'Best No Hint Streak: ' + allPlayers.reduce(function(score, player) {
             return player.maxHintStreak ? score > player.maxHintStreak ? score : player.maxHintStreak : score;
           }, 0) + '\n';
+          message += 'Answers Given: ' + allPlayers.reduce(function(count, player) {
+            return count + player.answers;
+          }, 0) + '\n';
+          message += 'Hints Asked: ' + allPlayers.reduce(function(count, player) {
+            return count + player.hints;
+          }, 0) + '\n';
+          message += 'Lists Skipped: ' + allPlayers.reduce(function(count, player) {
+            return count + player.skips;
+          }, 0) + '\n';
           message += allPlayers.filter(function(player) {
             return player.scoreDaily;
           }).length + ' out of ' + allPlayers.length + ' players played today\n';
-          message += 'Collectively cycled through all lists ' + games.reduce(function(count, game) {
+          message += 'Cycled through all lists ' + games.reduce(function(count, game) {
             return count + (game.cycles ? game.cycles : 0);
           }, 0) + ' times\n';
           message += '\n';
@@ -177,6 +186,15 @@ exports.getStats = function(chat_id, data, requestor) {
           }, 0) + '\n';
           message += 'Best No Hint Streak: ' + game.players.reduce(function(score, player) {
             return player.maxHintStreak ? score > player.maxHintStreak ? score : player.maxHintStreak : score;
+          }, 0) + '\n';
+          message += 'Answers Given: ' + game.players.reduce(function(count, player) {
+            return count + player.answers;
+          }, 0) + '\n';
+          message += 'Hints Asked: ' + game.players.reduce(function(count, player) {
+            return count + player.hints;
+          }, 0) + '\n';
+          message += 'Lists Skipped: ' + game.players.reduce(function(count, player) {
+            return count + player.skips;
           }, 0) + '\n';
           message += game.players.filter(function(player) {
             return player.scoreDaily;
