@@ -6,6 +6,7 @@ var TenThings = db.model('TenThings', {
   cycles: { type: Number, required: true, default: 0 },
   lastCycleDate: { type: Date, required: true, default: Date.now },
   guessers: [{ type: String, required: true }],
+  hinters: [{ type: String, required: true }],
   streak: {
     player: { type: String, required: false },
     count: { type: Number, required: false },

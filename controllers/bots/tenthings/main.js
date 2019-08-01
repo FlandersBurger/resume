@@ -275,7 +275,7 @@ function checkGuess(game, guess, msg) {
       var accuracy = (guess.match.distance * 100).toFixed(0) + '%';
       player.score += score;
       player.scoreDaily += score;
-      if (game.hints === 0) {
+      if (game.hints = 0 || !_.find(game.hinters, function(hinter) { return player.id === hinter; })) {
         player.hintStreak++;
       } else {
         player.hintStreak = 0;
@@ -393,6 +393,7 @@ function newRound(game) {
     game.list.totalValues = game.list.values.length;
     game.list.values = getRandom(game.list.values, 10);
     game.hints = 0;
+    game.hinters = [];
     game.hintCooldown = 0;
     game.guessers = [];
     var message = 'A new round will start in 3 seconds';
@@ -501,6 +502,9 @@ function countLetters(string) {
 }
 
 function hint(game, player, callback) {
+  if (!find(game.hinters, function(hinter) { return player.id === hinter; })) {
+    game.hinters.push(player.id);
+  }
   if (game.hints >= MAXHINTS) {
     bot.sendMessage(game.chat_id, 'What? Another hint? I\'m just gonna ignore that request');
   } else if (cooldowns[game.id] && cooldowns[game.id] > 0) {
@@ -521,7 +525,6 @@ function hint(game, player, callback) {
     }, ''));
     cooldowns[game.id] = 10;
     cooldownHint(game.id);
-    game.save();
     List.findOne({ _id: game.list._id }).exec(function (err, list) {
       if (!list.hints) {
         list.hints = 0;
@@ -530,6 +533,7 @@ function hint(game, player, callback) {
       list.save();
     });
   }
+  game.save();
 }
 
 function getHint(hints, value) {
