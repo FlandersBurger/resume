@@ -502,7 +502,7 @@ function countLetters(string) {
 }
 
 function hint(game, player, callback) {
-  if (!find(game.hinters, function(hinter) { return player.id === hinter; })) {
+  if (!_.find(game.hinters, function(hinter) { return player.id === hinter; })) {
     game.hinters.push(player.id);
   }
   if (game.hints >= MAXHINTS) {
