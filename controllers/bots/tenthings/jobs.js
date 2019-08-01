@@ -4,6 +4,7 @@ var moment = require('moment');
 
 var config = require('../../../config');
 var bot = require('../../../bots/telegram');
+var stats = require('./stats');
 
 var List = require('../../../models/list');
 var TenThings = require('../../../models/games/tenthings');
