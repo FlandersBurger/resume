@@ -275,7 +275,7 @@ function checkGuess(game, guess, msg) {
       var accuracy = (guess.match.distance * 100).toFixed(0) + '%';
       player.score += score;
       player.scoreDaily += score;
-      if (game.hints = 0 || !_.find(game.hinters, function(hinter) { return player.id === hinter; })) {
+      if (game.hints === 0 || !_.find(game.hinters, function(hinter) { return player.id === hinter; })) {
         player.hintStreak++;
       } else {
         player.hintStreak = 0;
