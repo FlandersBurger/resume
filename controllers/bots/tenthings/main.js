@@ -502,14 +502,16 @@ function countLetters(string) {
 }
 
 function hint(game, player, callback) {
-  if (!_.find(game.hinters, function(hinter) { return player.id === hinter; })) {
-    game.hinters.push(player.id);
-  }
   if (game.hints >= MAXHINTS) {
     bot.sendMessage(game.chat_id, 'What? Another hint? I\'m just gonna ignore that request');
   } else if (cooldowns[game.id] && cooldowns[game.id] > 0) {
     bot.sendMessage(game.chat_id, 'Calm down with the hints, wait ' + cooldowns[game.id] + ' more seconds');
   } else {
+    if (!game.hinters) {
+      game.hinters = [player.id];
+    } else if (!_.find(game.hinters, function(hinter) { return player.id === hinter; })) {
+      game.hinters.push(player.id);
+    }
     game.hints++;
     if (player) {
       player.hints++;
@@ -525,6 +527,7 @@ function hint(game, player, callback) {
     }, ''));
     cooldowns[game.id] = 10;
     cooldownHint(game.id);
+    game.save();
     List.findOne({ _id: game.list._id }).exec(function (err, list) {
       if (!list.hints) {
         list.hints = 0;
@@ -533,7 +536,6 @@ function hint(game, player, callback) {
       list.save();
     });
   }
-  game.save();
 }
 
 function getHint(hints, value) {
@@ -771,16 +773,15 @@ router.post('/', function (req, res, next) {
   if (msg.command.indexOf('@') >= 0) {
     msg.command = msg.command.substring(0, msg.command.indexOf('@'));
   }
-      console.log(msg);
   try {
-        if (!msg.from.id) {
-          console.log(req.body.message);
-          return res.sendStatus(200);
-        }
-  } catch (e) {
-      console.error(e);
+    if (!msg.from.id) {
       console.log(req.body.message);
       return res.sendStatus(200);
+    }
+  } catch (e) {
+    console.error(e);
+    console.log(req.body.message);
+    return res.sendStatus(200);
   }
   TenThings.findOne({
     chat_id: msg.chat.id
