@@ -274,10 +274,8 @@ function checkGuess(game, guess, msg) {
       var accuracy = (guess.match.distance * 100).toFixed(0) + '%';
       player.score += score;
       player.scoreDaily += score;
-      if (game.hints === 0 || !_.find(game.hinters, function(hinter) { return player.id === hinter; })) {
+      if (game.hints === 0) {
         player.hintStreak++;
-      } else {
-        player.hintStreak = 0;
       }
       if (!game.streak || game.streak.player != player.id) {
         game.streak = {
@@ -392,7 +390,6 @@ function newRound(game) {
     game.list.totalValues = game.list.values.length;
     game.list.values = getRandom(game.list.values, 10);
     game.hints = 0;
-    game.hinters = [];
     game.hintCooldown = 0;
     game.guessers = [];
     var message = 'A new round will start in 3 seconds';
@@ -506,14 +503,10 @@ function hint(game, player, callback) {
   } else if (cooldowns[game.id] && cooldowns[game.id] > 0) {
     bot.sendMessage(game.chat_id, 'Calm down with the hints, wait ' + cooldowns[game.id] + ' more seconds');
   } else {
-    if (!game.hinters) {
-      game.hinters = [player.id];
-    } else if (!_.find(game.hinters, function(hinter) { return player.id === hinter; })) {
-      game.hinters.push(player.id);
-    }
     game.hints++;
     if (player) {
       player.hints++;
+      player.hintStreak = 0;
     }
     callback(game.list.values.reduce(function(str, item, index) {
       if (!item.guesser.first_name) {
