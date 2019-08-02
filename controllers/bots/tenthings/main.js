@@ -17,7 +17,6 @@ var List = require('../../../models/list');
 var TenThings = require('../../../models/games/tenthings');
 
 var MAXHINTS = 6;
-var SUPERGROUP = '-1001394022777';
 var SPECIAL_CHARACTERS = "\\\\/ !?@#$%^&*()_+:.{},;\\-'``\"";
 
 var cooldowns = {};
@@ -42,7 +41,7 @@ var skips = {};
       );
 */
 /*
-  bot.getChatMember(SUPERGROUP, config.masterChat)
+  bot.getChatMember(config.groupChat, config.masterChat)
   .then(function(present) {
     console.log(present);
   });*/
@@ -104,8 +103,8 @@ queue.on('job complete', function(id, result){
 TenThings.find()
 .then(function(games) {
   games.forEach(function(game) {
-    if (game.chat_id !== SUPERGROUP) {
-      bot.sendMessage(game.chat_id, 'Come join us in the <a href="https://t.me/tenthings">Ten Things Supergroup</a>!');
+    if (game.chat_id !== config.groupChat) {
+      bot.sendMessage(game.chat_id, 'Come join us in the <a href="https://t.me/tenthings">Ten Things config.groupChat</a>!');
     }
   });
 });

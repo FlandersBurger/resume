@@ -124,7 +124,7 @@ var dailyScore = schedule.scheduleJob('0 0 0 * * *', function() {
               message += winner.first_name;
               setTimeout(function() {
                 bot.sendMessage(game.chat_id, '<b>' + message + ' won with ' + highScore + ' points!</b>');
-                if (game.chat_id !== SUPERGROUP) {
+                if (game.chat_id != config.groupChat) {
                   bot.sendMessage(game.chat_id, 'Come join us in the <a href="https://t.me/tenthings">Ten Things Supergroup</a>!');
                 }
                 TenThings.update(
