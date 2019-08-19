@@ -1,34 +1,46 @@
-var schedule = require('node-schedule');
-var _ = require('underscore');
-var moment = require('moment');
+const schedule = require('node-schedule');
+const _ = require('underscore');
+const moment = require('moment');
+const config = require('../../../config)';
+const bot = require('../../../bots/telegram)';
+const stats = require('./stats');
+const List = require('../../../models/list');
+const TenThings = require('../../../models/games/tenthings');
+/*
+TenThings.find()
+.then(function(games) {
+  games.forEach(function(game, index) {
+    setTimeout(function() {
+      Promise.all(game.players.map(function(player, index) {
+        return isPlayerPresent(game.chat_id, player.id, index);
+      })).then(function(absentPlayers) {
+        for (var i = 0; i < game.players.length; i++) {
+          if (absentPlayers.indexOf(game.players[i].id) >= 0) {
+            console.log(game.chat_id, game.players[i].first_name);
+            game.players[i].present = false;
+          }
+        }
+        //game.save();
+      });
+    }, index * 10)
+  });
+});
 
-var config = require('../../../config');
-var bot = require('../../../bots/telegram');
-var stats = require('./stats');
+function isPlayerPresent(channel, player, index) {
+  return new Promise(function(resolve, reject) {
+    setTimeout(function() {
+      bot.getChatMember(channel, player)
+      .then(function(chatMember) {
+        resolve()
+      }, function(err) {
+        resolve(player)
+      });
+    }, index * 10)
+  });
+}*/
 
-var List = require('../../../models/list');
-var TenThings = require('../../../models/games/tenthings');
 
-
-setTimeout(function() {
-  console.log('starting');
-    TenThings
-    .find({ 'players.scoreDaily': { $gt: 0 } })
-    .lean()
-    .exec(function(err, games) {
-      if (err) return console.error(err);
-        console.log('got the games');
-      var allPlayers = games.reduce(function(allPlayers, game, index) {
-        return allPlayers.concat(game.players.filter(function(player) {
-          return player.scoreDaily;
-        }));
-      }, []);
-      console.log(allPlayers);
-
-    });
-}, 5000);
-
-var newLists = schedule.scheduleJob('0 0 12 * * *', function() {
+const newLists = schedule.scheduleJob('0 0 12 * * *', () => {
   if (new Date().getHours() === 12) {
     List.find({
       $or: [
@@ -37,30 +49,24 @@ var newLists = schedule.scheduleJob('0 0 12 * * *', function() {
         }
       ]
     })
-    .then(function(lists) {
+    .then(lists => {
       if (lists.length > 0) {
-        var message = '<b>New lists created today</b>';
-        lists.forEach(function(list) {
-          message += '\n- ' + list.name;
+        let message = '<b>New lists created today</b>';
+        lists.forEach(({name}) => {
+          message += `\n- ${name}`;
         });
         TenThings.find({}).select('chat_id')
-        .then(function(games) {
-          bot.notifyAll(games.filter(function(game) {
-            return !_.find(bot.getAdmins(), function(admin) {
-              return admin === game.chat_id;
-            });
-          }).map(function(game) {
-            return game.chat_id;
-          }), message);
+        .then(games => {
+          bot.notifyAll(games.filter(({chat_id}) => !_.find(bot.getAdmins(), admin => admin === chat_id)).map(({chat_id}) => chat_id), message);
         });
       }
     });
   } else {
-    bot.notifyAdmin('New lists incorrectly triggered: ' + moment().format("DD-MMM-YYYY hh:mm"));
+    bot.notifyAdmin(`New lists incorrectly triggered: ${moment().format('DD-MMM-YYYY hh:mm')}`);
   }
 });
 
-var modifiedLists = schedule.scheduleJob('0 5 12 * * *', function() {
+const modifiedLists = schedule.scheduleJob('0 5 12 * * *', () => {
   if (new Date().getHours() === 12) {
     List.find({
       $or: [
@@ -70,60 +76,54 @@ var modifiedLists = schedule.scheduleJob('0 5 12 * * *', function() {
         }
       ]
     })
-    .then(function(lists) {
+    .then(lists => {
       if (lists.length > 0) {
-        var message = '<b>Lists updated today</b>';
-        lists.forEach(function(list) {
-          message += '\n- ' + list.name;
+        let message = '<b>Lists updated today</b>';
+        lists.forEach(({name}) => {
+          message += `\n- ${name}`;
         });
         TenThings.find({}).select('chat_id')
-        .then(function(games) {
-          bot.notifyAll(games.filter(function(game) {
-            return !_.find(bot.getAdmins(), function(admin) {
-              return admin === game.chat_id;
-            });
-          }).map(function(game) {
-            return game.chat_id;
-          }), message);
+        .then(games => {
+          bot.notifyAll(games.filter(({chat_id}) => !_.find(bot.getAdmins(), admin => admin === chat_id)).map(({chat_id}) => chat_id), message);
         });
       }
     });
   } else {
-    bot.notifyAdmin('New lists incorrectly triggered: ' + moment().format("DD-MMM-YYYY hh:mm"));
+    bot.notifyAdmin(`New lists incorrectly triggered: ${moment().format('DD-MMM-YYYY hh:mm')}`);
   }
 });
 //bot.sendPhoto(config.masterChat, 'https://m.media-amazon.com/images/M/MV5BNmE1OWI2ZGItMDUyOS00MmU5LWE0MzUtYTQ0YzA1YTE5MGYxXkEyXkFqcGdeQXVyMDM5ODIyNw@@._V1._SX40_CR0,0,40,54_.jpg')
 
 //var dailyScore = schedule.scheduleJob('*/10 * * * * *', function() {
-var dailyScore = schedule.scheduleJob('0 0 0 * * *', function() {
+const dailyScore = schedule.scheduleJob('0 0 0 * * *', () => {
   if (new Date().getHours() === 0) {
-    bot.notifyAdmin('Score Reset Triggered; ' + moment().format('DD-MMM-YYYY'));
+    bot.notifyAdmin(`Score Reset Triggered; ${moment().format('DD-MMM-YYYY')}`);
     TenThings.find({ 'players.scoreDaily': { $gt: 0 }})
-    .then(function(games) {
-      var uniquePlayers = [];
-      var players = games.reduce(function(players, game) {
+    .then(games => {
+      const uniquePlayers = [];
+      const players = games.reduce((amountOfPlayers, game) => {
         stats.getDailyScores(game);
-        var getHighScore = new Promise(function(resolve, reject) {
-          resolve(game.players.reduce(function(highScore, player) {
-            if (uniquePlayers.indexOf(player.id) < 0) {
-              uniquePlayers.push(player.id);
+        const getHighScore = new Promise((resolve, reject) => {
+          resolve(game.players.reduce((highScore, {id, scoreDaily}) => {
+            if (!uniquePlayers.includes(id) && scoreDaily > 0) {
+              uniquePlayers.push(id);
             }
-            return (player.scoreDaily > highScore) ? player.scoreDaily : highScore;
+            return (scoreDaily > highScore) ? scoreDaily : highScore;
           }, 0));
         });
-        getHighScore.then(function(highScore) {
-          var message = '';
-          var winners = [];
-          game.players.filter(function(player) {
-            return player.scoreDaily === highScore;
-          }).forEach(function(winner, index, array) {
-            winners.push(winner._id);
-            if (index < array.length - 1) {
-              message += winner.first_name + ' & ';
+        getHighScore.then(highScore => {
+          let message = '';
+          const winners = [];
+          game.players
+          .filter(({scoreDaily}) => scoreDaily === highScore)
+          .forEach(({_id, first_name}, index, {length}) => {
+            winners.push(_id);
+            if (index < length - 1) {
+              message += `${first_name} & `;
             } else {
-              message += winner.first_name;
-              setTimeout(function() {
-                bot.sendMessage(game.chat_id, '<b>' + message + ' won with ' + highScore + ' points!</b>');
+              message += first_name;
+              setTimeout(() => {
+                bot.sendMessage(game.chat_id, `<b>${message} won with ${highScore} points!</b>`);
                 if (game.chat_id != config.groupChat) {
                   bot.sendMessage(game.chat_id, 'Come join us in the <a href="https://t.me/tenthings">Ten Things Supergroup</a>!');
                 }
@@ -150,57 +150,54 @@ var dailyScore = schedule.scheduleJob('0 0 0 * * *', function() {
                       { 'idler.scoreDaily': 0 }
                     ]
                   },
-                  function(err, saved) {
-                    console.log('Win recorded for ' + winners);
+                  (err, saved) => {
+                    console.log(`Win recorded for ${winners}`);
                   }
                 );
               }, index * 50);
             }
           });
         });
-        return players + game.players.length;
+        return amountOfPlayers + game.players.filter(({scoreDaily}) => scoreDaily).length;
       }, 0);
-      bot.notifyAdmins(games.length + ' games played today with ' + players + ' players of which ' + uniquePlayers.length + ' unique');
-    }, function(err) {
+      bot.notifyAdmins(`${games.length} games played today with ${players} players of which ${uniquePlayers.length} unique`);
+    }, err => {
       console.error(err);
-      bot.notifyAdmin('Update daily score error\n' + err);
+      bot.notifyAdmin(`Update daily score error\n${err}`);
     });
   } else {
-    bot.notifyAdmin('Schedule incorrectly triggered: ' + moment().format('DD-MMM-YYYY hh:mm'));
+    bot.notifyAdmin(`Schedule incorrectly triggered: ${moment().format('DD-MMM-YYYY hh:mm')}`);
   }
   //Delete stale games
   TenThings.find({ 'players.highScore': { $gt: 0 } })
-  .then(function(games) {
-    var ids = games.map(function(game) {
-      return game._id;
-    });
+  .then(games => {
+    const ids = games.map(({_id}) => _id);
     if (ids.length > 0) {
       TenThings.find({ '_id': { $nin: ids }, 'date': { $lt: moment().subtract(30, 'days') } })
-      .then(function(staleGames) {
-        staleGames.forEach(function(game) {
+      .then(staleGames => {
+        staleGames.forEach(game => {
           game.remove();
         });
-        if (staleGames.length > 0) bot.notifyAdmin(staleGames.length + ' stale games deleted');
+        if (staleGames.length > 0) bot.notifyAdmin(`${staleGames.length} stale games deleted`);
       });
     }
   });
 });
 
 
-var playStreak = schedule.scheduleJob('0 0 1 * * *', function() {
+const playStreak = schedule.scheduleJob('0 0 1 * * *', () => {
   //Update play streaks
   TenThings.find({ 'players.playStreak': { $gt: 0 } })
   .select('players.playStreak players.maxPlayStreak')
-  .then(function(games) {
-    if (games.length > 0) bot.notifyAdmin(games.length + ' game streaks updated');
-    games.forEach(function(game) {
-      for (var i = 0; i < game.players.length; i++) {
-        var player = game.players[i];
+  .then(games => {
+    if (games.length > 0) bot.notifyAdmin(`${games.length} game streaks updated`);
+    games.forEach(game => {
+      for (const player of game.players) {
         if (player.playStreak > player.maxPlayStreak) {
           player.maxPlayStreak = player.playStreak;
         }
       }
-      game.save(function(err, saved, rows) {
+      game.save((err, saved, rows) => {
         if (err) console.error(err);
       });
     });

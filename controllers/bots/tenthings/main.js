@@ -1,26 +1,23 @@
-var router = require('express').Router();
-var _ = require('underscore');
-var FuzzyMatching = require('fuzzy-matching');
-var kue = require('kue');
-var moment = require('moment');
-var request = require('request');
+const router = require('express').Router();
+const _ = require('underscore');
+const FuzzyMatching = require('fuzzy-matching');
+const kue = require('kue');
+const moment = require('moment');
+const request = require('request');
+const config = require('../../../config');
+const bot = require('../../../bots/telegram');
+const messages = require('./messages');
+const keyboards = require('./keyboards');
+const stats = require('./stats');
+const jobs = require('./jobs');
+const List = require('../../../models/list');
+const TenThings = require('../../../models/games/tenthings');
 
-var config = require('../../../config');
-var bot = require('../../../bots/telegram');
+const MAXHINTS = 6;
+const SPECIAL_CHARACTERS = "\\\\/ !?@#$%^&*()_+:.{},;\\-'``\"";
 
-var messages = require('./messages');
-var keyboards = require('./keyboards');
-var stats = require('./stats');
-var jobs = require('./jobs');
-
-var List = require('../../../models/list');
-var TenThings = require('../../../models/games/tenthings');
-
-var MAXHINTS = 6;
-var SPECIAL_CHARACTERS = "\\\\/ !?@#$%^&*()_+:.{},;\\-'``\"";
-
-var cooldowns = {};
-var skips = {};
+const cooldowns = {};
+const skips = {};
 /*
       TenThings.update(
         {},
@@ -45,36 +42,36 @@ var skips = {};
   .then(function(present) {
     console.log(present);
   });*/
-  /*
+/*
 TenThings.find({}).select('chat_id players').exec(function(err, games) {
 
-  games.forEach(function(game, gameIndex) {
-      game.players.forEach(function(player, index, array) {
-        setTimeout(function() {
-          bot.getChatMember(game.chat_id, player.id)
-          .then(function(present) {
-            if (present) {
-              console.log(player.first_name + ' present');
-              player.present = true;
-            } else {
-              console.log(player.first_name + ' absent');
-              player.present = false;
-            }
-            if (index === array.length - 1) {
-              game.save(function(err, saved) {
-                if (err) return console.error(err);
-              });
-            }
-          }, function(error) {
-            console.error(error);
-          });
-        }, index * 50 * gameIndex);
-      });
-  });
+games.forEach(function(game, gameIndex) {
+    game.players.forEach(function(player, index, array) {
+      setTimeout(function() {
+        bot.getChatMember(game.chat_id, player.id)
+        .then(function(present) {
+          if (present) {
+            console.log(player.first_name + ' present');
+            player.present = true;
+          } else {
+            console.log(player.first_name + ' absent');
+            player.present = false;
+          }
+          if (index === array.length - 1) {
+            game.save(function(err, saved) {
+              if (err) return console.error(err);
+            });
+          }
+        }, function(error) {
+          console.error(error);
+        });
+      }, index * 50 * gameIndex);
+    });
+});
 
 });
 */
-var queue = kue.createQueue({
+const queue = kue.createQueue({
   redis: {
     port: config.redis.port,
     host: 'localhost',
@@ -149,18 +146,16 @@ bot.exportChatInviteLink('-1001394022777').then(function(chat) {
 function selectList(game, callback) {
   List.find({ _id: { $nin: game.playedLists } })
   .populate('creator')
-  .exec(function (err, lists) {
+  .exec((err, lists) => {
     if (err) return notifyAdmin(JSON.stringify(err));
     if (lists.length === 0) {
       game.playedLists = [];
       game.cycles++;
       game.lastCycleDate = moment();
-      game.save(function (err) {
+      game.save(err => {
         if (err) return bot.notifyAdmin(JSON.stringify(err));
         bot.sendMessage(game.chat_id, 'All lists have been played, a new cycle will now start.');
-        List.find({}).populate('creator').exec(function (err, lists) {
-          return callback(lists[Math.floor(Math.random() * lists.length)]);
-        });
+        List.find({}).populate('creator').exec((err, lists) => callback(lists[Math.floor(Math.random() * lists.length)]));
       });
     } else {
       return callback(lists[Math.floor(Math.random() * lists.length)]);
@@ -170,11 +165,11 @@ function selectList(game, callback) {
 
 
 function createGame(id, creator) {
-  var game = new TenThings({
+  const game = new TenThings({
     chat_id: id,
     players: [creator]
   });
-  game.save(function (err) {
+  game.save(err => {
   if (err) return console.error(err);
     console.log('Game Saved!');
     return game;
@@ -193,53 +188,51 @@ bot.sendKeyboard(config.masterChat, 'test', {
 });
 */
 function rateList(game) {
-  bot.sendKeyboard(game.chat_id, 'Did you like ' + '<b>' + game.list.name + '</b>?', keyboards.like(game));
+  bot.sendKeyboard(game.chat_id, `Did you like <b>${game.list.name}</b>?`, keyboards.like(game));
 }
 
-function queueGuess(game, msg) {
-  var fuzzyMatch = new FuzzyMatching(game.list.values.map(function(item) { return item.value.replace(new RegExp('[' + SPECIAL_CHARACTERS + ']', 'gi'), ''); }));
-  var guess = {
-    game: game.chat_id,
-    msg: msg,
-    match: fuzzyMatch.get(msg.text.replace(new RegExp('[' + SPECIAL_CHARACTERS + ']', 'gi'), ''))
+function queueGuess({list, chat_id}, msg) {
+  const fuzzyMatch = new FuzzyMatching(list.values.map(({value}) => value.replace(new RegExp(`[${SPECIAL_CHARACTERS}]`, 'gi'), '')));
+  const guess = {
+    game: chat_id,
+    msg,
+    match: fuzzyMatch.get(msg.text.replace(new RegExp(`[${SPECIAL_CHARACTERS}]`, 'gi'), ''))
   };
-  guess.match.index = _.findIndex(game.list.values, function(item) {
-    return item.value.replace(new RegExp('[' + SPECIAL_CHARACTERS + ']', 'gi'), '') === guess.match.value;
-  });
+  guess.match.index = _.findIndex(list.values, ({value}) => value.replace(new RegExp(`[${SPECIAL_CHARACTERS}]`, 'gi'), '') === guess.match.value);
   if (guess.match.distance >= 0.9) {
     queueingGuess(guess);
   } else if (guess.match.distance >= 0.75) {
-    setTimeout(function() {
+    setTimeout(() => {
       queueingGuess(guess);
     }, 2000);
   }
 }
 
 function queueingGuess(guess) {
-  queue.create('guess', guess).removeOnComplete( true ).save(function(err) {
-    if( !err ) console.log(guess.game + ' - Guess evaluated: "' + guess.msg.text + '" by '+ guess.msg.from.first_name);
+  queue.create('guess', guess).removeOnComplete( true ).save(err => {
+    if( !err ) console.log(`${guess.game} - Guess evaluated: "${guess.msg.text}" by ${guess.msg.from.first_name}`);
   });
 }
 
-queue.process('guess', function(guess, done) {
-  processGuess(guess.data)
-  .then(function() {
+queue.process('guess', ({data}, done) => {
+  processGuess(data)
+  .then(() => {
     done();
-  }, function() {
+  }, () => {
     done();
   });
 });
 
 function processGuess(guess) {
-  return new Promise(function(resolve, reject) {
+  return new Promise((resolve, reject) => {
     TenThings.findOne({ chat_id: guess.game })
     .populate('list.creator')
-    .exec(function(err, game) {
+    .exec((err, game) => {
       if (err) return reject();
       checkGuess(game, guess, guess.msg)
-      .then(function() {
+      .then(() => {
         resolve();
-      }, function() {
+      }, () => {
         reject();
       });
     });
@@ -247,31 +240,27 @@ function processGuess(guess) {
 }
 
 function checkGuess(game, guess, msg) {
-  return new Promise(function(resolve, reject) {
+  return new Promise((resolve, reject) => {
     if (skips[game.id]) {
       delete skips[game.id];
-      bot.sendMessage(msg.chat.id, 'Skip vetoed by ' + msg.from.first_name + ' giving a correct answer');
+      bot.sendMessage(msg.chat.id, `Skip vetoed by ${msg.from.first_name} giving a correct answer`);
     }
-    if (!_.some(game.guessers, function(guesser) {
-      return guesser == msg.from.id;
-    })) {
+    if (!_.some(game.guessers, guesser => guesser == msg.from.id)) {
       game.guessers.push(msg.from.id);
     }
-    var match = game.list.values[guess.match.index];
-    var player = _.find(game.players, function(existingPlayer) {
-      return existingPlayer.id == msg.from.id;
-    });
+    const match = game.list.values[guess.match.index];
+    const player = _.find(game.players, ({id}) => id == msg.from.id);
     if (!player) {
       bot.notifyAdmin(JSON.stringify(guess));
-      console.error('Something wrong with this guess:\n' + JSON.stringify(guess));
+      console.error(`Something wrong with this guess:\n${JSON.stringify(guess)}`);
       return resolve();
     }
     if (!match.guesser.first_name) {
       match.guesser = msg.from;
       player.answers++;
       player.lastPlayDate = moment();
-      var score = Math.round((MAXHINTS - game.hints + game.guessers.length) * (guess.match.distance - 0.6) * 2.5);
-      var accuracy = (guess.match.distance * 100).toFixed(0) + '%';
+      const score = Math.round((MAXHINTS - game.hints + game.guessers.length) * (guess.match.distance - 0.6) * 2.5);
+      const accuracy = `${(guess.match.distance * 100).toFixed(0)}%`;
       player.score += score;
       player.scoreDaily += score;
       if (game.hints === 0) {
@@ -295,18 +284,16 @@ function checkGuess(game, guess, msg) {
         player.maxHintStreak = player.hintStreak;
       }
       if (match.blurb) {
-        guessed(game, player, msg, match.value, (match.blurb.substring(0, 4) === 'http' ? ('<a href="' + match.blurb + '">&#8204;</a>') : ('\n<i>' + match.blurb + '</i>')), score, accuracy);
+        guessed(game, player, msg, match.value, (match.blurb.substring(0, 4) === 'http' ? (`<a href="${match.blurb}">&#8204;</a>`) : (`\n<i>${match.blurb}</i>`)), score, accuracy);
       } else {
-        request('https://en.wikipedia.org/w/api.php?action=opensearch&search=' + encodeURIComponent(match.value), function (err, response, body) {
+        request(`https://en.wikipedia.org/w/api.php?action=opensearch&search=${encodeURIComponent(match.value)}`, (err, response, body) => {
           if (err) {
             guessed(game, player, msg, match.value, '', score, accuracy);
           } else {
             try {
-              var results = JSON.parse(body)[2].filter(function(result) {
-                return result && result.indexOf('refer to:') < 0 && result.indexOf('refers to:') < 0;
-              });
+              const results = JSON.parse(body)[2].filter(result => result && !result.includes('refer to:') && !result.includes('refers to:'));
               if (results.length > 0) {
-                guessed(game, player, msg, match.value, '\nRandom Wiki:\n<i>' + results[0/*Math.floor(Math.random()*results.length)*/] + '</i>', score, accuracy);
+                guessed(game, player, msg, match.value, `\nRandom Wiki:\n<i>${results[0/*Math.floor(Math.random()*results.length)*/]}</i>`, score, accuracy);
               } else {
                 guessed(game, player, msg, match.value, '', score, accuracy);
               }
@@ -316,14 +303,12 @@ function checkGuess(game, guess, msg) {
           }
         });
       }
-      setTimeout(function() {
-        return checkRound(game);
-      }, 200);
+      setTimeout(() => checkRound(game), 200);
     } else {
       player.snubs++;
       bot.sendMessage(msg.chat.id, messages.alreadyGuessed(match.value, msg.from, match.guesser));
     }
-    game.save(function(err, savedGame) {
+    game.save((err, savedGame) => {
       if (err) {
         bot.notifyAdmin(JSON.stringify(err));
         return reject();
@@ -333,36 +318,34 @@ function checkGuess(game, guess, msg) {
   });
 }
 
-function guessed(game, player, msg, value, blurb, score, accuracy) {
-  var message = messages.guessed(value, msg.from.first_name);
-  message += messages.streak(game.streak.count);
+function guessed({streak, list}, {scoreDaily}, {from, chat}, value, blurb, score, accuracy) {
+  let message = messages.guessed(value, from.first_name);
+  message += messages.streak(streak.count);
   message += blurb;
-  message += '\n<pre>' + (player.scoreDaily - score) + ' + ' + score + ' points (' + accuracy + ')</pre>';
-  var answersLeft = game.list.values.filter(function(item) { return !item.guesser.first_name; }).length;
+  message += `\n<pre>${scoreDaily - score} + ${score} points (${accuracy})</pre>`;
+  const answersLeft = list.values.filter(({guesser}) => !guesser.first_name).length;
   if (answersLeft > 0) {
-    message += '\n' + answersLeft + ' answer' + (answersLeft > 1 ? 's' : '') + ' left.';
+    message += `\n${answersLeft} answer${answersLeft > 1 ? 's' : ''} left.`;
   } else {
     message += '\nRound over.';
   }
-  bot.sendMessage(msg.chat.id, message);
+  bot.sendMessage(chat.id, message);
 }
 
 function checkRound(game) {
-  if (game.list.values.filter(function(item) {
-    return !item.guesser.first_name;
-  }).length === 0) {
-    setTimeout(function () {
-      getList(game, function(list) {
-        List.findOne({ _id: game.list._id }).exec(function(err, foundList) {
-          var message = '<b>' + game.list.name + '</b> by ' + game.list.creator.username + '\n';
-          message += game.list.category ? 'Category: ' + game.list.category + '\n' : '';
+  if (game.list.values.filter(({guesser}) => !guesser.first_name).length === 0) {
+    setTimeout(() => {
+      getList(game, list => {
+        List.findOne({ _id: game.list._id }).exec((err, foundList) => {
+          let message = `<b>${game.list.name}</b> by ${game.list.creator.username}\n`;
+          message += game.list.category ? `Category: ${game.list.category}\n` : '';
           message += list;
           message += messages.listStats(foundList);
           bot.sendMessage(game.chat_id, message);
-          setTimeout(function () {
+          setTimeout(() => {
             stats.getDailyScores(game, 5);
             rateList(game);
-            setTimeout(function() {
+            setTimeout(() => {
               newRound(game);
             }, 1000);
           }, 2000);
@@ -373,12 +356,12 @@ function checkRound(game) {
 }
 
 function newRound(game) {
-  selectList(game, function(list) {
+  selectList(game, list => {
     list.plays++;
     list.save();
-    for (var i in game.guessers) {
+    for (const i in game.guessers) {
       if (game.players.length > 0) {
-        for (var j in game.players) {
+        for (const j in game.players) {
           if (game.players[j].id == game.guessers[i]) {
             game.players[j].lists++;
             break;
@@ -392,12 +375,12 @@ function newRound(game) {
     game.hints = 0;
     game.hintCooldown = 0;
     game.guessers = [];
-    var message = 'A new round will start in 3 seconds';
-    message += game.list.category ? '\nCategory: <b>' + game.list.category + '</b>' : '';
+    let message = 'A new round will start in 3 seconds';
+    message += game.list.category ? `\nCategory: <b>${game.list.category}</b>` : '';
     bot.sendMessage(game.chat_id, message);
-    setTimeout(function() {
-      var message = '<b>' + game.list.name + '</b> (' + game.list.totalValues + ') by ' + game.list.creator.username;
-      message += game.list.description ? '\n<i>' + angleBrackets(game.list.description) + '</i>' : '';
+    setTimeout(() => {
+      let message = `<b>${game.list.name}</b> (${game.list.totalValues}) by ${game.list.creator.username}`;
+      message += game.list.description ? `\n<i>${angleBrackets(game.list.description)}</i>` : '';
       bot.sendMessage(game.chat_id, message);
     }, 3000);
     game.playedLists.push(game.list._id);
@@ -409,17 +392,17 @@ function angleBrackets(str) {
   return str.replace('<','&lt;').replace('>','&gt;');
 }
 
-  /*
-  var string = 'The qui-ck bro"wn f\'ox jump+ed over the lazy dog';
-  //string = 'TERA';
-  console.log(getHint(0, string));
-  console.log(getHint(1, string));
-  console.log(getHint(2, string));
-  console.log(getHint(3, string));
-  console.log(getHint(4, string));
-  console.log(getHint(5, string));
-  console.log(getHint(6, string));
-  */
+/*
+var string = 'The qui-ck bro"wn f\'ox jump+ed over the lazy dog';
+//string = 'TERA';
+console.log(getHint(0, string));
+console.log(getHint(1, string));
+console.log(getHint(2, string));
+console.log(getHint(3, string));
+console.log(getHint(4, string));
+console.log(getHint(5, string));
+console.log(getHint(6, string));
+*/
 
 function skip(game, skipper) {
   if (skips[game.id] && skips[game.id].player !== skipper) {
@@ -427,7 +410,7 @@ function skip(game, skipper) {
   } else if (skips[game.id] && skips[game.id].player === skipper) {
     bot.sendMessage(game.chat_id, 'Get someone else to confirm your skip request!');
   } else {
-    bot.sendMessage(game.chat_id, 'Skipping <b>' + game.list.name + '</b> in 15 seconds.\nType /veto to cancel or /skip to confirm.');
+    bot.sendMessage(game.chat_id, `Skipping <b>${game.list.name}</b> in 15 seconds.\nType /veto to cancel or /skip to confirm.`);
     skips[game.id] = {
       timer: 15,
       player: skipper
@@ -437,29 +420,29 @@ function skip(game, skipper) {
 }
 
 function skipList(game, skipper) {
-  game.list.values.forEach(function(item, index) {
-    if (!item.guesser.first_name) {
+  game.list.values.forEach(function({guesser}, index) {
+    if (!guesser.first_name) {
       this[index].guesser.first_name = 'Not guessed';
     }
   }, game.list.values);
-  game.players.forEach(function(player, index) {
+  game.players.forEach(function({id}, index) {
     //Hint streaks will be reset for people that skipped the list
-    if (player.id === skips[game.id].player || player.id === skipper) {
+    if (id === skips[game.id].player || id === skipper) {
       this[index].hintStreak = 0;
     }
   }, game.players);
-  getList(game, function(list) {
-    var message = '<b>' + game.list.name + '</b> skipped!\n';
+  getList(game, list => {
+    let message = `<b>${game.list.name}</b> skipped!\n`;
     message += list;
     bot.sendMessage(game.chat_id, message);
     delete skips[game.id];
-    List.findOne({ _id: game.list._id }).exec(function (err, foundList) {
+    List.findOne({ _id: game.list._id }).exec((err, foundList) => {
       if (err) return console.error(err);
       if (!foundList.skips) {
         foundList.skips = 0;
       }
       foundList.skips++;
-      foundList.save(function(err) {
+      foundList.save(err => {
         if (err) return console.error(err);
         stats.getDailyScores(game, 5);
         newRound(game);
@@ -472,7 +455,7 @@ function cooldownSkip(game) {
   if (skips[game.id]) {
     if (skips[game.id].timer > 0) {
       skips[game.id].timer--;
-      setTimeout(function() {
+      setTimeout(() => {
         cooldownSkip(game);
       }, 1000);
     } else {
@@ -483,36 +466,30 @@ function cooldownSkip(game) {
 
 function countLetters(string) {
   //Vowels get revealed all at once
-  var alphabet = ['b', 'c', 'd', 'f', 'g', 'h', 'j', 'k', 'l', 'm', 'n', 'p',
+  const alphabet = ['b', 'c', 'd', 'f', 'g', 'h', 'j', 'k', 'l', 'm', 'n', 'p',
   'q', 'r', 's', 't', 'v', 'w', 'x', 'y', 'z'];
-  return alphabet.map(function(letter) {
-    return {
-      letter: letter,
-      count: (string.match(new RegExp('[' + letter + ']','ig')) || []).length
-    };
-  }).filter(function(letter) {
-    return letter.count;
-  }).sort(function(letter1, letter2) {
-    return letter1.count - letter2.count;
-  });
+  return alphabet.map(letter => ({
+    letter,
+    count: (string.match(new RegExp(`[${letter}]`,'ig')) || []).length
+  })).filter(({count}) => count).sort(({count}, {count}) => count - count);
 }
 
 function hint(game, player, callback) {
   if (game.hints >= MAXHINTS) {
     bot.sendMessage(game.chat_id, 'What? Another hint? I\'m just gonna ignore that request');
   } else if (cooldowns[game.id] && cooldowns[game.id] > 0) {
-    bot.sendMessage(game.chat_id, 'Calm down with the hints, wait ' + cooldowns[game.id] + ' more seconds');
+    bot.sendMessage(game.chat_id, `Calm down with the hints, wait ${cooldowns[game.id]} more seconds`);
   } else {
     game.hints++;
     if (player) {
       player.hints++;
       player.hintStreak = 0;
     }
-    callback(game.list.values.reduce(function(str, item, index) {
-      if (!item.guesser.first_name) {
+    callback(game.list.values.reduce((str, {guesser, value}, index) => {
+      if (!guesser.first_name) {
         str += index + 1;
         str += ': ';
-        str += getHint(game.hints, item.value);
+        str += getHint(game.hints, value);
         str += '\n';
       }
       return str;
@@ -520,7 +497,7 @@ function hint(game, player, callback) {
     cooldowns[game.id] = 10;
     cooldownHint(game.id);
     game.save();
-    List.findOne({ _id: game.list._id }).exec(function (err, list) {
+    List.findOne({ _id: game.list._id }).exec((err, list) => {
       if (!list.hints) {
         list.hints = 0;
       }
@@ -531,39 +508,39 @@ function hint(game, player, callback) {
 }
 
 function getHint(hints, value) {
-  var i = 0;
-  var tester = '';
+  let i = 0;
+  let tester = '';
   //3 -> the 3 first hints reveal other stuff
   if (hints > 3) {
-    var croppedValue = '';
+    let croppedValue = '';
     for (i = 1; i < value.length - 1; i++) {
       if (!/[ -]/.test(value.charAt(i - 1)) && !/[ -]/.test(value.charAt(i + 1))) {
         croppedValue += value.charAt(i);
       }
     }
-    var letters = countLetters(croppedValue);
-    var revealCount = Math.floor(letters.length * (hints - 3) / 4);
+    const letters = countLetters(croppedValue);
+    let revealCount = Math.floor(letters.length * (hints - 3) / 4);
     revealCount = revealCount < hints - 3 ? hints - 3 < letters.length ? hints - 3 : letters.length : revealCount;
     for (i = 0; i < revealCount; i++) {
       tester += letters[i].letter;
     }
   }
-  var str = '';
-  var vowels = "aeiouÀ-ÖØ-öø-ÿ";
+  let str = '';
+  const vowels = "aeiouÀ-ÖØ-öø-ÿ";
   switch (hints) {
     case 0:
-      return value.replace(new RegExp('[^' + SPECIAL_CHARACTERS + ']', 'gi'), '*');
+      return value.replace(new RegExp(`[^${SPECIAL_CHARACTERS}]`, 'gi'), '*');
     case 1:
-      str = value[0] + value.substring(1, value.length).replace(new RegExp('[^' + SPECIAL_CHARACTERS + ']', 'gi'), '*');
+      str = value[0] + value.substring(1, value.length).replace(new RegExp(`[^${SPECIAL_CHARACTERS}]`, 'gi'), '*');
       break;
     case 2:
-      str = value[0] + value.substring(1, value.length - 1).replace(new RegExp('[^' + SPECIAL_CHARACTERS + ']', 'gi'), '*') + value[value.length - 1];
+      str = value[0] + value.substring(1, value.length - 1).replace(new RegExp(`[^${SPECIAL_CHARACTERS}]`, 'gi'), '*') + value[value.length - 1];
       break;
     case 3:
-      str = value[0] + value.substring(1, value.length - 1).replace(new RegExp('[^' + SPECIAL_CHARACTERS + vowels + ']', 'gi'), '*') + value[value.length - 1];
+      str = value[0] + value.substring(1, value.length - 1).replace(new RegExp(`[^${SPECIAL_CHARACTERS}${vowels}]`, 'gi'), '*') + value[value.length - 1];
       break;
     default:
-      str = value[0] + value.substring(1, value.length - 1).replace(new RegExp('[^' + SPECIAL_CHARACTERS + vowels + tester + ']', 'gi'), '*') + value[value.length - 1];
+      str = value[0] + value.substring(1, value.length - 1).replace(new RegExp(`[^${SPECIAL_CHARACTERS}${vowels}${tester}]`, 'gi'), '*') + value[value.length - 1];
   }
   for (i = 1; i < value.length - 2; i++) {
     switch (hints) {
@@ -585,7 +562,7 @@ function getHint(hints, value) {
 function cooldownHint(gameId) {
   if (cooldowns[gameId] > 0) {
     cooldowns[gameId]--;
-    setTimeout(function() {
+    setTimeout(() => {
       cooldownHint(gameId);
     }, 1000);
   } else {
@@ -594,15 +571,15 @@ function cooldownHint(gameId) {
 }
 
 
-function getList(game, callback) {
-  var str = '';
-  game.list.values.forEach(function(item, index) {
-    str += (index + 1) + ': ';
-    if (!item.guesser.first_name) {
-      str += '<b>' + getHint(game.hints, item.value) + '</b>';
+function getList({list, hints}, callback) {
+  let str = '';
+  list.values.forEach(({guesser, value}, index) => {
+    str += `${index + 1}: `;
+    if (!guesser.first_name) {
+      str += `<b>${getHint(hints, value)}</b>`;
       str += '\n';
     } else {
-      str += item.value + ' - <i>' + item.guesser.first_name + '</i>';
+      str += `${value} - <i>${guesser.first_name}</i>`;
       str += '\n';
     }
   });
@@ -610,50 +587,48 @@ function getList(game, callback) {
 }
 
 function getRandom(arr, n) {
-  var result = new Array(n),
-    len = arr.length,
-    taken = new Array(len);
+  const result = new Array(n);
+  let len = arr.length;
+  const taken = new Array(len);
   if (n > len)
     throw new RangeError("getRandom: more elements taken than available");
   while (n--) {
-    var x = Math.floor(Math.random() * len);
+    const x = Math.floor(Math.random() * len);
     result[n] = arr[x in taken ? taken[x] : x];
     taken[x] = --len in taken ? taken[len] : len;
   }
   return result;
 }
 
-router.post('/', function (req, res, next) {
-  if (req.body.object === 'page') {
+router.post('/', ({body}, res, next) => {
+  if (body.object === 'page') {
     res.status(200).send('EVENT_RECEIVED');
-    return console.log(req.body);
+    return console.log(body);
   }
-  var msg, i, item;
-  if (req.body.callback_query) {
-    var data = JSON.parse(req.body.callback_query.data);
+  let msg, i, item;
+  if (body.callback_query) {
+    const data = JSON.parse(body.callback_query.data);
     if (data.type === 'rate') {
-      List.findOne({ _id: data.list }).exec(function (err, foundList) {
+      List.findOne({ _id: data.list }).exec((err, foundList) => {
         if (err) return console.error(err);
-        if (!_.find(foundList.voters, function(voter) {
-          return voter === req.body.callback_query.from.id;
-        })) {
-          foundList.voters.push(req.body.callback_query.from.id);
+        if (!_.find(foundList.voters, voter => voter === body.callback_query.from.id)) {
+          foundList.voters.push(body.callback_query.from.id);
           if (!foundList.score) {
             foundList.score = parseInt(data.vote);
           } else {
             foundList.score += parseInt(data.vote);
           }
-          foundList.save(function(err) {
+          foundList.save(err => {
             if (err) return console.error(err);
-            console.log('"' + foundList.name + '" rated!');
+            console.log(`"${foundList.name}" rated!`);
           });
         }
       });
     } else if (data.type === 'stats') {
-      console.log(req.body.callback_query);
+      console.log(body.callback_query);
       TenThings.findOne({
-        chat_id: req.body.callback_query.message.chat.id
-      }).select('chat_id list').exec(function(err, game) {
+        chat_id: body.callback_query.message.chat.id
+      }).select('chat_id list').exec((err, game) => {
         switch (data.data) {
           case 'list':
             bot.sendKeyboard(game.chat_id, '<b>List Stats</b>', keyboards.stats_list(game));
@@ -670,45 +645,43 @@ router.post('/', function (req, res, next) {
         }
       });
     } else if (data.type === 'stat') {
-      stats.getStats(req.body.callback_query.message.chat.id, data, req.body.callback_query.from.id);
+      stats.getStats(body.callback_query.message.chat.id, data, body.callback_query.from.id);
     } else if (data.type === 'score') {
-      stats.getScores(req.body.callback_query.message.chat.id, data.id);
+      stats.getScores(body.callback_query.message.chat.id, data.id);
     }
     return res.sendStatus(200);
-  } else if (!req.body.message) {
+  } else if (!body.message) {
     msg = {
       id: config.masterChat,
       from: {
         first_name: 'Bot Error'
       },
       command: '/error',
-      text: JSON.stringify(req.body),
+      text: JSON.stringify(body),
       chat: {
         id: config.masterChat
       }
     };
-  } else if (!req.body.message.text) {
-    if (req.body.message.new_chat_participant) {
+  } else if (!body.message.text) {
+    if (body.message.new_chat_participant) {
       msg = {
-        id: req.body.message.chat.id,
-        from: req.body.message.new_chat_participant,
+        id: body.message.chat.id,
+        from: body.message.new_chat_participant,
         command: '/info',
-        chat: req.body.message.chat
+        chat: body.message.chat
       };
-    } else if (req.body.message.group_chat_created) {
+    } else if (body.message.group_chat_created) {
       msg = {
-        id: req.body.message.chat.id,
-        from: req.body.from,
+        id: body.message.chat.id,
+        from: body.from,
         command: '/info',
-        chat: req.body.message.chat
+        chat: body.message.chat
       };
-    } else if (req.body.message.left_chat_participant) {
+    } else if (body.message.left_chat_participant) {
       TenThings.findOne({
-        chat_id: req.body.message.chat.id
-      }).select('players').exec(function(err, game) {
-        var player = _.find(game.players, function(existingPlayer) {
-          return existingPlayer.id == req.body.message.left_chat_participant.id;
-        });
+        chat_id: body.message.chat.id
+      }).select('players').exec((err, game) => {
+        const player = _.find(game.players, ({id}) => id == body.message.left_chat_participant.id);
         if (player) {
           player.present = false;
           game.save();
@@ -716,29 +689,29 @@ router.post('/', function (req, res, next) {
       });
 
       return res.sendStatus(200);
-    } else if (req.body.edited_message) {
-      bot.sendMessage(req.body.message.chat.id, 'You can\'t just edit your answers! I\'m watching you!');
+    } else if (body.edited_message) {
+      bot.sendMessage(body.message.chat.id, 'You can\'t just edit your answers! I\'m watching you!');
       return res.sendStatus(200);
     } else if (
-      req.body.message.game ||
-      req.body.message.photo ||
-      req.body.message.video ||
-      req.body.message.audio ||
-      req.body.message.video_note ||
-      req.body.message.emoji ||
-      req.body.message.voice ||
-      req.body.message.animation ||
-      req.body.message.sticker ||
-      req.body.message.reply_to_message ||
-      req.body.message.migrate_to_chat_id ||
-      req.body.message.pinned_message ||
-      req.body.message.new_chat_title ||
-      req.body.message.new_chat_photo ||
-      req.body.message.document
+      body.message.game ||
+      body.message.photo ||
+      body.message.video ||
+      body.message.audio ||
+      body.message.video_note ||
+      body.message.emoji ||
+      body.message.voice ||
+      body.message.animation ||
+      body.message.sticker ||
+      body.message.reply_to_message ||
+      body.message.migrate_to_chat_id ||
+      body.message.pinned_message ||
+      body.message.new_chat_title ||
+      body.message.new_chat_photo ||
+      body.message.document
     ) {
       //Ignore these messages as they're just chat interactions
       console.log('Ignoring this message:');
-      console.log(req.body.message);
+      console.log(body.message);
       return res.sendStatus(200);
     } else {
       msg = {
@@ -747,7 +720,7 @@ router.post('/', function (req, res, next) {
           first_name: 'Bot Error'
         },
         command: '/error',
-        text: JSON.stringify(req.body),
+        text: JSON.stringify(body),
         chat: {
           id: config.masterChat
         }
@@ -755,43 +728,43 @@ router.post('/', function (req, res, next) {
     }
   } else {
     msg = {
-      id: req.body.message.message_id,
-      from: req.body.message.from,
-      command: req.body.message.text.substring(0, req.body.message.text.indexOf(' ') < 0 ? req.body.message.text.length : req.body.message.text.indexOf(' ')),
-      text: req.body.message.text,
-      chat: req.body.message.chat
+      id: body.message.message_id,
+      from: body.message.from,
+      command: body.message.text.substring(0, !body.message.text.includes(' ') ? body.message.text.length : body.message.text.indexOf(' ')),
+      text: body.message.text,
+      chat: body.message.chat
     };
   }
-  if (msg.command.indexOf('@') >= 0) {
+  if (msg.command.includes('@')) {
     msg.command = msg.command.substring(0, msg.command.indexOf('@'));
   }
   try {
     if (!msg.from.id) {
-      console.log(req.body.message);
+      console.log(body.message);
       return res.sendStatus(200);
     }
   } catch (e) {
     console.error(e);
-    console.log(req.body.message);
+    console.log(body.message);
     return res.sendStatus(200);
   }
   TenThings.findOne({
     chat_id: msg.chat.id
-  }).populate('list.creator').exec(function(err, existingGame) {
+  }).populate('list.creator').exec((err, existingGame) => {
     if (!existingGame) {
-      var newGame = new TenThings({
+      const newGame = new TenThings({
         chat_id: msg.chat.id,
         players: [msg.from]
       });
-      newGame.save(function (err) {
+      newGame.save(err => {
       if (err) return console.error(err);
         console.log('Game Saved!');
-        var player = newGame.players[0];
+        const player = newGame.players[0];
         return evaluateCommand(res, msg, newGame, player, true);
       });
     } else {
-      var player;
-      player = _.find(existingGame.players, function(existingPlayer) {
+      let player;
+      player = _.find(existingGame.players, existingPlayer => {
         if (!existingPlayer) {
           console.log('Empty Player!');
           console.log(existingGame);
@@ -802,7 +775,7 @@ router.post('/', function (req, res, next) {
       if (!player) {
         existingGame.players.push(msg.from);
         player = existingGame.players[existingGame.players.length - 1];
-        existingGame.save(function(err) {
+        existingGame.save(err => {
           if (err) {
             console.error(err);
             console.log(player);
@@ -823,29 +796,29 @@ router.post('/', function (req, res, next) {
   });
 });
 
-router.get('/', function (req, res, next) {
-  console.log(req.query);
-  var token = req.query['hub.verify_token'];
-  if (req.query['hub.verify_token'] === config.tokens.facebook.tenthings) {
-    res.status(200).send(req.query['hub.challenge']);
+router.get('/', ({query}, res, next) => {
+  console.log(query);
+  const token = query['hub.verify_token'];
+  if (query['hub.verify_token'] === config.tokens.facebook.tenthings) {
+    res.status(200).send(query['hub.challenge']);
   } else {
     res.sendStatus(200);
   }
 });
 
 // Creates the endpoint for our webhook
-router.post('/webhook', function (req, res) {
-  var body = req.body;
+router.post('/webhook', (req, res) => {
+  const body = req.body;
   if (body.object === 'page') {
     // Iterates over each entry - there may be multiple if batched
-    body.entry.forEach(function(entry) {
+    body.entry.forEach(({messaging}) => {
       // Gets the message. entry.messaging is an array, but
       // will only ever contain one message, so we get index 0
-      var webhook_event = entry.messaging[0];
+      const webhook_event = messaging[0];
       console.log(webhook_event);
       // Get the sender PSID
-      var sender_psid = webhook_event.sender.id;
-      console.log('Sender PSID: ' + sender_psid);
+      const sender_psid = webhook_event.sender.id;
+      console.log(`Sender PSID: ${sender_psid}`);
       // Check if the event is a message or postback and
       // pass the event to the appropriate handler function
       if (webhook_event.message) {
@@ -857,7 +830,7 @@ router.post('/webhook', function (req, res) {
     // Returns a '200 OK' response to all requests
     res.status(200).send('EVENT_RECEIVED');
   } else {
-    // Returns a '404 Not Found' if event is not from a page subscription
+    // Returns a '404 Not Found' if event is not = require(a page subscription
     res.sendStatus(404);
   }
 });
@@ -905,8 +878,8 @@ function evaluateCommand(res, msg, game, player, isNew) {
       if (player) {
         player.skips++;
       } else {
-        console.error('Error in game: ' + game.id);
-        console.error('From: ' + msg.from);
+        console.error(`Error in game: ${game.id}`);
+        console.error(`From: ${msg.from}`);
       }
       game.save();
       skip(game, msg.from.id);
@@ -914,9 +887,9 @@ function evaluateCommand(res, msg, game, player, isNew) {
     case '/veto':
       if (skips[game.id]) {
         delete skips[game.id];
-        bot.sendMessage(msg.chat.id, 'Skip vetoed by ' + msg.from.first_name);
+        bot.sendMessage(msg.chat.id, `Skip vetoed by ${msg.from.first_name}`);
       } else {
-        bot.sendMessage(msg.chat.id, 'I can\'t find a skip request, ' + msg.from.first_name);
+        bot.sendMessage(msg.chat.id, `I can't find a skip request, ${msg.from.first_name}`);
       }
       break;
     case '/stats':
@@ -924,10 +897,10 @@ function evaluateCommand(res, msg, game, player, isNew) {
       break;
     case '/list':
       try {
-        getList(game, function(list) {
-          var message = '<b>' + game.list.name + '</b> (' + game.list.totalValues  + ') by ' + game.list.creator.username + '\n';
-          message += game.list.category ? 'Category: ' + game.list.category + '\n' : '';
-          message += game.list.description ? (game.list.description.indexOf('href') >= 0 ? game.list.description : '<i>' + angleBrackets(game.list.description) + '</i>\n') : '';
+        getList(game, list => {
+          let message = `<b>${game.list.name}</b> (${game.list.totalValues}) by ${game.list.creator.username}\n`;
+          message += game.list.category ? `Category: ${game.list.category}\n` : '';
+          message += game.list.description ? (game.list.description.includes('href') ? game.list.description : `<i>${angleBrackets(game.list.description)}</i>\n`) : '';
           message += list;
           bot.sendMessage(msg.chat.id, message);
         });
@@ -945,15 +918,15 @@ function evaluateCommand(res, msg, game, player, isNew) {
       if (msg.text.substring(8, msg.text.length).replace(/\s/g,'')) {
         player.suggestions++;
         game.save();
-        bot.notifyAdmins('<b>Suggestion</b>\n' + msg.text.substring(9, msg.text.length) + '\n<i>' + (msg.from.username ? msg.from.username : msg.from.first_name) + '</i>');
-        bot.sendMessage(msg.chat.id, 'Suggestion noted, ' + msg.from.first_name + '!');
+        bot.notifyAdmins(`<b>Suggestion</b>\n${msg.text.substring(9, msg.text.length)}\n<i>${msg.from.username ? msg.from.username : msg.from.first_name}</i>`);
+        bot.sendMessage(msg.chat.id, `Suggestion noted, ${msg.from.first_name}!`);
       } else {
-        bot.sendMessage(msg.chat.id, 'You didn\'t suggest anything ' + msg.from.first_name + '. Add your message after /suggest');
+        bot.sendMessage(msg.chat.id, `You didn't suggest anything ${msg.from.first_name}. Add your message after /suggest`);
       }
       break;
     case '/hint':
-      hint(game, player, function(hints) {
-        var message = '<b>' + game.list.name + '</b>\n';
+      hint(game, player, hints => {
+        let message = `<b>${game.list.name}</b>\n`;
         message += hints;
         bot.sendMessage(msg.chat.id, message);
       });
@@ -961,10 +934,8 @@ function evaluateCommand(res, msg, game, player, isNew) {
     case '/notify':
       if (msg.chat.id === config.masterChat) {
         TenThings.find({}).select('chat_id')
-        .then(function(games) {
-          bot.notifyAll(games.map(function(game) {
-            return game.chat_id;
-          }), msg.text.substring(8, msg.text.length).replace(/\s/g,''));
+        .then(games => {
+          bot.broadcast(games.map(({chat_id}) => chat_id), msg.text);
         });
       }
       break;
