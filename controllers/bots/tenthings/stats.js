@@ -150,13 +150,13 @@ exports.getStats = function(chat_id, data, requestor) {
             return player.maxHintStreak ? score > player.maxHintStreak ? score : player.maxHintStreak : score;
           }, 0) + '\n';
           message += 'Answers Given: ' + allPlayers.reduce(function(count, player) {
-            return count + player.answers;
+            return count + (player.answers ? player.answers : 0);
           }, 0) + '\n';
           message += 'Hints Asked: ' + allPlayers.reduce(function(count, player) {
-            return count + player.hints;
+            return count + (player.hints ? player.hints : 0);
           }, 0) + '\n';
           message += 'Lists Skipped: ' + allPlayers.reduce(function(count, player) {
-            return count + player.skips;
+            return count + (player.skips ? player.skips : 0);
           }, 0) + '\n';
           message += allPlayers.filter(function(player) {
             return player.scoreDaily;

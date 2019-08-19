@@ -526,7 +526,7 @@ function getHint(hints, value) {
     }
   }
   let str = '';
-  const vowels = "aeiouÀ-ÖØ-öø-ÿ";
+  const vowels = 'aeiouÀ-ÖØ-öø-ÿ';
   switch (hints) {
     case 0:
       return value.replace(new RegExp(`[^${SPECIAL_CHARACTERS}]`, 'gi'), '*');
