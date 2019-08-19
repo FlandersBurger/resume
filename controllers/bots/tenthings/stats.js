@@ -3,6 +3,7 @@ var moment = require('moment');
 
 var bot = require('../../../bots/telegram');
 var messages = require('./messages');
+var hints = require('./hints');
 
 var List = require('../../../models/list');
 var TenThings = require('../../../models/games/tenthings');
@@ -82,7 +83,7 @@ exports.getList = ({list, hints}, callback) => {
   list.values.forEach(({guesser, value}, index) => {
     str += `${index + 1}: `;
     if (!guesser.first_name) {
-      str += `<b>${getHint(hints, value)}</b>`;
+      str += `<b>${hints.getHint(hints, value)}</b>`;
       str += '\n';
     } else {
       str += `${value} - <i>${guesser.first_name}</i>`;

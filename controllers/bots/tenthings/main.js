@@ -10,12 +10,13 @@ const messages = require('./messages');
 const keyboards = require('./keyboards');
 const stats = require('./stats');
 const jobs = require('./jobs');
+const hints = require('./hints');
+
 const List = require('../../../models/list');
 const TenThings = require('../../../models/games/tenthings');
 
-const MAXHINTS = 6;
-const SPECIAL_CHARACTERS = "\\\\/ !?@#$%^&*()_+:.{},;\\-'``\"";
-const VOWELS = 'aeiouAEIOUàèìòùÀÈÌÒÙáéíóúýÁÉÍÓÚÝâêîôûÂÊÎÔÛãñõÃÑÕäëïöüÿÄËÏÖÜŸçÇßØøÅåÆæœ';
+const MAX_HINTS = hints.getMaxHints();
+const SPECIAL_CHARACTERS = hints.getSpecialCharacters();
 
 const cooldowns = {};
 const skips = {};
@@ -260,7 +261,7 @@ function checkGuess(game, guess, msg) {
       match.guesser = msg.from;
       player.answers++;
       player.lastPlayDate = moment();
-      const score = Math.round((MAXHINTS - game.hints + game.guessers.length) * (guess.match.distance - 0.6) * 2.5);
+      const score = Math.round((MAX_HINTS - game.hints + game.guessers.length) * (guess.match.distance - 0.6) * 2.5);
       const accuracy = `${(guess.match.distance * 100).toFixed(0)}%`;
       player.score += score;
       player.scoreDaily += score;
@@ -396,13 +397,13 @@ function angleBrackets(str) {
 /*
 var string = 'The qui-ck bro"wn f\'ox jump+ed over the lazy dog';
 //string = 'TERA';
-console.log(getHint(0, string));
-console.log(getHint(1, string));
-console.log(getHint(2, string));
-console.log(getHint(3, string));
-console.log(getHint(4, string));
-console.log(getHint(5, string));
-console.log(getHint(6, string));
+console.log(hints.getHint(0, string));
+console.log(hints.getHint(1, string));
+console.log(hints.getHint(2, string));
+console.log(hints.getHint(3, string));
+console.log(hints.getHint(4, string));
+console.log(hints.getHint(5, string));
+console.log(hints.getHint(6, string));
 */
 
 function skip(game, skipper) {
@@ -476,7 +477,7 @@ function countLetters(string) {
 }
 
 function hint(game, player, callback) {
-  if (game.hints >= MAXHINTS) {
+  if (game.hints >= MAX_HINTS) {
     bot.sendMessage(game.chat_id, 'What? Another hint? I\'m just gonna ignore that request');
   } else if (cooldowns[game.id] && cooldowns[game.id] > 0) {
     bot.sendMessage(game.chat_id, `Calm down with the hints, wait ${cooldowns[game.id]} more seconds`);
@@ -490,7 +491,7 @@ function hint(game, player, callback) {
       if (!guesser.first_name) {
         str += index + 1;
         str += ': ';
-        str += getHint(game.hints, value);
+        str += hints.getHint(game.hints, value);
         str += '\n';
       }
       return str;
@@ -508,56 +509,6 @@ function hint(game, player, callback) {
   }
 }
 
-function getHint(hints, value) {
-  let i = 0;
-  let tester = '';
-  //3 -> the 3 first hints reveal other stuff
-  if (hints > 3) {
-    let croppedValue = '';
-    for (i = 1; i < value.length - 1; i++) {
-      if (!/[ -]/.test(value.charAt(i - 1)) && !/[ -]/.test(value.charAt(i + 1))) {
-        croppedValue += value.charAt(i);
-      }
-    }
-    let letters = countLetters(croppedValue);
-    let revealCount = Math.floor(letters.length * (hints - 3) / 4);
-    revealCount = revealCount < hints - 3 ? hints - 3 < letters.length ? hints - 3 : letters.length : revealCount;
-    for (i = 0; i < revealCount; i++) {
-      tester += letters[i].letter;
-    }
-  }
-  let str = '';
-  switch (hints) {
-    case 0:
-      return value.replace(new RegExp(`[^${SPECIAL_CHARACTERS}]`, 'gi'), '*');
-    case 1:
-      str = value[0] + value.substring(1, value.length).replace(new RegExp(`[^${SPECIAL_CHARACTERS}]`, 'gi'), '*');
-      break;
-    case 2:
-      str = value[0] + value.substring(1, value.length - 1).replace(new RegExp(`[^${SPECIAL_CHARACTERS}]`, 'gi'), '*') + value[value.length - 1];
-      break;
-    case 3:
-      str = value[0] + value.substring(1, value.length - 1).replace(new RegExp(`[^${SPECIAL_CHARACTERS}${VOWELS}]`, 'gi'), '*') + value[value.length - 1];
-      break;
-    default:
-      str = value[0] + value.substring(1, value.length - 1).replace(new RegExp(`[^${SPECIAL_CHARACTERS}${VOWELS}${tester}]`, 'gi'), '*') + value[value.length - 1];
-  }
-  for (i = 1; i < value.length - 2; i++) {
-    switch (hints) {
-      case 1:
-        if (i === 0 || /[ -]/.test(value.charAt(i - 1))) {
-          str = str.substr(0, i) + value.charAt(i) + str.substr(i + 1);
-        }
-        break;
-      default:
-        if (i === 0 || /[ -]/.test(value.charAt(i - 1)) || /[ -]/.test(value.charAt(i + 1)) || i === value.length - 1) {
-          str = str.substr(0, i) + value.charAt(i) + str.substr(i + 1);
-        }
-        break;
-    }
-  }
-  return str;
-}
 
 function cooldownHint(gameId) {
   if (cooldowns[gameId] > 0) {

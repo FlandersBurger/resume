@@ -1,0 +1,57 @@
+const MAX_HINTS = 6;
+const SPECIAL_CHARACTERS = "\\\\/ !?@#$%^&*()_+:.{},;\\-'``\"";
+const VOWELS = 'aeiouAEIOUàèìòùÀÈÌÒÙáéíóúýÁÉÍÓÚÝâêîôûÂÊÎÔÛãñõÃÑÕäëïöüÿÄËÏÖÜŸçÇßØøÅåÆæœ';
+
+exports.getHint = (hints, value) => {
+  let i = 0;
+  let tester = '';
+  //3 -> the 3 first hints reveal other stuff
+  if (hints > 3) {
+    let croppedValue = '';
+    for (i = 1; i < value.length - 1; i++) {
+      if (!/[ -]/.test(value.charAt(i - 1)) && !/[ -]/.test(value.charAt(i + 1))) {
+        croppedValue += value.charAt(i);
+      }
+    }
+    let letters = countLetters(croppedValue);
+    let revealCount = Math.floor(letters.length * (hints - 3) / 4);
+    revealCount = revealCount < hints - 3 ? hints - 3 < letters.length ? hints - 3 : letters.length : revealCount;
+    for (i = 0; i < revealCount; i++) {
+      tester += letters[i].letter;
+    }
+  }
+  let str = '';
+  switch (hints) {
+    case 0:
+      return value.replace(new RegExp(`[^${SPECIAL_CHARACTERS}]`, 'gi'), '*');
+    case 1:
+      str = value[0] + value.substring(1, value.length).replace(new RegExp(`[^${SPECIAL_CHARACTERS}]`, 'gi'), '*');
+      break;
+    case 2:
+      str = value[0] + value.substring(1, value.length - 1).replace(new RegExp(`[^${SPECIAL_CHARACTERS}]`, 'gi'), '*') + value[value.length - 1];
+      break;
+    case 3:
+      str = value[0] + value.substring(1, value.length - 1).replace(new RegExp(`[^${SPECIAL_CHARACTERS}${VOWELS}]`, 'gi'), '*') + value[value.length - 1];
+      break;
+    default:
+      str = value[0] + value.substring(1, value.length - 1).replace(new RegExp(`[^${SPECIAL_CHARACTERS}${VOWELS}${tester}]`, 'gi'), '*') + value[value.length - 1];
+  }
+  for (i = 1; i < value.length - 2; i++) {
+    switch (hints) {
+      case 1:
+        if (i === 0 || /[ -]/.test(value.charAt(i - 1))) {
+          str = str.substr(0, i) + value.charAt(i) + str.substr(i + 1);
+        }
+        break;
+      default:
+        if (i === 0 || /[ -]/.test(value.charAt(i - 1)) || /[ -]/.test(value.charAt(i + 1)) || i === value.length - 1) {
+          str = str.substr(0, i) + value.charAt(i) + str.substr(i + 1);
+        }
+        break;
+    }
+  }
+  return str;
+}
+
+exports.getMAX_HINTS = () => MAX_HINTS;
+exports.getSpecialCharacters = () => SPECIAL_CHARACTERS;
