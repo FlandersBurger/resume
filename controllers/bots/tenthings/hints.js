@@ -13,9 +13,9 @@ exports.getHint = (hints, value) => {
         croppedValue += value.charAt(i);
       }
     }
-    console.log(croppedValue);
-    const letters = countLetters(croppedValue);
+    console.log(countLetters(croppedValue));
     console.log(letters);
+    const letters = countLetters(croppedValue);
     let revealCount = Math.floor(letters.length * (hints - 3) / 4);
     revealCount = revealCount < hints - 3 ? hints - 3 < letters.length ? hints - 3 : letters.length : revealCount;
     for (i = 0; i < revealCount; i++) {
