@@ -78,12 +78,12 @@ function getDailyScores(game, limit) {
 
 exports.getDailyScores = getDailyScores;
 
-exports.getList = ({list, hints}, callback) => {
+exports.getList = ({list, hintsAsked}, callback) => {
   let str = '';
   list.values.forEach(({guesser, value}, index) => {
     str += `${index + 1}: `;
     if (!guesser.first_name) {
-      str += `<b>${hints.getHint(hints, value)}</b>`;
+      str += `<b>${hints.getHint(hintsAsked, value)}</b>`;
       str += '\n';
     } else {
       str += `${value} - <i>${guesser.first_name}</i>`;
