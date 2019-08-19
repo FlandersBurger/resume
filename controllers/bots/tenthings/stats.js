@@ -77,6 +77,21 @@ function getDailyScores(game, limit) {
 
 exports.getDailyScores = getDailyScores;
 
+exports.getList = ({list, hints}, callback) => {
+  let str = '';
+  list.values.forEach(({guesser, value}, index) => {
+    str += `${index + 1}: `;
+    if (!guesser.first_name) {
+      str += `<b>${getHint(hints, value)}</b>`;
+      str += '\n';
+    } else {
+      str += `${value} - <i>${guesser.first_name}</i>`;
+      str += '\n';
+    }
+  });
+  callback(str);
+};
+
 exports.getStats = function(chat_id, data, requestor) {
   data = data.id.split('_');
   var type = data[0];

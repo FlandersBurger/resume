@@ -15,6 +15,7 @@ const TenThings = require('../../../models/games/tenthings');
 
 const MAXHINTS = 6;
 const SPECIAL_CHARACTERS = "\\\\/ !?@#$%^&*()_+:.{},;\\-'``\"";
+const VOWELS = 'aeiouAEIOUàèìòùÀÈÌÒÙáéíóúýÁÉÍÓÚÝâêîôûÂÊÎÔÛãñõÃÑÕäëïöüÿÄËÏÖÜŸçÇßØøÅåÆæœ';
 
 const cooldowns = {};
 const skips = {};
@@ -335,7 +336,7 @@ function guessed({streak, list}, {scoreDaily}, {from, chat}, value, blurb, score
 function checkRound(game) {
   if (game.list.values.filter(({guesser}) => !guesser.first_name).length === 0) {
     setTimeout(() => {
-      getList(game, list => {
+      stats.getList(game, list => {
         List.findOne({ _id: game.list._id }).exec((err, foundList) => {
           let message = `<b>${game.list.name}</b> by ${game.list.creator.username}\n`;
           message += game.list.category ? `Category: ${game.list.category}\n` : '';
@@ -431,7 +432,7 @@ function skipList(game, skipper) {
       this[index].hintStreak = 0;
     }
   }, game.players);
-  getList(game, list => {
+  stats.getList(game, list => {
     let message = `<b>${game.list.name}</b> skipped!\n`;
     message += list;
     bot.sendMessage(game.chat_id, message);
@@ -526,7 +527,6 @@ function getHint(hints, value) {
     }
   }
   let str = '';
-  const vowels = 'aeiouÀ-ÖØ-öø-ÿ';
   switch (hints) {
     case 0:
       return value.replace(new RegExp(`[^${SPECIAL_CHARACTERS}]`, 'gi'), '*');
@@ -537,10 +537,10 @@ function getHint(hints, value) {
       str = value[0] + value.substring(1, value.length - 1).replace(new RegExp(`[^${SPECIAL_CHARACTERS}]`, 'gi'), '*') + value[value.length - 1];
       break;
     case 3:
-      str = value[0] + value.substring(1, value.length - 1).replace(new RegExp(`[^${SPECIAL_CHARACTERS}${vowels}]`, 'gi'), '*') + value[value.length - 1];
+      str = value[0] + value.substring(1, value.length - 1).replace(new RegExp(`[^${SPECIAL_CHARACTERS}${VOWELS}]`, 'gi'), '*') + value[value.length - 1];
       break;
     default:
-      str = value[0] + value.substring(1, value.length - 1).replace(new RegExp(`[^${SPECIAL_CHARACTERS}${vowels}${tester}]`, 'gi'), '*') + value[value.length - 1];
+      str = value[0] + value.substring(1, value.length - 1).replace(new RegExp(`[^${SPECIAL_CHARACTERS}${VOWELS}${tester}]`, 'gi'), '*') + value[value.length - 1];
   }
   for (i = 1; i < value.length - 2; i++) {
     switch (hints) {
@@ -568,22 +568,6 @@ function cooldownHint(gameId) {
   } else {
     delete cooldowns[gameId];
   }
-}
-
-
-function getList({list, hints}, callback) {
-  let str = '';
-  list.values.forEach(({guesser, value}, index) => {
-    str += `${index + 1}: `;
-    if (!guesser.first_name) {
-      str += `<b>${getHint(hints, value)}</b>`;
-      str += '\n';
-    } else {
-      str += `${value} - <i>${guesser.first_name}</i>`;
-      str += '\n';
-    }
-  });
-  callback(str);
 }
 
 function getRandom(arr, n) {
@@ -897,7 +881,7 @@ function evaluateCommand(res, msg, game, player, isNew) {
       break;
     case '/list':
       try {
-        getList(game, list => {
+        stats.getList(game, list => {
           let message = `<b>${game.list.name}</b> (${game.list.totalValues}) by ${game.list.creator.username}\n`;
           message += game.list.category ? `Category: ${game.list.category}\n` : '';
           message += game.list.description ? (game.list.description.includes('href') ? game.list.description : `<i>${angleBrackets(game.list.description)}</i>\n`) : '';

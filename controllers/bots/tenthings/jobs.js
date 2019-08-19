@@ -1,3 +1,4 @@
+/*jslint esversion: 6 */
 const schedule = require('node-schedule');
 const _ = require('underscore');
 const moment = require('moment');
@@ -127,6 +128,13 @@ const dailyScore = schedule.scheduleJob('0 0 0 * * *', () => {
                 if (game.chat_id != config.groupChat) {
                   bot.sendMessage(game.chat_id, 'Come join us in the <a href="https://t.me/tenthings">Ten Things Supergroup</a>!');
                 }
+                stats.getList(game, list => {
+                  let message = `<b>${game.list.name}</b> (${game.list.totalValues}) by ${game.list.creator.username}\n`;
+                  message += game.list.category ? `Category: ${game.list.category}\n` : '';
+                  message += game.list.description ? (game.list.description.includes('href') ? game.list.description : `<i>${angleBrackets(game.list.description)}</i>\n`) : '';
+                  message += list;
+                  bot.sendMessage(msg.chat.id, message);
+                });
                 TenThings.update(
                   {
                     _id: game._id
