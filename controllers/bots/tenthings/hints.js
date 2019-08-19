@@ -2,16 +2,6 @@ const MAX_HINTS = 6;
 const SPECIAL_CHARACTERS = "\\\\/ !?@#$%^&*()_+:.{},;\\-'``\"";
 const VOWELS = 'aeiouAEIOUàèìòùÀÈÌÒÙáéíóúýÁÉÍÓÚÝâêîôûÂÊÎÔÛãñõÃÑÕäëïöüÿÄËÏÖÜŸçÇßØøÅåÆæœ';
 
-function countLetters(string) {
-  //Vowels get revealed all at once
-  const alphabet = ['b', 'c', 'd', 'f', 'g', 'h', 'j', 'k', 'l', 'm', 'n', 'p',
-  'q', 'r', 's', 't', 'v', 'w', 'x', 'y', 'z'];
-  return alphabet.map(letter => ({
-    letter,
-    count: (string.match(new RegExp(`[${letter}]`,'ig')) || []).length
-  })).filter(({count}) => count).sort(({count}, {count}) => count - count);
-}
-
 exports.getHint = (hints, value) => {
   let i = 0;
   let tester = '';
@@ -23,8 +13,6 @@ exports.getHint = (hints, value) => {
         croppedValue += value.charAt(i);
       }
     }
-    console.log(countLetters(croppedValue));
-    console.log(letters);
     const letters = countLetters(croppedValue);
     let revealCount = Math.floor(letters.length * (hints - 3) / 4);
     revealCount = revealCount < hints - 3 ? hints - 3 < letters.length ? hints - 3 : letters.length : revealCount;
@@ -67,3 +55,13 @@ exports.getHint = (hints, value) => {
 
 exports.getMaxHints = () => MAX_HINTS;
 exports.getSpecialCharacters = () => SPECIAL_CHARACTERS;
+
+function countLetters(string) {
+  //Vowels get revealed all at once
+  const alphabet = ['b', 'c', 'd', 'f', 'g', 'h', 'j', 'k', 'l', 'm', 'n', 'p',
+  'q', 'r', 's', 't', 'v', 'w', 'x', 'y', 'z'];
+  return alphabet.map(letter => ({
+    letter,
+    count: (string.match(new RegExp(`[${letter}]`,'ig')) || []).length
+  })).filter(({count}) => count).sort((letter1, letter2) => letter1.count - letter2.count);
+}
