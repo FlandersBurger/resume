@@ -53,5 +53,5 @@ exports.getHint = (hints, value) => {
   return str;
 }
 
-exports.getMAX_HINTS = () => MAX_HINTS;
+exports.getMaxHints = () => MAX_HINTS;
 exports.getSpecialCharacters = () => SPECIAL_CHARACTERS;
