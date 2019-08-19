@@ -55,3 +55,13 @@ exports.getHint = (hints, value) => {
 
 exports.getMaxHints = () => MAX_HINTS;
 exports.getSpecialCharacters = () => SPECIAL_CHARACTERS;
+
+function countLetters(string) {
+  //Vowels get revealed all at once
+  const alphabet = ['b', 'c', 'd', 'f', 'g', 'h', 'j', 'k', 'l', 'm', 'n', 'p',
+  'q', 'r', 's', 't', 'v', 'w', 'x', 'y', 'z'];
+  return alphabet.map(letter => ({
+    letter,
+    count: (string.match(new RegExp(`[${letter}]`,'ig')) || []).length
+  })).filter(({count}) => count).sort(({count}, {count}) => count - count);
+}
