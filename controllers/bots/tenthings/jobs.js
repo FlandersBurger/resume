@@ -100,6 +100,7 @@ const dailyScore = schedule.scheduleJob('0 0 0 * * *', () => {
   if (new Date().getHours() === 0) {
     bot.notifyAdmin(`Score Reset Triggered; ${moment().format('DD-MMM-YYYY')}`);
     TenThings.find({ 'players.scoreDaily': { $gt: 0 }})
+    .populate('list.creator')
     .then(games => {
       const uniquePlayers = [];
       const players = games.reduce((amountOfPlayers, game) => {
