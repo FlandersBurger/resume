@@ -212,6 +212,7 @@ exports.getStats = function(chat_id, data, requestor) {
           message += 'Lists Skipped: ' + game.players.reduce(function(count, player) {
             return count + player.skips;
           }, 0) + '\n';
+          message += 'Current Answer Streak:' + game.streak.count
           message += game.players.filter(function(player) {
             return player.scoreDaily;
           }).length + ' out of ' + game.players.filter(function(player) {
