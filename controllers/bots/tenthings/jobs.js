@@ -134,7 +134,7 @@ const dailyScore = schedule.scheduleJob('0 0 0 * * *', () => {
                   message += game.list.category ? `Category: ${game.list.category}\n` : '';
                   message += game.list.description ? (game.list.description.includes('href') ? game.list.description : `<i>${angleBrackets(game.list.description)}</i>\n`) : '';
                   message += list;
-                  bot.sendMessage(msg.chat.id, message);
+                  bot.sendMessage(game.chat_id, message);
                 });
                 TenThings.update(
                   {
