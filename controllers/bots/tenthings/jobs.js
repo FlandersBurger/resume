@@ -96,8 +96,9 @@ const modifiedLists = schedule.scheduleJob('0 5 12 * * *', () => {
 //bot.sendPhoto(config.masterChat, 'https://m.media-amazon.com/images/M/MV5BNmE1OWI2ZGItMDUyOS00MmU5LWE0MzUtYTQ0YzA1YTE5MGYxXkEyXkFqcGdeQXVyMDM5ODIyNw@@._V1._SX40_CR0,0,40,54_.jpg')
 
 //var dailyScore = schedule.scheduleJob('*/10 * * * * *', function() {
-const dailyScore = schedule.scheduleJob('0 0 5 * * *', () => {
-  if (new Date().getHours() === 5) {
+const dailyScore = schedule.scheduleJob('0 30 4 * * *', () => {
+  //if (new Date().getHours() === 5) {
+  if (true) {
     bot.notifyAdmin(`Score Reset Triggered; ${moment().format('DD-MMM-YYYY')}`);
     TenThings.find({ 'players.scoreDaily': { $gt: 0 }})
     .populate('list.creator')
@@ -105,15 +106,8 @@ const dailyScore = schedule.scheduleJob('0 0 5 * * *', () => {
       const uniquePlayers = [];
       const players = games.reduce((amountOfPlayers, game) => {
         stats.getDailyScores(game);
-        const getHighScore = new Promise((resolve, reject) => {
-          resolve(game.players.reduce((highScore, {id, scoreDaily}) => {
-            if (!uniquePlayers.includes(id) && scoreDaily > 0) {
-              uniquePlayers.push(id);
-            }
-            return (scoreDaily > highScore) ? scoreDaily : highScore;
-          }, 0));
-        });
-        getHighScore.then(highScore => {
+        getHighScore(game).then(highScore => {
+          console.log(highScore);
           let message = '';
           const winners = [];
           game.players
@@ -126,6 +120,7 @@ const dailyScore = schedule.scheduleJob('0 0 5 * * *', () => {
               message += first_name;
               setTimeout(() => {
                 bot.sendMessage(game.chat_id, `<b>${message} won with ${highScore} points!</b>`);
+                console.log(game.chat_id, `<b>${message} won with ${highScore} points!</b>`);
                 if (game.chat_id != config.groupChat) {
                   bot.sendMessage(game.chat_id, 'Come join us in the <a href="https://t.me/tenthings">Ten Things Supergroup</a>!');
                 }
@@ -211,4 +206,13 @@ const playStreak = schedule.scheduleJob('0 0 1 * * *', () => {
       });
     });
   });
+});
+
+const getHighScore = (game) => new Promise((resolve, reject) => {
+  resolve(game.players.reduce((highScore, {id, scoreDaily}) => {
+    if (!uniquePlayers.includes(id) && scoreDaily > 0) {
+      uniquePlayers.push(id);
+    }
+    return (scoreDaily > highScore) ? scoreDaily : highScore;
+  }, 0));
 });
