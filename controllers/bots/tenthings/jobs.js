@@ -98,7 +98,7 @@ const modifiedLists = schedule.scheduleJob('0 5 12 * * *', () => {
 //bot.sendPhoto(config.masterChat, 'https://m.media-amazon.com/images/M/MV5BNmE1OWI2ZGItMDUyOS00MmU5LWE0MzUtYTQ0YzA1YTE5MGYxXkEyXkFqcGdeQXVyMDM5ODIyNw@@._V1._SX40_CR0,0,40,54_.jpg')
 
 //var dailyScore = schedule.scheduleJob('*/10 * * * * *', function() {
-const dailyScore = schedule.scheduleJob('0 15 1 * * *', () => {
+const dailyScore = schedule.scheduleJob('0 17 1 * * *', () => {
   //if (new Date().getHours() === 0) {
   if (true) {
     bot.notifyAdmin(`Score Reset Triggered; ${moment().format('DD-MMM-YYYY')}`);
@@ -112,7 +112,7 @@ const dailyScore = schedule.scheduleJob('0 15 1 * * *', () => {
           let message = '';
           const winners = [];
           game.players
-          .filter(({scoreDaily}) => scoreDaily === highScore)
+          .filter({scoreDaily} => scoreDaily === highScore)
           .forEach(({_id, first_name}, index, {length}) => {
             winners.push(_id);
             if (index < length - 1) {
@@ -121,6 +121,7 @@ const dailyScore = schedule.scheduleJob('0 15 1 * * *', () => {
               message += first_name;
               setTimeout(() => {
                 bot.sendMessage(game.chat_id, `<b>${message} won with ${highScore} points!</b>`);
+                console.log(message);
                 if (game.chat_id != config.groupChat) {
                   bot.sendMessage(game.chat_id, 'Come join us in the <a href="https://t.me/tenthings">Ten Things Supergroup</a>!');
                 }
@@ -148,16 +149,21 @@ const dailyScore = schedule.scheduleJob('0 15 1 * * *', () => {
                     ]
                   },
                   (err, saved) => {
+                    if (err) console.error(err);
                     console.log(`Win recorded for ${winners}`);
                   }
                 );
-                stats.getList(game, list => {
-                  let message = `<b>${game.list.name}</b> (${game.list.totalValues}) by ${game.list.creator.username}\n`;
-                  message += game.list.category ? `Category: ${game.list.category}\n` : '';
-                  message += game.list.description ? (game.list.description.includes('href') ? game.list.description : `<i>${angleBrackets(game.list.description)}</i>\n`) : '';
-                  message += list;
-                  bot.sendMessage(game.chat_id, message);
-                });
+                try {
+                  stats.getList(game, list => {
+                    let message = `<b>${game.list.name}</b> (${game.list.totalValues}) by ${game.list.creator.username}\n`;
+                    message += game.list.category ? `Category: ${game.list.category}\n` : '';
+                    message += game.list.description ? (game.list.description.includes('href') ? game.list.description : `<i>${angleBrackets(game.list.description)}</i>\n`) : '';
+                    message += list;
+                    bot.sendMessage(game.chat_id, message);
+                  });
+                } catch (e) {
+                  console.error(e);
+                }
               }, index * 50);
             }
           });
