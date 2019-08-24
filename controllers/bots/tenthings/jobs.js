@@ -58,7 +58,8 @@ const newLists = schedule.scheduleJob('0 0 12 * * *', () => {
         });
         TenThings.find({}).select('chat_id')
         .then(games => {
-          bot.notifyAll(games.filter(({chat_id}) => !_.find(bot.getAdmins(), admin => admin === chat_id)).map(({chat_id}) => chat_id), message);
+          bot.notifyAll(games.filter(game => !_.find(bot.getAdmins(), admin => admin === game.chat_id)).map(game => game.chat_id), message);
+          bot.notifyAdmin(message);
         });
       }
     });
@@ -85,7 +86,8 @@ const modifiedLists = schedule.scheduleJob('0 5 12 * * *', () => {
         });
         TenThings.find({}).select('chat_id')
         .then(games => {
-          bot.notifyAll(games.filter(({chat_id}) => !_.find(bot.getAdmins(), admin => admin === chat_id)).map(({chat_id}) => chat_id), message);
+          bot.notifyAll(games.filter(game => !_.find(bot.getAdmins(), admin => admin === game.chat_id)).map(game => game.chat_id), message);
+          bot.notifyAdmin(message);
         });
       }
     });
@@ -96,18 +98,17 @@ const modifiedLists = schedule.scheduleJob('0 5 12 * * *', () => {
 //bot.sendPhoto(config.masterChat, 'https://m.media-amazon.com/images/M/MV5BNmE1OWI2ZGItMDUyOS00MmU5LWE0MzUtYTQ0YzA1YTE5MGYxXkEyXkFqcGdeQXVyMDM5ODIyNw@@._V1._SX40_CR0,0,40,54_.jpg')
 
 //var dailyScore = schedule.scheduleJob('*/10 * * * * *', function() {
-const dailyScore = schedule.scheduleJob('0 30 4 * * *', () => {
-  //if (new Date().getHours() === 5) {
+const dailyScore = schedule.scheduleJob('0 15 1 * * *', () => {
+  //if (new Date().getHours() === 0) {
   if (true) {
     bot.notifyAdmin(`Score Reset Triggered; ${moment().format('DD-MMM-YYYY')}`);
     TenThings.find({ 'players.scoreDaily': { $gt: 0 }})
     .populate('list.creator')
     .then(games => {
       const uniquePlayers = [];
-      const players = games.reduce((amountOfPlayers, game) => {
+      const players = games.reduce((players, game) => {
         stats.getDailyScores(game);
         getHighScore(game).then(highScore => {
-          console.log(highScore);
           let message = '';
           const winners = [];
           game.players
@@ -120,7 +121,6 @@ const dailyScore = schedule.scheduleJob('0 30 4 * * *', () => {
               message += first_name;
               setTimeout(() => {
                 bot.sendMessage(game.chat_id, `<b>${message} won with ${highScore} points!</b>`);
-                console.log(game.chat_id, `<b>${message} won with ${highScore} points!</b>`);
                 if (game.chat_id != config.groupChat) {
                   bot.sendMessage(game.chat_id, 'Come join us in the <a href="https://t.me/tenthings">Ten Things Supergroup</a>!');
                 }
@@ -162,9 +162,9 @@ const dailyScore = schedule.scheduleJob('0 30 4 * * *', () => {
             }
           });
         });
-        return amountOfPlayers + game.players.filter(({scoreDaily}) => scoreDaily).length;
+        return players.concat(game.players.filter(({scoreDaily}) => scoreDaily).map(player => player.id));
       }, 0);
-      bot.notifyAdmins(`${games.length} games played today with ${players} players of which ${uniquePlayers.length} unique`);
+      bot.notifyAdmins(`${games.length} games played today with ${players.length} players of which ${_.uniq(players, player => player).length} unique`);
     }, err => {
       console.error(err);
       bot.notifyAdmin(`Update daily score error\n${err}`);
@@ -209,10 +209,11 @@ const playStreak = schedule.scheduleJob('0 0 1 * * *', () => {
 });
 
 const getHighScore = (game) => new Promise((resolve, reject) => {
-  resolve(game.players.reduce((highScore, {id, scoreDaily}) => {
-    if (!uniquePlayers.includes(id) && scoreDaily > 0) {
-      uniquePlayers.push(id);
-    }
-    return (scoreDaily > highScore) ? scoreDaily : highScore;
-  }, 0));
+  try {
+    resolve(game.players.reduce((highScore, {id, scoreDaily}) => {
+      return (scoreDaily > highScore) ? scoreDaily : highScore;
+    }, 0));
+  } catch(e) {
+    reject();
+  }
 });
