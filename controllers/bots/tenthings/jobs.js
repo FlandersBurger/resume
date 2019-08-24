@@ -98,7 +98,7 @@ const modifiedLists = schedule.scheduleJob('0 5 12 * * *', () => {
 //bot.sendPhoto(config.masterChat, 'https://m.media-amazon.com/images/M/MV5BNmE1OWI2ZGItMDUyOS00MmU5LWE0MzUtYTQ0YzA1YTE5MGYxXkEyXkFqcGdeQXVyMDM5ODIyNw@@._V1._SX40_CR0,0,40,54_.jpg')
 
 //var dailyScore = schedule.scheduleJob('*/10 * * * * *', function() {
-const dailyScore = schedule.scheduleJob('0 20 1 * * *', () => {
+const dailyScore = schedule.scheduleJob('0 22 1 * * *', () => {
   //if (new Date().getHours() === 0) {
   if (true) {
     bot.notifyAdmin(`Score Reset Triggered; ${moment().format('DD-MMM-YYYY')}`);
@@ -169,7 +169,7 @@ const dailyScore = schedule.scheduleJob('0 20 1 * * *', () => {
           });
         });
         return players.concat(game.players.filter(({scoreDaily}) => scoreDaily).map(player => player.id));
-      }, 0);
+      }, []);
       bot.notifyAdmins(`${games.length} games played today with ${players.length} players of which ${_.uniq(players, player => player).length} unique`);
     }, err => {
       console.error(err);
