@@ -58,8 +58,7 @@ const newLists = schedule.scheduleJob('0 0 12 * * *', () => {
         });
         TenThings.find({}).select('chat_id')
         .then(games => {
-          bot.notifyAll(games.filter(game => !_.find(bot.getAdmins(), admin => admin === game.chat_id)).map(game => game.chat_id), message);
-          bot.notifyAdmin(message);
+          bot.notifyAll(games.map(game => game.chat_id), message);
         });
       }
     });
@@ -86,8 +85,7 @@ const modifiedLists = schedule.scheduleJob('0 5 12 * * *', () => {
         });
         TenThings.find({}).select('chat_id')
         .then(games => {
-          bot.notifyAll(games.filter(game => !_.find(bot.getAdmins(), admin => admin === game.chat_id)).map(game => game.chat_id), message);
-          bot.notifyAdmin(message);
+          bot.notifyAll(games.map(game => game.chat_id), message);
         });
       }
     });
@@ -98,9 +96,9 @@ const modifiedLists = schedule.scheduleJob('0 5 12 * * *', () => {
 //bot.sendPhoto(config.masterChat, 'https://m.media-amazon.com/images/M/MV5BNmE1OWI2ZGItMDUyOS00MmU5LWE0MzUtYTQ0YzA1YTE5MGYxXkEyXkFqcGdeQXVyMDM5ODIyNw@@._V1._SX40_CR0,0,40,54_.jpg')
 
 //var dailyScore = schedule.scheduleJob('*/10 * * * * *', function() {
-const dailyScore = schedule.scheduleJob('0 22 1 * * *', () => {
-  //if (new Date().getHours() === 0) {
-  if (true) {
+const dailyScore = schedule.scheduleJob('0 0 0 * * *', () => {
+  if (new Date().getHours() === 0) {
+  //if (true) {
     bot.notifyAdmin(`Score Reset Triggered; ${moment().format('DD-MMM-YYYY')}`);
     TenThings.find({ 'players.scoreDaily': { $gt: 0 }})
     .populate('list.creator')
@@ -223,3 +221,7 @@ const getHighScore = (game) => new Promise((resolve, reject) => {
     reject();
   }
 });
+
+function angleBrackets(str) {
+  return str.replace('<','&lt;').replace('>','&gt;');
+}
