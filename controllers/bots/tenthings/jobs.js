@@ -41,8 +41,8 @@ function isPlayerPresent(channel, player, index) {
 }*/
 
 
-const newLists = schedule.scheduleJob('0 0 12 * * *', () => {
-  if (new Date().getHours() === 12) {
+const newLists = schedule.scheduleJob('0 0 5 * * *', () => {
+  if (new Date().getHours() === 5) {
     List.find({
       $or: [
         {
@@ -67,8 +67,8 @@ const newLists = schedule.scheduleJob('0 0 12 * * *', () => {
   }
 });
 
-const modifiedLists = schedule.scheduleJob('0 5 12 * * *', () => {
-  if (new Date().getHours() === 12) {
+const modifiedLists = schedule.scheduleJob('0 5 5 * * *', () => {
+  if (new Date().getHours() === 5) {
     List.find({
       $or: [
         {
