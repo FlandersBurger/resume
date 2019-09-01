@@ -42,56 +42,52 @@ function isPlayerPresent(channel, player, index) {
 
 
 const newLists = schedule.scheduleJob('0 0 5 * * *', () => {
-  if (new Date().getHours() === 5) {
-    List.find({
-      $or: [
-        {
-          date: { $gt: moment().subtract(1, 'days') }
-        }
-      ]
-    })
-    .then(lists => {
-      if (lists.length > 0) {
-        let message = '<b>New lists created today</b>';
-        lists.forEach(({name}) => {
-          message += `\n- ${name}`;
-        });
-        TenThings.find({}).select('chat_id')
-        .then(games => {
-          bot.notifyAll(games.map(game => game.chat_id), message);
-        });
+  List.find({
+    $or: [
+      {
+        date: { $gt: moment().subtract(1, 'days') }
       }
-    });
-  } else {
-    bot.notifyAdmin(`New lists incorrectly triggered: ${moment().format('DD-MMM-YYYY hh:mm')}`);
-  }
+    ]
+  })
+  .then(lists => {
+    if (lists.length > 0) {
+      let message = '<b>New lists created today</b>';
+      lists.forEach(({name}) => {
+        message += `\n- ${name}`;
+      });
+      TenThings.find({}).select('chat_id')
+      .then(games => {
+        bot.notifyAll(games.map(game => game.chat_id), message);
+      });
+    } else {
+      bot.notifyAdmin('No lists created');
+    }
+  });
 });
 
 const modifiedLists = schedule.scheduleJob('0 5 5 * * *', () => {
-  if (new Date().getHours() === 5) {
-    List.find({
-      $or: [
-        {
-          modifyDate: { $gt: moment().subtract(1, 'days') },
-          date: { $lt: moment().subtract(1, 'days') }
-        }
-      ]
-    })
-    .then(lists => {
-      if (lists.length > 0) {
-        let message = '<b>Lists updated today</b>';
-        lists.forEach(({name}) => {
-          message += `\n- ${name}`;
-        });
-        TenThings.find({}).select('chat_id')
-        .then(games => {
-          bot.notifyAll(games.map(game => game.chat_id), message);
-        });
+  List.find({
+    $or: [
+      {
+        modifyDate: { $gt: moment().subtract(1, 'days') },
+        date: { $lt: moment().subtract(1, 'days') }
       }
-    });
-  } else {
-    bot.notifyAdmin(`New lists incorrectly triggered: ${moment().format('DD-MMM-YYYY hh:mm')}`);
-  }
+    ]
+  })
+  .then(lists => {
+    if (lists.length > 0) {
+      let message = '<b>Lists updated today</b>';
+      lists.forEach(({name}) => {
+        message += `\n- ${name}`;
+      });
+      TenThings.find({}).select('chat_id')
+      .then(games => {
+        bot.notifyAll(games.map(game => game.chat_id), message);
+      });
+    } else {
+      bot.notifyAdmin('No lists modified');
+    }
+  });
 });
 //bot.sendPhoto(config.masterChat, 'https://m.media-amazon.com/images/M/MV5BNmE1OWI2ZGItMDUyOS00MmU5LWE0MzUtYTQ0YzA1YTE5MGYxXkEyXkFqcGdeQXVyMDM5ODIyNw@@._V1._SX40_CR0,0,40,54_.jpg')
 
