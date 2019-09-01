@@ -188,17 +188,17 @@ const dailyScore = schedule.scheduleJob('0 0 0 * * *', () => {
   });
 });
 
-
 const playStreak = schedule.scheduleJob('0 0 1 * * *', () => {
   //Update play streaks
   TenThings.find({ 'players.playStreak': { $gt: 0 } })
-  .select('players.playStreak players.maxPlayStreak')
   .then(games => {
     if (games.length > 0) bot.notifyAdmin(`${games.length} game streaks updated`);
     games.forEach(game => {
       for (const player of game.players) {
         if (player.playStreak > player.maxPlayStreak) {
           player.maxPlayStreak = player.playStreak;
+        } else if (player.playStreak === player.maxPlayStreak) {
+          player.playStreak = 0;
         }
       }
       game.save((err, saved, rows) => {
