@@ -234,7 +234,7 @@ module.exports = {
         messages = ['Ultra Spree'];
         break;
       case 22:
-        messages = ['Cath-22'];
+        messages = ['Catch-22'];
         break;
       case 25:
         messages = ['M-M-M-Monster Spree'];
@@ -278,7 +278,7 @@ module.exports = {
         messages = ['ONE HUNDRED AND EIGHTY!'];
         break;
       case 200:
-        messages = ['Zwei Hunderd Bitte und Danke Schon!'];
+        messages = ['Zwei Hundert Bitte und Danke Schon!'];
         break;
       case 201:
         messages = ['I\'m not actually German btw'];
