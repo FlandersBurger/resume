@@ -41,11 +41,11 @@ function isPlayerPresent(channel, player, index) {
 }*/
 
 
-const newLists = schedule.scheduleJob('0 0 5 * * *', () => {
+const newLists = schedule.scheduleJob('0 0 12 * * *', () => {
   List.find({
     $or: [
       {
-        date: { $gt: moment().subtract(1, 'days') }
+        date: { $gte: moment().subtract(1, 'days') }
       }
     ]
   })
@@ -57,7 +57,7 @@ const newLists = schedule.scheduleJob('0 0 5 * * *', () => {
       });
       TenThings.find({}).select('chat_id')
       .then(games => {
-        bot.notifyAll(games.map(game => game.chat_id), message);
+        bot.broadcast(games.map(game => game.chat_id), message);
       });
     } else {
       bot.notifyAdmin('No lists created');
@@ -65,11 +65,11 @@ const newLists = schedule.scheduleJob('0 0 5 * * *', () => {
   });
 });
 
-const modifiedLists = schedule.scheduleJob('0 5 5 * * *', () => {
+const modifiedLists = schedule.scheduleJob('0 5 12 * * *', () => {
   List.find({
     $or: [
       {
-        modifyDate: { $gt: moment().subtract(1, 'days') },
+        modifyDate: { $gte: moment().subtract(1, 'days') },
         date: { $lt: moment().subtract(1, 'days') }
       }
     ]
@@ -82,7 +82,7 @@ const modifiedLists = schedule.scheduleJob('0 5 5 * * *', () => {
       });
       TenThings.find({}).select('chat_id')
       .then(games => {
-        bot.notifyAll(games.map(game => game.chat_id), message);
+        bot.broadcast(games.map(game => game.chat_id), message);
       });
     } else {
       bot.notifyAdmin('No lists modified');
