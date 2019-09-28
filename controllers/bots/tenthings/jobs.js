@@ -187,18 +187,42 @@ const dailyScore = schedule.scheduleJob('0 0 0 * * *', () => {
     }
   });
 });
+/*
+TenThings.find({ 'players.playStreak': { $gt: 0 } })
+.then(games => {
+
+  const activePlayers = games.reduce((players, game) => {
+    return players.concat(game.players.filter(player => player.playStreak))
+  }, []).length;
+  if (games.length > 0) console.log(`${activePlayers} game streaks updated in ${games.length} games`);
+  games.forEach(game => {
+    console.log(game._id, game.players.filter(player => player.playStreak).map(player => player._id + ' ' + player.playStreak + '/' + player.maxPlayStreak + ' ' + player.lastPlayDate));
+    for (const player of game.players) {
+      if (player.playStreak <= player.maxPlayStreak && player.lastPlayDate <= moment().subtract(1, 'days')) {
+        player.playStreak = 0;
+      } else if (player.playStreak > player.maxPlayStreak) {
+        player.maxPlayStreak = player.playStreak;
+      }
+    }
+    console.log(game._id, game.players.filter(player => player.playStreak).map(player => player._id + ' ' + player.playStreak + '/' + player.maxPlayStreak + ' ' + player.lastPlayDate));
+  });
+});
+*/
 
 const playStreak = schedule.scheduleJob('0 0 1 * * *', () => {
   //Update play streaks
   TenThings.find({ 'players.playStreak': { $gt: 0 } })
   .then(games => {
-    if (games.length > 0) bot.notifyAdmin(`${games.length} game streaks updated`);
+    const activePlayers = games.reduce((players, game) => {
+      return players.concat(game.players.filter(player => player.playStreak))
+    }, []).length;
+    if (games.length > 0) bot.notifyAdmin(`${activePlayers} game streaks updated in ${games.length} games`);
     games.forEach(game => {
       for (const player of game.players) {
-        if (player.playStreak > player.maxPlayStreak) {
-          player.maxPlayStreak = player.playStreak;
-        } else if (player.playStreak === player.maxPlayStreak) {
+        if (player.playStreak <= player.maxPlayStreak && player.lastPlayDate <= moment().subtract(1, 'days')) {
           player.playStreak = 0;
+        } else if (player.playStreak > player.maxPlayStreak) {
+          player.maxPlayStreak = player.playStreak;
         }
       }
       game.save((err, saved, rows) => {
