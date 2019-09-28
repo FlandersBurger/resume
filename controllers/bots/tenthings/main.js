@@ -530,6 +530,7 @@ router.post('/', ({body}, res, next) => {
     res.status(200).send('EVENT_RECEIVED');
     return console.log(body);
   }
+  if (msg.chat.id === config.adminChat) return res.status(200);
   let msg, i, item;
   if (body.callback_query) {
     const data = JSON.parse(body.callback_query.data);
@@ -772,7 +773,7 @@ function evaluateCommand(res, msg, game, player, isNew) {
     console.error(msg);
     return res.sendStatus(200);
   } else {
-      res.sendStatus(200);
+    res.sendStatus(200);
   }
   if (game.list.values.length === 0) {
     newRound(game);
@@ -845,7 +846,6 @@ function evaluateCommand(res, msg, game, player, isNew) {
         game.save();
         const suggestion = `<b>Suggestion</b>\n${msg.text.substring(9, msg.text.length)}\n<i>${msg.from.username ? msg.from.username : msg.from.first_name}</i>`;
         bot.notifyAdmins(suggestion);
-        bot.sendMessage(config.suggestionChat, suggestion)
         bot.sendMessage(msg.chat.id, `Suggestion noted, ${msg.from.first_name}!`);
       } else {
         bot.sendMessage(msg.chat.id, `You didn't suggest anything ${msg.from.first_name}. Add your message after /suggest`);

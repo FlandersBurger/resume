@@ -78,12 +78,8 @@ function TelegramBot() {
     b.sendMessage(config.masterChat, msg);
   };
 
-  bot.getAdmins = () => config.adminChats;
-
   bot.notifyAdmins = msg => {
-    bot.getAdmins().forEach(admin => {
-      b.sendMessage(admin, msg);
-    });
+    b.sendMessage(config.adminChat, msg);
   };
 
   bot.broadcast = (channels, message) => {
