@@ -540,7 +540,7 @@ router.post('/', ({body}, res, next) => {
     text: body.message.text,
     chat: body.message.chat
   });
-  if (body.message.chat.id === config.adminChat) return res.status(200);
+  if (body.message.chat.id === config.adminChat) return res.sendStatus(200);;
   let msg, i, item;
   if (body.callback_query) {
     const data = JSON.parse(body.callback_query.data);
