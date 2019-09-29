@@ -531,7 +531,7 @@ router.post('/', ({body}, res, next) => {
     return console.log(body);
   }
   if (!body.message) {
-    notifyAdmin(body);
+    bot.notifyAdmin(body);
   }
   if (body.message && body.message.chat.id === config.adminChat) return res.sendStatus(200);;
   let msg, i, item;
