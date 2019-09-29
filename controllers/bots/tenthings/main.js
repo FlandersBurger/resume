@@ -530,9 +530,10 @@ router.post('/', ({body}, res, next) => {
     res.status(200).send('EVENT_RECEIVED');
     return console.log(body);
   }
-  console.log('here');
+  console.log(body.message.chat.id);
+  console.log(config.adminChat);
+  console.log(body.message.chat.id === config.adminChat);
   if (body.message.chat.id === config.adminChat) return res.status(200);
-  console.log('here2');
   let msg, i, item;
   if (body.callback_query) {
     const data = JSON.parse(body.callback_query.data);
