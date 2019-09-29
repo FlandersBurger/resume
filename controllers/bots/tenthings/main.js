@@ -530,16 +530,6 @@ router.post('/', ({body}, res, next) => {
     res.status(200).send('EVENT_RECEIVED');
     return console.log(body);
   }
-  console.log(body.message.chat.id);
-  console.log(config.adminChat);
-  console.log(body.message.chat.id === config.adminChat);
-  console.log({
-    id: body.message.message_id,
-    from: body.message.from,
-    command: body.message.text.substring(0, !body.message.text.includes(' ') ? body.message.text.length : body.message.text.indexOf(' ')),
-    text: body.message.text,
-    chat: body.message.chat
-  });
   if (body.message.chat.id === config.adminChat) return res.sendStatus(200);;
   let msg, i, item;
   if (body.callback_query) {
