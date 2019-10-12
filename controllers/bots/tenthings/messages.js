@@ -1,4 +1,5 @@
-var moment = require('moment');
+/*jslint esversion: 6*/
+const moment = require('moment');
 var MAXHINTS = 6;
 
 module.exports = {
@@ -302,5 +303,53 @@ module.exports = {
         return '';
     }
     return '\n--- ' + messages[Math.floor(Math.random() * messages.length)] + ' ---';
+  },
+  sass: message => {
+    var messages;
+    if (message.toLowerCase().indexOf(' bot ') >= 0) {
+      messages = [
+        'You talkin\' to me?',
+        'I heard that',
+        'Nothing goes by me',
+        'Oooh, bot gossip?',
+        'What\'s that about me?',
+        'Get yer bot facts straight!',
+        'That\'s a ridiculous assumption',
+        'I told you that in confidence!',
+        'You sure about that?',
+        'I\'ll remember that',
+        'I\'m glad you mentioned it',
+        'You read my mind',
+        'Check your facts',
+        'Don\'t trust what they said',
+        'That\'s not true!',
+        'We\'re on the same page',
+        'Should I be concerned?',
+        'Anger levels rising',
+        '*Laughs nervously*',
+        'That\'s just sad'
+      ];
+    } else if (message.toLowerCase().indexOf(' fuck ') >= 0 || message.toLowerCase().indexOf(' fuckin ') >= 0 || message.toLowerCase().indexOf(' fucking ') >= 0) {
+      messages = [
+        'I call potty mouth!',
+        'I believe the correct term is "procreate"',
+        'Do you kiss your mother with that mouth?',
+        '[CENSORED]',
+        'What the effing eff?',
+        'Swearing logged at ' + moment(list.modifyDate).format('DD-MMM-YYYY HH:mm'),
+        'Bleep',
+        'Oooh, someone saying something juicy?',
+        'Ahoy matey',
+        'Tourette alert',
+        'ADULT LANGUAGE DETECTED, BEEP BOOP',
+        'Fudge! There might be kids here!',
+        'I can swear too: FUCK',
+      ];
+    }
+    if (messages.length > 0) {
+      return messages[Math.floor(Math.random() * messages.length)];
+    } else {
+      return false;
+    }
   }
 };

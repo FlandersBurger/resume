@@ -1,10 +1,11 @@
-var mongoose = require('mongoose');
-var config = require('./config');
-var url = process.env.MONGOLAB_URI || config.mongo;
+/*jslint esversion: 6*/
+const mongoose = require('mongoose');
+const config = require('./config');
+const url = process.env.MONGOLAB_URI || config.mongo;
 
-mongoose.connect(url, function(err) {
+mongoose.connect(url, (err) => {
 //mongoose.connect('mongodb://localhost/social', function() {
-  if (err) { console.error(err); }
+  if (err) return console.error(err);
   console.log('MongoDB connected');
 });
 

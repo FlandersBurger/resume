@@ -1,3 +1,4 @@
+/*jslint esversion: 6*/
 const router = require('express').Router();
 const _ = require('underscore');
 const FuzzyMatching = require('fuzzy-matching');
@@ -196,8 +197,8 @@ function rateList(game) {
 function queueGuess({list, chat_id}, msg) {
   const fuzzyMatch = new FuzzyMatching(list.values.map(({value}) => value.replace(new RegExp(`[${SPECIAL_CHARACTERS}]`, 'gi'), '')));
   const guess = {
-    game: chat_id,
     msg,
+    game: chat_id,
     match: fuzzyMatch.get(msg.text.replace(new RegExp(`[${SPECIAL_CHARACTERS}]`, 'gi'), ''))
   };
   guess.match.index = _.findIndex(list.values, ({value}) => value.replace(new RegExp(`[${SPECIAL_CHARACTERS}]`, 'gi'), '') === guess.match.value);
@@ -207,6 +208,12 @@ function queueGuess({list, chat_id}, msg) {
     setTimeout(() => {
       queueingGuess(guess);
     }, 2000);
+  } else {
+    const sass = messages.sass(guess);
+    if (sass) {
+      bot.notifyAdmin(message, sass);
+      bot.sendMessage(chat_id, sass);
+    }
   }
 }
 

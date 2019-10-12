@@ -1,4 +1,4 @@
-/*jslint esversion: 6 */
+/*jslint esversion: 6*/
 const schedule = require('node-schedule');
 const _ = require('underscore');
 const moment = require('moment');
