@@ -214,15 +214,18 @@ const playStreak = schedule.scheduleJob('0 0 1 * * *', () => {
   TenThings.find({ 'players.playStreak': { $gt: 0 } })
   .then(games => {
     const activePlayers = games.reduce((players, game) => {
-      return players.concat(game.players.filter(player => player.playStreak))
+      return players.concat(game.players.filter(player => player.playStreak));
     }, []).length;
     if (games.length > 0) bot.notifyAdmin(`${activePlayers} game streaks updated in ${games.length} games`);
     games.forEach(game => {
       for (const player of game.players) {
-        if (player.playStreak <= player.maxPlayStreak && player.lastPlayDate <= moment().subtract(1, 'days')) {
-          player.playStreak = 0;
-        } else if (player.playStreak > player.maxPlayStreak) {
-          player.maxPlayStreak = player.playStreak;
+        if (player.playStreak > 0) {
+          if (player.playStreak > player.maxPlayStreak) {
+            player.maxPlayStreak = player.playStreak;
+          }
+          if (player.lastPlayDate <= moment().subtract(1, 'days')) {
+            player.playStreak = 0;
+          }
         }
       }
       game.save((err, saved, rows) => {
