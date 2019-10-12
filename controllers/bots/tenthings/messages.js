@@ -329,7 +329,11 @@ module.exports = {
         '*Laughs nervously*',
         'That\'s just sad'
       ];
-    } else if (message.toLowerCase().indexOf(' fuck ') >= 0 || message.toLowerCase().indexOf(' fuckin ') >= 0 || message.toLowerCase().indexOf(' fucking ') >= 0) {
+    } else if (message.toLowerCase().indexOf(' fuck ') >= 0 ||
+      message.toLowerCase().indexOf('fuck') === 0 ||  
+      message.toLowerCase().indexOf(' fuckin ') >= 0 ||
+      message.toLowerCase().indexOf(' fucking ') >= 0
+    ) {
       messages = [
         'I call potty mouth!',
         'I believe the correct term is "procreate"',
