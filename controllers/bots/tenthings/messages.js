@@ -305,7 +305,7 @@ module.exports = {
     return '\n--- ' + messages[Math.floor(Math.random() * messages.length)] + ' ---';
   },
   sass: message => {
-    var messages;
+    var messages = [];
     if (message.toLowerCase().indexOf(' bot ') >= 0 || message.toLowerCase().indexOf('bot ') === 0 || message.toLowerCase().indexOf(' bot') === message.length - 4) {
       messages = [
         'You talkin\' to me?',
