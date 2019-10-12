@@ -211,7 +211,7 @@ function queueGuess({list, chat_id}, msg) {
   } else {
     const sass = messages.sass(guess.msg.text);
     if (sass) {
-      bot.notifyAdmin(guess.msg.text + '\n' + sass);
+      bot.notifyAdmin(list.name + '\n' + guess.msg.text + '\n' + sass);
       bot.sendMessage(chat_id, sass);
     }
   }

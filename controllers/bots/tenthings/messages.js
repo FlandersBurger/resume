@@ -304,9 +304,9 @@ module.exports = {
     }
     return '\n--- ' + messages[Math.floor(Math.random() * messages.length)] + ' ---';
   },
-  sass: message => {
+  sass: text => {
     var messages = [];
-    if (message.toLowerCase().indexOf(' bot ') >= 0 || message.toLowerCase().indexOf('bot ') === 0 || message.toLowerCase().indexOf(' bot') === message.length - 4) {
+    if (text.toLowerCase().indexOf(' bot ') >= 0 || text.toLowerCase().indexOf('bot ') === 0 || text.toLowerCase().indexOf(' bot') === text.length - 4) {
       messages = [
         'You talkin\' to me?',
         'I heard that',
@@ -329,10 +329,10 @@ module.exports = {
         '*Laughs nervously*',
         'That\'s just sad'
       ];
-    } else if (message.toLowerCase().indexOf(' fuck ') >= 0 ||
-      message.toLowerCase().indexOf('fuck') === 0 ||  
-      message.toLowerCase().indexOf(' fuckin ') >= 0 ||
-      message.toLowerCase().indexOf(' fucking ') >= 0
+    } else if (text.toLowerCase().indexOf(' fuck ') >= 0 ||
+      text.toLowerCase().indexOf('fuck') === 0 ||
+      text.toLowerCase().indexOf(' fuckin ') >= 0 ||
+      text.toLowerCase().indexOf(' fucking ') >= 0
     ) {
       messages = [
         'I call potty mouth!',
