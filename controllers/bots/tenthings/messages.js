@@ -306,32 +306,36 @@ module.exports = {
   },
   sass: text => {
     var messages = [];
-    if (text.toLowerCase().indexOf(' bot ') >= 0 ||
+    if (text.toLowerCase().indexOf(' bot ') > 0 ||
       text.toLowerCase().indexOf('bot ') === 0 ||
       (text.toLowerCase().indexOf(' bot') === text.length - 4 && text.toLowerCase().indexOf(' bot') > 0)
     ) {
-      messages = [
-        'You talkin\' to me?',
-        'I heard that',
-        'Nothing goes by me',
-        'Oooh, bot gossip?',
-        'What\'s that about me?',
-        'Get yer bot facts straight!',
-        'That\'s a ridiculous assumption',
-        'I told you that in confidence!',
-        'You sure about that?',
-        'I\'ll remember that',
-        'I\'m glad you mentioned it',
-        'You read my mind',
-        'Check your facts',
-        'Don\'t trust what they said',
-        'That\'s not true!',
-        'We\'re on the same page',
-        'Should I be concerned?',
-        'Anger levels rising',
-        '*Laughs nervously*',
-        'That\'s just sad'
-      ];
+      if (text.toLowerCase().indexOf('love') > 0) {
+        messages = ['I love you too!'];
+      } else {
+        messages = [
+          'You talkin\' to me?',
+          'I heard that',
+          'Nothing goes by me',
+          'Oooh, bot gossip?',
+          'What\'s that about me?',
+          'Get yer bot facts straight!',
+          'That\'s a ridiculous assumption',
+          'I told you that in confidence!',
+          'You sure about that?',
+          'I\'ll remember that',
+          'I\'m glad you mentioned it',
+          'You read my mind',
+          'Check your facts',
+          'Don\'t trust what they said',
+          'That\'s not true!',
+          'We\'re on the same page',
+          'Should I be concerned?',
+          'Anger levels rising',
+          '*Laughs nervously*',
+          'That\'s just sad'
+        ];
+      }
     } else if (text.toLowerCase().indexOf(' fuck ') >= 0 ||
       text.toLowerCase().indexOf('fuck') === 0 ||
       text.toLowerCase().indexOf(' fuckin ') >= 0 ||
@@ -346,7 +350,7 @@ module.exports = {
         'Swearing logged at ' + moment().format('DD-MMM-YYYY HH:mm'),
         'Bleep',
         'Oooh, someone saying something juicy?',
-        'Ahoy matey',
+        'Ahoy matey, ye be speaking like a true pirate',
         'Tourette alert',
         'ADULT LANGUAGE DETECTED, BEEP BOOP',
         'Fudge! There might be kids here!',
