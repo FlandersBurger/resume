@@ -306,7 +306,10 @@ module.exports = {
   },
   sass: text => {
     var messages = [];
-    if (text.toLowerCase().indexOf(' bot ') >= 0 || text.toLowerCase().indexOf('bot ') === 0 || text.toLowerCase().indexOf(' bot') === text.length - 4) {
+    if (text.toLowerCase().indexOf(' bot ') >= 0 ||
+      text.toLowerCase().indexOf('bot ') === 0 ||
+      (text.toLowerCase().indexOf(' bot') === text.length - 4 && text.toLowerCase().indexOf(' bot') > 0)
+    ) {
       messages = [
         'You talkin\' to me?',
         'I heard that',
