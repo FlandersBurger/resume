@@ -209,7 +209,7 @@ function queueGuess({list, chat_id}, msg) {
       queueingGuess(guess);
     }, 2000);
   } else {
-    const sass = messages.sass(guess);
+    const sass = messages.sass(guess.msg.text);
     if (sass) {
       bot.notifyAdmin(message, sass);
       bot.sendMessage(chat_id, sass);

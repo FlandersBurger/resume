@@ -353,6 +353,3 @@ module.exports = {
     }
   }
 };
-
-console.log('ummmmm bot'.toLowerCase().indexOf(' bot'));
-console.log('ummmmm bot'.length);
