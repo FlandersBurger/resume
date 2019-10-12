@@ -306,7 +306,7 @@ module.exports = {
   },
   sass: message => {
     var messages;
-    if (message.toLowerCase().indexOf(' bot ') >= 0) {
+    if (message.toLowerCase().indexOf(' bot ') >= 0 || message.toLowerCase().indexOf('bot ') === 0 || message.toLowerCase().indexOf(' bot') === message.length - 4) {
       messages = [
         'You talkin\' to me?',
         'I heard that',
@@ -353,3 +353,6 @@ module.exports = {
     }
   }
 };
+
+console.log('ummmmm bot'.toLowerCase().indexOf(' bot'));
+console.log('ummmmm bot'.length);
