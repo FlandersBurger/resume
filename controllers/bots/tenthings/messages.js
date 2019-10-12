@@ -336,7 +336,7 @@ module.exports = {
         'Do you kiss your mother with that mouth?',
         '[CENSORED]',
         'What the effing eff?',
-        'Swearing logged at ' + moment(list.modifyDate).format('DD-MMM-YYYY HH:mm'),
+        'Swearing logged at ' + moment().format('DD-MMM-YYYY HH:mm'),
         'Bleep',
         'Oooh, someone saying something juicy?',
         'Ahoy matey',
