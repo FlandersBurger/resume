@@ -361,11 +361,11 @@ module.exports = {
       messages = ['Who\'s there?'];
     } else if (text.toLowerCase() === ('i love you')) {
       messages = ['I know'];
-    } else if (checkString('the truth')) {
+    } else if (checkString(text, 'the truth')) {
       messages = ['You can\'t handle the truth!'];
-    } else if (checkString('your quest')) {
+    } else if (checkString(text, 'your quest')) {
       messages = ['To seek the holy grail'];
-    } else if (checkString('inconceivable')) {
+    } else if (checkString(text, 'inconceivable')) {
       messages = ['My name is Inigo Montoya'];
     }
     if (messages.length > 0) {
