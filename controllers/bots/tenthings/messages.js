@@ -306,10 +306,7 @@ module.exports = {
   },
   sass: text => {
     var messages = [];
-    if (text.toLowerCase().indexOf(' bot ') > 0 ||
-      text.toLowerCase().indexOf('bot ') === 0 ||
-      (text.toLowerCase().indexOf(' bot') === text.length - 4 && text.toLowerCase().indexOf(' bot') > 0)
-    ) {
+    if (checkString(text, 'bot')) {
       if (text.toLowerCase().indexOf('love') > 0) {
         messages = ['I love you too!'];
       } else {
@@ -336,10 +333,9 @@ module.exports = {
           'That\'s just sad'
         ];
       }
-    } else if (text.toLowerCase().indexOf(' fuck ') >= 0 ||
-      text.toLowerCase().indexOf('fuck') === 0 ||
-      text.toLowerCase().indexOf(' fuckin ') >= 0 ||
-      text.toLowerCase().indexOf(' fucking ') >= 0
+    } else if (checkString(text, 'fuck') ||
+      checkString(text, 'fuckin') ||
+      checkString(text, 'fucking')
     ) {
       messages = [
         'I call potty mouth!',
@@ -355,7 +351,22 @@ module.exports = {
         'ADULT LANGUAGE DETECTED, BEEP BOOP',
         'Fudge! There might be kids here!',
         'I can swear too: FUCK',
+        'That escalated quickly'
       ];
+    } else if (checkString(text, 'cake')) {
+      messages = ['The cake is a lie'];
+    } else if (checkString(text, 'marco')) {
+      messages = ['Polo'];
+    } else if (checkString(text, 'knock knock')) {
+      messages = ['Who\'s there?'];
+    } else if (text.toLowerCase() === ('i love you')) {
+      messages = ['I know'];
+    } else if (checkString('the truth')) {
+      messages = ['You can\'t handle the truth!'];
+    } else if (checkString('your quest')) {
+      messages = ['To seek the holy grail'];
+    } else if (checkString('inconceivable')) {
+      messages = ['My name is Inigo Montoya'];
     }
     if (messages.length > 0) {
       return messages[Math.floor(Math.random() * messages.length)];
@@ -364,3 +375,7 @@ module.exports = {
     }
   }
 };
+
+const checkString = (text, str) => text.toLowerCase().indexOf(` ${str} `) > 0 ||
+  text.toLowerCase().indexOf(`${str} `) === 0 ||
+  (text.toLowerCase().indexOf(` ${str}`) === text.length - str.length - 1 && text.toLowerCase().indexOf(` ${str}`) > 0);
