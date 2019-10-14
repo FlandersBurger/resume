@@ -79,8 +79,13 @@ angular.module('app')
   })
   .state('bots', {
     url: '/bots',
-    controller: 'BotsCtrl',
-    templateUrl: 'bots.html'
+    controller: 'TenThingsCtrl',
+    templateUrl: 'tenthings.html'
+  })
+  .state('tenthings', {
+    url: '/tenthings',
+    controller: 'TenThingsCtrl',
+    templateUrl: 'tenthings.html'
   })
   .state('quiz-google', {
     url: '/google',
