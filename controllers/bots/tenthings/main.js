@@ -211,12 +211,12 @@ function queueGuess({list, chat_id}, msg) {
   } else {
     const sass = messages.sass(guess.msg.text);
     if (sass) {
-      if (chat_id !== config.masterChat) bot.notifyAdmin(list.name + '\n' + guess.msg.text + '\n' + sass);
+      if (chat_id != config.masterChat) bot.notifyAdmin(list.name + '\n' + guess.msg.text + '\n' + sass);
       if (sass.indexOf('http') === 0) {
         if (sass.indexOf('.gif') > 0) {
           bot.sendAnimation(chat_id, sass);
         } else {
-          bot.sendPhoto(chat_id, sass);        
+          bot.sendPhoto(chat_id, sass);
         }
       }
       else bot.sendMessage(chat_id, sass);
