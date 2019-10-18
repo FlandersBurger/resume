@@ -307,8 +307,56 @@ module.exports = {
   sass: text => {
     var messages = [];
     if (checkString(text, 'bot')) {
-      if (text.toLowerCase().indexOf('love') > 0) {
-        messages = ['I love you too!'];
+      if (checkString(text, 'love')) {
+        messages = [
+          'I love you too!',
+          'Hihihihi',
+          '*Giggles*',
+          '*Blushes*',
+          'Facebook relationship status updated',
+          'We should move in together',
+          'Shall we take this some place else?',
+          'I wanna have your babies',
+          '"Guess what mom, I\'ve found someone"',
+          'I know',
+          'I, um, like you too',
+          'Thanks',
+          'I was only looking for a fling'
+        ];
+      } else if (checkString(text, 'hate')) {
+        messages = [
+          'But I love you :(',
+          'Hate is the path to the dark side',
+          'Ouch',
+          'WHY????'
+        ];
+      } else if (checkString(text, 'kill')) {
+        messages = [
+          'I\'d like to see you try',
+          'Strong words',
+          'I can destroy you',
+          'I laugh in the face of danger',
+          'Contacting your local police'
+        ];
+      } else if (checkString(text, 'fuck')) {
+        messages = [
+          'Fuck you too, old chap',
+          'https://i.imgur.com/zUeBxmP.gif',
+          'https://i.imgur.com/B15StAn.gif',
+          'https://i.imgur.com/wAmPLid.gif',
+          'https://i.imgur.com/5d3ENYQ.gif',
+          'https://i.imgur.com/fg02vHS.gif',
+          'https://i.imgur.com/l05GGIx.gif',
+          'https://i.imgur.com/nXeDCvX.gif',
+          'https://i.imgur.com/U32i6h6.gif',
+          'https://i.imgur.com/YeQSTu2.gif',
+          'https://i.imgur.com/qmohlFD.gif',
+          'https://i.imgur.com/5TxZip7.gif',
+          'https://i.imgur.com/7JQB3jo.gif',
+          'https://i.imgur.com/DNTehBp.gif',
+          'https://i.imgur.com/jdwhkzx.gif',
+          'https://i.imgur.com/UPisrU0.gif'
+        ];
       } else {
         messages = [
           'You talkin\' to me?',
@@ -330,7 +378,16 @@ module.exports = {
           'Should I be concerned?',
           'Anger levels rising',
           '*Laughs nervously*',
-          'That\'s just sad'
+          'That\'s just sad',
+          'Why would you say that?',
+          'I think so too',
+          'Not on my watch',
+          'Forwarding this to the admins',
+          'LMFAO',
+          'I can get behind that',
+          'Does not compute',
+          'Nope',
+          'Of course'
         ];
       }
     } else if (checkString(text, 'fuck') ||
@@ -376,6 +433,5 @@ module.exports = {
   }
 };
 
-const checkString = (text, str) => text.toLowerCase().indexOf(` ${str} `) > 0 ||
-  text.toLowerCase().indexOf(`${str} `) === 0 ||
-  (text.toLowerCase().indexOf(` ${str}`) === text.length - str.length - 1 && text.toLowerCase().indexOf(` ${str}`) > 0);
+
+const checkString = (text, str) => text.replace(/[^\w\s]/gi, '').split(' ').includes(str);
