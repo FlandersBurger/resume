@@ -83,6 +83,7 @@ const modifiedLists = schedule.scheduleJob('0 5 12 * * *', () => {
       TenThings.find({}).select('chat_id')
       .then(games => {
         bot.broadcast(games.map(game => game.chat_id), message);
+        bot.notifyAdmins(message);
       });
     } else {
       bot.notifyAdmin('No lists modified');
