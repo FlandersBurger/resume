@@ -211,8 +211,9 @@ function queueGuess({list, chat_id}, msg) {
   } else {
     const sass = messages.sass(guess.msg.text);
     if (sass) {
-      bot.notifyAdmin(list.name + '\n' + guess.msg.text + '\n' + sass);
-      bot.sendMessage(chat_id, sass);
+      if (chat_id !== config.masterChat) bot.notifyAdmin(list.name + '\n' + guess.msg.text + '\n' + sass);
+      if (sass.indexOf('http') === 0) bot.sendPhoto(chat_id, sass);
+      else bot.sendMessage(chat_id, sass);
     }
   }
 }

@@ -341,21 +341,21 @@ module.exports = {
       } else if (checkString(text, 'fuck')) {
         messages = [
           'Fuck you too, old chap',
-          '<img src="https://i.imgur.com/zUeBxmP.gif"/>',
-          '<img src="https://i.imgur.com/B15StAn.gif"/>',
-          '<img src="https://i.imgur.com/wAmPLid.gif"/>',
-          '<img src="https://i.imgur.com/5d3ENYQ.gif"/>',
-          '<img src="https://i.imgur.com/fg02vHS.gif"/>',
-          '<img src="https://i.imgur.com/l05GGIx.gif"/>',
-          '<img src="https://i.imgur.com/nXeDCvX.gif"/>',
-          '<img src="https://i.imgur.com/U32i6h6.gif"/>',
-          '<img src="https://i.imgur.com/YeQSTu2.gif"/>',
-          '<img src="https://i.imgur.com/qmohlFD.gif"/>',
-          '<img src="https://i.imgur.com/5TxZip7.gif"/>',
-          '<img src="https://i.imgur.com/7JQB3jo.gif"/>',
-          '<img src="https://i.imgur.com/DNTehBp.gif"/>',
-          '<img src="https://i.imgur.com/jdwhkzx.gif"/>',
-          '<img src="https://i.imgur.com/UPisrU0.gif"/>'
+          'https://i.imgur.com/zUeBxmP.gif',
+          'https://i.imgur.com/B15StAn.gif',
+          'https://i.imgur.com/wAmPLid.gif',
+          'https://i.imgur.com/5d3ENYQ.gif',
+          'https://i.imgur.com/fg02vHS.gif',
+          'https://i.imgur.com/l05GGIx.gif',
+          'https://i.imgur.com/nXeDCvX.gif',
+          'https://i.imgur.com/U32i6h6.gif',
+          'https://i.imgur.com/YeQSTu2.gif',
+          'https://i.imgur.com/qmohlFD.gif',
+          'https://i.imgur.com/5TxZip7.gif',
+          'https://i.imgur.com/7JQB3jo.gif',
+          'https://i.imgur.com/DNTehBp.gif',
+          'https://i.imgur.com/jdwhkzx.gif',
+          'https://i.imgur.com/UPisrU0.gif'
         ];
       } else {
         messages = [
