@@ -318,7 +318,7 @@ module.exports = {
           'Shall we take this some place else?',
           'I wanna have your babies',
           '"Guess what mom, I\'ve found someone"',
-          'I know',
+          'I\'m not ready for that',
           'I, um, like you too',
           'Thanks',
           'I was only looking for a fling'
@@ -418,9 +418,9 @@ module.exports = {
       messages = ['Who\'s there?'];
     } else if (text.toLowerCase() === ('i love you')) {
       messages = ['I know'];
-    } else if (checkString(text, 'the truth')) {
+    } else if (text.toLowerCase().indexOf('the truth') >= 0) {
       messages = ['You can\'t handle the truth!'];
-    } else if (checkString(text, 'your quest')) {
+    } else if (text.toLowerCase().indexOf('your quest')) {
       messages = ['To seek the holy grail'];
     } else if (checkString(text, 'inconceivable')) {
       messages = ['My name is Inigo Montoya'];
