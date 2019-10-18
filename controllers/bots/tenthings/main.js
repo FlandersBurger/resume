@@ -860,6 +860,18 @@ function evaluateCommand(res, msg, game, player, isNew) {
         bot.sendMessage(msg.chat.id, `You didn't suggest anything ${msg.from.first_name}. Add your message after /suggest`);
       }
       break;
+    case '/typo':
+      if (msg.text.substring(8, msg.text.length).replace(/\s/g,'')) {
+        player.suggestions++;
+        game.save();
+        let typo = `<b>Typo</b>\n${msg.text.substring(9, msg.text.length)}\n<i>${msg.from.username ? msg.from.username : msg.from.first_name}</i>`;
+        typo += `\nList: ${game.list.name}`;
+        bot.notifyAdmins(typo);
+        bot.sendMessage(msg.chat.id, `Typo noted, ${msg.from.first_name}!`);
+      } else {
+        bot.sendMessage(msg.chat.id, `You didn't say anything ${msg.from.first_name}. Add your message after /typo`);
+      }
+      break;
     case '/hint':
       hint(game, player, hints => {
         let message = `<b>${game.list.name}</b>\n`;

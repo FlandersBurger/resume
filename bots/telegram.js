@@ -1,3 +1,4 @@
+/*jslint esversion: 6*/
 const request = require('request');
 const config = require('../config');
 

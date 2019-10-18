@@ -1,3 +1,4 @@
+/*jslint esversion: 6*/
 var _ = require('underscore');
 var moment = require('moment');
 
@@ -265,20 +266,32 @@ exports.getStats = function(chat_id, data, requestor) {
       case 'skippers':
         playerStats(game, 'skips', 'lists', 1, 'Most Skips Requested', 1);
         break;
+      case 'unskippers':
+        playerStats(game, 'skips', 'lists', 1, 'Least Skips Requested', -1);
+        break;
       case 'answers':
         playerStats(game, 'answers', 'lists', 0.1, 'Most Correct Answers', 1);
         break;
       case 'snubs':
         playerStats(game, 'snubs', 'answers', 1, 'Most Snubs', 1);
         break;
+      case 'unsnubs':
+        playerStats(game, 'snubs', 'answers', 1, 'Least Snubs', 1);
+        break;
       case 'hints':
         playerStats(game, 'hints', 'lists', 1/6, 'Most Hints Asked', 1);
+        break;
+      case 'unhints':
+        playerStats(game, 'hints', 'lists', 1/6, 'Least Hints Asked', -1);
         break;
       case 'plays':
         playerStats(game, 'plays', '', 1, 'Most Games Played', 1);
         break;
       case 'wins':
         playerStats(game, 'wins', 'lists', 1, 'Most Wins', 1);
+        break;
+      case 'unwins':
+        playerStats(game, 'wins', 'lists', 1, 'Least Wins', -1);
         break;
       case 'astreak':
         playerStats(game, 'streak', '', 1, 'Best Answer Streak', 1);
@@ -314,7 +327,7 @@ function listsStats(game, field, divisor, ratio, title, sorter) {
 function playerStats(game, field, divisor, ratio, title, sorter) {
   var message = '<b>' + title + '</b>\n';
   game.players.filter(function(player) {
-    return player.present;
+    return player.present && player[field] > 0;
   }).sort(function(a, b) {
     if (divisor) {
       return (b[field] / (b[divisor] ? b[divisor] : 1) - a[field] / (a[divisor] ? a[divisor] : 1)) * sorter;

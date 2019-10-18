@@ -201,10 +201,10 @@ module.exports = {
             })
           },
           {
-            'text': 'Most Correct Answers',
+            'text': 'Least Skips Requested',
             'callback_data': JSON.stringify({
               type: 'stat',
-              id: 'answers'
+              id: 'unskippers'
             })
           }
         ],
@@ -217,10 +217,26 @@ module.exports = {
             })
           },
           {
+            'text': 'Most Correct Answers',
+            'callback_data': JSON.stringify({
+              type: 'stat',
+              id: 'answers'
+            })
+          }
+        ],
+        [
+          {
             'text': 'Most Snubs',
             'callback_data': JSON.stringify({
               type: 'stat',
               id: 'snubs'
+            })
+          },
+          {
+            'text': 'Least Snubs',
+            'callback_data': JSON.stringify({
+              type: 'stat',
+              id: 'unsnubs'
             })
           }
         ],
@@ -233,10 +249,26 @@ module.exports = {
             })
           },
           {
+            'text': 'Least Hints Asked',
+            'callback_data': JSON.stringify({
+              type: 'stat',
+              id: 'unhints'
+            })
+          }
+        ],
+        [
+          {
             'text': 'Most Wins',
             'callback_data': JSON.stringify({
               type: 'stat',
               id: 'wins'
+            })
+          },
+          {
+            'text': 'Least Wins',
+            'callback_data': JSON.stringify({
+              type: 'stat',
+              id: 'unwins'
             })
           }
         ],
