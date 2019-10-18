@@ -138,6 +138,14 @@ function TelegramBot() {
     });
   });
 
+  bot.sendAnimation = (channel, animation) => new Promise((resolve, reject) => {
+    const url = `https://api.telegram.org/bot${bot.token}/sendAnimation?chat_id=${channel}&animation=${animation}`;
+    request(encodeURI(url), (error, r, body) => {
+      if (error) return;
+      resolve();
+    });
+  });
+
   bot.getChatMember = (chat_id, user_id) => new Promise((resolve, reject) => {
     const url = `https://api.telegram.org/bot${bot.token}/getChatMember?chat_id=${chat_id}&user_id=${user_id}`;
     request(url, (error, r, body) => {
