@@ -420,7 +420,7 @@ module.exports = {
       messages = ['I know'];
     } else if (text.toLowerCase().indexOf('the truth') >= 0) {
       messages = ['You can\'t handle the truth!'];
-    } else if (text.toLowerCase().indexOf('your quest')) {
+    } else if (text.toLowerCase().indexOf('your quest') >= 0) {
       messages = ['To seek the holy grail'];
     } else if (checkString(text, 'inconceivable')) {
       messages = ['My name is Inigo Montoya'];
