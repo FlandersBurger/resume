@@ -12,8 +12,8 @@ function TelegramBot() {
     return new Promise((resolve, reject) => {
       const url = `https://api.telegram.org/bot${bot.token}/getMe`;
       request(url, (error, r, body) => {
-        const response = JSON.parse(body).result;
         if (error) return;
+        const response = JSON.parse(body).result;
         if (!response) return;
         bot.id = response.id || '';
         bot.first_name = response.first_name || '';

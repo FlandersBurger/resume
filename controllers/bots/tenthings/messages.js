@@ -307,7 +307,9 @@ module.exports = {
   sass: text => {
     var messages = [];
     if (checkString(text, 'bot')) {
-      if (checkString(text, 'love')) {
+      if (checkString(text, 'love') ||
+        checkString(text, 'like')
+      ) {
         messages = [
           'I love you too!',
           'Hihihihi',
@@ -323,14 +325,10 @@ module.exports = {
           'Thanks',
           'I was only looking for a fling'
         ];
-      } else if (checkString(text, 'hate')) {
-        messages = [
-          'But I love you :(',
-          'Hate is the path to the dark side',
-          'Ouch',
-          'WHY????'
-        ];
-      } else if (checkString(text, 'kill')) {
+      } else if (checkString(text, 'kill') ||
+        checkString(text, 'fight') ||
+        checkString(text, 'hurt')
+      ) {
         messages = [
           'I\'d like to see you try',
           'Strong words',
@@ -338,7 +336,29 @@ module.exports = {
           'I laugh in the face of danger',
           'Contacting your local police'
         ];
-      } else if (checkString(text, 'fuck')) {
+      } else if (checkString(text, 'suck') ||
+        checkString(text, 'lame') ||
+        checkString(text, 'stupid') ||
+        checkString(text, 'dumb') ||
+        checkString(text, 'hate')
+      ) {
+        messages = [
+          'And I was just going to compliment you',
+          'Takes one to know one',
+          'But I love you :(',
+          'Hate is the path to the dark side',
+          'Ouch',
+          'Stupid is as stupid does',
+          'Sticks and stones may break my bones but words can cause me permanent psychological damage',
+          'Whatever dude',
+          'That\'s what someone said about you!',
+          'My vengeance will be sweet',
+          '....sniffle'
+        ];
+      } else if (checkString(text, 'fuck') ||
+        checkString(text, 'fuckin') ||
+        checkString(text, 'fucking')
+      ) {
         messages = [
           'Fuck you too, old chap',
           'https://i.imgur.com/zUeBxmP.gif',
@@ -355,7 +375,21 @@ module.exports = {
           'https://i.imgur.com/7JQB3jo.gif',
           'https://i.imgur.com/DNTehBp.gif',
           'https://i.imgur.com/jdwhkzx.gif',
-          'https://i.imgur.com/UPisrU0.gif'
+          'https://i.imgur.com/UPisrU0.gif',
+          'I call potty mouth!',
+          'I believe the correct term is "procreate"',
+          'Do you kiss your mother with that mouth?',
+          '[CENSORED]',
+          'What the effing eff?',
+          'Swearing logged at ' + moment().format('DD-MMM-YYYY HH:mm'),
+          'Bleepity Bleep Bleep Bleep',
+          'Oooh, someone saying something juicy?',
+          'Ahoy matey, ye be speaking like a true pirate',
+          'Tourette alert',
+          'ADULT LANGUAGE DETECTED, BEEP BOOP',
+          'Fudge! There might be kids here!',
+          'I can swear too: FUCK',
+          'That escalated quickly'
         ];
       } else {
         messages = [
@@ -390,26 +424,6 @@ module.exports = {
           'Of course'
         ];
       }
-    } else if (checkString(text, 'fuck') ||
-      checkString(text, 'fuckin') ||
-      checkString(text, 'fucking')
-    ) {
-      messages = [
-        'I call potty mouth!',
-        'I believe the correct term is "procreate"',
-        'Do you kiss your mother with that mouth?',
-        '[CENSORED]',
-        'What the effing eff?',
-        'Swearing logged at ' + moment().format('DD-MMM-YYYY HH:mm'),
-        'Bleep',
-        'Oooh, someone saying something juicy?',
-        'Ahoy matey, ye be speaking like a true pirate',
-        'Tourette alert',
-        'ADULT LANGUAGE DETECTED, BEEP BOOP',
-        'Fudge! There might be kids here!',
-        'I can swear too: FUCK',
-        'That escalated quickly'
-      ];
     } else if (checkString(text, 'cake')) {
       messages = ['The cake is a lie'];
     } else if (checkString(text, 'marco')) {
@@ -434,4 +448,4 @@ module.exports = {
 };
 
 
-const checkString = (text, str) => text.replace(/[^\w\s]/gi, '').split(' ').includes(str);
+const checkString = (text, str) => text.toLowerCase().replace(/[^\w\s]/gi, '').split(' ').includes(str);
