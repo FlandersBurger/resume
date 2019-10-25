@@ -209,8 +209,8 @@ function queueGuess({list, chat_id}, msg) {
       queueingGuess(guess);
     }, 2000);
   } else {
-    const sass = messages.sass(guess.msg.text);
-    if (sass) {
+    messages.sass(guess.msg.text)
+    .then(sass => {
       if (chat_id != config.masterChat) bot.notifyAdmin(list.name + '\n' + guess.msg.text + '\n' + sass);
       if (sass.indexOf('http') === 0) {
         if (sass.indexOf('.gif') > 0) {
@@ -218,9 +218,10 @@ function queueGuess({list, chat_id}, msg) {
         } else {
           bot.sendPhoto(chat_id, sass);
         }
+      } else {
+        bot.sendMessage(chat_id, sass);
       }
-      else bot.sendMessage(chat_id, sass);
-    }
+    }, err => null);
   }
 }
 

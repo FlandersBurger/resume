@@ -1,6 +1,7 @@
 /*jslint esversion: 6*/
 const moment = require('moment');
-var MAXHINTS = 6;
+const request = require('request');
+const MAXHINTS = 6;
 
 module.exports = {
   introduction: function(player) {
@@ -304,7 +305,7 @@ module.exports = {
     }
     return '\n--- ' + messages[Math.floor(Math.random() * messages.length)] + ' ---';
   },
-  sass: text => {
+  sass: text => new Promise((resolve, reject) => {
     var messages = [];
     if (checkString(text, 'bot')) {
       if (checkString(text, 'love') ||
@@ -391,6 +392,15 @@ module.exports = {
           'I can swear too: FUCK',
           'That escalated quickly'
         ];
+      } else if (checkString(text, 'joke') ||
+        checkString(text, 'funny')
+      ) {
+        request({
+          url: 'https://icanhazdadjoke.com/',
+          headers: { 'Accept': 'application/json' }
+        }, (err, response, body) => {
+          resolve(body.joke);
+        });
       } else {
         messages = [
           'You talkin\' to me?',
@@ -440,12 +450,11 @@ module.exports = {
       messages = ['My name is Inigo Montoya'];
     }
     if (messages.length > 0) {
-      return messages[Math.floor(Math.random() * messages.length)];
+      resolve(messages[Math.floor(Math.random() * messages.length)]);
     } else {
-      return false;
+      reject();
     }
-  }
+  })
 };
-
 
 const checkString = (text, str) => text.toLowerCase().replace(/[^\w\s]/gi, '').split(' ').includes(str);
