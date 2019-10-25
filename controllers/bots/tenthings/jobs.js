@@ -6,7 +6,35 @@ const config = require('../../../config');
 const bot = require('../../../bots/telegram');
 const stats = require('./stats');
 const List = require('../../../models/list');
+const Joke = require('../../../models/joke');
 const TenThings = require('../../../models/games/tenthings');
+
+
+const getJoke = schedule.scheduleJob('0 0 */3 * * *', () => {
+
+  request({
+    method: 'GET',
+    url: 'https://webknox-jokes.p.rapidapi.com/jokes/random',
+    headers: {
+      'X-RapidAPI-Host': 'webknox-jokes.p.rapidapi.com' ,
+      'X-RapidAPI-Key': '653bc36f0fmsh36e43f725b03af2p1c26a4jsn26bdda50bce1'
+    }
+  }, (err, response, body) => {
+    Joke.findOne({
+      joke: body.joke
+    }).exec((err, existingJoke) => {
+      bot.notifyAdmin(body);
+      if (!existingJoke) {
+        const newJoke = new Joke(body);
+        newJoke.save(err => {
+          if (err) return console.error(err);
+          console.log('Joke saved!');
+        });
+      }
+    });
+  });
+});
+
 /*
 TenThings.find()
 .then(function(games) {
@@ -235,6 +263,7 @@ const playStreak = schedule.scheduleJob('0 0 1 * * *', () => {
     });
   });
 });
+
 
 const getHighScore = (game) => new Promise((resolve, reject) => {
   try {

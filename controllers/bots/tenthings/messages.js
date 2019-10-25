@@ -448,6 +448,8 @@ module.exports = {
       messages = ['To seek the holy grail'];
     } else if (checkString(text, 'inconceivable')) {
       messages = ['My name is Inigo Montoya'];
+    } else if (checkString(text, 'dad') && checkString(text, 'joke')) {
+      messages = ['My name is Inigo Montoya'];
     }
     if (messages.length > 0) {
       resolve(messages[Math.floor(Math.random() * messages.length)]);
