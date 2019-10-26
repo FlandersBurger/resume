@@ -21,12 +21,13 @@ const getJoke = schedule.scheduleJob('0 0 */3 * * *', () => {
       'X-RapidAPI-Key': config.tokens.rapidapi
     }
   }, (err, response, body) => {
+    const joke = JSON.parse(body);
     Joke.findOne({
-      joke: body.joke
+      joke: joke.joke
     }).exec((err, existingJoke) => {
-      bot.notifyAdmin(body);
+      bot.notifyAdmin(joke);
       if (!existingJoke) {
-        const newJoke = new Joke(body);
+        const newJoke = new Joke(joke);
         newJoke.save(err => {
           if (err) return console.error(err);
           console.log('Joke saved!');
@@ -35,6 +36,7 @@ const getJoke = schedule.scheduleJob('0 0 */3 * * *', () => {
     });
   });
 });
+
 
 /*
 TenThings.find()
