@@ -2,6 +2,7 @@
 const schedule = require('node-schedule');
 const _ = require('underscore');
 const moment = require('moment');
+const request = require('request');
 const config = require('../../../config');
 const bot = require('../../../bots/telegram');
 const stats = require('./stats');
