@@ -18,7 +18,7 @@ const getJoke = schedule.scheduleJob('0 0 */3 * * *', () => {
     url: 'https://webknox-jokes.p.rapidapi.com/jokes/random',
     headers: {
       'X-RapidAPI-Host': 'webknox-jokes.p.rapidapi.com' ,
-      'X-RapidAPI-Key': '653bc36f0fmsh36e43f725b03af2p1c26a4jsn26bdda50bce1'
+      'X-RapidAPI-Key': config.tokens.rapidapi
     }
   }, (err, response, body) => {
     Joke.findOne({
@@ -242,6 +242,7 @@ TenThings.find({ 'players.playStreak': { $gt: 0 } })
 const playStreak = schedule.scheduleJob('0 0 1 * * *', () => {
   //Update play streaks
   TenThings.find({ 'players.playStreak': { $gt: 0 } })
+  .select('_id players')
   .then(games => {
     const activePlayers = games.reduce((players, game) => {
       return players.concat(game.players.filter(player => player.playStreak));
@@ -260,6 +261,7 @@ const playStreak = schedule.scheduleJob('0 0 1 * * *', () => {
       }
       game.save((err, saved, rows) => {
         if (err) console.error(err);
+        console.log(saved, game._id);
       });
     });
   });
