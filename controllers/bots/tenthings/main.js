@@ -897,7 +897,7 @@ function evaluateCommand(res, msg, game, player, isNew) {
       }
       break;
     case '/me':
-      stats.getStats(msg.chat.id, 'p', msg.from.id);
+      stats.getStats(msg.chat.id, { id: 'p_' }, msg.from.id);
       break;
     default:
       queueGuess(game, msg);
