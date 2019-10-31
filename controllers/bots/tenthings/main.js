@@ -258,6 +258,7 @@ function processGuess(guess) {
 
 function checkGuess(game, guess, msg) {
   return new Promise((resolve, reject) => {
+    game.lastPlayDate = new Date();
     if (skips[game.id]) {
       delete skips[game.id];
       bot.sendMessage(msg.chat.id, `Skip vetoed by ${msg.from.first_name} giving a correct answer`);

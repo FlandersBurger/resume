@@ -16,6 +16,7 @@ const getJoke = schedule.scheduleJob('0 0 */3 * * *', () => {
   request({
     method: 'GET',
     url: 'https://webknox-jokes.p.rapidapi.com/jokes/random',
+    qs: {minRating: '7'},
     headers: {
       'X-RapidAPI-Host': 'webknox-jokes.p.rapidapi.com' ,
       'X-RapidAPI-Key': config.tokens.rapidapi
@@ -25,7 +26,7 @@ const getJoke = schedule.scheduleJob('0 0 */3 * * *', () => {
     Joke.findOne({
       joke: joke.joke
     }).exec((err, existingJoke) => {
-      bot.notifyAdmin(joke);
+      bot.notifyAdmin(joke.joke);
       if (!existingJoke) {
         const newJoke = new Joke(joke);
         newJoke.save(err => {
@@ -219,6 +220,21 @@ const dailyScore = schedule.scheduleJob('0 0 0 * * *', () => {
     }
   });
 });
+
+const inactiveChats = schedule.scheduleJob('0 0 2 * * *', () => {
+  TenThings.find({ 'lastPlayDate': { $lt: moment().subtract(30, 'days') } })
+  .then(games => {
+    Promise.all(games.map((game, i) => {
+      return getChat(game.chat_id, i * 50)
+    }))
+    .then(result => {
+      TenThings.deleteMany({ chat_id: { $in: result.filter(game => game.code === 404).map(game => game.id)}}, (err, response) => {
+        if (err) return console.error(err);
+        bot.notifyAdmin(`${result.filter(game => game.code === 404)} inactive chats deleted`);
+      });
+    }, err => console.error(err))
+  });
+});
 /*
 TenThings.find({ 'players.playStreak': { $gt: 0 } })
 .then(games => {
@@ -269,7 +285,6 @@ const playStreak = schedule.scheduleJob('0 0 1 * * *', () => {
   });
 });
 
-
 const getHighScore = (game) => new Promise((resolve, reject) => {
   try {
     resolve(game.players.reduce((highScore, {id, scoreDaily}) => {
@@ -282,4 +297,13 @@ const getHighScore = (game) => new Promise((resolve, reject) => {
 
 function angleBrackets(str) {
   return str.replace('<','&lt;').replace('>','&gt;');
+}
+
+function getChat(chat, delay) {
+  return new Promise((resolve, reject) => {
+    setTimeout(() => {
+      bot.getChat(chat)
+      .then(result => resolve(result), err => resolve(err));
+    }, delay);
+  });
 }

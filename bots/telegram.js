@@ -94,21 +94,19 @@ function TelegramBot() {
   bot.getChat = channel => new Promise((resolve, reject) => {
     const url = `https://api.telegram.org/bot${bot.token}/getChat?chat_id=${channel}`;
     request(encodeURI(url), (error, r, body) => {
-      const response = JSON.parse(body).result;
-      //console.log(response);
-      if (error) return;
-      if (!response) return;
-      resolve(response);
+      if (error) return reject({ id: channel, code: 500, error});
+      const response = JSON.parse(body);
+      if (!response || !response.ok) return reject({ id: channel, code: 404 });
+      resolve({ id: channel, code: 200 });
     });
   });
 
   bot.exportChatInviteLink = channel => new Promise((resolve, reject) => {
     const url = `https://api.telegram.org/bot${bot.token}/exportChatInviteLink?chat_id=${channel}`;
     request(encodeURI(url), (error, r, body) => {
-      const response = JSON.parse(body).result;
-      //console.log(response);
-      if (error) return;
-      if (!response) return;
+      if (error) reject(error);
+      const response = JSON.parse(body);
+      if (!response || !response.ok) reject(response);
       resolve(response);
     });
   });
