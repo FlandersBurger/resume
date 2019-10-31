@@ -785,7 +785,8 @@ function evaluateCommand(res, msg, game, player, isNew) {
       bot.sendMessage(msg.chat.id, msg.text);
       break;
     case '/info':
-      bot.sendMessage(msg.chat.id, messages.introduction(msg.from.first_name));
+      const addedMessage = game.chat_id != config.groupChat ? '\n\n<a href="https://t.me/tenthings">Ten Things Supergroup</a>!' : '';
+      bot.sendMessage(msg.chat.id, messages.introduction(msg.from.first_name) + addedMessage);
       break;
     case '/logic':
       bot.sendMessage(msg.chat.id, messages.logic());
