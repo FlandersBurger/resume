@@ -896,6 +896,9 @@ function evaluateCommand(res, msg, game, player, isNew) {
         });
       }
       break;
+    case '/me':
+      stats.getStats(msg.chat.id, 'p', msg.from.id);
+      break;
     default:
       queueGuess(game, msg);
   }
