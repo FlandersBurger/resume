@@ -1,3 +1,4 @@
+/*jslint esversion: 6*/
 const router = require('express').Router();
 const _ = require('underscore');
 const FuzzyMatching = require('fuzzy-matching');
@@ -196,8 +197,8 @@ function rateList(game) {
 function queueGuess({list, chat_id}, msg) {
   const fuzzyMatch = new FuzzyMatching(list.values.map(({value}) => value.replace(new RegExp(`[${SPECIAL_CHARACTERS}]`, 'gi'), '')));
   const guess = {
-    game: chat_id,
     msg,
+    game: chat_id,
     match: fuzzyMatch.get(msg.text.replace(new RegExp(`[${SPECIAL_CHARACTERS}]`, 'gi'), ''))
   };
   guess.match.index = _.findIndex(list.values, ({value}) => value.replace(new RegExp(`[${SPECIAL_CHARACTERS}]`, 'gi'), '') === guess.match.value);
@@ -207,6 +208,20 @@ function queueGuess({list, chat_id}, msg) {
     setTimeout(() => {
       queueingGuess(guess);
     }, 2000);
+  } else {
+    messages.sass(guess.msg.text)
+    .then(sass => {
+      if (chat_id != config.masterChat) bot.notifyAdmin(list.name + '\n' + guess.msg.text + '\n' + sass);
+      if (sass.indexOf('http') === 0) {
+        if (sass.indexOf('.gif') > 0) {
+          bot.sendAnimation(chat_id, sass);
+        } else {
+          bot.sendPhoto(chat_id, sass);
+        }
+      } else {
+        bot.sendMessage(chat_id, sass);
+      }
+    }, err => null);
   }
 }
 
@@ -852,6 +867,18 @@ function evaluateCommand(res, msg, game, player, isNew) {
         bot.sendMessage(msg.chat.id, `Suggestion noted, ${msg.from.first_name}!`);
       } else {
         bot.sendMessage(msg.chat.id, `You didn't suggest anything ${msg.from.first_name}. Add your message after /suggest`);
+      }
+      break;
+    case '/typo':
+      if (msg.text.substring(8, msg.text.length).replace(/\s/g,'')) {
+        player.suggestions++;
+        game.save();
+        let typo = `<b>Typo</b>\n${msg.text.substring(9, msg.text.length)}\n<i>${msg.from.username ? msg.from.username : msg.from.first_name}</i>`;
+        typo += `\nList: ${game.list.name}`;
+        bot.notifyAdmins(typo);
+        bot.sendMessage(msg.chat.id, `Typo noted, ${msg.from.first_name}!`);
+      } else {
+        bot.sendMessage(msg.chat.id, `You didn't say anything ${msg.from.first_name}. Add your message after /typo`);
       }
       break;
     case '/hint':

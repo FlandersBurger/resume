@@ -1,3 +1,4 @@
+/*jslint esversion: 6*/
 const request = require('request');
 const config = require('../config');
 
@@ -11,8 +12,8 @@ function TelegramBot() {
     return new Promise((resolve, reject) => {
       const url = `https://api.telegram.org/bot${bot.token}/getMe`;
       request(url, (error, r, body) => {
-        const response = JSON.parse(body).result;
         if (error) return;
+        const response = JSON.parse(body).result;
         if (!response) return;
         bot.id = response.id || '';
         bot.first_name = response.first_name || '';
@@ -131,6 +132,14 @@ function TelegramBot() {
 
   bot.sendPhoto = (channel, photo) => new Promise((resolve, reject) => {
     const url = `https://api.telegram.org/bot${bot.token}/sendPhoto?chat_id=${channel}&photo=${photo}`;
+    request(encodeURI(url), (error, r, body) => {
+      if (error) return;
+      resolve();
+    });
+  });
+
+  bot.sendAnimation = (channel, animation) => new Promise((resolve, reject) => {
+    const url = `https://api.telegram.org/bot${bot.token}/sendAnimation?chat_id=${channel}&animation=${animation}`;
     request(encodeURI(url), (error, r, body) => {
       if (error) return;
       resolve();

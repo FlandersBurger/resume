@@ -1,4 +1,4 @@
-<div id="bots-page" class="col-md-12" ng-keydown="keyDown($event)">
+<div id="tenthings-page" class="col-md-12" ng-keydown="keyDown($event)">
   <h1 class="text-danger" ng-show="!loggedIn">You have to be logged in to edit lists</h1>
   <div ng-show="loggedIn">
     <div class="well well-sm">
@@ -63,7 +63,17 @@
       </div>
       <div class="col-md-12">
         <div class="input-group">
-          <input class="form-control" id="list-name" ng-model="selectedList.name" ng-change="searchListNames()" ng-blur="search = savedSearch;savedSearch = '';" placeholder="List Name" ng-disabled="!selectedList || (!currentUser.admin && selectedList.creator._id !== currentUser._id && selectedList._id)" />
+          <input class="form-control"
+            id="list-name"
+            ng-model="selectedList.name"
+            ng-change="searchListNames()"
+            ng-blur="search = savedSearch;savedSearch = '';"
+            placeholder="List Name"
+            ng-disabled="!selectedList || (!currentUser.admin && selectedList.creator._id !== currentUser._id && selectedList._id)"
+            autocomplete="off"
+            uib-typeahead="list.name for list in filteredLists() | filter:$viewValue | limitTo:8"
+            typeahead-on-select="selectList($item)"
+          />
           <div class="input-group-btn">
             <button class="btn btn-default" id="list-category" type="button" ng-click="selectingCategory = !selectingCategory" ng-disabled="!selectedList || (!currentUser.admin && selectedList.creator._id !== currentUser._id && selectedList._id)">{{selectedList.category ? selectedList.category : 'Category'}}</button>
           </div>

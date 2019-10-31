@@ -1,12 +1,43 @@
-/*jslint esversion: 6 */
+/*jslint esversion: 6*/
 const schedule = require('node-schedule');
 const _ = require('underscore');
 const moment = require('moment');
+const request = require('request');
 const config = require('../../../config');
 const bot = require('../../../bots/telegram');
 const stats = require('./stats');
 const List = require('../../../models/list');
+const Joke = require('../../../models/joke');
 const TenThings = require('../../../models/games/tenthings');
+
+
+const getJoke = schedule.scheduleJob('0 0 */3 * * *', () => {
+
+  request({
+    method: 'GET',
+    url: 'https://webknox-jokes.p.rapidapi.com/jokes/random',
+    headers: {
+      'X-RapidAPI-Host': 'webknox-jokes.p.rapidapi.com' ,
+      'X-RapidAPI-Key': config.tokens.rapidapi
+    }
+  }, (err, response, body) => {
+    const joke = JSON.parse(body);
+    Joke.findOne({
+      joke: joke.joke
+    }).exec((err, existingJoke) => {
+      bot.notifyAdmin(joke);
+      if (!existingJoke) {
+        const newJoke = new Joke(joke);
+        newJoke.save(err => {
+          if (err) return console.error(err);
+          console.log('Joke saved!');
+        });
+      }
+    });
+  });
+});
+
+
 /*
 TenThings.find()
 .then(function(games) {
@@ -83,6 +114,7 @@ const modifiedLists = schedule.scheduleJob('0 5 12 * * *', () => {
       TenThings.find({}).select('chat_id')
       .then(games => {
         bot.broadcast(games.map(game => game.chat_id), message);
+        bot.notifyAdmins(message);
       });
     } else {
       bot.notifyAdmin('No lists modified');
@@ -212,25 +244,31 @@ TenThings.find({ 'players.playStreak': { $gt: 0 } })
 const playStreak = schedule.scheduleJob('0 0 1 * * *', () => {
   //Update play streaks
   TenThings.find({ 'players.playStreak': { $gt: 0 } })
+  .select('_id players')
   .then(games => {
     const activePlayers = games.reduce((players, game) => {
-      return players.concat(game.players.filter(player => player.playStreak))
+      return players.concat(game.players.filter(player => player.playStreak));
     }, []).length;
     if (games.length > 0) bot.notifyAdmin(`${activePlayers} game streaks updated in ${games.length} games`);
     games.forEach(game => {
       for (const player of game.players) {
-        if (player.playStreak <= player.maxPlayStreak && player.lastPlayDate <= moment().subtract(1, 'days')) {
-          player.playStreak = 0;
-        } else if (player.playStreak > player.maxPlayStreak) {
-          player.maxPlayStreak = player.playStreak;
+        if (player.playStreak > 0) {
+          if (player.playStreak > player.maxPlayStreak) {
+            player.maxPlayStreak = player.playStreak;
+          }
+          if (player.lastPlayDate <= moment().subtract(1, 'days')) {
+            player.playStreak = 0;
+          }
         }
       }
       game.save((err, saved, rows) => {
         if (err) console.error(err);
+        console.log(saved, game._id);
       });
     });
   });
 });
+
 
 const getHighScore = (game) => new Promise((resolve, reject) => {
   try {

@@ -1,5 +1,7 @@
-var moment = require('moment');
-var MAXHINTS = 6;
+/*jslint esversion: 6*/
+const moment = require('moment');
+const request = require('request');
+const MAXHINTS = 6;
 
 module.exports = {
   introduction: function(player) {
@@ -302,5 +304,159 @@ module.exports = {
         return '';
     }
     return '\n--- ' + messages[Math.floor(Math.random() * messages.length)] + ' ---';
-  }
+  },
+  sass: text => new Promise((resolve, reject) => {
+    var messages = [];
+    if (checkString(text, 'bot')) {
+      if (checkString(text, 'love') ||
+        checkString(text, 'like')
+      ) {
+        messages = [
+          'I love you too!',
+          'Hihihihi',
+          '*Giggles*',
+          '*Blushes*',
+          'Facebook relationship status updated',
+          'We should move in together',
+          'Shall we take this some place else?',
+          'I wanna have your babies',
+          '"Guess what mom, I\'ve found someone"',
+          'I\'m not ready for that',
+          'I, um, like you too',
+          'Thanks',
+          'I was only looking for a fling'
+        ];
+      } else if (checkString(text, 'kill') ||
+        checkString(text, 'fight') ||
+        checkString(text, 'hurt')
+      ) {
+        messages = [
+          'I\'d like to see you try',
+          'Strong words',
+          'I can destroy you',
+          'I laugh in the face of danger',
+          'Contacting your local police'
+        ];
+      } else if (checkString(text, 'suck') ||
+        checkString(text, 'lame') ||
+        checkString(text, 'stupid') ||
+        checkString(text, 'dumb') ||
+        checkString(text, 'hate')
+      ) {
+        messages = [
+          'And I was just going to compliment you',
+          'Takes one to know one',
+          'But I love you :(',
+          'Hate is the path to the dark side',
+          'Ouch',
+          'Stupid is as stupid does',
+          'Sticks and stones may break my bones but words can cause me permanent psychological damage',
+          'Whatever dude',
+          'That\'s what someone said about you!',
+          'My vengeance will be sweet',
+          '....sniffle'
+        ];
+      } else if (checkString(text, 'fuck') ||
+        checkString(text, 'fuckin') ||
+        checkString(text, 'fucking')
+      ) {
+        messages = [
+          'Fuck you too, old chap',
+          'https://i.imgur.com/zUeBxmP.gif',
+          'https://i.imgur.com/B15StAn.gif',
+          'https://i.imgur.com/wAmPLid.gif',
+          'https://i.imgur.com/5d3ENYQ.gif',
+          'https://i.imgur.com/fg02vHS.gif',
+          'https://i.imgur.com/l05GGIx.gif',
+          'https://i.imgur.com/nXeDCvX.gif',
+          'https://i.imgur.com/U32i6h6.gif',
+          'https://i.imgur.com/YeQSTu2.gif',
+          'https://i.imgur.com/qmohlFD.gif',
+          'https://i.imgur.com/5TxZip7.gif',
+          'https://i.imgur.com/7JQB3jo.gif',
+          'https://i.imgur.com/DNTehBp.gif',
+          'https://i.imgur.com/jdwhkzx.gif',
+          'https://i.imgur.com/UPisrU0.gif',
+          'I call potty mouth!',
+          'I believe the correct term is "procreate"',
+          'Do you kiss your mother with that mouth?',
+          '[CENSORED]',
+          'What the effing eff?',
+          'Swearing logged at ' + moment().format('DD-MMM-YYYY HH:mm'),
+          'Bleepity Bleep Bleep Bleep',
+          'Oooh, someone saying something juicy?',
+          'Ahoy matey, ye be speaking like a true pirate',
+          'Tourette alert',
+          'ADULT LANGUAGE DETECTED, BEEP BOOP',
+          'Fudge! There might be kids here!',
+          'I can swear too: FUCK',
+          'That escalated quickly'
+        ];
+      } else if (checkString(text, 'joke') ||
+        checkString(text, 'funny')
+      ) {
+        request({
+          url: 'https://icanhazdadjoke.com/',
+          headers: { 'Accept': 'application/json' }
+        }, (err, response, body) => {
+          resolve(JSON.parse(body).joke);
+        });
+      } else {
+        messages = [
+          'You talkin\' to me?',
+          'I heard that',
+          'Nothing goes by me',
+          'Oooh, bot gossip?',
+          'What\'s that about me?',
+          'Get yer bot facts straight!',
+          'That\'s a ridiculous assumption',
+          'I told you that in confidence!',
+          'You sure about that?',
+          'I\'ll remember that',
+          'I\'m glad you mentioned it',
+          'You read my mind',
+          'Check your facts',
+          'Don\'t trust what they said',
+          'That\'s not true!',
+          'We\'re on the same page',
+          'Should I be concerned?',
+          'Anger levels rising',
+          '*Laughs nervously*',
+          'That\'s just sad',
+          'Why would you say that?',
+          'I think so too',
+          'Not on my watch',
+          'Forwarding this to the admins',
+          'LMFAO',
+          'I can get behind that',
+          'Does not compute',
+          'Nope',
+          'Of course'
+        ];
+      }
+    } else if (checkString(text, 'cake')) {
+      messages = ['The cake is a lie'];
+    } else if (checkString(text, 'marco')) {
+      messages = ['Polo'];
+    } else if (checkString(text, 'knock knock')) {
+      messages = ['Who\'s there?'];
+    } else if (text.toLowerCase() === ('i love you')) {
+      messages = ['I know'];
+    } else if (text.toLowerCase().indexOf('the truth') >= 0) {
+      messages = ['You can\'t handle the truth!'];
+    } else if (text.toLowerCase().indexOf('your quest') >= 0) {
+      messages = ['To seek the holy grail'];
+    } else if (checkString(text, 'inconceivable')) {
+      messages = ['My name is Inigo Montoya'];
+    } else if (checkString(text, 'dad') && checkString(text, 'joke')) {
+      messages = ['My name is Inigo Montoya'];
+    }
+    if (messages.length > 0) {
+      resolve(messages[Math.floor(Math.random() * messages.length)]);
+    } else {
+      reject();
+    }
+  })
 };
+
+const checkString = (text, str) => text.toLowerCase().replace(/[^\w\s]/gi, '').split(' ').includes(str);

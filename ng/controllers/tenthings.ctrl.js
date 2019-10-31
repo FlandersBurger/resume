@@ -1,5 +1,5 @@
 angular.module('app')
-.controller('BotsCtrl', function ($scope, BotsSvc) {
+.controller('TenThingsCtrl', function ($scope, BotsSvc) {
 
   $scope.categories = [
     'Music',
