@@ -900,7 +900,7 @@ function evaluateCommand(res, msg, game, player, isNew) {
       stats.getStats(msg.chat.id, { id: 'p_' }, msg.from.id);
       break;
     case '/score':
-      stats.getScores(msg.chat.id, 'td');
+      stats.getDailyScores(game);
       break;
     default:
       queueGuess(game, msg);
