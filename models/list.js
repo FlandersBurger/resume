@@ -20,6 +20,12 @@ var List = db.model('List', {
   score: { type: Number, required: true, default: 0 },
   voters: [
     { type: String }
+  ],
+  votes: [
+    {
+      voter: { type: String, required: true },
+      vote: { type: Number, required: true, default: 1 },
+    }
   ]
 });
 

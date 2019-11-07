@@ -552,18 +552,22 @@ router.post('/', ({body}, res, next) => {
     if (data.type === 'rate') {
       List.findOne({ _id: data.list }).exec((err, foundList) => {
         if (err) return console.error(err);
-        if (!_.find(foundList.voters, voter => voter === body.callback_query.from.id)) {
-          foundList.voters.push(body.callback_query.from.id);
-          if (!foundList.score) {
-            foundList.score = parseInt(data.vote);
-          } else {
-            foundList.score += parseInt(data.vote);
-          }
-          foundList.save(err => {
-            if (err) return console.error(err);
-            console.log(`"${foundList.name}" rated!`);
+        let vote = _.find(foundList.votes, vote => vote.voter === body.callback_query.from.id);
+        if (!voter) {
+          foundList.votes.push({
+            voter: body.callback_query.from.id,
+            vote: data.vote
           });
+          vote = foundList.votes[foundList.votes.length - 1];
+        } else {
+          vote.vote = data.vote;
         }
+        foundList.score = foundList.votes.reduce((score, vote) => score += vote.vote, 0);
+        delete foundList.voters;
+        foundList.save(err => {
+          if (err) return console.error(err);
+          bot.notifyAdmins(`"<b>${foundList.name}</b>" ${data.vote > 0 ? 'up' : 'down'}voted!`);
+        });
       });
     } else if (data.type === 'stats') {
       console.log(body.callback_query);
