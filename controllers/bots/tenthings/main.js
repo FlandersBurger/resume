@@ -680,6 +680,7 @@ router.post('/', ({body}, res, next) => {
     };
   }
   if (msg.command.includes('@')) {
+    if (msg.command.substring(msg.command.indexOf('@') + 1) !== 'TenThings_Bot') return res.sendStatus(200);
     msg.command = msg.command.substring(0, msg.command.indexOf('@'));
   }
   try {
