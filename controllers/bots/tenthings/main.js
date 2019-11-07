@@ -552,7 +552,7 @@ router.post('/', ({body}, res, next) => {
     if (data.type === 'rate') {
       List.findOne({ _id: data.list }).exec((err, foundList) => {
         if (err) return console.error(err);
-        let voter = _.find(foundList.votes, vote => vote.voter === body.callback_query.from.id);
+        let voter = _.find(foundList.votes, vote => vote.voter == body.callback_query.from.id);
         if (!voter) {
           foundList.votes.push({
             voter: body.callback_query.from.id,
