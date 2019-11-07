@@ -40,6 +40,9 @@ var TenThings = db.model('TenThings', {
   playedLists: [
     { type: String }
   ],
+  pickedLists: [
+    { type: String }
+  ],
   list: {
     _id: String,
     name: String,

@@ -561,10 +561,10 @@ router.post('/', ({body}, res, next) => {
           voter = foundList.votes[foundList.votes.length - 1];
         } else {
           voter.vote = data.vote;
+          voter.modifyDate = new Date();
         }
         foundList.score = foundList.votes.reduce((score, vote) => score += vote.vote, 0);
         delete foundList.voters;
-        console.log(foundList);
         foundList.save(err => {
           if (err) return console.error(err);
           bot.notifyAdmins(`"<b>${foundList.name}</b>" ${data.vote > 0 ? 'up' : 'down'}voted!`);

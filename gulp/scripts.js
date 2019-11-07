@@ -34,9 +34,9 @@ gulp.task('resources', function () {
     .on('error', onError);
 });
 
-gulp.task('watch:js', ['js'], function () {
-  gulp.watch('ng/**/*.js', ['js']);
-});
+gulp.task('watch:js', gulp.series(['js'], function () {
+  gulp.watch('ng/**/*.js', gulp.series(['js']));
+}));
 
 gulp.task('json', function () {
     return gulp.src(['data/*.json'])
@@ -44,9 +44,9 @@ gulp.task('json', function () {
         .pipe(gulp.dest('assets'));
 });
 
-gulp.task('watch:json', ['json'], function () {
-  gulp.watch('data/*.json', ['json']);
-});
+gulp.task('watch:json', gulp.series(['json'], function () {
+  gulp.watch('data/*.json', gulp.series(['json']));
+}));
 
 function onError(err) {
   console.log(err);

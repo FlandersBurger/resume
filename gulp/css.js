@@ -13,6 +13,6 @@ gulp.task('css', function () {
     .pipe(gulp.dest('assets'));
 });
 
-gulp.task('watch:css', ['css'], function () {
+gulp.task('watch:css', gulp.series(['css'], function () {
   gulp.watch('css/**/*.styl', ['css']);
-});
+}));

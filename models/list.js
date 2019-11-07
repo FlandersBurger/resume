@@ -25,6 +25,8 @@ var List = db.model('List', {
     {
       voter: { type: String, required: true },
       vote: { type: Number, required: true, default: 1 },
+      date: { type: Date, required: true, default: Date.now },
+      modifyDate: { type: Date, required: false },
     }
   ]
 });
