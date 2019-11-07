@@ -552,18 +552,19 @@ router.post('/', ({body}, res, next) => {
     if (data.type === 'rate') {
       List.findOne({ _id: data.list }).exec((err, foundList) => {
         if (err) return console.error(err);
-        let vote = _.find(foundList.votes, vote => vote.voter === body.callback_query.from.id);
-        if (!vote) {
+        let voter = _.find(foundList.votes, vote => vote.voter === body.callback_query.from.id);
+        if (!voter) {
           foundList.votes.push({
             voter: body.callback_query.from.id,
             vote: data.vote
           });
-          vote = foundList.votes[foundList.votes.length - 1];
+          voter = foundList.votes[foundList.votes.length - 1];
         } else {
-          vote.vote = data.vote;
+          voter.vote = data.vote;
         }
         foundList.score = foundList.votes.reduce((score, vote) => score += vote.vote, 0);
         delete foundList.voters;
+        console.log(foundList);
         foundList.save(err => {
           if (err) return console.error(err);
           bot.notifyAdmins(`"<b>${foundList.name}</b>" ${data.vote > 0 ? 'up' : 'down'}voted!`);
