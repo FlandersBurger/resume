@@ -291,7 +291,7 @@ const voteStats = (game, sorter, title) => {
   List.aggregate([
     { $unwind:'$votes' },
     { $group: {
-      'id': '$votes.voter',
+      '_id': '$votes.voter',
       'votes': { $count:'$votes.vote' }
     }},
   ]).sort({ votes: sorter }).limit(10).exec((err, voters) => {
@@ -299,7 +299,7 @@ const voteStats = (game, sorter, title) => {
     console.log(result);
     message = `<b>${title}</b>\n`;
     voters.forEach((voter, index) => {
-      const player = _.find(game.players, player => voters.id == player.id)
+      const player = _.find(game.players, player => voters._id == player.id)
       message += `${index + 1}. ${player.first_name}\n`;
     });
   });
