@@ -292,7 +292,7 @@ const voteStats = (game, sorter, title) => {
     { $unwind:'$votes' },
     { $group: {
       '_id': '$votes.voter',
-      'votes': { $count:'$votes.vote' }
+      'votes': { $sum: 1 }
     }},
   ]).sort({ votes: sorter }).limit(10).exec((err, voters) => {
     if (err) console.error(err);
