@@ -299,9 +299,12 @@ const voteStats = ({players, chat_id}, sorter, title) => {
       console.log(players.map(player => player.id));
       console.log(voters.map(voter => voter._id));
     let message = `<b>${title}</b>\n`;
-    voters.forEach((voter, index) => {
-      const player = _.find(players, player => voters._id == player.id)
-      message += `${index + 1}. ${player.first_name}\n`;
+    let i = 1;
+    voters.forEach((voter) => {
+      const player = _.find(players, player => voters._id == player.id);
+      if (player) {
+        message += `${i++}. ${player.first_name}\n`;
+      }
     });
   });
   bot.sendMessage(chat_id, message);
