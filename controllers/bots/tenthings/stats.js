@@ -298,7 +298,6 @@ const voteStats = ({players, chat_id}, sorter, title) => {
     if (err) console.error(err);
       console.log(players.map(player => player.id));
       console.log(voters.map(voter => voter._id));
-    let message = `<b>${title}</b>\n`;
     let i = 1;
     voters.forEach((voter) => {
       const player = _.find(players, player => voters._id == player.id);
@@ -306,8 +305,8 @@ const voteStats = ({players, chat_id}, sorter, title) => {
         message += `${i++}. ${player.first_name}\n`;
       }
     });
+    bot.sendMessage(chat_id, message);
   });
-  bot.sendMessage(chat_id, message);
 };
 
 const tenThingsStats = (game, sorter, field, title) => {
