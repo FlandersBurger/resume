@@ -186,31 +186,31 @@ exports.getStats = (chat_id, data, requestor) => {
         });
         break;
       case 'mostskipped':
-        listsStats(game, 'skips', 'plays', 1, 'Most Skipped Lists', 1);
+        listStats(game, 'skips', 'plays', 1, 'Most Skipped Lists', 1);
         break;
       case 'leastskipped':
-        listsStats(game, 'skips', 'plays', 1, 'Least Skipped Lists', -1);
+        listStats(game, 'skips', 'plays', 1, 'Least Skipped Lists', -1);
         break;
       case 'mosthinted':
-        listsStats(game, 'hints', 'plays', 1/6, 'Most Hinted Lists', 1);
+        listStats(game, 'hints', 'plays', 1/6, 'Most Hinted Lists', 1);
         break;
       case 'leasthinted':
-        listsStats(game, 'hints', 'plays', 1/6, 'Least Hinted Lists', -1);
+        listStats(game, 'hints', 'plays', 1/6, 'Least Hinted Lists', -1);
         break;
       case 'mostvoted':
-        listsStats(game, 'hints', 'plays', 1/6, 'Most Hinted Lists', 1);
+        voteStats(game, 1, 'Voted Most on Lists');
         break;
       case 'leastvoted':
-        listsStats(game, 'hints', 'plays', 1/6, 'Least Hinted Lists', -1);
+        voteStats(game, -1, 'Voted Least on Lists');
         break;
       case 'mostplayed':
-        listsStats(game, 'plays', '', 1, 'Most Played Lists', 1);
+        listStats(game, 'plays', '', 1, 'Most Played Lists', 1);
         break;
       case 'mostpopular':
-        listsStats(game, 'score', '', 1, 'Most Popular Lists', 1);
+        listStats(game, 'score', '', 1, 'Most Popular Lists', 1);
         break;
       case 'leastpopular':
-        listsStats(game, 'score', '', 1, 'Least Popular Lists', -1);
+        listStats(game, 'score', '', 1, 'Least Popular Lists', -1);
         break;
       case 'skippers':
         playerStats(game, 'skips', 'lists', 1, 'Most Skips Requested', 1);
@@ -257,7 +257,7 @@ exports.getStats = (chat_id, data, requestor) => {
   });
 };
 
-const listsStats = ({chat_id}, field, divisor, ratio, title, sorter) => {
+const listStats = ({chat_id}, field, divisor, ratio, title, sorter) => {
   let message = `<b>${title}</b>\n`;
   List.find({ plays: { $gt: 0 } }).exec((err, lists) => {
     lists.sort((a, b) => {
@@ -287,8 +287,22 @@ const playerStats = ({players, chat_id}, field, divisor, ratio, title, sorter) =
   bot.sendMessage(chat_id, message);
 };
 
-const voteStats = (list) => {
-
+const voteStats = (game, sorter, title) => {
+  List.aggregate([
+    { $unwind:'$votes' },
+    { $group: {
+      'id': { _id:'$votes.voter' },
+      'votes': { $count:'$votes.vote' }
+    }},
+  ]).sort(sorter).limit(10).exec((err, voters) => {
+    if (err) console.error(err);
+    console.log(result);
+    message = `<b>${title}</b>\n`;
+    voters.forEach((voter, index) => {
+      const player = _.find(game.players, player => voters.id == player.id)
+      message += `${index + 1}. ${player.first_name}\n`;
+    });
+  });
 };
 
 const tenThingsStats = (game, sorter, field, title) => {

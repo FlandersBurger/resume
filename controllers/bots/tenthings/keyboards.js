@@ -272,6 +272,22 @@ module.exports = {
             })
           }
         ],
+        [
+          {
+            'text': 'Voted Most on Lists',
+            'callback_data': JSON.stringify({
+              type: 'stat',
+              id: 'mostvoted'
+            })
+          },
+          {
+            'text': 'Voted Least on Lists',
+            'callback_data': JSON.stringify({
+              type: 'stat',
+              id: 'leastvoted'
+            })
+          }
+        ],
       ]
     };
   },
