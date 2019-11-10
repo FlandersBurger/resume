@@ -287,7 +287,7 @@ const playerStats = ({players, chat_id}, field, divisor, ratio, title, sorter) =
   bot.sendMessage(chat_id, message);
 };
 
-const voteStats = (game, sorter, title) => {
+const voteStats = ({players, chat_id}, sorter, title) => {
   List.aggregate([
     { $unwind:'$votes' },
     { $group: {
@@ -296,13 +296,13 @@ const voteStats = (game, sorter, title) => {
     }},
   ]).sort({ votes: sorter }).limit(10).exec((err, voters) => {
     if (err) console.error(err);
-    console.log(result);
-    message = `<b>${title}</b>\n`;
+    let message = `<b>${title}</b>\n`;
     voters.forEach((voter, index) => {
-      const player = _.find(game.players, player => voters._id == player.id)
+      const player = _.find(players, player => voters._id == player.id)
       message += `${index + 1}. ${player.first_name}\n`;
     });
   });
+  bot.sendMessage(chat_id, message);
 };
 
 const tenThingsStats = (game, sorter, field, title) => {
