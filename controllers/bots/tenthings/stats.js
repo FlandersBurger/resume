@@ -291,7 +291,7 @@ const voteStats = (game, sorter, title) => {
   List.aggregate([
     { $unwind:'$votes' },
     { $group: {
-      'id': { id:'$votes.voter' },
+      'id': '$votes.voter',
       'votes': { $count:'$votes.vote' }
     }},
   ]).sort({ votes: sorter }).limit(10).exec((err, voters) => {
