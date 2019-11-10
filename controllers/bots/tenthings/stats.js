@@ -294,7 +294,7 @@ const voteStats = (game, sorter, title) => {
       'id': { _id:'$votes.voter' },
       'votes': { $count:'$votes.vote' }
     }},
-  ]).sort((voter1, voter2) => (voter2 - voter1) * sorter).limit(10).exec((err, voters) => {
+  ]).sort({ votes: sorter }).limit(10).exec((err, voters) => {
     if (err) console.error(err);
     console.log(result);
     message = `<b>${title}</b>\n`;
