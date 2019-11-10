@@ -296,6 +296,8 @@ const voteStats = ({players, chat_id}, sorter, title) => {
     }},
   ]).sort({ votes: sorter }).limit(10).exec((err, voters) => {
     if (err) console.error(err);
+      console.log(players.map(player => player.id));
+      console.log(voters.map(voter => voter._id));
     let message = `<b>${title}</b>\n`;
     voters.forEach((voter, index) => {
       const player = _.find(players, player => voters._id == player.id)
