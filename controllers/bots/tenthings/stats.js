@@ -23,14 +23,14 @@ exports.getScores = (game_id, type) => {
       case 'td':
         str = '<b>Top Daily Scores</b>\n';
         console.log(str);
-        game.players.filter(({present}) => present).sort((player1, player2) => player1.highScore - player2.highScore).slice(0, 10).forEach(({first_name, highScore}, index) => {
+        game.players.filter(({present}) => present).sort((player1, player2) => player2.highScore - player1.highScore).slice(0, 10).forEach(({first_name, highScore}, index) => {
           str += `${index + 1}: ${first_name}: ${highScore}\n`;
         });
         bot.sendMessage(game_id, str);
         break;
       case 'tr':
         str = '<b>Top Win Ratio</b>\n';
-        game.players.filter(({present}) => present).sort((player1, player2) => (player1.plays === 0 ? 0 : player1.wins / player1.plays) - (player2.plays === 0 ? 0 : player2.wins / player2.plays)).slice(0, 10).forEach(({first_name, wins, plays}, index) => {
+        game.players.filter(({present}) => present).sort((player1, player2) => (player2.plays === 0 ? 0 : player2.wins / player2.plays) - (player1.plays === 0 ? 0 : player1.wins / player1.plays)).slice(0, 10).forEach(({first_name, wins, plays}, index) => {
           str += `${index + 1}: ${first_name}: ${wins}/${plays} (${Math.round(plays === 0 ? 0 : wins / plays * 10000) / 100}%)\n`;
         });
         bot.sendMessage(game_id, str);
@@ -38,14 +38,14 @@ exports.getScores = (game_id, type) => {
       case 'ts':
         str = '<b>Top Overall Score</b>\n';
         console.log(str);
-        game.players.filter(({present}) => present).sort((player1, player2) => player1.score - player2.score).slice(0, 10).forEach(({first_name, score}, index) => {
+        game.players.filter(({present}) => present).sort((player1, player2) => player2.score - player1.score).slice(0, 10).forEach(({first_name, score}, index) => {
           str += `${index + 1}: ${first_name}: ${score}\n`;
         });
         bot.sendMessage(game_id, str);
         break;
       case 'ta':
         str = '<b>Top Average Daily Score</b>\n';
-        game.players.filter(({present}) => present).sort((player1, player2) => (player1.plays === 0 ? 0 : player1.score / player1.plays) - (player2.plays === 0 ? 0 : player2.score / player2.plays)).slice(0, 10).forEach(({first_name, plays, score}, index) => {
+        game.players.filter(({present}) => present).sort((player1, player2) => (player2.plays === 0 ? 0 : player2.score / player2.plays) - (player1.plays === 0 ? 0 : player1.score / player1.plays)).slice(0, 10).forEach(({first_name, plays, score}, index) => {
           str += `${index + 1}: ${first_name}: ${Math.round(plays === 0 ? 0 : score / plays)}\n`;
         });
         bot.sendMessage(game_id, str);
@@ -57,7 +57,7 @@ exports.getScores = (game_id, type) => {
 }
 
 const getDailyScores = ({players, chat_id}, limit) => {
-  const message = players.filter(({scoreDaily}) => scoreDaily).sort((player1, player2) => player1.scoreDaily - player2.scoreDaily).slice(0, limit ? limit : players.length).reduce((str, {first_name, scoreDaily}, index) => {
+  const message = players.filter(({scoreDaily}) => scoreDaily).sort((player1, player2) => player2.scoreDaily - player1.scoreDaily).slice(0, limit ? limit : players.length).reduce((str, {first_name, scoreDaily}, index) => {
     str += `${index + 1}: ${first_name} - ${scoreDaily}\n`;
     return str;
   }, `<b>${limit ? `Top ${limit} ` : ''}Daily Scores</b>\n`);
