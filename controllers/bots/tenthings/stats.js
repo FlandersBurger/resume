@@ -301,6 +301,7 @@ const voteStats = ({players, chat_id}, sorter, title) => {
     voters.forEach((voter) => {
       const player = _.find(players, player => voters._id == player.id);
       if (player) {
+        console.log(`${i + 1}. ${player.first_name}`);
         message += `${i++}. ${player.first_name}\n`;
       }
     });
