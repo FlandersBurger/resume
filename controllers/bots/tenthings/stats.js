@@ -198,10 +198,10 @@ exports.getStats = (chat_id, data, requestor) => {
         listStats(game, 'hints', 'plays', 1/6, 'Least Hinted Lists', -1);
         break;
       case 'mostvoted':
-        voteStats(game, 1, 'Voted Most on Lists');
+        voteStats(game, -1, 'Voted Most on Lists');
         break;
       case 'leastvoted':
-        voteStats(game, -1, 'Voted Least on Lists');
+        voteStats(game, 1, 'Voted Least on Lists');
         break;
       case 'mostplayed':
         listStats(game, 'plays', '', 1, 'Most Played Lists', 1);
@@ -301,7 +301,7 @@ const voteStats = ({players, chat_id}, sorter, title) => {
     voters.forEach((voter) => {
       const player = _.find(players, player => voter._id == player.id);
       if (player) {
-        message += `${i++}. ${player.first_name}\n`;
+        message += `${i++}. ${player.first_name} (${voter.votes})\n`;
       }
     });
     bot.sendMessage(chat_id, message);
