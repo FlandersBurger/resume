@@ -866,10 +866,10 @@ function evaluateCommand(res, msg, game, player, isNew) {
       break;
     */
     case '/suggest':
-      if (msg.text.substring(8, msg.text.length).replace(/\s/g,'')) {
+      if (msg.text.substring(msg.command.length, msg.text.length).replace(/\s/g,'')) {
         player.suggestions++;
         game.save();
-        const suggestion = `<b>Suggestion</b>\n${msg.text.substring(9, msg.text.length)}\n<i>${msg.from.username ? msg.from.username : msg.from.first_name}</i>`;
+        const suggestion = `<b>Suggestion</b>\n${msg.text.substring(msg.command.length + 1, msg.text.length)}\n<i>${msg.from.username ? msg.from.username : msg.from.first_name}</i>`;
         bot.notifyAdmins(suggestion);
         bot.sendMessage(msg.chat.id, `Suggestion noted, ${msg.from.first_name}!`);
       } else {
@@ -877,10 +877,10 @@ function evaluateCommand(res, msg, game, player, isNew) {
       }
       break;
     case '/typo':
-      if (msg.text.substring(8, msg.text.length).replace(/\s/g,'')) {
+      if (msg.text.substring(msg.command.length, msg.text.length).replace(/\s/g,'')) {
         player.suggestions++;
         game.save();
-        let typo = `<b>Typo</b>\n${msg.text.substring(9, msg.text.length)}\n<i>${msg.from.username ? msg.from.username : msg.from.first_name}</i>`;
+        let typo = `<b>Typo</b>\n${msg.text.substring(msg.command.length + 1, msg.text.length)}\n<i>${msg.from.username ? msg.from.username : msg.from.first_name}</i>`;
         typo += `\nList: ${game.list.name}`;
         bot.notifyAdmins(typo);
         bot.sendMessage(msg.chat.id, `Typo noted, ${msg.from.first_name}!`);
