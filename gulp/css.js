@@ -1,9 +1,9 @@
-var gulp = require('gulp');
-var stylus = require('gulp-stylus');
-var concat = require('gulp-concat');
+const gulp = require('gulp');
+const stylus = require('gulp-stylus');
+const concat = require('gulp-concat');
 
 
-gulp.task('css', function () {
+gulp.task('css', () => {
   gulp.src('css/**/*.styl')
     .pipe(stylus({
       compress: true,
@@ -13,6 +13,6 @@ gulp.task('css', function () {
     .pipe(gulp.dest('assets'));
 });
 
-gulp.task('watch:css', gulp.series(['css'], function () {
+gulp.task('watch:css', gulp.series(['css'], () => {
   gulp.watch('css/**/*.styl', ['css']);
 }));

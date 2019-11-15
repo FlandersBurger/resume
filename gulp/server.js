@@ -1,12 +1,12 @@
-var gulp = require('gulp');
-var nodemon = require('gulp-nodemon');
-var connect = require('gulp-connect');
+const gulp = require('gulp');
+const nodemon = require('gulp-nodemon');
+const connect = require('gulp-connect');
 
-gulp.task('dev:server', function () {
+gulp.task('dev:server', () => {
   nodemon({
     script: 'server.js',
     ext: 'js',
-    ignore: ['ng*', 'gulp*', 'assets*']
+    ignore: ['ng/*', 'gulp/*', 'assets/*']
   });
 
 });

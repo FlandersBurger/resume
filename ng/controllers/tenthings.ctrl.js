@@ -1,5 +1,6 @@
+/*jslint esversion: 8*/
 angular.module('app')
-.controller('TenThingsCtrl', function ($scope, BotsSvc) {
+.controller('TenThingsCtrl', ($scope, BotsSvc) => {
 
   $scope.categories = [
     'Music',
@@ -23,12 +24,12 @@ angular.module('app')
     'Business',
     'Internet'
   ];
-  $scope.keyDown = function (e) {
+  $scope.keyDown = e => {
     e = e || window.event;
     switch (e.keyCode) {
       case 9:
         if ($("#new-blurb").is(":focus")) {
-          setTimeout(function() {
+          setTimeout(() => {
             $scope.addValue();
           }, 100);
         }
@@ -46,47 +47,47 @@ angular.module('app')
     // use e.keyCode
   };
 
-  $scope.categoryFilters = $scope.categories.map(function(category) { return category; });
+  $scope.categoryFilters = $scope.categories.map(category => category);
   $scope.categoryFilters.push('All');
   $scope.categoryFilters.push('Blank');
   $scope.categoryFilter = 'All';
 
-  $scope.setCategoryFilter = function(category) {
+  $scope.setCategoryFilter = category => {
     $scope.categoryFilter = category;
   };
-  $scope.setUserFilter = function(user) {
+  $scope.setUserFilter = user => {
     $scope.userFilter = user;
   };
 
-  $scope.filteredLists = function() {
+  $scope.filteredLists = () => {
     if (!$scope.lists) return [];
-    return $scope.lists.filter(function(list) {
+    return $scope.lists.filter(({category, creator}) => {
       if ($scope.categoryFilter === 'All' && $scope.userFilter === 'All') {
         return true;
       } else if ($scope.categoryFilter !== 'All' && $scope.userFilter === 'All') {
-        if (list.category) {
-          return list.category === $scope.categoryFilter;
+        if (category) {
+          return category === $scope.categoryFilter;
         } else {
           return $scope.categoryFilter === 'Blank';
         }
       } else if ($scope.categoryFilter === 'All' && $scope.userFilter !== 'All') {
-        return list.creator === $scope.userFilter;
+        return creator === $scope.userFilter;
       } else {
-        if (list.category) {
-          return list.category === $scope.categoryFilter && list.creator === $scope.userFilter;
+        if (category) {
+          return category === $scope.categoryFilter && creator === $scope.userFilter;
         } else {
-          return $scope.categoryFilter === 'Blank' && list.creator === $scope.userFilter;
+          return $scope.categoryFilter === 'Blank' && creator === $scope.userFilter;
         }
       }
     });
   };
 
-  $scope.$on('login', function (_) {
+  $scope.$on('login', _ => {
     $scope.getLists();
   });
 
 
-  $scope.sort = function(sortBy) {
+  $scope.sort = sortBy => {
     if ($scope.sortValue === sortBy) {
       $scope.sortDirection = !$scope.sortDirection;
     } else {
@@ -101,27 +102,23 @@ angular.module('app')
   $scope.sortList = 'value';
   $scope.sort('date');
 
-  $scope.getCategoryCount = function(category) {
+  $scope.getCategoryCount = category => {
     if (category === 'All') return $scope.filteredLists().length;
     if (!$scope.lists) return 0;
-    return $scope.lists.filter(function(list) {
-      return list.category === category && ($scope.userFilter === 'All' || list.creator.username === $scope.userFilter);
-    }).length;
+    return $scope.lists.filter(list => list.category === category && ($scope.userFilter === 'All' || list.creator.username === $scope.userFilter)).length;
   };
 
-  $scope.getLists = function() {
+  $scope.getLists = () => {
     $scope.loading = true;
     BotsSvc.getLists($scope.currentUser)
-    .then(function(response) {
-      $scope.lists = response.data;
+    .then(({data}) => {
+      $scope.lists = data;
       console.log($scope.lists[0]);
       $scope.userFilters = {};
       $scope.userFilters.All = $scope.lists.length;
-      $scope.userFilters = $scope.lists.sort(function(a, b) {
-        return a.creator > b.creator;
-      }).reduce(function(users, list) {
-        if (!users[list.creator]) users[list.creator] = 0;
-        users[list.creator]++;
+      $scope.userFilters = $scope.lists.sort((list1, list2) => list1.creator > list2.creator).reduce((users, {creator}) => {
+        if (!users[creator]) users[creator] = 0;
+        users[creator]++;
         return users;
       }, $scope.userFilters);
       $scope.userCount = Object.keys($scope.userFilters).length;
@@ -130,21 +127,21 @@ angular.module('app')
     });
   };
 
-  $scope.selectList = function(list) {
+  $scope.selectList = list => {
     BotsSvc.getList(list)
-    .then(function(response) {
-      $scope.selectedList = response.data;
+    .then(({data}) => {
+      $scope.selectedList = data;
       console.log($scope.selectedList);
     });
   };
 
-  $scope.selectCategory = function(category) {
+  $scope.selectCategory = category => {
     $scope.selectedList.category = category;
     $scope.selectingCategory = false;
   };
 
-  $scope.addList = function() {
-    var newList = _.find($scope.lists, function(list) { return !list._id; });
+  $scope.addList = () => {
+    const newList = _.find($scope.lists, ({_id}) => !_id);
     if (!newList) {
       $scope.lists.unshift({
         name: '',
@@ -159,36 +156,38 @@ angular.module('app')
     }
   };
 
-  $scope.addValue = function() {
+  $scope.addValue = () => {
     if ($scope.newItem.value) {
-      $scope.newItem.creator = $scope.currentUser._id;
-      $scope.selectedList.values.unshift(JSON.parse(JSON.stringify($scope.newItem)));
-      $scope.selectedList.answers++;
-      $scope.newItem.value = '';
-      $scope.newItem.blurb = '';
-      if ($scope.selectedList.values.length >= 10 && $scope.selectedList.name && $scope.selectedList.category) {
-        $scope.saveList($scope.selectedList);
+      if (_.some($scope.selectedList.values, value => value == $scope.newItem.value)) {
+        alert(`${$scope.newItem.value} is already in the list`);
+      } else {
+        $scope.newItem.creator = $scope.currentUser._id;
+        $scope.selectedList.values.unshift(JSON.parse(JSON.stringify($scope.newItem)));
+        $scope.selectedList.answers++;
+        $scope.newItem.value = '';
+        $scope.newItem.blurb = '';
+        if ($scope.selectedList.values.length >= 10 && $scope.selectedList.name && $scope.selectedList.category) {
+          $scope.saveList($scope.selectedList);
+        }
       }
     }
     $('#new-value').focus();
   };
 
-  $scope.reportList = function(list) {
+  $scope.reportList = list => {
     BotsSvc.reportList($scope.currentUser, list);
   };
 
-  $scope.saveList = function(list) {
-    list.values = list.values.filter(function(item) {
-      return item.value;
-    });
+  $scope.saveList = list => {
+    list.values = list.values.filter(({value}) => value);
     if (list.values.length >= 10 && list.name && list.category) {
       $scope.saving = true;
       BotsSvc.saveList($scope.currentUser, list)
-      .then(function(response) {
+      .then(({data}) => {
         $scope.getLists();
-        $scope.selectList(response.data);
+        $scope.selectList(data);
         $scope.saving = false;
-      }, function(err) {
+      }, err => {
         console.error(err);
         $scope.saving = false;
       });
@@ -202,24 +201,24 @@ angular.module('app')
   };
 
   function flash(element) {
-    var color = $(element).css("background-color");
+    const color = $(element).css("background-color");
     $(element).animate({
       backgroundColor: "#FA8072"
-    }, 100, function() {
+    }, 100, () => {
       $(element).animate({
         backgroundColor: color
       }, 100);
     });
   }
 
-  $scope.deleteList = function(list) {
+  $scope.deleteList = list => {
     if (!list._id) {
-      $scope.lists = $scope.lists.filter(function(list) { return list._id; });
+      $scope.lists = $scope.lists.filter(({_id}) => _id);
       $scope.selectedList = null;
     } else {
       if (confirm('Are you sure you want to delete this list?')) {
         BotsSvc.deleteList(list)
-        .then(function(response) {
+        .then(response => {
           $scope.getLists();
           $scope.selectedList = null;
         });
@@ -227,9 +226,9 @@ angular.module('app')
     }
   };
 
-  $scope.listButtonClass = function(list) {
-    var values = list.values;
-    var blurbs = list.blurbs;
+  $scope.listButtonClass = list => {
+    const values = list.values;
+    const blurbs = list.blurbs;
     if (values === blurbs && list.description) {
       return 'btn-default';
     } else if (blurbs === 0 && !list.description) {

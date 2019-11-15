@@ -1,12 +1,15 @@
-var gulp = require('gulp');
-var concat = require('gulp-concat');
-var sourcemaps = require('gulp-sourcemaps');
-var ngAnnotate = require('gulp-ng-annotate');
-var uglify = require('gulp-uglify');
-var jsonminify = require('gulp-jsonminify');
-var browserify = require('gulp-browserify');
+/*jslint esversion: 8*/
+const gulp = require('gulp');
 
-gulp.task('js', function () {
+const concat = require('gulp-concat');
+const sourcemaps = require('gulp-sourcemaps');
+const ngAnnotate = require('gulp-ng-annotate');
+const uglify = require('gulp-terser');
+const jsonminify = require('gulp-jsonminify');
+const browserify = require('gulp-browserify');
+const babel = require('gulp-babel');
+
+gulp.task('js', () => {
   gulp.src(['ng/module.js', 'ng/**/*.js'])
     .pipe(sourcemaps.init())/*
     .pipe(
@@ -17,13 +20,17 @@ gulp.task('js', function () {
     )*/
     .pipe(concat('app.js'))
     .pipe(ngAnnotate())
-    .pipe(uglify())
+    .pipe(uglify({
+      mangle: false,
+      ecma: 6
+    }))
+    .pipe(babel())
     .pipe(sourcemaps.write())
     .pipe(gulp.dest('assets'))
     .on('error', onError);
 });
 
-gulp.task('resources', function () {
+gulp.task('resources', () => {
   gulp.src(['resources/ui-bootstrap-tpls-2.5.0.js'])
     .pipe(sourcemaps.init())
     .pipe(concat('ui-bootstrap-tpls-2.5.0.min.js'))
@@ -34,21 +41,19 @@ gulp.task('resources', function () {
     .on('error', onError);
 });
 
-gulp.task('watch:js', gulp.series(['js'], function () {
+gulp.task('watch:js', gulp.series(['js'], () => {
   gulp.watch('ng/**/*.js', gulp.series(['js']));
 }));
 
-gulp.task('json', function () {
-    return gulp.src(['data/*.json'])
-        .pipe(jsonminify())
-        .pipe(gulp.dest('assets'));
-});
+gulp.task('json', () => gulp.src(['data/*.json'])
+    .pipe(jsonminify())
+    .pipe(gulp.dest('assets')));
 
-gulp.task('watch:json', gulp.series(['json'], function () {
+gulp.task('watch:json', gulp.series(['json'], () => {
   gulp.watch('data/*.json', gulp.series(['json']));
 }));
 
-function onError(err) {
+const onError = (err) => {
   console.log(err);
   this.emit('end');
-}
+};
