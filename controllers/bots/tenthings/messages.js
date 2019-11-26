@@ -399,7 +399,7 @@ module.exports = {
           url: 'https://icanhazdadjoke.com/',
           headers: { 'Accept': 'application/json' }
         }, (err, response, body) => {
-          console.log(JSON.parse(body));
+          console.log(JSON.parse(body).joke);
           resolve(JSON.parse(body).joke);
         });
       } else {

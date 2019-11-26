@@ -211,6 +211,7 @@ function queueGuess({list, chat_id}, msg) {
   } else {
     messages.sass(guess.msg.text)
     .then(sass => {
+      console.log(sass);
       if (chat_id != config.masterChat) bot.notifyAdmin(list.name + '\n' + guess.msg.text + '\n' + sass);
       if (sass.indexOf('http') === 0) {
         if (sass.indexOf('.gif') > 0) {
