@@ -910,6 +910,34 @@ function evaluateCommand(res, msg, game, player, isNew) {
     case '/score':
       stats.getDailyScores(game);
       break;
+    case '/minigame':
+      List
+      .find()
+      .lean()
+      .exec((err, lists) => {
+        let answers = lists.reduce((answers, list) => {
+          for (const value of list.values) {
+            if (!answers[value.value]) answers[value.value] = [list.name];
+            else answers[value.value].push(list.name);
+          }
+          return answers;
+        }, {});
+        let result = Object.keys(result).reduce((answers, answer) => {
+          if (result[answer] && result[answer].length > 2) {
+            answers.push({
+              value: answer,
+              lists: result[answer]
+            });
+          }
+          return answers;
+        }, []);
+        let message = result[Math.floor(Math.random() * result.length].lists.reduce((msg, list) => {
+          msg += ` - ${list}\n`;
+          return msg;
+        });
+        bot.sendMessage(msg.chat.id, message);    
+      });
+      break;
     default:
       queueGuess(game, msg);
   }

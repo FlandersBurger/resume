@@ -1,6 +1,7 @@
 /*jslint esversion: 6*/
 angular.module('app')
-.controller('TenThingsCtrl', function ($scope, BotsSvc) {
+//AngularJs can't have an arrow function here
+.controller('TenThingsCtrl', function($scope, BotsSvc) {
 
   $scope.categories = [
     'Music',
