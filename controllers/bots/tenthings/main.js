@@ -922,14 +922,14 @@ function evaluateCommand(res, msg, game, player, isNew) {
           }
           return answers;
         }, {});
-        let result = Object.keys(result).reduce((answers, answer) => {
-          if (result[answer] && result[answer].length > 2) {
-            answers.push({
+        let result = Object.keys(answers).reduce((result, answer) => {
+          if (answers[answer] && answers[answer].length > 2) {
+            result.push({
               value: answer,
-              lists: result[answer]
+              lists: answers[answer]
             });
           }
-          return answers;
+          return result;
         }, []);
         let message = result[Math.floor(Math.random() * result.length)].lists.reduce((msg, list) => {
           msg += ` - ${list}\n`;
