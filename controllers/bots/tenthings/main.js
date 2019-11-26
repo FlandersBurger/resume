@@ -567,7 +567,7 @@ router.post('/', ({body}, res, next) => {
         delete foundList.voters;
         foundList.save(err => {
           if (err) return console.error(err);
-          bot.notifyAdmins(`"<b>${foundList.name}</b>" ${data.vote > 0 ? 'up' : 'down'}voted!`);
+          bot.notifyAdmin(`"<b>${foundList.name}</b>" ${data.vote > 0 ? 'up' : 'down'}voted!`);
         });
       });
     } else if (data.type === 'stats') {
