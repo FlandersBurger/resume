@@ -1,6 +1,6 @@
-/*jslint esversion: 8*/
+/*jslint esversion: 6*/
 angular.module('app')
-.controller('TenThingsCtrl', ($scope, BotsSvc) => {
+.controller('TenThingsCtrl', function ($scope, BotsSvc) {
 
   $scope.categories = [
     'Music',
