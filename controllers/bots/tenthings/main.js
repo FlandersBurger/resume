@@ -931,11 +931,11 @@ function evaluateCommand(res, msg, game, player, isNew) {
           }
           return answers;
         }, []);
-        let message = result[Math.floor(Math.random() * result.length].lists.reduce((msg, list) => {
+        let message = result[Math.floor(Math.random() * result.length)].lists.reduce((msg, list) => {
           msg += ` - ${list}\n`;
           return msg;
         });
-        bot.sendMessage(msg.chat.id, message);    
+        bot.sendMessage(msg.chat.id, message);
       });
       break;
     default:
