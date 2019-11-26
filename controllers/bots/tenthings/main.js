@@ -932,9 +932,9 @@ function evaluateCommand(res, msg, game, player, isNew) {
           return result;
         }, []);
         let message = result[Math.floor(Math.random() * result.length)].lists.reduce((msg, list) => {
-          msg += ` - ${list}\n`;
+          msg += `\n - ${list}`;
           return msg;
-        });
+        }, '');
         bot.sendMessage(msg.chat.id, message);
       });
       break;
