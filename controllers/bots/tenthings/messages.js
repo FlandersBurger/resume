@@ -454,8 +454,6 @@ module.exports = {
     }
     if (messages.length > 0) {
       resolve(messages[Math.floor(Math.random() * messages.length)]);
-    } else {
-      reject();
     }
   })
 };
