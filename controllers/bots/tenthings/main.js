@@ -425,7 +425,7 @@ console.log(hints.getHint(6, string));
 
 function skip(game, skipper) {
   if (skips[game.id] && skips[game.id].player !== skipper) {
-    skipList(game);
+    skipList(game, skipper);
   } else if (skips[game.id] && skips[game.id].player === skipper) {
     bot.sendMessage(game.chat_id, 'Get someone else to confirm your skip request!');
   } else {
