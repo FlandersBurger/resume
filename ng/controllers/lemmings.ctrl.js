@@ -198,6 +198,7 @@ angular.module('app')
       }
     }
     hatch.open();
+    started = true;
     setTimeout(function() {
       draw();
     }, 150);
