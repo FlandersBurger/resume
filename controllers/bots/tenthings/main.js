@@ -217,7 +217,7 @@ function queueGuess(game, msg) {
         bot.notifyAdmin(JSON.stringify(err));
       } else {
         let message = 'Mini-game answer guessed!'
-        message += messages.guessed(game.minigame.answer, from.first_name);
+        message += messages.guessed(game.minigame.answer, msg.from.first_name);
         message += `\n<pre>${player.scoreDaily - 10} + 10 points</pre>`;
         bot.sendMessage(chat.id, message);
         setTimeout(() => {
@@ -573,20 +573,20 @@ function createMinigame(game, msg) {
     let result = Object.keys(answers).reduce((result, answer) => {
       if (answers[answer] && answers[answer].length > 2) {
         result.push({
-          value: answer,
+          answer: answer,
           lists: answers[answer]
         });
       }
       return result;
     }, []);
     let minigame = result[Math.floor(Math.random() * result.length)];
-    let message = '<b>Find the connection</b>'
+    let message = '<b>Find the connection</b>\n'
     message += minigame.lists.reduce((msg, list) => {
       msg += `- ${list}\n`;
       return msg;
     }, '');
     bot.sendMessage(msg.chat.id, message);
-    game.minigame.answer = minigame.value;
+    game.minigame.answer = minigame.answer;
     game.minigame.lists = minigame.lists;
     game.save();
   });
@@ -966,7 +966,7 @@ function evaluateCommand(res, msg, game, player, isNew) {
       if (!game.minigame.answer) {
         createMinigame(game, msg);
       } else {
-        let message = '<b>Find the connection</b>'
+        let message = '<b>Find the connection</b>\n'
         message += game.minigame.lists.reduce((msg, list) => {
           msg += `- ${list}\n`;
           return msg;
