@@ -963,7 +963,7 @@ function evaluateCommand(res, msg, game, player, isNew) {
       break;
     case '/minigame':
     console.log(game.minigame);
-      if (!game.minigame) {
+      if (!game.minigame.answer) {
         createMinigame(game, msg);
       } else {
         let message = '<b>Find the connection</b>'
