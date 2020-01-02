@@ -569,7 +569,7 @@ router.post('/', ({body}, res, next) => {
         foundList.save(err => {
           if (err) return console.error(err);
           bot.notifyAdmin(`"<b>${foundList.name}</b>" ${data.vote > 0 ? 'up' : 'down'}voted!`);
-          bot.sendMessage(body.callback_query.message.chat.id, `${foundList.name} \ud83d\udc4${data.vote > 0 ? 'd' : 'e'}`);
+          bot.sendMessage(body.callback_query.message.chat.id, `${foundList.name} ${data.vote > 0 ? '\ud83d\udc4d' : '\ud83d\udc4e'}`);
         });
       });
     } else if (data.type === 'stats') {
