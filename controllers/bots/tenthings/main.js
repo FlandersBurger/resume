@@ -219,7 +219,7 @@ function queueGuess(game, msg) {
         let message = 'Mini-game answer guessed!'
         message += messages.guessed(game.minigame.answer, msg.from.first_name);
         message += `\n<pre>${player.scoreDaily - 10} + 10 points</pre>`;
-        bot.sendMessage(chat.id, message);
+        bot.sendMessage(msg.chat.id, message);
         setTimeout(() => {
           createMinigame(game, msg);
         }, 5000);
