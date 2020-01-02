@@ -208,7 +208,7 @@ function queueGuess(game, msg) {
     setTimeout(() => {
       queueingGuess(guess);
     }, 2000);
-  } else if (msg.text == game.minigame.answer) {
+  } else if (msg.text.replace(new RegExp(`[${SPECIAL_CHARACTERS}]`, 'gi'), '') == game.minigame.answer.replace(new RegExp(`[${SPECIAL_CHARACTERS}]`, 'gi'), '')) {
     const player = _.find(game.players, ({id}) => id == msg.from.id);
     player.score += 10;
     player.scoreDaily += 10;
@@ -216,7 +216,7 @@ function queueGuess(game, msg) {
       if (err) {
         bot.notifyAdmin(JSON.stringify(err));
       } else {
-        let message = 'Mini-game answer guessed!'
+        let message = 'Mini-game answer guessed!\n'
         message += messages.guessed(game.minigame.answer, msg.from.first_name);
         message += `\n<pre>${player.scoreDaily - 10} + 10 points</pre>`;
         bot.sendMessage(msg.chat.id, message);
