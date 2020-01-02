@@ -194,33 +194,49 @@ function rateList(game) {
   bot.sendKeyboard(game.chat_id, `Did you like <b>${game.list.name}</b>?`, keyboards.like(game));
 }
 
-function queueGuess({list, chat_id}, msg) {
-  const fuzzyMatch = new FuzzyMatching(list.values.map(({value}) => value.replace(new RegExp(`[${SPECIAL_CHARACTERS}]`, 'gi'), '')));
+function queueGuess(game, msg) {
+  const fuzzyMatch = new FuzzyMatching(game.list.values.map(({value}) => value.replace(new RegExp(`[${SPECIAL_CHARACTERS}]`, 'gi'), '')));
   const guess = {
     msg,
-    game: chat_id,
+    game: game.chat_id,
     match: fuzzyMatch.get(msg.text.replace(new RegExp(`[${SPECIAL_CHARACTERS}]`, 'gi'), ''))
   };
-  guess.match.index = _.findIndex(list.values, ({value}) => value.replace(new RegExp(`[${SPECIAL_CHARACTERS}]`, 'gi'), '') === guess.match.value);
+  guess.match.index = _.findIndex(game.list.values, ({value}) => value.replace(new RegExp(`[${SPECIAL_CHARACTERS}]`, 'gi'), '') === guess.match.value);
   if (guess.match.distance >= 0.9) {
     queueingGuess(guess);
   } else if (guess.match.distance >= 0.75) {
     setTimeout(() => {
       queueingGuess(guess);
     }, 2000);
+  } else if (msg.text == game.minigame.answer) {
+    const player = _.find(game.players, ({id}) => id == msg.from.id);
+    player.score += 10;
+    player.scoreDaily += 10;
+    game.save((err, savedGame) => {
+      if (err) {
+        bot.notifyAdmin(JSON.stringify(err));
+      } else {
+        let message = 'Mini-game answer guessed!'
+        message += messages.guessed(game.minigame.answer, from.first_name);
+        message += `\n<pre>${player.scoreDaily - 10} + 10 points</pre>`;
+        bot.sendMessage(chat.id, message);
+        setTimeout(() => {
+          createMinigame(game, msg);
+        }, 5000);
+      }
+    });
   } else {
     messages.sass(guess.msg.text)
     .then(sass => {
-      console.log(sass);
-      if (chat_id != config.masterChat) bot.notifyAdmin(list.name + '\n' + guess.msg.text + '\n' + sass);
+      if (game.chat_id != config.masterChat) bot.notifyAdmin(game.list.name + '\n' + guess.msg.text + '\n' + sass);
       if (sass.indexOf('http') === 0) {
         if (sass.indexOf('.gif') > 0) {
-          bot.sendAnimation(chat_id, sass);
+          bot.sendAnimation(game.chat_id, sass);
         } else {
-          bot.sendPhoto(chat_id, sass);
+          bot.sendPhoto(game.chat_id, sass);
         }
       } else {
-        bot.sendMessage(chat_id, sass);
+        bot.sendMessage(game.chat_id, sass);
       }
     }, err => null);
   }
@@ -357,7 +373,7 @@ function checkRound(game) {
       stats.getList(game, list => {
         List.findOne({ _id: game.list._id }).exec((err, foundList) => {
           let message = `<b>${game.list.name}</b> by ${game.list.creator.username}\n`;
-          message += game.list.category ? `Category: ${game.list.category}\n` : '';
+          message += game.list.category ? `Category: <b>${game.list.category}</b>\n` : '';
           message += list;
           message += messages.listStats(foundList);
           bot.sendMessage(game.chat_id, message);
@@ -540,6 +556,39 @@ function getRandom(arr, n) {
     taken[x] = --len in taken ? taken[len] : len;
   }
   return result;
+}
+
+function createMinigame(game, msg) {
+  List
+  .find()
+  .lean()
+  .exec((err, lists) => {
+    let answers = lists.reduce((answers, list) => {
+      for (const value of list.values) {
+        if (!answers[value.value]) answers[value.value] = [list.name];
+        else answers[value.value].push(list.name);
+      }
+      return answers;
+    }, {});
+    let result = Object.keys(answers).reduce((result, answer) => {
+      if (answers[answer] && answers[answer].length > 2) {
+        result.push({
+          value: answer,
+          lists: answers[answer]
+        });
+      }
+      return result;
+    }, []);
+    let minigame = result[Math.floor(Math.random() * result.length)];
+    let message = '<b>Find the connection</b>'
+    message += minigame.lists.reduce((msg, list) => {
+      msg += `- ${list}\n`;
+      return msg;
+    }, '');
+    bot.sendMessage(msg.chat.id, message);
+    game.minigame.answer = minigame.value;
+    game.minigame.lists = minigame.lists;
+  });
 }
 
 router.post('/', ({body}, res, next) => {
@@ -912,32 +961,16 @@ function evaluateCommand(res, msg, game, player, isNew) {
       stats.getDailyScores(game);
       break;
     case '/minigame':
-      List
-      .find()
-      .lean()
-      .exec((err, lists) => {
-        let answers = lists.reduce((answers, list) => {
-          for (const value of list.values) {
-            if (!answers[value.value]) answers[value.value] = [list.name];
-            else answers[value.value].push(list.name);
-          }
-          return answers;
-        }, {});
-        let result = Object.keys(answers).reduce((result, answer) => {
-          if (answers[answer] && answers[answer].length > 2) {
-            result.push({
-              value: answer,
-              lists: answers[answer]
-            });
-          }
-          return result;
-        }, []);
-        let message = result[Math.floor(Math.random() * result.length)].lists.reduce((msg, list) => {
+      if (!game.minigame) {
+        createMinigame(game, msg);
+      } else {
+        let message = '<b>Find the connection</b>'
+        message += game.minigame.lists.reduce((msg, list) => {
           msg += `- ${list}\n`;
           return msg;
         }, '');
         bot.sendMessage(msg.chat.id, message);
-      });
+      }
       break;
     default:
       queueGuess(game, msg);

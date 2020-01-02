@@ -63,7 +63,13 @@ var TenThings = db.model('TenThings', {
       }
     ]
   },
-  date: { type: Date, required: true, default: Date.now }
+  date: { type: Date, required: true, default: Date.now },
+  minigame: {
+    answer: { type: String, required: false },
+    lists: [
+      { type: String, required: false },
+    ]
+  },
 });
 
 module.exports = TenThings;
