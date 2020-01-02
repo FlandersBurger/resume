@@ -588,6 +588,7 @@ function createMinigame(game, msg) {
     bot.sendMessage(msg.chat.id, message);
     game.minigame.answer = minigame.value;
     game.minigame.lists = minigame.lists;
+    game.save();
   });
 }
 
@@ -961,6 +962,7 @@ function evaluateCommand(res, msg, game, player, isNew) {
       stats.getDailyScores(game);
       break;
     case '/minigame':
+    console.log(game.minigame);
       if (!game.minigame) {
         createMinigame(game, msg);
       } else {
