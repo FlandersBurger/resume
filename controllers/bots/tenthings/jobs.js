@@ -230,7 +230,7 @@ const inactiveChats = schedule.scheduleJob('0 0 2 * * *', () => {
     .then(result => {
       TenThings.deleteMany({ chat_id: { $in: result.filter(game => game.code === 404).map(game => game.id)}}, (err, response) => {
         if (err) return console.error(err);
-        bot.notifyAdmin(`${result.filter(game => game.code === 404)} inactive chats deleted`);
+        bot.notifyAdmin(`${result.filter(game => game.code === 404).length} inactive chats deleted`);
       });
     }, err => console.error(err))
   });

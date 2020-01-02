@@ -208,7 +208,7 @@ function queueGuess(game, msg) {
     setTimeout(() => {
       queueingGuess(guess);
     }, 2000);
-  } else if (msg.text.replace(new RegExp(`[${SPECIAL_CHARACTERS}]`, 'gi'), '') == game.minigame.answer.replace(new RegExp(`[${SPECIAL_CHARACTERS}]`, 'gi'), '')) {
+  } else if (msg.text.toLowerCase().replace(new RegExp(`[${SPECIAL_CHARACTERS}]`, 'gi'), '') == game.minigame.answer.toLowerCase().replace(new RegExp(`[${SPECIAL_CHARACTERS}]`, 'gi'), '')) {
     const player = _.find(game.players, ({id}) => id == msg.from.id);
     player.score += 10;
     player.scoreDaily += 10;
