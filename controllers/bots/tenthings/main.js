@@ -146,23 +146,25 @@ bot.exportChatInviteLink('-1001394022777').then(function(chat) {
 });
 */
 
-function selectList(game, callback) {
-  List.find({ _id: { $nin: game.playedLists } })
-  .populate('creator')
-  .exec((err, lists) => {
-    if (err) return notifyAdmin(JSON.stringify(err));
-    if (lists.length === 0) {
-      game.playedLists = [];
-      game.cycles++;
-      game.lastCycleDate = moment();
-      game.save(err => {
-        if (err) return bot.notifyAdmin(JSON.stringify(err));
-        bot.sendMessage(game.chat_id, 'All lists have been played, a new cycle will now start.');
-        List.find({}).populate('creator').exec((err, lists) => callback(lists[Math.floor(Math.random() * lists.length)]));
-      });
-    } else {
-      return callback(lists[Math.floor(Math.random() * lists.length)]);
-    }
+function selectList(game) {
+  return new Promise(function(resolve, reject) {
+    List.find({ _id: { $nin: game.playedLists } })
+    .populate('creator')
+    .exec((err, lists) => {
+      if (err) return notifyAdmin(JSON.stringify(err));
+      if (lists.length === 0) {
+        game.playedLists = [];
+        game.cycles++;
+        game.lastCycleDate = moment();
+        game.save(err => {
+          if (err) reject(err);
+          bot.sendMessage(game.chat_id, 'All lists have been played, a new cycle will now start.');
+          List.find({}).populate('creator').exec((err, lists) => resolve(lists[Math.floor(Math.random() * lists.length)]));
+        });
+      } else {
+        resolve(lists[Math.floor(Math.random() * lists.length)]);
+      }
+    });
   });
 }
 
@@ -243,11 +245,11 @@ function queueGuess(game, msg) {
 }
 
 function queueingGuess(guess) {
-  queue.create('guess', guess).removeOnComplete( true ).save(err => {
+  queue.create('guess', guess).removeOnComplete(true).save(err => {
     if( !err ) console.log(`${guess.game} - Guess evaluated: "${guess.msg.text}" by ${guess.msg.from.first_name}`);
   });
 }
-
+//check out -->5b6361dcbd0ff6645df5f2
 queue.process('guess', ({data}, done) => {
   processGuess(data)
   .then(() => {
@@ -391,7 +393,8 @@ function checkRound(game) {
 }
 
 function newRound(game) {
-  selectList(game, list => {
+  selectList(game)
+  .then(list => {
     list.plays++;
     list.save();
     for (const i in game.guessers) {
@@ -419,8 +422,10 @@ function newRound(game) {
       bot.sendMessage(game.chat_id, message);
     }, 3000);
     game.playedLists.push(game.list._id);
-    game.save();
-  });
+    game.save(err => {
+      if (err) bot.notifyAdmin(JSON.stringify(err));
+    });
+  } err => bot.notifyAdmin(JSON.stringify(err)));
 }
 
 function angleBrackets(str) {
