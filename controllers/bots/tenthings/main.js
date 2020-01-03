@@ -425,7 +425,7 @@ function newRound(game) {
     game.save(err => {
       if (err) bot.notifyAdmin(JSON.stringify(err));
     });
-  } err => bot.notifyAdmin(JSON.stringify(err)));
+  }, err => bot.notifyAdmin(JSON.stringify(err)));
 }
 
 function angleBrackets(str) {
