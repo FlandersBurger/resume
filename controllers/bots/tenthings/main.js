@@ -584,9 +584,7 @@ function createMinigame(game, msg) {
       return result;
     }, []);
     let minigame = result[Math.floor(Math.random() * result.length)];
-    let message = '-----------------------\n'
-    message += '| <b>Find the connection</b> |\n'
-    message += '-----------------------\n';
+    let message = '<b>Find the connection</b>\n'
     message += minigame.lists.reduce((msg, list) => {
       msg += `- ${list}\n`;
       return msg;
@@ -972,9 +970,7 @@ function evaluateCommand(res, msg, game, player, isNew) {
       if (!game.minigame.answer) {
         createMinigame(game, msg);
       } else {
-        let message = '-----------------------\n'
-        message += '| <b>Find the connection</b> |\n'
-        message += '-----------------------\n';
+        let message = '<b>Find the connection</b>\n'
         message += game.minigame.lists.reduce((msg, list) => {
           msg += `- ${list}\n`;
           return msg;
