@@ -589,9 +589,9 @@ function createMinigame(game, msg) {
     message += '-----------------------\n';
     message += minigame.lists.reduce((msg, list) => {
       msg += `- ${list}\n`;
-      msg += minigame.answer.conceal();
       return msg;
     }, '');
+    message += minigame.answer.conceal();
     bot.sendMessage(msg.chat.id, message);
     game.minigame.answer = minigame.answer;
     game.minigame.lists = minigame.lists;
