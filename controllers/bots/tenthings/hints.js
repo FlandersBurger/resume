@@ -23,18 +23,18 @@ exports.getHint = (hints, value) => {
   let str = '';
   switch (hints) {
     case 0:
-      return value.replace(new RegExp(`[^${SPECIAL_CHARACTERS}]`, 'gi'), '*');
+      return value.conceal('');
     case 1:
-      str = value[0] + value.substring(1, value.length).replace(new RegExp(`[^${SPECIAL_CHARACTERS}]`, 'gi'), '*');
+      str = value[0] + value.substring(1, value.length).conceal('');
       break;
     case 2:
-      str = value[0] + value.substring(1, value.length - 1).replace(new RegExp(`[^${SPECIAL_CHARACTERS}]`, 'gi'), '*') + value[value.length - 1];
+      str = value[0] + value.substring(1, value.length - 1).conceal('') + value[value.length - 1];
       break;
     case 3:
-      str = value[0] + value.substring(1, value.length - 1).replace(new RegExp(`[^${SPECIAL_CHARACTERS}${VOWELS}]`, 'gi'), '*') + value[value.length - 1];
+      str = value[0] + value.substring(1, value.length - 1).conceal(VOWELS) + value[value.length - 1];
       break;
     default:
-      str = value[0] + value.substring(1, value.length - 1).replace(new RegExp(`[^${SPECIAL_CHARACTERS}${VOWELS}${tester}]`, 'gi'), '*') + value[value.length - 1];
+      str = value[0] + value.substring(1, value.length - 1).conceal(VOWELS + tester) + value[value.length - 1];
   }
   for (i = 1; i < value.length - 2; i++) {
     switch (hints) {

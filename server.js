@@ -3,6 +3,7 @@ const bodyParser = require('body-parser');
 const logger = require('morgan');
 const admin = require('firebase-admin');
 const websocket = require('./websockets');
+const prototypes = require('./prototypes');
 
 const serviceAccount = require('./keys/resume-172205-firebase-adminsdk-r34t7-0028c702be.json');
 

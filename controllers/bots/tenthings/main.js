@@ -192,6 +192,7 @@ bot.sendKeyboard(config.masterChat, 'test', {
   //}
 });
 */
+
 function rateList(game) {
   bot.sendKeyboard(game.chat_id, `Did you like <b>${game.list.name}</b>?`, keyboards.like(game));
 }
@@ -210,7 +211,7 @@ function queueGuess(game, msg) {
     setTimeout(() => {
       queueingGuess(guess);
     }, 2000);
-  } else if (game.minigame.answer && msg.text.toLowerCase().replace(new RegExp(`[${SPECIAL_CHARACTERS}]`, 'gi'), '') == game.minigame.answer.toLowerCase().replace(new RegExp(`[${SPECIAL_CHARACTERS}]`, 'gi'), '')) {
+  } else if (game.minigame.answer && msg.text.removeAllButLetters() == game.minigame.answer.removeAllButLetters()) {
     const player = _.find(game.players, ({id}) => id == msg.from.id);
     player.score += 10;
     player.scoreDaily += 10;
@@ -222,9 +223,7 @@ function queueGuess(game, msg) {
         message += messages.guessed(game.minigame.answer, msg.from.first_name);
         message += `\n<pre>${player.scoreDaily - 10} + 10 points</pre>`;
         bot.sendMessage(msg.chat.id, message);
-        setTimeout(() => {
-          createMinigame(game, msg);
-        }, 5000);
+        createMinigame(game, msg);
       }
     });
   } else {
@@ -585,9 +584,12 @@ function createMinigame(game, msg) {
       return result;
     }, []);
     let minigame = result[Math.floor(Math.random() * result.length)];
-    let message = '<b>Find the connection</b>\n'
+    let message = '-----------------------\n'
+    message += '| <b>Find the connection</b> |\n'
+    message += '-----------------------\n';
     message += minigame.lists.reduce((msg, list) => {
       msg += `- ${list}\n`;
+      msg += minigame.answer.conceal();
       return msg;
     }, '');
     bot.sendMessage(msg.chat.id, message);
@@ -967,13 +969,13 @@ function evaluateCommand(res, msg, game, player, isNew) {
       stats.getDailyScores(game);
       break;
     case '/minigame':
-    console.log(game.minigame);
       if (!game.minigame.answer) {
         createMinigame(game, msg);
       } else {
         let message = '<b>Find the connection</b>\n'
         message += game.minigame.lists.reduce((msg, list) => {
           msg += `- ${list}\n`;
+          msg += game.minigame.answer.conceal();
           return msg;
         }, '');
         bot.sendMessage(msg.chat.id, message);
@@ -985,3 +987,27 @@ function evaluateCommand(res, msg, game, player, isNew) {
 }
 
 module.exports = router;
+
+
+List
+.find()
+.lean()
+.exec((err, lists) => {
+  let answers = lists.reduce((answers, list) => {
+    for (const value of list.values) {
+      if (!answers[value.value]) answers[value.value] = [list.name];
+      else answers[value.value].push(list.name);
+    }
+    return answers;
+  }, {});
+  let result = Object.keys(answers).reduce((result, answer) => {
+    if (answers[answer] && answers[answer].length === 2) {
+      result.push({
+        answer: answer,
+        lists: answers[answer]
+      });
+    }
+    return result;
+  }, []);
+  console.log(result);
+});
