@@ -591,7 +591,7 @@ function createMinigame(game, msg) {
       msg += `- ${list}\n`;
       return msg;
     }, '');
-    message += minigame.answer.conceal();
+    message += minigame.answer.conceal('');
     bot.sendMessage(msg.chat.id, message);
     game.minigame.answer = minigame.answer;
     game.minigame.lists = minigame.lists;
@@ -975,7 +975,7 @@ function evaluateCommand(res, msg, game, player, isNew) {
         let message = '<b>Find the connection</b>\n'
         message += game.minigame.lists.reduce((msg, list) => {
           msg += `- ${list}\n`;
-          msg += game.minigame.answer.conceal();
+          msg += game.minigame.answer.conceal('');
           return msg;
         }, '');
         bot.sendMessage(msg.chat.id, message);
