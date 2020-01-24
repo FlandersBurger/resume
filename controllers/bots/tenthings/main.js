@@ -972,12 +972,14 @@ function evaluateCommand(res, msg, game, player, isNew) {
       if (!game.minigame.answer) {
         createMinigame(game, msg);
       } else {
-        let message = '<b>Find the connection</b>\n'
+        let message = '-----------------------\n'
+        message += '| <b>Find the connection</b> |\n'
+        message += '-----------------------\n';
         message += game.minigame.lists.reduce((msg, list) => {
           msg += `- ${list}\n`;
-          msg += game.minigame.answer.conceal('');
           return msg;
         }, '');
+        message += game.minigame.answer.conceal('');
         bot.sendMessage(msg.chat.id, message);
       }
       break;
