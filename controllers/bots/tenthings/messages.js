@@ -324,7 +324,9 @@ module.exports = {
           'I\'m not ready for that',
           'I, um, like you too',
           'Thanks',
-          'I was only looking for a fling'
+          'I was only looking for a fling',
+          'You had me at hello',
+          '( ˘ ³˘)♥'
         ];
       } else if (checkString(text, 'kill') ||
         checkString(text, 'fight') ||
@@ -431,7 +433,18 @@ module.exports = {
           'I can get behind that',
           'Does not compute',
           'Nope',
-          'Of course'
+          'Of course',
+          'Sure, Sure',
+          'Whatever',
+          'You should frame that',
+          'That was so 1999',
+          'HA!',
+          'I\'m just gonna ignore that',
+          'That makes me happy',
+          'Yikes!',
+          'ಠ_ಠ',
+          '( ͡° ͜ʖ ͡°)',
+          '¯\\_(ツ)_/¯'
         ];
       }
     } else if (checkString(text, 'cake')) {
@@ -448,8 +461,8 @@ module.exports = {
       messages = ['To seek the holy grail'];
     } else if (checkString(text, 'inconceivable')) {
       messages = ['My name is Inigo Montoya'];
-    } else if (checkString(text, 'dad') && checkString(text, 'joke')) {
-      messages = ['My name is Inigo Montoya'];
+    } else if (checkString(text, 'who') && checkString(text, 'gonna') && checkString(text, 'call')) {
+      messages = ['Ghostbusters'];
     }
     if (messages.length > 0) {
       resolve(messages[Math.floor(Math.random() * messages.length)]);
