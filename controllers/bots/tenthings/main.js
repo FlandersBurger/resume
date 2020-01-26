@@ -986,6 +986,8 @@ function evaluateCommand(res, msg, game, player, isNew) {
 
 module.exports = router;
 
+/*
+const fs = require('fs');
 
 List
 .find()
@@ -1007,5 +1009,13 @@ List
     }
     return result;
   }, []);
-  console.log(result);
+  fs.writeFile("./temp/test.json", `{ array: ${JSON.stringify(result)}}`, function(err) {
+      if(err) {
+          return console.log(err);
+      }
+      console.log("The file was saved!");
+  });
+
+  //console.log(result);
 });
+*/

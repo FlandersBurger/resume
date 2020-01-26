@@ -39,12 +39,12 @@ exports.getHint = (hints, value) => {
   for (i = 1; i < value.length - 2; i++) {
     switch (hints) {
       case 1:
-        if (i === 0 || /[ -]/.test(value.charAt(i - 1))) {
+        if (i === 0 || /[ -().]/.test(value.charAt(i - 1))) {
           str = str.substr(0, i) + value.charAt(i) + str.substr(i + 1);
         }
         break;
       default:
-        if (i === 0 || /[ -]/.test(value.charAt(i - 1)) || /[ -]/.test(value.charAt(i + 1)) || i === value.length - 1) {
+        if (i === 0 || /[ -().]/.test(value.charAt(i - 1)) || /[ -().]/.test(value.charAt(i + 1)) || i === value.length - 1) {
           str = str.substr(0, i) + value.charAt(i) + str.substr(i + 1);
         }
         break;
