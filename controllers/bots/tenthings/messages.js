@@ -326,7 +326,8 @@ module.exports = {
           'Thanks',
           'I was only looking for a fling',
           'You had me at hello',
-          '( ˘ ³˘)♥'
+          '( ˘ ³˘)♥',
+          'How does your spouse feel about that?'
         ];
       } else if (checkString(text, 'kill') ||
         checkString(text, 'fight') ||
@@ -427,6 +428,7 @@ module.exports = {
           'That\'s just sad',
           'Why would you say that?',
           'I think so too',
+          'I don\'t think so',
           'Not on my watch',
           'Forwarding this to the admins',
           'LMFAO',
@@ -444,7 +446,19 @@ module.exports = {
           'Yikes!',
           'ಠ_ಠ',
           '( ͡° ͜ʖ ͡°)',
-          '¯\\_(ツ)_/¯'
+          '¯\\_(ツ)_/¯',
+          'ಥ_ಥ',
+          'Tell me more',
+          'I\'m listening',
+          '--SIGH--',
+          'Hakuna Matata, mate',
+          'You shouldn\'t have said that',
+          'And this is how democracy dies',
+          'Source?',
+          'That makes me happy',
+          'You should write a book about that',
+          '𝔻𝕠𝕖𝕤 𝕟𝕠𝕥 𝕔𝕠𝕞𝕡𝕦𝕥𝕖',
+          'ǝɯ ǝʞoɹq no⅄'
         ];
       }
     } else if (checkString(text, 'cake')) {
