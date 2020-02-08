@@ -623,7 +623,7 @@ router.post('/', ({body}, res, next) => {
         delete foundList.voters;
         foundList.save(err => {
           if (err) return console.error(err);
-          bot.notifyAdmin(`"<b>${foundList.name}</b>" ${data.vote > 0 ? 'up' : 'down'}voted!`);
+          bot.notifyAdmin(`"<b>${foundList.name}</b>" ${data.vote > 0 ? 'up' : 'down'}voted by <i>${body.callback_query.from.first_name}</i>!`);
           bot.sendMessage(body.callback_query.message.chat.id, ` ${data.vote > 0 ? '\ud83d\udc4d' : '\ud83d\udc4e'} ${body.callback_query.from.first_name} ${data.vote > 0 ? '' : 'dis'}likes <b>${foundList.name}</b>`);
         });
       });
@@ -986,7 +986,7 @@ function evaluateCommand(res, msg, game, player, isNew) {
 
 module.exports = router;
 
-/*
+
 const fs = require('fs');
 
 List
@@ -1009,7 +1009,15 @@ List
     }
     return result;
   }, []);
-  fs.writeFile("./temp/test.json", `{ array: ${JSON.stringify(result)}}`, function(err) {
+
+  const string = result.reduce((result, answer) => {
+    result += `${answer.answer},${answer.lists.reduce((str, list) => {
+      str += list + ',';
+      return str;
+    }, '')}\n`
+  return result},
+     '')
+  fs.writeFile("./temp/test.csv", string, function(err) {
       if(err) {
           return console.log(err);
       }
@@ -1018,4 +1026,3 @@ List
 
   //console.log(result);
 });
-*/
