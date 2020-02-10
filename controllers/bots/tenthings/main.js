@@ -217,7 +217,7 @@ function queueGuess(game, msg) {
     player.scoreDaily += 10;
     game.save((err, savedGame) => {
       if (err) {
-        bot.notifyAdmin(JSON.stringify(err));
+        bot.notifyAdmin('queueGuess: ' + JSON.stringify(err) + '\n' + JSON.stringify(game));
       } else {
         let message = 'Mini-game answer guessed!\n'
         message += messages.guessed(game.minigame.answer, msg.from.first_name);
@@ -346,7 +346,7 @@ function checkGuess(game, guess, msg) {
     }
     game.save((err, savedGame) => {
       if (err) {
-        bot.notifyAdmin(JSON.stringify(err));
+        bot.notifyAdmin('checkGuess: ' + JSON.stringify(err) + '\n' + JSON.stringify(game));
         return reject();
       }
       resolve();
@@ -422,7 +422,8 @@ function newRound(game) {
     }, 3000);
     game.playedLists.push(game.list._id);
     game.save(err => {
-      if (err) bot.notifyAdmin(JSON.stringify(err));
+      if (err)
+        bot.notifyAdmin('newRound: ' + JSON.stringify(err) + '\n' + JSON.stringify(game));
     });
   }, err => bot.notifyAdmin(JSON.stringify(err)));
 }
@@ -764,7 +765,8 @@ router.post('/', ({body}, res, next) => {
         players: [msg.from]
       });
       newGame.save(err => {
-      if (err) return console.error(err);
+      if (err)
+        bot.notifyAdmin('POST: ' + JSON.stringify(err) + '\n' + JSON.stringify(game));
         console.log('Game Saved!');
         const player = newGame.players[0];
         return evaluateCommand(res, msg, newGame, player, true);
@@ -784,6 +786,7 @@ router.post('/', ({body}, res, next) => {
         player = existingGame.players[existingGame.players.length - 1];
         existingGame.save(err => {
           if (err) {
+            bot.notifyAdmin('Can\'t add new player: ' + JSON.stringify(err));
             console.error(err);
             console.log(player);
             console.log(msg.from);
