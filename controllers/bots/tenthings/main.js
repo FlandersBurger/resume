@@ -550,11 +550,12 @@ function cooldownHint(gameId) {
 }
 
 function getRandom(arr, n) {
+  if (n > arr.length) {
+    return arr;
+  }
   const result = new Array(n);
   let len = arr.length;
   const taken = new Array(len);
-  if (n > len)
-    throw new RangeError("getRandom: more elements taken than available");
   while (n--) {
     const x = Math.floor(Math.random() * len);
     result[n] = arr[x in taken ? taken[x] : x];
@@ -586,7 +587,7 @@ function createMinigame(game, msg) {
     }, []);
     let minigame = result[Math.floor(Math.random() * result.length)];
     let message = '<b>Find the connection</b>\n'
-    message += minigame.lists.reduce((msg, list) => {
+    message += getRandom(minigame.lists, 10).reduce((msg, list) => {
       msg += `- ${list}\n`;
       return msg;
     }, '');
