@@ -9,7 +9,7 @@ const stats = require('./stats');
 const List = require('../../../models/list');
 const Joke = require('../../../models/joke');
 const TenThings = require('../../../models/games/tenthings');
-
+const TenThingsStats = require('../../../models/stats/tenthings');
 
 const getJoke = schedule.scheduleJob('0 0 */3 * * *', () => {
 
@@ -307,3 +307,24 @@ function getChat(chat, delay) {
     }, delay);
   });
 }
+
+/*
+  const game = new TenThingsStats({
+    base: true,
+    hints: 154486,
+    cycles: 34,
+    chats: 31,
+    totalPlayers: 186,
+    uniquePlayers: 158
+    score: { type: Number, required: false, default: 0 },
+    snubs: { type: Number, required: false, default: 0 },
+    skips: 50024,
+    suggestions: { type: Number, required: false, default: 0 },
+    listsPlayed: { type: Number, required: false, default: 0 },
+  });
+  game.save(err => {
+  if (err) return console.error(err);
+    console.log('Game Saved!');
+    return game;
+  });
+*/

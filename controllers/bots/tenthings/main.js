@@ -409,6 +409,7 @@ function newRound(game) {
     game.list = JSON.parse(JSON.stringify(list));
     game.list.totalValues = game.list.values.length;
     game.list.values = getRandom(game.list.values, 10);
+    game.listsPlayed++;
     game.hints = 0;
     game.hintCooldown = 0;
     game.guessers = [];
