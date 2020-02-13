@@ -10,6 +10,7 @@ var TenThingsStats = db.model('TenThingsStats', {
   uniquePlayers: { type: Number, required: false },
   score: { type: Number, required: false, default: 0 },
   highScore: { type: Number, required: false, default: 0 },
+  answers: { type: Number, required: false, default: 0 },
   snubs: { type: Number, required: false, default: 0 },
   skips: { type: Number, required: false, default: 0 },
   suggestions: { type: Number, required: false, default: 0 },

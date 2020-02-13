@@ -317,16 +317,26 @@ const updateDailyStats = (gamesPlayed, totalPlayers, uniquePlayers) => {
     .lean()
     .exec((err, games) => {
       if (err) return console.error(err);
-      bot.notifyAdmins(`${gamesPlayed} games played today with ${totalPlayers} players of which ${uniquePlayers} unique`);
       const allPlayers = games.reduce((allPlayers, {players}, index) => allPlayers.concat(players), []);
       const listsPlayed = games.reduce((count, {listsPlayed}) => count + listsPlayed, 0);
       const hints = allPlayers.reduce((count, {hints}) => count + (hints ? hints : 0), 0);
       const cycles = games.reduce((count, {cycles}) => count + (cycles ? cycles : 0), 0);
       const score = allPlayers.reduce((count, {score}) => count + (score ? score : 0), 0);
       const highScore = allPlayers.reduce((score, {scoreDaily}) => scoreDaily ? score > scoreDaily ? score : scoreDaily : score, 0);
+      const answers = allPlayers.reduce((count, {answers}) => count + (answers ? answers : 0), 0);
       const snubs = allPlayers.reduce((count, {snubs}) => count + (snubs ? snubs : 0), 0);
       const skips = allPlayers.reduce((count, {skips}) => count + (skips ? skips : 0), 0);
       const suggestions = allPlayers.reduce((count, {suggestions}) => count + (suggestions ? suggestions : 0), 0);
+      let message = `${gamesPlayed} games played today with ${totalPlayers} players of which ${uniquePlayers} unique\n`;
+      message += `${listsPlayed} lists played\n`;
+      message += `${skips} lists skipped\n`;
+      message += `${answers} answers given\n`;
+      message += `${snubs} answers snubbed\n`;
+      message += `${hints} hints asked\n`;
+      message += `${cycles} new cycles started\n`;
+      message += `${score} points scored overall\n`;
+      message += `${suggestions} suggestions given`;
+      bot.notifyAdmins(message);
       const dailyStats = new TenThingsStats({
         hints: hints - base.hints,
         cycles: cycles - base.cycles,
@@ -336,6 +346,7 @@ const updateDailyStats = (gamesPlayed, totalPlayers, uniquePlayers) => {
         uniquePlayers: uniquePlayers,
         score: score - base.score,
         highScore: highScore,
+        answers: answers - base.answers,
         snubs: snubs - base.snubs,
         skips: skips - base.skips,
         suggestions: suggestions - base.suggestions
@@ -347,6 +358,7 @@ const updateDailyStats = (gamesPlayed, totalPlayers, uniquePlayers) => {
         base.cycles = cycles;
         base.listsPlayed = listsPlayed;
         base.score = score;
+        base.answers = answers;
         base.snubs = snubs;
         base.skips = skips;
         base.suggestions = suggestions;
