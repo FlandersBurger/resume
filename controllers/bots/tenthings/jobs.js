@@ -197,7 +197,7 @@ const dailyScore = schedule.scheduleJob('0 0 0 * * *', () => {
         });
         return players.concat(game.players.filter(({scoreDaily}) => scoreDaily).map(player => player.id));
       }, []);
-      bot.notifyAdmins(`${games.length} games played today with ${players.length} players of which ${_.uniq(players, player => player).length} unique`);
+      updateDailyStats(games.length, players.length, _.uniq(players, player => player).length);
     }, err => {
       console.error(err);
       bot.notifyAdmin(`Update daily score error\n${err}`);
@@ -308,6 +308,56 @@ function getChat(chat, delay) {
   });
 }
 
+
+const updateDailyStats = (gamesPlayed, totalPlayers, uniquePlayers) => {
+  TenThingsStats.findOne({ base: true })
+  .then(base => {
+    TenThings
+    .find({ 'players.present': true })
+    .lean()
+    .exec((err, games) => {
+      if (err) return console.error(err);
+      bot.notifyAdmins(`${gamesPlayed} games played today with ${totalPlayers} players of which ${uniquePlayers} unique`);
+      const allPlayers = games.reduce((allPlayers, {players}, index) => allPlayers.concat(players), []);
+      const listsPlayed = games.reduce((count, {listsPlayed}) => count + listsPlayed, 0);
+      const hints = allPlayers.reduce((count, {hints}) => count + (hints ? hints : 0), 0);
+      const cycles = games.reduce((count, {cycles}) => count + (cycles ? cycles : 0), 0);
+      const score = allPlayers.reduce((count, {score}) => count + (score ? score : 0), 0);
+      const highScore = allPlayers.reduce((score, {scoreDaily}) => scoreDaily ? score > scoreDaily ? score : scoreDaily : score, 0);
+      const snubs = allPlayers.reduce((count, {snubs}) => count + (snubs ? snubs : 0), 0);
+      const skips = allPlayers.reduce((count, {skips}) => count + (skips ? skips : 0), 0);
+      const suggestions = allPlayers.reduce((count, {suggestions}) => count + (suggestions ? suggestions : 0), 0);
+      const dailyStats = new TenThingsStats({
+        hints: hints - base.hints,
+        cycles: cycles - base.cycles,
+        chats: gamesPlayed,
+        listsPlayed: listsPlayed - base.listsPlayed,
+        totalPlayers: totalPlayers,
+        uniquePlayers: uniquePlayers,
+        score: score - base.score,
+        highScore: highScore,
+        snubs: snubs - base.snubs,
+        skips: skips - base.skips,
+        suggestions: suggestions - base.suggestions
+      });
+      dailyStats.save(err => {
+        if (err) return console.error(err);
+        console.log('Daily Stats Saved!');
+        base.hints = hints;
+        base.cycles = cycles;
+        base.listsPlayed = listsPlayed;
+        base.score = score;
+        base.snubs = snubs;
+        base.skips = skips;
+        base.suggestions = suggestions;
+        base.save(err => {
+          if (err) return console.error(err);
+          console.log('Base Stats Updated!');
+        });
+      });
+    });
+  });
+};
 /*
   const game = new TenThingsStats({
     base: true,
@@ -315,16 +365,14 @@ function getChat(chat, delay) {
     cycles: 34,
     chats: 31,
     totalPlayers: 186,
-    uniquePlayers: 158
-    score: { type: Number, required: false, default: 0 },
-    snubs: { type: Number, required: false, default: 0 },
+    uniquePlayers: 158,
+    score: 2438628,
+    snubs: 51670,
     skips: 50024,
-    suggestions: { type: Number, required: false, default: 0 },
-    listsPlayed: { type: Number, required: false, default: 0 },
+    suggestions: 719,
   });
   game.save(err => {
-  if (err) return console.error(err);
+    if (err) return console.error(err);
     console.log('Game Saved!');
-    return game;
   });
 */
