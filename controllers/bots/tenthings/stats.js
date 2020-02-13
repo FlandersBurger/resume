@@ -147,7 +147,7 @@ exports.getStats = (chat_id, data, requestor) => {
           message += `Hints Asked: ${allPlayers.reduce((count, {hints}) => count + (hints ? hints : 0), 0)}\n`;
           message += `Suggestions given: ${allPlayers.reduce((count, {suggestions}) => count + (suggestions ? suggestions : 0), 0)}\n`;
           message += `Lists Skipped: ${allPlayers.reduce((count, {skips}) => count + (skips ? skips : 0), 0)}\n`;
-          message += `${allPlayers.filter(({scoreDaily}) => scoreDaily).length} out of ${allPlayers.filter({present} => present).length} players played today\n`;
+          message += `${allPlayers.filter(({scoreDaily}) => scoreDaily).length} out of ${allPlayers.filter(({present}) => present).length} players played today\n`;
           message += `Cycled through all lists ${games.reduce((count, {cycles}) => count + (cycles ? cycles : 0), 0)} times\n`;
           message += '\n';
           bot.sendMessage(game.chat_id, message);
