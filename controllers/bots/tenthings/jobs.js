@@ -318,7 +318,7 @@ const updateDailyStats = (gamesPlayed, totalPlayers, uniquePlayers) => {
     .exec((err, games) => {
       if (err) return console.error(err);
       const allPlayers = games.reduce((allPlayers, {players}, index) => allPlayers.concat(players), []);
-      const listsPlayed = games.reduce((count, {listsPlayed}) => count + listsPlayed, 0);
+      const listsPlayed = games.reduce((count, {listsPlayed}) => count + (listsPlayed ? listsPlayed : 0), 0);
       const hints = allPlayers.reduce((count, {hints}) => count + (hints ? hints : 0), 0);
       const cycles = games.reduce((count, {cycles}) => count + (cycles ? cycles : 0), 0);
       const score = allPlayers.reduce((count, {score}) => count + (score ? score : 0), 0);
@@ -328,14 +328,14 @@ const updateDailyStats = (gamesPlayed, totalPlayers, uniquePlayers) => {
       const skips = allPlayers.reduce((count, {skips}) => count + (skips ? skips : 0), 0);
       const suggestions = allPlayers.reduce((count, {suggestions}) => count + (suggestions ? suggestions : 0), 0);
       let message = `${gamesPlayed} games played today with ${totalPlayers} players of which ${uniquePlayers} unique\n`;
-      message += `${listsPlayed} lists played\n`;
-      message += `${skips} lists skipped\n`;
-      message += `${answers} answers given\n`;
-      message += `${snubs} answers snubbed\n`;
-      message += `${hints} hints asked\n`;
-      message += `${cycles} new cycles started\n`;
-      message += `${score} points scored overall\n`;
-      message += `${suggestions} suggestions given`;
+      message += `${listsPlayed - base.listsPlayed} lists played\n`;
+      message += `${skips - base.skips} lists skipped\n`;
+      message += `${answers - base.answers} answers given\n`;
+      message += `${snubs - base.snubs} answers snubbed\n`;
+      message += `${hints - base.hints} hints asked\n`;
+      message += `${cycles - base.cycles} new cycles started\n`;
+      message += `${score - base.score} points scored overall\n`;
+      message += `${suggestions - base.suggestions} suggestions given`;
       bot.notifyAdmins(message);
       const dailyStats = new TenThingsStats({
         hints: hints - base.hints,
