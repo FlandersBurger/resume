@@ -864,7 +864,7 @@ function evaluateCommand(res, msg, game, player, isNew) {
   if (game.list.values.length === 0) {
     newRound(game);
   }
-  switch (msg.command) {
+  switch (msg.command.toLowerCase()) {
     case '/error':
       bot.sendMessage(msg.chat.id, msg.text);
       break;
