@@ -152,7 +152,7 @@ const dailyScore = schedule.scheduleJob('0 0 0 * * *', () => {
                 if (game.chat_id != config.groupChat) {
                   bot.sendMessage(game.chat_id, 'Come join us in the <a href="https://t.me/tenthings">Ten Things Supergroup</a>!');
                 }
-                TenThings.update(
+                TenThings.updateMany(
                   {
                     _id: game._id
                   },
@@ -168,7 +168,6 @@ const dailyScore = schedule.scheduleJob('0 0 0 * * *', () => {
                     }
                   },
                   {
-                    multi: true,
                     arrayFilters: [
                       { 'winner._id': { $in: winners } },
                       { 'player.scoreDaily': { $gt: 0 } },

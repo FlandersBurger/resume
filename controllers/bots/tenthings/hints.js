@@ -28,13 +28,13 @@ exports.getHint = (hints, value) => {
       str = value[0] + value.substring(1, value.length).conceal('');
       break;
     case 2:
-      str = value[0] + value.substring(1, value.length - 1).conceal('') + value[value.length - 1];
+      str = conceal(value);
       break;
     case 3:
-      str = value[0] + value.substring(1, value.length - 1).conceal(VOWELS) + value[value.length - 1];
+      str = conceal(value, VOWELS);
       break;
     default:
-      str = value[0] + value.substring(1, value.length - 1).conceal(VOWELS + tester) + value[value.length - 1];
+      str = conceal(value, VOWELS + tester);
   }
   for (i = 1; i < value.length - 2; i++) {
     switch (hints) {
@@ -56,10 +56,13 @@ exports.getHint = (hints, value) => {
 exports.getMaxHints = () => MAX_HINTS;
 exports.getSpecialCharacters = () => SPECIAL_CHARACTERS;
 
+const conceal = (value, exceptions = '') =>
+  value.length < 3 ? value : value[0] + value.substring(1, value.length - 1).conceal(exceptions) + value[value.length - 1];
+
 function countLetters(string) {
   //Vowels get revealed all at once
   const alphabet = ['b', 'c', 'd', 'f', 'g', 'h', 'j', 'k', 'l', 'm', 'n', 'p',
-  'q', 'r', 's', 't', 'v', 'w', 'x', 'y', 'z'];
+  'q', 'r', 's', 't', 'v', 'w', 'x', 'y', 'z', '0', '1', '2', '3', '4', '5', '6', '7', '8', '9'];
   return alphabet.map(letter => ({
     letter,
     count: (string.match(new RegExp(`[${letter}]`,'ig')) || []).length
