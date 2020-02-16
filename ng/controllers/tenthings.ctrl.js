@@ -104,9 +104,8 @@ angular.module('app')
   $scope.sort('date');
 
   $scope.getCategoryCount = category => {
-    if (category === 'All') return $scope.filteredLists().length;
     if (!$scope.lists) return 0;
-    return $scope.lists.filter(list => list.category === category && ($scope.userFilter === 'All' || list.creator.username === $scope.userFilter)).length;
+    return $scope.lists.filter(list => (category === 'All' || list.category === category) && ($scope.userFilter === 'All' || list.creator.username === $scope.userFilter)).length;
   };
 
   $scope.getLists = () => {
