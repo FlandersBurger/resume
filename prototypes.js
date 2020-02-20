@@ -104,6 +104,6 @@ String.prototype.conceal = function(extra) {
   return this.replace(new RegExp(`[^${SPECIAL_CHARACTERS}${extra}]`, 'gi'), '*');
 }
 
-String.prototype.capitalize = function(word) {
-  return word.charAt(0).toUpperCase() + word.slice(1);
+String.prototype.capitalize = function() {
+  return this.charAt(0).toUpperCase() + this.slice(1);
 }
