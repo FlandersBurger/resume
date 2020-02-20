@@ -999,7 +999,9 @@ function evaluateCommand(res, msg, game, player, isNew) {
       }
       break;
     case '/settings':
-      bot.sendKeyboard(game.chat_id, '<b>Settings</b>', keyboards.settings(game.chat_id, game.settings));
+      if (game.chat_id != config.masterChat) {
+        bot.sendKeyboard(game.chat_id, '<b>Settings</b>', keyboards.settings(game.chat_id, game.settings));
+      }
       break;
     default:
       queueGuess(game, msg);
