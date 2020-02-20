@@ -35,7 +35,8 @@ var TenThings = db.model('TenThings', {
       hintStreak: { type: Number, required: true, default: 0 },
       maxHintStreak: { type: Number, required: true, default: 0 },
       lastPlayDate: { type: Date, required: false, default: new Date(2019, 5, 15).valueOf() }, //Date when lastPlayDate was implemented
-      present: { type: Boolean, required: true, default: true }
+      present: { type: Boolean, required: true, default: true },
+      minigamePlays: { type: Number, required: false, default: 0 },
     }
   ],
   playedLists: [
@@ -69,7 +70,8 @@ var TenThings = db.model('TenThings', {
     answer: { type: String, required: false },
     lists: [
       { type: String, required: false },
-    ]
+    ],
+    plays: { type: Number, default: 0 },
   },
   settings: {
     intro: { type: Boolean, required: true, default: false },

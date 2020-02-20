@@ -215,6 +215,8 @@ function queueGuess(game, msg) {
     const player = _.find(game.players, ({id}) => id == msg.from.id);
     player.score += 10;
     player.scoreDaily += 10;
+    player.minigamePlays++;
+    game.minigame.plays++;
     game.save((err, savedGame) => {
       if (err) {
         bot.notifyAdmin('queueGuess: ' + JSON.stringify(err) + '\n' + JSON.stringify(game));
