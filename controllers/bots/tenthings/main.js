@@ -663,7 +663,7 @@ router.post('/', ({body}, res, next) => {
         chat_id: body.callback_query.message.chat.id
       }).select('chat_id settings').exec((err, game) => {
         game.settings[data.id] = !game.settings[data.id];
-        bot.sendMessage(game.chat_id, `${data.id.capitalize()} ${game.settings[data.id] ? 'On' : 'Off'}`);
+        bot.sendMessage(game.chat_id, `${data.id.capitalize()} <b>${game.settings[data.id] ? 'On' : 'Off'}</b>`);
         game.save();
       });
     }
