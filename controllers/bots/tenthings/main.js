@@ -659,9 +659,13 @@ router.post('/', ({body}, res, next) => {
     } else if (data.type === 'score') {
       stats.getScores(body.callback_query.message.chat.id, data.id);
     } else if (data.type === 'setting') {
-      game.settings[data.id] = !game.settings[data.id];
-      bot.sendMessage(game.chat_id, `${data.id.capitalize()} ${game.settings[data.id] ? 'On' : 'Off'}`);
-      game.save();
+      TenThings.findOne({
+        chat_id: body.callback_query.message.chat.id
+      }).select('chat_id list').exec((err, game) => {
+        game.settings[data.id] = !game.settings[data.id];
+        bot.sendMessage(game.chat_id, `${data.id.capitalize()} ${game.settings[data.id] ? 'On' : 'Off'}`);
+        game.save();
+      });
     }
     return res.sendStatus(200);
   } else if (!body.message) {
