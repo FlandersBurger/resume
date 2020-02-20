@@ -661,7 +661,7 @@ router.post('/', ({body}, res, next) => {
     } else if (data.type === 'setting') {
       TenThings.findOne({
         chat_id: body.callback_query.message.chat.id
-      }).select('chat_id list').exec((err, game) => {
+      }).select('chat_id settings').exec((err, game) => {
         game.settings[data.id] = !game.settings[data.id];
         bot.sendMessage(game.chat_id, `${data.id.capitalize()} ${game.settings[data.id] ? 'On' : 'Off'}`);
         game.save();
