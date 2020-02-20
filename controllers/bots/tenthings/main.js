@@ -227,19 +227,21 @@ function queueGuess(game, msg) {
       }
     });
   } else {
-    messages.sass(guess.msg.text)
-    .then(sass => {
-      if (game.chat_id != config.masterChat) bot.notifyAdmin(game.list.name + '\n' + guess.msg.text + '\n' + sass);
-      if (sass.indexOf('http') === 0) {
-        if (sass.indexOf('.gif') > 0) {
-          bot.sendAnimation(game.chat_id, sass);
+    if (game.settings.sass) {
+      messages.sass(guess.msg.text)
+      .then(sass => {
+        if (game.chat_id != config.masterChat) bot.notifyAdmin(game.list.name + '\n' + guess.msg.text + '\n' + sass);
+        if (sass.indexOf('http') === 0) {
+          if (sass.indexOf('.gif') > 0) {
+            bot.sendAnimation(game.chat_id, sass);
+          } else {
+            bot.sendPhoto(game.chat_id, sass);
+          }
         } else {
-          bot.sendPhoto(game.chat_id, sass);
+          bot.sendMessage(game.chat_id, sass);
         }
-      } else {
-        bot.sendMessage(game.chat_id, sass);
-      }
-    }, err => null);
+      }, err => null);
+    }
   }
 }
 
@@ -342,7 +344,9 @@ function checkGuess(game, guess, msg) {
       setTimeout(() => checkRound(game), 200);
     } else {
       player.snubs++;
-      bot.sendMessage(msg.chat.id, messages.alreadyGuessed(match.value, msg.from, match.guesser));
+      if (game.settings.snubs) {
+        bot.sendMessage(msg.chat.id, messages.alreadyGuessed(match.value, msg.from, match.guesser));
+      }
     }
     game.save((err, savedGame) => {
       if (err) {
@@ -654,6 +658,10 @@ router.post('/', ({body}, res, next) => {
       stats.getStats(body.callback_query.message.chat.id, data, body.callback_query.from.id);
     } else if (data.type === 'score') {
       stats.getScores(body.callback_query.message.chat.id, data.id);
+    } else if (data.type === 'setting') {
+      game.settings[data.id] = !game.settings[data.id];
+      bot.sendMessage(game.chat_id, `${data.id.capitalize()} ${game.settings[data.id] ? 'On' : 'Off'}`);
+      game.save();
     }
     return res.sendStatus(200);
   } else if (!body.message) {
@@ -673,12 +681,13 @@ router.post('/', ({body}, res, next) => {
     return res.sendStatus(200);
   } else if (!body.message.text) {
     if (body.message.new_chat_participant) {
-      msg = {
-        id: body.message.chat.id,
-        from: body.message.new_chat_participant,
-        command: '/info',
-        chat: body.message.chat
-      };
+      TenThings.findOne({
+        chat_id: body.message.chat.id
+      }).select('settings').exec((err, game) => {
+        if (game.settings.intro) {
+          bot.sendMessage(msg.chat.id, messages.introduction(body.message.new_chat_participant.first_name));
+        }
+      });
     } else if (body.message.group_chat_created) {
       msg = {
         id: body.message.chat.id,
@@ -869,8 +878,7 @@ function evaluateCommand(res, msg, game, player, isNew) {
       bot.sendMessage(msg.chat.id, msg.text);
       break;
     case '/info':
-      const addedMessage = game.chat_id != config.groupChat ? '\n\n<a href="https://t.me/tenthings">Ten Things Supergroup</a>!' : '';
-      bot.sendMessage(msg.chat.id, messages.introduction(msg.from.first_name) + addedMessage);
+      bot.sendMessage(msg.chat.id, messages.introduction(msg.from.first_name));
       break;
     case '/logic':
       bot.sendMessage(msg.chat.id, messages.logic());
@@ -983,6 +991,9 @@ function evaluateCommand(res, msg, game, player, isNew) {
         message += game.minigame.answer.conceal('');
         bot.sendMessage(msg.chat.id, message);
       }
+      break;
+    case '/settings':
+      bot.sendKeyboard(game.chat_id, '<b>Settings</b>', keyboards.settings(game.chat_id, game.settings));
       break;
     default:
       queueGuess(game, msg);

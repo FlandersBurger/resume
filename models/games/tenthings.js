@@ -71,6 +71,11 @@ var TenThings = db.model('TenThings', {
       { type: String, required: false },
     ]
   },
+  settings: {
+    intro: { type: Boolean, required: true, default: false },
+    sass: { type: Boolean, required: true, default: true },
+    snubs: { type: Boolean, required: true, default: true },
+  }
 });
 
 module.exports = TenThings;

@@ -291,6 +291,37 @@ module.exports = {
       ]
     };
   },
+  settings: function(game, settings) {
+    return {
+      inline_keyboard: [
+        [{
+            'text': `Player intro: ${settings.intro ? 'On' : 'Off'}`,
+            'callback_data': JSON.stringify({
+              type: 'setting',
+              id: 'intro',
+              game: game
+            })
+          },
+          {
+            'text': `Sass: ${settings.sass ? 'On' : 'Off'}`,
+            'callback_data': JSON.stringify({
+              type: 'setting',
+              id: 'sass',
+              game: game
+            })
+          },
+          {
+            'text': `Snub Messages: ${settings.snubs ? 'On' : 'Off'}`,
+            'callback_data': JSON.stringify({
+              type: 'setting',
+              id: 'snubs',
+              game: game
+            })
+          },
+        ]
+      ]
+    };
+  },
   like: function(game) {
     return {
       inline_keyboard: [
