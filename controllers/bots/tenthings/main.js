@@ -688,6 +688,7 @@ router.post('/', ({body}, res, next) => {
           bot.sendMessage(msg.chat.id, messages.introduction(body.message.new_chat_participant.first_name));
         }
       });
+      return res.sendStatus(200);
     } else if (body.message.group_chat_created) {
       msg = {
         id: body.message.chat.id,
@@ -705,7 +706,6 @@ router.post('/', ({body}, res, next) => {
           game.save();
         }
       });
-
       return res.sendStatus(200);
     } else if (body.edited_message) {
       bot.sendMessage(body.message.chat.id, 'You can\'t just edit your answers! I\'m watching you!');
