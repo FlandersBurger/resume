@@ -691,8 +691,9 @@ router.post('/', ({body}, res, next) => {
       TenThings.findOne({
         chat_id: body.message.chat.id
       }).select('settings').exec((err, game) => {
+        if (err) return notifyAdmin(err);
         if (game.settings.intro) {
-          bot.sendMessage(msg.chat.id, messages.introduction(body.message.new_chat_participant.first_name));
+          bot.sendMessage(body.message.chat.id, messages.introduction(body.message.new_chat_participant.first_name));
         }
       });
       return res.sendStatus(200);
