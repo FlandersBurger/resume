@@ -904,10 +904,10 @@ function evaluateCommand(res, msg, game, player, isNew) {
       }
       break;
     case '/skip':
-    let skip = false;
+    let doSkip = false;
       if (skippers[player.id]) {
         if (skippers[player.id].lastSkipped < moment().subtract(skippers[player.id].delay, 'seconds')) {
-          skip = true;
+          doSkip = true;
           delete skippers[player.id];
         } else {
           if (skippers[player.id].delay < 10) {
@@ -931,9 +931,9 @@ function evaluateCommand(res, msg, game, player, isNew) {
           lastSkipped: moment(),
           delay: 5
         }
-        skip = true;
+        doSkip = true;
       }
-      if (skip) {
+      if (doSkip) {
         if (player) {
           player.skips++;
         } else {
