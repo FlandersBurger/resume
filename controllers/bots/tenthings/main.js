@@ -21,6 +21,7 @@ const SPECIAL_CHARACTERS = hints.getSpecialCharacters();
 
 const cooldowns = {};
 const skips = {};
+const skippers = {};
 /*
       TenThings.update(
         {},
@@ -902,14 +903,45 @@ function evaluateCommand(res, msg, game, player, isNew) {
       }
       break;
     case '/skip':
-      if (player) {
-        player.skips++;
+    let skip = false;
+      if (skippers[player.id]) {
+        if (skippers[player.id].lastSkipped < moment().subtract(skippers[player.id].delay, 'seconds')) {
+          skip = true;
+          delete skippers[player.id];
+        } else {
+          if (skippers[player.id].delay < 10) {
+            skippers[player.id].lastSkipped = moment();
+            skippers[player.id].delay = 10;
+          } else if (skippers[player.id].delay < 50) {
+            skippers[player.id].lastSkipped = moment();
+            skippers[player.id].delay += 10;
+            bot.sendMessage(msg.chat.id, `Banned ${player.first_name} from skipping again for ${skippers[player.id].delay} seconds`);
+          } else if (skippers[player.id].delay < 60) {
+            skippers[player.id].lastSkipped = moment();
+            skippers[player.id].delay += 10;
+            bot.sendMessage(msg.chat.id, `If you skip again within ${skippers[player.id].delay} seconds, ${player.first_name}, you will be banned for 1 hour`);
+          } else if (skippers[player.id].delay != 3600) {
+            skippers[player.id].delay = 3600;
+            bot.sendMessage(msg.chat.id, `Banned ${player.first_name} from skipping for 1 hour`);
+          }
+        }
       } else {
-        console.error(`Error in game: ${game.id}`);
-        console.error(`From: ${msg.from}`);
+        skippers[player.id] = {
+          lastSkipped: moment(),
+          delay: 5
+        }
+        skip = true;
       }
-      game.save();
-      skip(game, msg.from.id);
+      if (skip) {
+        if (player) {
+          player.skips++;
+        } else {
+          console.error(`Error in game: ${game.id}`);
+          console.error(`From: ${msg.from}`);
+        }
+        game.save();
+        skip(game, msg.from.id);
+      }
       break;
     case '/veto':
       if (skips[game.id]) {
@@ -1019,8 +1051,8 @@ List
 .exec((err, lists) => {
   let answers = lists.reduce((answers, list) => {
     for (const value of list.values) {
-      if (!answers[value.value]) answers[value.value] = [list.name];
-      else answers[value.value].push(list.name);
+      if (!answers[value.value]) answers[value.value] = [list.name.replace(',', ' ')];
+      else answers[value.value].push(list.name.replace(',', ' '));
     }
     return answers;
   }, {});
