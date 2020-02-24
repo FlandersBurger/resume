@@ -662,13 +662,22 @@ router.post('/', ({body}, res, next) => {
     } else if (data.type === 'score') {
       stats.getScores(body.callback_query.message.chat.id, data.id);
     } else if (data.type === 'setting') {
-      TenThings.findOne({
-        chat_id: body.callback_query.message.chat.id
-      }).select('chat_id settings').exec((err, game) => {
-        game.settings[data.id] = !game.settings[data.id];
-        bot.sendMessage(game.chat_id, `${data.id.capitalize()} <b>${game.settings[data.id] ? 'On' : 'Off'}</b>`);
-        game.save();
-      });
+      if (game.chat_id != config.masterChat) {
+        bot.checkAdmin(game.chat_id, msg.from.id)
+        .then(admin => {
+          if (admin) {
+            TenThings.findOne({
+              chat_id: body.callback_query.message.chat.id
+            }).select('chat_id settings').exec((err, game) => {
+              game.settings[data.id] = !game.settings[data.id];
+              bot.sendMessage(game.chat_id, `${data.id.capitalize()} <b>${game.settings[data.id] ? 'On' : 'Off'}</b>`);
+              game.save();
+            });
+          } else {
+            bot.sendMessage(game.chat_id, `Nice try ${msg.from.first_name} but that's an admin function`)
+          }
+        })
+      }
     }
     return res.sendStatus(200);
   } else if (!body.message) {
@@ -1033,7 +1042,12 @@ function evaluateCommand(res, msg, game, player, isNew) {
       break;
     case '/settings':
       if (game.chat_id != config.masterChat) {
-        bot.sendKeyboard(game.chat_id, '<b>Settings</b>', keyboards.settings(game.chat_id, game.settings));
+        bot.checkAdmin(game.chat_id, msg.from.id)
+        .then(admin => {
+          if (admin) {
+            bot.sendKeyboard(game.chat_id, '<b>Settings</b>', keyboards.settings(game.chat_id, game.settings));
+          }
+        })
       }
       break;
     default:

@@ -120,6 +120,15 @@ function TelegramBot() {
     });
   });
 
+  bot.checkAdmin= (channel, user_id) => new Promise((resolve, reject) => {
+    const url = `https://api.telegram.org/bot${bot.token}/getChatMember?chat_id=${channel}&user_id=${user_id}`;
+    request(url, (error, r, body) => {
+      if (error) return reject(error);
+      const response = JSON.parse(body).result;
+      resolve(response && ['creator', 'administrator'].includes(response.status));
+    });
+  });
+
   bot.sendKeyboard = (channel, message, keyboard) => new Promise((resolve, reject) => {
     const url = `https://api.telegram.org/bot${bot.token}/sendMessage?chat_id=${channel}&disable_notification=true&parse_mode=html&text=${message}&reply_markup=${JSON.stringify(keyboard)}`;
     request(encodeURI(url), (error, r, body) => {
