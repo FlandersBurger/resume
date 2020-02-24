@@ -120,7 +120,7 @@ function TelegramBot() {
     });
   });
 
-  bot.checkAdmin= (channel, user_id) => new Promise((resolve, reject) => {
+  bot.checkAdmin = (channel, user_id) => new Promise((resolve, reject) => {
     const url = `https://api.telegram.org/bot${bot.token}/getChatMember?chat_id=${channel}&user_id=${user_id}`;
     request(url, (error, r, body) => {
       if (error) return reject(error);
