@@ -662,7 +662,7 @@ router.post('/', ({body}, res, next) => {
     } else if (data.type === 'score') {
       stats.getScores(body.callback_query.message.chat.id, data.id);
     } else if (data.type === 'setting') {
-      if (game.chat_id != config.masterChat) {
+      if (body.callback_query.message.chat_id != config.masterChat) {
         bot.checkAdmin(body.callback_query.message.chat_id, body.callback_query.message.from.id)
         .then(admin => {
           if (admin) {
@@ -1042,10 +1042,8 @@ function evaluateCommand(res, msg, game, player, isNew) {
       break;
     case '/settings':
       if (game.chat_id != config.masterChat) {
-        console.log('Checking admin');
         bot.checkAdmin(game.chat_id, msg.from.id)
         .then(admin => {
-          console.log(admin);
           if (admin) {
             bot.sendKeyboard(game.chat_id, '<b>Settings</b>', keyboards.settings(game.chat_id, game.settings));
           }
