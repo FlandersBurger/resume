@@ -15,11 +15,12 @@ router.post('/start', function ({ body }, res, next) {
 router.post('/move', function ({ body }, res, next) {
   const me = body.you.body[0];
   console.log(body);
-  let board = new Array(body.board.width);
-
-  console.log(board);
-  for (const i in board) {
-    board[i] = new Array(body.board.width).fill(0);
+  let board = [];
+  for (var i = 0; i < body.board.width; i++) {
+    board.push([]);
+    for (var j = 0; j < body.board.height; j++) {
+      board[i].push(0);
+    }
   }
 
   console.log(board);
