@@ -1,4 +1,4 @@
-/*jslint esversion: 6*/
+/*jslint esversion: 10*/
 const router = require('express').Router();
 const _ = require('underscore');
 const FuzzyMatching = require('fuzzy-matching');
@@ -212,7 +212,26 @@ function queueGuess(game, msg) {
     setTimeout(() => {
       queueingGuess(guess);
     }, 2000);
-  } else if (game.minigame.answer && msg.text.removeAllButLetters() == game.minigame.answer.removeAllButLetters()) {
+  } else {
+    if (game.settings.sass) {
+      messages.sass(guess.msg.text)
+      .then(sass => {
+        if (sass) {
+          if (game.chat_id != config.masterChat) bot.notifyAdmin(game.list.name + '\n' + guess.msg.text + '\n' + sass);
+          if (sass.indexOf('http') === 0) {
+            if (sass.indexOf('.gif') > 0) {
+              bot.sendAnimation(game.chat_id, sass);
+            } else {
+              bot.sendPhoto(game.chat_id, sass);
+            }
+          } else {
+            bot.sendMessage(game.chat_id, sass);
+          }
+        }
+      }, err => null);
+    }
+  }
+  if (game.minigame.answer && msg.text.removeAllButLetters() == game.minigame.answer.removeAllButLetters()) {
     const player = _.find(game.players, ({id}) => id == msg.from.id);
     player.score += 10;
     player.scoreDaily += 10;
@@ -229,22 +248,6 @@ function queueGuess(game, msg) {
         createMinigame(game, msg);
       }
     });
-  } else {
-    if (game.settings.sass) {
-      messages.sass(guess.msg.text)
-      .then(sass => {
-        if (game.chat_id != config.masterChat) bot.notifyAdmin(game.list.name + '\n' + guess.msg.text + '\n' + sass);
-        if (sass.indexOf('http') === 0) {
-          if (sass.indexOf('.gif') > 0) {
-            bot.sendAnimation(game.chat_id, sass);
-          } else {
-            bot.sendPhoto(game.chat_id, sass);
-          }
-        } else {
-          bot.sendMessage(game.chat_id, sass);
-        }
-      }, err => null);
-    }
   }
 }
 
@@ -1049,6 +1052,9 @@ function evaluateCommand(res, msg, game, player, isNew) {
           }
         })
       }
+      break;
+    case '/ping':
+      bot.sendMessage(msg.chat.id, message);
       break;
     default:
       queueGuess(game, msg);
