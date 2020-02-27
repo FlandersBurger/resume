@@ -13,9 +13,15 @@ router.post('/start', function ({ body }, res, next) {
   });
 });
 router.post('/move', function ({ body }, res, next) {
-  const me = body.you.body;
+  const me = body.you.body[0];
   console.log(body);
-  let board = new Array(body.board.width).fill(new Array(body.board.height).fill(0));
+  let board = new Array(body.board.width);
+
+  console.log(board);
+  for (const i in board) {
+    board[i] = new Array(body.board.width).fill(0);
+  }
+
   console.log(board);
   const food = body.board.food;
   const snakes = body.board.snakes.reduce((positions, snake) => {
@@ -28,7 +34,7 @@ router.post('/move', function ({ body }, res, next) {
     board[item.x][item.y] = -1;
   });
   console.log(board);
-  let direction
+  let direction;
   if (me.x < body.board.width - 1 && board[me.x + 1][me.y] >= 0) {
     direction = 'right';
   } else if (me.x > 0 && board[me.x - 1][me.y] >= 0) {
