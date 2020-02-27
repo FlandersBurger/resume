@@ -14,8 +14,9 @@ router.post('/start', function ({ body }, res, next) {
 });
 router.post('/move', function ({ body }, res, next) {
   const me = body.you.body;
-
+  console.log(me);
   let board = new Array(body.board.width).fill(new Array(body.board.height).fill(0));
+  console.log(board);
   const food = body.board.food;
   const snakes = body.board.snakes.reduce((positions, snake) => {
     positions.concat(snake.body);
@@ -36,6 +37,7 @@ router.post('/move', function ({ body }, res, next) {
   } else if (me.y > 0 && board[me.x][me.y - 1] >= 0) {
     direction = 'up';
   }
+  console.log(direction);
   res.json({
     move: direction,
     shout: 'Moving!'
