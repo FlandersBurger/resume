@@ -14,12 +14,12 @@ router.post('/start', function ({ body }, res, next) {
 });
 router.post('/move', function ({ body }, res, next) {
   const me = body.you.body;
-  console.log(me);
+  console.log(body);
   let board = new Array(body.board.width).fill(new Array(body.board.height).fill(0));
   console.log(board);
   const food = body.board.food;
   const snakes = body.board.snakes.reduce((positions, snake) => {
-    positions.concat(snake.body);
+    return positions.concat(snake.body);
   }, []);
   food.forEach(item => {
     board[item.x][item.y] = 1;
@@ -27,6 +27,7 @@ router.post('/move', function ({ body }, res, next) {
   snakes.forEach(item => {
     board[item.x][item.y] = -1;
   });
+  console.log(board);
   let direction
   if (me.x < body.board.width - 1 && board[me.x + 1][me.y] >= 0) {
     direction = 'right';

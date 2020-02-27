@@ -748,8 +748,8 @@ router.post('/', ({body}, res, next) => {
       body.message.document
     ) {
       //Ignore these messages as they're just chat interactions
-      console.log('Ignoring this message:');
-      console.log(body.message);
+      //console.log('Ignoring this message:');
+      //console.log(body.message);
       return res.sendStatus(200);
     } else {
       msg = {
