@@ -22,32 +22,35 @@ router.post('/move', function ({ body }, res, next) {
       board[i].push(0);
     }
   }
-
-  console.log(board);
-  const food = body.board.food;
-  const snakes = body.board.snakes.reduce((positions, snake) => {
-    return positions.concat(snake.body);
-  }, []);
-  food.forEach(item => {
-    board[item.x][item.y] = 1;
+  body.board.food.forEach(position => {
+    board[position.x][position.y] = 1;
   });
-  snakes.forEach(item => {
-    board[item.x][item.y] = -1;
+  body.board.snakes.forEach(snake => {
+    snake.body.forEach(position => {
+      board[item.x][item.y] = snake.id;
+    });
   });
   console.log(board);
-  let direction;
+  let directions;
   if (me.x < body.board.width - 1 && board[me.x + 1][me.y] >= 0) {
-    direction = 'right';
-  } else if (me.x > 0 && board[me.x - 1][me.y] >= 0) {
-    direction = 'left';
-  } else if (me.y < body.board.width - 1 && board[me.x][me.y + 1] >= 0) {
-    direction = 'down';
-  } else if (me.y > 0 && board[me.x][me.y - 1] >= 0) {
-    direction = 'up';
+    if (checkSpot(body, { x: me.x + 1, y: me.y - 1 }) && checkSpot(body, { x: me.x + 1, y: me.y + 1 }))
+      directions.push('right');
   }
-  console.log(direction);
+  if (me.x > 0 && board[me.x - 1][me.y] >= 0) {
+    if (checkSpot(body, { x: me.x - 1, y: me.y - 1 }) && checkSpot(body, { x: me.x - 1, y: me.y + 1 }))
+      directions.push('left');
+  }
+  if (me.y < body.board.width - 1 && board[me.x][me.y + 1] >= 0) {
+    if (checkSpot(body, { x: me.x - 1, y: me.y + 1 }) && checkSpot(body, { x: me.x + 1, y: me.y + 1 }))
+      directions.push('down');
+  }
+  if (me.y > 0 && board[me.x][me.y - 1] >= 0) {
+    if (checkSpot(body, { x: me.x - 1, y: me.y - 1 }) && checkSpot(body, { x: me.x + 2, y: me.y - 1 }))
+      directions.push('up');
+  }
+  console.log(directions);
   res.json({
-    move: direction,
+    move: directions[Math.floor(Math.random() * directions.length)],
     shout: 'Moving!'
   });
 });
@@ -60,6 +63,22 @@ router.post('/ping', function (req, res, next) {
 
 const distance = (spot1, spot2) => {
   return Math.abs(spot1.x - spot2.x) + Math.abs(spot1.y - spot2.y)
+};
+
+const checkSpot = (body, position) {
+  let xOk = position.x < 0 || position.x >= body.board.width;
+  let yOk = position.y < 0 || position.y >= body.board.height;
+  if (!(xOk && yOk)) {
+    const snake = _.find(body.board.snakes, snake => {
+      _.some(snake.body, spot => {
+        return spot.x === position.x && spot.y === position.y;
+      });
+    });
+    return !snake || snake.body.length < body.you.body.length
+  } else {
+    return true;
+  }
+
 };
 
 module.exports = router;
