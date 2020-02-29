@@ -65,7 +65,7 @@ const distance = (spot1, spot2) => {
   return Math.abs(spot1.x - spot2.x) + Math.abs(spot1.y - spot2.y)
 };
 
-const checkSpot = (body, position) {
+const checkSpot = (body, position) => {
   let xOk = position.x < 0 || position.x >= body.board.width;
   let yOk = position.y < 0 || position.y >= body.board.height;
   if (!(xOk && yOk)) {
