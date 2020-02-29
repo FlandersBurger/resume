@@ -27,7 +27,7 @@ router.post('/move', function ({ body }, res, next) {
   });
   body.board.snakes.forEach(snake => {
     snake.body.forEach(position => {
-      board[item.x][item.y] = snake.id;
+      board[position.x][position.y] = snake.id;
     });
   });
   console.log(board);
@@ -70,8 +70,8 @@ const checkSpot = (body, position) => {
   let yOk = position.y < 0 || position.y >= body.board.height;
   if (!(xOk && yOk)) {
     const snake = _.find(body.board.snakes, snake => {
-      _.some(snake.body, spot => {
-        return spot.x === position.x && spot.y === position.y;
+      _.some(snake.body, snakePosition => {
+        return snakePosition.x === position.x && snakePosition.y === position.y;
       });
     });
     return !snake || snake.body.length < body.you.body.length
