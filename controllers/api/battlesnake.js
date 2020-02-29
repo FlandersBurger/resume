@@ -32,7 +32,7 @@ router.post('/move', function ({ body }, res, next) {
     });
   });
   console.log(board);
-  let directions;
+  let directions = [];
   if (me.x < body.board.width - 1 && ['food', 'empty'].indexOf(board[me.x + 1][me.y]) >= 0) {
     if (checkSpot(body, { x: me.x + 1, y: me.y - 1 }) && checkSpot(body, { x: me.x + 1, y: me.y + 1 }))
       directions.push('right');
