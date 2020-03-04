@@ -15,7 +15,6 @@ router.post('/start', function ({ body }, res, next) {
 });
 router.post('/move', function ({ body }, res, next) {
   const me = body.you.body[0];
-  console.log(body);
   let board = [];
   for (var i = 0; i < body.board.width; i++) {
     board.push([]);
@@ -31,27 +30,32 @@ router.post('/move', function ({ body }, res, next) {
       board[position.x][position.y] = snake.id;
     });
   });
-  console.log(board);
-  let directions = [];
+  let validDirections = [];
   if (me.x < body.board.width - 1 && ['food', 'empty'].indexOf(board[me.x + 1][me.y]) >= 0) {
     if (checkSpot(body, { x: me.x + 1, y: me.y - 1 }) && checkSpot(body, { x: me.x + 1, y: me.y + 1 }))
-      directions.push('right');
+      validDirections.push('right');
   }
   if (me.x > 0 && ['food', 'empty'].indexOf(board[me.x - 1][me.y]) >= 0) {
     if (checkSpot(body, { x: me.x - 1, y: me.y - 1 }) && checkSpot(body, { x: me.x - 1, y: me.y + 1 }))
-      directions.push('left');
+      validDirections.push('left');
   }
   if (me.y < body.board.width - 1 && ['food', 'empty'].indexOf(board[me.x][me.y + 1]) >= 0) {
     if (checkSpot(body, { x: me.x - 1, y: me.y + 1 }) && checkSpot(body, { x: me.x + 1, y: me.y + 1 }))
-      directions.push('down');
+      validDirections.push('down');
   }
   if (me.y > 0 && ['food', 'empty'].indexOf(board[me.x][me.y - 1]) >= 0) {
     if (checkSpot(body, { x: me.x - 1, y: me.y - 1 }) && checkSpot(body, { x: me.x + 2, y: me.y - 1 }))
-      directions.push('up');
+      validDirections.push('up');
   }
-  console.log(directions);
+  const foodDirections = getClosestFood(body, me);
+  const bestDirections = _.intersection(validDirections, foodDirections);
+  const direction = bestDirections.length > 0 ? bestDirections[Math.floor(Math.random() * bestDirections.length)] : validDirections[Math.floor(Math.random() * validDirections.length)];
+
+  console.log(validDirections);
+  console.log(bestDirections);
+  console.log(direction);
   res.json({
-    move: directions[Math.floor(Math.random() * directions.length)],
+    move: direction,
     shout: 'Moving!'
   });
 });
@@ -73,7 +77,28 @@ const checkSpot = (body, position) => {
     });
   });
   return !snake || snake.body.length < body.you.body.length
-
 };
+
+const getClosestFood = (body, position) => {
+  const food = body.board.food.reduce((closest, crumb) => {
+    if (Math.abs(position.x - crumb.x) + Math.abs(position.y - crumb.y)) {
+      closest.x = crumb.x;
+      closest.y = crumb.y;
+    }
+    return closest;
+  }, { x: body.board.width, y: body.board.height });
+  let directions = [];
+  if (food.x < position.x) {
+    directions.push('left');
+  } else if (food.x > position.x) {
+    direction.push('right');
+  }
+  if (food.y < position.y) {
+    directions.push('up');
+  } else if (food.y > position.y) {
+    direction.push('down');
+  }
+  return directions;
+}
 
 module.exports = router;
