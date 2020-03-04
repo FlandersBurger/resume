@@ -96,7 +96,7 @@ const getClosestFood = (body, position) => {
   if (food.y < position.y) {
     directions.push('up');
   } else if (food.y > position.y) {
-    direction.push('down');
+    directions.push('down');
   }
   return directions;
 }
