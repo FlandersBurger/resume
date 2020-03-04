@@ -76,7 +76,7 @@ const checkSpot = (body, position) => {
       return snakePosition.x === position.x && snakePosition.y === position.y;
     });
   });
-  return !snake || snake.body.length < body.you.body.length
+  return !snake || snake.body.length <= body.you.body.length
 };
 
 const getClosestFood = (body, position) => {
