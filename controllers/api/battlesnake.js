@@ -71,6 +71,7 @@ const distance = (spot1, spot2) => {
 };
 
 const checkSpot = (body, position) => {
+
   let partOfBody = -1;
   const snake = _.find(body.board.snakes, snake => {
     _.some(snake.body, (snakePosition, index) => {
@@ -80,6 +81,7 @@ const checkSpot = (body, position) => {
   });
   //partOfBody === 0 is the head of the snake
   //You can do a head-on collision if the snake is smaller than yours
+  if (snake) console.log(`{${position.x}, ${position.y}} ${partOfBody === 0 ? 'Head' : 'Body'} of a ${snake.body.length} enemy, I'm a ${body.you.body.length}`);
   return !snake || (snake.body.length < body.you.body.length && partOfBody === 0)
 };
 
