@@ -32,19 +32,19 @@ router.post('/move', function ({ body }, res, next) {
   });
   let validDirections = [];
   if (me.x < body.board.width - 1 && ['food', 'empty'].indexOf(board[me.x + 1][me.y]) >= 0) {
-    if (checkSpot(body, { x: me.x + 1, y: me.y - 1 }) && checkSpot(body, { x: me.x + 1, y: me.y + 1 }))
+    if (checkSpot(body, { x: me.x + 1, y: me.y - 1 }) && checkSpot(body, { x: me.x + 1, y: me.y + 1 }) && checkSpot(body, { x: me.x + 2, y: me.y }))
       validDirections.push('right');
   }
   if (me.x > 0 && ['food', 'empty'].indexOf(board[me.x - 1][me.y]) >= 0) {
-    if (checkSpot(body, { x: me.x - 1, y: me.y - 1 }) && checkSpot(body, { x: me.x - 1, y: me.y + 1 }))
+    if (checkSpot(body, { x: me.x - 1, y: me.y - 1 }) && checkSpot(body, { x: me.x - 1, y: me.y + 1 }) && checkSpot(body, { x: me.x - 2, y: me.y }))
       validDirections.push('left');
   }
   if (me.y < body.board.width - 1 && ['food', 'empty'].indexOf(board[me.x][me.y + 1]) >= 0) {
-    if (checkSpot(body, { x: me.x - 1, y: me.y + 1 }) && checkSpot(body, { x: me.x + 1, y: me.y + 1 }))
+    if (checkSpot(body, { x: me.x - 1, y: me.y + 1 }) && checkSpot(body, { x: me.x + 1, y: me.y + 1 }) && checkSpot(body, { x: me.x, y: me.y - 2 }))
       validDirections.push('down');
   }
   if (me.y > 0 && ['food', 'empty'].indexOf(board[me.x][me.y - 1]) >= 0) {
-    if (checkSpot(body, { x: me.x - 1, y: me.y - 1 }) && checkSpot(body, { x: me.x + 2, y: me.y - 1 }))
+    if (checkSpot(body, { x: me.x - 1, y: me.y - 1 }) && checkSpot(body, { x: me.x + 1, y: me.y - 1 }) && checkSpot(body, { x: me.x, y: me.y + 2 }))
       validDirections.push('up');
   }
   const foodDirections = getClosestFood(body, me);
@@ -71,12 +71,16 @@ const distance = (spot1, spot2) => {
 };
 
 const checkSpot = (body, position) => {
+  let partOfBody = -1;
   const snake = _.find(body.board.snakes, snake => {
-    _.some(snake.body, snakePosition => {
+    _.some(snake.body, (snakePosition, index) => {
+      partOfBody = index;
       return snakePosition.x === position.x && snakePosition.y === position.y;
     });
   });
-  return !snake || snake.body.length <= body.you.body.length
+  //partOfBody === 0 is the head of the snake
+  //You can do a head-on collision if the snake is smaller than yours
+  return !snake || (snake.body.length < body.you.body.length && partOfBody === 0)
 };
 
 const getClosestFood = (body, position) => {
