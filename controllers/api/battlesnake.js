@@ -76,11 +76,11 @@ const checkSpot = (board, snakes, myLength, position) => {
   } else {
     //You can do a head-on collision if the snake is smaller than yours
     const snake = _.find(snakes, snake => board[position.x][position.y] === snake.id);
-    const head = position.x === snake.body[0].x && position.y === snake.body[0].y;
     if (!snake) {
-      console.log(`what's here? {${position.x}, ${position.y}}`);
+      console.log(`what's here? {${position.x}, ${position.y}} -> ${board[position.x][position.y]}`);
       return false;
     } else {
+      const head = position.x === snake.body[0].x && position.y === snake.body[0].y;
       console.log(`{${position.x}, ${position.y}} -> ${snake.body.length} snake, I'm a ${myLength}`);
       return snake.body.length < myLength && head;
     }
