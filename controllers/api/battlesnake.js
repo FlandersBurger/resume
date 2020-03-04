@@ -71,7 +71,7 @@ const distance = (spot1, spot2) => {
 };
 
 const checkSpot = (board, snakes, myLength, position) => {
-  if (position.x >= board.length || position.y >= board[0].length || ['food', 'empty'].indexOf(board[position.x][position.y]) >= 0) {
+  if (postion.x < 0 || position.y < 0 || position.x >= board.length || position.y >= board[0].length || ['food', 'empty'].indexOf(board[position.x][position.y]) >= 0) {
     return true;
   } else {
     //You can do a head-on collision if the snake is smaller than yours
