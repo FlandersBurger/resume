@@ -354,6 +354,7 @@ function checkGuess(game, guess, msg) {
                 guessed(game, player, msg, match.value, '', score, accuracy);
               }
             } catch (e) {
+              console.error(e);
               guessed(game, player, msg, match.value, '', score, accuracy);
             }
           }
