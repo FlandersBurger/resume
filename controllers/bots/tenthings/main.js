@@ -944,8 +944,7 @@ function evaluateCommand(res, msg, game, player, isNew) {
       }
       break;
     case '/skip':
-      console.log(vetoes[game.id]);
-      if (vetoes[game.id] && vetoes[game.id] < moment().subtract(VETO_DELAY, 'seconds')) {
+      if (!vetoes[game.id] || vetoes[game.id] < moment().subtract(VETO_DELAY, 'seconds')) {
         delete vetoes[game.id];
         let doSkip = false;
         if (skippers[player.id]) {
