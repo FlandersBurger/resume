@@ -344,6 +344,7 @@ function checkGuess(game, guess, msg) {
             try {
               const pages = JSON.parse(body).query.pages;
               const result = pages[Object.keys(pages)[0]].extract;
+              console.log(result);
               if (result && !result.includes('refer to:') && !result.includes('refers to:')) {
                 if (result.length > 200) {
                   result = result.substring(0, 200) + '...';
