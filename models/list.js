@@ -5,6 +5,7 @@ var List = db.model('List', {
   description: String,
   category: String,
   creator: { type: String, ref: 'User', required: false },
+  isDynamic: { type: Boolean, required: true, default: true },
   values: [
     {
       value: String,

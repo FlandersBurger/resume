@@ -24,7 +24,6 @@ app.use('/api/email', require('./controllers/api/email'));
 app.use('/api/games', require('./controllers/api/games'));
 app.use('/api/bots', require('./controllers/api/bots'));
 app.use('/api/files', require('./controllers/api/files'));
-app.use('/api/battlesnake', require('./controllers/api/battlesnake'));
 
 app.use('/bots/tenthings', require('./controllers/bots/tenthings/main'));
 

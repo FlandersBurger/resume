@@ -18,10 +18,13 @@ const TenThings = require('../../../models/games/tenthings');
 
 const MAX_HINTS = hints.getMaxHints();
 const SPECIAL_CHARACTERS = hints.getSpecialCharacters();
+const VETO_DELAY = 15;
 
 const cooldowns = {};
 const skips = {};
+const vetoes = {};
 const skippers = {};
+const voters = {};
 /*
       TenThings.update(
         {},
@@ -287,7 +290,8 @@ function checkGuess(game, guess, msg) {
     game.lastPlayDate = new Date();
     if (skips[game.id]) {
       delete skips[game.id];
-      bot.sendMessage(msg.chat.id, `Skip vetoed by ${msg.from.first_name} giving a correct answer`);
+      vetoes[game.id] = moment();
+      bot.sendMessage(msg.chat.id, `Skip vetoed by ${msg.from.first_name} giving a correct answer\nNo skipping allowed for ${VETO_DELAY} seconds`);
     }
     if (!_.some(game.guessers, guesser => guesser == msg.from.id)) {
       game.guessers.push(msg.from.id);
@@ -457,7 +461,7 @@ console.log(hints.getHint(6, string));
 
 function skip(game, skipper) {
   if (skips[game.id] && skips[game.id].player !== skipper) {
-    skipList(game, skipper);
+    skips[game.id].timer = 2;
   } else if (skips[game.id] && skips[game.id].player === skipper) {
     bot.sendMessage(game.chat_id, 'Get someone else to confirm your skip request!');
   } else {
@@ -619,27 +623,42 @@ router.post('/', ({body}, res, next) => {
   if (body.callback_query) {
     const data = JSON.parse(body.callback_query.data);
     if (data.type === 'rate') {
-      List.findOne({ _id: data.list }).exec((err, foundList) => {
-        if (err) return console.error(err);
-        let voter = _.find(foundList.votes, vote => vote.voter == body.callback_query.from.id);
-        if (!voter) {
-          foundList.votes.push({
-            voter: body.callback_query.from.id,
-            vote: data.vote
-          });
-          voter = foundList.votes[foundList.votes.length - 1];
-        } else {
-          voter.vote = data.vote;
-          voter.modifyDate = new Date();
+      let doVote = false;
+      if (voters[body.callback_query.from.id]) {
+        if (voters[body.callback_query.from.id].lastVoted < moment().subtract(voters[body.callback_query.from.id].delay, 'seconds')) {
+          doVote = true;
+          delete voters[body.callback_query.from.id];
         }
-        foundList.score = foundList.votes.reduce((score, vote) => score += vote.vote, 0);
-        delete foundList.voters;
-        foundList.save(err => {
+      } else {
+        voters[body.callback_query.from.id] = {
+          lastVoted: moment(),
+          delay: 5
+        }
+        doVote = true;
+      }
+      if (doVote) {
+        List.findOne({ _id: data.list }).exec((err, foundList) => {
           if (err) return console.error(err);
-          bot.notifyAdmin(`"<b>${foundList.name}</b>" ${data.vote > 0 ? 'up' : 'down'}voted by <i>${body.callback_query.from.first_name}</i>!`);
-          bot.sendMessage(body.callback_query.message.chat.id, ` ${data.vote > 0 ? '\ud83d\udc4d' : '\ud83d\udc4e'} ${body.callback_query.from.first_name} ${data.vote > 0 ? '' : 'dis'}likes <b>${foundList.name}</b>`);
+          let voter = _.find(foundList.votes, vote => vote.voter == body.callback_query.from.id);
+          if (!voter) {
+            foundList.votes.push({
+              voter: body.callback_query.from.id,
+              vote: data.vote
+            });
+            voter = foundList.votes[foundList.votes.length - 1];
+          } else {
+            voter.vote = data.vote;
+            voter.modifyDate = new Date();
+          }
+          foundList.score = foundList.votes.reduce((score, vote) => score += vote.vote, 0);
+          delete foundList.voters;
+          foundList.save(err => {
+            if (err) return console.error(err);
+            bot.notifyAdmin(`"<b>${foundList.name}</b>" ${data.vote > 0 ? 'up' : 'down'}voted by <i>${body.callback_query.from.first_name}</i>!`);
+            bot.sendMessage(body.callback_query.message.chat.id, ` ${data.vote > 0 ? '\ud83d\udc4d' : '\ud83d\udc4e'} ${body.callback_query.from.first_name} ${data.vote > 0 ? '' : 'dis'}likes <b>${foundList.name}</b>`);
+          });
         });
-      });
+      }
     } else if (data.type === 'stats') {
       console.log(body.callback_query);
       TenThings.findOne({
@@ -916,50 +935,54 @@ function evaluateCommand(res, msg, game, player, isNew) {
       }
       break;
     case '/skip':
-    let doSkip = false;
-      if (skippers[player.id]) {
-        if (skippers[player.id].lastSkipped < moment().subtract(skippers[player.id].delay, 'seconds')) {
-          doSkip = true;
-          delete skippers[player.id];
-        } else {
-          if (skippers[player.id].delay < 10) {
-            skippers[player.id].lastSkipped = moment();
-            skippers[player.id].delay = 10;
-          } else if (skippers[player.id].delay < 50) {
-            skippers[player.id].lastSkipped = moment();
-            skippers[player.id].delay += 10;
-            bot.sendMessage(msg.chat.id, `Banned ${player.first_name} from skipping again for ${skippers[player.id].delay} seconds`);
-          } else if (skippers[player.id].delay < 60) {
-            skippers[player.id].lastSkipped = moment();
-            skippers[player.id].delay += 10;
-            bot.sendMessage(msg.chat.id, `If you skip again within ${skippers[player.id].delay} seconds, ${player.first_name}, you will be banned for 1 hour`);
-          } else if (skippers[player.id].delay != 3600) {
-            skippers[player.id].delay = 3600;
-            bot.sendMessage(msg.chat.id, `Banned ${player.first_name} from skipping for 1 hour`);
+      if (vetoes[game.id] < moment().subtract(VETO_DELAY, 'seconds')) {
+        delete vetoes[game.id];
+        let doSkip = false;
+        if (skippers[player.id]) {
+          if (skippers[player.id].lastSkipped < moment().subtract(skippers[player.id].delay, 'seconds')) {
+            doSkip = true;
+            delete skippers[player.id];
+          } else {
+            if (skippers[player.id].delay < 10) {
+              skippers[player.id].lastSkipped = moment();
+              skippers[player.id].delay = 10;
+            } else if (skippers[player.id].delay < 50) {
+              skippers[player.id].lastSkipped = moment();
+              skippers[player.id].delay += 10;
+              bot.sendMessage(msg.chat.id, `Banned ${player.first_name} from skipping again for ${skippers[player.id].delay} seconds`);
+            } else if (skippers[player.id].delay < 60) {
+              skippers[player.id].lastSkipped = moment();
+              skippers[player.id].delay += 10;
+              bot.sendMessage(msg.chat.id, `If you skip again within ${skippers[player.id].delay} seconds, ${player.first_name}, you will be banned for 1 hour`);
+            } else if (skippers[player.id].delay != 3600) {
+              skippers[player.id].delay = 3600;
+              bot.sendMessage(msg.chat.id, `Banned ${player.first_name} from skipping for 1 hour`);
+            }
           }
-        }
-      } else {
-        skippers[player.id] = {
-          lastSkipped: moment(),
-          delay: 5
-        }
-        doSkip = true;
-      }
-      if (doSkip) {
-        if (player) {
-          player.skips++;
         } else {
-          console.error(`Error in game: ${game.id}`);
-          console.error(`From: ${msg.from}`);
+          skippers[player.id] = {
+            lastSkipped: moment(),
+            delay: 5
+          }
+          doSkip = true;
         }
-        game.save();
-        skip(game, msg.from.id);
+        if (doSkip) {
+          if (player) {
+            player.skips++;
+          } else {
+            console.error(`Error in game: ${game.id}`);
+            console.error(`From: ${msg.from}`);
+          }
+          game.save();
+          skip(game, msg.from.id);
+        }
       }
       break;
     case '/veto':
       if (skips[game.id]) {
         delete skips[game.id];
-        bot.sendMessage(msg.chat.id, `Skip vetoed by ${msg.from.first_name}`);
+        vetoes[game.id] = moment();
+        bot.sendMessage(msg.chat.id, `Skip vetoed by ${msg.from.first_name}\nNo skipping allowed for ${VETO_DELAY} seconds`);
       } else {
         bot.sendMessage(msg.chat.id, `I can't find a skip request, ${msg.from.first_name}`);
       }
