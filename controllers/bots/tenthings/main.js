@@ -131,6 +131,7 @@ function getLanguage(language) {
 }
 
 bot.notifyAdmin('<b>Started Ten Things</b>');
+
 //bot.sendMessage('-1001394022777', "test<a href=\'https://upload.wikimedia.org/wikipedia/commons/thumb/8/89/Regular_Hexagon_Inscribed_in_a_Circle.gif/360px-Regular_Hexagon_Inscribed_in_a_Circle.gif\'>&#8204;</a>\nsome other stuff")
 //var url = 'https://upload.wikimedia.org/wikipedia/commons/d/d8/Olympique_Marseille_logo.svg';
 //bot.sendMessage(config.masterChat, "test<a href=\'" + url + "\'>&#8204;</a>\nsome other stuff");
@@ -334,14 +335,17 @@ function checkGuess(game, guess, msg) {
       if (match.blurb) {
         guessed(game, player, msg, match.value, (match.blurb.substring(0, 4) === 'http' ? (`<a href="${match.blurb}">&#8204;</a>`) : (`\n<i>${match.blurb}</i>`)), score, accuracy);
       } else {
-        request(`https://en.wikipedia.org/w/api.php?action=opensearch&search=${encodeURIComponent(match.value)}`, (err, response, body) => {
+
+
+        request(`https://en.wikipedia.org/w/api.php?action=query&format=json&prop=extracts&titles=Earth&generator=prefixsearch&exintro=1&explaintext=1&gpssearch=${encodeURIComponent(match.value)}`, (err, response, body) => {
           if (err) {
             guessed(game, player, msg, match.value, '', score, accuracy);
           } else {
             try {
-              const results = JSON.parse(body)[2].filter(result => result && !result.includes('refer to:') && !result.includes('refers to:'));
-              if (results.length > 0) {
-                guessed(game, player, msg, match.value, `\nRandom Wiki:\n<i>${results[0/*Math.floor(Math.random()*results.length)*/]}</i>`, score, accuracy);
+              const pages = JSON.parse(body).query.pages;
+              const result = pages[Object.keys(pages)[0]].extract
+              if (result) {
+                guessed(game, player, msg, match.value, `\nRandom Wiki:\n<i>${result}</i>`, score, accuracy);
               } else {
                 guessed(game, player, msg, match.value, '', score, accuracy);
               }
@@ -367,6 +371,8 @@ function checkGuess(game, guess, msg) {
     });
   });
 }
+
+
 
 function guessed({streak, list}, {scoreDaily}, {from, chat}, value, blurb, score, accuracy) {
   let message = messages.guessed(value, from.first_name);
