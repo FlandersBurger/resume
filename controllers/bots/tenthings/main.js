@@ -340,11 +340,11 @@ function checkGuess(game, guess, msg) {
         request(`https://en.wikipedia.org/w/api.php?action=query&format=json&prop=extracts&titles=Earth&generator=prefixsearch&exintro=1&explaintext=1&gpssearch=${encodeURIComponent(match.value)}`, (err, response, body) => {
           if (err) {
             guessed(game, player, msg, match.value, '', score, accuracy);
-          } else
+          } else {
             try {
               const pages = JSON.parse(body).query.pages;
               const result = pages[Object.keys(pages)[0]].extract;
-              if (result && !result.includes('refer to:') && !result.includes('refers to:') ) {
+              if (result && !result.includes('refer to:') && !result.includes('refers to:')) {
                 if (result.length > 200) {
                   result = result.substring(0, 200) + '...';
                 }
