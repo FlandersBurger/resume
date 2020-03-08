@@ -344,11 +344,11 @@ function checkGuess(game, guess, msg) {
             try {
               const pages = JSON.parse(body).query.pages;
               const result = pages[Object.keys(pages)[0]].extract;
+              if (result.length > 200) {
+                result = result.substring(0, 200) + '...';
+              }
               console.log(result);
               if (result && !result.includes('refer to:') && !result.includes('refers to:')) {
-                if (result.length > 200) {
-                  result = result.substring(0, 200) + '...';
-                }
                 guessed(game, player, msg, match.value, `\nRandom Wiki:\n<i>${result}</i>`, score, accuracy);
               } else {
                 guessed(game, player, msg, match.value, '', score, accuracy);
