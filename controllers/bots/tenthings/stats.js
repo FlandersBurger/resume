@@ -231,7 +231,7 @@ exports.getStats = (chat_id, data, requestor) => {
         playerStats(game, 'snubs', 'answers', 1, 'Most Snubs', 1);
         break;
       case 'unsnubs':
-        playerStats(game, 'snubs', 'answers', 1, 'Least Snubs', 1);
+        playerStats(game, 'snubs', 'answers', 1, 'Least Snubs', -1);
         break;
       case 'hints':
         playerStats(game, 'hints', 'lists', 1/6, 'Most Hints Asked', 1);
