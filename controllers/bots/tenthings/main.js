@@ -1089,6 +1089,9 @@ function evaluateCommand(res, msg, game, player, isNew) {
     case '/ping':
       bot.sendMessage(msg.chat.id, message);
       break;
+    case '/hello':
+      bot.sendMessage(msg.chat.id, 'You already had me but you got greedy, now you ruined it');
+      break;
     default:
       queueGuess(game, msg);
   }

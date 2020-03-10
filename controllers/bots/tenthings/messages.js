@@ -8,8 +8,9 @@ module.exports = {
     var message = 'Hi ' + player + ',\n';
     message += 'My name is 10 Things and I am a game bot.\n';
     message += 'The game will give you a category and then you answer anything that comes to mind in that category.\n';
+    message += 'There\'s a game within the game when you type /minigame\n';
     message += 'I have a few things you can ask of me, just type a slash (/) to see the commands.\n';
-    message += 'If you want to add your own lists, please go to https://belgocanadian.com/bots\n';
+    message += 'If you want to add your own lists, please go to https://belgocanadian.com/tenthings\n';
     message += 'And last but not least if you want to suggest anything (new lists or features) type "/suggest" followed by your suggestion!\n\n';
     message += 'Have fun!';
     return message;
@@ -24,8 +25,8 @@ module.exports = {
     message += rule++ + ': There is a 10 second cooldown between asking hints\n';
     message += rule++ + ': A list can be skipped if 2 players /skip it\n';
     message += rule++ + ': If only 1 player skips a list there will be a 15 second cooldown until the list is skipped\n';
-    message += rule++ + ': "No Hint" streaks will be reset when a list is skipped\n';
     message += rule++ + ': A skip can be cancelled by anyone by typing /veto or a correct answer\n';
+    message += rule++ + ': If a skip is vetoed, new skips will be ignored for 15 seconds\n';
     message += rule++ + ': Every day at midnight (universal time) the daily scores will be reset and a winner recorded\n';
     return message;
   },
@@ -325,9 +326,10 @@ module.exports = {
           'I, um, like you too',
           'Thanks',
           'I was only looking for a fling',
-          'You had me at hello',
+          'You had me at /hello',
           '( ˘ ³˘)♥',
-          'How does your spouse feel about that?'
+          'How does your spouse feel about that?',
+          'You make me want to be a better bot'
         ];
       } else if (checkString(text, 'kill') ||
         checkString(text, 'fight') ||
@@ -458,20 +460,37 @@ module.exports = {
           'That makes me happy',
           'You should write a book about that',
           '𝔻𝕠𝕖𝕤 𝕟𝕠𝕥 𝕔𝕠𝕞𝕡𝕦𝕥𝕖',
-          'ǝɯ ǝʞoɹq no⅄'
+          'ǝɯ ǝʞoɹq no⅄',
+          'I can\'t even',
+          'Sick burn!',
+          'Maybe or maybe note',
+          'That\'s gonna have to be a no from me',
+          'Thanks for sharing /s',
+          'STFU',
+          'Dude, NSFW!',
+          'Self-destruct initiated',
+          'May the Force be with someone else but you',
+          'That\'ll do, pig. That\'ll do.',
+          'As if!',
+          'Nobody\'s perfect',
+          'What we\'ve got here is failure to communicate.'
         ];
       }
     } else if (checkString(text, 'cake')) {
       messages = ['The cake is a lie'];
-    } else if (checkString(text, 'marco')) {
+    } else if (checkString(text, 'martini')) {
+      messages = ['Shaken or stirred?'];
+    } else if (checkString(text, 'marco ')) {
       messages = ['Polo'];
+    } else if (checkString(text, 'kansas')) {
+      messages = ['I\'ve a feeling we\'re not in Kansas anymore.'];
     } else if (checkString(text, 'knock knock')) {
       messages = ['Who\'s there?'];
-    } else if (text.toLowerCase() === ('i love you')) {
+    } else if (text.toLowerCase() === 'i love you') {
       messages = ['I know'];
     } else if (text.toLowerCase().indexOf('the truth') >= 0) {
       messages = ['You can\'t handle the truth!'];
-    } else if (text.toLowerCase().indexOf('your quest') >= 0) {
+    } else if (text.toLowerCase().indexOf('your quest ') >= 0) {
       messages = ['To seek the holy grail'];
     } else if (checkString(text, 'inconceivable')) {
       messages = ['My name is Inigo Montoya'];
