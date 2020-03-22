@@ -245,7 +245,7 @@ function queueGuess(game, msg) {
       if (err) {
         bot.notifyAdmin('queueGuess: ' + JSON.stringify(err) + '\n' + JSON.stringify(game));
       } else {
-        let message = 'Mini-game answer guessed!\n'
+        let message = 'Mini-game answer guessed!\n';
         message += messages.guessed(game.minigame.answer, msg.from.first_name);
         message += `\n<pre>${player.scoreDaily - 10} + 10 points</pre>`;
         bot.sendMessage(msg.chat.id, message);
@@ -336,7 +336,8 @@ function checkGuess(game, guess, msg) {
         guessed(game, player, msg, match.value, (match.blurb.substring(0, 4) === 'http' ? (`<a href="${match.blurb}">&#8204;</a>`) : (`\n<i>${match.blurb}</i>`)), score, accuracy);
       } else {
 
-
+        guessed(game, player, msg, match.value, '', score, accuracy);
+        /*
         request(`https://en.wikipedia.org/w/api.php?action=query&format=json&prop=extracts&titles=Earth&generator=prefixsearch&exintro=1&explaintext=1&gpssearch=${encodeURIComponent(match.value)}`, (err, response, body) => {
           if (err) {
             guessed(game, player, msg, match.value, '', score, accuracy);
@@ -358,6 +359,7 @@ function checkGuess(game, guess, msg) {
             }
           }
         });
+        */
       }
       setTimeout(() => checkRound(game), 200);
     } else {
@@ -973,7 +975,7 @@ function evaluateCommand(res, msg, game, player, isNew) {
           skippers[player.id] = {
             lastSkipped: moment(),
             delay: 5
-          }
+          };
           doSkip = true;
         }
         if (doSkip) {
@@ -1020,7 +1022,8 @@ function evaluateCommand(res, msg, game, player, isNew) {
       break;
     */
     case '/suggest':
-      if (msg.text.substring(msg.command.length, msg.text.length).replace(/\s/g,'')) {
+      const text = msg.text.substring(msg.command.length, msg.text.length).replace(/\s/g,'');
+      if (text && text !== 'TenThings_Bot') {
         player.suggestions++;
         game.save();
         const suggestion = `<b>Suggestion</b>\n${msg.text.substring(msg.command.length + 1, msg.text.length)}\n<i>${msg.from.username ? msg.from.username : msg.from.first_name}</i>`;
@@ -1067,7 +1070,7 @@ function evaluateCommand(res, msg, game, player, isNew) {
       if (!game.minigame.answer) {
         createMinigame(game, msg);
       } else {
-        let message = '<b>Find the connection</b>\n'
+        let message = '<b>Find the connection</b>\n';
         message += game.minigame.lists.reduce((msg, list) => {
           msg += `- ${list}\n`;
           return msg;
@@ -1083,7 +1086,7 @@ function evaluateCommand(res, msg, game, player, isNew) {
           if (admin) {
             bot.sendKeyboard(game.chat_id, '<b>Settings</b>', keyboards.settings(game.chat_id, game.settings));
           }
-        })
+        });
       }
       break;
     case '/ping':
