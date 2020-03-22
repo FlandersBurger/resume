@@ -644,8 +644,8 @@ router.post('/', ({body}, res, next) => {
       } else {
         voters[body.callback_query.from.id] = {
           lastVoted: moment(),
-          delay: 5
-        }
+          delay: 10
+        };
         doVote = true;
       }
       if (doVote) {
