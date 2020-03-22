@@ -957,7 +957,7 @@ function evaluateCommand(res, msg, game, player, isNew) {
           } else {
             if (skippers[player.id].delay < 10) {
               skippers[player.id].lastSkipped = moment();
-              skippers[player.id].delay = 10;
+              skippers[player.id].delay += 10;
             } else if (skippers[player.id].delay < 50) {
               skippers[player.id].lastSkipped = moment();
               skippers[player.id].delay += 10;
@@ -974,7 +974,7 @@ function evaluateCommand(res, msg, game, player, isNew) {
         } else {
           skippers[player.id] = {
             lastSkipped: moment(),
-            delay: 5
+            delay: 15
           };
           doSkip = true;
         }
