@@ -2,7 +2,8 @@
 const router = require('express').Router();
 const _ = require('underscore');
 const FuzzyMatching = require('fuzzy-matching');
-const kue = require('kue');
+//const kue = require('kue');
+const Queue = require('bull');
 const moment = require('moment');
 const request = require('request');
 const config = require('../../../config');
@@ -78,12 +79,21 @@ games.forEach(function(game, gameIndex) {
 
 });
 */
+/*
 const queue = kue.createQueue({
   redis: {
     port: config.redis.port,
     host: 'localhost',
     auth: config.redis.password,
     //db: 3, // if provided select a non-default redis db
+  }
+});
+*/
+const guessQueue = new Queue('processGuess', {
+  redis: {
+    port: config.redis.port,
+    host: 'localhost',
+    password: config.redis.password
   }
 });
 
@@ -198,11 +208,11 @@ bot.sendKeyboard(config.masterChat, 'test', {
 });
 */
 
-function rateList(game) {
+const rateList = (game) => {
   bot.sendKeyboard(game.chat_id, `Did you like <b>${game.list.name}</b>?`, keyboards.like(game));
-}
+};
 
-function queueGuess(game, msg) {
+const queueGuess = (game, msg) => {
   const fuzzyMatch = new FuzzyMatching(game.list.values.map(({value}) => value.replace(new RegExp(`[${SPECIAL_CHARACTERS}]`, 'gi'), '')));
   const guess = {
     msg,
@@ -217,7 +227,7 @@ function queueGuess(game, msg) {
       queueingGuess(guess);
     }, 2000);
   } else {
-    if (game.settings.sass) {
+    if (game.settings.sass && game.lastPlayDate > moment().subtract(7, 'days')) {
       messages.sass(guess.msg.text)
       .then(sass => {
         if (sass) {
@@ -253,13 +263,29 @@ function queueGuess(game, msg) {
       }
     });
   }
-}
+};
 
-function queueingGuess(guess) {
+const queueingGuess = (guess) => {
+  guessQueue.add({ guess: guess }, { removeOnComplete: true }, () => {
+    console.log(`${guess.game} - Guess evaluated: "${guess.msg.text}" by ${guess.msg.from.first_name}`);
+  });
+  /*
   queue.create('guess', guess).removeOnComplete(true).save(err => {
     if( !err ) console.log(`${guess.game} - Guess evaluated: "${guess.msg.text}" by ${guess.msg.from.first_name}`);
   });
-}
+  */
+};
+
+guessQueue.process(({data}, done) => {
+  processGuess(data)
+  .then(() => {
+    done();
+  }, (err) => {
+    console.error(err);
+    done();
+  });
+});
+/*
 //check out -->5b6361dcbd0ff6645df5f2
 queue.process('guess', ({data}, done) => {
   processGuess(data)
@@ -269,8 +295,8 @@ queue.process('guess', ({data}, done) => {
     done();
   });
 });
-
-function processGuess(guess) {
+*/
+const processGuess = (guess) => {
   return new Promise((resolve, reject) => {
     TenThings.findOne({ chat_id: guess.game })
     .populate('list.creator')
@@ -279,16 +305,16 @@ function processGuess(guess) {
       checkGuess(game, guess, guess.msg)
       .then(() => {
         resolve();
-      }, () => {
-        reject();
+      }, (err) => {
+        reject(err);
       });
     });
   });
-}
+};
 
-function checkGuess(game, guess, msg) {
+const checkGuess = (game, guess, msg) => {
   return new Promise((resolve, reject) => {
-    game.lastPlayDate = new Date();
+    game.lastPlayDate = moment();
     if (skips[game.id]) {
       delete skips[game.id];
       vetoes[game.id] = moment();
@@ -307,7 +333,6 @@ function checkGuess(game, guess, msg) {
     if (!match.guesser.first_name) {
       match.guesser = msg.from;
       player.answers++;
-      player.lastPlayDate = moment();
       const score = Math.round((MAX_HINTS - game.hints + game.guessers.length) * (guess.match.distance - 0.6) * 2.5);
       const accuracy = `${(guess.match.distance * 100).toFixed(0)}%`;
       player.score += score;
@@ -376,11 +401,11 @@ function checkGuess(game, guess, msg) {
       resolve();
     });
   });
-}
+};
 
 
 
-function guessed({streak, list}, {scoreDaily}, {from, chat}, value, blurb, score, accuracy) {
+const guessed = ({streak, list}, {scoreDaily}, {from, chat}, value, blurb, score, accuracy) => {
   let message = messages.guessed(value, from.first_name);
   message += messages.streak(streak.count);
   message += blurb;
@@ -392,9 +417,9 @@ function guessed({streak, list}, {scoreDaily}, {from, chat}, value, blurb, score
     message += '\nRound over.';
   }
   bot.sendMessage(chat.id, message);
-}
+};
 
-function checkRound(game) {
+const checkRound = (game) => {
   if (game.list.values.filter(({guesser}) => !guesser.first_name).length === 0) {
     setTimeout(() => {
       stats.getList(game, list => {
@@ -415,9 +440,9 @@ function checkRound(game) {
       });
     }, 2000);
   }
-}
+};
 
-function newRound(game) {
+const newRound = (game) => {
   selectList(game)
   .then(list => {
     list.plays++;
@@ -453,11 +478,11 @@ function newRound(game) {
         bot.notifyAdmin('newRound: ' + JSON.stringify(err) + '\n' + JSON.stringify(game));
     });
   }, err => bot.notifyAdmin(JSON.stringify(err)));
-}
+};
 
-function angleBrackets(str) {
+const angleBrackets = (str) => {
   return str.replace('<','&lt;').replace('>','&gt;');
-}
+};
 
 /*
 var string = 'The qui-ck bro"wn f\'ox jump+ed over the lazy dog';
@@ -708,9 +733,9 @@ router.post('/', ({body}, res, next) => {
               game.save();
             });
           } else {
-            bot.sendMessage(game.chat_id, `Nice try ${msg.from.first_name} but that's an admin function`)
+            bot.sendMessage(game.chat_id, `Nice try ${msg.from.first_name} but that's an admin function`);
           }
-        })
+        });
       }
     }
     return res.sendStatus(200);
@@ -869,7 +894,6 @@ router.post('/', ({body}, res, next) => {
 });
 
 router.get('/', ({query}, res, next) => {
-  console.log(query);
   const token = query['hub.verify_token'];
   if (query['hub.verify_token'] === config.tokens.facebook.tenthings) {
     res.status(200).send(query['hub.challenge']);
