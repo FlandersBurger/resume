@@ -266,7 +266,7 @@ const queueGuess = (game, msg) => {
 };
 
 const queueingGuess = (guess) => {
-  guessQueue.add({ guess: guess }, { removeOnComplete: true }, () => {
+  guessQueue.add(guess, { removeOnComplete: true }, () => {
     console.log(`${guess.game} - Guess evaluated: "${guess.msg.text}" by ${guess.msg.from.first_name}`);
   });
   /*
