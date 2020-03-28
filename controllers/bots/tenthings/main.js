@@ -443,7 +443,7 @@ const checkRound = (game) => {
 };
 
 const newRound = (game) => {
-  TenThings.findOne({ _id: game._id })
+  TenThings.findOne({ chat_id: game.chat_id })
   .select('chat_id playedLists players list cycles guessers hintCooldown hints')
   .exec((err, game) => {
     selectList(game)
