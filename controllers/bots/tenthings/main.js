@@ -226,6 +226,23 @@ const queueGuess = (game, msg) => {
     setTimeout(() => {
       queueingGuess(guess);
     }, 2000);
+  } else if (game.minigame.answer && msg.text.removeAllButLetters() == game.minigame.answer.removeAllButLetters()) {
+    const player = _.find(game.players, ({id}) => id == msg.from.id);
+    player.score += 10;
+    player.scoreDaily += 10;
+    player.minigamePlays++;
+    game.minigame.plays++;
+    game.save((err, savedGame) => {
+      if (err) {
+        bot.notifyAdmin('queueGuess: ' + JSON.stringify(err) + '\n' + JSON.stringify(game));
+      } else {
+        let message = 'Mini-game answer guessed!\n';
+        message += messages.guessed(game.minigame.answer, msg.from.first_name);
+        message += `\n<pre>${player.scoreDaily - 10} + 10 points</pre>`;
+        bot.sendMessage(msg.chat.id, message);
+        createMinigame(game, msg);
+      }
+    });
   } else {
     if (game.settings.sass && game.lastPlayDate > moment().subtract(7, 'days')) {
       messages.sass(guess.msg.text)
@@ -244,24 +261,6 @@ const queueGuess = (game, msg) => {
         }
       }, err => null);
     }
-  }
-  if (game.minigame.answer && msg.text.removeAllButLetters() == game.minigame.answer.removeAllButLetters()) {
-    const player = _.find(game.players, ({id}) => id == msg.from.id);
-    player.score += 10;
-    player.scoreDaily += 10;
-    player.minigamePlays++;
-    game.minigame.plays++;
-    game.save((err, savedGame) => {
-      if (err) {
-        bot.notifyAdmin('queueGuess: ' + JSON.stringify(err) + '\n' + JSON.stringify(game));
-      } else {
-        let message = 'Mini-game answer guessed!\n';
-        message += messages.guessed(game.minigame.answer, msg.from.first_name);
-        message += `\n<pre>${player.scoreDaily - 10} + 10 points</pre>`;
-        bot.sendMessage(msg.chat.id, message);
-        createMinigame(game, msg);
-      }
-    });
   }
 };
 
@@ -738,7 +737,7 @@ router.post('/', ({body}, res, next) => {
               game.save();
             });
           } else {
-            bot.sendMessage(game.chat_id, `Nice try ${msg.from.first_name} but that's an admin function`);
+            bot.sendMessage(body.callback_query.message.chat.id, `Nice try ${msg.from.first_name} but that's an admin function`);
           }
         });
       }
