@@ -13,8 +13,6 @@ admin.initializeApp({
 });
 
 const app = express();
-app.use(bodyParser.json());
-app.use(logger('dev'));
 
 app.use(require('./auth'));
 app.use('/api/users', require('./controllers/api/users'));
@@ -24,6 +22,9 @@ app.use('/api/email', require('./controllers/api/email'));
 app.use('/api/games', require('./controllers/api/games'));
 app.use('/api/bots', require('./controllers/api/bots'));
 app.use('/api/files', require('./controllers/api/files'));
+
+app.use(bodyParser.json());
+app.use(logger('dev'));
 
 app.use('/bots/tenthings', require('./controllers/bots/tenthings/main'));
 
