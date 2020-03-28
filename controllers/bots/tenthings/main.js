@@ -300,7 +300,7 @@ const processGuess = (guess) => {
   return new Promise((resolve, reject) => {
     TenThings.findOne({ chat_id: guess.game })
     .populate('list.creator')
-    .select('chat_id players list lastPlayDate hints streak settings')
+    .select('chat_id players guessers list lastPlayDate hints streak settings')
     .exec((err, game) => {
       if (err) return reject();
       checkGuess(game, guess, guess.msg)
