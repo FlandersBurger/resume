@@ -300,6 +300,7 @@ const processGuess = (guess) => {
   return new Promise((resolve, reject) => {
     TenThings.findOne({ chat_id: guess.game })
     .populate('list.creator')
+    .select('chat_id players list lastPlayDate hints streak settings')
     .exec((err, game) => {
       if (err) return reject();
       checkGuess(game, guess, guess.msg)
@@ -443,41 +444,45 @@ const checkRound = (game) => {
 };
 
 const newRound = (game) => {
-  selectList(game)
-  .then(list => {
-    list.plays++;
-    list.save();
-    for (const i in game.guessers) {
-      if (game.players.length > 0) {
-        for (const j in game.players) {
-          if (game.players[j].id == game.guessers[i]) {
-            game.players[j].lists++;
-            break;
+  TenThings.findOne({ _id: game._id })
+  .select('chat_id playedLists players list cycles guessers hintCooldown hints')
+  .exec((err, game) => {
+    selectList(game)
+    .then(list => {
+      list.plays++;
+      list.save();
+      for (const i in game.guessers) {
+        if (game.players.length > 0) {
+          for (const j in game.players) {
+            if (game.players[j].id == game.guessers[i]) {
+              game.players[j].lists++;
+              break;
+            }
           }
         }
       }
-    }
-    game.list = JSON.parse(JSON.stringify(list));
-    game.list.totalValues = game.list.values.length;
-    game.list.values = getRandom(game.list.values, 10);
-    game.listsPlayed++;
-    game.hints = 0;
-    game.hintCooldown = 0;
-    game.guessers = [];
-    let message = 'A new round will start in 3 seconds';
-    message += game.list.category ? `\nCategory: <b>${game.list.category}</b>` : '';
-    bot.sendMessage(game.chat_id, message);
-    setTimeout(() => {
-      let message = `<b>${game.list.name}</b> (${game.list.totalValues}) by ${game.list.creator.username}`;
-      message += game.list.description ? `\n<i>${angleBrackets(game.list.description)}</i>` : '';
+      game.list = JSON.parse(JSON.stringify(list));
+      game.list.totalValues = game.list.values.length;
+      game.list.values = getRandom(game.list.values, 10);
+      game.listsPlayed++;
+      game.hints = 0;
+      game.hintCooldown = 0;
+      game.guessers = [];
+      let message = 'A new round will start in 3 seconds';
+      message += game.list.category ? `\nCategory: <b>${game.list.category}</b>` : '';
       bot.sendMessage(game.chat_id, message);
-    }, 3000);
-    game.playedLists.push(game.list._id);
-    game.save(err => {
-      if (err)
-        bot.notifyAdmin('newRound: ' + JSON.stringify(err) + '\n' + JSON.stringify(game));
-    });
-  }, err => bot.notifyAdmin(JSON.stringify(err)));
+      setTimeout(() => {
+        let message = `<b>${game.list.name}</b> (${game.list.totalValues}) by ${game.list.creator.username}`;
+        message += game.list.description ? `\n<i>${angleBrackets(game.list.description)}</i>` : '';
+        bot.sendMessage(game.chat_id, message);
+      }, 3000);
+      game.playedLists.push(game.list._id);
+      game.save(err => {
+        if (err)
+          bot.notifyAdmin('newRound: ' + JSON.stringify(err) + '\n' + JSON.stringify(game));
+      });
+    }, err => bot.notifyAdmin(JSON.stringify(err)));
+  });
 };
 
 const angleBrackets = (str) => {
@@ -638,7 +643,7 @@ function createMinigame(game, msg) {
       return result;
     }, []);
     let minigame = result[Math.floor(Math.random() * result.length)];
-    let message = '<b>Find the connection</b>\n'
+    let message = '<b>Find the connection</b>\n';
     message += getRandom(minigame.lists, 10).reduce((msg, list) => {
       msg += `- ${list}\n`;
       return msg;
@@ -845,7 +850,10 @@ router.post('/', ({body}, res, next) => {
   }
   TenThings.findOne({
     chat_id: msg.chat.id
-  }).populate('list.creator').exec((err, existingGame) => {
+  })
+  .populate('list.creator')
+  .select('-playedLists')
+  .exec((err, existingGame) => {
     if (!existingGame) {
       const newGame = new TenThings({
         chat_id: msg.chat.id,
@@ -1070,11 +1078,13 @@ function evaluateCommand(res, msg, game, player, isNew) {
       }
       break;
     case '/hint':
-      hint(game, player, hints => {
-        let message = `<b>${game.list.name}</b>\n`;
-        message += hints;
-        bot.sendMessage(msg.chat.id, message);
-      });
+      if (game.list.values.filter(({guesser}) => !guesser.first_name).length !== 0) {
+        hint(game, player, hints => {
+          let message = `<b>${game.list.name}</b>\n`;
+          message += hints;
+          bot.sendMessage(msg.chat.id, message);
+        });
+      }
       break;
     case '/notify':
       if (msg.chat.id === config.masterChat) {
