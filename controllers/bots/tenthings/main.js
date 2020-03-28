@@ -464,26 +464,31 @@ const newRound = (currentGame) => {
           }
         }
       }
-      game.list = JSON.parse(JSON.stringify(list));
-      game.list.totalValues = game.list.values.length;
-      game.list.values = getRandom(game.list.values, 10);
-      game.listsPlayed++;
-      game.hints = 0;
-      game.hintCooldown = 0;
-      game.guessers = [];
-      let message = 'A new round will start in 3 seconds';
-      message += game.list.category ? `\nCategory: <b>${game.list.category}</b>` : '';
-      bot.sendMessage(game.chat_id, message);
-      setTimeout(() => {
-        let message = `<b>${game.list.name}</b> (${game.list.totalValues}) by ${game.list.creator.username}`;
-        message += game.list.description ? `\n<i>${angleBrackets(game.list.description)}</i>` : '';
+      try {
+
+        game.list = JSON.parse(JSON.stringify(list));
+        game.list.totalValues = game.list.values.length;
+        game.list.values = getRandom(game.list.values, 10);
+        game.listsPlayed++;
+        game.hints = 0;
+        game.hintCooldown = 0;
+        game.guessers = [];
+        let message = 'A new round will start in 3 seconds';
+        message += game.list.category ? `\nCategory: <b>${game.list.category}</b>` : '';
         bot.sendMessage(game.chat_id, message);
-      }, 3000);
-      game.playedLists.push(game.list._id);
-      game.save(err => {
-        if (err) return bot.notifyAdmin('newRound: ' + JSON.stringify(err) + '\n' + JSON.stringify(game));
-        console.log(`Game ${game._id} saved with new list -> ${list.name}`);
-      });
+        setTimeout(() => {
+          let message = `<b>${game.list.name}</b> (${game.list.totalValues}) by ${game.list.creator.username}`;
+          message += game.list.description ? `\n<i>${angleBrackets(game.list.description)}</i>` : '';
+          bot.sendMessage(game.chat_id, message);
+        }, 3000);
+        game.playedLists.push(game.list._id);
+        game.save(err => {
+          if (err) return bot.notifyAdmin('newRound: ' + JSON.stringify(err) + '\n' + JSON.stringify(game));
+          console.log(`Game ${game._id} saved with new list -> ${list.name}`);
+        });
+      } catch (e) {
+        bot.notifyAdmin(JSON.stringify(e));
+      }
     }, err => bot.notifyAdmin(JSON.stringify(err)));
   });
 };
