@@ -445,12 +445,13 @@ const checkRound = (game) => {
 const newRound = (game) => {
   console.log('New round -> ' + game._id);
   TenThings.findOne({ _id: game._id })
-  .select('_id chat_id playedLists players list cycles guessers hintCooldown hints')
+  .select('_id chat_id playedLists players list listsPlayed cycles guessers hintCooldown hints')
   .exec((err, game) => {
     if (err) return console.error(err);
     if (!game) return console.log('Game not found');
     selectList(game)
     .then(list => {
+      console.log('New list -> ' + list.name);
       list.plays++;
       list.save();
       for (const i in game.guessers) {
