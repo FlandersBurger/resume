@@ -445,7 +445,8 @@ const checkRound = (game) => {
 const newRound = (currentGame) => {
   console.log('New round -> ' + currentGame._id);
   TenThings.findOne({ _id: currentGame._id })
-  //.select('_id chat_id playedLists players list listsPlayed cycles guessers hintCooldown hints')
+  .select('_id chat_id playedLists players list listsPlayed cycles guessers hintCooldown hints')
+  .populate('list.creator')
   .exec((err, game) => {
     if (err) return console.error(err);
     if (!game) return console.log('Game not found');
