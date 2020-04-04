@@ -10,9 +10,8 @@ const List = require('../../../models/list');
 const Joke = require('../../../models/joke');
 const TenThings = require('../../../models/games/tenthings');
 const TenThingsStats = require('../../../models/stats/tenthings');
-
-const getJoke = schedule.scheduleJob('0 0 */3 * * *', () => {
-
+/*
+const getJoke = schedule.scheduleJob('0 0 0 * * *', () => {
   request({
     method: 'GET',
     url: 'https://webknox-jokes.p.rapidapi.com/jokes/random',
@@ -37,7 +36,7 @@ const getJoke = schedule.scheduleJob('0 0 */3 * * *', () => {
     });
   });
 });
-
+*/
 
 /*
 TenThings.find()

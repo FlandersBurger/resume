@@ -463,7 +463,7 @@ module.exports = {
           'ǝɯ ǝʞoɹq no⅄',
           'I can\'t even',
           'Sick burn!',
-          'Maybe or maybe note',
+          'Maybe or maybe not',
           'That\'s gonna have to be a no from me',
           'Thanks for sharing /s',
           'STFU',
