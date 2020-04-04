@@ -731,6 +731,7 @@ router.post('/', ({body}, res, next) => {
     } else if (data.type === 'score') {
       stats.getScores(body.callback_query.message.chat.id, data.id);
     } else if (data.type === 'setting') {
+      console.log(`Toggling ${data.id} for ${game._id}`);
       if (body.callback_query.message.chat_id != config.masterChat) {
         bot.checkAdmin(body.callback_query.message.chat_id, body.callback_query.message.from.id)
         .then(admin => {
