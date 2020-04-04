@@ -655,6 +655,7 @@ function createMinigame(game, msg) {
     message += minigame.answer.conceal('');
     bot.sendMessage(msg.chat.id, message);
     game.minigame.answer = minigame.answer;
+    game.minigame.date = moment();
     game.minigame.lists = minigame.lists;
     game.save();
   });
@@ -1113,7 +1114,7 @@ function evaluateCommand(res, msg, game, player, isNew) {
           msg += `- ${list}\n`;
           return msg;
         }, '');
-        message += game.minigame.answer.conceal('');
+        message += game.minigame.answer.conceal(game.minigame.date < moment().subtract(1, 'hours') ? 'aeoui' : '');
         bot.sendMessage(msg.chat.id, message);
       }
       break;

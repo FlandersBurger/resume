@@ -68,6 +68,7 @@ var TenThings = db.model('TenThings', {
   date: { type: Date, required: true, default: Date.now },
   minigame: {
     answer: { type: String, required: false },
+    date: { type: Date, required: true, default: Date.now },
     lists: [
       { type: String, required: false },
     ],

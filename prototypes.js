@@ -87,23 +87,23 @@ var defaultDiacriticsRemovalMap = [
 
 String.prototype.removeDiacritics = function() {
   return defaultDiacriticsRemovalMap.reduce((result, letter) => {
-    return result.replace(letter.letters, letter.base)
+    return result.replace(letter.letters, letter.base);
   }, this);
-}
+};
 
 const SPECIAL_CHARACTERS = "\\\\/ !?@#$%^&*()_+:.{},;\\-'``’‘\"";
 String.prototype.removeSpecialCharacters = function() {
-  return this.replace(new RegExp(`[${SPECIAL_CHARACTERS}]`, 'gi'), '')
-}
+  return this.replace(new RegExp(`[${SPECIAL_CHARACTERS}]`, 'gi'), '');
+};
 
 String.prototype.removeAllButLetters = function() {
   return this.toLowerCase().removeDiacritics().removeSpecialCharacters();
-}
+};
 
 String.prototype.conceal = function(extra) {
   return this.replace(new RegExp(`[^${SPECIAL_CHARACTERS}${extra}]`, 'gi'), '*');
-}
+};
 
 String.prototype.capitalize = function() {
   return this.charAt(0).toUpperCase() + this.slice(1);
-}
+};
