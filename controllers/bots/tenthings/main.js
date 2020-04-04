@@ -389,9 +389,11 @@ const checkGuess = (game, guess, msg) => {
       setTimeout(() => checkRound(game), 200);
     } else {
       player.snubs++;
+      /*
       if (game.settings.snubs) {
         bot.sendMessage(msg.chat.id, messages.alreadyGuessed(match.value, msg.from, match.guesser));
       }
+      */
     }
     game.save((err, savedGame) => {
       if (err) {

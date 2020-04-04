@@ -309,7 +309,7 @@ module.exports = {
               id: 'sass',
               game: game
             })
-          },
+          },/*
           {
             'text': `Snub Messages: ${settings.snubs ? 'On' : 'Off'}`,
             'callback_data': JSON.stringify({
@@ -317,7 +317,7 @@ module.exports = {
               id: 'snubs',
               game: game
             })
-          },
+          },*/
         ]
       ]
     };
