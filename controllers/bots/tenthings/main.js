@@ -1133,6 +1133,11 @@ function evaluateCommand(res, msg, game, player, isNew) {
     case '/hello':
       bot.sendMessage(msg.chat.id, 'You already had me but you got greedy, now you ruined it');
       break;
+    case '/queue':
+      guessQueue.count().then((err, count) => {
+        bot.sendMessage(msg.chat.id, `${count} messages in the queue`);
+      });
+      break;
     default:
       queueGuess(game, msg);
   }
