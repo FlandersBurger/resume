@@ -125,6 +125,7 @@ function TelegramBot() {
     request(url, (error, r, body) => {
       if (error) return reject(error);
       const response = JSON.parse(body).result;
+      console.log(response);
       resolve(response && ['creator', 'administrator'].includes(response.status));
     });
   });
