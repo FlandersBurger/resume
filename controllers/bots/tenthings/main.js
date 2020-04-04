@@ -738,9 +738,12 @@ router.post('/', ({body}, res, next) => {
             TenThings.findOne({
               chat_id: body.callback_query.message.chat_id
             }).select('chat_id settings').exec((err, game) => {
+              console.log(`${data.id} toggled for ${game._id}`);
               game.settings[data.id] = !game.settings[data.id];
               bot.sendMessage(game.chat_id, `${data.id.capitalize()} <b>${game.settings[data.id] ? 'On' : 'Off'}</b>`);
-              game.save();
+              game.save((err, savedGame) => {
+                if (err) return bot.notifyAdmin(err);
+              });
             });
           } else {
             bot.sendMessage(body.callback_query.message.chat_id, `Nice try ${body.callback_query.message.from.first_name} but that's an admin function`);
