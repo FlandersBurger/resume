@@ -732,11 +732,11 @@ router.post('/', ({body}, res, next) => {
       stats.getScores(body.callback_query.message.chat.id, data.id);
     } else if (data.type === 'setting') {
       if (body.callback_query.message.chat_id != config.masterChat) {
-        bot.checkAdmin(body.callback_query.message.chat_id, body.callback_query.message.from.id)
+        bot.checkAdmin(body.callback_query.message.chat.id, body.callback_query.message.from.id)
         .then(admin => {
           if (admin) {
             TenThings.findOne({
-              chat_id: body.callback_query.message.chat_id
+              chat_id: body.callback_query.message.chat.id
             }).select('chat_id settings').exec((err, game) => {
               if (err) return bot.notifyAdmin(JSON.stringify(err));
               console.log(`${data.id} toggled for ${game._id}`);
@@ -747,7 +747,7 @@ router.post('/', ({body}, res, next) => {
               });
             });
           } else {
-            bot.sendMessage(body.callback_query.message.chat_id, `Nice try ${body.callback_query.message.from.first_name} but that's an admin function`);
+            bot.sendMessage(body.callback_query.message.chat.id, `Nice try ${body.callback_query.message.from.first_name} but that's an admin function`);
           }
         }, err => {
           bot.notifyAdmin(JSON.stringify(err));
