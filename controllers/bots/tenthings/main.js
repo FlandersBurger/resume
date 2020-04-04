@@ -742,7 +742,7 @@ router.post('/', ({body}, res, next) => {
               game.save();
             });
           } else {
-            bot.sendMessage(body.callback_query.message.chat_id, `Nice try ${msg.from.first_name} but that's an admin function`);
+            bot.sendMessage(body.callback_query.message.chat_id, `Nice try ${body.callback_query.message.from.first_name} but that's an admin function`);
           }
         });
       }
