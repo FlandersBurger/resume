@@ -329,7 +329,15 @@ module.exports = {
           'You had me at /hello',
           '( ˘ ³˘)♥',
           'How does your spouse feel about that?',
-          'You make me want to be a better bot'
+          'You make me want to be a better bot',
+          'https://i.imgur.com/Ha8srew.gif',
+          'https://i.imgur.com/kfowH2E.gif',
+          'https://i.imgur.com/vCrZLt2.gif',
+          'https://i.imgur.com/djNt1jJ.gif',
+          'https://i.imgur.com/Rl2743h.gif',
+          'https://i.imgur.com/t8Ghkkm.gif',
+          'https://i.imgur.com/qqHQZbU.gif',
+          'https://i.imgur.com/I7E7rpp.gif'
         ];
       } else if (checkString(text, 'kill') ||
         checkString(text, 'fight') ||
@@ -493,7 +501,7 @@ module.exports = {
     } else if (text.toLowerCase().indexOf('your quest ') >= 0) {
       messages = ['To seek the holy grail'];
     } else if (checkString(text, 'inconceivable')) {
-      messages = ['My name is Inigo Montoya'];
+      messages = ['My name is Inigo Montoya. You killed my father. Prepare to die.'];
     } else if (checkString(text, 'who') && checkString(text, 'gonna') && checkString(text, 'call')) {
       messages = ['Ghostbusters'];
     }

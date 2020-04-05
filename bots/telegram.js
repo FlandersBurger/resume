@@ -5,8 +5,6 @@ const config = require('../config');
 function TelegramBot() {
   const bot = this;
 
-  bot.lastMsgId = 69;
-
   bot.init = TOKEN => {
     bot.token = TOKEN;
     return new Promise((resolve, reject) => {
@@ -125,7 +123,6 @@ function TelegramBot() {
     request(url, (error, r, body) => {
       if (error) return reject(error);
       const response = JSON.parse(body).result;
-      console.log(JSON.parse(body));
       resolve(response && ['creator', 'administrator'].includes(response.status));
     });
   });
