@@ -1101,7 +1101,7 @@ function evaluateCommand(res, msg, game, player, isNew) {
       if (msg.chat.id === config.masterChat) {
         TenThings.find({}).select('chat_id')
         .then(games => {
-          bot.broadcast(games.map(({chat_id}) => chat_id), msg.text.substring(msx.text.indexOf('/notify') + 1));
+          bot.broadcast(games.map(({chat_id}) => chat_id), msg.text.substring(msx.command, msg.text.length));
         });
       }
       break;
