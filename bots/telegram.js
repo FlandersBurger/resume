@@ -28,6 +28,7 @@ function TelegramBot() {
     const url = `https://api.telegram.org/bot${bot.token}/setWebhook?url=https://belgocanadian.com/bots/${api}`;
     request(url, (error, r, body) => {
       if (error) return console.error(error);
+      console.log(body);
       resolve(body);
     });
   });
