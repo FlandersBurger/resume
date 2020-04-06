@@ -26,7 +26,7 @@ app.use('/api/files', require('./controllers/api/files'));
 
 app.use(logger('dev'));
 
-app.use('/bots/tenthings', require('./controllers/bots/tenthings/main'));
+//app.use('/bots/tenthings', require('./controllers/bots/tenthings/main'));
 
 app.use(require('./controllers/static'));
 
