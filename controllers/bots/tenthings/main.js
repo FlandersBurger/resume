@@ -174,11 +174,11 @@ function selectList(game) {
           if (err) reject(err);
           bot.sendMessage(game.chat_id, 'All lists have been played, a new cycle will now start.');
           List.count().exec(function (err, count) {
-            List.select('-votes').populate('creator').findOne().skip(Math.floor(Math.random() * count)).exec((err, list) => resolve(list));
+            List.findOne().select('-votes').populate('creator').skip(Math.floor(Math.random() * count)).exec((err, list) => resolve(list));
           });
         });
       } else {
-        List.select('-votes').populate('creator').findOne().skip(Math.floor(Math.random() * count)).exec((err, list) => resolve(list));
+        List.findOne().select('-votes').populate('creator').skip(Math.floor(Math.random() * count)).exec((err, list) => resolve(list));
       }
     });
   });
@@ -315,7 +315,7 @@ const processGuess = (guess) => {
 };
 
 const checkGuess = (game, guess, msg) => {
-  return new Promise((resolve, reject) => {    
+  return new Promise((resolve, reject) => {
     if (guess.list !== game.list._id) resolve();
     game.lastPlayDate = moment();
     if (skips[game.id]) {
