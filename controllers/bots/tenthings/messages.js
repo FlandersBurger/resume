@@ -350,6 +350,18 @@ module.exports = {
           'I laugh in the face of danger',
           'Contacting your local police'
         ];
+      } else if (checkString(text, 'slow') ||
+        checkString(text, 'lag')
+      ) {
+        messages = [
+          'I\'m giving \'er all she got, captain',
+          'Servers cost Moneys',
+          'Save your pennies to make me go faster',
+          'Better slow than not working?',
+          'Thanks for continuing to play :)',
+          'Type /queue to check pending messages',
+          'I\'m working on it -> @FlandersBurger',
+        ];
       } else if (checkString(text, 'suck') ||
         checkString(text, 'lame') ||
         checkString(text, 'stupid') ||
