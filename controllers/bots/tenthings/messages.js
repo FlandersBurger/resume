@@ -351,6 +351,7 @@ module.exports = {
           'Contacting your local police'
         ];
       } else if (checkString(text, 'slow') ||
+        checkString(text, 'bagal') ||
         checkString(text, 'lag')
       ) {
         messages = [
