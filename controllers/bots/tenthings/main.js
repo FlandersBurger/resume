@@ -163,21 +163,22 @@ bot.exportChatInviteLink('-1001394022777').then(function(chat) {
 
 function selectList(game) {
   return new Promise(function(resolve, reject) {
-    List.find({ _id: { $nin: game.playedLists } })
-    .populate('creator')
-    .exec((err, lists) => {
+    List.count({ _id: { $nin: game.playedLists } })
+    .exec((err, count) => {
       if (err) return notifyAdmin(JSON.stringify(err));
-      if (lists.length === 0) {
+      if (count === 0) {
         game.playedLists = [];
         game.cycles++;
         game.lastCycleDate = moment();
         game.save(err => {
           if (err) reject(err);
           bot.sendMessage(game.chat_id, 'All lists have been played, a new cycle will now start.');
-          List.find({}).populate('creator').exec((err, lists) => resolve(lists[Math.floor(Math.random() * lists.length)]));
+          List.count().exec(function (err, count) {
+            List.select('-votes').populate('creator').findOne().skip(Math.floor(Math.random() * count)).exec((err, list) => resolve(list));
+          });
         });
       } else {
-        resolve(lists[Math.floor(Math.random() * lists.length)]);
+        List.select('-votes').populate('creator').findOne().skip(Math.floor(Math.random() * count)).exec((err, list) => resolve(list));
       }
     });
   });
@@ -217,6 +218,7 @@ const queueGuess = (game, msg) => {
   const guess = {
     msg,
     game: game.chat_id,
+    list: game.list._id,
     match: fuzzyMatch.get(msg.text.replace(new RegExp(`[${SPECIAL_CHARACTERS}]`, 'gi'), ''))
   };
   guess.match.index = _.findIndex(game.list.values, ({value}) => value.replace(new RegExp(`[${SPECIAL_CHARACTERS}]`, 'gi'), '') === guess.match.value);
@@ -313,7 +315,8 @@ const processGuess = (guess) => {
 };
 
 const checkGuess = (game, guess, msg) => {
-  return new Promise((resolve, reject) => {
+  return new Promise((resolve, reject) => {    
+    if (guess.list !== game.list._id) resolve();
     game.lastPlayDate = moment();
     if (skips[game.id]) {
       delete skips[game.id];
@@ -425,7 +428,9 @@ const checkRound = (game) => {
   if (game.list.values.filter(({guesser}) => !guesser.first_name).length === 0) {
     setTimeout(() => {
       stats.getList(game, list => {
-        List.findOne({ _id: game.list._id }).exec((err, foundList) => {
+        List
+        .findOne({ _id: game.list._id })
+        .exec((err, foundList) => {
           let message = `<b>${game.list.name}</b> by ${game.list.creator.username}\n`;
           message += game.list.category ? `Category: <b>${game.list.category}</b>\n` : '';
           message += list;
@@ -684,7 +689,9 @@ router.post('/', ({body}, res, next) => {
         doVote = true;
       }
       if (doVote) {
-        List.findOne({ _id: data.list }).exec((err, foundList) => {
+        List.findOne({ _id: data.list })
+        .select('name votes modifyDate score')
+        .exec((err, foundList) => {
           if (err) return console.error(err);
           let voter = _.find(foundList.votes, vote => vote.voter == body.callback_query.from.id);
           if (!voter) {
