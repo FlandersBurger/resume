@@ -708,7 +708,7 @@ router.post('/', ({body}, res, next) => {
           delete foundList.voters;
           foundList.save(err => {
             if (err) return console.error(err);
-            bot.notifyAdmin(`"<b>${foundList.name}</b>" ${data.vote > 0 ? 'up' : 'down'}voted by <i>${body.callback_query.from.first_name}</i>!`);
+            //bot.notifyAdmin(`"<b>${foundList.name}</b>" ${data.vote > 0 ? 'up' : 'down'}voted by <i>${body.callback_query.from.first_name}</i>!`);
             bot.sendMessage(body.callback_query.message.chat.id, ` ${data.vote > 0 ? '\ud83d\udc4d' : '\ud83d\udc4e'} ${body.callback_query.from.first_name} ${data.vote > 0 ? '' : 'dis'}likes <b>${foundList.name}</b>`);
           });
         });
@@ -783,7 +783,7 @@ router.post('/', ({body}, res, next) => {
         chat_id: body.message.chat.id
       }).select('settings').exec((err, game) => {
         if (err) return notifyAdmin(err);
-        if (game.settings.intro) {
+        if (game && game.settings.intro) {
           bot.sendMessage(body.message.chat.id, messages.introduction(body.message.new_chat_participant.first_name));
         }
       });
