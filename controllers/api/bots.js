@@ -70,22 +70,35 @@ router.get('/lists/:id', (req, res, next) => {
 });
 
 router.put('/lists', (req, res, next) => {
-  var yesterday = new Date();
-  yesterday.setDate(yesterday.getDate() - 1);
-  var previousModifyDate = req.body.list.modifyDate;
+  var yesterday = moment().subtract(1, 'days');
+  var previousModifyDate = moment(req.body.list.modifyDate);
   req.body.list.modifyDate = new Date();
   List.findByIdAndUpdate(req.body.list._id ? req.body.list._id : new mongoose.Types.ObjectId(), req.body.list, { new: true, upsert: true }, function(err, list) {
     if (err) return next(err);
     List.findOne({ _id: list._id })
     .populate('creator')
-    .exec((err, result) => {
+    .exec((err, foundList) => {
       if (err) return next(err);
       if (!req.body.list._id) {
         bot.notifyAdmins('<b>' + list.name + '</b> created by <i>' + req.body.user.username + '</i>');
       } else if (previousModifyDate < yesterday) {
         bot.notifyAdmins('<b>' + list.name + '</b> updated by <i>' + req.body.user.username + '</i>');
       }
-      res.json(result);
+      res.json({
+        _id: foundList._id,
+        plays: foundList.plays,
+        skips: foundList.skips,
+        score: foundList.score,
+        answers: foundList.values.length,
+        values: foundList.values.map(item => item.value),
+        blurbs: foundList.values.filter(item => item.blurb).length,
+        date: foundList.date,
+        modifyDate: foundList.modifyDate,
+        creator: foundList.creator.username,
+        name: foundList.name,
+        description: foundList.description,
+        category: foundList.category,
+      });
     });
   });
 });
