@@ -216,7 +216,7 @@ const rateList = (game) => {
 const queueGuess = (game, msg) => {
   const values = game.list.values.map(({value}) => value.removeAllButLetters());
   const text = msg.text.removeAllButLetters();
-  const correctMatch = _.findIndex(values, value === text);
+  const correctMatch = _.findIndex(values, value => value === text);
   if (correctMatch >= 0) {
     return queueingGuess({
       msg,
