@@ -221,6 +221,8 @@ const queueGuess = (game, msg) => {
     longest: 1,
     shortest: 1000
   });
+  console.log(lengths);
+  console.log(msg.text);
   if (msg.text.length / lengths.shortest > 0.8 && msg.text.length / lengths.longest < 1.2) {
     const fuzzyMatch = new FuzzyMatching(game.list.values.map(({value}) => value.replace(new RegExp(`[${SPECIAL_CHARACTERS}]`, 'gi'), '')));
     const guess = {
