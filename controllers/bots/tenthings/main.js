@@ -214,7 +214,21 @@ const rateList = (game) => {
 };
 
 const queueGuess = (game, msg) => {
-  const lengths = game.list.values.reduce((lengths, {value}) => ({
+  const values = game.list.values.map(({value}) => value.removeAllButLetters());
+  const text = msg.text.removeAllButLetters();
+  const correctMatch = _.findIndex(values, value === text);
+  if (correctMatch >= 0) {
+    return queueingGuess({
+      msg,
+      game: game.chat_id,
+      list: game.list._id,
+      match: {
+        index: correctMatch,
+        distance: 1
+      }
+    });
+  }
+  const lengths = values.reduce((lengths, value) => ({
     longest: lengths.longest < value.length ? value.length : lengths.longest,
     shortest: lengths.shortest > value.length ? value.length : lengths.shortest
   }), {
@@ -222,14 +236,14 @@ const queueGuess = (game, msg) => {
     shortest: 1000
   });
   if (msg.text.length / lengths.shortest > 0.8 && msg.text.length / lengths.longest < 1.2) {
-    const fuzzyMatch = new FuzzyMatching(game.list.values.map(({value}) => value.replace(new RegExp(`[${SPECIAL_CHARACTERS}]`, 'gi'), '')));
+    const fuzzyMatch = new FuzzyMatching(values);
     const guess = {
       msg,
       game: game.chat_id,
       list: game.list._id,
-      match: fuzzyMatch.get(msg.text.replace(new RegExp(`[${SPECIAL_CHARACTERS}]`, 'gi'), ''))
+      match: fuzzyMatch.get(text)
     };
-    guess.match.index = _.findIndex(game.list.values, ({value}) => value.replace(new RegExp(`[${SPECIAL_CHARACTERS}]`, 'gi'), '') === guess.match.value);
+    guess.match.index = _.findIndex(values, value => value === guess.match.value);
     if (guess.match.distance >= 0.9) {
       queueingGuess(guess);
     } else if (guess.match.distance >= 0.75) {
@@ -240,7 +254,7 @@ const queueGuess = (game, msg) => {
   }
   if (game.minigame.answer && msg.text.length / game.minigame.answer.length > 0.8 && msg.text.length / game.minigame.answer.length < 1.2) {
     const fuzzyMatch = new FuzzyMatching([game.minigame.answer.removeAllButLetters()]);
-    const match = fuzzyMatch.get(msg.text.removeAllButLetters());
+    const match = fuzzyMatch.get(text);
     if (match.distance >= 0.8) {
       const player = _.find(game.players, ({id}) => id == msg.from.id);
       player.score += 10;

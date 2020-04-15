@@ -77,7 +77,7 @@ var TenThings = db.model('TenThings', {
   settings: {
     intro: { type: Boolean, required: true, default: false },
     sass: { type: Boolean, required: true, default: true },
-    snubs: { type: Boolean, required: true, default: true },
+    snubs: { type: Boolean, required: true, default: true }
   }
 });
 
