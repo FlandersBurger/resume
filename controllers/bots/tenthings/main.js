@@ -221,7 +221,6 @@ const queueGuess = (game, msg) => {
     longest: 1,
     shortest: 1000
   });
-  console.log(lengths);
   if (msg.text.length / lengths.shortest > 0.8 && msg.text.length / lengths.longest < 1.2) {
     const fuzzyMatch = new FuzzyMatching(game.list.values.map(({value}) => value.replace(new RegExp(`[${SPECIAL_CHARACTERS}]`, 'gi'), '')));
     const guess = {
@@ -272,7 +271,7 @@ const sass = (game, text) => {
     messages.sass(text)
     .then(sass => {
       if (sass) {
-        if (game.chat_id != config.masterChat) bot.notifyAdmin(game.list.name + '\n' + guess.msg.text + '\n' + sass);
+        if (game.chat_id != config.masterChat) bot.notifyAdmin(game.list.name + '\n' + text + '\n' + sass);
         if (sass.indexOf('http') === 0) {
           if (sass.indexOf('.gif') > 0) {
             bot.sendAnimation(game.chat_id, sass);
