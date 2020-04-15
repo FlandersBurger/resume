@@ -141,19 +141,13 @@ angular.module('app')
   };
 
   $scope.addList = () => {
-    const newList = _.find($scope.lists, ({_id}) => !_id);
-    if (!newList) {
-      $scope.lists.unshift({
-        name: '',
-        creator: $scope.currentUser._id,
-        date: new Date(),
-        values: [],
-        answers: 0
-      });
-      $scope.selectedList = $scope.lists[0];
-    } else {
-      $scope.selectedList = newList;
-    }
+    $scope.selectedList = {
+      name: '',
+      creator: $scope.currentUser._id,
+      date: new Date(),
+      values: [],
+      answers: 0
+    };
   };
 
   $scope.addValue = () => {
@@ -184,7 +178,7 @@ angular.module('app')
       $scope.saving = true;
       BotsSvc.saveList($scope.currentUser, list)
       .then(({data}) => {
-        $scope.getLists();
+        if (!$scope.selectedList._id) $scope.lists.unshift(data);
         $scope.selectList(data);
         $scope.saving = false;
       }, err => {

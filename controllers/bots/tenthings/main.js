@@ -214,55 +214,75 @@ const rateList = (game) => {
 };
 
 const queueGuess = (game, msg) => {
-  const fuzzyMatch = new FuzzyMatching(game.list.values.map(({value}) => value.replace(new RegExp(`[${SPECIAL_CHARACTERS}]`, 'gi'), '')));
-  const guess = {
-    msg,
-    game: game.chat_id,
-    list: game.list._id,
-    match: fuzzyMatch.get(msg.text.replace(new RegExp(`[${SPECIAL_CHARACTERS}]`, 'gi'), ''))
-  };
-  guess.match.index = _.findIndex(game.list.values, ({value}) => value.replace(new RegExp(`[${SPECIAL_CHARACTERS}]`, 'gi'), '') === guess.match.value);
-  if (guess.match.distance >= 0.9) {
-    queueingGuess(guess);
-  } else if (guess.match.distance >= 0.75) {
-    setTimeout(() => {
+  const lengths = game.list.values.reduce((lengths, value) => ({
+    longest: lengths.longest < value.length ? value.length : lengths.longest,
+    shortest: lengths.shortest > value.length ? value.length : lengths.shortest
+  }), {
+    longest: 1,
+    shortest: 1000
+  });
+  if (msg.text.length / lengths.shortest > 0.8 && msg.text.length / lengths.longest < 1.2) {
+    const fuzzyMatch = new FuzzyMatching(game.list.values.map(({value}) => value.replace(new RegExp(`[${SPECIAL_CHARACTERS}]`, 'gi'), '')));
+    const guess = {
+      msg,
+      game: game.chat_id,
+      list: game.list._id,
+      match: fuzzyMatch.get(msg.text.replace(new RegExp(`[${SPECIAL_CHARACTERS}]`, 'gi'), ''))
+    };
+    guess.match.index = _.findIndex(game.list.values, ({value}) => value.replace(new RegExp(`[${SPECIAL_CHARACTERS}]`, 'gi'), '') === guess.match.value);
+    if (guess.match.distance >= 0.9) {
       queueingGuess(guess);
-    }, 2000);
-  } else if (game.minigame.answer && msg.text.removeAllButLetters() == game.minigame.answer.removeAllButLetters()) {
-    const player = _.find(game.players, ({id}) => id == msg.from.id);
-    player.score += 10;
-    player.scoreDaily += 10;
-    player.minigamePlays++;
-    game.minigame.plays++;
-    game.save((err, savedGame) => {
-      if (err) {
-        bot.notifyAdmin('queueGuess: ' + JSON.stringify(err) + '\n' + JSON.stringify(game));
-      } else {
-        let message = 'Mini-game answer guessed!\n';
-        message += messages.guessed(game.minigame.answer, msg.from.first_name);
-        message += `\n<pre>${player.scoreDaily - 10} + 10 points</pre>`;
-        bot.sendMessage(msg.chat.id, message);
-        createMinigame(game, msg);
-      }
-    });
-  } else {
-    if (game.settings.sass && game.lastPlayDate > moment().subtract(7, 'days')) {
-      messages.sass(guess.msg.text)
-      .then(sass => {
-        if (sass) {
-          if (game.chat_id != config.masterChat) bot.notifyAdmin(game.list.name + '\n' + guess.msg.text + '\n' + sass);
-          if (sass.indexOf('http') === 0) {
-            if (sass.indexOf('.gif') > 0) {
-              bot.sendAnimation(game.chat_id, sass);
-            } else {
-              bot.sendPhoto(game.chat_id, sass);
-            }
-          } else {
-            bot.sendMessage(game.chat_id, sass);
-          }
-        }
-      }, err => null);
+    } else if (guess.match.distance >= 0.75) {
+      setTimeout(() => {
+        queueingGuess(guess);
+      }, 2000);
     }
+  }
+  if (game.minigame.answer && msg.text.length / game.minigame.answer.length > 0.8 && msg.text.length / game.minigame.answer.length < 1.2) {
+    const fuzzyMatch = new FuzzyMatching([game.minigame.answer.removeAllButLetters()]);
+    const match = fuzzyMatch.get(msg.text.removeAllButLetters());
+    if (match.distance >= 0.8) {
+      const player = _.find(game.players, ({id}) => id == msg.from.id);
+      player.score += 10;
+      player.scoreDaily += 10;
+      player.minigamePlays++;
+      game.minigame.plays++;
+      game.save((err, savedGame) => {
+        if (err) {
+          bot.notifyAdmin('queueGuess: ' + JSON.stringify(err) + '\n' + JSON.stringify(game));
+        } else {
+          let message = 'Mini-game answer guessed!\n';
+          message += messages.guessed(game.minigame.answer, msg.from.first_name);
+          message += `\n<pre>${player.scoreDaily - 10} + 10 points</pre>`;
+          bot.sendMessage(msg.chat.id, message);
+          createMinigame(game, msg);
+        }
+      });
+    } else {
+      sass(game, msg.text);
+    }
+  } else {
+    sass(game, msg.text);
+  }
+};
+
+const sass = (game, text) => {
+  if (game.settings.sass && game.lastPlayDate > moment().subtract(7, 'days')) {
+    messages.sass(text)
+    .then(sass => {
+      if (sass) {
+        if (game.chat_id != config.masterChat) bot.notifyAdmin(game.list.name + '\n' + guess.msg.text + '\n' + sass);
+        if (sass.indexOf('http') === 0) {
+          if (sass.indexOf('.gif') > 0) {
+            bot.sendAnimation(game.chat_id, sass);
+          } else {
+            bot.sendPhoto(game.chat_id, sass);
+          }
+        } else {
+          bot.sendMessage(game.chat_id, sass);
+        }
+      }
+    }, err => null);
   }
 };
 

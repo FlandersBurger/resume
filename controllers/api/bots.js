@@ -97,6 +97,7 @@ router.delete('/lists/:id', (req, res, next) => {
     res.sendStatus(200);
   });
 });
+
 router.post('/', (req, res, next) => {
   console.log(req.body);
   res.sendStatus(200);
