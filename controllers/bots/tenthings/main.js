@@ -214,7 +214,7 @@ const rateList = (game) => {
 };
 
 const queueGuess = (game, msg) => {
-  const lengths = game.list.values.reduce((lengths, value) => ({
+  const lengths = game.list.values.reduce((lengths, {value}) => ({
     longest: lengths.longest < value.length ? value.length : lengths.longest,
     shortest: lengths.shortest > value.length ? value.length : lengths.shortest
   }), {
@@ -222,7 +222,6 @@ const queueGuess = (game, msg) => {
     shortest: 1000
   });
   console.log(lengths);
-  console.log(msg.text);
   if (msg.text.length / lengths.shortest > 0.8 && msg.text.length / lengths.longest < 1.2) {
     const fuzzyMatch = new FuzzyMatching(game.list.values.map(({value}) => value.replace(new RegExp(`[${SPECIAL_CHARACTERS}]`, 'gi'), '')));
     const guess = {
