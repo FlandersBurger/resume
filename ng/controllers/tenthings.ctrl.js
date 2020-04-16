@@ -8,6 +8,7 @@ angular.module('app')
     'Television',
     'Movies',
     'Entertainment',
+    //'Culture',
     'Geography',
     'History',
     'Science',
@@ -179,6 +180,14 @@ angular.module('app')
       BotsSvc.saveList($scope.currentUser, list)
       .then(({data}) => {
         if (!$scope.selectedList._id) $scope.lists.unshift(data);
+        else {
+          for (let list of $scope.lists) {
+            if (list._id === data._id) {
+              list = data;
+              break;
+            }
+          }
+        }
         $scope.selectList(data);
         $scope.saving = false;
       }, err => {
