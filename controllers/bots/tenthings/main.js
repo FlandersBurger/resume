@@ -214,7 +214,7 @@ const rateList = (game) => {
 };
 
 const queueGuess = (game, msg) => {
-  const values = game.list.values.map(({value}) => value.removeAllButLetters());
+  const values = game.list.values.filter(({guesser}) => guesser).map(({value}) => value.removeAllButLetters());
   const text = msg.text.removeAllButLetters();
   const correctMatch = _.findIndex(values, value => value === text);
   if (correctMatch >= 0) {
@@ -235,7 +235,7 @@ const queueGuess = (game, msg) => {
     longest: 1,
     shortest: 1000
   });
-  if (msg.text.length / lengths.shortest > 0.8 && msg.text.length / lengths.longest < 1.2) {
+  if (msg.text.length / lengths.shortest > 0.75 && msg.text.length / lengths.longest < 1.25) {
     const fuzzyMatch = new FuzzyMatching(values);
     const guess = {
       msg,
@@ -252,7 +252,7 @@ const queueGuess = (game, msg) => {
       }, 2000);
     }
   }
-  if (game.minigame.answer && msg.text.length / game.minigame.answer.length > 0.8 && msg.text.length / game.minigame.answer.length < 1.2) {
+  if (game.minigame.answer && msg.text.length / game.minigame.answer.length > 0.75 && msg.text.length / game.minigame.answer.length < 1.25) {
     const fuzzyMatch = new FuzzyMatching([game.minigame.answer.removeAllButLetters()]);
     const match = fuzzyMatch.get(text);
     if (match.distance >= 0.8) {
