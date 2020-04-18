@@ -18,8 +18,8 @@ const List = require('../../../models/list');
 const TenThings = require('../../../models/games/tenthings');
 
 const MAX_HINTS = hints.getMaxHints();
-const SPECIAL_CHARACTERS = hints.getSpecialCharacters();
 const VETO_DELAY = 15;
+const ANSWER_DELAY = 2;
 
 const cooldowns = {};
 const skips = {};
@@ -244,12 +244,10 @@ const queueGuess = (game, msg) => {
       match: fuzzyMatch.get(text)
     };
     guess.match.index = _.findIndex(values, value => value === guess.match.value);
-    if (guess.match.distance >= 0.9) {
-      queueingGuess(guess);
-    } else if (guess.match.distance >= 0.75) {
+    if (guess.match.distance >= 0.75) {
       setTimeout(() => {
         queueingGuess(guess);
-      }, 2000);
+      }, 2000 / 0.25 * (1 - guess.match.distance));
     }
   }
   if (game.minigame.answer && msg.text.length / game.minigame.answer.length > 0.75 && msg.text.length / game.minigame.answer.length < 1.25) {
@@ -300,26 +298,14 @@ const sass = (game, text) => {
   }
 };
 
-const queueingGuess = (guess) => {
-  guessQueue.add(guess, { removeOnComplete: true }, () => {
-    console.log(`${guess.game} - Guess evaluated: "${guess.msg.text}" by ${guess.msg.from.first_name}`);
-  });
+const queueingGuess = guess => guessQueue.add(guess);
   /*
   queue.create('guess', guess).removeOnComplete(true).save(err => {
     if( !err ) console.log(`${guess.game} - Guess evaluated: "${guess.msg.text}" by ${guess.msg.from.first_name}`);
   });
   */
-};
 
-guessQueue.process(({data}, done) => {
-  processGuess(data)
-  .then(() => {
-    done();
-  }, (err) => {
-    console.error(err);
-    done();
-  });
-});
+guessQueue.process(({data}) => processGuess(data));
 /*
 //check out -->5b6361dcbd0ff6645df5f2
 queue.process('guess', ({data}, done) => {
@@ -331,7 +317,7 @@ queue.process('guess', ({data}, done) => {
   });
 });
 */
-const processGuess = (guess) => {
+const processGuess = guess => {
   return new Promise((resolve, reject) => {
     TenThings.findOne({ chat_id: guess.game })
     .populate('list.creator')
@@ -340,6 +326,7 @@ const processGuess = (guess) => {
       if (err) return reject();
       checkGuess(game, guess, guess.msg)
       .then(() => {
+        console.log(`${guess.game} - Guess for ${game.list.name}: "${guess.msg.text}" by ${guess.msg.from.first_name}`);
         resolve();
       }, (err) => {
         reject(err);
@@ -363,7 +350,7 @@ const checkGuess = (game, guess, msg) => {
     const match = game.list.values[guess.match.index];
     const player = _.find(game.players, ({id}) => id == msg.from.id);
     if (!player) {
-      bot.notifyAdmin(JSON.stringify(guess));
+      bot.notifyAdmin(`Something wrong with this guess:\n${JSON.stringify(guess)}`);
       console.error(`Something wrong with this guess:\n${JSON.stringify(guess)}`);
       return resolve();
     }
