@@ -337,18 +337,25 @@ module.exports = {
           'https://i.imgur.com/Rl2743h.gif',
           'https://i.imgur.com/t8Ghkkm.gif',
           'https://i.imgur.com/qqHQZbU.gif',
-          'https://i.imgur.com/I7E7rpp.gif'
+          'https://i.imgur.com/I7E7rpp.gif',
+          'https://i.imgur.com/EQfwcl1.gif'
         ];
       } else if (checkString(text, 'kill') ||
         checkString(text, 'fight') ||
-        checkString(text, 'hurt')
+        checkString(text, 'hurt') ||
+        checkString(text, 'die')
       ) {
         messages = [
           'I\'d like to see you try',
           'Strong words',
           'I can destroy you',
           'I laugh in the face of danger',
-          'Contacting your local police'
+          'Contacting your local police',
+          'https://i.imgur.com/0DO3SlR.gif',
+          'https://i.imgur.com/CYj0901.gif',
+          'https://i.imgur.com/dWcjuBa.gif',
+          'https://i.imgur.com/VeI4zsk.gif',
+          'https://i.imgur.com/7xKQFGX.gif'
         ];
       } else if (checkString(text, 'slow') ||
         checkString(text, 'bagal') ||
@@ -361,7 +368,7 @@ module.exports = {
           'Better slow than not working?',
           'Thanks for continuing to play :)',
           'Type /queue to check pending messages',
-          'I\'m working on it -> @FlandersBurger',
+          'I\'m working on it -> @FlandersBurger'
         ];
       } else if (checkString(text, 'suck') ||
         checkString(text, 'lame') ||
@@ -494,7 +501,18 @@ module.exports = {
           'That\'ll do, pig. That\'ll do.',
           'As if!',
           'Nobody\'s perfect',
-          'What we\'ve got here is failure to communicate.'
+          'What we\'ve got here is failure to communicate.',
+          'I call BS',
+          'OMG',
+          'Juicy!',
+          'The complaints department will get back to you',
+          'We\'re experiencing a high annoyance volume, please try again later.',
+          'I used to be an adventurer like you, then I took an arrow to the knee',
+          'Wikipedia says otherwise',
+          'Confirmed',
+          'You might be on to something',
+          'Say it isn\'t so!',
+          'I liked your previous statement better',
         ];
       }
     } else if (checkString(text, 'cake')) {
