@@ -216,6 +216,7 @@ const rateList = (game) => {
 const queueGuess = (game, msg) => {
   const values = game.list.values.filter(({guesser}) => guesser).map(({value}) => value.removeAllButLetters());
   const text = msg.text.removeAllButLetters();
+  const minigameAnswer = game.minigame.answer ? game.minigame.answer.removeAllButLetters() : '';
   const correctMatch = _.findIndex(values, value => value === text);
   if (correctMatch >= 0) {
     return queueingGuess({
@@ -250,26 +251,29 @@ const queueGuess = (game, msg) => {
       }, 2000 / 0.25 * (1 - guess.match.distance));
     }
   }
-  if (game.minigame.answer && msg.text.length / game.minigame.answer.length > 0.75 && msg.text.length / game.minigame.answer.length < 1.25) {
-    const fuzzyMatch = new FuzzyMatching([game.minigame.answer.removeAllButLetters()]);
+  if (minigameAnswer && msg.text.length / minigameAnswer.length > 0.75 && msg.text.length / minigameAnswer.length < 1.25) {
+    const fuzzyMatch = new FuzzyMatching([minigameAnswer]);
     const match = fuzzyMatch.get(text);
-    if (match.distance >= 0.8) {
-      const player = _.find(game.players, ({id}) => id == msg.from.id);
-      player.score += 10;
-      player.scoreDaily += 10;
-      player.minigamePlays++;
-      game.minigame.plays++;
-      game.save((err, savedGame) => {
-        if (err) {
-          bot.notifyAdmin('queueGuess: ' + JSON.stringify(err) + '\n' + JSON.stringify(game));
-        } else {
-          let message = 'Mini-game answer guessed!\n';
-          message += messages.guessed(game.minigame.answer, msg.from.first_name);
-          message += `\n<pre>${player.scoreDaily - 10} + 10 points</pre>`;
-          bot.sendMessage(msg.chat.id, message);
-          createMinigame(game, msg);
-        }
-      });
+    if (match.distance >= 0.75) {
+      setTimeout(() => {
+        const player = _.find(game.players, ({id}) => id == msg.from.id);
+        const score = Math.floor(10 * match.distance);
+        player.score += score;
+        player.scoreDaily += score;
+        player.minigamePlays++;
+        game.minigame.plays++;
+        game.save((err, savedGame) => {
+          if (err) {
+            bot.notifyAdmin('queueGuess: ' + JSON.stringify(err) + '\n' + JSON.stringify(game));
+          } else {
+            let message = `Mini-game answer guessed! (${(match.distance * 100).toFixed(0)}%)\n`;
+            message += messages.guessed(game.minigame.answer, msg.from.first_name);
+            message += `\n<pre>${player.scoreDaily - 10} + 10 points</pre>`;
+            bot.sendMessage(msg.chat.id, message);
+            createMinigame(game, msg);
+          }
+        });
+      }, 2000 / 0.25 * (1 - match.distance));
     } else {
       sass(game, msg.text);
     }
