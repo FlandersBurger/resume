@@ -26,23 +26,7 @@ router.get('/lists', (req, res, next) => {
   .populate('creator', 'username')
   .exec((err, result) => {
     if (err) return next(err);
-    var lists = result.map(list =>
-      ({
-        _id: list._id,
-        plays: list.plays,
-        skips: list.skips,
-        score: list.score,
-        answers: list.values.length,
-        values: list.values.map(item => item.value),
-        blurbs: list.values.filter(item => item.blurb).length,
-        date: list.date,
-        modifyDate: list.modifyDate,
-        creator: list.creator.username,
-        name: list.name,
-        description: list.description,
-        category: list.category,
-      })
-    );
+    var lists = result.map(list => formatList(list));
     res.json(lists);
   });
 });
@@ -58,6 +42,10 @@ router.get('/lists/:id/report/:user', (req, res, next) => {
     });
   });
 });
+
+List.find({
+  _id: '5e984e9d9d68c475b173b6cc'
+}).then(console.log)
 
 router.get('/lists/:id', (req, res, next) => {
   List.findOne({
@@ -84,21 +72,7 @@ router.put('/lists', (req, res, next) => {
       } else if (previousModifyDate < yesterday) {
         bot.notifyAdmins('<b>' + list.name + '</b> updated by <i>' + req.body.user.username + '</i>');
       }
-      res.json({
-        _id: foundList._id,
-        plays: foundList.plays,
-        skips: foundList.skips,
-        score: foundList.score,
-        answers: foundList.values.length,
-        values: foundList.values.map(item => item.value),
-        blurbs: foundList.values.filter(item => item.blurb).length,
-        date: foundList.date,
-        modifyDate: foundList.modifyDate,
-        creator: foundList.creator.username,
-        name: foundList.name,
-        description: foundList.description,
-        category: foundList.category,
-      });
+      res.json(formatList(foundList));
     });
   });
 });
@@ -117,3 +91,19 @@ router.post('/', (req, res, next) => {
 });
 
 module.exports = router;
+
+const formatList = list => ({
+  _id: list._id,
+  plays: list.plays,
+  skips: list.skips,
+  score: list.score,
+  answers: list.values.length,
+  values: list.values.map(item => item.value),
+  blurbs: list.values.filter(item => item.blurb).length,
+  date: list.date,
+  modifyDate: list.modifyDate,
+  creator: list.creator.username,
+  name: list.name,
+  description: list.description,
+  category: list.category,
+});

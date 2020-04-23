@@ -132,7 +132,6 @@ angular.module('app')
     BotsSvc.getList(list)
     .then(({data}) => {
       $scope.selectedList = data;
-      console.log($scope.selectedList);
     });
   };
 
@@ -181,14 +180,14 @@ angular.module('app')
       .then(({data}) => {
         if (!$scope.selectedList._id) $scope.lists.unshift(data);
         else {
-          for (let list of $scope.lists) {
-            if (list._id === data._id) {
-              list = data;
+          for (let i = 0; i < $scope.lists.length; i++) {
+            if ($scope.lists[i]._id === data._id) {
+              $scope.lists[i] = data;
               break;
             }
           }
         }
-        $scope.selectList(data);
+        $scope.selectList(list);
         $scope.saving = false;
       }, err => {
         console.error(err);
