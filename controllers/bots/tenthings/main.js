@@ -174,11 +174,21 @@ function selectList(game) {
           if (err) reject(err);
           bot.sendMessage(game.chat_id, 'All lists have been played, a new cycle will now start.');
           List.count().exec(function (err, count) {
-            List.findOne().select('-votes').populate('creator').skip(Math.floor(Math.random() * count)).exec((err, list) => resolve(list));
+            List.find()
+            .select('-votes')
+            .populate('creator')
+            .limit(1)
+            .skip(Math.floor(Math.random() * count))
+            .exec((err, lists) => resolve(list[0]));
           });
         });
       } else {
-        List.findOne().select('-votes').populate('creator').skip(Math.floor(Math.random() * count)).exec((err, list) => resolve(list));
+        List.find({ _id: { $nin: game.playedLists } })
+        .select('-votes')
+        .populate('creator')
+        .limit(1)
+        .skip(Math.floor(Math.random() * count))
+        .exec((err, lists) => resolve(list[0]));
       }
     });
   });
