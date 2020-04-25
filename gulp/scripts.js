@@ -45,9 +45,11 @@ gulp.task('watch:js', gulp.series(['js'], () =>
   gulp.watch('ng/**/*.js', gulp.series(['js']))
 ));
 
-gulp.task('json', () => gulp.src(['data/*.json'])
+gulp.task('json', () =>
+  gulp.src(['data/*.json'])
     .pipe(jsonminify())
-    .pipe(gulp.dest('assets')));
+    .pipe(gulp.dest('assets'))
+);
 
 gulp.task('watch:json', gulp.series(['json'], () =>
   gulp.watch('data/*.json', gulp.series(['json']))

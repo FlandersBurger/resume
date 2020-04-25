@@ -43,10 +43,6 @@ router.get('/lists/:id/report/:user', (req, res, next) => {
   });
 });
 
-List.find({
-  _id: '5e984e9d9d68c475b173b6cc'
-}).then(console.log)
-
 router.get('/lists/:id', (req, res, next) => {
   List.findOne({
     _id: req.params.id

@@ -178,16 +178,18 @@ angular.module('app')
       $scope.saving = true;
       BotsSvc.saveList($scope.currentUser, list)
       .then(({data}) => {
-        if (!$scope.selectedList._id) $scope.lists.unshift(data);
-        else {
+        if (!$scope.selectedList._id) {
+          $scope.lists.unshift(data);
+          //$scope.selectList(data);
+        } else {
           for (let i = 0; i < $scope.lists.length; i++) {
             if ($scope.lists[i]._id === data._id) {
               $scope.lists[i] = data;
               break;
             }
           }
+          $scope.selectList(list);
         }
-        $scope.selectList(list);
         $scope.saving = false;
       }, err => {
         console.error(err);
