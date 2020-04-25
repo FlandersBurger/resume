@@ -63,7 +63,8 @@
         </div>
       </div>
       <div class="col-md-12">
-        <kbd>Please search existing lists to avoid duplication. Subjective lists and duplicates will be deleted.</kbd>
+        <kbd>Please search existing lists first and add answers to them. Subjective lists and duplicates will be deleted.
+        </kbd>
         <div class="input-group">
           <input class="form-control"
             id="list-name"
@@ -101,7 +102,7 @@
         <div class="input-group" ng-repeat="item in selectedList.values | orderBy: sortList">
           <input id="value{{$index}}" class="form-control" ng-model="item.value" placeholder="Value {{selectedList.values.length - $index}}" ng-disabled="!currentUser.admin && selectedList.creator._id !== currentUser._id && item.creator !== currentUser._id" />
           <span class="input-group-addon"><img ng-src="{{item.blurb}}" ng-if="item.blurb.substring(0, 4) === 'http'"/></span>
-          <input class="form-control" ng-model="item.blurb" placeholder="Display after guessing {{item.value}}" ng-disabled="!currentUser.admin && selectedList.creator._id !== currentUser._id && item.creator !== currentUser._id" />
+          <input class="form-control" ng-model="item.blurb" placeholder="Display after guessing {{item.value}} (Can be an image URL)" ng-disabled="!currentUser.admin && selectedList.creator._id !== currentUser._id && item.creator !== currentUser._id" />
         </div>
       </div>
     </div>
