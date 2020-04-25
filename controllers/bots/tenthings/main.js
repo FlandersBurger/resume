@@ -179,7 +179,7 @@ function selectList(game) {
             .populate('creator')
             .limit(1)
             .skip(Math.floor(Math.random() * count))
-            .exec((err, lists) => resolve(list[0]));
+            .exec((err, lists) => resolve(lists[0]));
           });
         });
       } else {
@@ -188,7 +188,7 @@ function selectList(game) {
         .populate('creator')
         .limit(1)
         .skip(Math.floor(Math.random() * count))
-        .exec((err, lists) => resolve(list[0]));
+        .exec((err, lists) => resolve(lists[0]));
       }
     });
   });
