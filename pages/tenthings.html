@@ -1,9 +1,9 @@
 <div id="tenthings-page" class="col-md-12" ng-keydown="keyDown($event)">
   <h1 class="text-danger" ng-show="!loggedIn">You have to be logged in to edit lists</h1>
+  <div class="well well-sm">
+    This page works in conjunction with the <a href="https://t.me/joinchat/I1Di-1MXGXkjhgNPXi6Vfg" target="_blank">Ten Things Telegram Bot</a>
+  </div>
   <div ng-show="loggedIn">
-    <div class="well well-sm">
-      This page works in conjunction with the <a href="https://t.me/joinchat/I1Di-1MXGXkjhgNPXi6Vfg" target="_blank">Ten Things Telegram Bot</a>
-    </div>
     <div class="col-md-4">
       <div class="btn-group">
         <button class="btn btn-default" ng-click="getLists()">
@@ -63,6 +63,7 @@
         </div>
       </div>
       <div class="col-md-12">
+        <kbd>Please search existing lists to avoid duplication. Subjective lists and duplicates will be deleted.</kbd>
         <div class="input-group">
           <input class="form-control"
             id="list-name"
