@@ -180,7 +180,7 @@ angular.module('app')
       .then(({data}) => {
         if (!$scope.selectedList._id) {
           $scope.lists.unshift(data);
-          //$scope.selectList(data);
+          $scope.selectList(data);
         } else {
           for (let i = 0; i < $scope.lists.length; i++) {
             if ($scope.lists[i]._id === data._id) {
