@@ -368,7 +368,8 @@ module.exports = {
           'Better slow than not working?',
           'Thanks for continuing to play :)',
           'Type /queue to check pending messages',
-          'I\'m working on it -> @FlandersBurger'
+          'I\'m working on it -> @FlandersBurger',
+          'Bots aren\'t free to host, suggest me cheap hosting options -> @FlandersBurger'
         ];
       } else if (checkString(text, 'suck') ||
         checkString(text, 'lame') ||
