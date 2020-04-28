@@ -20,6 +20,7 @@ const TenThings = require('../../../models/games/tenthings');
 const MAX_HINTS = hints.getMaxHints();
 const VETO_DELAY = 15;
 const ANSWER_DELAY = 2;
+const BANNED_USERS = ['1136025506'];
 
 const cooldowns = {};
 const skips = {};
@@ -193,6 +194,9 @@ function selectList(game) {
     });
   });
 }
+
+List.findOne({name: 'Slavery Movies'}).exec((err, list) => console.log(list));
+
 
 
 function createGame(id, creator) {
@@ -707,7 +711,7 @@ router.post('/', ({body}, res, next) => {
     return console.log(body);
   }
   let msg, i, item;
-  if (body.callback_query) {
+  if (body.callback_query && BANNED_USERS.indexOf(body.callback_query.from.id) < 0) {
     const data = JSON.parse(body.callback_query.data);
     if (data.type === 'rate') {
       let doVote = false;
@@ -887,71 +891,75 @@ router.post('/', ({body}, res, next) => {
       chat: body.message.chat
     };
   }
-  if (msg.command.includes('@')) {
-    if (msg.command.substring(msg.command.indexOf('@') + 1) !== 'TenThings_Bot') return res.sendStatus(200);
-    msg.command = msg.command.substring(0, msg.command.indexOf('@'));
-  }
-  try {
-    if (!msg.from.id) {
+  if (BANNED_USERS.indexOf(msg.from.id) < 0) {
+    if (msg.command.includes('@')) {
+      if (msg.command.substring(msg.command.indexOf('@') + 1) !== 'TenThings_Bot') return res.sendStatus(200);
+      msg.command = msg.command.substring(0, msg.command.indexOf('@'));
+    }
+    try {
+      if (!msg.from.id) {
+        console.log(body.message);
+        b.notifyAdmin(body.message);
+        return res.sendStatus(200);
+      }
+    } catch (e) {
+      console.error(e);
       console.log(body.message);
+      b.notifyAdmin(body.message);
       return res.sendStatus(200);
     }
-  } catch (e) {
-    console.error(e);
-    console.log(body.message);
-    return res.sendStatus(200);
-  }
-  TenThings.findOne({
-    chat_id: msg.chat.id
-  })
-  .populate('list.creator')
-  .select('-playedLists')
-  .exec((err, existingGame) => {
-    if (!existingGame) {
-      const newGame = new TenThings({
-        chat_id: msg.chat.id,
-        players: [msg.from]
-      });
-      newGame.save(err => {
-      if (err)
-        bot.notifyAdmin('POST: ' + JSON.stringify(err) + '\n' + JSON.stringify(game));
-        console.log('Game Saved!');
-        const player = newGame.players[0];
-        return evaluateCommand(res, msg, newGame, player, true);
-      });
-    } else {
-      let player;
-      player = _.find(existingGame.players, existingPlayer => {
-        if (!existingPlayer) {
-          console.log('Empty Player!');
-          console.log(existingGame);
-          return false;
-        }
-        return existingPlayer.id == msg.from.id;
-      });
-      if (!player) {
-        existingGame.players.push(msg.from);
-        player = existingGame.players[existingGame.players.length - 1];
-        existingGame.save(err => {
-          if (err) {
-            bot.notifyAdmin('Can\'t add new player: ' + JSON.stringify(err));
-            console.error(err);
-            console.log(player);
-            console.log(msg.from);
-            res.sendStatus(200);
-          } else {
-            return evaluateCommand(res, msg, existingGame, player, false);
-          }
+    TenThings.findOne({
+      chat_id: msg.chat.id
+    })
+    .populate('list.creator')
+    .select('-playedLists')
+    .exec((err, existingGame) => {
+      if (!existingGame) {
+        const newGame = new TenThings({
+          chat_id: msg.chat.id,
+          players: [msg.from]
+        });
+        newGame.save(err => {
+        if (err)
+          bot.notifyAdmin('POST: ' + JSON.stringify(err) + '\n' + JSON.stringify(game));
+          console.log('Game Saved!');
+          const player = newGame.players[0];
+          return evaluateCommand(res, msg, newGame, player, true);
         });
       } else {
-        player.first_name = msg.from.first_name;
-        player.last_name = msg.from.last_name;
-        player.username = msg.from.username;
-        player.present = true;
-        return evaluateCommand(res, msg, existingGame, player, false);
+        let player;
+        player = _.find(existingGame.players, existingPlayer => {
+          if (!existingPlayer) {
+            console.log('Empty Player!');
+            console.log(existingGame);
+            return false;
+          }
+          return existingPlayer.id == msg.from.id;
+        });
+        if (!player) {
+          existingGame.players.push(msg.from);
+          player = existingGame.players[existingGame.players.length - 1];
+          existingGame.save(err => {
+            if (err) {
+              bot.notifyAdmin('Can\'t add new player: ' + JSON.stringify(err));
+              console.error(err);
+              console.log(player);
+              console.log(msg.from);
+              res.sendStatus(200);
+            } else {
+              return evaluateCommand(res, msg, existingGame, player, false);
+            }
+          });
+        } else {
+          player.first_name = msg.from.first_name;
+          player.last_name = msg.from.last_name;
+          player.username = msg.from.username;
+          player.present = true;
+          return evaluateCommand(res, msg, existingGame, player, false);
+        }
       }
-    }
-  });
+    });
+  }
 });
 
 router.get('/', ({query}, res, next) => {
