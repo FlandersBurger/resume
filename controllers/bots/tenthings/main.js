@@ -899,13 +899,13 @@ router.post('/', ({body}, res, next) => {
     try {
       if (!msg.from.id) {
         console.log(body.message);
-        b.notifyAdmin(body.message);
+        bot.notifyAdmin(body.message);
         return res.sendStatus(200);
       }
     } catch (e) {
       console.error(e);
       console.log(body.message);
-      b.notifyAdmin(body.message);
+      bot.notifyAdmin(body.message);
       return res.sendStatus(200);
     }
     TenThings.findOne({
