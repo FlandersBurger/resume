@@ -873,6 +873,7 @@ router.post('/', ({body}, res, next) => {
       msg = {
         id: config.masterChat,
         from: {
+          id: 0,
           first_name: 'Bot Error'
         },
         command: '/error',
@@ -898,13 +899,11 @@ router.post('/', ({body}, res, next) => {
     }
     try {
       if (!msg.from.id) {
-        console.log(msg);
-        bot.notifyAdmin(JSON.stringify(msg));
+        bot.notifyAdmin(JSON.stringify(body));
         return res.sendStatus(200);
       }
     } catch (e) {
       console.error(e);
-      console.log(msg);
       bot.notifyAdmin(JSON.stringify(msg));
       return res.sendStatus(200);
     }
