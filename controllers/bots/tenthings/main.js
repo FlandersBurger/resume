@@ -1113,8 +1113,11 @@ function evaluateCommand(res, msg, game, player, isNew) {
       break;
     */
     case '/suggest':
-      const text = msg.text.substring(msg.command.length, msg.text.length).replace(/\s/g,'');
-      if (text && text !== 'TenThings_Bot') {
+      let text = msg.text.substring(msg.command.length, msg.text.length).replace(/\s/g,'');
+      if (text.lastIndexOf('TenThings_Bot') != -1) {
+          text = text.replace('TenThings_Bot', '');
+      }
+      if (text) {
         player.suggestions++;
         game.save();
         const suggestion = `<b>Suggestion</b>\n${msg.text.substring(msg.command.length + 1, msg.text.length)}\n<i>${msg.from.username ? msg.from.username : msg.from.first_name}</i>`;
