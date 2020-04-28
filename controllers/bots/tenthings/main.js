@@ -195,7 +195,7 @@ function selectList(game) {
   });
 }
 
-List.findOne({name: 'Slavery Movies'}).exec((err, list) => console.log(list));
+//List.findOne({name: 'Writing Instruments'}).exec((err, list) => console.log(list));
 
 
 
@@ -898,14 +898,14 @@ router.post('/', ({body}, res, next) => {
     }
     try {
       if (!msg.from.id) {
-        console.log(body.message);
-        bot.notifyAdmin(body.message);
+        console.log(msg);
+        bot.notifyAdmin(JSON.stringify(msg));
         return res.sendStatus(200);
       }
     } catch (e) {
       console.error(e);
-      console.log(body.message);
-      bot.notifyAdmin(body.message);
+      console.log(msg);
+      bot.notifyAdmin(JSON.stringify(msg));
       return res.sendStatus(200);
     }
     TenThings.findOne({
