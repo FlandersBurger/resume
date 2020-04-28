@@ -801,6 +801,8 @@ router.post('/', ({body}, res, next) => {
       }
     }
     return res.sendStatus(200);
+  } else if (body.edited_message) {
+    return res.sendStatus(200);
   } else if (!body.message) {
     msg = {
       id: config.masterChat,
@@ -845,10 +847,8 @@ router.post('/', ({body}, res, next) => {
         }
       });
       return res.sendStatus(200);
-    } else if (body.edited_message) {
-      bot.sendMessage(body.message.chat.id, 'You can\'t just edit your answers! I\'m watching you!');
-      return res.sendStatus(200);
     } else if (
+      body.edited_message ||
       body.message.game ||
       body.message.photo ||
       body.message.video ||
@@ -873,7 +873,6 @@ router.post('/', ({body}, res, next) => {
       msg = {
         id: config.masterChat,
         from: {
-          id: 0,
           first_name: 'Bot Error'
         },
         command: '/error',
