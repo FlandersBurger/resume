@@ -891,21 +891,21 @@ router.post('/', ({body}, res, next) => {
       chat: body.message.chat
     };
   }
-  if (BANNED_USERS.indexOf(msg.from.id) < 0) {
-    if (msg.command.includes('@')) {
-      if (msg.command.substring(msg.command.indexOf('@') + 1) !== 'TenThings_Bot') return res.sendStatus(200);
-      msg.command = msg.command.substring(0, msg.command.indexOf('@'));
-    }
-    try {
-      if (!msg.from.id) {
-        bot.notifyAdmin(JSON.stringify(body));
-        return res.sendStatus(200);
-      }
-    } catch (e) {
-      console.error(e);
-      bot.notifyAdmin(JSON.stringify(msg));
+  if (msg.command.includes('@')) {
+    if (msg.command.substring(msg.command.indexOf('@') + 1) !== 'TenThings_Bot') return res.sendStatus(200);
+    msg.command = msg.command.substring(0, msg.command.indexOf('@'));
+  }
+  try {
+    if (!msg.from.id) {
+      bot.notifyAdmin(JSON.stringify(body));
       return res.sendStatus(200);
     }
+  } catch (e) {
+    console.error(e);
+    bot.notifyAdmin(JSON.stringify(msg));
+    return res.sendStatus(200);
+  }
+  if (BANNED_USERS.indexOf(msg.from.id) < 0) {
     TenThings.findOne({
       chat_id: msg.chat.id
     })
