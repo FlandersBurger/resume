@@ -18,6 +18,7 @@ const pingBoozeCruise = schedule.scheduleJob('0 */25 * * * *', () => {
     url: 'https://booze-cruise.herokuapp.com/api/ping'
   }, (err, response, body) => {
     console.log(body);
+    bot.sendMessage('-1001399879250', 'Ping-Pong');
   });
 });
 /*
