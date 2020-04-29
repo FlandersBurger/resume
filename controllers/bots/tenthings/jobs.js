@@ -10,6 +10,16 @@ const List = require('../../../models/list');
 const Joke = require('../../../models/joke');
 const TenThings = require('../../../models/games/tenthings');
 const TenThingsStats = require('../../../models/stats/tenthings');
+
+
+const pingBoozeCruise = schedule.scheduleJob('0 */25 * * * *', () => {
+  request({
+    method: 'GET',
+    url: 'https://booze-cruise.herokuapp.com/api/ping'
+  }, (err, response, body) => {
+    console.log(body);
+  });
+});
 /*
 const getJoke = schedule.scheduleJob('0 0 0 * * *', () => {
   request({
