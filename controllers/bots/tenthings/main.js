@@ -1113,14 +1113,15 @@ function evaluateCommand(res, msg, game, player, isNew) {
       break;
     */
     case '/suggest':
-      let text = msg.text.substring(msg.command.length, msg.text.length).replace(/\s/g,'');
-      if (text.lastIndexOf('TenThings_Bot') != -1) {
-          text = text.replace('TenThings_Bot', '');
-      }
-      if (text) {
+      const text = msg.text.substring(msg.command.length, msg.text.length).replace(/\s/g,'');
+      if (text && text !== 'TenThings_Bot') {
         player.suggestions++;
         game.save();
-        const suggestion = `<b>Suggestion</b>\n${msg.text.substring(msg.command.length + 1, msg.text.length)}\n<i>${msg.from.username ? msg.from.username : msg.from.first_name}</i>`;
+        let fullsuggestion = msg.text.substring(msg.command.length + 1, msg.text.length);
+        if (fullsuggestion.indexOf('TenThings_Bot ') == 0) {
+            fullsuggestion = fullsuggestion.replace('TenThings_Bot ', '');
+        }
+        const suggestion = `<b>Suggestion</b>\n${fullsuggestion}\n<i>${msg.from.username ? msg.from.username : msg.from.first_name}</i>`;
         bot.notifyAdmins(suggestion);
         bot.sendMessage(msg.chat.id, `Suggestion noted, ${msg.from.first_name}!`);
       } else {
@@ -1131,7 +1132,11 @@ function evaluateCommand(res, msg, game, player, isNew) {
       if (msg.text.substring(msg.command.length, msg.text.length).replace(/\s/g,'')) {
         player.suggestions++;
         game.save();
-        let typo = `<b>Typo</b>\n${msg.text.substring(msg.command.length + 1, msg.text.length)}\n<i>${msg.from.username ? msg.from.username : msg.from.first_name}</i>`;
+        let fulltypo = msg.text.substring(msg.command.length + 1, msg.text.length);
+        if (fulltypo.indexOf('TenThings_Bot ') == 0) {
+            fulltypo = fulltypo.replace('TenThings_Bot ', '');
+        }
+        let typo = `<b>Typo</b>\n${fulltypo}\n<i>${msg.from.username ? msg.from.username : msg.from.first_name}</i>`;
         typo += `\nList: ${game.list.name}`;
         bot.notifyAdmins(typo);
         bot.sendMessage(msg.chat.id, `Typo noted, ${msg.from.first_name}!`);
