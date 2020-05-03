@@ -18,7 +18,7 @@ const pingBoozeCruise = schedule.scheduleJob('0 */25 * * * *', () => {
     url: 'https://booze-cruise.herokuapp.com/api/ping'
   }, (err, response, body) => {
     console.log(body);
-    bot.sendMessage('-1001399879250', 'Ping-Pong');
+    //bot.sendMessage('-1001399879250', 'Ping-Pong');
   });
 });
 /*
@@ -100,6 +100,7 @@ const newLists = schedule.scheduleJob('0 0 12 * * *', () => {
       TenThings.find({}).select('chat_id')
       .then(games => {
         bot.broadcast(games.map(game => game.chat_id), message);
+        bot.notifyAdmins(message);
       });
     } else {
       bot.notifyAdmin('No lists created');
@@ -107,7 +108,7 @@ const newLists = schedule.scheduleJob('0 0 12 * * *', () => {
   });
 });
 
-const modifiedLists = schedule.scheduleJob('0 5 12 * * *', () => {
+const modifiedLists = schedule.scheduleJob('0 30 12 * * *', () => {
   List.find({
     $or: [
       {
@@ -140,6 +141,7 @@ const dailyScore = schedule.scheduleJob('0 0 0 * * *', () => {
   //if (true) {
     bot.notifyAdmin(`Score Reset Triggered; ${moment().format('DD-MMM-YYYY')}`);
     TenThings.find({ 'players.scoreDaily': { $gt: 0 }})
+    .select('chat_id list players')
     .populate('list.creator')
     .then(games => {
       const uniquePlayers = [];
@@ -216,6 +218,7 @@ const dailyScore = schedule.scheduleJob('0 0 0 * * *', () => {
   }
   //Delete stale games
   TenThings.find({ 'players.highScore': { $gt: 0 } })
+  .select('_id date')
   .then(games => {
     const ids = games.map(({_id}) => _id);
     if (ids.length > 0) {
@@ -232,16 +235,18 @@ const dailyScore = schedule.scheduleJob('0 0 0 * * *', () => {
 
 const inactiveChats = schedule.scheduleJob('0 0 2 * * *', () => {
   TenThings.find({ 'lastPlayDate': { $lt: moment().subtract(30, 'days') } })
+  .select('chat_id')
   .then(games => {
     Promise.all(games.map((game, i) => {
-      return getChat(game.chat_id, i * 50)
+      return getChat(game.chat_id, i * 50);
     }))
-    .then(result => {
-      TenThings.deleteMany({ chat_id: { $in: result.filter(game => game.code === 404).map(game => game.id)}}, (err, response) => {
+    .then(chats => {
+      const inactiveChats = chats.filter(chat => chat.code === 404).map(chat => chat.id);
+      TenThings.deleteMany({ chat_id: { $in: inactiveChats }}, (err, response) => {
         if (err) return console.error(err);
-        bot.notifyAdmin(`${result.filter(game => game.code === 404).length} inactive chats deleted`);
+        bot.notifyAdmin(`${inactiveChats.length} inactive chats deleted`);
       });
-    }, err => console.error(err))
+    }, err => console.error(err));
   });
 });
 /*
