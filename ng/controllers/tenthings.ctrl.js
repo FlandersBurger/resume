@@ -54,6 +54,7 @@ angular.module('app')
   $scope.categoryFilters.push('All');
   $scope.categoryFilters.push('Blank');
   $scope.categoryFilter = 'All';
+  $scope.searchName = '';
 
   $scope.setCategoryFilter = category => {
     $scope.categoryFilter = category;
