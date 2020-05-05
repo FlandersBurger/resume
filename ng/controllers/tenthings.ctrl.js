@@ -147,7 +147,8 @@ angular.module('app')
       creator: $scope.currentUser._id,
       date: new Date(),
       values: [],
-      answers: 0
+      answers: 0,
+      isDynamic: true
     };
   };
 

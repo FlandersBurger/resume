@@ -1,9 +1,13 @@
-<div id="tenthings-page" class="col-md-12" ng-keydown="keyDown($event)">
+<div ng-if="currentUser.uid === 'xQNVsg7H6kdn28lSgDMnU27SlO23'">
+  <h2>Hi Justin, please come talk to me on Telegram -> @FlandersBurger</h2>
+</div>
+
+<div id="tenthings-page" class="col-md-12" ng-keydown="keyDown($event)" ng-if="currentUser.uid !== 'xQNVsg7H6kdn28lSgDMnU27SlO23'">
   <h1 class="text-danger" ng-show="!loggedIn">You have to be logged in to edit lists</h1>
   <div class="well well-sm">
     This page works in conjunction with the <a href="https://t.me/joinchat/I1Di-1MXGXkjhgNPXi6Vfg" target="_blank">Ten Things Telegram Bot</a>
   </div>
-  <div ng-show="loggedIn">
+  <div>
     <div class="col-md-4">
       <div class="btn-group">
         <button class="btn btn-default" ng-click="getLists()">
@@ -45,7 +49,7 @@
       <button class="btn btn-sm" ng-class="listButtonClass(list)" ng-repeat="list in filteredLists() | filter: searchAll | orderBy: sorter | limitTo: 100" ng-click="selectList(list)">{{list.name}} ({{list.answers}})</button>
     </div>
     <div class="col-md-8">
-      <div class="col-md-12">
+      <div class="col-md-12" ng-show="loggedIn">
         <div class="btn btn-default" ng-click="addList()" ng-disabled="selectedList && !selectedList._id">
           <i class="fa fa-file-o" aria-hidden="true"></i> New
         </div>
@@ -62,9 +66,9 @@
           <i class="fa fa-sort-amount-down" aria-hidden="true"></i> Sort by {{sortList === 'value' ? 'blurb' : 'value'}}
         </div>
       </div>
-      <div class="col-md-12">
-        <kbd>Please search existing lists first and add answers to them. Subjective lists and duplicates will be deleted.
-        </kbd>
+      <div class="col-md-12" ng-show="loggedIn">
+        <kbd>Please search existing lists first and add answers to them. Subjective lists and duplicates will be deleted.</kbd>
+        <br />
         <div class="input-group">
           <input class="form-control"
             id="list-name"
@@ -84,12 +88,14 @@
         <div id="category-select" ng-show="selectingCategory">
           <button class="btn btn-sm btn-default" ng-repeat="category in categories | orderBy" ng-click="selectCategory(category)">{{category}}</button>
         </div>
-        <h5 ng-show="selectedList.creator">By {{selectedList.creator.username}} on {{formatDate(selectedList.date)}} --- <span ng-show="selectedList.plays">Plays: {{selectedList.plays}} / Skips: {{selectedList.skips}} / Score: {{selectedList.score}} / Hints: {{selectedList.hints}}</span></h5>
         <div>
 
           <!--div class="btn btn-default" ng-click="selectedList.values.unshift({ value: '', blurb: '' })" ng-disabled="!selectedList">
             <i class="fa fa-plus" aria-hidden="true"></i> Add Value
           </div-->
+        </div>
+        <div class="btn-group">
+            <button class="btn" ng-class="{'btn-success': list.isDynamic, 'btn-default': !list.isDynamic}" ng-disabled="!selectedList || (!currentUser.admin && selectedList.creator._id !== currentUser._id && selectedList._id)">{{list.isDynamic ? 'List changes overtime' : 'List never changes'}}</button>
         </div>
         <div class="input-group">
           <input id="new-value" class="form-control" ng-model="newItem.value" ng-disabled="!selectedList || !selectedList.name" placeholder="Value {{selectedList.values.length + 1}}" />
@@ -99,10 +105,13 @@
           </div>
         </div>
         <hr />
+      </div>
+      <div>
+        <h5 ng-show="selectedList.creator">By {{selectedList.creator.username}} on {{formatDate(selectedList.date)}} --- <span ng-show="selectedList.plays">Plays: {{selectedList.plays}} / Skips: {{selectedList.skips}} / Score: {{selectedList.score}} / Hints: {{selectedList.hints}}</span></h5>
         <div class="input-group" ng-repeat="item in selectedList.values | orderBy: sortList">
-          <input id="value{{$index}}" class="form-control" ng-model="item.value" placeholder="Value {{selectedList.values.length - $index}}" ng-disabled="!currentUser.admin && selectedList.creator._id !== currentUser._id && item.creator !== currentUser._id" />
+          <input id="value{{$index}}" class="form-control" ng-model="item.value" placeholder="Value {{selectedList.values.length - $index}}" ng-disabled="!loggedIn || !currentUser.admin && selectedList.creator._id !== currentUser._id && item.creator !== currentUser._id" />
           <span class="input-group-addon"><img ng-src="{{item.blurb}}" ng-if="item.blurb.substring(0, 4) === 'http'"/></span>
-          <input class="form-control" ng-model="item.blurb" placeholder="Display after guessing {{item.value}} (Can be an image URL)" ng-disabled="!currentUser.admin && selectedList.creator._id !== currentUser._id && item.creator !== currentUser._id" />
+          <input class="form-control" ng-model="item.blurb" placeholder="Display after guessing {{item.value}} (Can be an image URL)" ng-disabled="!loggedIn || !currentUser.admin && selectedList.creator._id !== currentUser._id && item.creator !== currentUser._id" />
         </div>
       </div>
     </div>

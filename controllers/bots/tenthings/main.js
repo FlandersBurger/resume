@@ -849,6 +849,7 @@ router.post('/', ({body}, res, next) => {
       return res.sendStatus(200);
     } else if (
       body.edited_message ||
+      body.message.from.is_bot ||
       body.message.game ||
       body.message.photo ||
       body.message.video ||
@@ -1249,3 +1250,33 @@ List
   //console.log(result);
 });
 */
+
+List
+.find()
+.lean()
+.exec((err, lists) => {
+  let answers = lists.reduce((answers, list) => {
+    for (const value of list.values) {
+      if (!answers[value.value]) answers[value.value] = [list.name.replace(',', ' ')];
+      else answers[value.value].push(list.name.replace(',', ' '));
+    }
+    return answers;
+  }, {});
+  let result = Object.keys(answers).reduce((result, answer) => {
+    if (answers[answer] && answers[answer].length > 2) {
+      result.push({
+        answer: answer,
+        lists: answers[answer]
+      });
+    }
+    return result;
+  }, []);
+  console.log(result.length);
+  console.log(result.reduce((count, answer) => {
+    if (!count[answer.lists.length]) count[answer.lists.length] = 1;
+    else count[answer.lists.length]++;
+    if (answer.lists.length >= 30) console.log(answer.answer + ' ' +  answer.lists.length);
+    return count;
+  }, {}));
+
+});
