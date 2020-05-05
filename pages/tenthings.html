@@ -95,19 +95,19 @@
           </div-->
         </div>
         <div class="btn-group">
-            <button class="btn" ng-class="{'btn-success': list.isDynamic, 'btn-default': !list.isDynamic}" ng-disabled="!selectedList || (!currentUser.admin && selectedList.creator._id !== currentUser._id && selectedList._id)">{{list.isDynamic ? 'List changes overtime' : 'List never changes'}}</button>
+          <button class="btn" ng-class="{'btn-success': list.isDynamic, 'btn-default': !list.isDynamic}" ng-disabled="!selectedList || (!currentUser.admin && selectedList.creator._id !== currentUser._id && selectedList._id)">{{list.isDynamic ? 'List changes overtime' : 'List never changes'}}</button>
         </div>
-        <div class="input-group">
+        <hr />
+      </div>
+      <div class="col-md-12">
+        <h5 ng-show="selectedList.creator"><b>{{selectedList.name}}</b> by {{selectedList.creator.username}} on {{formatDate(selectedList.date)}} --- <span ng-show="selectedList.plays">Plays: {{selectedList.plays}} / Skips: {{selectedList.skips}} / Score: {{selectedList.score}} / Hints: {{selectedList.hints}}</span></h5>
+        <div class="input-group" ng-if="loggedIn">
           <input id="new-value" class="form-control" ng-model="newItem.value" ng-disabled="!selectedList || !selectedList.name" placeholder="Value {{selectedList.values.length + 1}}" />
           <input id="new-blurb" class="form-control" ng-model="newItem.blurb" ng-disabled="!selectedList || !selectedList.name" placeholder="Display after guessing {{newItem.value}}" />
           <div class="input-group-btn">
             <button class="btn" ng-click="addValue()" ng-disabled="!selectedList || !selectedList.name">Add</button>
           </div>
         </div>
-        <hr />
-      </div>
-      <div>
-        <h5 ng-show="selectedList.creator">By {{selectedList.creator.username}} on {{formatDate(selectedList.date)}} --- <span ng-show="selectedList.plays">Plays: {{selectedList.plays}} / Skips: {{selectedList.skips}} / Score: {{selectedList.score}} / Hints: {{selectedList.hints}}</span></h5>
         <div class="input-group" ng-repeat="item in selectedList.values | orderBy: sortList">
           <input id="value{{$index}}" class="form-control" ng-model="item.value" placeholder="Value {{selectedList.values.length - $index}}" ng-disabled="!loggedIn || !currentUser.admin && selectedList.creator._id !== currentUser._id && item.creator !== currentUser._id" />
           <span class="input-group-addon"><img ng-src="{{item.blurb}}" ng-if="item.blurb.substring(0, 4) === 'http'"/></span>

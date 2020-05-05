@@ -50,11 +50,14 @@ angular.module('app')
     // use e.keyCode
   };
 
+  console.log($scope.currentUser);
+
   $scope.categoryFilters = $scope.categories.map(category => category);
   $scope.categoryFilters.push('All');
   $scope.categoryFilters.push('Blank');
   $scope.categoryFilter = 'All';
   $scope.searchName = '';
+  $scope.newItem = {};
 
   $scope.setCategoryFilter = category => {
     $scope.categoryFilter = category;
@@ -140,6 +143,7 @@ angular.module('app')
   $scope.selectCategory = category => {
     $scope.selectedList.category = category;
     $scope.selectingCategory = false;
+    console.log($scope.selectingCategory);
   };
 
   $scope.addList = () => {
@@ -149,7 +153,8 @@ angular.module('app')
       date: new Date(),
       values: [],
       answers: 0,
-      isDynamic: true
+      isDynamic: true,
+      category: ''
     };
   };
 

@@ -1252,6 +1252,10 @@ List
 */
 
 List
+.find({name: ''})
+.exec((err, lists) => {console.log(lists);});
+/*
+List
 .find()
 .lean()
 .exec((err, lists) => {
@@ -1280,3 +1284,4 @@ List
   }, {}));
 
 });
+*/
