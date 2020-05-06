@@ -1,149 +1,156 @@
-<div ng-if="currentUser.uid === 'xQNVsg7H6kdn28lSgDMnU27SlO23'">
-  <h2>Hi Justin, please come talk to me on Telegram -> @FlandersBurger</h2>
-</div>
 
-<div id="tenthings-page" class="col-md-12" ng-keydown="keyDown($event)" ng-if="currentUser.uid !== 'xQNVsg7H6kdn28lSgDMnU27SlO23'">
-  <h1 class="text-danger" ng-show="!loggedIn">You have to be logged in to edit lists</h1>
-  <div class="well well-sm">
-    This page works in conjunction with the <a href="https://t.me/joinchat/I1Di-1MXGXkjhgNPXi6Vfg" target="_blank">Ten Things Telegram Bot</a>
+
+<div id="tenthings-page" class="col-md-12" ng-keydown="keyDown($event)">
+  <div ng-if="currentUser.uid === 'xQNVsg7H6kdn28lSgDMnU27SlO23'">
+    <h2>Hi Justin, please come talk to me on Telegram -> @FlandersBurger</h2>
   </div>
-  <div>
-    <div class="col-md-4">
-      <div class="btn-group">
-        <button class="btn btn-default" ng-click="getLists()">
-          <i class="fa fa-refresh" ng-class="{ 'fa-spin': loading }" aria-hidden="true"></i>
-        </button>
-        <div class="btn-group" ng-if="userCount > 1">
-          <div class="dropdown">
-            <button class="btn btn-default dropdown-toggle" type="button" data-toggle="dropdown">{{userFilter ? userFilter : 'User'}}</button>
-            <ul class="dropdown-menu">
-              <li ng-repeat="(key, value) in userFilters" ng-show="currentUser.admin || key === currentUser.username || key === 'All'"><a href="#" ng-click="setUserFilter(key)">{{key}} ({{value}})</a></li>
-            </ul>
-          </div>
-        </div>
-        <div class="btn-group">
-          <div class="dropdown">
-            <button class="btn btn-default dropdown-toggle" type="button" data-toggle="dropdown">{{categoryFilter ? categoryFilter : 'Category'}} ({{filteredLists().length}})</button>
-            <ul class="dropdown-menu">
-              <li ng-repeat="category in categoryFilters | orderBy"><a href="#" ng-click="setCategoryFilter(category)">{{category}} ({{getCategoryCount(category)}})</a></li>
-            </ul>
-          </div>
-        </div>
-        <div class="btn-group">
-          <div class="dropdown">
-            <button class="btn btn-default dropdown-toggle" type="button" data-toggle="dropdown">Order by {{sortValue}} {{(sortDirection ? 'descending' : 'ascending')}}</button>
-            <ul class="dropdown-menu">
-              <li><a href="#" ng-click="sort('name')">Name {{sortValue === 'name' ? (sortDirection ? 'Descending' : 'Ascending') : 'Ascending'}}</a></li>
-              <li><a href="#" ng-click="sort('date')">Date {{sortValue === 'date' ? (sortDirection ? 'Descending' : 'Ascending') : 'Ascending'}}</a></li>
-              <li><a href="#" ng-click="sort('skips')">Skips {{sortValue === 'skips' ? (sortDirection ? 'Descending' : 'Ascending') : 'Ascending'}}</a></li>
-              <li><a href="#" ng-click="sort('plays')">Plays {{sortValue === 'plays' ? (sortDirection ? 'Descending' : 'Ascending') : 'Ascending'}}</a></li>
-              <li><a href="#" ng-click="sort('hints')">Hints {{sortValue === 'hints' ? (sortDirection ? 'Descending' : 'Ascending') : 'Ascending'}}</a></li>
-              <li><a href="#" ng-click="sort('score')">Score {{sortValue === 'score' ? (sortDirection ? 'Descending' : 'Ascending') : 'Ascending'}}</a></li>
-              <li><a href="#" ng-click="sort('answers')">Answers {{sortValue === 'answers' ? (sortDirection ? 'Descending' : 'Ascending') : 'Ascending'}}</a></li>
-            </ul>
-          </div>
-        </div>
-      </div>
-      <input class="form-control" ng-init="searchName = ''" ng-model="searchName" placeholder="Search List Names"/>
-      <input class="form-control" ng-model="searchAll" placeholder="Search Everything"/>
-      <button class="btn btn-sm" ng-class="listButtonClass(list)" ng-repeat="list in filteredLists() | filter: searchAll | orderBy: sorter | limitTo: 100" ng-click="selectList(list)">{{list.name}} ({{list.answers}})</button>
+  <div ng-if="currentUser.uid !== 'xQNVsg7H6kdn28lSgDMnU27SlO23'">
+    <h1 class="text-danger" ng-show="!loggedIn">You have to be logged in to edit lists</h1>
+    <div class="well well-sm">
+      This page works in conjunction with the <a href="https://t.me/joinchat/I1Di-1MXGXkjhgNPXi6Vfg" target="_blank">Ten Things Telegram Bot</a>
     </div>
-    <div class="col-md-8">
-      <div class="col-md-12" ng-show="loggedIn">
-        <div class="btn btn-default" ng-click="addList()" ng-disabled="selectedList && !selectedList._id">
-          <i class="fa fa-file-o" aria-hidden="true"></i> New
-        </div>
-        <div class="btn btn-default" ng-click="saveList(selectedList)" ng-disabled="!selectedList">
-          <i class="fa fa-save" ng-class="{ 'fa-save': !saving, 'fa-spin fa-spinner': saving }" aria-hidden="true"></i> Save
-        </div>
-        <div class="btn btn-danger" ng-click="deleteList(selectedList)" ng-disabled="!selectedList || (!currentUser.admin && selectedList.creator._id !== currentUser._id && selectedList._id)">
-          <i class="fa fa-trash-o" aria-hidden="true"></i> Delete
-        </div>
-        <div class="btn btn-default" ng-click="reportList(selectedList)" ng-hide="!selectedList || selectedList.creator._id === currentUser._id">
-          <i class="fa fa-bug" aria-hidden="true"></i> Report
-        </div>
-        <div class="btn btn-default" ng-click="sortList = sortList === 'value' ? 'blurb' : 'value'" ng-hide="!selectedList">
-          <i class="fa fa-sort-amount-down" aria-hidden="true"></i> Sort by {{sortList === 'value' ? 'blurb' : 'value'}}
-        </div>
-      </div>
-      <div class="col-md-12" ng-show="loggedIn">
-        <kbd>Please search existing lists first and add answers to them. Subjective lists and duplicates will be deleted.</kbd>
-        <br />
-        <div class="input-group">
-          <input class="form-control"
-            id="list-name"
-            ng-model="selectedList.name"
-            ng-blur="search = savedSearch;savedSearch = '';"
-            placeholder="List Name"
-            ng-disabled="!selectedList || (!currentUser.admin && selectedList.creator._id !== currentUser._id && selectedList._id)"
-            autocomplete="off"
-            uib-typeahead="list.name for list in filteredLists() | filter:$viewValue | limitTo:8"
-            typeahead-on-select="selectList($item)"
-          />
-          <span class="input-group-addon"><img ng-src="{{item.description}}" ng-if="item.blurb.substring(0, 4) === 'http'"/></span>
-          <input class="form-control" ng-model="selectedList.description" placeholder="List Description" ng-disabled="!selectedList || (!currentUser.admin && selectedList.creator._id !== currentUser._id && selectedList._id)" />
-        </div>
-        <div>
-
-          <!--div class="btn btn-default" ng-click="selectedList.values.unshift({ value: '', blurb: '' })" ng-disabled="!selectedList">
-            <i class="fa fa-plus" aria-hidden="true"></i> Add Value
-          </div-->
-        </div>
+    <div>
+      <div class="col-md-4">
         <div class="btn-group">
-          <button class="btn"
-            ng-class="{ 'btn-default': selectedList.category, 'btn-warning': !selectedList.category }"
-            id="list-category"
-            type="button"
-            onclick="$('#category-select').show();"
-            ng-disabled="!selectedList || (!currentUser.admin && selectedList.creator._id !== currentUser._id && selectedList._id)">
-            {{selectedList.category ? selectedList.category : 'Category'}}
+          <button class="btn btn-default" ng-click="getLists()">
+            <i class="fa fa-refresh" ng-class="{ 'fa-spin': loading }" aria-hidden="true"></i>
           </button>
-          <button class="btn" ng-class="{'btn-success': list.isDynamic, 'btn-default': !list.isDynamic}" ng-disabled="!selectedList || (!currentUser.admin && selectedList.creator._id !== currentUser._id && selectedList._id)">{{list.isDynamic ? 'List changes overtime' : 'List never changes'}}</button>
+          <div class="btn-group" ng-if="userCount > 1">
+            <div class="dropdown">
+              <button class="btn btn-default dropdown-toggle" type="button" data-toggle="dropdown">{{userFilter ? userFilter : 'User'}}</button>
+              <ul class="dropdown-menu">
+                <li ng-repeat="(key, value) in userFilters" ng-show="currentUser.admin || key === currentUser.username || key === 'All'"><a href="#" ng-click="setUserFilter(key)">{{key}} ({{value}})</a></li>
+              </ul>
+            </div>
+          </div>
+          <div class="btn-group">
+            <div class="dropdown">
+              <button class="btn btn-default dropdown-toggle" type="button" data-toggle="dropdown">{{categoryFilter ? categoryFilter : 'Category'}} ({{filteredLists().length}})</button>
+              <ul class="dropdown-menu">
+                <li ng-repeat="category in categoryFilters | orderBy"><a href="#" ng-click="setCategoryFilter(category)">{{category}} ({{getCategoryCount(category)}})</a></li>
+              </ul>
+            </div>
+          </div>
+          <div class="btn-group">
+            <div class="dropdown">
+              <button class="btn btn-default dropdown-toggle" type="button" data-toggle="dropdown">Order by {{sortValue}} {{(sortDirection ? 'descending' : 'ascending')}}</button>
+              <ul class="dropdown-menu">
+                <li><a href="#" ng-click="sort('name')">Name {{sortValue === 'name' ? (sortDirection ? 'Descending' : 'Ascending') : 'Ascending'}}</a></li>
+                <li><a href="#" ng-click="sort('date')">Date {{sortValue === 'date' ? (sortDirection ? 'Descending' : 'Ascending') : 'Ascending'}}</a></li>
+                <li><a href="#" ng-click="sort('skips')">Skips {{sortValue === 'skips' ? (sortDirection ? 'Descending' : 'Ascending') : 'Ascending'}}</a></li>
+                <li><a href="#" ng-click="sort('plays')">Plays {{sortValue === 'plays' ? (sortDirection ? 'Descending' : 'Ascending') : 'Ascending'}}</a></li>
+                <li><a href="#" ng-click="sort('hints')">Hints {{sortValue === 'hints' ? (sortDirection ? 'Descending' : 'Ascending') : 'Ascending'}}</a></li>
+                <li><a href="#" ng-click="sort('score')">Score {{sortValue === 'score' ? (sortDirection ? 'Descending' : 'Ascending') : 'Ascending'}}</a></li>
+                <li><a href="#" ng-click="sort('answers')">Answers {{sortValue === 'answers' ? (sortDirection ? 'Descending' : 'Ascending') : 'Ascending'}}</a></li>
+              </ul>
+            </div>
+          </div>
         </div>
-        <div id="category-select">
-          <button class="btn btn-sm"
-            ng-class="{'btn-default': category !== selectedList.category, 'btn-success': category === selectedList.category}"
-            ng-repeat="category in categories | orderBy"
-            ng-click="selectCategory(category)">{{category}}</button>
-        </div>
+        <input class="form-control" ng-model="search.name" placeholder="Search List Names"/>
+        <input class="form-control" ng-model="searchAll" placeholder="Search Everything"/>
+        <button class="btn btn-sm" ng-class="listButtonClass(list)" ng-repeat="list in filteredLists() | filter: searchAll | filter: search | orderBy: sorter | limitTo: 100" ng-click="selectList(list)">{{list.name}} ({{list.answers}})</button>
       </div>
-      <div class="col-md-12">
-        <h5 ng-show="selectedList.creator"><b>{{selectedList.name}}</b> by {{selectedList.creator.username}} on {{formatDate(selectedList.date)}} --- <span ng-show="selectedList.plays">Plays: {{selectedList.plays}} / Skips: {{selectedList.skips}} / Score: {{selectedList.score}} / Hints: {{selectedList.hints}}</span></h5>
-        <div class="input-group" ng-if="loggedIn">
-          <input id="new-value" class="form-control" ng-model="newItem.value" ng-disabled="!selectedList || !selectedList.name" placeholder="Value {{selectedList.values.length + 1}}" />
-          <input id="new-blurb" class="form-control" ng-model="newItem.blurb" ng-disabled="!selectedList || !selectedList.name" placeholder="Display after guessing {{newItem.value}}" />
-          <div class="input-group-btn">
-            <button class="btn" ng-click="addValue()" ng-disabled="!selectedList || !selectedList.name">Add</button>
+      <div class="col-md-8">
+        <div class="col-md-12" ng-if="loggedIn">
+          <div class="btn btn-default" ng-click="addList()" ng-disabled="selectedList && !selectedList._id">
+            <i class="fa fa-file-o" aria-hidden="true"></i> New
           </div>
-        </div>
-        <hr />
-        <div class="input-group" ng-repeat="item in selectedList.values | orderBy: sortList">
-          <input id="value{{$index}}" class="form-control" ng-model="item.value" placeholder="Value {{selectedList.values.length - $index}}" ng-disabled="!loggedIn || !currentUser.admin && selectedList.creator._id !== currentUser._id && item.creator !== currentUser._id" />
-          <span class="input-group-addon"><img ng-src="{{item.blurb}}" ng-if="item.blurb.substring(0, 4) === 'http'"/></span>
-          <input class="form-control" ng-model="item.blurb" placeholder="Display after guessing {{item.value}} (Can be an image URL)" ng-disabled="!loggedIn || !currentUser.admin && selectedList.creator._id !== currentUser._id && item.creator !== currentUser._id" />
-        </div>
-      </div>
-    </div>
-    <!--div class="col-md-4" ng-repeat="list in lists">
-      <div class="panel" ng-class="{'panel-info': !list._id, 'panel-default': list._id}">
-        <div class="panel-heading">
-          <input class="form-control" ng-model="list.name" placeholder="Name of the list" />
-          <h5>By {{list.creator.username}}</h5>
-        </div>
-        <div class="panel-body">
-          <div ng-repeat="value in list.values track by $index">
-            <input class="form-control" ng-model="value.value" placeholder="Value {{$index + 1}}" />
+          <div class="btn btn-default" ng-click="saveList(selectedList)" ng-disabled="!selectedList">
+            <i class="fa fa-save" ng-class="{ 'fa-save': !saving, 'fa-spin fa-spinner': saving }" aria-hidden="true"></i> Save
           </div>
-        </div>
-        <div class="panel-footer">
-          <div class="btn btn-default" ng-click="saveList(list)">
-            <i class="fa fa-save" aria-hidden="true"></i> Save
-          </div>
-          <div class="btn btn-default" ng-click="deleteList(list)">
+          <div class="btn btn-danger" ng-click="deleteList(selectedList)" ng-disabled="!selectedList || (!currentUser.admin && selectedList.creator._id !== currentUser._id && selectedList._id)">
             <i class="fa fa-trash-o" aria-hidden="true"></i> Delete
           </div>
+          <div class="btn btn-default" ng-click="reportList(selectedList)" ng-hide="!selectedList || selectedList.creator._id === currentUser._id">
+            <i class="fa fa-bug" aria-hidden="true"></i> Report
+          </div>
+          <div class="btn btn-default" ng-click="sortList = sortList === 'value' ? 'blurb' : 'value'" ng-hide="!selectedList">
+            <i class="fa fa-sort-amount-down" aria-hidden="true"></i> Sort by {{sortList === 'value' ? 'blurb' : 'value'}}
+          </div>
+          <br />
+          <kbd>Please search existing lists first and add answers to them. Subjective lists and duplicates will be deleted.</kbd>
+          <br />
+          <div class="input-group">
+            <input class="form-control"
+              id="list-name"
+              ng-model="selectedList.name"
+              ng-blur="search = savedSearch;savedSearch = '';"
+              placeholder="List Name"
+              ng-disabled="!selectedList || (!currentUser.admin && selectedList.creator._id !== currentUser._id && selectedList._id)"
+              autocomplete="off"
+              uib-typeahead="list.name for list in filteredLists() | filter:$viewValue | limitTo:8"
+              typeahead-on-select="selectList($item)"
+            />
+            <span class="input-group-addon"><img ng-src="{{item.description}}" ng-if="item.blurb.substring(0, 4) === 'http'"/></span>
+            <input class="form-control" ng-model="selectedList.description" placeholder="List Description" ng-disabled="!selectedList || (!currentUser.admin && selectedList.creator._id !== currentUser._id && selectedList._id)" />
+          </div>
+          <div>
+
+            <!--div class="btn btn-default" ng-click="selectedList.values.unshift({ value: '', blurb: '' })" ng-disabled="!selectedList">
+              <i class="fa fa-plus" aria-hidden="true"></i> Add Value
+            </div-->
+          </div>
+          <div class="btn-group">
+            <button class="btn"
+              ng-class="{ 'btn-default': selectedList.category, 'btn-warning': !selectedList.category }"
+              id="list-category"
+              type="button"
+              onclick="$('#category-select').show();"
+              ng-disabled="!selectedList || (!currentUser.admin && selectedList.creator._id !== currentUser._id && selectedList._id)">
+              {{selectedList.category ? selectedList.category : 'Category'}}
+            </button>
+            <button class="btn"
+              ng-class="{'btn-success': selectedList.isDynamic, 'btn-default': !selectedList.isDynamic}"
+              ng-click="selectedList.isDynamic = !selectedList.isDynamic"
+              ng-disabled="!selectedList || (!currentUser.admin && selectedList.creator._id !== currentUser._id && selectedList._id)">
+              {{selectedList.isDynamic ? 'List changes overtime' : 'List never changes'}}
+            </button>
+          </div>
+          <div id="category-select">
+            <button class="btn btn-sm"
+              ng-class="{'btn-default': category !== selectedList.category, 'btn-success': category === selectedList.category}"
+              ng-repeat="category in categories | orderBy"
+              ng-click="selectCategory(category)">{{category}}</button>
+          </div>
+        </div>
+        <div class="col-md-12">
+          <h5 ng-show="selectedList.creator"><b>{{selectedList.name}}</b> by {{selectedList.creator.username}} on {{formatDate(selectedList.date)}} --- <span ng-show="selectedList.plays">Plays: {{selectedList.plays}} / Skips: {{selectedList.skips}} / Score: {{selectedList.score}} / Hints: {{selectedList.hints}}</span></h5>
+          <div class="input-group" ng-if="loggedIn">
+            <input id="new-value" class="form-control" ng-model="newItem.value" ng-disabled="!selectedList || !selectedList.name" placeholder="Value {{selectedList.values.length + 1}}" />
+            <input id="new-blurb" class="form-control" ng-model="newItem.blurb" ng-disabled="!selectedList || !selectedList.name" placeholder="Display after guessing {{newItem.value}}" />
+            <div class="input-group-btn">
+              <button class="btn" ng-click="addValue()" ng-disabled="!selectedList || !selectedList.name">Add</button>
+            </div>
+          </div>
+          <hr />
+          <div class="input-group" ng-repeat="item in selectedList.values | orderBy: sortList">
+            <input id="value{{$index}}" class="form-control" ng-model="item.value" placeholder="Value {{selectedList.values.length - $index}}" ng-disabled="!loggedIn || !currentUser.admin && selectedList.creator._id !== currentUser._id && item.creator !== currentUser._id" />
+            <span class="input-group-addon"><img ng-src="{{item.blurb}}" ng-if="item.blurb.substring(0, 4) === 'http'"/></span>
+            <input class="form-control" ng-model="item.blurb" placeholder="Display after guessing {{item.value}} (Can be an image URL)" ng-disabled="!loggedIn || !currentUser.admin && selectedList.creator._id !== currentUser._id && item.creator !== currentUser._id" />
+          </div>
         </div>
       </div>
-    </div-->
+      <!--div class="col-md-4" ng-repeat="list in lists">
+        <div class="panel" ng-class="{'panel-info': !list._id, 'panel-default': list._id}">
+          <div class="panel-heading">
+            <input class="form-control" ng-model="list.name" placeholder="Name of the list" />
+            <h5>By {{list.creator.username}}</h5>
+          </div>
+          <div class="panel-body">
+            <div ng-repeat="value in list.values track by $index">
+              <input class="form-control" ng-model="value.value" placeholder="Value {{$index + 1}}" />
+            </div>
+          </div>
+          <div class="panel-footer">
+            <div class="btn btn-default" ng-click="saveList(list)">
+              <i class="fa fa-save" aria-hidden="true"></i> Save
+            </div>
+            <div class="btn btn-default" ng-click="deleteList(list)">
+              <i class="fa fa-trash-o" aria-hidden="true"></i> Delete
+            </div>
+          </div>
+        </div>
+      </div-->
+    </div>
   </div>
 </div>

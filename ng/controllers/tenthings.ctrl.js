@@ -85,7 +85,7 @@ angular.module('app')
           return $scope.categoryFilter === 'Blank' && creator === $scope.userFilter;
         }
       }
-    }).filter(({name}) => !name || name.toLowerCase().indexOf($scope.searchName.toLowerCase()) >= 0);
+    });
   };
 
   $scope.$on('login', _ => {
