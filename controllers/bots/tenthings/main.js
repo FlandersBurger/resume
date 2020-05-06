@@ -304,6 +304,8 @@ const sass = (game, text) => {
         if (game.chat_id != config.masterChat) {
           bot.exportChatInviteLink(game.chat_id).then(function(chat) {
             bot.notifyAdmin(`<b>${game.list.name}</b>\n${text}\n<i>${sass}</i>\n${chat}`);
+          }, err => {
+            bot.notifyAdmin(`<b>${game.list.name}</b>\n${text}\n<i>${sass}</i>`);
           });
         }
         if (sass.indexOf('http') === 0) {
