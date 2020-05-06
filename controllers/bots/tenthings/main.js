@@ -1197,7 +1197,7 @@ function evaluateCommand(res, msg, game, player, isNew) {
       }
       break;
     case '/ping':
-      bot.sendMessage(msg.chat.id, message);
+      bot.sendMessage(msg.chat.id, 'pong');
       break;
     case '/hello':
       bot.sendMessage(msg.chat.id, 'You already had me but you got greedy, now you ruined it');
