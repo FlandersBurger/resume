@@ -301,7 +301,11 @@ const sass = (game, text) => {
     messages.sass(text)
     .then(sass => {
       if (sass) {
-        if (game.chat_id != config.masterChat) bot.notifyAdmin(game.list.name + '\n' + text + '\n' + sass);
+        if (game.chat_id != config.masterChat) {
+          bot.exportChatInviteLink(game.chat_id).then(function(chat) {
+            bot.notifyAdmin(`<b>${game.list.name}</b>\n${text}\n<i>${sass}</i>\n${chat}`);
+          });
+        }
         if (sass.indexOf('http') === 0) {
           if (sass.indexOf('.gif') > 0) {
             bot.sendAnimation(game.chat_id, sass);
