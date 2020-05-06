@@ -105,8 +105,8 @@ function TelegramBot() {
     request(encodeURI(url), (error, r, body) => {
       if (error) reject(error);
       const response = JSON.parse(body);
-      if (!response || !response.ok) reject(response);
-      resolve(response);
+      if (!response || !response.ok || !response.result) reject(response);
+      resolve(response.result);
     });
   });
 
