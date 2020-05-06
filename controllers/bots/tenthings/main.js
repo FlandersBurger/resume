@@ -849,6 +849,7 @@ router.post('/', ({body}, res, next) => {
       return res.sendStatus(200);
     } else if (
       body.edited_message ||
+      body.update_id ||
       body.message.from.is_bot ||
       body.message.game ||
       body.message.photo ||

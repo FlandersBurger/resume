@@ -50,7 +50,6 @@ angular.module('app')
     // use e.keyCode
   };
 
-  console.log($scope.currentUser);
 
   $scope.categoryFilters = $scope.categories.map(category => category);
   $scope.categoryFilters.push('All');
@@ -119,7 +118,6 @@ angular.module('app')
     BotsSvc.getLists($scope.currentUser)
     .then(({data}) => {
       $scope.lists = data;
-      console.log($scope.lists[0]);
       $scope.userFilters = {};
       $scope.userFilters.All = $scope.lists.length;
       $scope.userFilters = $scope.lists.sort((list1, list2) => list1.creator > list2.creator).reduce((users, {creator}) => {
@@ -142,8 +140,7 @@ angular.module('app')
 
   $scope.selectCategory = category => {
     $scope.selectedList.category = category;
-    $scope.selectingCategory = false;
-    console.log($scope.selectingCategory);
+    $('#category-select').hide();
   };
 
   $scope.addList = () => {

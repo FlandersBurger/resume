@@ -80,13 +80,8 @@
             uib-typeahead="list.name for list in filteredLists() | filter:$viewValue | limitTo:8"
             typeahead-on-select="selectList($item)"
           />
-          <div class="input-group-btn">
-            <button class="btn" ng-class="{ 'btn-default': selectedList.category, 'btn-warning': !selectedList.category }" id="list-category" type="button" ng-click="selectingCategory = !selectingCategory" ng-disabled="!selectedList || (!currentUser.admin && selectedList.creator._id !== currentUser._id && selectedList._id)">{{selectedList.category ? selectedList.category : 'Category'}}</button>
-          </div>
+          <span class="input-group-addon"><img ng-src="{{item.description}}" ng-if="item.blurb.substring(0, 4) === 'http'"/></span>
           <input class="form-control" ng-model="selectedList.description" placeholder="List Description" ng-disabled="!selectedList || (!currentUser.admin && selectedList.creator._id !== currentUser._id && selectedList._id)" />
-        </div>
-        <div id="category-select" ng-show="selectingCategory">
-          <button class="btn btn-sm btn-default" ng-repeat="category in categories | orderBy" ng-click="selectCategory(category)">{{category}}</button>
         </div>
         <div>
 
@@ -95,9 +90,22 @@
           </div-->
         </div>
         <div class="btn-group">
+          <button class="btn"
+            ng-class="{ 'btn-default': selectedList.category, 'btn-warning': !selectedList.category }"
+            id="list-category"
+            type="button"
+            onclick="$('#category-select').show();"
+            ng-disabled="!selectedList || (!currentUser.admin && selectedList.creator._id !== currentUser._id && selectedList._id)">
+            {{selectedList.category ? selectedList.category : 'Category'}}
+          </button>
           <button class="btn" ng-class="{'btn-success': list.isDynamic, 'btn-default': !list.isDynamic}" ng-disabled="!selectedList || (!currentUser.admin && selectedList.creator._id !== currentUser._id && selectedList._id)">{{list.isDynamic ? 'List changes overtime' : 'List never changes'}}</button>
         </div>
-        <hr />
+        <div id="category-select">
+          <button class="btn btn-sm"
+            ng-class="{'btn-default': category !== selectedList.category, 'btn-success': category === selectedList.category}"
+            ng-repeat="category in categories | orderBy"
+            ng-click="selectCategory(category)">{{category}}</button>
+        </div>
       </div>
       <div class="col-md-12">
         <h5 ng-show="selectedList.creator"><b>{{selectedList.name}}</b> by {{selectedList.creator.username}} on {{formatDate(selectedList.date)}} --- <span ng-show="selectedList.plays">Plays: {{selectedList.plays}} / Skips: {{selectedList.skips}} / Score: {{selectedList.score}} / Hints: {{selectedList.hints}}</span></h5>
@@ -108,6 +116,7 @@
             <button class="btn" ng-click="addValue()" ng-disabled="!selectedList || !selectedList.name">Add</button>
           </div>
         </div>
+        <hr />
         <div class="input-group" ng-repeat="item in selectedList.values | orderBy: sortList">
           <input id="value{{$index}}" class="form-control" ng-model="item.value" placeholder="Value {{selectedList.values.length - $index}}" ng-disabled="!loggedIn || !currentUser.admin && selectedList.creator._id !== currentUser._id && item.creator !== currentUser._id" />
           <span class="input-group-addon"><img ng-src="{{item.blurb}}" ng-if="item.blurb.substring(0, 4) === 'http'"/></span>
