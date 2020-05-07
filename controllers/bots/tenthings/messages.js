@@ -42,7 +42,7 @@ module.exports = {
         case 0:
           return 'Too slow, ' + loser.first_name + '. ' + winner.first_name + ' said ' + match + ' ages ago.';
         case 1:
-          return winner.first_name + ' beat you to '  + match + ', ' + loser.first_name;
+          return winner.first_name + ' beat you to ' + match + ', ' + loser.first_name;
         case 2:
           return match + ' denied by ' + winner.first_name + ', ' + loser.first_name;
         case 3:
@@ -85,8 +85,9 @@ module.exports = {
       }
     }
   },
-  listStats: function(list) {
+  listStats: function(list, requestor = null) {
     var message = '';
+    message += requestor ? `<i>Requested by ${requestor}</i>\n` : '';
     message += '<b>Stats for ' + list.name + '</b>\n';
     message += 'Score: ' + list.score + '\n';
     message += 'Votes: ' + list.votes.length + '\n';
@@ -99,8 +100,9 @@ module.exports = {
     message += '\n';
     return message;
   },
-  playerStats: function(player) {
+  playerStats: function(player, requestor) {
     var message = '';
+    message += requestor ? `<i>Requested by ${requestor}</i>\n` : '';
     message += '<b>Personal Stats for ' + player.first_name + '</b>\n';
     message += 'Total Score: ' + player.score + '\n';
     message += 'High Score: ' + player.highScore + '\n';
@@ -431,7 +433,9 @@ module.exports = {
       ) {
         request({
           url: 'https://icanhazdadjoke.com/',
-          headers: { 'Accept': 'application/json' }
+          headers: {
+            'Accept': 'application/json'
+          }
         }, (err, response, body) => {
           resolve(JSON.parse(body).joke);
         });

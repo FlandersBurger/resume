@@ -115,12 +115,10 @@ exports.getList = (game, callback) => {
 };
 
 exports.getStats = (chat_id, data, requestor) => {
-  bot.sendMessage(chat_id, 'Temporarily disabled stats as someone is spamming the bot');
-  bot.notifyAdmin(JSON.stringify(data));
   const type = data.id.split('_')[0];
   const id = data.id.split('_')[1];
+  bot.notifyAdmin(`${data.requestor} requested ${type} stats`);
   let message = '';
-  return;
   TenThings.findOne({
     chat_id
   }).then(game => {
@@ -225,81 +223,81 @@ exports.getStats = (chat_id, data, requestor) => {
           resolve(player);
         });
         findPlayer.then(player => {
-          bot.sendMessage(game.chat_id, messages.playerStats(player));
+          bot.sendMessage(game.chat_id, messages.playerStats(player, data.requestor));
         });
         break;
       case 'l':
         List.findOne({
           _id: id
         }).populate('creator').exec((err, gameList) => {
-          bot.sendMessage(game.chat_id, messages.listStats(gameList));
+          bot.sendMessage(game.chat_id, messages.listStats(gameList, data.requestor));
         });
         break;
       case 'mostskipped':
-        listStats(game, 'skips', 'plays', 1, 'Most Skipped Lists', 1);
+        listStats(game, 'skips', 'plays', 1, 'Most Skipped Lists', 1, data.requestor);
         break;
       case 'leastskipped':
-        listStats(game, 'skips', 'plays', 1, 'Least Skipped Lists', -1);
+        listStats(game, 'skips', 'plays', 1, 'Least Skipped Lists', -1, data.requestor);
         break;
       case 'mosthinted':
-        listStats(game, 'hints', 'plays', 1 / 6, 'Most Hinted Lists', 1);
+        listStats(game, 'hints', 'plays', 1 / 6, 'Most Hinted Lists', 1, data.requestor);
         break;
       case 'leasthinted':
-        listStats(game, 'hints', 'plays', 1 / 6, 'Least Hinted Lists', -1);
+        listStats(game, 'hints', 'plays', 1 / 6, 'Least Hinted Lists', -1, data.requestor);
         break;
       case 'mostvoted':
-        voteStats(game, -1, 'Voted Most on Lists');
+        voteStats(game, -1, 'Voted Most on Lists', data.requestor);
         break;
       case 'leastvoted':
-        voteStats(game, 1, 'Voted Least on Lists');
+        voteStats(game, 1, 'Voted Least on Lists', data.requestor);
         break;
       case 'mostplayed':
-        listStats(game, 'plays', '', 1, 'Most Played Lists', 1);
+        listStats(game, 'plays', '', 1, 'Most Played Lists', 1, data.requestor);
         break;
       case 'mostpopular':
-        listStats(game, 'score', '', 1, 'Most Popular Lists', 1);
+        listStats(game, 'score', '', 1, 'Most Popular Lists', 1, data.requestor);
         break;
       case 'leastpopular':
-        listStats(game, 'score', '', 1, 'Least Popular Lists', -1);
+        listStats(game, 'score', '', 1, 'Least Popular Lists', -1, data.requestor);
         break;
       case 'skippers':
-        playerStats(game, 'skips', 'lists', 1, 'Most Skips Requested', 1);
+        playerStats(game, 'skips', 'lists', 1, 'Most Skips Requested', 1, data.requestor);
         break;
       case 'unskippers':
-        playerStats(game, 'skips', 'lists', 1, 'Least Skips Requested', -1);
+        playerStats(game, 'skips', 'lists', 1, 'Least Skips Requested', -1, data.requestor);
         break;
       case 'answers':
-        playerStats(game, 'answers', 'lists', 0.1, 'Most Correct Answers', 1);
+        playerStats(game, 'answers', 'lists', 0.1, 'Most Correct Answers', 1, data.requestor);
         break;
       case 'snubs':
-        playerStats(game, 'snubs', 'answers', 1, 'Most Snubs', 1);
+        playerStats(game, 'snubs', 'answers', 1, 'Most Snubs', 1, data.requestor);
         break;
       case 'unsnubs':
-        playerStats(game, 'snubs', 'answers', 1, 'Least Snubs', -1);
+        playerStats(game, 'snubs', 'answers', 1, 'Least Snubs', -1, data.requestor);
         break;
       case 'hints':
-        playerStats(game, 'hints', 'lists', 1 / 6, 'Most Hints Asked', 1);
+        playerStats(game, 'hints', 'lists', 1 / 6, 'Most Hints Asked', 1, data.requestor);
         break;
       case 'unhints':
-        playerStats(game, 'hints', 'lists', 1 / 6, 'Least Hints Asked', -1);
+        playerStats(game, 'hints', 'lists', 1 / 6, 'Least Hints Asked', -1, data.requestor);
         break;
       case 'plays':
-        playerStats(game, 'plays', '', 1, 'Most Games Played', 1);
+        playerStats(game, 'plays', '', 1, 'Most Games Played', 1, data.requestor);
         break;
       case 'wins':
-        playerStats(game, 'wins', 'lists', 1, 'Most Wins', 1);
+        playerStats(game, 'wins', 'lists', 1, 'Most Wins', 1, data.requestor);
         break;
       case 'unwins':
-        playerStats(game, 'wins', 'lists', 1, 'Least Wins', -1);
+        playerStats(game, 'wins', 'lists', 1, 'Least Wins', -1, data.requestor);
         break;
       case 'astreak':
-        playerStats(game, 'streak', '', 1, 'Best Answer Streak', 1);
+        playerStats(game, 'streak', '', 1, 'Best Answer Streak', 1, data.requestor);
         break;
       case 'pstreak':
-        playerStats(game, 'maxPlayStreak', '', 1, 'Best Play Streak', 1);
+        playerStats(game, 'maxPlayStreak', '', 1, 'Best Play Streak', 1, data.requestor);
         break;
       case 'hstreak':
-        playerStats(game, 'maxHintStreak', '', 1, 'No Hint Streak', 1);
+        playerStats(game, 'maxHintStreak', '', 1, 'No Hint Streak', 1, data.requestor);
         break;
       default:
         bot.sendMessage(game.chat_id, 'Something');
@@ -309,8 +307,9 @@ exports.getStats = (chat_id, data, requestor) => {
 
 const listStats = ({
   chat_id
-}, field, divisor, ratio, title, sorter) => {
+}, field, divisor, ratio, title, sorter, requestor) => {
   let message = `<b>${title}</b>\n`;
+  message += requestor ? `<i>Requested by ${requestor}</i>\n` : '';
   List.find({
     plays: {
       $gt: 0
@@ -332,8 +331,9 @@ const listStats = ({
 const playerStats = ({
   players,
   chat_id
-}, field, divisor, ratio, title, sorter) => {
+}, field, divisor, ratio, title, sorter, requestor) => {
   let message = `<b>${title}</b>\n`;
+  message += requestor ? `<i>Requested by ${requestor}</i>\n` : '';
   players.filter(player => player.present && player[field] > 0).sort((a, b) => {
     if (divisor) {
       return (b[field] / (b[divisor] ? b[divisor] : 1) - a[field] / (a[divisor] ? a[divisor] : 1)) * sorter;
