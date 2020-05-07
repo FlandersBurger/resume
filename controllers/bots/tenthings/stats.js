@@ -115,12 +115,11 @@ exports.getList = (game, callback) => {
 };
 
 exports.getStats = (chat_id, data, requestor) => {
-  data = data.id.split('_');
-  const type = data[0];
-  const id = data[1];
-  let message = '';
   bot.sendMessage(chat_id, 'Temporarily disabled stats as someone is spamming the bot');
   bot.notifyAdmin(data);
+  const type = data.id.split('_')[0];
+  const id = data.id.split('_')[1];
+  let message = '';
   return;
   TenThings.findOne({
     chat_id
@@ -226,7 +225,7 @@ exports.getStats = (chat_id, data, requestor) => {
           resolve(player);
         });
         findPlayer.then(player => {
-          bot.sendMessage(game.chat_id, messages.playerStats(player, data));
+          bot.sendMessage(game.chat_id, messages.playerStats(player));
         });
         break;
       case 'l':
