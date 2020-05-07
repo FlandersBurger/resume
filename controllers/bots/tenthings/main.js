@@ -164,34 +164,42 @@ bot.exportChatInviteLink('-1001394022777').then(function(chat) {
 
 function selectList(game) {
   return new Promise(function(resolve, reject) {
-    List.count({ _id: { $nin: game.playedLists } })
-    .exec((err, count) => {
-      if (err) return notifyAdmin(JSON.stringify(err));
-      if (count === 0) {
-        game.playedLists = [];
-        game.cycles++;
-        game.lastCycleDate = moment();
-        game.save(err => {
-          if (err) reject(err);
-          bot.sendMessage(game.chat_id, 'All lists have been played, a new cycle will now start.');
-          List.count().exec(function (err, count) {
-            List.find()
+    List.count({
+        _id: {
+          $nin: game.playedLists
+        }
+      })
+      .exec((err, count) => {
+        if (err) return notifyAdmin(JSON.stringify(err));
+        if (count === 0) {
+          game.playedLists = [];
+          game.cycles++;
+          game.lastCycleDate = moment();
+          game.save(err => {
+            if (err) reject(err);
+            bot.sendMessage(game.chat_id, 'All lists have been played, a new cycle will now start.');
+            List.count().exec(function(err, count) {
+              List.find()
+                .select('-votes')
+                .populate('creator')
+                .limit(1)
+                .skip(Math.floor(Math.random() * count))
+                .exec((err, lists) => resolve(lists[0]));
+            });
+          });
+        } else {
+          List.find({
+              _id: {
+                $nin: game.playedLists
+              }
+            })
             .select('-votes')
             .populate('creator')
             .limit(1)
             .skip(Math.floor(Math.random() * count))
             .exec((err, lists) => resolve(lists[0]));
-          });
-        });
-      } else {
-        List.find({ _id: { $nin: game.playedLists } })
-        .select('-votes')
-        .populate('creator')
-        .limit(1)
-        .skip(Math.floor(Math.random() * count))
-        .exec((err, lists) => resolve(lists[0]));
-      }
-    });
+        }
+      });
   });
 }
 
@@ -205,7 +213,7 @@ function createGame(id, creator) {
     players: [creator]
   });
   game.save(err => {
-  if (err) return console.error(err);
+    if (err) return console.error(err);
     console.log('Game Saved!');
     return game;
   });
@@ -228,7 +236,11 @@ const rateList = (game) => {
 };
 
 const queueGuess = (game, msg) => {
-  const values = game.list.values.filter(({guesser}) => guesser).map(({value}) => value.removeAllButLetters());
+  const values = game.list.values.filter(({
+    guesser
+  }) => guesser).map(({
+    value
+  }) => value.removeAllButLetters());
   const text = msg.text.removeAllButLetters();
   const minigameAnswer = game.minigame.answer ? game.minigame.answer.removeAllButLetters() : '';
   const correctMatch = _.findIndex(values, value => value === text);
@@ -270,7 +282,9 @@ const queueGuess = (game, msg) => {
     const match = fuzzyMatch.get(text);
     if (match.distance >= 0.75) {
       setTimeout(() => {
-        const player = _.find(game.players, ({id}) => id == msg.from.id);
+        const player = _.find(game.players, ({
+          id
+        }) => id == msg.from.id);
         const score = Math.floor(10 * match.distance);
         player.score += score;
         player.scoreDaily += score;
@@ -299,37 +313,39 @@ const queueGuess = (game, msg) => {
 const sass = (game, text) => {
   if (game.settings.sass && game.lastPlayDate > moment().subtract(7, 'days')) {
     messages.sass(text)
-    .then(sass => {
-      if (sass) {
-        if (game.chat_id != config.masterChat) {
-          bot.exportChatInviteLink(game.chat_id).then(function(chat) {
-            bot.notifyAdmin(`<b>${game.list.name}</b>\n${text}\n<i>${sass}</i>\n${chat}`);
-          }, err => {
-            bot.notifyAdmin(`<b>${game.list.name}</b>\n${text}\n<i>${sass}</i>`);
-          });
-        }
-        if (sass.indexOf('http') === 0) {
-          if (sass.indexOf('.gif') > 0) {
-            bot.sendAnimation(game.chat_id, sass);
-          } else {
-            bot.sendPhoto(game.chat_id, sass);
+      .then(sass => {
+        if (sass) {
+          if (game.chat_id != config.masterChat) {
+            bot.exportChatInviteLink(game.chat_id).then(function(chat) {
+              bot.notifyAdmin(`<b>${game.list.name}</b>\n${text}\n<i>${sass}</i>\n${chat}`);
+            }, err => {
+              bot.notifyAdmin(`<b>${game.list.name}</b>\n${text}\n<i>${sass}</i>`);
+            });
           }
-        } else {
-          bot.sendMessage(game.chat_id, sass);
+          if (sass.indexOf('http') === 0) {
+            if (sass.indexOf('.gif') > 0) {
+              bot.sendAnimation(game.chat_id, sass);
+            } else {
+              bot.sendPhoto(game.chat_id, sass);
+            }
+          } else {
+            bot.sendMessage(game.chat_id, sass);
+          }
         }
-      }
-    }, err => null);
+      }, err => null);
   }
 };
 
 const queueingGuess = guess => guessQueue.add(guess);
-  /*
-  queue.create('guess', guess).removeOnComplete(true).save(err => {
-    if( !err ) console.log(`${guess.game} - Guess evaluated: "${guess.msg.text}" by ${guess.msg.from.first_name}`);
-  });
-  */
+/*
+queue.create('guess', guess).removeOnComplete(true).save(err => {
+  if( !err ) console.log(`${guess.game} - Guess evaluated: "${guess.msg.text}" by ${guess.msg.from.first_name}`);
+});
+*/
 
-guessQueue.process(({data}) => processGuess(data));
+guessQueue.process(({
+  data
+}) => processGuess(data));
 /*
 //check out -->5b6361dcbd0ff6645df5f2
 queue.process('guess', ({data}, done) => {
@@ -343,19 +359,21 @@ queue.process('guess', ({data}, done) => {
 */
 const processGuess = guess => {
   return new Promise((resolve, reject) => {
-    TenThings.findOne({ chat_id: guess.game })
-    .populate('list.creator')
-    .select('_id chat_id players guessers list lastPlayDate hints streak settings')
-    .exec((err, game) => {
-      if (err) return reject();
-      checkGuess(game, guess, guess.msg)
-      .then(() => {
-        console.log(`${guess.game} - Guess for ${game.list.name}: "${guess.msg.text}" by ${guess.msg.from.first_name}`);
-        resolve();
-      }, (err) => {
-        reject(err);
+    TenThings.findOne({
+        chat_id: guess.game
+      })
+      .populate('list.creator')
+      .select('_id chat_id players guessers list lastPlayDate hints streak settings')
+      .exec((err, game) => {
+        if (err) return reject();
+        checkGuess(game, guess, guess.msg)
+          .then(() => {
+            console.log(`${guess.game} - Guess for ${game.list.name}: "${guess.msg.text}" by ${guess.msg.from.first_name}`);
+            resolve();
+          }, (err) => {
+            reject(err);
+          });
       });
-    });
   });
 };
 
@@ -372,7 +390,9 @@ const checkGuess = (game, guess, msg) => {
       game.guessers.push(msg.from.id);
     }
     const match = game.list.values[guess.match.index];
-    const player = _.find(game.players, ({id}) => id == msg.from.id);
+    const player = _.find(game.players, ({
+      id
+    }) => id == msg.from.id);
     if (!player) {
       bot.notifyAdmin(`Something wrong with this guess:\n${JSON.stringify(guess)}`);
       console.error(`Something wrong with this guess:\n${JSON.stringify(guess)}`);
@@ -455,12 +475,22 @@ const checkGuess = (game, guess, msg) => {
 
 
 
-const guessed = ({streak, list}, {scoreDaily}, {from, chat}, value, blurb, score, accuracy) => {
+const guessed = ({
+  streak,
+  list
+}, {
+  scoreDaily
+}, {
+  from,
+  chat
+}, value, blurb, score, accuracy) => {
   let message = messages.guessed(value, from.first_name);
   message += messages.streak(streak.count);
   message += blurb;
   message += `\n<pre>${scoreDaily - score} + ${score} points (${accuracy})</pre>`;
-  const answersLeft = list.values.filter(({guesser}) => !guesser.first_name).length;
+  const answersLeft = list.values.filter(({
+    guesser
+  }) => !guesser.first_name).length;
   if (answersLeft > 0) {
     message += `\n${answersLeft} answer${answersLeft > 1 ? 's' : ''} left.`;
   } else {
@@ -470,77 +500,83 @@ const guessed = ({streak, list}, {scoreDaily}, {from, chat}, value, blurb, score
 };
 
 const checkRound = (game) => {
-  if (game.list.values.filter(({guesser}) => !guesser.first_name).length === 0) {
+  if (game.list.values.filter(({
+      guesser
+    }) => !guesser.first_name).length === 0) {
     setTimeout(() => {
       stats.getList(game, list => {
         List
-        .findOne({ _id: game.list._id })
-        .exec((err, foundList) => {
-          let message = `<b>${game.list.name}</b> by ${game.list.creator.username}\n`;
-          message += game.list.category ? `Category: <b>${game.list.category}</b>\n` : '';
-          message += list;
-          message += messages.listStats(foundList);
-          bot.sendMessage(game.chat_id, message);
-          setTimeout(() => {
-            stats.getDailyScores(game, 5);
-            rateList(game);
+          .findOne({
+            _id: game.list._id
+          })
+          .exec((err, foundList) => {
+            let message = `<b>${game.list.name}</b> by ${game.list.creator.username}\n`;
+            message += game.list.category ? `Category: <b>${game.list.category}</b>\n` : '';
+            message += list;
+            message += messages.listStats(foundList);
+            bot.sendMessage(game.chat_id, message);
             setTimeout(() => {
-              newRound(game);
-            }, 1000);
-          }, 2000);
-        });
+              stats.getDailyScores(game, 5);
+              rateList(game);
+              setTimeout(() => {
+                newRound(game);
+              }, 1000);
+            }, 2000);
+          });
       });
     }, 2000);
   }
 };
 
 const newRound = (currentGame) => {
-  TenThings.findOne({ _id: currentGame._id })
-  .select('_id chat_id playedLists players list listsPlayed cycles guessers hintCooldown hints')
-  .populate('list.creator')
-  .exec((err, game) => {
-    if (err) return console.error(err);
-    if (!game) return console.log('Game not found');
-    selectList(game)
-    .then(list => {
-      list.plays++;
-      list.save();
-      for (const i in game.guessers) {
-        if (game.players.length > 0) {
-          for (const j in game.players) {
-            if (game.players[j].id == game.guessers[i]) {
-              game.players[j].lists++;
-              break;
+  TenThings.findOne({
+      _id: currentGame._id
+    })
+    .select('_id chat_id playedLists players list listsPlayed cycles guessers hintCooldown hints')
+    .populate('list.creator')
+    .exec((err, game) => {
+      if (err) return console.error(err);
+      if (!game) return console.log('Game not found');
+      selectList(game)
+        .then(list => {
+          list.plays++;
+          list.save();
+          for (const i in game.guessers) {
+            if (game.players.length > 0) {
+              for (const j in game.players) {
+                if (game.players[j].id == game.guessers[i]) {
+                  game.players[j].lists++;
+                  break;
+                }
+              }
             }
           }
-        }
-      }
-      game.list = JSON.parse(JSON.stringify(list));
-      game.list.totalValues = game.list.values.length;
-      game.list.values = getRandom(game.list.values, 10);
-      game.listsPlayed++;
-      game.hints = 0;
-      game.hintCooldown = 0;
-      game.guessers = [];
-      let message = 'A new round will start in 3 seconds';
-      message += game.list.category ? `\nCategory: <b>${game.list.category}</b>` : '';
-      bot.sendMessage(game.chat_id, message);
-      setTimeout(() => {
-        let message = `<b>${game.list.name}</b> (${game.list.totalValues}) by ${game.list.creator.username}`;
-        message += game.list.description ? `\n<i>${angleBrackets(game.list.description)}</i>` : '';
-        bot.sendMessage(game.chat_id, message);
-      }, 3000);
-      game.playedLists.push(game.list._id);
-      game.save(err => {
-        if (err) return bot.notifyAdmin('newRound: ' + JSON.stringify(err) + '\n' + JSON.stringify(game));
-        console.log(`Game ${game._id} started new round with list -> "${list.name}"`);
-      });
-    }, err => bot.notifyAdmin(JSON.stringify(err)));
-  });
+          game.list = JSON.parse(JSON.stringify(list));
+          game.list.totalValues = game.list.values.length;
+          game.list.values = getRandom(game.list.values, 10);
+          game.listsPlayed++;
+          game.hints = 0;
+          game.hintCooldown = 0;
+          game.guessers = [];
+          let message = 'A new round will start in 3 seconds';
+          message += game.list.category ? `\nCategory: <b>${game.list.category}</b>` : '';
+          bot.sendMessage(game.chat_id, message);
+          setTimeout(() => {
+            let message = `<b>${game.list.name}</b> (${game.list.totalValues}) by ${game.list.creator.username}`;
+            message += game.list.description ? `\n<i>${angleBrackets(game.list.description)}</i>` : '';
+            bot.sendMessage(game.chat_id, message);
+          }, 3000);
+          game.playedLists.push(game.list._id);
+          game.save(err => {
+            if (err) return bot.notifyAdmin('newRound: ' + JSON.stringify(err) + '\n' + JSON.stringify(game));
+            console.log(`Game ${game._id} started new round with list -> "${list.name}"`);
+          });
+        }, err => bot.notifyAdmin(JSON.stringify(err)));
+    });
 };
 
 const angleBrackets = (str) => {
-  return str.replace('<','&lt;').replace('>','&gt;');
+  return str.replace('<', '&lt;').replace('>', '&gt;');
 };
 
 /*
@@ -571,12 +607,16 @@ function skip(game, skipper) {
 }
 
 function skipList(game, skipper) {
-  game.list.values.forEach(function({guesser}, index) {
+  game.list.values.forEach(function({
+    guesser
+  }, index) {
     if (!guesser.first_name) {
       this[index].guesser.first_name = 'Not guessed';
     }
   }, game.list.values);
-  game.players.forEach(function({id}, index) {
+  game.players.forEach(function({
+    id
+  }, index) {
     //Hint streaks will be reset for people that skipped the list
     if (id === skips[game.id].player || id === skipper) {
       this[index].hintStreak = 0;
@@ -587,7 +627,9 @@ function skipList(game, skipper) {
     message += list;
     bot.sendMessage(game.chat_id, message);
     delete skips[game.id];
-    List.findOne({ _id: game.list._id }).exec((err, foundList) => {
+    List.findOne({
+      _id: game.list._id
+    }).exec((err, foundList) => {
       if (err) return console.error(err);
       if (!foundList.skips) {
         foundList.skips = 0;
@@ -626,7 +668,10 @@ function hint(game, player, callback) {
       player.hints++;
       player.hintStreak = 0;
     }
-    callback(game.list.values.reduce((str, {guesser, value}, index) => {
+    callback(game.list.values.reduce((str, {
+      guesser,
+      value
+    }, index) => {
       if (!guesser.first_name) {
         str += index + 1;
         str += ': ';
@@ -638,7 +683,9 @@ function hint(game, player, callback) {
     cooldowns[game.id] = 10;
     cooldownHint(game.id);
     game.save();
-    List.findOne({ _id: game.list._id }).exec((err, list) => {
+    List.findOne({
+      _id: game.list._id
+    }).exec((err, list) => {
       if (!list.hints) {
         list.hints = 0;
       }
@@ -677,41 +724,43 @@ function getRandom(arr, n) {
 
 function createMinigame(game, msg) {
   List
-  .find()
-  .lean()
-  .exec((err, lists) => {
-    let answers = lists.reduce((answers, list) => {
-      for (const value of list.values) {
-        if (!answers[value.value]) answers[value.value] = [list.name];
-        else answers[value.value].push(list.name);
-      }
-      return answers;
-    }, {});
-    let result = Object.keys(answers).reduce((result, answer) => {
-      if (answers[answer] && answers[answer].length > 2) {
-        result.push({
-          answer: answer,
-          lists: answers[answer]
-        });
-      }
-      return result;
-    }, []);
-    let minigame = result[Math.floor(Math.random() * result.length)];
-    let message = '<b>Find the connection</b>\n';
-    message += getRandom(minigame.lists, 10).reduce((msg, list) => {
-      msg += `- ${list}\n`;
-      return msg;
-    }, '');
-    message += minigame.answer.conceal('');
-    bot.sendMessage(msg.chat.id, message);
-    game.minigame.answer = minigame.answer;
-    game.minigame.date = moment();
-    game.minigame.lists = minigame.lists;
-    game.save();
-  });
+    .find()
+    .lean()
+    .exec((err, lists) => {
+      let answers = lists.reduce((answers, list) => {
+        for (const value of list.values) {
+          if (!answers[value.value]) answers[value.value] = [list.name];
+          else answers[value.value].push(list.name);
+        }
+        return answers;
+      }, {});
+      let result = Object.keys(answers).reduce((result, answer) => {
+        if (answers[answer] && answers[answer].length > 2) {
+          result.push({
+            answer: answer,
+            lists: answers[answer]
+          });
+        }
+        return result;
+      }, []);
+      let minigame = result[Math.floor(Math.random() * result.length)];
+      let message = '<b>Find the connection</b>\n';
+      message += getRandom(minigame.lists, 10).reduce((msg, list) => {
+        msg += `- ${list}\n`;
+        return msg;
+      }, '');
+      message += minigame.answer.conceal('');
+      bot.sendMessage(msg.chat.id, message);
+      game.minigame.answer = minigame.answer;
+      game.minigame.date = moment();
+      game.minigame.lists = minigame.lists;
+      game.save();
+    });
 }
 
-router.post('/', ({body}, res, next) => {
+router.post('/', ({
+  body
+}, res, next) => {
   if (body.object === 'page') {
     res.status(200).send('EVENT_RECEIVED');
     return console.log(body);
@@ -719,6 +768,7 @@ router.post('/', ({body}, res, next) => {
   let msg, i, item;
   if (body.callback_query && BANNED_USERS.indexOf(body.callback_query.from.id) < 0) {
     const data = JSON.parse(body.callback_query.data);
+    data.requestor = body.callback_query.message.from.first_name;
     if (data.type === 'rate') {
       let doVote = false;
       if (voters[body.callback_query.from.id]) {
@@ -734,29 +784,31 @@ router.post('/', ({body}, res, next) => {
         doVote = true;
       }
       if (doVote) {
-        List.findOne({ _id: data.list })
-        .select('name votes modifyDate score')
-        .exec((err, foundList) => {
-          if (err) return console.error(err);
-          let voter = _.find(foundList.votes, vote => vote.voter == body.callback_query.from.id);
-          if (!voter) {
-            foundList.votes.push({
-              voter: body.callback_query.from.id,
-              vote: data.vote
-            });
-            voter = foundList.votes[foundList.votes.length - 1];
-          } else {
-            voter.vote = data.vote;
-            voter.modifyDate = new Date();
-          }
-          foundList.score = foundList.votes.reduce((score, vote) => score += vote.vote, 0);
-          delete foundList.voters;
-          foundList.save(err => {
+        List.findOne({
+            _id: data.list
+          })
+          .select('name votes modifyDate score')
+          .exec((err, foundList) => {
             if (err) return console.error(err);
-            //bot.notifyAdmin(`"<b>${foundList.name}</b>" ${data.vote > 0 ? 'up' : 'down'}voted by <i>${body.callback_query.from.first_name}</i>!`);
-            bot.sendMessage(body.callback_query.message.chat.id, ` ${data.vote > 0 ? '\ud83d\udc4d' : '\ud83d\udc4e'} ${body.callback_query.from.first_name} ${data.vote > 0 ? '' : 'dis'}likes <b>${foundList.name}</b>`);
+            let voter = _.find(foundList.votes, vote => vote.voter == body.callback_query.from.id);
+            if (!voter) {
+              foundList.votes.push({
+                voter: body.callback_query.from.id,
+                vote: data.vote
+              });
+              voter = foundList.votes[foundList.votes.length - 1];
+            } else {
+              voter.vote = data.vote;
+              voter.modifyDate = new Date();
+            }
+            foundList.score = foundList.votes.reduce((score, vote) => score += vote.vote, 0);
+            delete foundList.voters;
+            foundList.save(err => {
+              if (err) return console.error(err);
+              //bot.notifyAdmin(`"<b>${foundList.name}</b>" ${data.vote > 0 ? 'up' : 'down'}voted by <i>${body.callback_query.from.first_name}</i>!`);
+              bot.sendMessage(body.callback_query.message.chat.id, ` ${data.vote > 0 ? '\ud83d\udc4d' : '\ud83d\udc4e'} ${body.callback_query.from.first_name} ${data.vote > 0 ? '' : 'dis'}likes <b>${foundList.name}</b>`);
+            });
           });
-        });
       }
     } else if (data.type === 'stats') {
       console.log(body.callback_query);
@@ -785,25 +837,25 @@ router.post('/', ({body}, res, next) => {
     } else if (data.type === 'setting') {
       if (body.callback_query.message.chat_id != config.masterChat) {
         bot.checkAdmin(body.callback_query.message.chat.id, body.callback_query.message.from.id)
-        .then(admin => {
-          if (admin) {
-            TenThings.findOne({
-              chat_id: body.callback_query.message.chat.id
-            }).select('chat_id settings').exec((err, game) => {
-              if (err) return bot.notifyAdmin(JSON.stringify(err));
-              console.log(`${data.id} toggled for ${game._id}`);
-              game.settings[data.id] = !game.settings[data.id];
-              bot.sendMessage(game.chat_id, `${data.id.capitalize()} <b>${game.settings[data.id] ? 'On' : 'Off'}</b>`);
-              game.save((err, savedGame) => {
+          .then(admin => {
+            if (admin) {
+              TenThings.findOne({
+                chat_id: body.callback_query.message.chat.id
+              }).select('chat_id settings').exec((err, game) => {
                 if (err) return bot.notifyAdmin(JSON.stringify(err));
+                console.log(`${data.id} toggled for ${game._id}`);
+                game.settings[data.id] = !game.settings[data.id];
+                bot.sendMessage(game.chat_id, `${data.id.capitalize()} <b>${game.settings[data.id] ? 'On' : 'Off'}</b>`);
+                game.save((err, savedGame) => {
+                  if (err) return bot.notifyAdmin(JSON.stringify(err));
+                });
               });
-            });
-          } else {
-            bot.sendMessage(body.callback_query.message.chat.id, `Nice try ${body.callback_query.message.from.first_name} but that's an admin function`);
-          }
-        }, err => {
-          bot.notifyAdmin(JSON.stringify(err));
-        });
+            } else {
+              bot.sendMessage(body.callback_query.message.chat.id, `Nice try ${body.callback_query.message.from.first_name} but that's an admin function`);
+            }
+          }, err => {
+            bot.notifyAdmin(JSON.stringify(err));
+          });
       }
     }
     return res.sendStatus(200);
@@ -846,7 +898,9 @@ router.post('/', ({body}, res, next) => {
       TenThings.findOne({
         chat_id: body.message.chat.id
       }).select('players').exec((err, game) => {
-        const player = _.find(game.players, ({id}) => id == body.message.left_chat_participant.id);
+        const player = _.find(game.players, ({
+          id
+        }) => id == body.message.left_chat_participant.id);
         if (player) {
           player.present = false;
           game.save();
@@ -915,60 +969,62 @@ router.post('/', ({body}, res, next) => {
   }
   if (BANNED_USERS.indexOf(msg.from.id) < 0) {
     TenThings.findOne({
-      chat_id: msg.chat.id
-    })
-    .populate('list.creator')
-    .select('-playedLists')
-    .exec((err, existingGame) => {
-      if (!existingGame) {
-        const newGame = new TenThings({
-          chat_id: msg.chat.id,
-          players: [msg.from]
-        });
-        newGame.save(err => {
-        if (err)
-          bot.notifyAdmin('POST: ' + JSON.stringify(err) + '\n' + JSON.stringify(game));
-          console.log('Game Saved!');
-          const player = newGame.players[0];
-          return evaluateCommand(res, msg, newGame, player, true);
-        });
-      } else {
-        let player;
-        player = _.find(existingGame.players, existingPlayer => {
-          if (!existingPlayer) {
-            console.log('Empty Player!');
-            console.log(existingGame);
-            return false;
-          }
-          return existingPlayer.id == msg.from.id;
-        });
-        if (!player) {
-          existingGame.players.push(msg.from);
-          player = existingGame.players[existingGame.players.length - 1];
-          existingGame.save(err => {
-            if (err) {
-              bot.notifyAdmin('Can\'t add new player: ' + JSON.stringify(err));
-              console.error(err);
-              console.log(player);
-              console.log(msg.from);
-              res.sendStatus(200);
-            } else {
-              return evaluateCommand(res, msg, existingGame, player, false);
-            }
+        chat_id: msg.chat.id
+      })
+      .populate('list.creator')
+      .select('-playedLists')
+      .exec((err, existingGame) => {
+        if (!existingGame) {
+          const newGame = new TenThings({
+            chat_id: msg.chat.id,
+            players: [msg.from]
+          });
+          newGame.save(err => {
+            if (err)
+              bot.notifyAdmin('POST: ' + JSON.stringify(err) + '\n' + JSON.stringify(game));
+            console.log('Game Saved!');
+            const player = newGame.players[0];
+            return evaluateCommand(res, msg, newGame, player, true);
           });
         } else {
-          player.first_name = msg.from.first_name;
-          player.last_name = msg.from.last_name;
-          player.username = msg.from.username;
-          player.present = true;
-          return evaluateCommand(res, msg, existingGame, player, false);
+          let player;
+          player = _.find(existingGame.players, existingPlayer => {
+            if (!existingPlayer) {
+              console.log('Empty Player!');
+              console.log(existingGame);
+              return false;
+            }
+            return existingPlayer.id == msg.from.id;
+          });
+          if (!player) {
+            existingGame.players.push(msg.from);
+            player = existingGame.players[existingGame.players.length - 1];
+            existingGame.save(err => {
+              if (err) {
+                bot.notifyAdmin('Can\'t add new player: ' + JSON.stringify(err));
+                console.error(err);
+                console.log(player);
+                console.log(msg.from);
+                res.sendStatus(200);
+              } else {
+                return evaluateCommand(res, msg, existingGame, player, false);
+              }
+            });
+          } else {
+            player.first_name = msg.from.first_name;
+            player.last_name = msg.from.last_name;
+            player.username = msg.from.username;
+            player.present = true;
+            return evaluateCommand(res, msg, existingGame, player, false);
+          }
         }
-      }
-    });
+      });
   }
 });
 
-router.get('/', ({query}, res, next) => {
+router.get('/', ({
+  query
+}, res, next) => {
   const token = query['hub.verify_token'];
   if (query['hub.verify_token'] === config.tokens.facebook.tenthings) {
     res.status(200).send(query['hub.challenge']);
@@ -982,7 +1038,9 @@ router.post('/webhook', (req, res) => {
   const body = req.body;
   if (body.object === 'page') {
     // Iterates over each entry - there may be multiple if batched
-    body.entry.forEach(({messaging}) => {
+    body.entry.forEach(({
+      messaging
+    }) => {
       // Gets the message. entry.messaging is an array, but
       // will only ever contain one message, so we get index 0
       const webhook_event = messaging[0];
@@ -1033,11 +1091,11 @@ function evaluateCommand(res, msg, game, player, isNew) {
     case '/logic':
       bot.sendMessage(msg.chat.id, messages.logic());
       break;
-    /*
-    case '/start':
-      bot.sendMessage(msg.chat.id, 'To start a game, type /new');
-      break;
-    */
+      /*
+      case '/start':
+        bot.sendMessage(msg.chat.id, 'To start a game, type /new');
+        break;
+      */
     case '/new':
       if (!isNew) {
         bot.sendMessage(msg.chat.id, 'A game is already in progress');
@@ -1114,20 +1172,20 @@ function evaluateCommand(res, msg, game, player, isNew) {
         console.error(e);
       }
       break;
-    /*
-    case '/stop':
-      delete games[msg.chat.id];
-      bot.sendMessage(msg.chat.id, 'Game stopped');
-      break;
-    */
+      /*
+      case '/stop':
+        delete games[msg.chat.id];
+        bot.sendMessage(msg.chat.id, 'Game stopped');
+        break;
+      */
     case '/suggest':
-      const text = msg.text.substring(msg.command.length, msg.text.length).replace(/\s/g,'');
+      const text = msg.text.substring(msg.command.length, msg.text.length).replace(/\s/g, '');
       if (text && text !== 'TenThings_Bot') {
         player.suggestions++;
         game.save();
         let fullsuggestion = msg.text.substring(msg.command.length + 1, msg.text.length);
         if (fullsuggestion.indexOf('TenThings_Bot ') == 0) {
-            fullsuggestion = fullsuggestion.replace('TenThings_Bot ', '');
+          fullsuggestion = fullsuggestion.replace('TenThings_Bot ', '');
         }
         const suggestion = `<b>Suggestion</b>\n${fullsuggestion}\n<i>${msg.from.username ? msg.from.username : msg.from.first_name}</i>`;
         bot.notifyAdmins(suggestion);
@@ -1137,12 +1195,12 @@ function evaluateCommand(res, msg, game, player, isNew) {
       }
       break;
     case '/typo':
-      if (msg.text.substring(msg.command.length, msg.text.length).replace(/\s/g,'')) {
+      if (msg.text.substring(msg.command.length, msg.text.length).replace(/\s/g, '')) {
         player.suggestions++;
         game.save();
         let fulltypo = msg.text.substring(msg.command.length + 1, msg.text.length);
         if (fulltypo.indexOf('TenThings_Bot ') == 0) {
-            fulltypo = fulltypo.replace('TenThings_Bot ', '');
+          fulltypo = fulltypo.replace('TenThings_Bot ', '');
         }
         let typo = `<b>Typo</b>\n${fulltypo}\n<i>${msg.from.username ? msg.from.username : msg.from.first_name}</i>`;
         typo += `\nList: ${game.list.name}`;
@@ -1153,7 +1211,9 @@ function evaluateCommand(res, msg, game, player, isNew) {
       }
       break;
     case '/hint':
-      if (game.list.values.filter(({guesser}) => !guesser.first_name).length !== 0) {
+      if (game.list.values.filter(({
+          guesser
+        }) => !guesser.first_name).length !== 0) {
         hint(game, player, hints => {
           let message = `<b>${game.list.name}</b>\n`;
           message += hints;
@@ -1164,13 +1224,17 @@ function evaluateCommand(res, msg, game, player, isNew) {
     case '/notify':
       if (msg.chat.id === config.masterChat) {
         TenThings.find({}).select('chat_id')
-        .then(games => {
-          bot.broadcast(games.map(({chat_id}) => chat_id), msg.text.substring(msx.command, msg.text.length));
-        });
+          .then(games => {
+            bot.broadcast(games.map(({
+              chat_id
+            }) => chat_id), msg.text.substring(msx.command, msg.text.length));
+          });
       }
       break;
     case '/me':
-      stats.getStats(msg.chat.id, { id: 'p_' }, msg.from.id);
+      stats.getStats(msg.chat.id, {
+        id: 'p_'
+      }, msg.from.id);
       break;
     case '/score':
       stats.getDailyScores(game);
@@ -1191,11 +1255,11 @@ function evaluateCommand(res, msg, game, player, isNew) {
     case '/settings':
       if (game.chat_id != config.masterChat) {
         bot.checkAdmin(game.chat_id, msg.from.id)
-        .then(admin => {
-          if (admin) {
-            bot.sendKeyboard(game.chat_id, '<b>Settings</b>', keyboards.settings(game.chat_id, game.settings));
-          }
-        });
+          .then(admin => {
+            if (admin) {
+              bot.sendKeyboard(game.chat_id, '<b>Settings</b>', keyboards.settings(game.chat_id, game.settings));
+            }
+          });
       }
       break;
     case '/ping':
@@ -1259,8 +1323,12 @@ List
 */
 
 List
-.find({name: ''})
-.exec((err, lists) => {console.log(lists);});
+  .find({
+    name: ''
+  })
+  .exec((err, lists) => {
+    console.log(lists);
+  });
 /*
 List
 .find()
