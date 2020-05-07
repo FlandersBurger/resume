@@ -311,17 +311,12 @@ const queueGuess = (game, msg) => {
 };
 
 const sass = (game, text) => {
-  return;
   if (game.settings.sass && game.lastPlayDate > moment().subtract(7, 'days')) {
     messages.sass(text)
       .then(sass => {
         if (sass) {
           if (game.chat_id != config.masterChat) {
-            bot.exportChatInviteLink(game.chat_id).then(function(chat) {
-              bot.notifyAdmin(`<b>${game.list.name}</b>\n${text}\n<i>${sass}</i>\n${chat}`);
-            }, err => {
-              bot.notifyAdmin(`<b>${game.list.name}</b>\n${text}\n<i>${sass}</i>`);
-            });
+            bot.notifyAdmin(`<b>${game.list.name}</b>\n${text}\n<i>${sass}</i>\nChat id: ${game.chat_id}`);
           }
           if (sass.indexOf('http') === 0) {
             if (sass.indexOf('.gif') > 0) {
@@ -769,7 +764,7 @@ router.post('/', ({
   let msg, i, item;
   if (body.callback_query && BANNED_USERS.indexOf(body.callback_query.from.id) < 0) {
     const data = JSON.parse(body.callback_query.data);
-    data.requestor = body.callback_query.message.from.first_name;
+    data.requestor = body.callback_query.from.first_name;
     if (data.type === 'rate') {
       let doVote = false;
       if (voters[body.callback_query.from.id]) {
