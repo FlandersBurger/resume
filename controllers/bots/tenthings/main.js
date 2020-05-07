@@ -303,20 +303,20 @@ const queueGuess = (game, msg) => {
         });
       }, 2000 / 0.25 * (1 - match.distance));
     } else {
-      sass(game, msg.text);
+      sass(game, msg.text, msg.from);
     }
   } else {
-    sass(game, msg.text);
+    sass(game, msg.text, msg.from);
   }
 };
 
-const sass = (game, text) => {
+const sass = (game, text, from) => {
   if (game.settings.sass && game.lastPlayDate > moment().subtract(7, 'days')) {
     messages.sass(text)
       .then(sass => {
         if (sass) {
           if (game.chat_id != config.masterChat) {
-            bot.notifyAdmin(`<b>${game.list.name}</b>\n${text}\n<i>${sass}</i>\nChat id: ${game.chat_id}`);
+            bot.notifyAdmin(`<b>${game.list.name}</b>\n${text}\n<i>${sass}</i>\nChat id: ${game.chat_id}\nFrom: ${msg.from.username || JSON.stringify(msg.from)}`);
           }
           if (sass.indexOf('http') === 0) {
             if (sass.indexOf('.gif') > 0) {

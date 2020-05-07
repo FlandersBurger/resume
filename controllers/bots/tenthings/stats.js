@@ -115,6 +115,7 @@ exports.getList = (game, callback) => {
 };
 
 exports.getStats = (chat_id, data, requestor) => {
+  if (requestor === 'icedwater') return '';
   const type = data.id.split('_')[0];
   const id = data.id.split('_')[1];
   bot.notifyAdmin(`${data.requestor} requested ${type} stats`);
