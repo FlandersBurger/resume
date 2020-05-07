@@ -316,7 +316,7 @@ const sass = (game, text, from) => {
       .then(sass => {
         if (sass) {
           if (game.chat_id != config.masterChat) {
-            bot.notifyAdmin(`<b>${game.list.name}</b>\n${text}\n<i>${sass}</i>\nChat id: ${game.chat_id}\nFrom: ${msg.from.username || JSON.stringify(msg.from)}`);
+            bot.notifyAdmin(`<b>${game.list.name}</b>\n${text}\n<i>${sass}</i>\nChat id: ${game.chat_id}\nFrom: ${from.username || JSON.stringify(from)}`);
           }
           if (sass.indexOf('http') === 0) {
             if (sass.indexOf('.gif') > 0) {
