@@ -27,6 +27,7 @@ const skips = {};
 const vetoes = {};
 const skippers = {};
 const voters = {};
+const antispam = {};
 /*
       TenThings.update(
         {},
@@ -761,6 +762,26 @@ router.post('/', ({
     res.status(200).send('EVENT_RECEIVED');
     return console.log(body);
   }
+  if (body.message || body.callback_query) {
+    const from = body.message ? body.message.from.id : body.callback_query.from.id;
+    if (antispam[from]) {
+      if (antispam[from].lastMessage < moment().subtract(10, 'seconds')) {
+        delete antispam[from];
+      } else if (antispam[from].count <= 10) {
+        antispam[from].count++;
+      } else {
+        antispam[from].lastMessage = moment();
+        return res.sendStatus(200);
+      }
+    } else {
+      antispam[from] = {
+        lastMessage: moment(),
+        count: 1
+      };
+    }
+  } else {
+    return res.sendStatus(200);
+  }
   let msg, i, item;
   if (body.callback_query && BANNED_USERS.indexOf(body.callback_query.from.id) < 0) {
     const data = JSON.parse(body.callback_query.data);
@@ -854,8 +875,6 @@ router.post('/', ({
           });
       }
     }
-    return res.sendStatus(200);
-  } else if (body.edited_message) {
     return res.sendStatus(200);
   } else if (!body.message) {
     msg = {
