@@ -755,7 +755,7 @@ function createMinigame(game, msg) {
       game.save(err => {
         if (err) return console.error(err);
         //bot.notifyAdmin(`"<b>${foundList.name}</b>" ${data.vote > 0 ? 'up' : 'down'}voted by <i>${body.callback_query.from.first_name}</i>!`);
-        bot.notifyAdmin(`Can't save ${JSON.stringify(game.chat_id)}`);
+        //bot.notifyAdmin(`Can't save ${JSON.stringify(game.chat_id)}`);
       });
     });
 }
