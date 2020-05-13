@@ -1284,7 +1284,6 @@ function evaluateCommand(res, msg, game, player, isNew) {
       break;
     case '/ping':
       bot.sendMessage(msg.chat.id, 'pong');
-      bot.notifyAdmin(msg.chat.id);
       break;
     case '/hello':
       bot.sendMessage(msg.chat.id, 'You already had me but you got greedy, now you ruined it');
@@ -1381,20 +1380,25 @@ List
 
 });
 */
-
-TenThings.findOne({
-    _id: '5e6863596b0cae091d896170'
-  })
-  .exec((err, game) => {
-    console.log(game);
-    newRound(game);
-  });
 /*
-TenThings.remove({
-  _id: '5eb6a33a5bcb682e6277256a'
+TenThings.find({
+    //_id: '5e6863596b0cae091d896170',
+    'list.name': 'Principal Greek Deities'
+  })
+  .exec((err, games) => {
+    console.log(games.map(game => game._id));
+    //game.chat_id = '-1001195181419'; //'-1001380477486'
+    //game.save();
+  });
+
+TenThings.deleteOne({
+  _id: '5e8eda52318c09097b7b5e67'
+}).exec((err, game) => {
+  if (err) console.error(err);
+  console.log(game);
 });
-
-
+*/
+/*
 List.findOne({
     _id: '5eb69f1b5bcb682e62770f1a'
   })
