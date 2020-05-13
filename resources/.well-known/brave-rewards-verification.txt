@@ -1,0 +1,4 @@
+This is a Brave Rewards publisher verification file.
+
+Domain: belgocanadian.com
+Token: 372572f1b406b4be6f8d9dda64d93047b9068a98b455e20a95134ee6b35e4e9a
