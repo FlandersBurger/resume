@@ -1124,7 +1124,6 @@ function evaluateCommand(res, msg, game, player, isNew) {
       }
       break;
     case '/skip':
-      bot.notifyAdmin(JSON.stringify(game));
       if (!vetoes[game.id] || vetoes[game.id] < moment().subtract(VETO_DELAY, 'seconds')) {
         delete vetoes[game.id];
         let doSkip = false;
@@ -1285,6 +1284,7 @@ function evaluateCommand(res, msg, game, player, isNew) {
       break;
     case '/ping':
       bot.sendMessage(msg.chat.id, 'pong');
+      bot.notifyAdmin(msg.chat.id);
       break;
     case '/hello':
       bot.sendMessage(msg.chat.id, 'You already had me but you got greedy, now you ruined it');
@@ -1382,23 +1382,24 @@ List
 });
 */
 
-List
-  .find({
-    name: {
-      $regex: /.*watchOS.*/
-    }
+TenThings.findOne({
+    _id: '5e6863596b0cae091d896170'
+  })
+  .exec((err, game) => {
+    console.log(game);
+    newRound(game);
+  });
+/*
+TenThings.remove({
+  _id: '5eb6a33a5bcb682e6277256a'
+});
+
+
+List.findOne({
+    _id: '5eb69f1b5bcb682e62770f1a'
   })
   .lean()
-  .exec((err, lists) => {
-    const values = lists.reduce((values, list) => {
-      list.values.forEach(value => {
-        if (values[value.value]) {
-          values[value.value]++;
-        } else {
-          values[value.value] = 1;
-        }
-      });
-      return values;
-    }, {});
-    console.log(values);
+  .exec((err, list) => {
+    console.log(list);
   });
+  */
