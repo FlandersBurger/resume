@@ -751,7 +751,12 @@ function createMinigame(game, msg) {
       game.minigame.answer = minigame.answer;
       game.minigame.date = moment();
       game.minigame.lists = minigame.lists;
-      game.save();
+
+      game.save(err => {
+        if (err) return console.error(err);
+        //bot.notifyAdmin(`"<b>${foundList.name}</b>" ${data.vote > 0 ? 'up' : 'down'}voted by <i>${body.callback_query.from.first_name}</i>!`);
+        bot.notifyAdmin(`Can't save ${JSON.stringify(game.chat_id)}`);
+      });
     });
 }
 
@@ -1119,6 +1124,7 @@ function evaluateCommand(res, msg, game, player, isNew) {
       }
       break;
     case '/skip':
+      bot.notifyAdmin(JSON.stringify(game));
       if (!vetoes[game.id] || vetoes[game.id] < moment().subtract(VETO_DELAY, 'seconds')) {
         delete vetoes[game.id];
         let doSkip = false;
@@ -1375,3 +1381,24 @@ List
 
 });
 */
+
+List
+  .find({
+    name: {
+      $regex: /.*watchOS.*/
+    }
+  })
+  .lean()
+  .exec((err, lists) => {
+    const values = lists.reduce((values, list) => {
+      list.values.forEach(value => {
+        if (values[value.value]) {
+          values[value.value]++;
+        } else {
+          values[value.value] = 1;
+        }
+      });
+      return values;
+    }, {});
+    console.log(values);
+  });
