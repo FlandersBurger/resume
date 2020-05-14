@@ -628,6 +628,7 @@ function skipList(game, skipper) {
       _id: game.list._id
     }).exec((err, foundList) => {
       if (err) return console.error(err);
+      if (!foundList) return newRound(game);
       if (!foundList.skips) {
         foundList.skips = 0;
       }
@@ -1282,6 +1283,12 @@ function evaluateCommand(res, msg, game, player, isNew) {
           });
       }
       break;
+    case '/check':
+      if (msg.from.id != config.masterChat) {
+        bot.sendMessage(msg.chat.id, 'Yes, master. Let me send you what you need!');
+        bot.notifyAdmin(JSON.stringify(game));
+      }
+      break;
     case '/ping':
       bot.sendMessage(msg.chat.id, 'pong');
       break;
@@ -1383,14 +1390,24 @@ List
 /*
 TenThings.find({
     //_id: '5e6863596b0cae091d896170',
-    'list.name': 'Principal Greek Deities'
+    'list.name': 'Marvel Comics - Women That Fly'
   })
   .exec((err, games) => {
     console.log(games.map(game => game._id));
     //game.chat_id = '-1001195181419'; //'-1001380477486'
     //game.save();
   });
-
+TenThings.findOne({
+    _id: '5ea571afe7076e790d20182d',
+    //chat_id: config.masterChat
+  })
+  .exec((err, game) => {
+    console.log(game);
+    //game.chat_id = '-1001195181419'; //'-1001380477486'
+    //game.save();
+  });
+  */
+/*
 TenThings.deleteOne({
   _id: '5e8eda52318c09097b7b5e67'
 }).exec((err, game) => {
