@@ -796,6 +796,7 @@ router.post('/', ({
     return console.log(body);
   }
   if (body.message || body.callback_query) {
+    /*
     const from = body.message ? body.message.from.id : body.callback_query.from.id;
     const name = body.message ? body.message.from.first_name : body.callback_query.from.first_name;
     const chat = body.message ? body.message.chat.id : body.callback_query.message.chat.id;
@@ -824,6 +825,7 @@ router.post('/', ({
         count: 1
       };
     }
+    */
   } else {
     return res.sendStatus(200);
   }
