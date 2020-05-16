@@ -351,7 +351,7 @@ const processGuess = guess => {
         chat_id: guess.game
       })
       .populate('list.creator')
-      .select('_id chat_id players guessers list lastPlayDate hints streak settings')
+      .select('_id chat_id players guessers list lastPlayDate hints streak settings minigame')
       .exec((err, game) => {
         if (err) return reject();
         if (guess.type === 'game') {
