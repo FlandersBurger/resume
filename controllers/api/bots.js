@@ -22,61 +22,68 @@ var admins = [
 
 router.get('/lists', (req, res, next) => {
   List.find()
-  .select('_id plays skips score values date modifyDate creator name description category')
-  .populate('creator', 'username')
-  .exec((err, result) => {
-    if (err) return next(err);
-    var lists = result.map(list => formatList(list));
-    res.json(lists);
-  });
+    .select('_id plays skips score values date modifyDate creator name description category')
+    .populate('creator', 'username')
+    .exec((err, result) => {
+      if (err) return next(err);
+      var lists = result.map(list => formatList(list));
+      res.json(lists);
+    });
 });
 
 router.get('/lists/:id/report/:user', (req, res, next) => {
   List.findOne({
-    _id: req.params.id
-  })
-  .exec((err, list) => {
-    User.findOne({ _id: req.params.user })
-    .exec((err, user) => {
-      bot.notifyAdmins('Check: ' + list.name + ' reported by ' + user.username);
+      _id: req.params.id
+    })
+    .exec((err, list) => {
+      User.findOne({
+          _id: req.params.user
+        })
+        .exec((err, user) => {
+          bot.notifyAdmins('Check: ' + list.name + ' reported by ' + user.username);
+        });
     });
-  });
 });
 
 router.get('/lists/:id', (req, res, next) => {
   List.findOne({
-    _id: req.params.id
-  })
-  .populate('creator')
-  .exec((err, list) => {
-    res.json(list);
-  });
+      _id: req.params.id
+    })
+    .populate('creator')
+    .exec((err, list) => {
+      res.json(list);
+    });
 });
 
 router.put('/lists', (req, res, next) => {
   var yesterday = moment().subtract(1, 'days');
   var previousModifyDate = moment(req.body.list.modifyDate);
   req.body.list.modifyDate = new Date();
-  List.findByIdAndUpdate(req.body.list._id ? req.body.list._id : new mongoose.Types.ObjectId(), req.body.list, { new: true, upsert: true }, function(err, list) {
+  List.findByIdAndUpdate(req.body.list._id ? req.body.list._id : new mongoose.Types.ObjectId(), req.body.list, {
+    new: true,
+    upsert: true
+  }, function(err, list) {
     if (err) return next(err);
-    List.findOne({ _id: list._id })
-    .populate('creator')
-    .exec((err, foundList) => {
-      if (err) return next(err);
-      if (!req.body.list._id) {
-        bot.notifyAdmins('<b>' + list.name + '</b> created by <i>' + req.body.user.username + '</i>');
-      } else if (previousModifyDate < yesterday) {
-        bot.notifyAdmins('<b>' + list.name + '</b> updated by <i>' + req.body.user.username + '</i>');
-      }
-      res.json(formatList(foundList));
-    });
+    List.findOne({
+        _id: list._id
+      })
+      .populate('creator')
+      .exec((err, foundList) => {
+        if (err) return next(err);
+        if (!req.body.list._id) {
+          bot.notifyAdmins('<b>' + list.name + '</b> created by <i>' + req.body.user.username + '</i>');
+        } else if (previousModifyDate < yesterday) {
+          bot.notifyAdmins('<b>' + list.name + '</b> updated by <i>' + req.body.user.username + '</i>');
+        }
+        res.json(formatList(foundList));
+      });
   });
 });
 
 router.delete('/lists/:id', (req, res, next) => {
   List.findByIdAndRemove(req.params.id, (err, list) => {
     if (err) return next(err);
-    bot.notifyAdmins(list.name + ' deleted');
+    bot.notifyAdmins('<b>' + list.name + '</b> deleted by <i>' + req.body.user.username + '</i>');
     res.sendStatus(200);
   });
 });
