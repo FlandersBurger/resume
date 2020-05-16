@@ -382,7 +382,7 @@ const checkMinigame = (game, guess, msg) => {
     const player = _.find(game.players, ({
       id
     }) => id == msg.from.id);
-    const score = Math.floor(10 * match.distance);
+    const score = Math.floor(10 * guess.match.distance);
     player.score += score;
     player.scoreDaily += score;
     player.minigamePlays++;
