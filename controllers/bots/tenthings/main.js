@@ -392,7 +392,7 @@ const checkMinigame = (game, guess, msg) => {
         bot.notifyAdmin('queueGuess: ' + JSON.stringify(err) + '\n' + JSON.stringify(game));
         reject(err);
       } else {
-        let message = `Mini-game answer guessed! (${(match.distance * 100).toFixed(0)}%)\n`;
+        let message = `Mini-game answer guessed! (${(guess.match.distance * 100).toFixed(0)}%)\n`;
         message += messages.guessed(game.minigame.answer, msg.from.first_name);
         message += `\n<pre>${player.scoreDaily - 10} + 10 points</pre>`;
         bot.sendMessage(msg.chat.id, message);
