@@ -797,13 +797,25 @@ router.post('/', ({
   }
   if (body.message || body.callback_query) {
     const from = body.message ? body.message.from.id : body.callback_query.from.id;
+    const name = body.message ? body.message.from.first_name : body.callback_query.from.first_name;
+    const chat = body.message ? body.message.chat.id : body.callback_query.message.chat.id;
     if (antispam[from]) {
       if (antispam[from].lastMessage < moment().subtract(10, 'seconds')) {
         delete antispam[from];
-      } else if (antispam[from].count <= 10) {
+      } else if (antispam[from].count < 20) {
         antispam[from].count++;
-      } else {
+      } else if (antispam[from].count === 20) {
+        antispam[from].count++;
+        bot.sendMessage(chat, `You sure seem to be sending a lot of messages, ${name}. I'm keeping an eye on you`);
+      } else if (antispam[from].count < 30) {
+        antispam[from].count++;
+      } else if (antispam[from].count === 30) {
+        antispam[from].count++;
         antispam[from].lastMessage = moment();
+        bot.sendMessage(chat, `Ok, ${name}, calm down, I can't keep up.  Please stay silent for 10 seconds so I can process your stuff`);
+      } else if (antispam[from].count > 30) {
+        antispam[from].lastMessage = moment();
+        bot.notifyAdmin(`Possible spammer: ${from} in chat ${chat} ${chat == config.groupChat ? ' - The main chat!' : ''}`);
         return res.sendStatus(200);
       }
     } else {
