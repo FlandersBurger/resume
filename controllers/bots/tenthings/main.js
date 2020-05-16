@@ -368,6 +368,7 @@ const processGuess = guess => {
               console.log(`${guess.game} - Minigame guess for ${game.minigame.answer}: "${guess.msg.text}" by ${guess.msg.from.first_name}`);
               resolve();
             }, (err) => {
+              console.error(err);
               reject(err);
             });
         }
