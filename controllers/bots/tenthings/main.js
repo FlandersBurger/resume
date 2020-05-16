@@ -266,6 +266,7 @@ const queueGuess = (game, msg) => {
   if (text.length / lengths.shortest > 0.75 && text.length / lengths.longest < 1.25) {
     const fuzzyMatch = new FuzzyMatching(values);
     const guess = {
+      type: 'game',
       msg,
       game: game.chat_id,
       list: game.list._id,
@@ -282,26 +283,15 @@ const queueGuess = (game, msg) => {
     const fuzzyMatch = new FuzzyMatching([minigameAnswer]);
     const match = fuzzyMatch.get(text);
     if (match.distance >= 0.75) {
+      const guess = {
+        type: 'minigame',
+        msg,
+        game: game.chat_id,
+        answer: game.minigame.answer,
+        match
+      };
       setTimeout(() => {
-        const player = _.find(game.players, ({
-          id
-        }) => id == msg.from.id);
-        const score = Math.floor(10 * match.distance);
-        player.score += score;
-        player.scoreDaily += score;
-        player.minigamePlays++;
-        game.minigame.plays++;
-        game.save((err, savedGame) => {
-          if (err) {
-            bot.notifyAdmin('queueGuess: ' + JSON.stringify(err) + '\n' + JSON.stringify(game));
-          } else {
-            let message = `Mini-game answer guessed! (${(match.distance * 100).toFixed(0)}%)\n`;
-            message += messages.guessed(game.minigame.answer, msg.from.first_name);
-            message += `\n<pre>${player.scoreDaily - 10} + 10 points</pre>`;
-            bot.sendMessage(msg.chat.id, message);
-            createMinigame(game, msg);
-          }
-        });
+        queueingGuess(guess);
       }, 2000 / 0.25 * (1 - match.distance));
     } else {
       sass(game, msg.text, msg.from);
@@ -363,20 +353,57 @@ const processGuess = guess => {
       .select('_id chat_id players guessers list lastPlayDate hints streak settings')
       .exec((err, game) => {
         if (err) return reject();
-        checkGuess(game, guess, guess.msg)
-          .then(() => {
-            console.log(`${guess.game} - Guess for ${game.list.name}: "${guess.msg.text}" by ${guess.msg.from.first_name}`);
-            resolve();
-          }, (err) => {
-            reject(err);
-          });
+        if (guess.type === 'game') {
+          checkGuess(game, guess, guess.msg)
+            .then(() => {
+              console.log(`${guess.game} - Guess for ${game.list.name}: "${guess.msg.text}" by ${guess.msg.from.first_name}`);
+              resolve();
+            }, (err) => {
+              reject(err);
+            });
+        } else {
+          checkMinigame(game, guess, guess.msg)
+            .then(() => {
+              console.log(`${guess.game} - Minigame guess for ${game.minigame.answer}: "${guess.msg.text}" by ${guess.msg.from.first_name}`);
+              resolve();
+            }, (err) => {
+              reject(err);
+            });
+        }
       });
+  });
+};
+
+const checkMinigame = (game, guess, msg) => {
+  return new Promise(function(resolve, reject) {
+    if (guess.answer !== game.minigame.answer) return resolve();
+    const player = _.find(game.players, ({
+      id
+    }) => id == msg.from.id);
+    const score = Math.floor(10 * match.distance);
+    player.score += score;
+    player.scoreDaily += score;
+    player.minigamePlays++;
+    game.minigame.plays++;
+    game.save((err, savedGame) => {
+      if (err) {
+        bot.notifyAdmin('queueGuess: ' + JSON.stringify(err) + '\n' + JSON.stringify(game));
+        reject(err);
+      } else {
+        let message = `Mini-game answer guessed! (${(match.distance * 100).toFixed(0)}%)\n`;
+        message += messages.guessed(game.minigame.answer, msg.from.first_name);
+        message += `\n<pre>${player.scoreDaily - 10} + 10 points</pre>`;
+        bot.sendMessage(msg.chat.id, message);
+        createMinigame(game, msg);
+        resolve();
+      }
+    });
   });
 };
 
 const checkGuess = (game, guess, msg) => {
   return new Promise((resolve, reject) => {
-    if (guess.list !== game.list._id) resolve();
+    if (guess.list !== game.list._id) return resolve();
     game.lastPlayDate = moment();
     if (skips[game.id]) {
       delete skips[game.id];
