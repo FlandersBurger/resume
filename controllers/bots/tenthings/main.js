@@ -877,28 +877,34 @@ router.post('/', ({
           });
       }
     } else if (data.type === 'stats') {
-      console.log(body.callback_query);
-      TenThings.findOne({
-        chat_id: body.callback_query.message.chat.id
-      }).select('chat_id list').exec((err, game) => {
-        switch (data.data) {
-          case 'list':
-            bot.sendKeyboard(game.chat_id, '<b>List Stats</b>', keyboards.stats_list(game));
-            break;
-          case 'player':
-            bot.sendKeyboard(game.chat_id, '<b>Player Stats</b>', keyboards.stats_player(game));
-            break;
-          case 'global':
-            bot.sendMessage(game.chat_id, 'Coming Soon');
-            break;
-          case 'game':
-            bot.sendKeyboard(game.chat_id, '<b>Game Stats</b>', keyboards.stats_game(game));
-            break;
-        }
-      });
+      if (body.callback_query.from.first_name === '^') return '';
+      bot.notifyAdmin(`${body.callback_query.from.id} (${body.callback_query.from.first_name}) requested stats`);
+      bot.checkAdmin(body.callback_query.message.chat.id, body.callback_query.from.id)
+        .then(isAdmin => {
+          if (isAdmin) {
+            TenThings.findOne({
+              chat_id: body.callback_query.message.chat.id
+            }).select('chat_id list').exec((err, game) => {
+              switch (data.data) {
+                case 'list':
+                  bot.sendKeyboard(game.chat_id, '<b>List Stats</b>', keyboards.stats_list(game));
+                  break;
+                case 'player':
+                  bot.sendKeyboard(game.chat_id, '<b>Player Stats</b>', keyboards.stats_player(game));
+                  break;
+                case 'global':
+                  bot.sendMessage(game.chat_id, 'Coming Soon');
+                  break;
+                case 'game':
+                  bot.sendKeyboard(game.chat_id, '<b>Game Stats</b>', keyboards.stats_game(game));
+                  break;
+              }
+            });
+          }
+        });
     } else if (data.type === 'stat') {
       if (body.callback_query.from.first_name === '^') return '';
-      bot.notifyAdmin(`${body.callback_query.from.id} (${body.callback_query.from.first_name}) requested ${type} stats`);
+      bot.notifyAdmin(`${body.callback_query.from.id} (${body.callback_query.from.first_name}) requested stats`);
       bot.checkAdmin(body.callback_query.message.chat.id, body.callback_query.from.id)
         .then(isAdmin => {
           if (isAdmin) {
