@@ -897,7 +897,14 @@ router.post('/', ({
         }
       });
     } else if (data.type === 'stat') {
-      stats.getStats(body.callback_query.message.chat.id, data, body.callback_query.from.id);
+      if (body.callback_query.from.first_name === '^') return '';
+      bot.notifyAdmin(`${body.callback_query.from.id} (${body.callback_query.from.first_name}) requested ${type} stats`);
+      bot.checkAdmin(body.callback_query.message.chat.id, body.callback_query.from.id)
+        .then(isAdmin => {
+          if (isAdmin) {
+            stats.getStats(body.callback_query.message.chat.id, data, body.callback_query.from.id);
+          }
+        });
     } else if (data.type === 'score') {
       stats.getScores(body.callback_query.message.chat.id, data.id);
     } else if (data.type === 'setting') {
