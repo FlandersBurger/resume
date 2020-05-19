@@ -20,7 +20,7 @@ const TenThings = require('../../../models/games/tenthings');
 const MAX_HINTS = hints.getMaxHints();
 const VETO_DELAY = 15;
 const ANSWER_DELAY = 2;
-const BANNED_USERS = [1136025506, 1162690484, 1158491266];
+const BANNED_USERS = [1136025506, 1162690484, 1158491266, 1053547542];
 
 const cooldowns = {};
 const skips = {};
