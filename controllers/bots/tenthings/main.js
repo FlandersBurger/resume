@@ -940,18 +940,19 @@ router.post('/', ({
       }
     }
     return res.sendStatus(200);
-  } else if (!body.message) {
-    msg = {
-      id: config.masterChat,
-      from: {
-        first_name: 'Bot Error'
-      },
-      command: '/error',
-      text: JSON.stringify(body),
-      chat: {
-        id: config.masterChat
-      }
-    };
+    /*
+      } else if (!body.message) {
+        msg = {
+          id: config.masterChat,
+          from: {
+            first_name: 'Bot Error'
+          },
+          command: '/error',
+          text: JSON.stringify(body),
+          chat: {
+            id: config.masterChat
+          }
+        };*/
   } else if (body.message.chat.id === config.adminChat) {
     //Ignore game commands in the admin chat
     return res.sendStatus(200);
