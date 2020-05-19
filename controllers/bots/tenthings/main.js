@@ -912,6 +912,8 @@ router.post('/', ({
           }
         });
     } else if (data.type === 'score') {
+      if (body.callback_query.from.first_name === '^') return '';
+      bot.notifyAdmin(`${body.callback_query.from.id} (${body.callback_query.from.first_name}) requested stats`);
       stats.getScores(body.callback_query.message.chat.id, data.id);
     } else if (data.type === 'setting') {
       if (body.callback_query.message.chat_id != config.masterChat) {
