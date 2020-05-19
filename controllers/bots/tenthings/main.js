@@ -798,10 +798,10 @@ router.post('/', ({
     return console.log(body);
   }
   if (body.message || body.callback_query) {
-
     const from = body.message ? body.message.from.id : body.callback_query.from.id;
     const name = body.message ? body.message.from.first_name : body.callback_query.from.first_name;
     const chat = body.message ? body.message.chat.id : body.callback_query.message.chat.id;
+    if (BANNED_USERS.indexOf(from) < 0) return res.sendStatus(200);
     if (antispam[from]) {
       if (antispam[from].lastMessage < moment().subtract(10, 'seconds')) {
         delete antispam[from];
