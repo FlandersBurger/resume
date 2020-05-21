@@ -75,11 +75,15 @@ function TelegramBot() {
   };
 
   bot.notifyAdmin = msg => {
-    b.sendMessage(config.masterChat, msg);
+    bot.sendMessage(config.masterChat, msg);
+  };
+
+  bot.notify = msg => {
+    bot.sendMessage(config.noticeChannel, msg);
   };
 
   bot.notifyAdmins = msg => {
-    b.sendMessage(config.adminChat, msg);
+    bot.sendMessage(config.adminChat, msg);
   };
 
   bot.broadcast = (channels, message) => {
@@ -93,10 +97,20 @@ function TelegramBot() {
   bot.getChat = channel => new Promise((resolve, reject) => {
     const url = `https://api.telegram.org/bot${bot.token}/getChat?chat_id=${channel}`;
     request(encodeURI(url), (error, r, body) => {
-      if (error) return reject({ id: channel, code: 500, error});
+      if (error) return reject({
+        id: channel,
+        code: 500,
+        error
+      });
       const response = JSON.parse(body);
-      if (!response || !response.ok) return reject({ id: channel, code: 404 });
-      resolve({ id: channel, code: 200 });
+      if (!response || !response.ok) return reject({
+        id: channel,
+        code: 404
+      });
+      resolve({
+        id: channel,
+        code: 200
+      });
     });
   });
 
@@ -156,8 +170,8 @@ function TelegramBot() {
     const url = `https://api.telegram.org/bot${bot.token}/getChatMember?chat_id=${chat_id}&user_id=${user_id}`;
     request(url, (error, r, body) => {
       const response = JSON.parse(body).result;
-      if(error) return;
-      if(!response || ['restricted', 'left', 'kicked'].includes(response.status)) return reject();
+      if (error) return;
+      if (!response || ['restricted', 'left', 'kicked'].includes(response.status)) return reject();
       resolve(response);
     });
   });
@@ -178,7 +192,7 @@ function TelegramBot() {
 const TOKEN = config.tokens.telegram.tenthings;
 const b = new TelegramBot();
 b.init(TOKEN).then(() => {
-    //b.deleteWebhook();
+  //b.deleteWebhook();
   b.getWebhook().then(body => {
     if (JSON.parse(body).result && 'https://belgocanadian.com/bots/tenthings' === JSON.parse(body).result.url) {
       console.log('Webhook Set');

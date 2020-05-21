@@ -20,7 +20,7 @@ const TenThings = require('../../../models/games/tenthings');
 const MAX_HINTS = hints.getMaxHints();
 const VETO_DELAY = 15;
 const ANSWER_DELAY = 2;
-const BANNED_USERS = [1136025506, 1162690484, 1158491266, 1053547542, 1182973691];
+const BANNED_USERS = [1136025506, 1162690484, 1158491266, 1053547542, 1182973691, 1010339222, 906650538];
 
 const cooldowns = {};
 const skips = {};
@@ -29,23 +29,23 @@ const skippers = {};
 const voters = {};
 const antispam = {};
 /*
-      TenThings.update(
-        {},
-        {
-          'players.$[].wins': 0,
-          'players.$[].plays': 0,
-          'players.$[].score': 0,
-          'players.$[].scoreDaily': 0
-        },
-        { multi: true },
-        function(err, saved) {
-          if (err) {
-            console.log(err);
-          } else {
-            console.log(saved);
-          }
-        }
-      );
+  TenThings.update(
+    {},
+    {
+      'players.$[].wins': 0,
+      'players.$[].plays': 0,
+      'players.$[].score': 0,
+      'players.$[].scoreDaily': 0
+    },
+    { multi: true },
+    function(err, saved) {
+      if (err) {
+        console.log(err);
+      } else {
+        console.log(saved);
+      }
+    }
+  );
 */
 /*
   bot.getChatMember(config.groupChat, config.masterChat)
@@ -1269,6 +1269,7 @@ function evaluateCommand(res, msg, game, player, isNew) {
         }
         const suggestion = `<b>Suggestion</b>\n${fullsuggestion}\n<i>${msg.from.username ? msg.from.username : msg.from.first_name}</i>`;
         bot.notifyAdmins(suggestion);
+        bot.notify(suggestion);
         bot.sendMessage(msg.chat.id, `Suggestion noted, ${msg.from.first_name}!`);
       } else {
         bot.sendMessage(msg.chat.id, `You didn't suggest anything ${msg.from.first_name}. Add your message after /suggest`);
