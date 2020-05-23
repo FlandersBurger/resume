@@ -20,12 +20,22 @@ var admins = [
   '5cd6d3a4597a396941793afe', //Maria
 ];
 
-router.get('/lists', (req, res, next) => {
-  List.find()
-    .select('_id plays skips score values date modifyDate creator name description category')
-    .populate('creator', 'username')
+router.get('/names', (req, res, next) => {
+  List.find({})
+    .select('_id name')
     .exec((err, result) => {
       if (err) return next(err);
+      res.json(result);
+    });
+});
+router.get('/lists', (req, res, next) => {
+  List.find({})
+    .select('_id plays skips score values.value date modifyDate creator name description category')
+    .populate('creator', 'username')
+    .lean()
+    .exec((err, result) => {
+      if (err) return next(err);
+      //var lists = result.map(list => console.log(list.blurbs));
       var lists = result.map(list => formatList(list));
       res.json(lists);
     });
@@ -83,7 +93,7 @@ router.put('/lists', (req, res, next) => {
 router.delete('/lists/:id', (req, res, next) => {
   List.findByIdAndRemove(req.params.id, (err, list) => {
     if (err) return next(err);
-    bot.notifyAdmins('<b>' + list.name + '</b> deleted by <i>' + req.body.user.username + '</i>');
+    bot.notifyAdmins('<b>' + list.name + '</b> deleted');
     res.sendStatus(200);
   });
 });
