@@ -1308,7 +1308,7 @@ function evaluateCommand(res, msg, game, player, isNew) {
           .then(games => {
             bot.broadcast(games.map(({
               chat_id
-            }) => chat_id), msg.text.substring(msx.command, msg.text.length));
+            }) => chat_id), msg.text.substring(msg.command, msg.text.length));
           });
       }
       break;
