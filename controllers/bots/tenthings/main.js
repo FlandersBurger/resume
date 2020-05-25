@@ -165,7 +165,7 @@ bot.exportChatInviteLink('-1001394022777').then(function(chat) {
 
 function selectList(game) {
   return new Promise(function(resolve, reject) {
-    List.count({
+    List.countDocuments({
         _id: {
           $nin: game.playedLists
         }
@@ -179,11 +179,12 @@ function selectList(game) {
           game.save(err => {
             if (err) reject(err);
             bot.sendMessage(game.chat_id, 'All lists have been played, a new cycle will now start.');
-            List.count().exec(function(err, count) {
+            List.countDocuments().exec(function(err, count) {
               List.find()
                 .select('-votes')
                 .populate('creator')
                 .limit(1)
+                .lean()
                 .skip(Math.floor(Math.random() * count))
                 .exec((err, lists) => resolve(lists[0]));
             });
@@ -832,7 +833,7 @@ router.post('/', ({
     return res.sendStatus(200);
   }
   let msg, i, item;
-  if (body.callback_query && BANNED_USERS.indexOf(body.callback_query.from.id) < 0) {
+  if (body.callback_query) {
     const data = JSON.parse(body.callback_query.data);
     data.requestor = body.callback_query.from.first_name;
     if (data.type === 'rate') {
@@ -1034,8 +1035,10 @@ router.post('/', ({
     };
   }
   if (msg.command.includes('@')) {
+    console.log(msg.command);
     if (msg.command.substring(msg.command.indexOf('@') + 1) !== 'TenThings_Bot') return res.sendStatus(200);
     msg.command = msg.command.substring(0, msg.command.indexOf('@'));
+    console.log(msg.command);
   }
   try {
     if (!msg.from.id) {
@@ -1047,59 +1050,57 @@ router.post('/', ({
     bot.notifyAdmin(JSON.stringify(msg));
     return res.sendStatus(200);
   }
-  if (BANNED_USERS.indexOf(msg.from.id) < 0) {
-    TenThings.findOne({
-        chat_id: msg.chat.id
-      })
-      .populate('list.creator')
-      .select('-playedLists')
-      .exec((err, existingGame) => {
-        if (!existingGame) {
-          const newGame = new TenThings({
-            chat_id: msg.chat.id,
-            players: [msg.from]
-          });
-          newGame.save(err => {
-            if (err)
-              bot.notifyAdmin('POST: ' + JSON.stringify(err) + '\n' + JSON.stringify(game));
-            console.log('Game Saved!');
-            const player = newGame.players[0];
-            return evaluateCommand(res, msg, newGame, player, true);
+  TenThings.findOne({
+      chat_id: msg.chat.id
+    })
+    .populate('list.creator')
+    .select('-playedLists')
+    .exec((err, existingGame) => {
+      if (!existingGame) {
+        const newGame = new TenThings({
+          chat_id: msg.chat.id,
+          players: [msg.from]
+        });
+        newGame.save(err => {
+          if (err)
+            bot.notifyAdmin('POST: ' + JSON.stringify(err) + '\n' + JSON.stringify(game));
+          console.log('Game Saved!');
+          const player = newGame.players[0];
+          return evaluateCommand(res, msg, newGame, player, true);
+        });
+      } else {
+        let player;
+        player = _.find(existingGame.players, existingPlayer => {
+          if (!existingPlayer) {
+            console.log('Empty Player!');
+            console.log(existingGame);
+            return false;
+          }
+          return existingPlayer.id == msg.from.id;
+        });
+        if (!player) {
+          existingGame.players.push(msg.from);
+          player = existingGame.players[existingGame.players.length - 1];
+          existingGame.save(err => {
+            if (err) {
+              bot.notifyAdmin('Can\'t add new player: ' + JSON.stringify(err));
+              console.error(err);
+              console.log(player);
+              console.log(msg.from);
+              res.sendStatus(200);
+            } else {
+              return evaluateCommand(res, msg, existingGame, player, false);
+            }
           });
         } else {
-          let player;
-          player = _.find(existingGame.players, existingPlayer => {
-            if (!existingPlayer) {
-              console.log('Empty Player!');
-              console.log(existingGame);
-              return false;
-            }
-            return existingPlayer.id == msg.from.id;
-          });
-          if (!player) {
-            existingGame.players.push(msg.from);
-            player = existingGame.players[existingGame.players.length - 1];
-            existingGame.save(err => {
-              if (err) {
-                bot.notifyAdmin('Can\'t add new player: ' + JSON.stringify(err));
-                console.error(err);
-                console.log(player);
-                console.log(msg.from);
-                res.sendStatus(200);
-              } else {
-                return evaluateCommand(res, msg, existingGame, player, false);
-              }
-            });
-          } else {
-            player.first_name = msg.from.first_name;
-            player.last_name = msg.from.last_name;
-            player.username = msg.from.username;
-            player.present = true;
-            return evaluateCommand(res, msg, existingGame, player, false);
-          }
+          player.first_name = msg.from.first_name;
+          player.last_name = msg.from.last_name;
+          player.username = msg.from.username;
+          player.present = true;
+          return evaluateCommand(res, msg, existingGame, player, false);
         }
-      });
-  }
+      }
+    });
 });
 
 router.get('/', ({
