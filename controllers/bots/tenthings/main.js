@@ -1262,17 +1262,20 @@ function evaluateCommand(res, msg, game, player, isNew) {
       if (text && text != 'TenThings_Bot') {
         player.suggestions++;
         game.save();
-        const suggestion = `<b>Suggestion</b>\n${text}\n<i>${msg.from.username ? msg.from.username : msg.from.first_name}</i>`;
+        const suggestion = `<b>Suggestion</b>\n${msg.text.substring(msg.command.length, msg.text.length)}\n<i>${msg.from.username ? msg.from.username : msg.from.first_name}</i>`;
         bot.notifyAdmins(suggestion);
         bot.notify(suggestion);
         List.find({})
           .select('name')
           .exec((err, lists) => {
-
             const fuzzyMatch = new FuzzyMatching(lists.map(list => list.name));
             const match = fuzzyMatch.get(text);
             console.log(match);
-            bot.sendMessage(msg.chat.id, `Suggestion noted, ${msg.from.first_name}!`);
+            if (match.distance > 0.8) {
+              bot.sendMessage(msg.chat.id, `There's an existing list that seems almost the same, ${msg.from.first_name}!\n-> ${match.value}`);
+            } else {
+              bot.sendMessage(msg.chat.id, `Suggestion noted, ${msg.from.first_name}!\nNote that you can add your own lists at https://belgocanadian.com/tenthings`);
+            }
           });
       } else {
         bot.sendMessage(msg.chat.id, `You didn't suggest anything ${msg.from.first_name}. Add your message after /suggest`);
