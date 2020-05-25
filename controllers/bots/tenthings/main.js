@@ -1035,10 +1035,8 @@ router.post('/', ({
     };
   }
   if (msg.command.includes('@')) {
-    console.log(msg.command);
     if (msg.command.substring(msg.command.indexOf('@') + 1) !== 'TenThings_Bot') return res.sendStatus(200);
     msg.command = msg.command.substring(0, msg.command.indexOf('@'));
-    console.log(msg.command);
   }
   try {
     if (!msg.from.id) {
@@ -1261,17 +1259,21 @@ function evaluateCommand(res, msg, game, player, isNew) {
       */
     case '/suggest':
       const text = msg.text.substring(msg.command.length, msg.text.length).replace(/\s/g, '');
-      if (text && text !== 'TenThings_Bot') {
+      if (text && text != 'TenThings_Bot') {
         player.suggestions++;
         game.save();
-        let fullsuggestion = msg.text.substring(msg.command.length + 1, msg.text.length);
-        if (fullsuggestion.indexOf('TenThings_Bot ') == 0) {
-          fullsuggestion = fullsuggestion.replace('TenThings_Bot ', '');
-        }
-        const suggestion = `<b>Suggestion</b>\n${fullsuggestion}\n<i>${msg.from.username ? msg.from.username : msg.from.first_name}</i>`;
+        const suggestion = `<b>Suggestion</b>\n${text}\n<i>${msg.from.username ? msg.from.username : msg.from.first_name}</i>`;
         bot.notifyAdmins(suggestion);
         bot.notify(suggestion);
-        bot.sendMessage(msg.chat.id, `Suggestion noted, ${msg.from.first_name}!`);
+        List.find({})
+          .select('name')
+          .exec((err, lists) => {
+
+            const fuzzyMatch = new FuzzyMatching(lists.map(list => list.name));
+            const match = fuzzyMatch.get(text);
+            console.log(match);
+            bot.sendMessage(msg.chat.id, `Suggestion noted, ${msg.from.first_name}!`);
+          });
       } else {
         bot.sendMessage(msg.chat.id, `You didn't suggest anything ${msg.from.first_name}. Add your message after /suggest`);
       }
