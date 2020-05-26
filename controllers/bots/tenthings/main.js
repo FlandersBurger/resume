@@ -792,7 +792,7 @@ function createMinigame(game, msg) {
 router.post('/', ({
   body
 }, res, next) => {
-  res.sendStatus(200);
+  return res.sendStatus(200);
   if (body.object === 'page') {
     res.status(200).send('EVENT_RECEIVED');
     return console.log(body);
