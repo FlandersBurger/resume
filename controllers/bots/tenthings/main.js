@@ -296,10 +296,10 @@ const queueGuess = (game, msg) => {
         queueingGuess(guess);
       }, 2000 / 0.25 * (1 - match.distance));
     } else {
-      //sass(game, msg.text, msg.from);
+      sass(game, msg.text, msg.from);
     }
   } else {
-    //sass(game, msg.text, msg.from);
+    sass(game, msg.text, msg.from);
   }
 };
 
