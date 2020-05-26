@@ -49,6 +49,8 @@ const getJoke = schedule.scheduleJob('0 0 0 * * *', () => {
 });
 */
 
+console.log(moment().hour());
+
 /*
 TenThings.find()
 .then(function(games) {
@@ -85,12 +87,12 @@ function isPlayerPresent(channel, player, index) {
 
 const newLists = schedule.scheduleJob('0 0 12 * * *', () => {
   List.find({
-      $or: [{
-        date: {
-          $gte: moment().subtract(1, 'days')
-        }
-      }]
+      date: {
+        $gte: moment().subtract(1, 'days')
+      }
     })
+    .select('name')
+    .lean()
     .then(lists => {
       if (lists.length > 0) {
         let message = '<b>New lists created today</b>';
@@ -121,6 +123,8 @@ const modifiedLists = schedule.scheduleJob('0 30 12 * * *', () => {
         }
       }]
     })
+    .select('name')
+    .lean()
     .then(lists => {
       if (lists.length > 0) {
         let message = '<b>Lists updated today</b>';
@@ -143,9 +147,9 @@ const modifiedLists = schedule.scheduleJob('0 30 12 * * *', () => {
 
 //var dailyScore = schedule.scheduleJob('*/10 * * * * *', function() {
 const dailyScore = schedule.scheduleJob('0 0 0 * * *', () => {
-  if (new Date().getHours() === 0) {
+  if (moment().hour() === 0) {
     //if (true) {
-    bot.notifyAdmin(`Score Reset Triggered; ${moment().format('DD-MMM-YYYY')}`);
+    bot.notifyAdmin(`Score Reset Triggered; ${moment().format('DD-MMM-YYYY hh:mm')}`);
     TenThings.find({
         'players.scoreDaily': {
           $gt: 0
@@ -239,6 +243,9 @@ const dailyScore = schedule.scheduleJob('0 0 0 * * *', () => {
   } else {
     bot.notifyAdmin(`Schedule incorrectly triggered: ${moment().format('DD-MMM-YYYY hh:mm')}`);
   }
+});
+
+const deleteStaleGames = schedule.scheduleJob('0 0 3 * * *', () => {
   //Delete stale games
   TenThings.find({
       'players.highScore': {
