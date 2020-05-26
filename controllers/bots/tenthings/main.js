@@ -296,10 +296,10 @@ const queueGuess = (game, msg) => {
         queueingGuess(guess);
       }, 2000 / 0.25 * (1 - match.distance));
     } else {
-      sass(game, msg.text, msg.from);
+      //sass(game, msg.text, msg.from);
     }
   } else {
-    sass(game, msg.text, msg.from);
+    //sass(game, msg.text, msg.from);
   }
 };
 
@@ -792,7 +792,7 @@ function createMinigame(game, msg) {
 router.post('/', ({
   body
 }, res, next) => {
-  return res.sendStatus(200);
+  //return res.sendStatus(200);
   if (body.object === 'page') {
     res.status(200).send('EVENT_RECEIVED');
     return console.log(body);
