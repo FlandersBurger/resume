@@ -20,7 +20,7 @@ const TenThings = require('../../../models/games/tenthings');
 const MAX_HINTS = hints.getMaxHints();
 const VETO_DELAY = 15;
 const ANSWER_DELAY = 2;
-const BANNED_USERS = [1136025506, 1162690484, 1158491266, 1053547542, 1182973691, 1010339222, 906650538];
+const BANNED_USERS = [1136025506, 1162690484, 1158491266, 1053547542, 1182973691, 1010339222, 906650538, 1153021237, 623100045];
 
 const cooldowns = {};
 const skips = {};
@@ -500,8 +500,6 @@ const checkGuess = (game, guess, msg) => {
   });
 };
 
-
-
 const guessed = ({
   streak,
   list
@@ -794,6 +792,7 @@ function createMinigame(game, msg) {
 router.post('/', ({
   body
 }, res, next) => {
+  res.sendStatus(200);
   if (body.object === 'page') {
     res.status(200).send('EVENT_RECEIVED');
     return console.log(body);
