@@ -26,8 +26,8 @@ app.use('/api/files', require('./controllers/api/files'));
 
 app.use(logger('dev', {
   skip: (req, res) => {
-    console.log(req.method, req.path);
-    return req.path.indexOf('/bots/tenthings') > -1;
+    console.log(req.method, req.url);
+    return req.url.indexOf('/bots/tenthings') > -1;
   }
 }));
 
