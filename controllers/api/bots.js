@@ -92,6 +92,7 @@ router.put('/lists', (req, res, next) => {
 
 router.delete('/lists/:id', (req, res, next) => {
   console.log(req);
+  bot.notifyAdmin(`Deletion attempt: ${req.params.id}`);
   /*
   List.findByIdAndRemove(req.params.id, (err, list) => {
     if (err) return next(err);
@@ -123,3 +124,11 @@ const formatList = list => ({
   description: list.description,
   category: list.category,
 });
+
+User.findOne({
+    _id: '5ecdef49babb2620da884a6a'
+  })
+  .exec((err, user) => {
+    if (err) return console.error(err);
+    console.log(user);
+  });

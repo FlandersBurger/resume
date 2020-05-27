@@ -712,11 +712,13 @@ function hint(game, player, callback) {
     List.findOne({
       _id: game.list._id
     }).exec((err, list) => {
-      if (!list.hints) {
-        list.hints = 0;
+      if (list) {
+        if (!list.hints) {
+          list.hints = 0;
+        }
+        list.hints++;
+        list.save();
       }
-      list.hints++;
-      list.save();
     });
   }
 }
