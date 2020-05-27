@@ -91,11 +91,14 @@ router.put('/lists', (req, res, next) => {
 });
 
 router.delete('/lists/:id', (req, res, next) => {
+  console.log(req);
+  /*
   List.findByIdAndRemove(req.params.id, (err, list) => {
     if (err) return next(err);
     bot.notifyAdmins('<b>' + list.name + '</b> deleted');
     res.sendStatus(200);
   });
+  */
 });
 
 router.post('/', (req, res, next) => {
