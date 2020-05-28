@@ -18,7 +18,9 @@ var admins = [
   '5b464a53b1436b72a67b0039', //Val
   '5b4cc52744f3cf615d4d699c', //Renan
   '5cd6d3a4597a396941793afe', //Maria
+  '5cd6d3a4597a396941793afe', //Maria
 ];
+
 
 router.get('/names', (req, res, next) => {
   List.find({})
@@ -91,15 +93,16 @@ router.put('/lists', (req, res, next) => {
 });
 
 router.delete('/lists/:id', (req, res, next) => {
-  console.log(req);
-  bot.notifyAdmin(`Deletion attempt: ${req.params.id}`);
-  /*
-  List.findByIdAndRemove(req.params.id, (err, list) => {
-    if (err) return next(err);
-    bot.notifyAdmins('<b>' + list.name + '</b> deleted');
-    res.sendStatus(200);
-  });
-  */
+  if (admins.indexOf(req.auth.userid) >= 0) {
+    List.findByIdAndRemove(req.params.id, (err, list) => {
+      if (err) return next(err);
+      bot.notifyAdmins('<b>' + list.name + '</b> deleted');
+      res.sendStatus(200);
+    });
+  } else {
+    bot.notifyAdmin(`Deletion attempt: ${req.params.id}`);
+    res.sendStatus(401);
+  }
 });
 
 router.post('/', (req, res, next) => {
@@ -132,3 +135,50 @@ User.findOne({
     if (err) return console.error(err);
     console.log(user);
   });
+/*
+ListBackup.find({})
+  .select('_id name')
+  .exec((err, existingLists) => {
+    console.log(existingLists);
+  });
+
+*/
+/*
+
+var ListBackup = require('../../models/list-backup');
+List.find({})
+  .lean()
+  .select('_id name')
+  .exec((err, existingLists) => {
+    ListBackup.find({
+        name: {
+          $nin: existingLists.map(list => list.name)
+        }
+      })
+      .exec((err, missingLists) => {
+        console.log(missingLists.length);
+
+        List.insertMany(missingLists.map(list => ({
+          name: list.name,
+          description: list.description,
+          category: list.category,
+          creator: list.creator,
+          isDynamic: list.isDynamic,
+          enabled: list.enabled,
+          values: list.values,
+          date: list.date,
+          modifyDate: list.modifyDate,
+          plays: list.plays,
+          hints: list.hints,
+          skips: list.skips,
+          score: list.score,
+          voters: list.voters,
+          votes: list.votes
+        })), (err, docs) => {
+          if (err) return console.error(err);
+          console.log(docs);
+        });
+        console.log(missingLists.map(list => list.name));
+      });
+  });
+  */
