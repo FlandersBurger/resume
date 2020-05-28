@@ -790,11 +790,11 @@ function createMinigame(game, msg) {
       });
     });
 }
-let i = 0;
+let messageCount = 0;
 router.post('/', ({
   body
 }, res, next) => {
-  console.log(i++);
+  console.log(messageCount++);
   return res.sendStatus(200);
   if (body.object === 'page') {
     res.status(200).send('EVENT_RECEIVED');
