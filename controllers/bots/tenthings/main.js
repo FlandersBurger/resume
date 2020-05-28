@@ -790,7 +790,7 @@ function createMinigame(game, msg) {
       });
     });
 }
-let i;
+let i = 0;
 router.post('/', ({
   body
 }, res, next) => {
