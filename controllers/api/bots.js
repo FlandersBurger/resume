@@ -147,7 +147,7 @@ ListBackup.find({})
   });
 
 */
-
+/*
 List.find({})
   .lean()
   .select('_id name')
@@ -168,7 +168,8 @@ List.find({})
     }
     console.log(result);
   });
-/*
+  */
+
 List.find({})
   .lean()
   .select('_id name')
@@ -179,7 +180,6 @@ List.find({})
         }
       })
       .exec((err, missingLists) => {
-        console.log(missingLists.length);
 
         // List.insertMany(missingLists.map(list => ({
         //   name: list.name,
@@ -202,6 +202,6 @@ List.find({})
         //   console.log(docs);
         // });
         console.log(missingLists.map(list => list.name));
+        console.log(missingLists.length + ' missing lists');
       });
   });
-  */

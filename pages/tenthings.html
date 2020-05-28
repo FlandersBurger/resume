@@ -1,15 +1,12 @@
 
 
 <div id="tenthings-page" class="col-md-12" ng-keydown="keyDown($event)">
-  <div ng-if="currentUser.uid === 'xQNVsg7H6kdn28lSgDMnU27SlO23'">
-    <h2>Hi Justin, please come talk to me on Telegram -> @FlandersBurger</h2>
-  </div>
-  <div ng-if="currentUser.uid !== 'xQNVsg7H6kdn28lSgDMnU27SlO23'">
+  <div>
     <h1 class="text-danger" ng-show="!loggedIn">You have to be logged in to edit lists</h1>
     <div class="well well-sm">
       This page works in conjunction with the <a href="https://t.me/joinchat/I1Di-1MXGXkjhgNPXi6Vfg" target="_blank">Ten Things Telegram Bot</a>
     </div>
-    <div>
+    <div ng-show="!loggedIn">
       <div class="col-md-4">
         <div class="btn-group">
           <button class="btn btn-default" ng-click="getLists()">
