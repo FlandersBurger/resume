@@ -8,11 +8,12 @@ var config = require('../../config');
 var bot = require('../../bots/telegram');
 
 var List = require('../../models/list');
+var ListBackup = require('../../models/list-backup');
 var User = require('../../models/user');
 var TenThings = require('../../models/games/tenthings');
 
 var admins = [
-  //'5ae15f14b5f7883ff0497339', //Me
+  '5ae15f14b5f7883ff0497339', //Me
   '5b4ac81544f3cf615d4d67c6', //Caio
   '5ae16b2317c46c02144a93a9', //Terrence
   '5b464a53b1436b72a67b0039', //Val
@@ -93,7 +94,10 @@ router.put('/lists', (req, res, next) => {
 });
 
 router.delete('/lists/:id', (req, res, next) => {
+  console.log(req.auth);
+  console.log(admins);
   if (admins.indexOf(req.auth.userid) >= 0) {
+    console.log('here');
     List.findByIdAndRemove(req.params.id, (err, list) => {
       if (err) return next(err);
       bot.notifyAdmins('<b>' + list.name + '</b> deleted');
@@ -143,9 +147,28 @@ ListBackup.find({})
   });
 
 */
-/*
 
-var ListBackup = require('../../models/list-backup');
+List.find({})
+  .lean()
+  .select('_id name')
+  .exec((err, existingLists) => {
+    let counts = existingLists.reduce((result, list) => {
+      if (result[list.name]) {
+        result[list.name]++;
+      } else {
+        result[list.name] = 1;
+      }
+      return result;
+    }, {});
+    let result = [];
+    for (let key of Object.keys(counts)) {
+      if (counts[key] > 1) {
+        result.push(key);
+      }
+    }
+    console.log(result);
+  });
+/*
 List.find({})
   .lean()
   .select('_id name')
@@ -158,26 +181,26 @@ List.find({})
       .exec((err, missingLists) => {
         console.log(missingLists.length);
 
-        List.insertMany(missingLists.map(list => ({
-          name: list.name,
-          description: list.description,
-          category: list.category,
-          creator: list.creator,
-          isDynamic: list.isDynamic,
-          enabled: list.enabled,
-          values: list.values,
-          date: list.date,
-          modifyDate: list.modifyDate,
-          plays: list.plays,
-          hints: list.hints,
-          skips: list.skips,
-          score: list.score,
-          voters: list.voters,
-          votes: list.votes
-        })), (err, docs) => {
-          if (err) return console.error(err);
-          console.log(docs);
-        });
+        // List.insertMany(missingLists.map(list => ({
+        //   name: list.name,
+        //   description: list.description,
+        //   category: list.category,
+        //   creator: list.creator,
+        //   isDynamic: list.isDynamic,
+        //   enabled: list.enabled,
+        //   values: list.values,
+        //   date: list.date,
+        //   modifyDate: list.modifyDate,
+        //   plays: list.plays,
+        //   hints: list.hints,
+        //   skips: list.skips,
+        //   score: list.score,
+        //   voters: list.voters,
+        //   votes: list.votes
+        // })), (err, docs) => {
+        //   if (err) return console.error(err);
+        //   console.log(docs);
+        // });
         console.log(missingLists.map(list => list.name));
       });
   });

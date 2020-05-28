@@ -53,8 +53,11 @@ function TelegramBot() {
     message = encodeURIComponent(message);
     return new Promise((resolve, reject) => {
       const url = `https://api.telegram.org/bot${bot.token}/sendMessage?chat_id=${channel}&disable_notification=true&parse_mode=html&text=${message}`;
-      request(url, (error, r, body) => {
-        if (error) return;
+      request(url, (err, r, body) => {
+        if (err) {
+          console.error(err);
+          return reject();
+        }
         resolve();
       });
     });

@@ -48,7 +48,7 @@
         </div>
         <input class="form-control" ng-model="search.name" placeholder="Search List Names"/>
         <input class="form-control" ng-model="searchAll" placeholder="Search Everything"/>
-        <button class="btn btn-sm" ng-class="listButtonClass(list)" ng-repeat="list in filteredLists() | filter: searchAll | filter: search | orderBy: sorter | limitTo: 100" ng-click="selectList(list)">{{list.name}} ({{list.answers}})</button>
+        <button class="btn btn-sm" ng-class="listButtonClass(list)" ng-repeat="list in filteredLists() | filter: searchAll | filter: search | orderBy: sorter | limitTo: 200" ng-click="selectList(list)">{{list.name}} ({{list.answers}})</button>
       </div>
       <div class="col-md-8">
         <div class="col-md-12" ng-if="loggedIn">
