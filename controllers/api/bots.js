@@ -147,7 +147,7 @@ ListBackup.find({})
   });
 
 */
-/*
+
 List.find({})
   .lean()
   .select('_id name')
@@ -163,13 +163,16 @@ List.find({})
     let result = [];
     for (let key of Object.keys(counts)) {
       if (counts[key] > 1) {
-        result.push(key);
+        result.push({
+          key,
+          count: counts[key]
+        });
       }
     }
     console.log(result);
   });
-  */
 
+/*
 List.find({})
   .lean()
   .select('_id name')
@@ -204,4 +207,4 @@ List.find({})
         console.log(missingLists.map(list => list.name));
         console.log(missingLists.length + ' missing lists');
       });
-  });
+  });*/
