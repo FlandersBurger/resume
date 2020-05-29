@@ -200,7 +200,7 @@ List.find({})
       .exec((err, missingLists) => {
 
         List.insertMany(missingLists
-          /*.map(list => ({
+          .map(list => ({
                   name: list.name,
                   description: list.description,
                   category: list.category,
@@ -216,7 +216,7 @@ List.find({})
                   score: list.score,
                   voters: list.voters,
                   votes: list.votes
-                }))*/
+                }))
 ).then((docs) => {
 console.log(missingLists.map(list => list.name));
 console.log(missingLists.length + ' missing lists');
