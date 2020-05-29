@@ -8,7 +8,7 @@ var config = require('../../config');
 var bot = require('../../bots/telegram');
 
 var List = require('../../models/list');
-var ListBackup = require('../../models/list-backup');
+//var ListBackup = require('../../models/list-backup');
 var User = require('../../models/user');
 var TenThings = require('../../models/games/tenthings');
 
@@ -154,13 +154,13 @@ ListBackup.find({})
   });
 
 */
-
+/*
 List.find({
     'values.creator': '5ece428af848aa2fc392d099'
   })
   .exec((err, lists) => {
     console.log(lists.map(list => list.name));
-  });
+  });*/
 /*
 List.find({})
   .lean()
@@ -199,27 +199,28 @@ List.find({})
       })
       .exec((err, missingLists) => {
 
-        // List.insertMany(missingLists.map(list => ({
-        //   name: list.name,
-        //   description: list.description,
-        //   category: list.category,
-        //   creator: list.creator,
-        //   isDynamic: list.isDynamic,
-        //   enabled: list.enabled,
-        //   values: list.values,
-        //   date: list.date,
-        //   modifyDate: list.modifyDate,
-        //   plays: list.plays,
-        //   hints: list.hints,
-        //   skips: list.skips,
-        //   score: list.score,
-        //   voters: list.voters,
-        //   votes: list.votes
-        // })), (err, docs) => {
-        //   if (err) return console.error(err);
-        //   console.log(docs);
-        // });
-        console.log(missingLists.map(list => list.name));
-        console.log(missingLists.length + ' missing lists');
-      });
-  });*/
+        List.insertMany(missingLists
+          /*.map(list => ({
+                  name: list.name,
+                  description: list.description,
+                  category: list.category,
+                  creator: list.creator,
+                  isDynamic: list.isDynamic,
+                  enabled: list.enabled,
+                  values: list.values,
+                  date: list.date,
+                  modifyDate: list.modifyDate,
+                  plays: list.plays,
+                  hints: list.hints,
+                  skips: list.skips,
+                  score: list.score,
+                  voters: list.voters,
+                  votes: list.votes
+                }))*/
+).then((docs) => {
+console.log(missingLists.map(list => list.name));
+console.log(missingLists.length + ' missing lists');
+console.log(docs);
+}, console.error);
+});
+});*/
