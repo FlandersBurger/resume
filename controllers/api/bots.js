@@ -19,7 +19,8 @@ var admins = [
   '5b464a53b1436b72a67b0039', //Val
   '5b4cc52744f3cf615d4d699c', //Renan
   '5cd6d3a4597a396941793afe', //Maria
-  '5cd6d3a4597a396941793afe', //Maria
+  '5cd6d3a4597a396941793afe', //Sam
+  '5c60326c0cb0b54b1b19a6e8' //Alexandrite
 ];
 
 
