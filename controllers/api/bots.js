@@ -32,6 +32,9 @@ router.get('/names', (req, res, next) => {
     });
 });
 router.get('/lists', (req, res, next) => {
+  if (req.auth.userid == '5ece428af848aa2fc392d099') {
+    return res.sendStatus(401);
+  }
   List.find({})
     .select('_id plays skips score values.value date modifyDate creator name description category')
     //.populate('creator', 'username')
@@ -70,6 +73,9 @@ router.get('/lists/:id', (req, res, next) => {
 });
 
 router.put('/lists', (req, res, next) => {
+  if (req.auth.userid == '5ece428af848aa2fc392d099') {
+    return res.sendStatus(401);
+  }
   var yesterday = moment().subtract(1, 'days');
   var previousModifyDate = moment(req.body.list.modifyDate);
   req.body.list.modifyDate = new Date();
