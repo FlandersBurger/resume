@@ -155,6 +155,13 @@ ListBackup.find({})
 
 */
 
+List.find({
+    'values.creator': '5ece428af848aa2fc392d099'
+  })
+  .exec((err, lists) => {
+    console.log(lists.map(list => list.name));
+  });
+/*
 List.find({})
   .lean()
   .select('_id name')
@@ -179,7 +186,7 @@ List.find({})
     }
     console.log(result);
   });
-
+*/
 /*
 List.find({})
   .lean()
