@@ -34,12 +34,13 @@ router.get('/names', (req, res, next) => {
 router.get('/lists', (req, res, next) => {
   List.find({})
     .select('_id plays skips score values.value date modifyDate creator name description category')
-    .populate('creator', 'username')
+    //.populate('creator', 'username')
     .lean()
     .exec((err, result) => {
+      console.log(result.length);
       if (err) return next(err);
       //var lists = result.map(list => console.log(list.blurbs));
-      var lists = result.map(list => formatList(list));
+      var lists = result.map(formatList);
       res.json(lists);
     });
 });
@@ -94,13 +95,12 @@ router.put('/lists', (req, res, next) => {
 });
 
 router.delete('/lists/:id', (req, res, next) => {
-  console.log(req.auth);
-  console.log(admins);
   if (admins.indexOf(req.auth.userid) >= 0) {
     console.log('here');
     List.findByIdAndRemove(req.params.id, (err, list) => {
       if (err) return next(err);
-      bot.notifyAdmins('<b>' + list.name + '</b> deleted');
+      console.log(`deleting ${req.params.id} - ${list.name}`);
+      //bot.notifyAdmins('<b>' + list.name + '</b> deleted');
       res.sendStatus(200);
     });
   } else {
@@ -152,6 +152,7 @@ List.find({})
   .lean()
   .select('_id name')
   .exec((err, existingLists) => {
+    console.log(`${existingLists.length} existing lists`);
     let counts = existingLists.reduce((result, list) => {
       if (result[list.name]) {
         result[list.name]++;

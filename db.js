@@ -8,9 +8,9 @@ mongoose.connect(url, {
   useUnifiedTopology: true,
   useFindAndModify: false
 }, (err) => {
-//mongoose.connect('mongodb://localhost/social', function() {
+  //mongoose.connect('mongodb://localhost/social', function() {
   if (err) return console.error(err);
-  console.log('MongoDB connected');
+  console.log(`MongoDB connected (${url})`);
 });
 
 module.exports = mongoose;
