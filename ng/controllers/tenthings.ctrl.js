@@ -94,7 +94,9 @@ angular.module('app')
       });
     };
 
-    $scope.getLists();
+    $scope.$on('login', _ => {
+      $scope.getLists();
+    });
 
 
     $scope.sort = sortBy => {
