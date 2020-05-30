@@ -1,4 +1,4 @@
-var db = require('../db-backup');
+var db = require('../db');
 var mongoose = require('mongoose');
 
 
@@ -6,7 +6,7 @@ var mongoose = require('mongoose');
 listSchema.virtual('answers').get(() => this.values.length);
 listSchema.virtual('blurbs').get(() => this.values.filter(item => item.blurb).length);
 */
-var ListBackup = db.model('list', {
+var ListBackup = db('backup').model('list', {
   name: String,
   description: String,
   category: String,

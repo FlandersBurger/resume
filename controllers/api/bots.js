@@ -8,7 +8,7 @@ var config = require('../../config');
 var bot = require('../../bots/telegram');
 
 var List = require('../../models/list');
-//var ListBackup = require('../../models/list-backup');
+var ListBackup = require('../../models/list-backup');
 var User = require('../../models/user');
 var TenThings = require('../../models/games/tenthings');
 
@@ -32,6 +32,7 @@ router.get('/names', (req, res, next) => {
       res.json(result);
     });
 });
+
 router.get('/lists', (req, res, next) => {
   if (req.auth.userid == '5ece428af848aa2fc392d099') {
     return res.sendStatus(401);
@@ -103,11 +104,9 @@ router.put('/lists', (req, res, next) => {
 
 router.delete('/lists/:id', (req, res, next) => {
   if (admins.indexOf(req.auth.userid) >= 0) {
-    console.log('here');
     List.findByIdAndRemove(req.params.id, (err, list) => {
       if (err) return next(err);
-      console.log(`deleting ${req.params.id} - ${list.name}`);
-      //bot.notifyAdmins('<b>' + list.name + '</b> deleted');
+      bot.notifyAdmins('<b>' + list.name + '</b> deleted');
       res.sendStatus(200);
     });
   } else {
@@ -138,14 +137,14 @@ const formatList = list => ({
   description: list.description,
   category: list.category,
 });
-
+/*
 User.findOne({
     _id: '5ecdef49babb2620da884a6a'
   })
   .exec((err, user) => {
     if (err) return console.error(err);
     console.log(user);
-  });
+  });*/
 /*
 ListBackup.find({})
   .select('_id name')
@@ -199,28 +198,28 @@ List.find({})
       })
       .exec((err, missingLists) => {
 
-        List.insertMany(missingLists
-          .map(list => ({
-                  name: list.name,
-                  description: list.description,
-                  category: list.category,
-                  creator: list.creator,
-                  isDynamic: list.isDynamic,
-                  enabled: list.enabled,
-                  values: list.values,
-                  date: list.date,
-                  modifyDate: list.modifyDate,
-                  plays: list.plays,
-                  hints: list.hints,
-                  skips: list.skips,
-                  score: list.score,
-                  voters: list.voters,
-                  votes: list.votes
-                }))
-).then((docs) => {
-console.log(missingLists.map(list => list.name));
-console.log(missingLists.length + ' missing lists');
-console.log(docs);
-}, console.error);
-});
-});*/
+        // List.insertMany(missingLists
+        //   .map(list => ({
+        //     name: list.name,
+        //     description: list.description,
+        //     category: list.category,
+        //     creator: list.creator,
+        //     isDynamic: list.isDynamic,
+        //     enabled: list.enabled,
+        //     values: list.values,
+        //     date: list.date,
+        //     modifyDate: list.modifyDate,
+        //     plays: list.plays,
+        //     hints: list.hints,
+        //     skips: list.skips,
+        //     score: list.score,
+        //     voters: list.voters,
+        //     votes: list.votes
+        //   }))
+        // ).then((docs) => {
+        //   console.log(missingLists.sort().map(list => list.name));
+        //   console.log(missingLists.length + ' missing lists');
+        //   console.log(docs.lengt);
+        // }, console.error);
+      });
+  });*/
