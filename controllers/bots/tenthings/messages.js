@@ -372,7 +372,7 @@ module.exports = {
           'Type /queue to check pending messages',
           'I\'m working on it -> @FlandersBurger',
           'Bots aren\'t free to host, suggest me cheap hosting options -> @FlandersBurger',
-          'Help me fund thisand make it better:\nhttps://paypal.me/tenthingsgame'
+          'Help me fund this and make it better:\nhttps://paypal.me/tenthingsgame'
         ];
       } else if (checkString(text, 'suck') ||
         checkString(text, 'lame') ||

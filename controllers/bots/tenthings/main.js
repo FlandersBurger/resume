@@ -1261,8 +1261,8 @@ function evaluateCommand(res, msg, game, player, isNew) {
         break;
       */
     case '/suggest':
-      const text = msg.text.substring(msg.command.length, msg.text.length).replace(/\s/g, '');
-      if (text && text != 'TenThings_Bot') {
+      const text = msg.text.substring(msg.command.length + 1, msg.text.length).replace(/\s/g, '');
+      if (text && text != 'TenThings_Bot' && text != '@TenThings_Bot') {
         player.suggestions++;
         game.save();
         const suggestion = `<b>Suggestion</b>\n${msg.text.substring(msg.command.length + 1, msg.text.length)}\n<i>${msg.from.username ? msg.from.username : msg.from.first_name}</i>`;
@@ -1272,7 +1272,7 @@ function evaluateCommand(res, msg, game, player, isNew) {
           .exec((err, lists) => {
             const fuzzyMatch = new FuzzyMatching(lists.map(list => list.name));
             const match = fuzzyMatch.get(text);
-            if (match.distance > 0.8) {
+            if (match.distance > 0.7) {
               bot.sendMessage(msg.chat.id, `There's an existing list that seems almost the same, ${msg.from.first_name}!\n-> ${match.value}`);
             } else {
               bot.notifyAdmins(suggestion);
@@ -1416,14 +1416,14 @@ List
   //console.log(result);
 });
 */
-
+/*
 List
   .find({
     name: ''
   })
   .exec((err, lists) => {
     console.log(lists);
-  });
+  });*/
 /*
 List
 .find()

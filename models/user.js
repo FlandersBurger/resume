@@ -14,6 +14,11 @@ var User = db('master').model('User', {
     required: false,
     default: false
   },
+  banned: {
+    type: Boolean,
+    required: false,
+    default: false
+  },
   gender: {
     sex: {
       type: Number,

@@ -1,0 +1,23 @@
+
+
+<div id="tenthingsadmin-page" class="col-md-12" ng-if="currentUser.admin">
+  <h1>Welcome to Ten Things Admin</h1>
+  <table class="table table-striped">
+    <thead>
+      <tr>
+        <th>Username</th>
+        <th>Banned</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr ng-repeat="user in users">
+        <td>{{user.username}}</td>
+        <td>
+          <button class="btn btn-sm" ng-class="{'btn-success': !user.banned, 'btn-danger': user.banned}">
+            <i class="fas" ng-class="{'btn-success': !user.banned, 'btn-ban': user.banned}" aria-hidden="true"></i>
+          </button>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</div>

@@ -41,7 +41,6 @@ router.get('/lists', (req, res, next) => {
     //.populate('creator', 'username')
     .lean()
     .exec((err, result) => {
-      console.log(result.length);
       if (err) return next(err);
       //var lists = result.map(list => console.log(list.blurbs));
       var lists = result.map(formatList);

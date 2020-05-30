@@ -35,7 +35,8 @@
   <link rel="stylesheet" ng-href="/bootstrap{{themeCounter}}.min.css">
   <!--link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"-->
 
-  <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+  <!--link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css"-->
+  <link rel="stylesheet" href="https://pro.fontawesome.com/releases/v5.13.0/css/all.css" integrity="sha384-IIED/eyOkM6ihtOiQsX2zizxFBphgnv1zbe1bKA+njdFzkr6cDNy16jfIKWu4FNH" crossorigin="anonymous">
 
   <!--script defer src="/resources/solid.min.js"></script>
   <script defer src="/resources/regular.min.js"></script>
@@ -150,7 +151,7 @@
       <div class="container">
         <ul class="nav navbar-nav collapse navbar-collapse">
           <li ng-repeat="profile in socialMedia" class="nav-item">
-            <a class="nav-link social-media" ng-href="{{profile.url}}" target="_blank"><i class="fa fa-2x" ng-class="profile.icon" aria-hidden="true"></i><span> {{profile.name}}</span></a>
+            <a class="nav-link social-media" ng-href="{{profile.url}}" target="_blank"><i class="fas fa-2x" ng-class="profile.icon" aria-hidden="true"></i><span> {{profile.name}}</span></a>
           </li>
         </ul>
       </div>
