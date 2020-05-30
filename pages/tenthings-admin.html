@@ -14,7 +14,7 @@
         <td>{{user.username}}</td>
         <td>
           <button class="btn btn-sm" ng-class="{'btn-success': !user.banned, 'btn-danger': user.banned}">
-            <i class="fas" ng-class="{'btn-success': !user.banned, 'btn-ban': user.banned}" aria-hidden="true"></i>
+            <i class="fas" ng-class="{'fa-thumbs-up': !user.banned, 'fa-thumbs-down': user.banned}" aria-hidden="true"></i>
           </button>
         </td>
       </tr>
