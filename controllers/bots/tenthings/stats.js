@@ -22,6 +22,7 @@ exports.getScores = (game_id, type) => {
     switch (type) {
       case 'td':
         str = '<b>Top Daily Scores</b>\n';
+        str += '<i>Highest single day score</i>\n';
         console.log(str);
         game.players.filter(({
           present
@@ -35,6 +36,7 @@ exports.getScores = (game_id, type) => {
         break;
       case 'tr':
         str = '<b>Top Win Ratio</b>\n';
+        str += '<i>Days won / Days played</i>\n';
         game.players.filter(({
           present
         }) => present).sort((player1, player2) => (player2.plays === 0 ? 0 : player2.wins / player2.plays) - (player1.plays === 0 ? 0 : player1.wins / player1.plays)).slice(0, 10).forEach(({
@@ -48,6 +50,7 @@ exports.getScores = (game_id, type) => {
         break;
       case 'ts':
         str = '<b>Top Overall Score</b>\n';
+        str += '<i>Highest sum of all scores</i>\n';
         console.log(str);
         game.players.filter(({
           present
@@ -61,6 +64,7 @@ exports.getScores = (game_id, type) => {
         break;
       case 'ta':
         str = '<b>Top Average Daily Score</b>\n';
+        str += '<i>Overall score / Days played</i>\n';
         game.players.filter(({
           present
         }) => present).sort((player1, player2) => (player2.plays === 0 ? 0 : player2.score / player2.plays) - (player1.plays === 0 ? 0 : player1.score / player1.plays)).slice(0, 10).forEach(({
@@ -76,7 +80,7 @@ exports.getScores = (game_id, type) => {
         getDailyScores(game);
     }
   });
-}
+};
 
 const getDailyScores = ({
   players,
@@ -233,16 +237,16 @@ exports.getStats = (chat_id, data, requestor) => {
         });
         break;
       case 'mostskipped':
-        listStats(game, 'skips', 'plays', 1, 'Most Skipped Lists', 1, data.requestor);
+        listStats(game, 'skips', 'plays', 1, 'Most Skipped Lists', '(Skip commands / 6) / Amount played', 1, data.requestor);
         break;
       case 'leastskipped':
-        listStats(game, 'skips', 'plays', 1, 'Least Skipped Lists', -1, data.requestor);
+        listStats(game, 'skips', 'plays', 1, 'Least Skipped Lists', '(Skip commands / 6) / Amount played', -1, data.requestor);
         break;
       case 'mosthinted':
-        listStats(game, 'hints', 'plays', 1 / 6, 'Most Hinted Lists', 1, data.requestor);
+        listStats(game, 'hints', 'plays', 1 / 6, 'Most Hinted Lists', '(Hint commands / 6) / Amount played', 1, data.requestor);
         break;
       case 'leasthinted':
-        listStats(game, 'hints', 'plays', 1 / 6, 'Least Hinted Lists', -1, data.requestor);
+        listStats(game, 'hints', 'plays', 1 / 6, 'Least Hinted Lists', '(Hint commands / 6) / Amount played', -1, data.requestor);
         break;
       case 'mostvoted':
         voteStats(game, -1, 'Voted Most on Lists', data.requestor);
@@ -250,53 +254,59 @@ exports.getStats = (chat_id, data, requestor) => {
       case 'leastvoted':
         voteStats(game, 1, 'Voted Least on Lists', data.requestor);
         break;
+      case 'mostpositive':
+        voteSentimentStats(game, 1, 'Voted Most Positively on Lists', data.requestor);
+        break;
+      case 'mostnegative':
+        voteSentimentStats(game, -1, 'Voted Most Negatively on Lists', data.requestor);
+        break;
       case 'mostplayed':
-        listStats(game, 'plays', '', 1, 'Most Played Lists', 1, data.requestor);
+        listStats(game, 'plays', '', 1, 'Most Played Lists', 'Sum of plays', 1, data.requestor);
         break;
       case 'mostpopular':
-        listStats(game, 'score', '', 1, 'Most Popular Lists', 1, data.requestor);
+        listStats(game, 'score', '', 1, 'Most Popular Lists', 'Sum of votes', 1, data.requestor);
         break;
       case 'leastpopular':
-        listStats(game, 'score', '', 1, 'Least Popular Lists', -1, data.requestor);
+        listStats(game, 'score', '', 1, 'Least Popular Lists', 'Sum of votes', -1, data.requestor);
         break;
       case 'skippers':
-        playerStats(game, 'skips', 'lists', 1, 'Most Skips Requested', 1, data.requestor);
+        playerStats(game, 'skips', 'lists', 1, 'Most Skips Requested', 'Skip commands / Lists played', 1, data.requestor);
         break;
       case 'unskippers':
-        playerStats(game, 'skips', 'lists', 1, 'Least Skips Requested', -1, data.requestor);
+        playerStats(game, 'skips', 'lists', 1, 'Least Skips Requested', 'Skip commands / Lists played', -1, data.requestor);
         break;
       case 'answers':
-        playerStats(game, 'answers', 'lists', 0.1, 'Most Correct Answers', 1, data.requestor);
+        playerStats(game, 'answers', 'lists', 0.1, 'Most Correct Answers', '(Correct answers given / 10) / Lists played', 1, data.requestor);
         break;
       case 'snubs':
-        playerStats(game, 'snubs', 'answers', 1, 'Most Snubs', 1, data.requestor);
+        playerStats(game, 'snubs', 'answers', 1, 'Most Snubs', 'Answers that were already answered / Total answers', 1, data.requestor);
         break;
       case 'unsnubs':
-        playerStats(game, 'snubs', 'answers', 1, 'Least Snubs', -1, data.requestor);
+        playerStats(game, 'snubs', 'answers', 1, 'Least Snubs', 'Answers that were already answered / Total answers', -1, data.requestor);
         break;
       case 'hints':
-        playerStats(game, 'hints', 'lists', 1 / 6, 'Most Hints Asked', 1, data.requestor);
+        playerStats(game, 'hints', 'lists', 1 / 6, 'Most Hints Asked', '(Hint commands / 6) / Lists played', 1, data.requestor);
         break;
       case 'unhints':
-        playerStats(game, 'hints', 'lists', 1 / 6, 'Least Hints Asked', -1, data.requestor);
+        playerStats(game, 'hints', 'lists', 1 / 6, 'Least Hints Asked', '(Hint commands / 6) / Lists played', -1, data.requestor);
         break;
       case 'plays':
-        playerStats(game, 'plays', '', 1, 'Most Games Played', 1, data.requestor);
+        playerStats(game, 'plays', '', 1, 'Most Games Played', 'Sum days played', 1, data.requestor);
         break;
       case 'wins':
-        playerStats(game, 'wins', 'lists', 1, 'Most Wins', 1, data.requestor);
+        playerStats(game, 'wins', '', 1, 'Most Wins', 'Sum of wins', 1, data.requestor);
         break;
       case 'unwins':
-        playerStats(game, 'wins', 'lists', 1, 'Least Wins', -1, data.requestor);
+        playerStats(game, 'wins', '', 1, 'Least Wins', 'Sum of wins', -1, data.requestor);
         break;
       case 'astreak':
-        playerStats(game, 'streak', '', 1, 'Best Answer Streak', 1, data.requestor);
+        playerStats(game, 'streak', '', 1, 'Best Answer Streak', 'Consecutive answers given', 1, data.requestor);
         break;
       case 'pstreak':
-        playerStats(game, 'maxPlayStreak', '', 1, 'Best Play Streak', 1, data.requestor);
+        playerStats(game, 'maxPlayStreak', '', 1, 'Best Play Streak', 'Consecutive days played', 1, data.requestor);
         break;
       case 'hstreak':
-        playerStats(game, 'maxHintStreak', '', 1, 'No Hint Streak', 1, data.requestor);
+        playerStats(game, 'maxHintStreak', '', 1, 'No Hint Streak', 'Consecutive answers given without asking hints', 1, data.requestor);
         break;
       default:
         bot.sendMessage(game.chat_id, 'Something');
@@ -306,9 +316,9 @@ exports.getStats = (chat_id, data, requestor) => {
 
 const listStats = ({
   chat_id
-}, field, divisor, ratio, title, sorter, requestor) => {
+}, field, divisor, ratio, title, description, sorter, requestor) => {
   let message = `<b>${title}</b>\n`;
-  message += requestor ? `<i>Requested by ${requestor}</i>\n` : '';
+  message += description ? `<i>${description}</i>\n` : '';
   List.find({
     plays: {
       $gt: 0
@@ -323,6 +333,7 @@ const listStats = ({
     }).slice(0, 20).forEach((list, index) => {
       message += `${index + 1}. ${list.name} (${Math.round(list[field] * ratio / (divisor ? (list[divisor] ? list[divisor] : 1) / 100 : 1) * 100) / 100}${divisor ? '%' : ''})\n`;
     });
+    message += requestor ? `<i>Requested by ${requestor}</i>\n` : '';
     bot.sendMessage(chat_id, message);
   });
 };
@@ -330,9 +341,9 @@ const listStats = ({
 const playerStats = ({
   players,
   chat_id
-}, field, divisor, ratio, title, sorter, requestor) => {
+}, field, divisor, ratio, title, description, sorter, requestor) => {
   let message = `<b>${title}</b>\n`;
-  message += requestor ? `<i>Requested by ${requestor}</i>\n` : '';
+  message += description ? `<i>${description}</i>\n` : '';
   players.filter(player => player.present && player[field] > 0).sort((a, b) => {
     if (divisor) {
       return (b[field] / (b[divisor] ? b[divisor] : 1) - a[field] / (a[divisor] ? a[divisor] : 1)) * sorter;
@@ -342,6 +353,7 @@ const playerStats = ({
   }).slice(0, 20).forEach((player, index) => {
     message += `${index + 1}. ${player.first_name} (${Math.round(player[field] * ratio / (divisor ? (player[divisor] ? player[divisor] : 1) / 100 : 1) * 100) / 100}${divisor ? '%' : ''})\n`;
   });
+  message += requestor ? `<i>Requested by ${requestor}</i>\n` : '';
   bot.sendMessage(chat_id, message);
 };
 
@@ -362,6 +374,43 @@ const voteStats = ({
     },
   ]).sort({
     votes: sorter
+  }).limit(10).exec((err, voters) => {
+    if (err) console.error(err);
+    let message = `<b>${title}</b>\n`;
+    let i = 1;
+    voters.forEach((voter) => {
+      const player = _.find(players, player => voter._id == player.id);
+      if (player) {
+        message += `${i++}. ${player.first_name} (${voter.votes})\n`;
+      }
+    });
+    bot.sendMessage(chat_id, message);
+  });
+};
+
+
+const voteSentimentStats = ({
+  players,
+  chat_id
+}, sorter, title) => {
+  List.aggregate([{
+      $match: {
+        'votes.vote': sorter
+      }
+    },
+    {
+      $unwind: '$votes'
+    },
+    {
+      $group: {
+        '_id': '$votes.voter',
+        'votes': {
+          $sum: 1
+        }
+      }
+    },
+  ]).sort({
+    votes: -sorter
   }).limit(10).exec((err, voters) => {
     if (err) console.error(err);
     let message = `<b>${title}</b>\n`;

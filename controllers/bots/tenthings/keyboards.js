@@ -2,8 +2,7 @@ module.exports = {
   stats: function(chat_id) {
     return {
       inline_keyboard: [
-        [
-          {
+        [{
             'text': 'List Stats',
             'callback_data': JSON.stringify({
               type: 'stats',
@@ -18,8 +17,7 @@ module.exports = {
             })
           },
         ],
-        [
-          {
+        [{
             'text': 'Global Stats',
             'callback_data': JSON.stringify({
               type: 'stat',
@@ -40,17 +38,14 @@ module.exports = {
   stats_list: function(game) {
     return {
       inline_keyboard: [
-        [
-          {
-            'text': '"' + game.list.name + '"',
-            'callback_data': JSON.stringify({
-              type: 'stat',
-              id: 'l_' + game.list._id
-            })
-          }
-        ],
-        [
-          {
+        [{
+          'text': '"' + game.list.name + '"',
+          'callback_data': JSON.stringify({
+            type: 'stat',
+            id: 'l_' + game.list._id
+          })
+        }],
+        [{
             'text': 'Most Skipped',
             'callback_data': JSON.stringify({
               type: 'stat',
@@ -65,8 +60,7 @@ module.exports = {
             })
           }
         ],
-        [
-          {
+        [{
             'text': 'Most Hints Asked',
             'callback_data': JSON.stringify({
               type: 'stat',
@@ -81,8 +75,7 @@ module.exports = {
             })
           }
         ],
-        [
-          {
+        [{
             'text': 'Least Popular Lists by Votes',
             'callback_data': JSON.stringify({
               type: 'stat',
@@ -97,23 +90,20 @@ module.exports = {
             })
           }
         ],
-        [
-          {
-            'text': 'Most Played Lists',
-            'callback_data': JSON.stringify({
-              type: 'stat',
-              id: 'mostplayed'
-            })
-          }
-        ]
+        [{
+          'text': 'Most Played Lists',
+          'callback_data': JSON.stringify({
+            type: 'stat',
+            id: 'mostplayed'
+          })
+        }]
       ]
     };
   },
   stats_player: function(game) {
     return {
       inline_keyboard: [
-        [
-          {
+        [{
             'text': 'My Stats',
             'callback_data': JSON.stringify({
               type: 'stat',
@@ -128,8 +118,7 @@ module.exports = {
             })
           }
         ],
-        [
-          {
+        [{
             'text': 'Daily Score',
             'callback_data': JSON.stringify({
               type: 'score',
@@ -144,8 +133,7 @@ module.exports = {
             })
           }
         ],
-        [
-          {
+        [{
             'text': 'Top Win Ratio',
             'callback_data': JSON.stringify({
               type: 'score',
@@ -160,8 +148,7 @@ module.exports = {
             })
           }
         ],
-        [
-          {
+        [{
             'text': 'Top Average',
             'callback_data': JSON.stringify({
               type: 'score',
@@ -176,8 +163,7 @@ module.exports = {
             })
           }
         ],
-        [
-          {
+        [{
             'text': 'Best Answer Streak',
             'callback_data': JSON.stringify({
               type: 'stat',
@@ -192,8 +178,7 @@ module.exports = {
             })
           }
         ],
-        [
-          {
+        [{
             'text': 'Most Skips Requested',
             'callback_data': JSON.stringify({
               type: 'stat',
@@ -208,8 +193,7 @@ module.exports = {
             })
           }
         ],
-        [
-          {
+        [{
             'text': 'Most Days Played',
             'callback_data': JSON.stringify({
               type: 'stat',
@@ -224,8 +208,7 @@ module.exports = {
             })
           }
         ],
-        [
-          {
+        [{
             'text': 'Most Snubs',
             'callback_data': JSON.stringify({
               type: 'stat',
@@ -240,8 +223,7 @@ module.exports = {
             })
           }
         ],
-        [
-          {
+        [{
             'text': 'Most Hints Asked',
             'callback_data': JSON.stringify({
               type: 'stat',
@@ -256,8 +238,7 @@ module.exports = {
             })
           }
         ],
-        [
-          {
+        [{
             'text': 'Most Wins',
             'callback_data': JSON.stringify({
               type: 'stat',
@@ -272,8 +253,7 @@ module.exports = {
             })
           }
         ],
-        [
-          {
+        [{
             'text': 'Voted Most on Lists',
             'callback_data': JSON.stringify({
               type: 'stat',
@@ -285,6 +265,21 @@ module.exports = {
             'callback_data': JSON.stringify({
               type: 'stat',
               id: 'leastvoted'
+            })
+          }
+        ],
+        [{
+            'text': 'Voted Most Positively on Lists',
+            'callback_data': JSON.stringify({
+              type: 'stat',
+              id: 'mostpositive'
+            })
+          },
+          {
+            'text': 'Voted Most Negatively on Lists',
+            'callback_data': JSON.stringify({
+              type: 'stat',
+              id: 'leastnegative'
             })
           }
         ],
@@ -309,15 +304,16 @@ module.exports = {
               id: 'sass',
               game: game
             })
-          },/*
-          {
-            'text': `Snub Messages: ${settings.snubs ? 'On' : 'Off'}`,
-            'callback_data': JSON.stringify({
-              type: 'setting',
-              id: 'snubs',
-              game: game
-            })
-          },*/
+          },
+          /*
+                    {
+                      'text': `Snub Messages: ${settings.snubs ? 'On' : 'Off'}`,
+                      'callback_data': JSON.stringify({
+                        type: 'setting',
+                        id: 'snubs',
+                        game: game
+                      })
+                    },*/
         ]
       ]
     };
