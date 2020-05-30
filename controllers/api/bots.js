@@ -8,7 +8,6 @@ var config = require('../../config');
 var bot = require('../../bots/telegram');
 
 var List = require('../../models/list');
-var ListBackup = require('../../models/list-backup');
 var User = require('../../models/user');
 var TenThings = require('../../models/games/tenthings');
 
