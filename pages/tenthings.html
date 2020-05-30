@@ -11,7 +11,7 @@
       <div class="col-md-4">
         <div class="btn-group">
           <button class="btn btn-default" ng-click="getLists()">
-            <i class="fa fa-refresh" ng-class="{ 'fa-spin': loading }" aria-hidden="true"></i>
+            <i class="fas fa-sync" ng-class="{ 'fa-spin': loading }" aria-hidden="true"></i>
           </button>
           <div class="btn-group" ng-if="userCount > 1">
             <div class="dropdown">
@@ -51,19 +51,19 @@
       <div class="col-md-8">
         <div class="col-md-12" ng-if="loggedIn">
           <div class="btn btn-default" ng-click="addList()" ng-disabled="selectedList && !selectedList._id">
-            <i class="fa fa-file-o" aria-hidden="true"></i> New
+            <i class="fas fa-list-ul" aria-hidden="true"></i> New
           </div>
           <div class="btn btn-default" ng-click="saveList(selectedList)" ng-disabled="!selectedList">
-            <i class="fa fa-save" ng-class="{ 'fa-save': !saving, 'fa-spin fa-spinner': saving }" aria-hidden="true"></i> Save
+            <i class="fas fa-save" ng-class="{ 'fa-save': !saving, 'fa-spin fa-spinner': saving }" aria-hidden="true"></i> Save
           </div>
           <div class="btn btn-danger" ng-click="deleteList(selectedList)" ng-disabled="!selectedList || (!currentUser.admin && selectedList.creator._id !== currentUser._id && selectedList._id)">
-            <i class="fa fa-trash-o" aria-hidden="true"></i> Delete
+            <i class="fas fa-trash-o" aria-hidden="true"></i> Delete
           </div>
           <div class="btn btn-default" ng-click="reportList(selectedList)" ng-hide="!selectedList || selectedList.creator._id === currentUser._id">
-            <i class="fa fa-bug" aria-hidden="true"></i> Report
+            <i class="fas fa-bug" aria-hidden="true"></i> Report
           </div>
           <div class="btn btn-default" ng-click="sortList = sortList === 'value' ? 'blurb' : 'value'" ng-hide="!selectedList">
-            <i class="fa fa-sort-amount-down" aria-hidden="true"></i> Sort by {{sortList === 'value' ? 'blurb' : 'value'}}
+            <i class="fas fa-sort-numeric-down" aria-hidden="true"></i> Sort by {{sortList === 'value' ? 'blurb' : 'value'}}
           </div>
           <br />
           <kbd>Please search existing lists first and add answers to them. Subjective lists and duplicates will be deleted.</kbd>
