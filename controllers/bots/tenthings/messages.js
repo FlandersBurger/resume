@@ -340,7 +340,12 @@ module.exports = {
           'https://i.imgur.com/t8Ghkkm.gif',
           'https://i.imgur.com/qqHQZbU.gif',
           'https://i.imgur.com/I7E7rpp.gif',
-          'https://i.imgur.com/EQfwcl1.gif'
+          'https://i.imgur.com/EQfwcl1.gif',
+          'https://i.imgur.com/deS2ENU.gif',
+          'https://i.imgur.com/0uTEMel.gif',
+          'https://i.imgur.com/05DRC5c.gif',
+          'https://i.imgur.com/v5FWRpJ.gif',
+          'https://i.imgur.com/TiIWN1O.gif'
         ];
       } else if (checkString(text, 'kill') ||
         checkString(text, 'fight') ||
@@ -357,7 +362,8 @@ module.exports = {
           'https://i.imgur.com/CYj0901.gif',
           'https://i.imgur.com/dWcjuBa.gif',
           'https://i.imgur.com/VeI4zsk.gif',
-          'https://i.imgur.com/7xKQFGX.gif'
+          'https://i.imgur.com/7xKQFGX.gif',
+          'https://i.imgur.com/6Y67zdt.gif'
         ];
       } else if (checkString(text, 'slow') ||
         checkString(text, 'bagal') ||
@@ -372,7 +378,19 @@ module.exports = {
           'Type /queue to check pending messages',
           'I\'m working on it -> @FlandersBurger',
           'Bots aren\'t free to host, suggest me cheap hosting options -> @FlandersBurger',
-          'Help me fund this and make it better:\nhttps://paypal.me/tenthingsgame'
+          'Help me fund this and make it better:\nhttps://paypal.me/tenthingsgame',
+          'https://i.imgur.com/t6Fhx6k.gif'
+        ];
+      } else if (checkString(text, 'sorry')) {
+        messages = [
+          'https://i.imgur.com/XXMazKp.gif',
+          'https://i.imgur.com/JUqg0O4.gif',
+          'https://i.imgur.com/phU8ptn.gif',
+          'https://i.imgur.com/8S3Fmjd.gif',
+          'https://i.imgur.com/fX0YODD.gif',
+          'https://i.imgur.com/sUvZrnO.gif',
+          'https://i.imgur.com/DjUH3w8.gif',
+          'https://i.imgur.com/Ywxo0Tf.gif'
         ];
       } else if (checkString(text, 'suck') ||
         checkString(text, 'lame') ||
@@ -391,7 +409,10 @@ module.exports = {
           'Whatever dude',
           'That\'s what someone said about you!',
           'My vengeance will be sweet',
-          '....sniffle'
+          '....sniffle',
+          'https://i.imgur.com/TTorePG.gif',
+          'https://i.imgur.com/VjQKRBc.gif',
+          'https://i.imgur.com/qiEJpPI.gif'
         ];
       } else if (checkString(text, 'fuck') ||
         checkString(text, 'fuckin') ||
@@ -414,6 +435,10 @@ module.exports = {
           'https://i.imgur.com/DNTehBp.gif',
           'https://i.imgur.com/jdwhkzx.gif',
           'https://i.imgur.com/UPisrU0.gif',
+          'https://i.imgur.com/NypzRMM.gif',
+          'https://i.imgur.com/kUjfZDU.gif',
+          'https://i.imgur.com/1Yy94Uz.gif',
+          'https://i.imgur.com/qQZoEuR.gif',
           'I call potty mouth!',
           'I believe the correct term is "procreate"',
           'Do you kiss your mother with that mouth?',
@@ -519,6 +544,19 @@ module.exports = {
           'You might be on to something',
           'Say it isn\'t so!',
           'I liked your previous statement better',
+          'I was going to listen to that, but then I just carried on linving my life',
+          'https://i.imgur.com/X71TdXK.gif',
+          'https://i.imgur.com/TEsdXvh.gif',
+          'https://i.imgur.com/ZZx2f2d.gif',
+          'https://i.imgur.com/TXHFeTI.gif',
+          'https://i.imgur.com/SK39kZA.gif',
+          'https://i.imgur.com/8vZLSBH.gif',
+          'https://i.imgur.com/knNUA7M.gif',
+          'https://i.imgur.com/aD5SChv.gif',
+          'https://i.imgur.com/pxbrHbw.gif',
+          'https://i.imgur.com/ZrnPp1F.gif',
+          'https://i.imgur.com/2HSm4mM.gif',
+          'https://i.imgur.com/NzqqDY6.gif'
         ];
       }
     } else if (checkString(text, 'cake')) {

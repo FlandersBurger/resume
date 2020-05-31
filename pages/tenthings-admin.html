@@ -5,12 +5,14 @@
   <table class="table table-striped">
     <thead>
       <tr>
+        <!--th></th-->
         <th>Username</th>
         <th>Banned</th>
       </tr>
     </thead>
     <tbody>
-      <tr ng-repeat="user in users">
+      <tr ng-repeat="user in users | orderBy: 'username'">
+        <!--td><img class="img-circle img-profile" ng-src="{{user.photoURL}}" alt="Profile Picture" ng-if="user.photoURL"></td-->
         <td>{{user.username}}</td>
         <td>
           <button class="btn btn-sm" ng-class="{'btn-success': !user.banned, 'btn-danger': user.banned}">
