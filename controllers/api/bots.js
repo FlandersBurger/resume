@@ -102,11 +102,17 @@ router.put('/lists', (req, res, next) => {
 
 router.delete('/lists/:id', (req, res, next) => {
   if (admins.indexOf(req.auth.userid) >= 0) {
-    List.findByIdAndRemove(req.params.id, (err, list) => {
-      if (err) return next(err);
-      bot.notifyAdmins('<b>' + list.name + '</b> deleted');
-      res.sendStatus(200);
-    });
+    User.findOne({
+        _id: req.auth.userid
+      })
+      .exec((err, user) => {
+        if (err) return next(err);
+        List.findByIdAndRemove(req.params.id, (err, list) => {
+          if (err) return next(err);
+          bot.notifyAdmins('<b>' + list.name + '</b> deleted by ' + user.username);
+          res.sendStatus(200);
+        });
+      });
   } else {
     bot.notifyAdmin(`Deletion attempt: ${req.params.id}`);
     res.sendStatus(401);
