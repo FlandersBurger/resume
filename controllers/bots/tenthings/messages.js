@@ -604,9 +604,9 @@ module.exports = {
       messages = ['Who\'s there?'];
     } else if (text.toLowerCase() === 'i love you') {
       messages = ['I know'];
-    } else if (checkString('meaning of life') >= 0) {
+    } else if (checkString('meaning of life')) {
       messages = ['42'];
-    } else if (checkString('mamma mia') >= 0) {
+    } else if (checkString('mamma mia')) {
       messages = ['Here I go again'];
     } else if (checkString('im blue')) {
       messages = ['Da ba dee da ba daa. Da ba dee da ba daa, da ba dee da ba daa, da ba dee da ba daa. Da ba dee da ba daa, da ba dee da ba daa, da ba dee da ba daa'];
