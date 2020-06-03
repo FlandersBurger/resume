@@ -1375,7 +1375,7 @@ function evaluateCommand(res, msg, game, player, isNew) {
 
 module.exports = router;
 guessQueue.count().then(count => {
-  bot.sendAdmin(`${count} messages in the queue`);
+  bot.notifyAdmin(`${count} messages in the queue`);
 }, console.error);
 
 /*
