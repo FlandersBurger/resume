@@ -369,22 +369,13 @@ module.exports = {
         checkString(text, 'things')
       ) {
         messages = [
-          'That\'s Mister Ten Things to you!',
-          'You rang?',
-          'I\'m busy',
-          ''
+          'That\'s Mister Ten Things to you!'
         ];
       } else if (checkString(text, 'name') &&
         checkString(text, 'your')
       ) {
         messages = [
-          'You can call me Mister Ten Things',
-          'I\'d tell you but I don\'t like being labeled',
-          'Heisenberg, now say my name!',
-          'Call me by your name',
-          'Soy diez cosas',
-          'Sampung bagay ako',
-          'Eu tenho dez coisas'
+          'Heisenberg, now say my name!'
         ];
       } else if (checkString(text, 'slow') ||
         checkString(text, 'bagal') ||
@@ -406,7 +397,6 @@ module.exports = {
         ];
       } else if (checkString(text, 'sorry')) {
         messages = [
-          'https://i.imgur.com/XXMazKp.gif',
           'https://i.imgur.com/JUqg0O4.gif',
           'https://i.imgur.com/phU8ptn.gif',
           'https://i.imgur.com/8S3Fmjd.gif',
@@ -585,7 +575,7 @@ module.exports = {
     } else if (checkString(text, 'cake')) {
       messages = ['The cake is a lie'];
     } else if (checkString(text, 'heisenberg')) {
-      messages = ['https://i.imgur.com/vB9B5.gif'];
+      messages = ['https://i.imgur.com/XXMazKp.gif'];
     } else if (checkString(text, 'martini')) {
       messages = ['Shaken or stirred?'];
     } else if (checkString(text, 'marco ')) {
@@ -596,6 +586,14 @@ module.exports = {
       messages = ['Who\'s there?'];
     } else if (text.toLowerCase() === 'i love you') {
       messages = ['I know'];
+    } else if (text.toLowerCase() === 'meaning of life') {
+      messages = ['42'];
+    } else if (text.toLowerCase() === 'mamma mia') {
+      messages = ['Here I go again'];
+    } else if (text.toLowerCase() === 'i\'m blue' || text.toLowerCase() === 'im blue') {
+      messages = ['Da ba dee da ba daa. Da ba dee da ba daa, da ba dee da ba daa, da ba dee da ba daa. Da ba dee da ba daa, da ba dee da ba daa, da ba dee da ba daa'];
+    } else if (text.toLowerCase() === 'what is love') {
+      messages = ['Baby, don\'t hurt me'];
     } else if (text.toLowerCase().indexOf('the truth') >= 0) {
       messages = ['You can\'t handle the truth!'];
     } else if (text.toLowerCase().indexOf('your quest ') >= 0) {
