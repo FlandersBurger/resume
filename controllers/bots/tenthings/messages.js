@@ -367,7 +367,8 @@ module.exports = {
         ];
       } else if (checkString(text, 'slow') ||
         checkString(text, 'bagal') ||
-        checkString(text, 'lag')
+        checkString(text, 'lag') ||
+        checkString(text, 'laggy')
       ) {
         messages = [
           'I\'m giving \'er all she got, captain',
@@ -379,6 +380,7 @@ module.exports = {
           'I\'m working on it -> @FlandersBurger',
           'Bots aren\'t free to host, suggest me cheap hosting options -> @FlandersBurger',
           'Help me fund this and make it better:\nhttps://paypal.me/tenthingsgame',
+          'Some Bitcoin could help me afford a better server\nBitcoin Address: 17ZhRg1iQTqhwUgEYq4MnEYfENMftuurqs',
           'https://i.imgur.com/t6Fhx6k.gif'
         ];
       } else if (checkString(text, 'sorry')) {
