@@ -365,6 +365,27 @@ module.exports = {
           'https://i.imgur.com/7xKQFGX.gif',
           'https://i.imgur.com/6Y67zdt.gif'
         ];
+      } else if (checkString(text, 'ten') &&
+        checkString(text, 'things')
+      ) {
+        messages = [
+          'That\'s Mister Ten Things to you!',
+          'You rang?',
+          'I\'m busy',
+          ''
+        ];
+      } else if (checkString(text, 'name') &&
+        checkString(text, 'your')
+      ) {
+        messages = [
+          'You can call me Mister Ten Things',
+          'I\'d tell you but I don\'t like being labeled',
+          'Heisenberg, now say my name!',
+          'Call me by your name',
+          'Soy diez cosas',
+          'Sampung bagay ako',
+          'Eu tenho dez coisas'
+        ];
       } else if (checkString(text, 'slow') ||
         checkString(text, 'bagal') ||
         checkString(text, 'lag') ||
@@ -563,6 +584,8 @@ module.exports = {
       }
     } else if (checkString(text, 'cake')) {
       messages = ['The cake is a lie'];
+    } else if (checkString(text, 'heisenberg')) {
+      messages = ['https://i.imgur.com/vB9B5.gif'];
     } else if (checkString(text, 'martini')) {
       messages = ['Shaken or stirred?'];
     } else if (checkString(text, 'marco ')) {
