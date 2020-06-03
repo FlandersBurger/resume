@@ -20,7 +20,7 @@ const TenThings = require('../../../models/games/tenthings');
 const MAX_HINTS = hints.getMaxHints();
 const VETO_DELAY = 15;
 const ANSWER_DELAY = 2;
-const BANNED_USERS = [1136025506, 1162690484, 1158491266, 1053547542, 1182973691, 1010339222, 906650538, 1153021237, 623100045, 1269984320, 1235415902];
+const BANNED_USERS = [1136025506, 1162690484, 1158491266, 1053547542, 1182973691, 1010339222, 906650538, 1153021237, 623100045, 1269984320];
 
 const cooldowns = {};
 const skips = {};
@@ -921,7 +921,7 @@ router.post('/', ({
       stats.getScores(body.callback_query.message.chat.id, data.id);
     } else if (data.type === 'setting') {
       if (body.callback_query.message.chat_id != config.masterChat) {
-        bot.checkAdmin(body.callback_query.message.chat.id, body.callback_query.message.from.id)
+        bot.checkAdmin(body.callback_query.message.chat.id, body.callback_query.from.id)
           .then(admin => {
             if (admin) {
               TenThings.findOne({
@@ -936,7 +936,7 @@ router.post('/', ({
                 });
               });
             } else {
-              bot.sendMessage(body.callback_query.message.chat.id, `Nice try ${body.callback_query.message.from.first_name} but that's an admin function`);
+              bot.sendMessage(body.callback_query.message.chat.id, `Nice try ${body.callback_query.from.first_name} but that's an admin function`);
             }
           }, err => {
             bot.notifyAdmin(JSON.stringify(err));
