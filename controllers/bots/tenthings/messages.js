@@ -427,6 +427,24 @@ module.exports = {
           'https://i.imgur.com/VjQKRBc.gif',
           'https://i.imgur.com/qiEJpPI.gif'
         ];
+      } else if ((checkString(text, 'favourite') ||
+          checkString(text, 'favorite')) &&
+        checkString(text, 'things')
+      ) {
+        messages = [
+          'Rain drops on roses',
+          'Whiskers on kittens',
+          'Brown paper packages tied up with strings',
+          'Cream-colored ponies',
+          'Crisp apple strudles',
+          'Door bells',
+          'Sleigh bells',
+          'Schnitzel with noodles',
+          'Wild geese that fly with the moon on their wings',
+          'Girst in white dresses with blue satin sashes',
+          'Snowflakes that stay on my nose and eyelashes',
+          'Silver white winters that melt into springs'
+        ];
       } else if (checkString(text, 'fuck') ||
         checkString(text, 'fuckin') ||
         checkString(text, 'fucking')
@@ -578,7 +596,7 @@ module.exports = {
       messages = ['https://i.imgur.com/XXMazKp.gif'];
     } else if (checkString(text, 'martini')) {
       messages = ['Shaken or stirred?'];
-    } else if (checkString(text, 'marco ')) {
+    } else if (text.toLowerCase().indexOf('marco') === 0) {
       messages = ['Polo'];
     } else if (checkString(text, 'kansas')) {
       messages = ['I\'ve a feeling we\'re not in Kansas anymore.'];
@@ -586,17 +604,17 @@ module.exports = {
       messages = ['Who\'s there?'];
     } else if (text.toLowerCase() === 'i love you') {
       messages = ['I know'];
-    } else if (text.toLowerCase() === 'meaning of life') {
+    } else if (checkString('meaning of life') >= 0) {
       messages = ['42'];
-    } else if (text.toLowerCase() === 'mamma mia') {
+    } else if (checkString('mamma mia') >= 0) {
       messages = ['Here I go again'];
-    } else if (text.toLowerCase() === 'i\'m blue' || text.toLowerCase() === 'im blue') {
+    } else if (checkString('im blue')) {
       messages = ['Da ba dee da ba daa. Da ba dee da ba daa, da ba dee da ba daa, da ba dee da ba daa. Da ba dee da ba daa, da ba dee da ba daa, da ba dee da ba daa'];
-    } else if (text.toLowerCase() === 'what is love') {
+    } else if (checkString('what is love')) {
       messages = ['Baby, don\'t hurt me'];
     } else if (text.toLowerCase().indexOf('the truth') >= 0) {
       messages = ['You can\'t handle the truth!'];
-    } else if (text.toLowerCase().indexOf('your quest ') >= 0) {
+    } else if (text.toLowerCase().indexOf('your quest') >= 0) {
       messages = ['To seek the holy grail'];
     } else if (checkString(text, 'inconceivable')) {
       messages = ['My name is Inigo Montoya. You killed my father. Prepare to die.'];
