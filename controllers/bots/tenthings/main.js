@@ -1270,7 +1270,10 @@ function evaluateCommand(res, msg, game, player, isNew) {
         const message = `<b>Suggestion</b>\n${msg.text.substring(msg.command.length + 1, msg.text.length)}\n<i>${msg.from.username ? msg.from.username : msg.from.first_name}</i>`;
         bot.notify(message);
         List.find({
-            $regex: `.*${msg.text.substring(msg.command.length + 1, msg.text.length)}.*`
+            name: {
+              $regex: `.*${msg.text.substring(msg.command.length + 1, msg.text.length)}.*`,
+              $options: 'i'
+            }
           })
           .select('name')
           .exec((err, lists) => {
