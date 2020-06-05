@@ -1282,7 +1282,7 @@ function evaluateCommand(res, msg, game, player, isNew) {
               return bot.notifyAdmin(message);
             }
             if (lists.length > 0) {
-              bot.sendMessage(msg.chat.id, `I found some similar lists that already exist, ${msg.from.first_name}!\n${lists.map(list => `\n - ${list.name}`)}`);
+              bot.sendMessage(msg.chat.id, `I found some similar lists that already exist, ${msg.from.first_name}!${lists.reduce((txt, list) => `${txt}\n - ${list.name}`)}`, '');
             } else {
               bot.notifyAdmins(message);
               bot.sendMessage(msg.chat.id, `Suggestion noted, ${msg.from.first_name}!\nNote that you can add your own lists at https://belgocanadian.com/tenthings`);

@@ -97,7 +97,6 @@ module.exports = {
     message += 'Hints: ' + list.hints + '\n';
     message += 'Created on: ' + moment(list.date).format("DD-MMM-YYYY") + '\n';
     message += 'Modified on: ' + moment(list.modifyDate).format("DD-MMM-YYYY") + '\n';
-    message += '\n';
     return message;
   },
   playerStats: function(player, requestor) {
