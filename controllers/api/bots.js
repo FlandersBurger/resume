@@ -38,7 +38,7 @@ router.get('/lists', (req, res, next) => {
   }
   List.find({})
     .select('_id plays skips score values.value date modifyDate creator name description category')
-    //.populate('creator', 'username')
+    .populate('creator', 'username')
     .lean()
     .exec((err, result) => {
       if (err) return next(err);
