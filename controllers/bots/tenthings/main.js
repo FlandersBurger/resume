@@ -923,7 +923,7 @@ router.post('/', ({
       if (body.callback_query.message.chat_id != config.masterChat) {
         bot.checkAdmin(body.callback_query.message.chat.id, body.callback_query.from.id)
           .then(admin => {
-            if (admin) {
+            if (admin || body.callback_query.message.chat.id > 0) {
               TenThings.findOne({
                 chat_id: body.callback_query.message.chat.id
               }).select('chat_id settings').exec((err, game) => {
@@ -1261,21 +1261,22 @@ function evaluateCommand(res, msg, game, player, isNew) {
         break;
       */
     case '/suggest':
-      const text = msg.text.substring(msg.command.length + 1, msg.text.length).replace(/\s/g, '');
-      if (text && text != 'TenThings_Bot' && text != '@TenThings_Bot') {
+      const suggestion = msg.text.substring(msg.command.length + 1, msg.text.length).replace(/\s/g, '');
+      console.log(suggestion);
+      if (suggestion && suggestion != 'TenThings_Bot' && suggestion != '@TenThings_Bot') {
         player.suggestions++;
         game.save();
-        const suggestion = `<b>Suggestion</b>\n${msg.text.substring(msg.command.length + 1, msg.text.length)}\n<i>${msg.from.username ? msg.from.username : msg.from.first_name}</i>`;
-        bot.notify(suggestion);
-        List.find({})
+        const message = `<b>Suggestion</b>\n${msg.text.substring(msg.command.length + 1, msg.text.length)}\n<i>${msg.from.username ? msg.from.username : msg.from.first_name}</i>`;
+        bot.notify(message);
+        List.find({
+            $regex: `.*${msg.text.substring(msg.command.length + 1, msg.text.length)}.*`
+          })
           .select('name')
           .exec((err, lists) => {
-            const fuzzyMatch = new FuzzyMatching(lists.map(list => list.name));
-            const match = fuzzyMatch.get(text);
-            if (match.distance > 0.7) {
-              bot.sendMessage(msg.chat.id, `There's an existing list that seems almost the same, ${msg.from.first_name}!\n-> ${match.value}`);
+            if (lists.length > 0) {
+              bot.sendMessage(msg.chat.id, `I found some similar lists that already exist, ${msg.from.first_name}!\n${lists.map(list => `\n - ${list.name}`)}`);
             } else {
-              bot.notifyAdmins(suggestion);
+              bot.notifyAdmins(message);
               bot.sendMessage(msg.chat.id, `Suggestion noted, ${msg.from.first_name}!\nNote that you can add your own lists at https://belgocanadian.com/tenthings`);
             }
           });
@@ -1284,19 +1285,17 @@ function evaluateCommand(res, msg, game, player, isNew) {
       }
       break;
     case '/typo':
-      if (msg.text.substring(msg.command.length, msg.text.length).replace(/\s/g, '')) {
+      const typo = msg.text.substring(msg.command.length + 1, msg.text.length).replace(/\s/g, '');
+      if (typo && typo != 'TenThings_Bot' && typo != '@TenThings_Bot') {
         player.suggestions++;
         game.save();
-        let fulltypo = msg.text.substring(msg.command.length + 1, msg.text.length);
-        if (fulltypo.indexOf('TenThings_Bot ') == 0) {
-          fulltypo = fulltypo.replace('TenThings_Bot ', '');
-        }
-        let typo = `<b>Typo</b>\n${fulltypo}\n<i>${msg.from.username ? msg.from.username : msg.from.first_name}</i>`;
-        typo += `\nList: ${game.list.name}`;
-        bot.notifyAdmins(typo);
+        let message = `<b>Typo</b>\n${typo}\n<i>${msg.from.username ? msg.from.username : msg.from.first_name}</i>`;
+        message += `\nList: ${game.list.name}`;
+        bot.notifyAdmins(message);
+        bot.notify(message);
         bot.sendMessage(msg.chat.id, `Typo noted, ${msg.from.first_name}!`);
       } else {
-        bot.sendMessage(msg.chat.id, `You didn't say anything ${msg.from.first_name}. Add your message after /typo`);
+        bot.sendMessage(msg.chat.id, `You didn't say anything, ${msg.from.first_name}. Add your message after /typo`);
       }
       break;
     case '/hint':
@@ -1345,7 +1344,7 @@ function evaluateCommand(res, msg, game, player, isNew) {
       if (game.chat_id != config.masterChat) {
         bot.checkAdmin(game.chat_id, msg.from.id)
           .then(admin => {
-            if (admin) {
+            if (admin || game.chat_id > 0) {
               bot.sendKeyboard(game.chat_id, '<b>Settings</b>', keyboards.settings(game.chat_id, game.settings));
             }
           });
