@@ -11,6 +11,10 @@ angular.module('app')
       return $http.get('/api/users/all');
     };
 
+    svc.toggleBan = function(id) {
+      return $http.get(`/api/users/ban/${id}`);
+    };
+
     svc.setToken = function(token) {
       $http.defaults.headers.common['X-Auth'] = token;
       return svc.getUser();

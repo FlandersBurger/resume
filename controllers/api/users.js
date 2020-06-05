@@ -36,6 +36,37 @@ router.get('/all', (req, res, next) => {
   });
 });
 
+router.get('/ban/:id', (req, res, next) => {
+  if (!req.auth.userid) {
+    return res.send(401);
+  }
+  console.log(req.params);
+  User.findOne({
+    _id: req.auth.userid
+  }, (err, user) => {
+    if (err) return next(err);
+    if (user.admin) {
+      User.findOne({
+        _id: req.params.id
+      }, (err, user) => {
+        if (err) {
+          return next(err);
+        }
+        if (user) {
+          console.log(user);
+          user.banned = !user.banned;
+          try {
+            user.save();
+          } catch (e) {
+            return next(err);
+          }
+          res.sendStatus(200);
+        }
+      });
+    }
+  });
+});
+
 router.post('/', function(req, res, next) {
   var user = new User({
     username: req.body.username,
