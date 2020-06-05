@@ -272,7 +272,9 @@ const queueGuess = (game, msg) => {
       msg,
       game: game.chat_id,
       list: game.list._id,
-      match: fuzzyMatch.get(text)
+      match: fuzzyMatch.get(text, {
+        min: 0.75
+      })
     };
     guess.match.index = _.findIndex(values, value => value === guess.match.value);
     if (guess.match.distance >= 0.75) {
@@ -283,7 +285,9 @@ const queueGuess = (game, msg) => {
   }
   if (minigameAnswer && text.length / minigameAnswer.length > 0.75 && text.length / minigameAnswer.length < 1.25) {
     const fuzzyMatch = new FuzzyMatching([minigameAnswer]);
-    const match = fuzzyMatch.get(text);
+    const match = fuzzyMatch.get(text, {
+      min: 0.75
+    });
     if (match.distance >= 0.75) {
       const guess = {
         type: 'minigame',
