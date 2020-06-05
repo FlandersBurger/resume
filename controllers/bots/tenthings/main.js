@@ -455,7 +455,6 @@ const checkGuess = (game, guess, msg) => {
       if (match.blurb) {
         guessed(game, player, msg, match.value, (match.blurb.substring(0, 4) === 'http' ? (`<a href="${match.blurb}">&#8204;</a>`) : (`\n<i>${match.blurb}</i>`)), score, accuracy);
       } else {
-
         guessed(game, player, msg, match.value, '', score, accuracy);
         /*
         request(`https://en.wikipedia.org/w/api.php?action=query&format=json&prop=extracts&titles=Earth&generator=prefixsearch&exintro=1&explaintext=1&gpssearch=${encodeURIComponent(match.value)}`, (err, response, body) => {
@@ -481,7 +480,9 @@ const checkGuess = (game, guess, msg) => {
         });
         */
       }
-      setTimeout(() => checkRound(game), 200);
+      setTimeout(() => {
+        checkRound(game);
+      }, 200);
     } else {
       player.snubs++;
       /*
@@ -500,7 +501,7 @@ const checkGuess = (game, guess, msg) => {
   });
 };
 
-const guessed = ({
+const guessed = async ({
   streak,
   list
 }, {
@@ -521,7 +522,7 @@ const guessed = ({
   } else {
     message += '\nRound over.';
   }
-  bot.sendMessage(chat.id, message);
+  return await bot.sendMessage(chat.id, message);
 };
 
 const checkRound = (game) => {
@@ -539,17 +540,17 @@ const checkRound = (game) => {
             message += game.list.category ? `Category: <b>${game.list.category}</b>\n` : '';
             message += list;
             message += messages.listStats(foundList);
+            message += stats.getDailyScores(game, 5);
             bot.sendMessage(game.chat_id, message);
             setTimeout(() => {
-              stats.getDailyScores(game, 5);
               rateList(game);
               setTimeout(() => {
                 newRound(game);
               }, 1000);
-            }, 2000);
+            }, 1000);
           });
       });
-    }, 2000);
+    }, 1000);
   }
 };
 
@@ -663,7 +664,7 @@ function skipList(game, skipper) {
       foundList.skips++;
       foundList.save(err => {
         if (err) return console.error(err);
-        stats.getDailyScores(game, 5);
+        bot.sendMessage(game.chat_id, stats.getDailyScores(game, 5));
         newRound(game);
       });
     });
@@ -1273,6 +1274,10 @@ function evaluateCommand(res, msg, game, player, isNew) {
           })
           .select('name')
           .exec((err, lists) => {
+            if (err) {
+              console.error(err);
+              return bot.notifyAdmin(message);
+            }
             if (lists.length > 0) {
               bot.sendMessage(msg.chat.id, `I found some similar lists that already exist, ${msg.from.first_name}!\n${lists.map(list => `\n - ${list.name}`)}`);
             } else {
@@ -1325,7 +1330,7 @@ function evaluateCommand(res, msg, game, player, isNew) {
       }, msg.from.id);
       break;
     case '/score':
-      stats.getDailyScores(game);
+      bot.sendMessage(game.chat_id, stats.getDailyScores(game));
       break;
     case '/minigame':
       if (!game.minigame.answer) {

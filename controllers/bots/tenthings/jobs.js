@@ -160,7 +160,7 @@ const dailyScore = schedule.scheduleJob('0 0 0 * * *', () => {
       .then(games => {
         const uniquePlayers = [];
         const players = games.reduce((players, game) => {
-          stats.getDailyScores(game);
+          bot.sendMessage(game.chat_id, stats.getDailyScores(game));
           getHighScore(game).then(highScore => {
             let message = '';
             const winners = [];

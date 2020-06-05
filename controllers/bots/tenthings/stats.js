@@ -77,7 +77,7 @@ exports.getScores = (game_id, type) => {
         bot.sendMessage(game_id, str);
         break;
       default:
-        getDailyScores(game);
+        bot.sendMessage(game_id, stats.getDailyScores(game));
     }
   });
 };
@@ -95,7 +95,7 @@ const getDailyScores = ({
     str += `${index + 1}: ${first_name} - ${scoreDaily}\n`;
     return str;
   }, `<b>${limit ? `Top ${limit} ` : ''}Daily Scores</b>\n`);
-  bot.sendMessage(chat_id, message);
+  return message;
 };
 
 exports.getDailyScores = getDailyScores;
