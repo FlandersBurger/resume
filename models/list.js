@@ -5,6 +5,7 @@ var listSchema = new mongoose.Schema({
   name: String,
   description: String,
   category: String,
+  categories: [String],
   creator: {
     type: String,
     ref: 'User',

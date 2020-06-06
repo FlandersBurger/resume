@@ -28,7 +28,8 @@ angular.module('app')
       'Technology',
       'Language',
       'Business',
-      'Internet'
+      'Internet',
+      'K-pop'
     ];
     $scope.keyDown = e => {
       e = e || window.event;
@@ -157,6 +158,19 @@ angular.module('app')
       $('#category-select').hide();
     };
 
+    $scope.getCategoryClass = category => {
+      return $scope.selectedList && $scope.selectedList.categories.indexOf(category) >= 0 ? 'btn-success' : 'btn-default';
+    };
+
+    $scope.toggleCategory = category => {
+      const categoryIndex = $scope.selectedList.categories.indexOf(category);
+      if (categoryIndex >= 0) {
+        $scope.selectedList.categories.splice(categoryIndex, 1);
+      } else {
+        $scope.selectedList.categories.push(category);
+      }
+    };
+
     $scope.addList = () => {
       $scope.selectedList = {
         name: '',
@@ -192,11 +206,14 @@ angular.module('app')
     };
 
     $scope.saveList = list => {
+      if (list.categories.length === 0) {
+        return alert('Please sel')
+      }
       if (!$scope.saving) {
         list.values = list.values.filter(({
           value
         }) => value);
-        if (list.values.length >= 10 && list.name && list.category) {
+        if (list.values.length >= 10 && list.name && list.categories.length > 0) {
           $scope.saving = true;
           BotsSvc.saveList($scope.currentUser, list)
             .then(({
@@ -224,7 +241,7 @@ angular.module('app')
         } else if (!list.name) {
           flash('#list-name');
         } else {
-          flash('#list-category');
+          flash('.list-category');
         }
       }
     };

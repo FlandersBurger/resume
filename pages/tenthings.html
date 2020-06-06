@@ -2,12 +2,11 @@
 
 <div id="tenthings-page" class="col-md-12" ng-keydown="keyDown($event)">
   <div>
-    <h1 ng-if="currentUser.uid == 'HVFJuJ9lO9Y0IVUIheZZq68qB5L2'">Come talk to me, Cans Ratr -> @FlandersBurger</h1>
     <h1 class="text-danger" ng-show="!loggedIn">You have to be logged in to edit lists</h1>
     <div class="well well-sm">
       This page works in conjunction with the <a href="https://t.me/joinchat/I1Di-1MXGXkjhgNPXi6Vfg" target="_blank">Ten Things Telegram Bot</a>
     </div>
-    <div ng-show="loggedIn" ng-if="currentUser.uid != 'HVFJuJ9lO9Y0IVUIheZZq68qB5L2'">
+    <div ng-show="loggedIn">
       <div class="col-md-4">
         <div class="btn-group">
           <button class="btn btn-default" ng-click="getLists()">
@@ -66,7 +65,7 @@
             <i class="fas fa-sort-numeric-down" aria-hidden="true"></i> Sort by {{sortList === 'value' ? 'blurb' : 'value'}}
           </div>
           <br />
-          <kbd>Please search existing lists first and add answers to them. Subjective lists and duplicates will be deleted.</kbd>
+          <kbd>Please search existing lists first and add answers to them. Subjective, niche and duplicate lists will be deleted.</kbd>
           <br />
           <div class="input-group">
             <input class="form-control"
@@ -89,14 +88,14 @@
             </div-->
           </div>
           <div class="btn-group">
-            <button class="btn"
+            <!--button class="btn"
               ng-class="{ 'btn-default': selectedList.category, 'btn-warning': !selectedList.category }"
               id="list-category"
               type="button"
               onclick="$('#category-select').show();"
               ng-disabled="!selectedList || (!currentUser.admin && selectedList.creator._id !== currentUser._id && selectedList._id)">
               {{selectedList.category ? selectedList.category : 'Category'}}
-            </button>
+            </button-->
             <button class="btn"
               ng-class="{'btn-success': selectedList.isDynamic, 'btn-default': !selectedList.isDynamic}"
               ng-click="selectedList.isDynamic = !selectedList.isDynamic"
@@ -104,12 +103,18 @@
               {{selectedList.isDynamic ? 'List changes overtime' : 'List never changes'}}
             </button>
           </div>
-          <div id="category-select">
+          <!--div id="category-select">
             <button class="btn btn-sm"
               ng-class="{'btn-default': category !== selectedList.category, 'btn-success': category === selectedList.category}"
               ng-repeat="category in categories | orderBy"
               ng-click="selectCategory(category)">{{category}}</button>
-          </div>
+          </div-->
+        </div>
+        <div class="btn-group" ng-hide="!selectedList || (!currentUser.admin && selectedList.creator._id !== currentUser._id && selectedList._id)">
+          <button class="btn btn-sm list-category"
+            ng-class="getCategoryClass(category)"
+            ng-repeat="category in categories | orderBy"
+            ng-click="toggleCategory(category)">{{category}}</button>
         </div>
         <div class="col-md-12">
           <h5 ng-show="selectedList.creator"><b>{{selectedList.name}}</b> by {{selectedList.creator.username}} on {{formatDate(selectedList.date)}} --- <span ng-show="selectedList.plays">Plays: {{selectedList.plays}} / Skips: {{selectedList.skips}} / Score: {{selectedList.score}} / Hints: {{selectedList.hints}}</span></h5>

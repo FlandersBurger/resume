@@ -168,6 +168,7 @@ var TenThings = db('master').model('TenThings', {
     name: String,
     description: String,
     category: String,
+    categories: [String],
     totalValues: Number,
     creator: {
       type: String,

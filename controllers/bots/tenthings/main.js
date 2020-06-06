@@ -541,7 +541,7 @@ const checkRound = (game) => {
           })
           .exec((err, foundList) => {
             let message = `<b>${game.list.name}</b> by ${game.list.creator.username}\n`;
-            message += game.list.category ? `Category: <b>${game.list.category}</b>\n` : '';
+            message += game.list.categories.length > 0 ? `Categor${game.list.categories.length > 1 ? 'ies' : 'y'}: <b>${game.list.categories}</b>\n` : '';
             message += list;
             message += messages.listStats(foundList);
             message += stats.getDailyScores(game, 5);
@@ -589,7 +589,7 @@ const newRound = (currentGame) => {
           game.hintCooldown = 0;
           game.guessers = [];
           let message = 'A new round will start in 3 seconds';
-          message += game.list.category ? `\nCategory: <b>${game.list.category}</b>` : '';
+          message += game.list.categories.length > 0 ? `\nCategor${game.list.categories.length > 1 ? 'ies' : 'y'}: <b>${game.list.categories}</b>` : '';
           bot.sendMessage(game.chat_id, message);
           setTimeout(() => {
             let message = `<b>${game.list.name}</b> (${game.list.totalValues}) by ${game.list.creator.username}`;
@@ -1250,7 +1250,7 @@ function evaluateCommand(res, msg, game, player, isNew) {
       try {
         stats.getList(game, list => {
           let message = `<b>${game.list.name}</b> (${game.list.totalValues}) by ${game.list.creator.username}\n`;
-          message += game.list.category ? `Category: ${game.list.category}\n` : '';
+          message += game.list.categories.length > 0 ? `Categor${game.list.categories.length > 1 ? 'ies' : 'y'}: <b>${game.list.categories}</b>\n` : '';
           message += game.list.description ? (game.list.description.includes('href') ? game.list.description : `<i>${angleBrackets(game.list.description)}</i>\n`) : '';
           message += list;
           bot.sendMessage(msg.chat.id, message);
@@ -1430,6 +1430,22 @@ List
   //console.log(result);
 });
 */
+/*
+List.find({})
+  .select('_id name category categories')
+  .exec((err, lists) => {
+    Promise.all(
+      lists.map(list => {
+        if (!list.categories) {
+          list.categories = [];
+        }
+        if (list.categories.length === 0) {
+          list.categories.push(list.category);
+        }
+        return list.save();
+      })).then(console.log, console.error);
+  });
+  */
 /*
 List
   .find({

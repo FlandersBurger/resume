@@ -219,7 +219,7 @@ const dailyScore = schedule.scheduleJob('0 0 0 * * *', () => {
                     try {
                       stats.getList(game, list => {
                         let message = `<b>${game.list.name}</b> (${game.list.totalValues}) by ${game.list.creator.username}\n`;
-                        message += game.list.category ? `Category: ${game.list.category}\n` : '';
+                        message += game.list.categories.length > 0 ? `Categor${game.list.categories.length > 1 ? 'ies' : 'y'}: <b>${game.list.categories}</b>\n` : '';
                         message += game.list.description ? (game.list.description.includes('href') ? game.list.description : `<i>${angleBrackets(game.list.description)}</i>\n`) : '';
                         message += list;
                         bot.sendMessage(game.chat_id, message);
