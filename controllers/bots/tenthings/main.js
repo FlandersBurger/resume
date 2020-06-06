@@ -1286,7 +1286,7 @@ function evaluateCommand(res, msg, game, player, isNew) {
               return bot.notifyAdmin(message);
             }
             if (lists.length > 0) {
-              bot.sendMessage(msg.chat.id, `I found some similar lists that already exist, ${msg.from.first_name}!${lists.reduce((txt, list) => `${txt}\n - ${list.name}`)}`, '');
+              bot.sendMessage(msg.chat.id, `I found some similar lists that already exist, ${msg.from.first_name}!\n${lists.reduce((txt, list) => `${txt}\n - ${list.name}`)}`, '<b>Lists:</b>');
             } else {
               bot.notifyAdmins(message);
               bot.sendMessage(msg.chat.id, `Suggestion noted, ${msg.from.first_name}!\nNote that you can add your own lists at https://belgocanadian.com/tenthings`);
@@ -1297,11 +1297,11 @@ function evaluateCommand(res, msg, game, player, isNew) {
       }
       break;
     case '/typo':
-      const typo = msg.text.substring(msg.command.length + 1, msg.text.length).replace(/\s/g, '');
-      if (typo && typo != 'TenThings_Bot' && typo != '@TenThings_Bot') {
+      const typo = msg.text.substring(msg.command.length + 1, msg.text.length).replace(/\s/g, '').toLowerCase();
+      if (typo && typo != 'tenthings_bot' && typo != '@tenthings_bot') {
         player.suggestions++;
         game.save();
-        let message = `<b>Typo</b>\n${typo}\n<i>${msg.from.username ? msg.from.username : msg.from.first_name}</i>`;
+        let message = `<b>Typo</b>\n${msg.text.substring(msg.command.length + 1, msg.text.length)}\n<i>${msg.from.username ? msg.from.username : msg.from.first_name}</i>`;
         message += `\nList: ${game.list.name}`;
         bot.notifyAdmins(message);
         bot.notify(message);
