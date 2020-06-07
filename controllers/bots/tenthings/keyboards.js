@@ -288,15 +288,18 @@ module.exports = {
       ]
     };
   },
-  categories: (game) => {
+  categories: ({
+    chat_id,
+    disabledCategories
+  }) => {
     return {
       inline_keyboard: categories.reduce((result, category, i) => {
         const button = {
-          'text': `${category}: ${game.disabledCategories.indexOf(category) >= 0 ? 'Off' : 'On'}`,
+          'text': `${category}: ${disabledCategories.indexOf(category) >= 0 ? 'Off' : 'On'}`,
           'callback_data': JSON.stringify({
             type: 'cat',
             id: category,
-            game: game.chat_id
+            game: chat_id
           })
         };
         if (i % 3 === 0) {
@@ -308,7 +311,10 @@ module.exports = {
       }, [])
     };
   },
-  settings: function(game, settings) {
+  settings: ({
+    chat_id,
+    settings
+  }) => {
     return {
       inline_keyboard: [
         [{
@@ -316,7 +322,7 @@ module.exports = {
             'callback_data': JSON.stringify({
               type: 'setting',
               id: 'intro',
-              game: game
+              game: chat_id
             })
           },
           {
@@ -324,7 +330,7 @@ module.exports = {
             'callback_data': JSON.stringify({
               type: 'setting',
               id: 'sass',
-              game: game
+              game: chat_id
             })
           },
           /*
