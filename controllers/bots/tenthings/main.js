@@ -1386,7 +1386,7 @@ function evaluateCommand(res, msg, game, player, isNew) {
         bot.checkAdmin(game.chat_id, msg.from.id)
           .then(admin => {
             if (admin || game.chat_id > 0) {
-              bot.notifyAdmin('Categories asked by ', msg.from.id);
+              bot.notifyAdmin(`Categories asked by ${msg.from.id} in ${game.chat_id}`);
               bot.sendKeyboard(game.chat_id, '<b>Categories</b>', keyboards.categories(game));
             }
           });
