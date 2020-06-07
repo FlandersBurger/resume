@@ -20,7 +20,7 @@ const TenThings = require('../../../models/games/tenthings');
 const MAX_HINTS = hints.getMaxHints();
 const VETO_DELAY = 15;
 const ANSWER_DELAY = 2;
-const BANNED_USERS = [1136025506, 1162690484, 1158491266, 1053547542, 1182973691, 1010339222, 906650538, 1153021237, 623100045, 1269984320];
+const BANNED_USERS = [1291668503, 1136025506, 1162690484, 1158491266, 1053547542, 1182973691, 1010339222, 906650538, 1153021237, 623100045, 1269984320];
 
 const cooldowns = {};
 const skips = {};
@@ -1386,6 +1386,7 @@ function evaluateCommand(res, msg, game, player, isNew) {
         bot.checkAdmin(game.chat_id, msg.from.id)
           .then(admin => {
             if (admin || game.chat_id > 0) {
+              bot.notifyAdmin('Categories asked');
               bot.sendKeyboard(game.chat_id, '<b>Categories</b>', keyboards.categories(game));
             }
           });
