@@ -180,6 +180,7 @@ function TelegramBot() {
   });
 
   bot.editKeyboard = (message_id, keyboard) => new Promise((resolve, reject) => {
+    console.log(message_id, keyboard);
     const url = `https://api.telegram.org/bot${bot.token}/editMessageReplyMarkup?inline_message_id=${message_id}&reply_markup=${JSON.stringify(keyboard)}`;
     request(encodeURI(url), (error, r, body) => {
       if (error) return;
