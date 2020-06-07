@@ -949,7 +949,6 @@ router.post('/', ({
             }
             game.save((err, savedGame) => {
               if (err) return bot.notifyAdmin(JSON.stringify(err));
-              console.log(body.callback_query);
               bot.editKeyboard(body.callback_query.message.chat.id, body.callback_query.message.message_id, keyboards.categories(game));
             });
           });
