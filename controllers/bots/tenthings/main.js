@@ -949,6 +949,7 @@ router.post('/', ({
             }
             game.save((err, savedGame) => {
               if (err) return bot.notifyAdmin(JSON.stringify(err));
+              console.log(body.callback_query);
               bot.editKeyboard(body.callback_query.inline_message_id, keyboards.categories(game));
             });
           });
