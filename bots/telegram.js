@@ -169,8 +169,8 @@ function TelegramBot() {
     });
   });
 
-  bot.getChatMember = (chat_id, user_id) => new Promise((resolve, reject) => {
-    const url = `https://api.telegram.org/bot${bot.token}/getChatMember?chat_id=${chat_id}&user_id=${user_id}`;
+  bot.getChatMember = (channel, user_id) => new Promise((resolve, reject) => {
+    const url = `https://api.telegram.org/bot${bot.token}/getChatMember?chat_id=${channel}&user_id=${user_id}`;
     request(url, (error, r, body) => {
       const response = JSON.parse(body).result;
       if (error) return;
@@ -179,9 +179,8 @@ function TelegramBot() {
     });
   });
 
-  bot.editKeyboard = (message_id, keyboard) => new Promise((resolve, reject) => {
-    console.log(message_id, keyboard);
-    const url = `https://api.telegram.org/bot${bot.token}/editMessageReplyMarkup?inline_message_id=${message_id}&reply_markup=${JSON.stringify(keyboard)}`;
+  bot.editKeyboard = (channel, message_id, keyboard) => new Promise((resolve, reject) => {
+    const url = `https://api.telegram.org/bot${bot.token}/editMessageReplyMarkup?chat_id=${channel}&message_id=${message_id}&reply_markup=${JSON.stringify(keyboard)}`;
     request(encodeURI(url), (error, r, body) => {
       if (error) return;
       resolve();

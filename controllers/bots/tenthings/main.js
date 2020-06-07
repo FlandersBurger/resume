@@ -950,7 +950,7 @@ router.post('/', ({
             game.save((err, savedGame) => {
               if (err) return bot.notifyAdmin(JSON.stringify(err));
               console.log(body.callback_query);
-              bot.editKeyboard(body.callback_query.inline_message_id, keyboards.categories(game));
+              bot.editKeyboard(body.callback_query.message.message_id, body.callback_query.message.chat.id, keyboards.categories(game));
             });
           });
         });
@@ -967,8 +967,7 @@ router.post('/', ({
                 game.settings[data.id] = !game.settings[data.id];
                 game.save((err, savedGame) => {
                   if (err) return bot.notifyAdmin(JSON.stringify(err));
-                  bot.editKeyboard(body.callback_query.inline_message_id, keyboards.settings(game));
-                  bot.sendMessage(game.chat_id, `${data.id.capitalize()} <b>${game.settings[data.id] ? 'On' : 'Off'}</b>`);
+                  bot.editKeyboard(body.callback_query.message.message_id, body.callback_query.message.chat.id, keyboards.settings(game));
                 });
               });
             } else {
