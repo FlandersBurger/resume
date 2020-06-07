@@ -163,25 +163,6 @@ bot.exportChatInviteLink('-1001394022777').then(function(chat) {
 });
 */
 
-TenThings.findOne({
-    chat_id: config.groupChat
-  })
-  .select('playedLists disabledCategories')
-  .exec((err, game) => {
-    console.log(game);
-    List.countDocuments({
-        _id: {
-          $nin: game.playedLists
-        },
-        categories: {
-          $nin: game.disabledCategories
-        }
-      })
-      .exec((err, count) => {
-        console.log(count);
-      });
-  });
-
 function selectList(game) {
   return new Promise(function(resolve, reject) {
     List.countDocuments({
@@ -968,7 +949,7 @@ router.post('/', ({
             }
             game.save((err, savedGame) => {
               if (err) return bot.notifyAdmin(JSON.stringify(err));
-              bot.sendMessage(game.chat_id, `${data.id} <b>${categoryIndex >= 0 ? 'On' : 'Off'}</b>`);
+              bot.editKeyboard(body.callback_query.inline_message_id, keyboards.categories(game));
             });
           });
         });
