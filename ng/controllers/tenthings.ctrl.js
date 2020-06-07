@@ -6,31 +6,15 @@ angular.module('app')
       name: '',
       values: ''
     };
-    $scope.categories = [
-      'Music',
-      'Television',
-      'Movies',
-      'Entertainment',
-      //'Culture',
-      'Geography',
-      'History',
-      'Science',
-      'Gaming',
-      'Sports',
-      'Religion',
-      'Art',
-      'Literature',
-      'Misc',
-      'Funny',
-      'Food and Drink',
-      'Society',
-      'Nature',
-      'Technology',
-      'Language',
-      'Business',
-      'Internet',
-      'K-pop'
-    ];
+    BotsSvc.getCategories()
+      .then(response => {
+        $scope.categories = response.data;
+        $scope.categoryFilters = $scope.categories.map(category => category);
+        $scope.categoryFilters.push('All');
+        $scope.categoryFilters.push('Blank');
+        $scope.categoryFilter = 'All';
+      });
+
     $scope.keyDown = e => {
       e = e || window.event;
       switch (e.keyCode) {
@@ -55,10 +39,6 @@ angular.module('app')
     };
 
 
-    $scope.categoryFilters = $scope.categories.map(category => category);
-    $scope.categoryFilters.push('All');
-    $scope.categoryFilters.push('Blank');
-    $scope.categoryFilter = 'All';
     $scope.searchName = '';
     $scope.newItem = {};
 
@@ -72,22 +52,22 @@ angular.module('app')
     $scope.filteredLists = () => {
       if (!$scope.lists) return [];
       return $scope.lists.filter(({
-        category,
+        categories,
         creator
       }) => {
         if ($scope.categoryFilter === 'All' && $scope.userFilter === 'All') {
           return true;
         } else if ($scope.categoryFilter !== 'All' && $scope.userFilter === 'All') {
-          if (category) {
-            return category === $scope.categoryFilter;
+          if (categories.length > 0) {
+            return categories.indexOf($scope.categoryFilter) >= 0;
           } else {
             return $scope.categoryFilter === 'Blank';
           }
         } else if ($scope.categoryFilter === 'All' && $scope.userFilter !== 'All') {
           return creator === $scope.userFilter;
         } else {
-          if (category) {
-            return category === $scope.categoryFilter && creator === $scope.userFilter;
+          if (categories.length > 0) {
+            return categories.indexOf($scope.categoryFilter) >= 0 && creator === $scope.userFilter;
           } else {
             return $scope.categoryFilter === 'Blank' && creator === $scope.userFilter;
           }
@@ -117,7 +97,7 @@ angular.module('app')
 
     $scope.getCategoryCount = category => {
       if (!$scope.lists) return 0;
-      return $scope.lists.filter(list => (category === 'All' || list.category === category) && ($scope.userFilter === 'All' || list.creator.username === $scope.userFilter)).length;
+      return $scope.lists.filter(list => (category === 'All' || list.categories.indexOf(category) >= 0) && ($scope.userFilter === 'All' || list.creator === $scope.userFilter)).length;
     };
 
     $scope.getLists = () => {
@@ -179,7 +159,8 @@ angular.module('app')
         values: [],
         answers: 0,
         isDynamic: true,
-        category: ''
+        category: '',
+        categories: []
       };
     };
 
@@ -193,7 +174,7 @@ angular.module('app')
           $scope.selectedList.answers++;
           $scope.newItem.value = '';
           $scope.newItem.blurb = '';
-          if ($scope.selectedList.values.length >= 10 && $scope.selectedList.name && $scope.selectedList.category) {
+          if ($scope.selectedList.values.length >= 10 && $scope.selectedList.name && $scope.selectedList.categories.length > 0) {
             $scope.saveList($scope.selectedList);
           }
         }
@@ -206,9 +187,6 @@ angular.module('app')
     };
 
     $scope.saveList = list => {
-      if (list.categories.length === 0) {
-        return alert('Please sel')
-      }
       if (!$scope.saving) {
         list.values = list.values.filter(({
           value

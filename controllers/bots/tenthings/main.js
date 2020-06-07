@@ -163,11 +163,33 @@ bot.exportChatInviteLink('-1001394022777').then(function(chat) {
 });
 */
 
+TenThings.findOne({
+    chat_id: config.groupChat
+  })
+  .select('playedLists disabledCategories')
+  .exec((err, game) => {
+    console.log(game);
+    List.countDocuments({
+        _id: {
+          $nin: game.playedLists
+        },
+        categories: {
+          $nin: game.disabledCategories
+        }
+      })
+      .exec((err, count) => {
+        console.log(count);
+      });
+  });
+
 function selectList(game) {
   return new Promise(function(resolve, reject) {
     List.countDocuments({
         _id: {
           $nin: game.playedLists
+        },
+        categories: {
+          $nin: game.disabledCategories
         }
       })
       .exec((err, count) => {
@@ -180,7 +202,11 @@ function selectList(game) {
             if (err) reject(err);
             bot.sendMessage(game.chat_id, 'All lists have been played, a new cycle will now start.');
             List.countDocuments().exec(function(err, count) {
-              List.find()
+              List.find({
+                  categories: {
+                    $nin: game.disabledCategories
+                  }
+                })
                 .select('-votes')
                 .populate('creator')
                 .limit(1)
@@ -193,6 +219,9 @@ function selectList(game) {
           List.find({
               _id: {
                 $nin: game.playedLists
+              },
+              categories: {
+                $nin: game.disabledCategories
               }
             })
             .select('-votes')
@@ -924,6 +953,25 @@ router.post('/', ({
       if (body.callback_query.from.first_name === '^') return '';
       bot.notifyAdmin(`${body.callback_query.from.id} (${body.callback_query.from.first_name}) requested stats`);
       stats.getScores(body.callback_query.message.chat.id, data.id);
+    } else if (data.type === 'cat') {
+      bot.checkAdmin(body.callback_query.message.chat.id, body.callback_query.from.id)
+        .then(admin => {
+          TenThings.findOne({
+            chat_id: body.callback_query.message.chat.id
+          }).select('chat_id disabledCategories').exec((err, game) => {
+            if (err) return bot.notifyAdmin(JSON.stringify(err));
+            const categoryIndex = game.disabledCategories.indexOf(data.id);
+            if (categoryIndex >= 0) {
+              game.disabledCategories.splice(categoryIndex, 1);
+            } else {
+              game.disabledCategories.push(data.id);
+            }
+            game.save((err, savedGame) => {
+              if (err) return bot.notifyAdmin(JSON.stringify(err));
+              bot.sendMessage(game.chat_id, `${data.id} <b>${categoryIndex >= 0 ? 'On' : 'Off'}</b>`);
+            });
+          });
+        });
     } else if (data.type === 'setting') {
       if (body.callback_query.message.chat_id != config.masterChat) {
         bot.checkAdmin(body.callback_query.message.chat.id, body.callback_query.from.id)
@@ -935,9 +983,9 @@ router.post('/', ({
                 if (err) return bot.notifyAdmin(JSON.stringify(err));
                 console.log(`${data.id} toggled for ${game._id}`);
                 game.settings[data.id] = !game.settings[data.id];
-                bot.sendMessage(game.chat_id, `${data.id.capitalize()} <b>${game.settings[data.id] ? 'On' : 'Off'}</b>`);
                 game.save((err, savedGame) => {
                   if (err) return bot.notifyAdmin(JSON.stringify(err));
+                  bot.sendMessage(game.chat_id, `${data.id.capitalize()} <b>${game.settings[data.id] ? 'On' : 'Off'}</b>`);
                 });
               });
             } else {
@@ -1350,6 +1398,16 @@ function evaluateCommand(res, msg, game, player, isNew) {
         }, '');
         message += game.minigame.answer.conceal(game.minigame.date < moment().subtract(1, 'hours') ? 'aeoui' : '');
         bot.sendMessage(msg.chat.id, message);
+      }
+      break;
+    case '/categories':
+      if (game.chat_id != config.masterChat) {
+        bot.checkAdmin(game.chat_id, msg.from.id)
+          .then(admin => {
+            if (admin || game.chat_id > 0) {
+              bot.sendKeyboard(game.chat_id, '<b>Categories</b>', keyboards.categories(game));
+            }
+          });
       }
       break;
     case '/settings':

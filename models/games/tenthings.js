@@ -157,6 +157,7 @@ var TenThings = db('master').model('TenThings', {
       default: 0
     },
   }],
+  disabledCategories: [String],
   playedLists: [{
     type: String
   }],

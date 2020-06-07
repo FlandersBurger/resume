@@ -7,6 +7,10 @@ angular.module('app')
       return $http.get(`/api/bots/lists`);
     };
 
+    svc.getCategories = function() {
+      return $http.get(`/api/bots/categories`);
+    };
+
     svc.getList = function(list) {
       return $http.get('/api/bots/lists/' + list._id);
     };

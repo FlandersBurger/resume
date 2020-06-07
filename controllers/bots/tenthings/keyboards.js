@@ -1,3 +1,5 @@
+const categories = require('./categories');
+
 module.exports = {
   stats: function(chat_id) {
     return {
@@ -284,6 +286,26 @@ module.exports = {
           }
         ],
       ]
+    };
+  },
+  categories: (game) => {
+    return {
+      inline_keyboard: categories.reduce((result, category, i) => {
+        const button = {
+          'text': `${category}: ${game.disabledCategories.indexOf(category) >= 0 ? 'Off' : 'On'}`,
+          'callback_data': JSON.stringify({
+            type: 'cat',
+            id: category,
+            game: game.chat_id
+          })
+        };
+        if (i % 3 === 0) {
+          result.push([button]);
+        } else {
+          result[result.length - 1].push(button);
+        }
+        return result;
+      }, [])
     };
   },
   settings: function(game, settings) {
