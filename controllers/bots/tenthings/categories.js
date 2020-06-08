@@ -20,5 +20,6 @@ module.exports = [
   'Language',
   'Business',
   'Internet',
-  'K-pop'
+  'K-pop',
+  'Entertainment'
 ];

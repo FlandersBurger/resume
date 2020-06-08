@@ -302,7 +302,7 @@ module.exports = {
             game: chat_id
           })
         };
-        if (i % 3 === 0) {
+        if (i % 2 === 0) {
           result.push([button]);
         } else {
           result[result.length - 1].push(button);

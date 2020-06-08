@@ -243,6 +243,16 @@ bot.sendKeyboard(config.masterChat, 'test', {
 });
 */
 
+
+List.find({
+    categories: {
+      $nin: ['Music', 'Movies']
+    }
+  })
+  .select('category')
+  .exec((err, lists) => {
+    console.log(_.uniq(lists.map(list => list.category)));
+  });
 const rateList = (game) => {
   bot.sendKeyboard(game.chat_id, `Did you like <b>${game.list.name}</b>?`, keyboards.like(game));
 };
@@ -890,14 +900,14 @@ router.post('/', ({
             delete foundList.voters;
             foundList.save(err => {
               if (err) return console.error(err);
+              bot.answerCallback(body.callback_query.id, data.vote > 0 ? '\ud83d\udc4d' : '\ud83d\udc4e');
               //bot.notifyAdmin(`"<b>${foundList.name}</b>" ${data.vote > 0 ? 'up' : 'down'}voted by <i>${body.callback_query.from.first_name}</i>!`);
               bot.sendMessage(body.callback_query.message.chat.id, ` ${data.vote > 0 ? '\ud83d\udc4d' : '\ud83d\udc4e'} ${body.callback_query.from.first_name} ${data.vote > 0 ? '' : 'dis'}likes <b>${foundList.name}</b>`);
             });
           });
       }
     } else if (data.type === 'stats') {
-      if (body.callback_query.from.first_name === '^') return '';
-      bot.notifyAdmin(`${body.callback_query.from.id} (${body.callback_query.from.first_name}) requested stats`);
+      //bot.notifyAdmin(`${body.callback_query.from.id} (${body.callback_query.from.first_name}) requested stats`);
       bot.checkAdmin(body.callback_query.message.chat.id, body.callback_query.from.id)
         .then(isAdmin => {
           if (isAdmin) {
@@ -906,15 +916,19 @@ router.post('/', ({
             }).select('chat_id list').exec((err, game) => {
               switch (data.data) {
                 case 'list':
+                  bot.answerCallback(body.callback_query.id, 'List Stats');
                   bot.sendKeyboard(game.chat_id, '<b>List Stats</b>', keyboards.stats_list(game));
                   break;
                 case 'player':
+                  bot.answerCallback(body.callback_query.id, 'Player Stats');
                   bot.sendKeyboard(game.chat_id, '<b>Player Stats</b>', keyboards.stats_player(game));
                   break;
                 case 'global':
+                  bot.answerCallback(body.callback_query.id, 'List Stats');
                   bot.sendMessage(game.chat_id, 'Coming Soon');
                   break;
                 case 'game':
+                  bot.answerCallback(body.callback_query.id, 'Game Stats');
                   bot.sendKeyboard(game.chat_id, '<b>Game Stats</b>', keyboards.stats_game(game));
                   break;
               }
@@ -922,17 +936,18 @@ router.post('/', ({
           }
         });
     } else if (data.type === 'stat') {
-      if (body.callback_query.from.first_name === '^') return '';
-      bot.notifyAdmin(`${body.callback_query.from.id} (${body.callback_query.from.first_name}) requested stats`);
+      //bot.notifyAdmin(`${body.callback_query.from.id} (${body.callback_query.from.first_name}) requested stats`);
       bot.checkAdmin(body.callback_query.message.chat.id, body.callback_query.from.id)
         .then(isAdmin => {
           if (isAdmin) {
+            bot.answerCallback(body.callback_query.id, '');
             stats.getStats(body.callback_query.message.chat.id, data, body.callback_query.from.id);
           }
         });
     } else if (data.type === 'score') {
       if (body.callback_query.from.first_name === '^') return '';
-      bot.notifyAdmin(`${body.callback_query.from.id} (${body.callback_query.from.first_name}) requested stats`);
+      //bot.notifyAdmin(`${body.callback_query.from.id} (${body.callback_query.from.first_name}) requested stats`);
+      bot.answerCallback(body.callback_query.id, 'Score');
       stats.getScores(body.callback_query.message.chat.id, data.id);
     } else if (data.type === 'cat') {
       bot.checkAdmin(body.callback_query.message.chat.id, body.callback_query.from.id)
@@ -949,6 +964,7 @@ router.post('/', ({
             }
             game.save((err, savedGame) => {
               if (err) return bot.notifyAdmin(JSON.stringify(err));
+              bot.answerCallback(body.callback_query.id, `${data.id} -> ${categoryIndex >= 0 ? 'On' : 'Off'}`);
               bot.editKeyboard(body.callback_query.message.chat.id, body.callback_query.message.message_id, keyboards.categories(game));
             });
           });
@@ -966,6 +982,7 @@ router.post('/', ({
                 game.settings[data.id] = !game.settings[data.id];
                 game.save((err, savedGame) => {
                   if (err) return bot.notifyAdmin(JSON.stringify(err));
+                  bot.answerCallback(body.callback_query.id, `${data.id} -> ${game.settings[data.id] ? 'On' : 'Off'}`);
                   bot.editKeyboard(body.callback_query.message.chat.id, body.callback_query.message.message_id, keyboards.settings(game));
                 });
               });

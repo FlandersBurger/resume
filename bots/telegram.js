@@ -187,6 +187,14 @@ function TelegramBot() {
     });
   });
 
+  bot.answerCallback = (callback_query_id, text) => new Promise((resolve, reject) => {
+    const url = `https://api.telegram.org/bot${bot.token}/answerCallbackQuery?callback_query_id=${callback_query_id}&text=${text}`;
+    request(encodeURI(url), (error, r, body) => {
+      if (error) return;
+      resolve();
+    });
+  });
+
   bot.getName = () => {
     if (bot.last_name) {
       return `${bot.first_name} ${bot.last_name}`;
