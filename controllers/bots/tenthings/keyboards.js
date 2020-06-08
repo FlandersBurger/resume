@@ -293,7 +293,7 @@ module.exports = {
     disabledCategories
   }) => {
     return {
-      inline_keyboard: categories.reduce((result, category, i) => {
+      inline_keyboard: categories.sort().reduce((result, category, i) => {
         const button = {
           'text': `${category}: ${disabledCategories.indexOf(category) >= 0 ? 'Off' : 'On'}`,
           'callback_data': JSON.stringify({

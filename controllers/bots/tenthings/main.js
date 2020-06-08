@@ -582,7 +582,7 @@ const newRound = (currentGame) => {
   TenThings.findOne({
       _id: currentGame._id
     })
-    .select('_id chat_id playedLists players list listsPlayed cycles guessers hintCooldown hints')
+    .select('_id chat_id playedLists players list listsPlayed cycles guessers hintCooldown hints disabledCategories')
     .populate('list.creator')
     .exec((err, game) => {
       if (err) return console.error(err);
