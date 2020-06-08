@@ -4,8 +4,6 @@ module.exports = [
   'Movies',
   'Culture',
   'Geography',
-  'Easy',
-  'Hard',
   'Politics',
   'History',
   'Science',
