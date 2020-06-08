@@ -171,7 +171,7 @@ function selectList(game) {
           $nin: game.playedLists
         },
         categories: {
-          $nin: game.disabledCategories
+          $in: _.difference(categories, game.disabledCategories)
         }
       })
       .exec((err, count) => {
