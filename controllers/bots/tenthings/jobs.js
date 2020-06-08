@@ -146,8 +146,8 @@ const modifiedLists = schedule.scheduleJob('0 30 12 * * *', () => {
 //bot.sendPhoto(config.masterChat, 'https://m.media-amazon.com/images/M/MV5BNmE1OWI2ZGItMDUyOS00MmU5LWE0MzUtYTQ0YzA1YTE5MGYxXkEyXkFqcGdeQXVyMDM5ODIyNw@@._V1._SX40_CR0,0,40,54_.jpg')
 
 //var dailyScore = schedule.scheduleJob('*/10 * * * * *', function() {
-const dailyScore = schedule.scheduleJob('0 0 0 * * *', () => {
-  if (moment().hour() === 0) {
+const dailyScore = schedule.scheduleJob('0 0 1 * * *', () => {
+  if (moment().hour() === 1) {
     //if (true) {
     bot.notifyAdmin(`Score Reset Triggered; ${moment().format('DD-MMM-YYYY hh:mm')}`);
     TenThings.find({
@@ -245,7 +245,7 @@ const dailyScore = schedule.scheduleJob('0 0 0 * * *', () => {
   }
 });
 
-const deleteStaleGames = schedule.scheduleJob('0 0 3 * * *', () => {
+const deleteStaleGames = schedule.scheduleJob('0 0 4 * * *', () => {
   //Delete stale games
   TenThings.find({
       'players.highScore': {
@@ -276,7 +276,7 @@ const deleteStaleGames = schedule.scheduleJob('0 0 3 * * *', () => {
     });
 });
 
-const inactiveChats = schedule.scheduleJob('0 0 2 * * *', () => {
+const inactiveChats = schedule.scheduleJob('0 0 3 * * *', () => {
   TenThings.find({
       'lastPlayDate': {
         $lt: moment().subtract(30, 'days')
@@ -322,7 +322,7 @@ TenThings.find({ 'players.playStreak': { $gt: 0 } })
 });
 */
 
-const playStreak = schedule.scheduleJob('0 0 1 * * *', () => {
+const playStreak = schedule.scheduleJob('0 0 2 * * *', () => {
   //Update play streaks
   TenThings.find({
       'players.playStreak': {
