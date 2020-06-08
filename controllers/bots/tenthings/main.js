@@ -185,7 +185,7 @@ function selectList(game) {
             bot.sendMessage(game.chat_id, 'All lists have been played, a new cycle will now start.');
             List.countDocuments({
               categories: {
-                $nin: game.disabledCategories
+                $in: _.difference(categories, game.disabledCategories)
               }
             }).exec(function(err, count) {
               if (count === 0) {
@@ -200,7 +200,7 @@ function selectList(game) {
               } else {
                 List.find({
                     categories: {
-                      $nin: game.disabledCategories
+                      $in: _.difference(categories, game.disabledCategories)
                     }
                   })
                   .select('-votes')
@@ -218,7 +218,7 @@ function selectList(game) {
                 $nin: game.playedLists
               },
               categories: {
-                $nin: game.disabledCategories
+                $in: _.difference(categories, game.disabledCategories)
               }
             })
             .select('-votes')
