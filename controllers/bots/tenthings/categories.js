@@ -25,5 +25,6 @@ module.exports = [
   'Internet',
   'K-pop',
   'Entertainment',
-  'Animation'
+  'Animation',
+  'Non-English'
 ];
