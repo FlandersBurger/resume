@@ -29,5 +29,6 @@ module.exports = [
   'K-pop',
   'Entertainment',
   'Animation',
+  'Anime/Manga',
   'Non-English'
 ];
