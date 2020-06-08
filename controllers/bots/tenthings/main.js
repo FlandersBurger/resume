@@ -13,6 +13,7 @@ const keyboards = require('./keyboards');
 const stats = require('./stats');
 const jobs = require('./jobs');
 const hints = require('./hints');
+const categories = require('./categories');
 
 const List = require('../../../models/list');
 const TenThings = require('../../../models/games/tenthings');
@@ -182,18 +183,33 @@ function selectList(game) {
           game.save(err => {
             if (err) reject(err);
             bot.sendMessage(game.chat_id, 'All lists have been played, a new cycle will now start.');
-            List.countDocuments().exec(function(err, count) {
-              List.find({
-                  categories: {
-                    $nin: game.disabledCategories
-                  }
-                })
-                .select('-votes')
-                .populate('creator')
-                .limit(1)
-                .lean()
-                .skip(Math.floor(Math.random() * count))
-                .exec((err, lists) => resolve(lists[0]));
+            List.countDocuments({
+              categories: {
+                $nin: game.disabledCategories
+              }
+            }).exec(function(err, count) {
+              if (count === 0) {
+                bot.sendMessage(game.chat_id, 'Selecting random list as there are none found with the enabled categories\nPlease speak to your admin to enable more /categories');
+                List.find()
+                  .select('-votes')
+                  .populate('creator')
+                  .limit(1)
+                  .lean()
+                  .skip(Math.floor(Math.random() * 2000))
+                  .exec((err, lists) => resolve(lists[0]));
+              } else {
+                List.find({
+                    categories: {
+                      $nin: game.disabledCategories
+                    }
+                  })
+                  .select('-votes')
+                  .populate('creator')
+                  .limit(1)
+                  .lean()
+                  .skip(Math.floor(Math.random() * count))
+                  .exec((err, lists) => resolve(lists[0]));
+              }
             });
           });
         } else {
@@ -1313,7 +1329,6 @@ function evaluateCommand(res, msg, game, player, isNew) {
       */
     case '/suggest':
       const suggestion = msg.text.substring(msg.command.length + 1, msg.text.length).replace(/\s/g, '');
-      console.log(suggestion);
       if (suggestion && suggestion != 'TenThings_Bot' && suggestion != '@TenThings_Bot') {
         player.suggestions++;
         game.save();

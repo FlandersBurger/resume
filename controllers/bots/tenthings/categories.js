@@ -4,6 +4,9 @@ module.exports = [
   'Movies',
   'Culture',
   'Geography',
+  'Easy',
+  'Hard',
+  'Politics',
   'History',
   'Science',
   'Gaming',
@@ -21,5 +24,6 @@ module.exports = [
   'Business',
   'Internet',
   'K-pop',
-  'Entertainment'
+  'Entertainment',
+  'Animation'
 ];
