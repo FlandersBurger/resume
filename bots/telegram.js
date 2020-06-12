@@ -55,6 +55,8 @@ function TelegramBot() {
       const url = `https://api.telegram.org/bot${bot.token}/sendMessage?chat_id=${channel}&disable_notification=true&parse_mode=html&text=${message}`;
       request(url, (err, r, body) => {
         if (err) {
+          console.error('Send Fail');
+          console.error(message);
           console.error(err);
           return reject();
         }

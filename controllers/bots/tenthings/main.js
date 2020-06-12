@@ -921,7 +921,8 @@ router.post('/', ({
               if (err) return console.error(err);
               bot.answerCallback(body.callback_query.id, data.vote > 0 ? '\ud83d\udc4d' : '\ud83d\udc4e');
               //bot.notifyAdmin(`"<b>${foundList.name}</b>" ${data.vote > 0 ? 'up' : 'down'}voted by <i>${body.callback_query.from.first_name}</i>!`);
-              bot.sendMessage(body.callback_query.message.chat.id, ` ${data.vote > 0 ? '\ud83d\udc4d' : '\ud83d\udc4e'} ${body.callback_query.from.first_name} ${data.vote > 0 ? '' : 'dis'}likes <b>${foundList.name}</b>`);
+              let score = foundList.votes.reduce((score, vote) => score + vote.vote, 0);
+              bot.sendMessage(body.callback_query.message.chat.id, ` ${data.vote > 0 ? '\ud83d\udc4d' : '\ud83d\udc4e'} ${body.callback_query.from.first_name} ${data.vote > 0 ? '' : 'dis'}likes <b>${foundList.name}</b> (${score})`);
             });
           });
       }
@@ -1115,7 +1116,7 @@ router.post('/', ({
     msg.command = msg.command.substring(0, msg.command.indexOf('@'));
   }
   try {
-    if (!msg.from.id) {
+    if (!msg.from || !msg.from.id) {
       bot.notifyAdmin(JSON.stringify(body));
       return res.sendStatus(200);
     }
@@ -1130,6 +1131,10 @@ router.post('/', ({
     .populate('list.creator')
     .select('-playedLists')
     .exec((err, existingGame) => {
+      if (err) {
+        b.notifyAdmin(`Error finding game: ${msg.chat.id}`);
+        return next(err);
+      }
       if (!existingGame) {
         const newGame = new TenThings({
           chat_id: msg.chat.id,
@@ -1597,6 +1602,7 @@ List.findOne({
   })
   .lean()
   .exec((err, list) => {
-    console.log(list);
-  });
-  */
+    //console.log(list);
+    let score = list.votes.reduce((score, vote) => score + vote.vote, 0);
+    console.log(score);
+  });*/
