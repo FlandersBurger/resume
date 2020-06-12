@@ -171,7 +171,7 @@ function selectList(game) {
           $nin: game.playedLists
         },
         categories: {
-          $in: _.difference(categories, game.disabledCategories)
+          $nin: game.disabledCategories
         }
       })
       .exec((err, count) => {
@@ -182,15 +182,18 @@ function selectList(game) {
           game.lastCycleDate = moment();
           game.save(err => {
             if (err) reject(err);
-            bot.sendMessage(game.chat_id, 'All lists have been played, a new cycle will now start.');
+            //bot.sendMessage(game.chat_id, 'All lists have been played, a new cycle will now start.');
             List.countDocuments({
               categories: {
-                $in: _.difference(categories, game.disabledCategories)
+                $nin: game.disabledCategories
               }
             }).exec(function(err, count) {
               if (count === 0) {
-                bot.sendMessage(game.chat_id, 'Selecting random list as there are none found with the enabled categories\nPlease speak to your admin to enable more /categories');
-                List.find()
+                List.find({
+                    categories: {
+                      $in: _.difference(categories, game.disabledCategories)
+                    }
+                  })
                   .select('-votes')
                   .populate('creator')
                   .limit(1)
@@ -200,7 +203,7 @@ function selectList(game) {
               } else {
                 List.find({
                     categories: {
-                      $in: _.difference(categories, game.disabledCategories)
+                      $nin: game.disabledCategories
                     }
                   })
                   .select('-votes')
@@ -218,7 +221,7 @@ function selectList(game) {
                 $nin: game.playedLists
               },
               categories: {
-                $in: _.difference(categories, game.disabledCategories)
+                $nin: game.disabledCategories
               }
             })
             .select('-votes')
@@ -259,7 +262,7 @@ bot.sendKeyboard(config.masterChat, 'test', {
 });
 */
 
-
+/*
 List.find({
     categories: {
       $nin: ['Music', 'Movies']
@@ -272,7 +275,7 @@ List.find({
 const rateList = (game) => {
   bot.sendKeyboard(game.chat_id, `Did you like <b>${game.list.name}</b>?`, keyboards.like(game));
 };
-
+*/
 const queueGuess = (game, msg) => {
   const values = game.list.values.filter(({
     guesser
@@ -976,6 +979,9 @@ router.post('/', ({
             if (categoryIndex >= 0) {
               game.disabledCategories.splice(categoryIndex, 1);
             } else {
+              if (game.disabledCategories.length === categories.length - 1) {
+                return b.sendMessage(body.callback_query.message.chat.id, 'A minimum of 1 category is required');
+              }
               game.disabledCategories.push(data.id);
             }
             game.save((err, savedGame) => {
