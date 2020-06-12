@@ -272,10 +272,11 @@ List.find({
   .exec((err, lists) => {
     console.log(_.uniq(lists.map(list => list.category)));
   });
+  */
 const rateList = (game) => {
   bot.sendKeyboard(game.chat_id, `Did you like <b>${game.list.name}</b>?`, keyboards.like(game));
 };
-*/
+
 const queueGuess = (game, msg) => {
   const values = game.list.values.filter(({
     guesser
