@@ -95,7 +95,7 @@ function TelegramBot() {
     channels.forEach((channel, index) => {
       setTimeout(() => {
         bot.sendMessage(channel, message);
-      }, index * 10);
+      }, index * 50);
     });
   };
 

@@ -49,7 +49,7 @@ const getJoke = schedule.scheduleJob('0 0 0 * * *', () => {
 });
 */
 
-console.log(moment().hour());
+console.log(`Time: ${moment().utc().hour()}`);
 
 /*
 TenThings.find()
@@ -146,8 +146,8 @@ const modifiedLists = schedule.scheduleJob('0 30 12 * * *', () => {
 //bot.sendPhoto(config.masterChat, 'https://m.media-amazon.com/images/M/MV5BNmE1OWI2ZGItMDUyOS00MmU5LWE0MzUtYTQ0YzA1YTE5MGYxXkEyXkFqcGdeQXVyMDM5ODIyNw@@._V1._SX40_CR0,0,40,54_.jpg')
 
 //var dailyScore = schedule.scheduleJob('*/10 * * * * *', function() {
-const dailyScore = schedule.scheduleJob('0 0 1 * * *', () => {
-  if (moment().hour() === 1) {
+const dailyScore = schedule.scheduleJob('0 0 0 * * *', () => {
+  if (moment().utc().hour() === 0) {
     //if (true) {
     bot.notifyAdmin(`Score Reset Triggered; ${moment().format('DD-MMM-YYYY hh:mm')}`);
     TenThings.find({
@@ -155,6 +155,7 @@ const dailyScore = schedule.scheduleJob('0 0 1 * * *', () => {
           $gt: 0
         }
       })
+      .lean()
       .select('chat_id list players')
       .populate('list.creator')
       .then(games => {
@@ -178,11 +179,8 @@ const dailyScore = schedule.scheduleJob('0 0 1 * * *', () => {
                 } else {
                   message += first_name;
                   setTimeout(() => {
-                    bot.sendMessage(game.chat_id, `<b>${message} won with ${highScore} points!</b>`);
-                    console.log(message);
-                    if (game.chat_id != config.groupChat) {
-                      bot.sendMessage(game.chat_id, 'Come join us in the <a href="https://t.me/tenthings">Ten Things Supergroup</a>!');
-                    }
+                    bot.sendMessage(game.chat_id, `<b>${message} won with ${highScore} points!</b>${game.chat_id != config.groupChat ? '\n\nCome join us in the <a href="https://t.me/tenthings">Ten Things Supergroup</a>!' : ''}`);
+                    //console.log(message);
                     TenThings.updateMany({
                         _id: game._id
                       }, {
@@ -219,7 +217,9 @@ const dailyScore = schedule.scheduleJob('0 0 1 * * *', () => {
                     try {
                       stats.getList(game, list => {
                         let message = `<b>${game.list.name}</b> (${game.list.totalValues}) by ${game.list.creator.username}\n`;
-                        message += game.list.categories.length > 0 ? `Categor${game.list.categories.length > 1 ? 'ies' : 'y'}: <b>${game.list.categories}</b>\n` : '';
+                        if (game.list.categories) {
+                          message += game.list.categories.length > 0 ? `Categor${game.list.categories.length > 1 ? 'ies' : 'y'}: <b>${game.list.categories}</b>\n` : '';
+                        }
                         message += game.list.description ? (game.list.description.includes('href') ? game.list.description : `<i>${angleBrackets(game.list.description)}</i>\n`) : '';
                         message += list;
                         bot.sendMessage(game.chat_id, message);
@@ -379,7 +379,11 @@ function getChat(chat, delay) {
     }, delay);
   });
 }
-
+TenThingsStats.find()
+  .lean()
+  .then(stats => {
+    console.log(stats.forEach(stat => console.log(stat.date)));
+  });
 
 const updateDailyStats = (gamesPlayed, totalPlayers, uniquePlayers) => {
   TenThingsStats.findOne({

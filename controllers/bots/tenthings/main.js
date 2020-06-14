@@ -1057,6 +1057,7 @@ router.post('/', ({
       TenThings.findOne({
         chat_id: body.message.chat.id
       }).select('players').exec((err, game) => {
+        if (err || !game) return;
         const player = _.find(game.players, ({
           id
         }) => id == body.message.left_chat_participant.id);
