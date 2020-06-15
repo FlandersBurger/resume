@@ -225,7 +225,7 @@ const dailyScore = schedule.scheduleJob('0 0 0 * * *', () => {
                         bot.sendMessage(game.chat_id, message);
                       });
                     } catch (e) {
-                      notifyAdmin(JSON.stringify(e));
+                      bot.notifyAdmin(JSON.stringify(e));
                     }
                   }, index * 50);
                 }
