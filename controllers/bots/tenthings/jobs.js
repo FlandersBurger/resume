@@ -145,10 +145,9 @@ const modifiedLists = schedule.scheduleJob('0 30 12 * * *', () => {
 });
 //bot.sendPhoto(config.masterChat, 'https://m.media-amazon.com/images/M/MV5BNmE1OWI2ZGItMDUyOS00MmU5LWE0MzUtYTQ0YzA1YTE5MGYxXkEyXkFqcGdeQXVyMDM5ODIyNw@@._V1._SX40_CR0,0,40,54_.jpg')
 
-//var dailyScore = schedule.scheduleJob('*/10 * * * * *', function() {
-const dailyScore = schedule.scheduleJob('0 0 0 * * *', () => {
-  if (moment().utc().hour() === 0) {
-    //if (true) {
+
+const resetDailyScore = () => {
+  if (moment().utc().hour() === 1) {
     bot.notifyAdmin(`Score Reset Triggered; ${moment().format('DD-MMM-YYYY hh:mm')}`);
     TenThings.find({
         'players.scoreDaily': {
@@ -243,8 +242,11 @@ const dailyScore = schedule.scheduleJob('0 0 0 * * *', () => {
   } else {
     bot.notifyAdmin(`Schedule incorrectly triggered: ${moment().format('DD-MMM-YYYY hh:mm')}`);
   }
-});
+};
 
+//var dailyScore = schedule.scheduleJob('*/10 * * * * *', function() {
+const dailyScore = schedule.scheduleJob('0 2 1 * * *', resetDailyScore);
+//resetDailyScore()
 const deleteStaleGames = schedule.scheduleJob('0 0 4 * * *', () => {
   //Delete stale games
   TenThings.find({
@@ -379,6 +381,7 @@ function getChat(chat, delay) {
     }, delay);
   });
 }
+
 TenThingsStats.find()
   .lean()
   .then(stats => {
