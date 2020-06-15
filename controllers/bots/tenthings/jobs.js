@@ -381,12 +381,12 @@ function getChat(chat, delay) {
     }, delay);
   });
 }
-
+/*
 TenThingsStats.find()
   .lean()
   .then(stats => {
     console.log(stats.forEach(stat => console.log(stat.date)));
-  });
+  });*/
 
 const updateDailyStats = (gamesPlayed, totalPlayers, uniquePlayers) => {
   TenThingsStats.findOne({
