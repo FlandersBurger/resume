@@ -7,7 +7,7 @@ module.exports = [
   'Politics',
   'Celebrities',
   'Challenging',
-  'Mathemathics',
+  'Mathematics',
   'History',
   'Science',
   'Gaming',
