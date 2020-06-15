@@ -982,7 +982,7 @@ router.post('/', ({
               game.disabledCategories.splice(categoryIndex, 1);
             } else {
               if (game.disabledCategories.length === categories.length - 1) {
-                return b.sendMessage(body.callback_query.message.chat.id, 'A minimum of 1 category is required');
+                return bot.sendMessage(body.callback_query.message.chat.id, 'A minimum of 1 category is required');
               }
               game.disabledCategories.push(data.id);
             }
@@ -1134,7 +1134,7 @@ router.post('/', ({
     .select('-playedLists')
     .exec((err, existingGame) => {
       if (err) {
-        b.notifyAdmin(`Error finding game: ${msg.chat.id}`);
+        bot.notifyAdmin(`Error finding game: ${msg.chat.id}`);
         return next(err);
       }
       if (!existingGame) {
@@ -1580,16 +1580,21 @@ TenThings.find({
     //game.chat_id = '-1001195181419'; //'-1001380477486'
     //game.save();
   });
+  */
+/*
 TenThings.findOne({
-    _id: '5ea571afe7076e790d20182d',
-    //chat_id: config.masterChat
+    //_id: '5ea571afe7076e790d20182d',
+    chat_id: config.groupChat
   })
+  .select('_id disabledCategories')
   .exec((err, game) => {
     console.log(game);
+
     //game.chat_id = '-1001195181419'; //'-1001380477486'
+    //game.disabledCategories.push('Non-English');
     //game.save();
   });
-  */
+*/
 /*
 TenThings.deleteOne({
   _id: '5e8eda52318c09097b7b5e67'
