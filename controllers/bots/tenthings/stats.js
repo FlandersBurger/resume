@@ -213,7 +213,7 @@ exports.getStats = (chat_id, data, requestor) => {
             }
           },
         ]).exec((err, stats) => {
-
+          stats = stats[0];
           let message = '<b>Global Stats</b>\n';
           message += data.requestor ? `<i>Requested by ${data.requestor}</i>\n` : '';
           message += `Highest Overall Score: ${stats.overallHighScore}\n`;
