@@ -163,35 +163,77 @@ exports.getStats = (chat_id, data, requestor) => {
         });
         break;
       case 'global':
-        TenThings
-          .find({
-            'players.present': true
-          })
-          .select('chat_id cycles players')
-          .lean()
-          .exec((err, games) => {
-            if (err) return console.error(err);
-            const allPlayers = games.reduce((allPlayers, {
-              players
-            }, index) => allPlayers.concat(players), []);
-            message = '<b>Global Stats</b>\n';
-            message += data.requestor ? `<i>Requested by ${data.requestor}</i>\n` : '';
-            message += `Highest Overall Score: ${allPlayers.reduce((score, {highScore}) => highScore ? score > highScore ? score : highScore : score, 0)}\n`;
-            message += `Highest Score Today: ${allPlayers.reduce((score, {scoreDaily}) => scoreDaily ? score > scoreDaily ? score : scoreDaily : score, 0)}\n`;
-            message += `Total Score: ${allPlayers.reduce((count, {score}) => count + (score ? score : 0), 0)}\n`;
-            message += `Best Answer Streak: ${allPlayers.reduce((score, {streak}) => streak ? score > streak ? score : streak : score, 0)}\n`;
-            message += `Best Play Streak: ${allPlayers.reduce((score, {maxPlayStreak}) => maxPlayStreak ? score > maxPlayStreak ? score : maxPlayStreak : score, 0)}\n`;
-            message += `Best No Hint Streak: ${allPlayers.reduce((score, {maxHintStreak}) => maxHintStreak ? score > maxHintStreak ? score : maxHintStreak : score, 0)}\n`;
-            message += `Answers Given: ${allPlayers.reduce((count, {answers}) => count + (answers ? answers : 0), 0)}\n`;
-            message += `Answer Snubs: ${allPlayers.reduce((count, {snubs}) => count + (snubs ? snubs : 0), 0)}\n`;
-            message += `Hints Asked: ${allPlayers.reduce((count, {hints}) => count + (hints ? hints : 0), 0)}\n`;
-            message += `Suggestions given: ${allPlayers.reduce((count, {suggestions}) => count + (suggestions ? suggestions : 0), 0)}\n`;
-            message += `Lists Skipped: ${allPlayers.reduce((count, {skips}) => count + (skips ? skips : 0), 0)}\n`;
-            message += `${allPlayers.filter(({scoreDaily}) => scoreDaily).length} out of ${allPlayers.filter(({present}) => present).length} players played today\n`;
-            message += `Cycled through all lists ${games.reduce((count, {cycles}) => count + (cycles ? cycles : 0), 0)} times\n`;
-            message += '\n';
-            bot.sendMessage(game.chat_id, message);
-          });
+        TenThings.aggregate([{
+            $match: {
+              'players.present': true
+            }
+          },
+          {
+            $unwind: '$players'
+          },
+          {
+            $group: {
+              _id: 'stats',
+              'overallHighScore': {
+                $max: '$players.highScore'
+              },
+              'overallTotalScore': {
+                $sum: '$players.score'
+              },
+              'dailyHighScore': {
+                $max: '$players.scoreDaily'
+              },
+              'dailyTotalScore': {
+                $sum: '$players.scoreDaily'
+              },
+              'answerStreak': {
+                $max: '$players.streak'
+              },
+              'playStreak': {
+                $max: '$players.maxPlayStreak'
+              },
+              'noHintStreak': {
+                $max: '$players.maxHintStreak'
+              },
+              'answers': {
+                $sum: '$players.answers'
+              },
+              'snubs': {
+                $sum: '$players.snubs'
+              },
+              'hints': {
+                $sum: '$players.hints'
+              },
+              'skips': {
+                $sum: '$players.skips'
+              },
+              'suggestions': {
+                $sum: '$players.suggestions'
+              },
+            }
+          },
+        ]).exec((err, stats) => {
+
+          let message = '<b>Global Stats</b>\n';
+          message += data.requestor ? `<i>Requested by ${data.requestor}</i>\n` : '';
+          message += `Highest Overall Score: ${stats.overallHighScore}\n`;
+          message += `Highest Score Today: ${stats.dailyHighScore}\n`;
+          message += `Total Overall Score: ${stats.overallTotalScore}\n`;
+          message += `Total Score Today: ${stats.dailyTotalScore}\n`;
+          message += `Best Answer Streak: ${stats.answerStreak}\n`;
+          message += `Best Play Streak: ${stats.playStreak}\n`;
+          message += `Best No Hint Streak: ${stats.noHintStreak}\n`;
+          message += `Answers Given: ${stats.answers}\n`;
+          message += `Answer Snubs: ${stats.snubs}\n`;
+          message += `Hints Asked: ${stats.hints}\n`;
+          message += `Suggestions given: ${stats.hints}\n`;
+          message += `Lists Skipped: ${stats.skips}\n`;
+          //message += `${allPlayers.filter(({scoreDaily}) => scoreDaily).length} out of ${allPlayers.filter(({present}) => present).length} players played today\n`;
+          //message += `Cycled through all lists ${games.reduce((count, {cycles}) => count + (cycles ? cycles : 0), 0)} times\n`;
+          message += '\n';
+
+          bot.sendMessage(game.chat_id, message);
+        });
         break;
       case 'g':
         List.find().exec((err, {
