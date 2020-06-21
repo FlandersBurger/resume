@@ -1,185 +1,277 @@
-﻿<!DOCTYPE html>
-<html ng-app="app" ng-controller="AppCtrl" ui-router-styles>
-<head>
-  <title>Laurent Debacker Resume</title>
+﻿
+<!DOCTYPE html>
+<html ng-app="app"
+      ng-controller="AppCtrl"
+      ui-router-styles>
 
-  <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/tether/1.3.4/css/tether.min.css">
+  <head>
+    <title>Laurent Debacker Resume</title>
 
-  <script src="//www.gstatic.com/firebasejs/4.13.0/firebase.js"></script>
-  <script>
-    // Initialize Firebase
-    var config = {
-      apiKey: "AIzaSyAxGFQpwqPfbMKEGRWsJk6B8gvY2A5PzoM",
-      authDomain: "resume-172205.firebaseapp.com",
-      databaseURL: "https://resume-172205.firebaseio.com",
-      projectId: "resume-172205",
-      storageBucket: "resume-172205.appspot.com",
-      messagingSenderId: "528274606655"
-    };
-    firebase.initializeApp(config);
-  </script>
-  <script src="//cdn.firebase.com/libs/firebaseui/2.5.1/firebaseui.js"></script>
-  <link type="text/css" rel="stylesheet" href="//cdn.firebase.com/libs/firebaseui/2.5.1/firebaseui.css" />
-  <!-- Hotjar Tracking Code for belgocanadian.com -->
-  <script>
-      (function(h,o,t,j,a,r){
-          h.hj=h.hj||function(){(h.hj.q=h.hj.q||[]).push(arguments)};
-          h._hjSettings={hjid:545346,hjsv:5};
-          a=o.getElementsByTagName('head')[0];
-          r=o.createElement('script');r.async=1;
-          r.src=t+h._hjSettings.hjid+j+h._hjSettings.hjsv;
-          a.appendChild(r);
-      })(window,document,'//static.hotjar.com/c/hotjar-','.js?sv=');
-  </script>
+    <link rel="stylesheet"
+          href="//cdnjs.cloudflare.com/ajax/libs/tether/1.3.4/css/tether.min.css">
 
-  <link rel="stylesheet" ng-href="/bootstrap{{themeCounter}}.min.css">
-  <!--link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"-->
+    <script src="//www.gstatic.com/firebasejs/4.13.0/firebase.js"></script>
+    <script>
+      // Initialize Firebase
+      var config = {
+        apiKey: "AIzaSyAxGFQpwqPfbMKEGRWsJk6B8gvY2A5PzoM",
+        authDomain: "resume-172205.firebaseapp.com",
+        databaseURL: "https://resume-172205.firebaseio.com",
+        projectId: "resume-172205",
+        storageBucket: "resume-172205.appspot.com",
+        messagingSenderId: "528274606655"
+      };
+      firebase.initializeApp(config);
+    </script>
+    <script src="//cdn.firebase.com/libs/firebaseui/2.5.1/firebaseui.js"></script>
+    <link type="text/css"
+          rel="stylesheet"
+          href="//cdn.firebase.com/libs/firebaseui/2.5.1/firebaseui.css" />
+    <!-- Hotjar Tracking Code for belgocanadian.com -->
+    <script>
+      (function(h, o, t, j, a, r) {
+        h.hj = h.hj || function() {
+          (h.hj.q = h.hj.q || []).push(arguments)
+        };
+        h._hjSettings = {
+          hjid: 545346,
+          hjsv: 5
+        };
+        a = o.getElementsByTagName('head')[0];
+        r = o.createElement('script');
+        r.async = 1;
+        r.src = t + h._hjSettings.hjid + j + h._hjSettings.hjsv;
+        a.appendChild(r);
+      })(window, document, '//static.hotjar.com/c/hotjar-', '.js?sv=');
+    </script>
 
-  <!--link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css"-->
-  <link rel="stylesheet" href="https://pro.fontawesome.com/releases/v5.13.0/css/all.css" integrity="sha384-IIED/eyOkM6ihtOiQsX2zizxFBphgnv1zbe1bKA+njdFzkr6cDNy16jfIKWu4FNH" crossorigin="anonymous">
+    <link rel="stylesheet"
+          ng-href="/bootstrap{{themeCounter}}.min.css">
+    <!--link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"-->
 
-  <!--script defer src="/resources/solid.min.js"></script>
+    <!--link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css"-->
+    <link rel="stylesheet"
+          href="https://pro.fontawesome.com/releases/v5.13.0/css/all.css"
+          integrity="sha384-IIED/eyOkM6ihtOiQsX2zizxFBphgnv1zbe1bKA+njdFzkr6cDNy16jfIKWu4FNH"
+          crossorigin="anonymous">
+
+    <!--script defer src="/resources/solid.min.js"></script>
   <script defer src="/resources/regular.min.js"></script>
   <script defer src="/resources/fontawesome.min.js"></script-->
 
-  <link rel="stylesheet" ng-href="/app.css?v={{random}}">
-  <link rel="stylesheet" href="/circle.css">
-  <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/animate.css/3.5.2/animate.min.css">
-  <script src="//cdnjs.cloudflare.com/ajax/libs/underscore.js/1.8.3/underscore-min.js"></script>
-  <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/animate.css/3.5.2/animate.min.css">
-  <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/flag-icon-css/2.5.0/css/flag-icon.min.css">
+    <link rel="stylesheet"
+          ng-href="/app.css?v={{random}}">
+    <link rel="stylesheet"
+          href="/circle.css">
+    <link rel="stylesheet"
+          href="//cdnjs.cloudflare.com/ajax/libs/animate.css/3.5.2/animate.min.css">
+    <script src="//cdnjs.cloudflare.com/ajax/libs/underscore.js/1.8.3/underscore-min.js"></script>
+    <link rel="stylesheet"
+          href="//cdnjs.cloudflare.com/ajax/libs/animate.css/3.5.2/animate.min.css">
+    <link rel="stylesheet"
+          href="//cdnjs.cloudflare.com/ajax/libs/flag-icon-css/2.5.0/css/flag-icon.min.css">
 
-  <link rel="stylesheet" href="//mbenford.github.io/ngTagsInput/css/ng-tags-input.min.css" />
+    <link rel="stylesheet"
+          href="//mbenford.github.io/ngTagsInput/css/ng-tags-input.min.css" />
 
-  <link href="//fonts.googleapis.com/css?family=Merriweather|VT323|Aldrich|Monoton|Press+Start+2P" rel="stylesheet">
+    <link href="//fonts.googleapis.com/css?family=Merriweather|VT323|Aldrich|Monoton|Press+Start+2P"
+          rel="stylesheet">
 
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1">
 
-  <base href="/">
+    <base href="/">
 
-  <!-- src="https://www.google.com/recaptcha/api.js"></script-->
-</head>
+    <!-- src="https://www.google.com/recaptcha/api.js"></script-->
+  </head>
 
-<body ng-cloak>
+  <body ng-cloak>
 
-  <div class="loading">
-    <i class="fa fa-spinner fa-spin fa-5x fa-fw"></i>
-  </div>
+    <div class="loading">
+      <i class="fa fa-spinner fa-spin fa-5x fa-fw"></i>
+    </div>
 
-  <div class="content display" style="display:none;">
-    <nav class="navbar navbar-default" style="position:fixed;width:100%;">
-      <div class="container-fluid">
-        <div class="navbar-header">
-          <a class="navbar-brand active" ui-sref="home">Laurent Debacker</a>
-          <button type="button" class="navbar-toggle" ng-init="navCollapsed = true" ng-click="navCollapsed = !navCollapsed">
-            <i class="fa fa-bars" aria-hidden="true"></i>
-          </button>
-        </div>
-        <div class="collapse navbar-collapse" id="navbar" ng-class="{'in': !navCollapsed}">
-          <ul class="nav navbar-nav navbar-left">
-            <li class="nav-item">
-              <a class="nav-link" ui-sref="experience" ng-click="navCollapsed = true">Experience</a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link" ui-sref="skills" ng-click="navCollapsed = true">Skills</a>
-            </li>
-            <li class="nav-item dropdown">
-              <a class="dropdown-toggle" data-toggle="dropdown" href="#">Contact</a>
-              <ul class="dropdown-menu">
-                <li><a ui-sref="contact" ng-click="navCollapsed = true">Form</a></li>
-                <li><a ui-sref="posts" ng-click="navCollapsed = true">Chat</a></li>
-              </ul>
-            </li>
-            <li class="nav-item dropdown">
-              <a class="dropdown-toggle" data-toggle="dropdown" href="#">Doodles</a>
-              <ul class="dropdown-menu">
-                <li><a class="nav-link" ui-sref="asteroids" ng-click="navCollapsed = true">Asteroids</a></li>
-                <li><a class="nav-link" ui-sref="tenthings" ng-click="navCollapsed = true">Ten Things</a></li>
-                <li><a class="nav-link" ui-sref="bubbles" ng-click="navCollapsed = true">Bubbles</a></li>
-                <li><a class="nav-link" ui-sref="hobbies" ng-click="navCollapsed = true">Hobbies</a></li>
-                <li><a class="nav-link" ui-sref="workout" ng-click="navCollapsed = true">7-Minute Workout</a></li>
-                <li><a class="nav-link" ui-sref="lists" ng-click="navCollapsed = true">Top Priority</a></li>
-                <li><a class="nav-link" ui-sref="lemmings" ng-click="navCollapsed = true">Lemmings</a></li>
-              </ul>
-            </li>
-            <li class="nav-item dropdown">
-              <a class="dropdown-toggle" data-toggle="dropdown" href="#">Quizzes</a>
-              <ul class="dropdown-menu">
-                <li><a class="nav-link" ui-sref="quiz-google" ng-click="navCollapsed = true">Google Images</a></li>
-                <li><a class="nav-link" ui-sref="quiz-logos" ng-click="navCollapsed = true">Pixelated Logos</a></li>
-              </ul>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link" onclick="window.print();" style="cursor:pointer" ng-click="navCollapsed = true">Print</a>
-            </li>
-          </ul>
-          <ul class="nav navbar-nav navbar-right">
-            <li class="nav-item" id="loading-icon">
-              <span class="navbar-text">
-                <i class="fa fa-2x fa-inverse" ng-class="{ 'fa-pulse fa-spinner': loading, 'fa-save': !loading}"></i>
-              </span>
-            </li>
-            <li class="nav-item dropdown" ng-show="loggedIn">
-              <a class="dropdown-toggle" ng-class="{'img-profile-a': currentUser.photoURL}" data-toggle="dropdown" href="#">
-                <i class="fa fa-user" ng-hide="currentUser.photoURL"></i>
-                <img class="img-circle img-profile" ng-src="{{currentUser.photoURL}}" ng-show="currentUser.photoURL" />
-              </a>
-              <ul class="dropdown-menu">
-                <li><a ui-sref="profile" ng-click="navCollapsed = true">Profile</a></li>
-                <li><a ng-click="navCollapsed = true;logout()">Logout</a></li>
-              </ul>
-            </li>
-            <li ng-hide="loggedIn">
-              <a class="nav-link" data-toggle="modal" data-target="#modal-login" ng-click="navCollapsed = true">Login</a>
-            </li>
-            <!--li class="dropdown">
+    <div class="content display"
+         style="display:none;">
+      <nav class="navbar navbar-default"
+           style="position:fixed;width:100%;">
+        <div class="container-fluid">
+          <div class="navbar-header">
+            <a class="navbar-brand active"
+               ui-sref="home">Laurent Debacker</a>
+            <button type="button"
+                    class="navbar-toggle"
+                    ng-init="navCollapsed = true"
+                    ng-click="navCollapsed = !navCollapsed">
+              <i class="fa fa-bars"
+                 aria-hidden="true"></i>
+            </button>
+          </div>
+          <div class="collapse navbar-collapse"
+               id="navbar"
+               ng-class="{'in': !navCollapsed}">
+            <ul class="nav navbar-nav navbar-left">
+              <li class="nav-item">
+                <a class="nav-link"
+                   ui-sref="experience"
+                   ng-click="navCollapsed = true">Experience</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link"
+                   ui-sref="skills"
+                   ng-click="navCollapsed = true">Skills</a>
+              </li>
+              <li class="nav-item dropdown">
+                <a class="dropdown-toggle"
+                   data-toggle="dropdown"
+                   href="#">Contact</a>
+                <ul class="dropdown-menu">
+                  <li><a ui-sref="contact"
+                       ng-click="navCollapsed = true">Form</a></li>
+                  <li><a ui-sref="posts"
+                       ng-click="navCollapsed = true">Chat</a></li>
+                </ul>
+              </li>
+              <li class="nav-item dropdown">
+                <a class="dropdown-toggle"
+                   data-toggle="dropdown"
+                   href="#">Doodles</a>
+                <ul class="dropdown-menu">
+                  <li><a class="nav-link"
+                       ui-sref="asteroids"
+                       ng-click="navCollapsed = true">Asteroids</a></li>
+                  <li><a class="nav-link"
+                       ui-sref="tenthings"
+                       ng-click="navCollapsed = true">Ten Things</a></li>
+                  <li><a class="nav-link"
+                       ui-sref="bubbles"
+                       ng-click="navCollapsed = true">Bubbles</a></li>
+                  <li><a class="nav-link"
+                       ui-sref="hobbies"
+                       ng-click="navCollapsed = true">Hobbies</a></li>
+                  <li><a class="nav-link"
+                       ui-sref="workout"
+                       ng-click="navCollapsed = true">7-Minute Workout</a></li>
+                  <li><a class="nav-link"
+                       ui-sref="lists"
+                       ng-click="navCollapsed = true">Top Priority</a></li>
+                  <li><a class="nav-link"
+                       ui-sref="lemmings"
+                       ng-click="navCollapsed = true">Lemmings</a></li>
+                </ul>
+              </li>
+              <li class="nav-item dropdown">
+                <a class="dropdown-toggle"
+                   data-toggle="dropdown"
+                   href="#">Quizzes</a>
+                <ul class="dropdown-menu">
+                  <li><a class="nav-link"
+                       ui-sref="quiz-google"
+                       ng-click="navCollapsed = true">Google Images</a></li>
+                  <li><a class="nav-link"
+                       ui-sref="quiz-logos"
+                       ng-click="navCollapsed = true">Pixelated Logos</a></li>
+                  <li><a class="nav-link"
+                       ui-sref="quiz-animals"
+                       ng-click="navCollapsed = true">Animals</a></li>
+                </ul>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link"
+                   onclick="window.print();"
+                   style="cursor:pointer"
+                   ng-click="navCollapsed = true">Print</a>
+              </li>
+            </ul>
+            <ul class="nav navbar-nav navbar-right">
+              <li class="nav-item"
+                  id="loading-icon">
+                <span class="navbar-text">
+                  <i class="fa fa-2x fa-inverse"
+                     ng-class="{ 'fa-pulse fa-spinner': loading, 'fa-save': !loading}"></i>
+                </span>
+              </li>
+              <li class="nav-item dropdown"
+                  ng-show="loggedIn">
+                <a class="dropdown-toggle"
+                   ng-class="{'img-profile-a': currentUser.photoURL}"
+                   data-toggle="dropdown"
+                   href="#">
+                  <i class="fa fa-user"
+                     ng-hide="currentUser.photoURL"></i>
+                  <img class="img-circle img-profile"
+                       ng-src="{{currentUser.photoURL}}"
+                       ng-show="currentUser.photoURL" />
+                </a>
+                <ul class="dropdown-menu">
+                  <li><a ui-sref="profile"
+                       ng-click="navCollapsed = true">Profile</a></li>
+                  <li><a ng-click="navCollapsed = true;logout()">Logout</a></li>
+                </ul>
+              </li>
+              <li ng-hide="loggedIn">
+                <a class="nav-link"
+                   data-toggle="modal"
+                   data-target="#modal-login"
+                   ng-click="navCollapsed = true">Login</a>
+              </li>
+              <!--li class="dropdown">
               <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">{{selectedLanguage.code}}</a>
               <ul class="dropdown-menu">
                 <li ng-repeat="language in languages"><a href="#" ng-click="selectLanguage(language)"><span class="flag-icon" ng-class="language.flag"></span> {{language.name}}</a></li>
               </ul>
             </li-->
+            </ul>
+          </div>
+        </div>
+      </nav>
+
+      <div class="container">
+        <div ui-view
+             class="page"></div>
+      </div>
+
+      <nav class="navbar navbar-default navbar-fixed-bottom"
+           id="footer">
+        <div class="container">
+          <ul class="nav navbar-nav collapse navbar-collapse">
+            <li ng-repeat="profile in socialMedia"
+                class="nav-item">
+              <a class="nav-link social-media"
+                 ng-href="{{profile.url}}"
+                 target="_blank"><i class="fab fa-2x"
+                   ng-class="profile.icon"
+                   aria-hidden="true"></i><span> {{profile.name}}</span></a>
+            </li>
           </ul>
         </div>
-      </div>
-    </nav>
-
-    <div class="container">
-      <div ui-view class="page"></div>
+      </nav>
     </div>
 
-    <nav class="navbar navbar-default navbar-fixed-bottom" id="footer">
-      <div class="container">
-        <ul class="nav navbar-nav collapse navbar-collapse">
-          <li ng-repeat="profile in socialMedia" class="nav-item">
-            <a class="nav-link social-media" ng-href="{{profile.url}}" target="_blank"><i class="fab fa-2x" ng-class="profile.icon" aria-hidden="true"></i><span> {{profile.name}}</span></a>
-          </li>
-        </ul>
-      </div>
-    </nav>
-  </div>
+    <div class="print"
+         ng-include="'/print.html'"></div>
+    <div ng-include="'/modals/login.html'"></div>
 
-  <div class="print" ng-include="'/print.html'"></div>
-  <div ng-include="'/modals/login.html'"></div>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/2.2.4/jquery.min.js"></script>
+    <script src="//ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/jqueryui-touch-punch/0.2.3/jquery.ui.touch-punch.min.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/tether/1.3.4/js/tether.min.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/Chart.js/2.5.0/Chart.min.js"></script>
+    <script src="//maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.7.8/angular.min.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/angular-ui-router/1.0.16/angular-ui-router.min.js"></script>
+    <script src="//mbenford.github.io/ngTagsInput/js/ng-tags-input.min.js"></script>
+    <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.7.8/angular-sanitize.js"></script>
+    <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.7.8/angular-animate.js"></script>
+    <script src="/ui-bootstrap-tpls-2.5.0.min.js"></script>
+    <script src="/angular-chart.min.js"></script>
+    <script src="/angular-recaptcha.min.js"></script>
+    <script src="/angular-dragdrop.min.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/Chart.js/1.1.1/Chart.min.js"></script>
+    <script src="/tc-angular-chartjs.min.js"></script>
+    <script src="/underscore-min.js"></script>
+    <script src="/app.js"></script>
 
-  <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/2.2.4/jquery.min.js"></script>
-  <script src="//ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
-  <script src="//cdnjs.cloudflare.com/ajax/libs/jqueryui-touch-punch/0.2.3/jquery.ui.touch-punch.min.js"></script>
-  <script src="//cdnjs.cloudflare.com/ajax/libs/tether/1.3.4/js/tether.min.js"></script>
-  <script src="//cdnjs.cloudflare.com/ajax/libs/Chart.js/2.5.0/Chart.min.js"></script>
-  <script src="//maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
-  <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.7.8/angular.min.js"></script>
-  <script src="//cdnjs.cloudflare.com/ajax/libs/angular-ui-router/1.0.16/angular-ui-router.min.js"></script>
-  <script src="//mbenford.github.io/ngTagsInput/js/ng-tags-input.min.js"></script>
-  <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.7.8/angular-sanitize.js"></script>
-  <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.7.8/angular-animate.js"></script>
-  <script src="/ui-bootstrap-tpls-2.5.0.min.js"></script>
-  <script src="/angular-chart.min.js"></script>
-  <script src="/angular-recaptcha.min.js"></script>
-  <script src="/angular-dragdrop.min.js"></script>
-  <script src="//cdnjs.cloudflare.com/ajax/libs/Chart.js/1.1.1/Chart.min.js"></script>
-  <script src="/tc-angular-chartjs.min.js"></script>
-  <script src="/underscore-min.js"></script>
-  <script src="/app.js"></script>
+  </body>
 
-</body>
 </html>

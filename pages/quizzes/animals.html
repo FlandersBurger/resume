@@ -1,0 +1,14 @@
+<div id="quiz-animals-page">
+  <h1>Animal Sounds</h1>
+  <div class="panel panel-default"
+       ng-repeat="sound in sounds track by $index">
+    <div class="panel-heading">{{$index + 1}}</div>
+    <div class="panel-body">
+      <audio controls>
+        <source src="animals/{{sound}}"
+                type="audio/wav">
+        Your browser does not support the audio element.
+      </audio>
+    </div>
+  </div>
+</div>

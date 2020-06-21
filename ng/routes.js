@@ -101,6 +101,11 @@ angular.module('app')
         url: '/logos',
         controller: 'QuizLogosCtrl',
         templateUrl: 'quizzes/logos.html'
+      })
+      .state('quiz-animals', {
+        url: '/animals',
+        controller: 'QuizAnimalsCtrl',
+        templateUrl: 'quizzes/animals.html'
       });
 
     $locationProvider.html5Mode({
