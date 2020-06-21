@@ -1,14 +1,24 @@
 <div id="quiz-animals-page">
   <h1>Animal Sounds</h1>
   <div class="panel panel-default"
-       ng-repeat="sound in sounds track by $index">
+       ng-class="{'panel-default': !animal.guess, 'panel-success': animal.guess === animal.name, 'panel-danger': animal.guess && animal.guess !== animal.name}"
+       ng-repeat="animal in animals track by $index">
     <div class="panel-heading">{{$index + 1}}</div>
     <div class="panel-body">
       <audio controls>
-        <source src="animals/{{sound}}"
+        <source src="animals/{{animal.sound}}"
                 type="audio/wav">
         Your browser does not support the audio element.
       </audio>
+      <div class="input-group">
+        <button class="btn btn-default"
+                ng-repeat="answer in animal.answers"
+                ng-disabled="animal.guess"
+                ng-class="{'btn-default': !animal.guess, 'btn-success': animal.guess && answer === animal.name, 'btn-danger': answer === animal.guess && animal.guess !== animal.name}"
+                ng-click="guess(animal, answer)">
+          {{answer}}
+        </button>
+      </div>
     </div>
   </div>
 </div>
