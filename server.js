@@ -4,6 +4,8 @@ const logger = require('morgan');
 const admin = require('firebase-admin');
 const websocket = require('./websockets');
 const prototypes = require('./prototypes');
+const http = require('http');
+const net = require('net');
 
 const serviceAccount = require('./keys/resume-172205-firebase-adminsdk-r34t7-0028c702be.json');
 
@@ -37,7 +39,8 @@ app.use(require('./controllers/static'));
 
 const port = process.env.PORT || 3000;
 
-const server = app.listen(port, function() {
+const server = http.createServer(app);
+server.listen(port, function() {
   console.log('Server ', process.pid, ' listening on', port);
 });
 

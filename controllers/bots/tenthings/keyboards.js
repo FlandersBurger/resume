@@ -1,3 +1,4 @@
+const moment = require('moment');
 const categories = require('./categories');
 
 module.exports = {
@@ -354,6 +355,7 @@ module.exports = {
             'callback_data': JSON.stringify({
               type: 'rate',
               list: game.list._id,
+              date: moment().format('YYYYMMDDThhmm'),
               vote: 1
             })
           },
@@ -362,6 +364,7 @@ module.exports = {
             'callback_data': JSON.stringify({
               type: 'rate',
               list: game.list._id,
+              date: moment().format('YYYYMMDDThhmm'),
               vote: -1
             })
           }

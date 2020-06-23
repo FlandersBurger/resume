@@ -923,7 +923,9 @@ router.post('/', ({
               bot.answerCallback(body.callback_query.id, data.vote > 0 ? '\ud83d\udc4d' : '\ud83d\udc4e');
               //bot.notifyAdmin(`"<b>${foundList.name}</b>" ${data.vote > 0 ? 'up' : 'down'}voted by <i>${body.callback_query.from.first_name}</i>!`);
               let score = foundList.votes.reduce((score, vote) => score + vote.vote, 0);
-              bot.sendMessage(body.callback_query.message.chat.id, ` ${data.vote > 0 ? '\ud83d\udc4d' : '\ud83d\udc4e'} ${body.callback_query.from.first_name} ${data.vote > 0 ? '' : 'dis'}likes <b>${foundList.name}</b> (${score})`);
+              if (moment(data.date) > moment().subtract(15, 'minutes')) {
+                bot.sendMessage(body.callback_query.message.chat.id, ` ${data.vote > 0 ? '\ud83d\udc4d' : '\ud83d\udc4e'} ${body.callback_query.from.first_name} ${data.vote > 0 ? '' : 'dis'}likes <b>${foundList.name}</b> (${score})`);
+              }
             });
           });
       }
@@ -945,7 +947,7 @@ router.post('/', ({
                   bot.sendKeyboard(game.chat_id, '<b>Player Stats</b>', keyboards.stats_player(game));
                   break;
                 case 'global':
-                  bot.answerCallback(body.callback_query.id, 'List Stats');
+                  bot.answerCallback(body.callback_query.id, 'Global Stats');
                   bot.sendMessage(game.chat_id, 'Coming Soon');
                   break;
                 case 'game':

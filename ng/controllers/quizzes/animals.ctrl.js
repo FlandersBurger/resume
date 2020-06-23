@@ -3,10 +3,10 @@ angular.module('app')
 
     FileSvc.getSounds('animals')
       .then(function(response) {
-        $scope.animals = response.data.map(animal => ({
+        $scope.animals = _.shuffle(response.data.map(animal => ({
           sound: animal,
           name: animal.substring(0, animal.indexOf('.')).replace('_', ' ').capitalize()
-        }));
+        })));
         for (let animal of $scope.animals) {
           animal.answers = _.shuffle([animal.name, ...getRandomAnimals(animal.name)]);
         }
