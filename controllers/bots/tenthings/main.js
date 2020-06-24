@@ -348,6 +348,7 @@ const queueGuess = (game, msg) => {
 };
 
 const sass = (game, text, from) => {
+  return;
   if (game.settings.sass && game.lastPlayDate > moment().subtract(7, 'days')) {
     messages.sass(text)
       .then(sass => {
@@ -923,7 +924,7 @@ router.post('/', ({
               bot.answerCallback(body.callback_query.id, data.vote > 0 ? '\ud83d\udc4d' : '\ud83d\udc4e');
               //bot.notifyAdmin(`"<b>${foundList.name}</b>" ${data.vote > 0 ? 'up' : 'down'}voted by <i>${body.callback_query.from.first_name}</i>!`);
               let score = foundList.votes.reduce((score, vote) => score + vote.vote, 0);
-              if (moment(data.date) > moment().subtract(15, 'minutes')) {
+              if (moment(data.date) > moment().subtract(1, 'days')) {
                 bot.sendMessage(body.callback_query.message.chat.id, ` ${data.vote > 0 ? '\ud83d\udc4d' : '\ud83d\udc4e'} ${body.callback_query.from.first_name} ${data.vote > 0 ? '' : 'dis'}likes <b>${foundList.name}</b> (${score})`);
               }
             });

@@ -355,7 +355,7 @@ module.exports = {
             'callback_data': JSON.stringify({
               type: 'rate',
               list: game.list._id,
-              date: moment().format('YYYYMMDDThhmm'),
+              date: moment().format('YYYYMMDD'),
               vote: 1
             })
           },
@@ -364,7 +364,7 @@ module.exports = {
             'callback_data': JSON.stringify({
               type: 'rate',
               list: game.list._id,
-              date: moment().format('YYYYMMDDThhmm'),
+              date: moment().format('YYYYMMDD'),
               vote: -1
             })
           }
