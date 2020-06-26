@@ -870,7 +870,7 @@ router.post('/', ({
           }, err => {
             bot.notifyAdmin(`Possible spammer: ${name} (${from}) in chat ${chat} ${chat == config.groupChat ? ' - The main chat!' : ''}\n\n${message}\n\nURL: Not available`);
           });
-        } else if (antispam[from].count % 40 === 10) {
+        } else if (antispam[from].count % 10 === 0) {
           bot.notifyAdmin(`Possible spammer: ${name} (${from}) -> ${antispam[from].count} messages`);
         }
         antispam[from].lastMessage = moment();
