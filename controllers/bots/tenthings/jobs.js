@@ -224,6 +224,7 @@ const resetDailyScore = () => {
                         bot.sendMessage(game.chat_id, message);
                       });
                     } catch (e) {
+                      console.error(e);
                       bot.notifyAdmin(JSON.stringify(e));
                     }
                   }, index * 50);
