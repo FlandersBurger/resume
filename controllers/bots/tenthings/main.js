@@ -348,7 +348,6 @@ const queueGuess = (game, msg) => {
 };
 
 const sass = (game, text, from) => {
-  return;
   if (game.settings.sass && game.lastPlayDate > moment().subtract(7, 'days')) {
     messages.sass(text)
       .then(sass => {
@@ -836,13 +835,11 @@ function createMinigame(game, msg) {
       });
     });
 }
-let messageCount = 0;
+
+
 router.post('/', ({
   body
 }, res, next) => {
-  /*
-    console.log(messageCount++);
-    return res.sendStatus(200);*/
   if (body.object === 'page') {
     res.status(200).send('EVENT_RECEIVED');
     return console.log(body);
@@ -851,24 +848,30 @@ router.post('/', ({
     const from = body.message ? body.message.from.id : body.callback_query.from.id;
     const name = body.message ? body.message.from.first_name : body.callback_query.from.first_name;
     const chat = body.message ? body.message.chat.id : body.callback_query.message.chat.id;
+    const message = body.message ? (body.message.text ? body.message.text : 'Not a callback or typed message') : body.callback_query.data;
     if (BANNED_USERS.indexOf(from) >= 0) return res.sendStatus(200);
     if (antispam[from]) {
       if (antispam[from].lastMessage < moment().subtract(10, 'seconds')) {
         delete antispam[from];
-      } else if (antispam[from].count < 20) {
+      } else if (antispam[from].count <= 30) {
         antispam[from].count++;
-      } else if (antispam[from].count === 20) {
-        antispam[from].count++;
-        bot.sendMessage(chat, `You sure seem to be sending a lot of messages, ${name}. I'm keeping an eye on you`);
-      } else if (antispam[from].count < 30) {
-        antispam[from].count++;
-      } else if (antispam[from].count === 30) {
-        antispam[from].count++;
+        if (antispam[from].count === 20) {
+          bot.sendMessage(chat, `You sure seem to be sending a lot of messages, ${name}. I'm keeping an eye on you`);
+        } else if (antispam[from].count === 30) {
+          antispam[from].lastMessage = moment();
+          bot.sendMessage(chat, `Ok, ${name}, calm down, I can't keep up.  Please stay silent for 10 seconds so I can process your stuff`);
+        }
+      } else {
+        if (antispam[from].count === 31) {
+          bot.exportChatInviteLink(chat).then(url => {
+            bot.notifyAdmin(`Possible spammer: ${name} (${from}) in chat ${chat} ${chat == config.groupChat ? ' - The main chat!' : ''}\n\n${message}\n\nURL: ${url}`);
+          }, err => {
+            bot.notifyAdmin(`Possible spammer: ${name} (${from}) in chat ${chat} ${chat == config.groupChat ? ' - The main chat!' : ''}\n\n${message}\n\nURL: Not available`);
+          });
+        } else if (antispam[from].count % 40 === 10) {
+          bot.notifyAdmin(`Possible spammer: ${name} (${from}) -> ${antispam[from].count} messages`);
+        }
         antispam[from].lastMessage = moment();
-        bot.sendMessage(chat, `Ok, ${name}, calm down, I can't keep up.  Please stay silent for 10 seconds so I can process your stuff`);
-      } else if (antispam[from].count > 30) {
-        antispam[from].lastMessage = moment();
-        bot.notifyAdmin(`Possible spammer: ${from} in chat ${chat} ${chat == config.groupChat ? ' - The main chat!' : ''}`);
         return res.sendStatus(200);
       }
     } else {
