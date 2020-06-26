@@ -863,6 +863,7 @@ router.post('/', ({
           bot.sendMessage(chat, `Ok, ${name}, calm down, I can't keep up.  Please stay silent for 10 seconds so I can process your stuff`);
         }
       } else {
+        antispam[from].count++;
         if (antispam[from].count === 31) {
           bot.exportChatInviteLink(chat).then(url => {
             bot.notifyAdmin(`Possible spammer: ${name} (${from}) in chat ${chat} ${chat == config.groupChat ? ' - The main chat!' : ''}\n\n${message}\n\nURL: ${url}`);

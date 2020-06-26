@@ -225,7 +225,7 @@ const resetDailyScore = () => {
                       });
                     } catch (e) {
                       console.error(e);
-                      bot.notifyAdmin(JSON.stringify(e));
+                      bot.notifyAdmin(e);
                     }
                   }, index * 50);
                 }
