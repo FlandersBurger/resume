@@ -352,10 +352,11 @@ const sass = (game, text, from) => {
   if (game.settings.sass && game.lastPlayDate > moment().subtract(7, 'days')) {
     messages.sass(text)
       .then(sass => {
-        if (sass) {/*
-          if (game.chat_id != config.masterChat) {
-            bot.notifyAdmin(`<b>${game.list.name}</b>\n${text}\n<i>${sass}</i>\nChat id: ${game.chat_id}\nFrom: ${from.username || JSON.stringify(from)}`);
-          }*/
+        if (sass) {
+          /*
+                    if (game.chat_id != config.masterChat) {
+                      bot.notifyAdmin(`<b>${game.list.name}</b>\n${text}\n<i>${sass}</i>\nChat id: ${game.chat_id}\nFrom: ${from.username || JSON.stringify(from)}`);
+                    }*/
           if (sass.indexOf('http') === 0) {
             if (sass.indexOf('.gif') > 0) {
               bot.sendAnimation(game.chat_id, sass);
@@ -864,7 +865,7 @@ router.post('/', ({
         }
       } else {
         antispam[from].count++;
-        if (antispam[from].count === 31) {
+        if (antispam[from].count === 35) {
           bot.exportChatInviteLink(chat).then(url => {
             bot.notifyAdmin(`Possible spammer: ${name} (${from}) in chat ${chat} ${chat == config.groupChat ? ' - The main chat!' : ''}\n\n${message}\n\nURL: ${url}`);
           }, err => {
