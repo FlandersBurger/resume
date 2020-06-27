@@ -107,7 +107,7 @@ exports.getList = (game, callback) => {
     value
   }, index) => {
     str += `${index + 1}: `;
-    if (!guesser.first_name) {
+    if (!guesser || !guesser.first_name) {
       str += `<b>${hints.getHint(game.hints, value)}</b>`;
       str += '\n';
     } else {
