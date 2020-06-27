@@ -5,6 +5,7 @@ const VOWELS = 'aeiouAEIOUàèìòùÀÈÌÒÙáéíóúýÁÉÍÓÚÝâêîôû
 exports.getHint = (hints, value) => {
   let i = 0;
   let tester = '';
+  if (hints > MAX_HINTS) hints = MAX_HINTS;
   //3 -> the 3 first hints reveal other stuff
   if (hints > 3) {
     let croppedValue = '';

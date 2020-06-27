@@ -1431,7 +1431,8 @@ function evaluateCommand(res, msg, game, player, isNew) {
           msg += `- ${list}\n`;
           return msg;
         }, '');
-        message += game.minigame.answer.conceal(game.minigame.date < moment().subtract(1, 'hours') ? 'aeoui' : '');
+        message += hints.getHint(moment().diff(game.minigame.date, 'hours'), game.minigame.answer);
+        //message += game.minigame.answer.conceal(game.minigame.date < moment().subtract(1, 'hours') ? 'aeoui' : '');
         bot.sendMessage(msg.chat.id, message);
       }
       break;
