@@ -1445,6 +1445,8 @@ function evaluateCommand(res, msg, game, player, isNew) {
               bot.sendKeyboard(game.chat_id, '<b>Categories</b>', keyboards.categories(game));
             }
           });
+      } else {
+        bot.notifyAdmin(JSON.stringify(msg));
       }
       break;
     case '/settings':
