@@ -1437,7 +1437,7 @@ function evaluateCommand(res, msg, game, player, isNew) {
       }
       break;
     case '/categories':
-      if (game.chat_id != config.masterChat) {
+      if (game.chat_id != config.masterChat && game.chat_id != config.groupChat) {
         bot.checkAdmin(game.chat_id, msg.from.id)
           .then(admin => {
             if (admin || game.chat_id > 0) {
@@ -1448,7 +1448,7 @@ function evaluateCommand(res, msg, game, player, isNew) {
       }
       break;
     case '/settings':
-      if (game.chat_id != config.masterChat) {
+      if (game.chat_id != config.masterChat && game.chat_id != config.groupChat) {
         bot.checkAdmin(game.chat_id, msg.from.id)
           .then(admin => {
             if (admin || game.chat_id > 0) {
@@ -1601,8 +1601,8 @@ TenThings.findOne({
     console.log(game);
 
     //game.chat_id = '-1001195181419'; //'-1001380477486'
-    //game.disabledCategories.push('Non-English');
-    //game.save();
+    game.disabledCategories = ['Non-English'];
+    game.save();
   });
 */
 /*
@@ -1613,6 +1613,7 @@ TenThings.deleteOne({
   console.log(game);
 });
 */
+
 /*
 List.findOne({
     _id: '5eb69f1b5bcb682e62770f1a'
