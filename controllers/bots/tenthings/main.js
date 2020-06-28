@@ -980,28 +980,32 @@ router.post('/', ({
       bot.answerCallback(body.callback_query.id, 'Score');
       stats.getScores(body.callback_query.message.chat.id, data.id);
     } else if (data.type === 'cat') {
-      bot.checkAdmin(body.callback_query.message.chat.id, body.callback_query.from.id)
-        .then(admin => {
-          TenThings.findOne({
-            chat_id: body.callback_query.message.chat.id
-          }).select('chat_id disabledCategories').exec((err, game) => {
-            if (err) return bot.notifyAdmin(JSON.stringify(err));
-            const categoryIndex = game.disabledCategories.indexOf(data.id);
-            if (categoryIndex >= 0) {
-              game.disabledCategories.splice(categoryIndex, 1);
-            } else {
-              if (game.disabledCategories.length === categories.length - 1) {
-                return bot.sendMessage(body.callback_query.message.chat.id, 'A minimum of 1 category is required');
-              }
-              game.disabledCategories.push(data.id);
-            }
-            game.save((err, savedGame) => {
+      if (game.chat_id != config.masterChat && game.chat_id != config.groupChat) {
+        bot.checkAdmin(body.callback_query.message.chat.id, body.callback_query.from.id)
+          .then(admin => {
+            TenThings.findOne({
+              chat_id: body.callback_query.message.chat.id
+            }).select('chat_id disabledCategories').exec((err, game) => {
               if (err) return bot.notifyAdmin(JSON.stringify(err));
-              bot.answerCallback(body.callback_query.id, `${data.id} -> ${categoryIndex >= 0 ? 'On' : 'Off'}`);
-              bot.editKeyboard(body.callback_query.message.chat.id, body.callback_query.message.message_id, keyboards.categories(game));
+              const categoryIndex = game.disabledCategories.indexOf(data.id);
+              if (categoryIndex >= 0) {
+                game.disabledCategories.splice(categoryIndex, 1);
+              } else {
+                if (game.disabledCategories.length === categories.length - 1) {
+                  return bot.sendMessage(body.callback_query.message.chat.id, 'A minimum of 1 category is required');
+                }
+                game.disabledCategories.push(data.id);
+              }
+              game.save((err, savedGame) => {
+                if (err) return bot.notifyAdmin(JSON.stringify(err));
+                bot.answerCallback(body.callback_query.id, `${data.id} -> ${categoryIndex >= 0 ? 'On' : 'Off'}`);
+                bot.editKeyboard(body.callback_query.message.chat.id, body.callback_query.message.message_id, keyboards.categories(game));
+              });
             });
           });
-        });
+      } else {
+        bot.notifyAdmin(JSON.stringify(body.callback_query.message));
+      }
     } else if (data.type === 'setting') {
       if (body.callback_query.message.chat_id != config.masterChat) {
         bot.checkAdmin(body.callback_query.message.chat.id, body.callback_query.from.id)
@@ -1593,7 +1597,7 @@ TenThings.find({
     //game.save();
   });
   */
-/*
+
 TenThings.findOne({
     //_id: '5ea571afe7076e790d20182d',
     chat_id: config.groupChat
@@ -1606,7 +1610,7 @@ TenThings.findOne({
     game.disabledCategories = ['Non-English'];
     game.save();
   });
-*/
+
 /*
 TenThings.deleteOne({
   _id: '5e8eda52318c09097b7b5e67'
