@@ -980,7 +980,7 @@ router.post('/', ({
       bot.answerCallback(body.callback_query.id, 'Score');
       stats.getScores(body.callback_query.message.chat.id, data.id);
     } else if (data.type === 'cat') {
-      if (game.chat_id != config.masterChat && game.chat_id != config.groupChat) {
+      if (body.callback_query.message.chat.id != config.masterChat && body.callback_query.message.chat.id != config.groupChat) {
         bot.checkAdmin(body.callback_query.message.chat.id, body.callback_query.from.id)
           .then(admin => {
             TenThings.findOne({
