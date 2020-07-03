@@ -1597,7 +1597,7 @@ TenThings.find({
     //game.save();
   });
   */
-
+/*
 TenThings.findOne({
     //_id: '5ea571afe7076e790d20182d',
     chat_id: config.groupChat
@@ -1607,10 +1607,10 @@ TenThings.findOne({
     console.log(game);
 
     //game.chat_id = '-1001195181419'; //'-1001380477486'
-    game.disabledCategories = ['Non-English'];
-    game.save();
+    //game.disabledCategories = ['Non-English'];
+    //game.save();
   });
-
+*/
 /*
 TenThings.deleteOne({
   _id: '5e8eda52318c09097b7b5e67'

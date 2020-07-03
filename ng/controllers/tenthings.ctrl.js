@@ -118,6 +118,7 @@ angular.module('app')
               return users;
             }, $scope.userFilters);
             $scope.userCount = Object.keys($scope.userFilters).length;
+            $scope.userFilters = sortObject($scope.userFilters, false);
             $scope.userFilter = 'All';
             $scope.loading = false;
           });
