@@ -1479,7 +1479,7 @@ function evaluateCommand(res, msg, game, player, isNew) {
       break;
     case '/queue':
       getQueue().then(message => {
-        bot.queueMessage(msg.chat.id, message);
+        bot.sendMessage(msg.chat.id, message);
       }, console.error);
       break;
     default:
