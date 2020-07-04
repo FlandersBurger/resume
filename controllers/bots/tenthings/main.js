@@ -1477,7 +1477,12 @@ function evaluateCommand(res, msg, game, player, isNew) {
       break;
     case '/queue':
       guessQueue.count().then(count => {
-        bot.sendMessage(msg.chat.id, `${count} messages in the queue`);
+        bot.getWebhook().then(response => {
+          let message = `<b>Queue</b>`;
+          message += `${count} correct answers queued`;
+          message += `${response.pending_update_count} messages pending in Telegram`;
+          bot.sendMessage(msg.chat.id, message);
+        });
       }, console.error);
       break;
     default:
@@ -1619,6 +1624,7 @@ TenThings.deleteOne({
   console.log(game);
 });
 */
+
 
 /*
 List.findOne({

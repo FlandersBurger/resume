@@ -38,7 +38,7 @@ function TelegramBot() {
     const url = `https://api.telegram.org/bot${bot.token}/getWebhookInfo`;
     request(url, (error, r, body) => {
       if (error) return;
-      resolve(body);
+      resolve(body.result);
     });
   });
 
