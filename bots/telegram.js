@@ -66,6 +66,7 @@ function TelegramBot() {
   });
 
   bot.sendMessage = (channel, message) => {
+    console.log(`Send message: ${message.substring(0, 30)}...`);
     message = encodeURIComponent(message);
     return new Promise((resolve, reject) => {
       const url = `https://api.telegram.org/bot${bot.token}/sendMessage?chat_id=${channel}&disable_notification=true&parse_mode=html&text=${message}`;
@@ -82,6 +83,7 @@ function TelegramBot() {
   };
 
   bot.queueMessage = (channel, message) => {
+    console.log(`Queue message: ${message.substring(0, 30)}...`);
     messageQueue.add({
       channel,
       message
