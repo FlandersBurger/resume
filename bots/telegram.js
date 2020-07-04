@@ -76,6 +76,7 @@ function TelegramBot() {
           console.error(err);
           return reject();
         }
+        console.log(`Sent message: ${message.substring(0, 40)}...`);
         resolve();
       });
     });
