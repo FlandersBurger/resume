@@ -1355,7 +1355,7 @@ function evaluateCommand(res, msg, game, player, isNew) {
               return bot.notifyAdmin(message);
             }
             if (lists.length > 0) {
-              message = `I found some similar lists that already exist, ${msg.from.first_name}!\n${lists.reduce((txt, list) => `${txt}\n - ${list.name}`, '<b>Lists:</b>')}`;
+              message = `I found some similar lists that already exist, ${msg.from.first_name}!\nPlease refine your suggestion to be more specific.\n${lists.reduce((txt, list) => `${txt}\n - ${list.name}`, '<b>Lists:</b>')}`;
               bot.notifyAdmin(message);
               bot.queueMessage(msg.chat.id, message);
             } else {
