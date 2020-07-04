@@ -1345,7 +1345,7 @@ function evaluateCommand(res, msg, game, player, isNew) {
         bot.notify(message);
         List.find({
             name: {
-              $regex: `.*${msg.text.substring(msg.command.length + 1, msg.text.length)}.*`,
+              $regex: `.*${msg.text.substring(msg.command.length + 1, msg.text.length).replace(' ', '.*')}.*`,
               $options: 'i'
             }
           })
