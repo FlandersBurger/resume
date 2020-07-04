@@ -349,6 +349,7 @@ const queueGuess = (game, msg) => {
 };
 
 const sass = (game, text, from) => {
+  return;
   if (game.settings.sass && game.lastPlayDate > moment().subtract(7, 'days')) {
     messages.sass(text)
       .then(sass => {
@@ -842,6 +843,8 @@ function createMinigame(game, msg) {
 router.post('/', ({
   body
 }, res, next) => {
+  
+  //return res.sendStatus(200);
   if (body.object === 'page') {
     res.status(200).send('EVENT_RECEIVED');
     return console.log(body);
