@@ -1341,8 +1341,7 @@ function evaluateCommand(res, msg, game, player, isNew) {
       if (suggestion && suggestion != 'TenThings_Bot' && suggestion != '@TenThings_Bot') {
         player.suggestions++;
         game.save();
-        const message = `<b>Suggestion</b>\n${msg.text.substring(msg.command.length + 1, msg.text.length)}\n<i>${msg.from.username ? msg.from.username : msg.from.first_name}</i>`;
-        bot.notify(message);
+        let message = `<b>Suggestion</b>\n${msg.text.substring(msg.command.length + 1, msg.text.length)}\n<i>${msg.from.username ? msg.from.username : msg.from.first_name}</i>`;
         List.find({
             name: {
               $regex: `.*${msg.text.substring(msg.command.length + 1, msg.text.length).replace(' ', '.*')}.*`,
@@ -1356,7 +1355,9 @@ function evaluateCommand(res, msg, game, player, isNew) {
               return bot.notifyAdmin(message);
             }
             if (lists.length > 0) {
-              bot.queueMessage(msg.chat.id, `I found some similar lists that already exist, ${msg.from.first_name}!\n${lists.reduce((txt, list) => `${txt}\n - ${list.name}`)}`, '<b>Lists:</b>');
+              message = `I found some similar lists that already exist, ${msg.from.first_name}!\n${lists.reduce((txt, list) => `${txt}\n - ${list.name}`, '<b>Lists:</b>')}`;
+              bot.notifyAdmin(message);
+              bot.queueMessage(msg.chat.id, message);
             } else {
               bot.notifyAdmins(message);
               bot.queueMessage(msg.chat.id, `Suggestion noted, ${msg.from.first_name}!\nNote that you can add your own lists at https://belgocanadian.com/tenthings`);
