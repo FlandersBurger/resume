@@ -1,6 +1,19 @@
 /*jslint esversion: 6*/
 const request = require('request');
+const Queue = require('bull');
 const config = require('../config');
+
+const messageQueue = new Queue('sendMessage', {
+  redis: {
+    port: config.redis.port,
+    host: 'localhost',
+    password: config.redis.password
+  },
+  limiter: {
+    max: 30,
+    duration: 1000
+  }
+});
 
 function TelegramBot() {
   const bot = this;
@@ -38,9 +51,7 @@ function TelegramBot() {
     const url = `https://api.telegram.org/bot${bot.token}/getWebhookInfo`;
     request(url, (error, r, body) => {
       if (error) return;
-      console.log(body);
       const response = JSON.parse(body).result;
-      console.log(response);
       if (!response) return;
       resolve(response);
     });
@@ -70,6 +81,18 @@ function TelegramBot() {
     });
   };
 
+  bot.queueMessage = (channel, message) => {
+    messageQueue.add({
+      channel,
+      message
+    });
+  };
+
+  messageQueue.process(({
+    channel,
+    message
+  }) => bot.sendMessage);
+
   bot.kick = (channel, user, minutes) => {
     if (!minutes) minutes = 1;
     let date = new Date();
@@ -85,21 +108,21 @@ function TelegramBot() {
   };
 
   bot.notifyAdmin = msg => {
-    bot.sendMessage(config.masterChat, msg);
+    bot.queueMessage(config.masterChat, msg);
   };
 
   bot.notify = msg => {
-    bot.sendMessage(config.noticeChannel, msg);
+    bot.queueMessage(config.noticeChannel, msg);
   };
 
   bot.notifyAdmins = msg => {
-    bot.sendMessage(config.adminChat, msg);
+    bot.queueMessage(config.adminChat, msg);
   };
 
   bot.broadcast = (channels, message) => {
     channels.forEach((channel, index) => {
       setTimeout(() => {
-        bot.sendMessage(channel, message);
+        bot.queueMessage(channel, message);
       }, index * 50);
     });
   };

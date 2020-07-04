@@ -12,7 +12,7 @@ exports.getScores = (game_id, type) => {
   /*
   stats('score', game_id, scoreType)
   .then(function(str) {
-    bot.sendMessage(game_id, str);
+    bot.queueMessage(game_id, str);
   });
   */
   TenThings.findOne({
@@ -32,7 +32,7 @@ exports.getScores = (game_id, type) => {
         }, index) => {
           str += `${index + 1}: ${first_name}: ${highScore}\n`;
         });
-        bot.sendMessage(game_id, str);
+        bot.queueMessage(game_id, str);
         break;
       case 'tr':
         str = '<b>Top Win Ratio</b>\n';
@@ -46,7 +46,7 @@ exports.getScores = (game_id, type) => {
         }, index) => {
           str += `${index + 1}: ${first_name}: ${wins}/${plays} (${Math.round(plays === 0 ? 0 : wins / plays * 10000) / 100}%)\n`;
         });
-        bot.sendMessage(game_id, str);
+        bot.queueMessage(game_id, str);
         break;
       case 'ts':
         str = '<b>Top Overall Score</b>\n';
@@ -60,7 +60,7 @@ exports.getScores = (game_id, type) => {
         }, index) => {
           str += `${index + 1}: ${first_name}: ${score}\n`;
         });
-        bot.sendMessage(game_id, str);
+        bot.queueMessage(game_id, str);
         break;
       case 'ta':
         str = '<b>Top Average Daily Score</b>\n';
@@ -74,10 +74,10 @@ exports.getScores = (game_id, type) => {
         }, index) => {
           str += `${index + 1}: ${first_name}: ${Math.round(plays === 0 ? 0 : score / plays)}\n`;
         });
-        bot.sendMessage(game_id, str);
+        bot.queueMessage(game_id, str);
         break;
       default:
-        bot.sendMessage(game_id, stats.getDailyScores(game));
+        bot.queueMessage(game_id, stats.getDailyScores(game));
     }
   });
 };
@@ -232,7 +232,7 @@ exports.getStats = (chat_id, data, requestor) => {
           //message += `Cycled through all lists ${games.reduce((count, {cycles}) => count + (cycles ? cycles : 0), 0)} times\n`;
           message += '\n';
 
-          bot.sendMessage(game.chat_id, message);
+          bot.queueMessage(game.chat_id, message);
         });
         break;
       case 'g':
@@ -259,7 +259,7 @@ exports.getStats = (chat_id, data, requestor) => {
           message += game.cycles ? `Last cycled: ${moment(game.lastCycleDate).format("DD-MMM-YYYY")}\n` : '';
           message += `${game.playedLists.length} of ${length} lists played (${Math.round(game.playedLists.length / length * 100).toFixed(0)}%)\n`;
           message += '\n';
-          bot.sendMessage(game.chat_id, message);
+          bot.queueMessage(game.chat_id, message);
         });
         break;
       case 'p':
@@ -268,14 +268,14 @@ exports.getStats = (chat_id, data, requestor) => {
           resolve(player);
         });
         findPlayer.then(player => {
-          bot.sendMessage(game.chat_id, messages.playerStats(player, data.requestor));
+          bot.queueMessage(game.chat_id, messages.playerStats(player, data.requestor));
         });
         break;
       case 'l':
         List.findOne({
           _id: id
         }).populate('creator').exec((err, gameList) => {
-          bot.sendMessage(game.chat_id, messages.listStats(gameList, data.requestor));
+          bot.queueMessage(game.chat_id, messages.listStats(gameList, data.requestor));
         });
         break;
       case 'mostskipped':
@@ -351,7 +351,7 @@ exports.getStats = (chat_id, data, requestor) => {
         playerStats(game, 'maxHintStreak', '', 1, 'No Hint Streak', 'Consecutive answers given without asking hints', 1, data.requestor);
         break;
       default:
-        bot.sendMessage(game.chat_id, 'Something');
+        bot.queueMessage(game.chat_id, 'Something');
     }
   });
 };
@@ -376,7 +376,7 @@ const listStats = ({
       message += `${index + 1}. ${list.name} (${Math.round(list[field] * ratio / (divisor ? (list[divisor] ? list[divisor] : 1) / 100 : 1) * 100) / 100}${divisor ? '%' : ''})\n`;
     });
     message += requestor ? `<i>Requested by ${requestor}</i>\n` : '';
-    bot.sendMessage(chat_id, message);
+    bot.queueMessage(chat_id, message);
   });
 };
 
@@ -396,7 +396,7 @@ const playerStats = ({
     message += `${index + 1}. ${player.first_name} (${Math.round(player[field] * ratio / (divisor ? (player[divisor] ? player[divisor] : 1) / 100 : 1) * 100) / 100}${divisor ? '%' : ''})\n`;
   });
   message += requestor ? `<i>Requested by ${requestor}</i>\n` : '';
-  bot.sendMessage(chat_id, message);
+  bot.queueMessage(chat_id, message);
 };
 
 const voteStats = ({
@@ -426,7 +426,7 @@ const voteStats = ({
         message += `${i++}. ${player.first_name} (${voter.votes})\n`;
       }
     });
-    bot.sendMessage(chat_id, message);
+    bot.queueMessage(chat_id, message);
   });
 };
 
@@ -463,7 +463,7 @@ const voteSentimentStats = ({
         message += `${i++}. ${player.first_name} (${voter.votes})\n`;
       }
     });
-    bot.sendMessage(chat_id, message);
+    bot.queueMessage(chat_id, message);
   });
 };
 

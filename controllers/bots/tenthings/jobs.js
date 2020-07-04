@@ -18,7 +18,7 @@ const pingBoozeCruise = schedule.scheduleJob('0 */25 * * * *', () => {
     url: 'https://booze-cruise.herokuapp.com/api/ping'
   }, (err, response, body) => {
     console.log(body);
-    //bot.sendMessage('-1001399879250', 'Ping-Pong');
+    //bot.queueMessage('-1001399879250', 'Ping-Pong');
   });
 });
 /*
@@ -160,7 +160,7 @@ const resetDailyScore = () => {
       .then(games => {
         const uniquePlayers = [];
         const players = games.reduce((players, game) => {
-          bot.sendMessage(game.chat_id, stats.getDailyScores(game));
+          bot.queueMessage(game.chat_id, stats.getDailyScores(game));
           getHighScore(game).then(highScore => {
             let message = '';
             const winners = [];
@@ -178,7 +178,7 @@ const resetDailyScore = () => {
                 } else {
                   message += first_name;
                   setTimeout(() => {
-                    bot.sendMessage(game.chat_id, `<b>${message} won with ${highScore} points!</b>${game.chat_id != config.groupChat ? '\n\nCome join us in the <a href="https://t.me/tenthings">Ten Things Supergroup</a>!' : ''}`);
+                    bot.queueMessage(game.chat_id, `<b>${message} won with ${highScore} points!</b>${game.chat_id != config.groupChat ? '\n\nCome join us in the <a href="https://t.me/tenthings">Ten Things Supergroup</a>!' : ''}`);
                     //console.log(message);
                     TenThings.updateMany({
                         _id: game._id
@@ -221,7 +221,7 @@ const resetDailyScore = () => {
                         }
                         message += game.list.description ? (game.list.description.includes('href') ? game.list.description : `<i>${angleBrackets(game.list.description)}</i>\n`) : '';
                         message += list;
-                        bot.sendMessage(game.chat_id, message);
+                        bot.queueMessage(game.chat_id, message);
                       });
                     } catch (e) {
                       console.error(e);

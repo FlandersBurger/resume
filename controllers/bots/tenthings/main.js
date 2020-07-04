@@ -122,7 +122,7 @@ TenThings.find()
 .then(function(games) {
   games.forEach(function(game) {
     if (game.chat_id !== config.groupChat) {
-      bot.sendMessage(game.chat_id, 'Come join us in the <a href="https://t.me/tenthings">Ten Things config.groupChat</a>!');
+      bot.queueMessage(game.chat_id, 'Come join us in the <a href="https://t.me/tenthings">Ten Things config.groupChat</a>!');
     }
   });
 });
@@ -146,10 +146,10 @@ function getLanguage(language) {
 
 bot.notifyAdmin('<b>Started Ten Things</b>');
 
-//bot.sendMessage('-1001394022777', "test<a href=\'https://upload.wikimedia.org/wikipedia/commons/thumb/8/89/Regular_Hexagon_Inscribed_in_a_Circle.gif/360px-Regular_Hexagon_Inscribed_in_a_Circle.gif\'>&#8204;</a>\nsome other stuff")
+//bot.queueMessage('-1001394022777', "test<a href=\'https://upload.wikimedia.org/wikipedia/commons/thumb/8/89/Regular_Hexagon_Inscribed_in_a_Circle.gif/360px-Regular_Hexagon_Inscribed_in_a_Circle.gif\'>&#8204;</a>\nsome other stuff")
 //var url = 'https://upload.wikimedia.org/wikipedia/commons/d/d8/Olympique_Marseille_logo.svg';
-//bot.sendMessage(config.masterChat, "test<a href=\'" + url + "\'>&#8204;</a>\nsome other stuff");
-//bot.sendMessage(config.masterChat, JSON.stringify(msg));
+//bot.queueMessage(config.masterChat, "test<a href=\'" + url + "\'>&#8204;</a>\nsome other stuff");
+//bot.queueMessage(config.masterChat, JSON.stringify(msg));
 //The Group: '5b6361dcbd0ff6645df5f225'  '-1001394022777'
 /*
 TenThings.findOne({ chat_id: '-1001394022777'})
@@ -183,7 +183,7 @@ function selectList(game) {
           game.lastCycleDate = moment();
           game.save(err => {
             if (err) reject(err);
-            //bot.sendMessage(game.chat_id, 'All lists have been played, a new cycle will now start.');
+            //bot.queueMessage(game.chat_id, 'All lists have been played, a new cycle will now start.');
             List.countDocuments({
               categories: {
                 $nin: game.disabledCategories
@@ -365,7 +365,7 @@ const sass = (game, text, from) => {
               bot.sendPhoto(game.chat_id, sass);
             }
           } else {
-            bot.sendMessage(game.chat_id, sass);
+            bot.queueMessage(game.chat_id, sass);
           }
         }
       }, err => null);
@@ -443,7 +443,7 @@ const checkMinigame = (game, guess, msg) => {
         let message = `Mini-game answer guessed! (${(guess.match.distance * 100).toFixed(0)}%)\n`;
         message += messages.guessed(game.minigame.answer, msg.from.first_name);
         message += `\n<pre>${player.scoreDaily - 10} + 10 points</pre>`;
-        bot.sendMessage(msg.chat.id, message);
+        bot.queueMessage(msg.chat.id, message);
         createMinigame(game, msg);
         resolve();
       }
@@ -458,7 +458,7 @@ const checkGuess = (game, guess, msg) => {
     if (skips[game.id]) {
       delete skips[game.id];
       vetoes[game.id] = moment();
-      bot.sendMessage(msg.chat.id, `Skip vetoed by ${msg.from.first_name} giving a correct answer\nNo skipping allowed for ${VETO_DELAY} seconds`);
+      bot.queueMessage(msg.chat.id, `Skip vetoed by ${msg.from.first_name} giving a correct answer\nNo skipping allowed for ${VETO_DELAY} seconds`);
     }
     if (!_.some(game.guessers, guesser => guesser == msg.from.id)) {
       game.guessers.push(msg.from.id);
@@ -534,7 +534,7 @@ const checkGuess = (game, guess, msg) => {
       player.snubs++;
       /*
       if (game.settings.snubs) {
-        bot.sendMessage(msg.chat.id, messages.alreadyGuessed(match.value, msg.from, match.guesser));
+        bot.queueMessage(msg.chat.id, messages.alreadyGuessed(match.value, msg.from, match.guesser));
       }
       */
     }
@@ -569,7 +569,7 @@ const guessed = async ({
   } else {
     message += '\nRound over.';
   }
-  return await bot.sendMessage(chat.id, message);
+  return await bot.queueMessage(chat.id, message);
 };
 
 const checkRound = (game) => {
@@ -588,7 +588,7 @@ const checkRound = (game) => {
             message += list;
             message += messages.listStats(foundList);
             message += stats.getDailyScores(game, 5);
-            bot.sendMessage(game.chat_id, message);
+            bot.queueMessage(game.chat_id, message);
             setTimeout(() => {
               rateList(game);
               setTimeout(() => {
@@ -633,11 +633,11 @@ const newRound = (currentGame) => {
           game.guessers = [];
           let message = 'A new round will start in 3 seconds';
           message += game.list.categories.length > 0 ? `\nCategor${game.list.categories.length > 1 ? 'ies' : 'y'}: <b>${game.list.categories}</b>` : '';
-          bot.sendMessage(game.chat_id, message);
+          bot.queueMessage(game.chat_id, message);
           setTimeout(() => {
             let message = `<b>${game.list.name}</b> (${game.list.totalValues}) by ${game.list.creator.username}`;
             message += game.list.description ? `\n<i>${angleBrackets(game.list.description)}</i>` : '';
-            bot.sendMessage(game.chat_id, message);
+            bot.queueMessage(game.chat_id, message);
           }, 3000);
           game.playedLists.push(game.list._id);
           game.save(err => {
@@ -668,9 +668,9 @@ function skip(game, skipper) {
   if (skips[game.id] && skips[game.id].player !== skipper) {
     skips[game.id].timer = 2;
   } else if (skips[game.id] && skips[game.id].player === skipper) {
-    bot.sendMessage(game.chat_id, 'Get someone else to confirm your skip request!');
+    bot.queueMessage(game.chat_id, 'Get someone else to confirm your skip request!');
   } else {
-    bot.sendMessage(game.chat_id, `Skipping <b>${game.list.name}</b> in 15 seconds.\nType /veto to cancel or /skip to confirm.`);
+    bot.queueMessage(game.chat_id, `Skipping <b>${game.list.name}</b> in 15 seconds.\nType /veto to cancel or /skip to confirm.`);
     skips[game.id] = {
       timer: 15,
       player: skipper
@@ -698,7 +698,7 @@ function skipList(game, skipper) {
   stats.getList(game, list => {
     let message = `<b>${game.list.name}</b> skipped!\n`;
     message += list;
-    bot.sendMessage(game.chat_id, message);
+    bot.queueMessage(game.chat_id, message);
     delete skips[game.id];
     List.findOne({
       _id: game.list._id
@@ -711,7 +711,7 @@ function skipList(game, skipper) {
       foundList.skips++;
       foundList.save(err => {
         if (err) return console.error(err);
-        bot.sendMessage(game.chat_id, stats.getDailyScores(game, 5));
+        bot.queueMessage(game.chat_id, stats.getDailyScores(game, 5));
         newRound(game);
       });
     });
@@ -733,9 +733,9 @@ function cooldownSkip(game) {
 
 function hint(game, player, callback) {
   if (game.hints >= MAX_HINTS) {
-    bot.sendMessage(game.chat_id, 'What? Another hint? I\'m just gonna ignore that request');
+    bot.queueMessage(game.chat_id, 'What? Another hint? I\'m just gonna ignore that request');
   } else if (cooldowns[game.id] && cooldowns[game.id] > 0) {
-    bot.sendMessage(game.chat_id, `Calm down with the hints, wait ${cooldowns[game.id]} more seconds`);
+    bot.queueMessage(game.chat_id, `Calm down with the hints, wait ${cooldowns[game.id]} more seconds`);
   } else {
     game.hints++;
     if (player) {
@@ -826,7 +826,7 @@ function createMinigame(game, msg) {
         return msg;
       }, '');
       message += minigame.answer.conceal('');
-      bot.sendMessage(msg.chat.id, message);
+      bot.queueMessage(msg.chat.id, message);
       game.minigame.answer = minigame.answer;
       game.minigame.date = moment();
       game.minigame.lists = minigame.lists;
@@ -861,10 +861,10 @@ router.post('/', ({
       } else if (antispam[from].count <= 30) {
         antispam[from].count++;
         if (antispam[from].count === 20) {
-          bot.sendMessage(chat, `You sure seem to be sending a lot of messages, ${name}. I'm keeping an eye on you`);
+          bot.queueMessage(chat, `You sure seem to be sending a lot of messages, ${name}. I'm keeping an eye on you`);
         } else if (antispam[from].count === 30) {
           antispam[from].lastMessage = moment();
-          bot.sendMessage(chat, `Ok, ${name}, calm down, I can't keep up.  Please stay silent for 10 seconds so I can process your stuff`);
+          bot.queueMessage(chat, `Ok, ${name}, calm down, I can't keep up.  Please stay silent for 10 seconds so I can process your stuff`);
         }
       } else {
         antispam[from].count++;
@@ -934,7 +934,7 @@ router.post('/', ({
               //bot.notifyAdmin(`"<b>${foundList.name}</b>" ${data.vote > 0 ? 'up' : 'down'}voted by <i>${body.callback_query.from.first_name}</i>!`);
               let score = foundList.votes.reduce((score, vote) => score + vote.vote, 0);
               if (moment(data.date) > moment().subtract(1, 'days')) {
-                bot.sendMessage(body.callback_query.message.chat.id, ` ${data.vote > 0 ? '\ud83d\udc4d' : '\ud83d\udc4e'} ${body.callback_query.from.first_name} ${data.vote > 0 ? '' : 'dis'}likes <b>${foundList.name}</b> (${score})`);
+                bot.queueMessage(body.callback_query.message.chat.id, ` ${data.vote > 0 ? '\ud83d\udc4d' : '\ud83d\udc4e'} ${body.callback_query.from.first_name} ${data.vote > 0 ? '' : 'dis'}likes <b>${foundList.name}</b> (${score})`);
               }
             });
           });
@@ -958,7 +958,7 @@ router.post('/', ({
                   break;
                 case 'global':
                   bot.answerCallback(body.callback_query.id, 'Global Stats');
-                  bot.sendMessage(game.chat_id, 'Coming Soon');
+                  bot.queueMessage(game.chat_id, 'Coming Soon');
                   break;
                 case 'game':
                   bot.answerCallback(body.callback_query.id, 'Game Stats');
@@ -995,7 +995,7 @@ router.post('/', ({
                 game.disabledCategories.splice(categoryIndex, 1);
               } else {
                 if (game.disabledCategories.length === categories.length - 1) {
-                  return bot.sendMessage(body.callback_query.message.chat.id, 'A minimum of 1 category is required');
+                  return bot.queueMessage(body.callback_query.message.chat.id, 'A minimum of 1 category is required');
                 }
                 game.disabledCategories.push(data.id);
               }
@@ -1027,7 +1027,7 @@ router.post('/', ({
                 });
               });
             } else {
-              bot.sendMessage(body.callback_query.message.chat.id, `Nice try ${body.callback_query.from.first_name} but that's an admin function`);
+              bot.queueMessage(body.callback_query.message.chat.id, `Nice try ${body.callback_query.from.first_name} but that's an admin function`);
             }
           }, err => {
             bot.notifyAdmin(JSON.stringify(err));
@@ -1058,7 +1058,7 @@ router.post('/', ({
       }).select('settings').exec((err, game) => {
         if (err) return notifyAdmin(err);
         if (game && game.settings.intro) {
-          bot.sendMessage(body.message.chat.id, messages.introduction(body.message.new_chat_participant.first_name));
+          bot.queueMessage(body.message.chat.id, messages.introduction(body.message.new_chat_participant.first_name));
         }
       });
       return res.sendStatus(200);
@@ -1261,22 +1261,22 @@ function evaluateCommand(res, msg, game, player, isNew) {
   }
   switch (msg.command.toLowerCase()) {
     case '/error':
-      bot.sendMessage(msg.chat.id, msg.text);
+      bot.queueMessage(msg.chat.id, msg.text);
       break;
     case '/info':
-      bot.sendMessage(msg.chat.id, messages.introduction(msg.from.first_name));
+      bot.queueMessage(msg.chat.id, messages.introduction(msg.from.first_name));
       break;
     case '/logic':
-      bot.sendMessage(msg.chat.id, messages.logic());
+      bot.queueMessage(msg.chat.id, messages.logic());
       break;
       /*
       case '/start':
-        bot.sendMessage(msg.chat.id, 'To start a game, type /new');
+        bot.queueMessage(msg.chat.id, 'To start a game, type /new');
         break;
       */
     case '/new':
       if (!isNew) {
-        bot.sendMessage(msg.chat.id, 'A game is already in progress');
+        bot.queueMessage(msg.chat.id, 'A game is already in progress');
       } else {
         newRound(game);
       }
@@ -1296,14 +1296,14 @@ function evaluateCommand(res, msg, game, player, isNew) {
             } else if (skippers[player.id].delay < 50) {
               skippers[player.id].lastSkipped = moment();
               skippers[player.id].delay += 10;
-              bot.sendMessage(msg.chat.id, `Banned ${player.first_name} from skipping again for ${skippers[player.id].delay} seconds`);
+              bot.queueMessage(msg.chat.id, `Banned ${player.first_name} from skipping again for ${skippers[player.id].delay} seconds`);
             } else if (skippers[player.id].delay < 60) {
               skippers[player.id].lastSkipped = moment();
               skippers[player.id].delay += 10;
-              bot.sendMessage(msg.chat.id, `If you skip again within ${skippers[player.id].delay} seconds, ${player.first_name}, you will be banned for 1 hour`);
+              bot.queueMessage(msg.chat.id, `If you skip again within ${skippers[player.id].delay} seconds, ${player.first_name}, you will be banned for 1 hour`);
             } else if (skippers[player.id].delay != 3600) {
               skippers[player.id].delay = 3600;
-              bot.sendMessage(msg.chat.id, `Banned ${player.first_name} from skipping for 1 hour`);
+              bot.queueMessage(msg.chat.id, `Banned ${player.first_name} from skipping for 1 hour`);
             }
           }
         } else {
@@ -1329,9 +1329,9 @@ function evaluateCommand(res, msg, game, player, isNew) {
       if (skips[game.id]) {
         delete skips[game.id];
         vetoes[game.id] = moment();
-        bot.sendMessage(msg.chat.id, `Skip vetoed by ${msg.from.first_name}\nNo skipping allowed for ${VETO_DELAY} seconds`);
+        bot.queueMessage(msg.chat.id, `Skip vetoed by ${msg.from.first_name}\nNo skipping allowed for ${VETO_DELAY} seconds`);
       } else {
-        bot.sendMessage(msg.chat.id, `I can't find a skip request, ${msg.from.first_name}`);
+        bot.queueMessage(msg.chat.id, `I can't find a skip request, ${msg.from.first_name}`);
       }
       break;
     case '/stats':
@@ -1344,7 +1344,7 @@ function evaluateCommand(res, msg, game, player, isNew) {
           message += game.list.categories.length > 0 ? `Categor${game.list.categories.length > 1 ? 'ies' : 'y'}: <b>${game.list.categories}</b>\n` : '';
           message += game.list.description ? (game.list.description.includes('href') ? game.list.description : `<i>${angleBrackets(game.list.description)}</i>\n`) : '';
           message += list;
-          bot.sendMessage(msg.chat.id, message);
+          bot.queueMessage(msg.chat.id, message);
         });
       } catch (e) {
         console.error(e);
@@ -1353,7 +1353,7 @@ function evaluateCommand(res, msg, game, player, isNew) {
       /*
       case '/stop':
         delete games[msg.chat.id];
-        bot.sendMessage(msg.chat.id, 'Game stopped');
+        bot.queueMessage(msg.chat.id, 'Game stopped');
         break;
       */
     case '/suggest':
@@ -1376,14 +1376,14 @@ function evaluateCommand(res, msg, game, player, isNew) {
               return bot.notifyAdmin(message);
             }
             if (lists.length > 0) {
-              bot.sendMessage(msg.chat.id, `I found some similar lists that already exist, ${msg.from.first_name}!\n${lists.reduce((txt, list) => `${txt}\n - ${list.name}`)}`, '<b>Lists:</b>');
+              bot.queueMessage(msg.chat.id, `I found some similar lists that already exist, ${msg.from.first_name}!\n${lists.reduce((txt, list) => `${txt}\n - ${list.name}`)}`, '<b>Lists:</b>');
             } else {
               bot.notifyAdmins(message);
-              bot.sendMessage(msg.chat.id, `Suggestion noted, ${msg.from.first_name}!\nNote that you can add your own lists at https://belgocanadian.com/tenthings`);
+              bot.queueMessage(msg.chat.id, `Suggestion noted, ${msg.from.first_name}!\nNote that you can add your own lists at https://belgocanadian.com/tenthings`);
             }
           });
       } else {
-        bot.sendMessage(msg.chat.id, `You didn't suggest anything ${msg.from.first_name}. Add your message after /suggest`);
+        bot.queueMessage(msg.chat.id, `You didn't suggest anything ${msg.from.first_name}. Add your message after /suggest`);
       }
       break;
     case '/typo':
@@ -1395,9 +1395,9 @@ function evaluateCommand(res, msg, game, player, isNew) {
         message += `\nList: ${game.list.name}`;
         bot.notifyAdmins(message);
         bot.notify(message);
-        bot.sendMessage(msg.chat.id, `Typo noted, ${msg.from.first_name}!`);
+        bot.queueMessage(msg.chat.id, `Typo noted, ${msg.from.first_name}!`);
       } else {
-        bot.sendMessage(msg.chat.id, `You didn't say anything, ${msg.from.first_name}. Add your message after /typo`);
+        bot.queueMessage(msg.chat.id, `You didn't say anything, ${msg.from.first_name}. Add your message after /typo`);
       }
       break;
     case '/hint':
@@ -1407,7 +1407,7 @@ function evaluateCommand(res, msg, game, player, isNew) {
         hint(game, player, hints => {
           let message = `<b>${game.list.name}</b>\n`;
           message += hints;
-          bot.sendMessage(msg.chat.id, message);
+          bot.queueMessage(msg.chat.id, message);
         });
       }
       break;
@@ -1427,7 +1427,7 @@ function evaluateCommand(res, msg, game, player, isNew) {
       }, msg.from.id);
       break;
     case '/score':
-      bot.sendMessage(game.chat_id, stats.getDailyScores(game));
+      bot.queueMessage(game.chat_id, stats.getDailyScores(game));
       break;
     case '/minigame':
       if (!game.minigame.answer) {
@@ -1440,7 +1440,7 @@ function evaluateCommand(res, msg, game, player, isNew) {
         }, '');
         message += hints.getHint(moment().diff(game.minigame.date, 'hours'), game.minigame.answer);
         //message += game.minigame.answer.conceal(game.minigame.date < moment().subtract(1, 'hours') ? 'aeoui' : '');
-        bot.sendMessage(msg.chat.id, message);
+        bot.queueMessage(msg.chat.id, message);
       }
       break;
     case '/categories':
@@ -1468,24 +1468,19 @@ function evaluateCommand(res, msg, game, player, isNew) {
       break;
     case '/check':
       if (msg.from.id != config.masterChat) {
-        bot.sendMessage(msg.chat.id, 'Yes, master. Let me send you what you need!');
+        bot.queueMessage(msg.chat.id, 'Yes, master. Let me send you what you need!');
         bot.notifyAdmin(JSON.stringify(game));
       }
       break;
     case '/ping':
-      bot.sendMessage(msg.chat.id, 'pong');
+      bot.queueMessage(msg.chat.id, 'pong');
       break;
     case '/hello':
-      bot.sendMessage(msg.chat.id, 'You already had me but you got greedy, now you ruined it');
+      bot.queueMessage(msg.chat.id, 'You already had me but you got greedy, now you ruined it');
       break;
     case '/queue':
-      guessQueue.count().then(count => {
-        bot.getWebhook().then(response => {
-          let message = `<b>Queue</b>`;
-          message += `${count} correct answers queued`;
-          message += `${response.pending_update_count} messages pending in Telegram`;
-          bot.sendMessage(msg.chat.id, message);
-        });
+      getQueue().then(message => {
+        bot.queueMessage(msg.chat.id, message);
       }, console.error);
       break;
     default:
@@ -1494,8 +1489,18 @@ function evaluateCommand(res, msg, game, player, isNew) {
 }
 
 module.exports = router;
-guessQueue.count().then(count => {
-  bot.notifyAdmin(`${count} messages in the queue`);
+
+const getQueue = async () => {
+  const count = await guessQueue.count();
+  const webhook = await bot.getWebhook();
+  let message = `<b>Queue</b>\n`;
+  message += `${count} correct answers queued\n`;
+  message += `${webhook.pending_update_count} messages pending in Telegram`;
+  return message;
+};
+
+getQueue().then(message => {
+  bot.notifyAdmin(message);
 }, console.error);
 
 /*

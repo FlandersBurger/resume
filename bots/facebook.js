@@ -33,7 +33,7 @@ module.exports = function() {
     });
   };
 
-  bot.sendMessage = function(chat_id, message) {
+  bot.queueMessage = function(chat_id, message) {
     var request_body = {
       'recipient': {
         'id': chat_id
