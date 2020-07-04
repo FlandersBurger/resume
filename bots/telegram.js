@@ -91,11 +91,10 @@ function TelegramBot() {
   };
 
   messageQueue.process(({
-    channel,
-    message
+    data
   }) => {
-    console.log(`Process message: ${message.substring(0, 30)}...`);
-    bot.sendMessage(channel, message);
+    console.log(`Process message: ${data.message.substring(0, 30)}...`);
+    bot.sendMessage(data.channel, data.message);
   });
 
   bot.kick = (channel, user, minutes) => {
