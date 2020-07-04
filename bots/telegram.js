@@ -72,11 +72,9 @@ function TelegramBot() {
       request(url, (err, r, body) => {
         if (err) {
           console.error('Send Fail');
-          console.error(message);
           console.error(err);
-          return reject();
+          //return reject();
         }
-        console.log(`Sent message: ${message.substring(0, 40)}...`);
         //resolve();
       });
       resolve();
