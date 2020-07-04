@@ -349,7 +349,6 @@ const queueGuess = (game, msg) => {
 };
 
 const sass = (game, text, from) => {
-  return;
   if (game.settings.sass && game.lastPlayDate > moment().subtract(7, 'days')) {
     messages.sass(text)
       .then(sass => {
