@@ -167,6 +167,7 @@ angular.module('app')
     };
 
     $scope.addList = () => {
+      const currentLanguage = $scope.selectedList ? $scope.selectedList.language : 'EN';
       $scope.selectedList = {
         name: '',
         creator: $scope.currentUser._id,
@@ -176,7 +177,7 @@ angular.module('app')
         isDynamic: true,
         category: '',
         categories: [],
-        language: 'EN'
+        language: currentLanguage
       };
     };
 

@@ -156,7 +156,7 @@
               <button class="btn btn-default dropdown-toggle"
                       type="button"
                       ng-disabled="!selectedList || (!currentUser.admin && selectedList.creator._id !== currentUser._id && selectedList._id)"
-                      data-toggle="dropdown">Language: {{selectedList.language}}</button>
+                      data-toggle="dropdown">Language: {{selectedList ? selectedList.language : 'None'}}</button>
               <ul class="dropdown-menu">
                 <li ng-repeat="language in languages | orderBy: 'code'"><a href="#"
                      ng-click="selectLanguage(language)">{{language.code}} - {{language.native}}</a></li>
