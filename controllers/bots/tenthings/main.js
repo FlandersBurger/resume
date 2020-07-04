@@ -368,26 +368,11 @@ const sass = (game, text, from) => {
 };
 
 const queueingGuess = guess => guessQueue.add(guess);
-/*
-queue.create('guess', guess).removeOnComplete(true).save(err => {
-  if( !err ) console.log(`${guess.game} - Guess evaluated: "${guess.msg.text}" by ${guess.msg.from.first_name}`);
-});
-*/
 
 guessQueue.process(({
   data
 }) => processGuess(data));
-/*
-//check out -->5b6361dcbd0ff6645df5f2
-queue.process('guess', ({data}, done) => {
-  processGuess(data)
-  .then(() => {
-    done();
-  }, () => {
-    done();
-  });
-});
-*/
+
 const processGuess = guess => {
   return new Promise((resolve, reject) => {
     TenThings.findOne({
@@ -1433,7 +1418,7 @@ function evaluateCommand(res, msg, game, player, isNew) {
           msg += `- ${list}\n`;
           return msg;
         }, '');
-        message += hints.getHint(moment().diff(game.minigame.date, 'hours'), game.minigame.answer);
+        message += hints.getHint(Math.round(moment().diff(game.minigame.date, 'minutes') / 15), game.minigame.answer);
         //message += game.minigame.answer.conceal(game.minigame.date < moment().subtract(1, 'hours') ? 'aeoui' : '');
         bot.queueMessage(msg.chat.id, message);
       }
