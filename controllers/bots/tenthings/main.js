@@ -1492,10 +1492,12 @@ module.exports = router;
 
 const getQueue = async () => {
   const count = await guessQueue.count();
+  const outgoing = await bot.getQueue();
   const webhook = await bot.getWebhook();
   let message = `<b>Queue</b>\n`;
   message += `${count} correct answers queued\n`;
-  message += `${webhook.pending_update_count} messages pending in Telegram`;
+  message += `${outgoing} outgoing messages queued (max 30/sec)\n`;
+  message += `${webhook.pending_update_count} incoming messages pending in Telegram`;
   return message;
 };
 

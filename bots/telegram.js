@@ -1,4 +1,4 @@
-/*jslint esversion: 6*/
+/*jslint esversion: 10*/
 const request = require('request');
 const Queue = require('bull');
 const config = require('../config');
@@ -91,6 +91,8 @@ function TelegramBot() {
   messageQueue.process(({
     data
   }) => bot.sendMessage(data.channel, data.message));
+
+  bot.getQueue = async () => await messageQueue.count();
 
   bot.kick = (channel, user, minutes) => {
     if (!minutes) minutes = 1;
