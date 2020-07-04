@@ -38,7 +38,11 @@ function TelegramBot() {
     const url = `https://api.telegram.org/bot${bot.token}/getWebhookInfo`;
     request(url, (error, r, body) => {
       if (error) return;
-      resolve(body.result);
+      console.log(body);
+      const response = JSON.parse(body).result;
+      console.log(response);
+      if (!response) return;
+      resolve(response);
     });
   });
 
@@ -215,8 +219,8 @@ const TOKEN = config.tokens.telegram.tenthings;
 const b = new TelegramBot();
 b.init(TOKEN).then(() => {
   //b.deleteWebhook();
-  b.getWebhook().then(body => {
-    if (JSON.parse(body).result && 'https://belgocanadian.com/bots/tenthings' === JSON.parse(body).result.url) {
+  b.getWebhook().then(response => {
+    if (response && 'https://belgocanadian.com/bots/tenthings' === response.url) {
       console.log('Webhook Set');
     } else {
       b.setWebhook('tenthings').then(body => {
