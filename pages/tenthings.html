@@ -100,6 +100,7 @@
           </div>
           <div class="btn btn-default"
                ng-click="reportList(selectedList)"
+               ng-disabled="selectedList.reported"
                ng-hide="!selectedList || selectedList.creator._id === currentUser._id">
             <i class="fas fa-bug"
                aria-hidden="true"></i> Report
@@ -151,6 +152,16 @@
                     ng-disabled="!selectedList || (!currentUser.admin && selectedList.creator._id !== currentUser._id && selectedList._id)">
               {{selectedList.isDynamic ? 'List changes overtime' : 'List never changes'}}
             </button>
+            <div class="btn-group">
+              <button class="btn btn-default dropdown-toggle"
+                      type="button"
+                      ng-disabled="!selectedList || (!currentUser.admin && selectedList.creator._id !== currentUser._id && selectedList._id)"
+                      data-toggle="dropdown">Language: {{selectedList.language}}</button>
+              <ul class="dropdown-menu">
+                <li ng-repeat="language in languages | orderBy: 'code'"><a href="#"
+                     ng-click="selectLanguage(language)">{{language.code}} - {{language.native}}</a></li>
+              </ul>
+            </div>
           </div>
           <!--div id="category-select">
             <button class="btn btn-sm"
@@ -159,7 +170,7 @@
               ng-click="selectCategory(category)">{{category}}</button>
           </div-->
         </div>
-        <div class="btn-group"
+        <div class="col-md-12 btn-group"
              ng-hide="!selectedList || (!currentUser.admin && selectedList.creator._id !== currentUser._id && selectedList._id)">
           <button class="btn btn-sm list-category"
                   ng-class="getCategoryClass(category)"

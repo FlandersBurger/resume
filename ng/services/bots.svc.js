@@ -7,8 +7,12 @@ angular.module('app')
       return $http.get(`/api/bots/lists`);
     };
 
-    svc.getCategories = function() {
+    svc.getCategories = () => {
       return $http.get(`/api/bots/categories`);
+    };
+
+    svc.getLanguages = () => {
+      return $http.get(`/api/bots/languages`);
     };
 
     svc.getList = function(list) {

@@ -7,6 +7,7 @@ var _ = require('underscore');
 var config = require('../../config');
 var bot = require('../../bots/telegram');
 var categories = require('../bots/tenthings/categories');
+var languages = require('../bots/tenthings/languages');
 
 var List = require('../../models/list');
 var User = require('../../models/user');
@@ -25,13 +26,17 @@ router.get('/categories', (req, res, next) => {
   res.json(categories);
 });
 
+router.get('/languages', (req, res, next) => {
+  res.json(languages);
+});
+
 
 router.get('/lists', (req, res, next) => {
   if (req.auth.userid == '5ece428af848aa2fc392d099') {
     return res.sendStatus(401);
   }
   List.find({})
-    .select('_id plays skips score values.value date modifyDate creator name description categories')
+    .select('_id plays skips score values.value date modifyDate creator name description categories language')
     .populate('creator', 'username')
     .lean()
     .exec((err, result) => {

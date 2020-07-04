@@ -14,6 +14,10 @@ angular.module('app')
         $scope.categoryFilters.push('Blank');
         $scope.categoryFilter = 'All';
       });
+    BotsSvc.getLanguages()
+      .then(response => {
+        $scope.languages = response.data;
+      });
 
     $scope.keyDown = e => {
       e = e || window.event;
@@ -152,6 +156,16 @@ angular.module('app')
       }
     };
 
+    $scope.selectLanguage = language => {
+      $scope.selectedList.language = language.code;
+      const nonEnglishIndex = $scope.selectedList.categories.indexOf('Non-English');
+      if (language.code !== 'EN' && nonEnglishIndex < 0) {
+        $scope.selectedList.categories.push('Non-English');
+      } else if (language.code === 'EN' && nonEnglishIndex >= 0) {
+        $scope.selectedList.categories.splice(nonEnglishIndex, 1);
+      }
+    };
+
     $scope.addList = () => {
       $scope.selectedList = {
         name: '',
@@ -161,7 +175,8 @@ angular.module('app')
         answers: 0,
         isDynamic: true,
         category: '',
-        categories: []
+        categories: [],
+        language: 'EN'
       };
     };
 
@@ -184,6 +199,7 @@ angular.module('app')
     };
 
     $scope.reportList = list => {
+      list.reported = true;
       BotsSvc.reportList($scope.currentUser, list);
     };
 

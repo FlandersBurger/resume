@@ -5,6 +5,11 @@ var listSchema = new mongoose.Schema({
   name: String,
   description: String,
   category: String,
+  language: {
+    type: String,
+    required: true,
+    default: 'EN'
+  },
   categories: [String],
   creator: {
     type: String,
