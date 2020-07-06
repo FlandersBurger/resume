@@ -422,7 +422,7 @@ const checkMinigame = (game, guess, msg) => {
       } else {
         let message = `Mini-game answer guessed! (${(guess.match.distance * 100).toFixed(0)}%)\n`;
         message += messages.guessed(game.minigame.answer, msg.from.first_name);
-        message += `\n<pre>${player.scoreDaily - 10} + 10 points</pre>`;
+        message += `\n<pre>${player.scoreDaily - score} + ${score} points</pre>`;
         bot.queueMessage(msg.chat.id, message);
         createMinigame(game, msg);
         resolve();
