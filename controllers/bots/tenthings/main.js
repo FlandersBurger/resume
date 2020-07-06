@@ -1344,8 +1344,8 @@ function evaluateCommand(res, msg, game, player, isNew) {
         let message = `<b>Suggestion</b>\n${msg.text.substring(msg.command.length + 1, msg.text.length)}\n<i>${msg.from.username ? msg.from.username : msg.from.first_name}</i>`;
         List.find({
             name: {
-              $regex: `.*${msg.text.substring(msg.command.length + 1, msg.text.length).replace('\W', '.*')}.*`,
-              $options: 'i'
+              $regex: `.*${msg.text.substring(msg.command.length + 1, msg.text.length).replace(new RegExp('[^a-zA-Z0-9]+','g'), '.*')}.*`,
+              $options: 'gi'
             }
           })
           .select('name')
@@ -1615,7 +1615,6 @@ TenThings.deleteOne({
   console.log(game);
 });
 */
-
 
 /*
 List.findOne({
