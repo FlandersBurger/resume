@@ -285,7 +285,7 @@ angular.module('app')
     };
 
     $scope.getMoviePics = () => {
-      BotsSvc.getMoviePics($scope.selectedList._id).then(response => $scope.selectList($scope.selectedList));
+      BotsSvc.getMoviePics($scope.selectedList).then(response => $scope.selectList($scope.selectedList));
     };
 
   });

@@ -5,7 +5,7 @@ const FuzzyMatching = require('fuzzy-matching');
 //const kue = require('kue');
 const Queue = require('bull');
 const moment = require('moment');
-const request = require('request-promise');
+const request = require('request');
 const config = require('../../../config');
 const bot = require('../../../bots/telegram');
 const messages = require('./messages');
@@ -1626,6 +1626,7 @@ List.findOne({
     let score = list.votes.reduce((score, vote) => score + vote.vote, 0);
     console.log(score);
   });*/
+
 /*
 request(`https://api.themoviedb.org/3/search/movie?api_key=${moviedbAPIKey}&query=${encodeURIComponent('good will hunting')}`, (err, response, body) => {
   if (err) {
