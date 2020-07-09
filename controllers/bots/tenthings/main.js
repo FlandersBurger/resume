@@ -1626,7 +1626,6 @@ List.findOne({
     let score = list.votes.reduce((score, vote) => score + vote.vote, 0);
     console.log(score);
   });*/
-<<<<<<< HEAD
 /*
 request(`https://api.themoviedb.org/3/search/movie?api_key=${moviedbAPIKey}&query=${encodeURIComponent('good will hunting')}`, (err, response, body) => {
   if (err) {
@@ -1635,5 +1634,3 @@ request(`https://api.themoviedb.org/3/search/movie?api_key=${moviedbAPIKey}&quer
     console.log(JSON.parse(response.body).results[0]);
   }
 });*/
-=======
->>>>>>> 985c5eea853a06d510f767e724ce992eb34b914a
