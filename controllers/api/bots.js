@@ -71,6 +71,29 @@ router.get('/lists/:id', (req, res, next) => {
     });
 });
 
+router.get('/lists/:id/movies', async (req, res, next) => {
+  let list = await List.findOne({
+    _id: req.params.id
+  });
+  let changed = false;
+  for (let value of list.values) {
+    const movieDB = await request(`https://api.themoviedb.org/3/search/movie?api_key=${config.tokens.tmdbapi}&query=${encodeURIComponent(value.value)}`);
+    try {
+      const posterPath = JSON.parse(movieDB).results[0].poster_path;
+      if (posterPath) {
+        value.blurb = `http://image.tmdb.org/t/p/w500${posterPath}`;
+      }
+      changed = true;
+    } catch (e) {
+      console.error(`No Poster for ${value.value}`);
+    }
+  }
+  if (changed) {
+    const saved = await list.save();
+  }
+  res.sendStatus(200);
+});
+
 router.put('/lists', (req, res, next) => {
   if (req.auth.userid == '5ece428af848aa2fc392d099') {
     return res.sendStatus(401);

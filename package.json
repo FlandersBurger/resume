@@ -36,6 +36,7 @@
     "popper.js": "^1.16.0",
     "redis": "^2.8.0",
     "request": "^2.88.0",
+    "request-promise": "^4.2.5",
     "underscore": "^1.9.1",
     "ws": "^7.2.0"
   },

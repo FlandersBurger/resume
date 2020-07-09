@@ -162,6 +162,12 @@
                      ng-click="selectLanguage(language)">{{language.code}} - {{language.native}}</a></li>
               </ul>
             </div>
+            <button class="btn btn-default"
+                    ng-click="getMoviePics()"
+                    ng-if="selectedList.categories.indexOf('Movies') >= 0"
+                    ng-disabled="!selectedList || (!currentUser.admin && selectedList.creator._id !== currentUser._id && selectedList._id)">
+              Get Movie Posters
+            </button>
           </div>
           <!--div id="category-select">
             <button class="btn btn-sm"

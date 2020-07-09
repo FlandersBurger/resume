@@ -5,7 +5,7 @@ const FuzzyMatching = require('fuzzy-matching');
 //const kue = require('kue');
 const Queue = require('bull');
 const moment = require('moment');
-const request = require('request');
+const request = require('request-promise');
 const config = require('../../../config');
 const bot = require('../../../bots/telegram');
 const messages = require('./messages');
@@ -1481,11 +1481,11 @@ const getQueue = async () => {
   message += `${webhook.pending_update_count} incoming messages pending in Telegram (max 100/sec)`;
   return message;
 };
-
+/*
 getQueue().then(message => {
   bot.notifyAdmin(message);
 }, console.error);
-
+*/
 /*
 const fs = require('fs');
 
@@ -1626,3 +1626,11 @@ List.findOne({
     let score = list.votes.reduce((score, vote) => score + vote.vote, 0);
     console.log(score);
   });*/
+/*
+request(`https://api.themoviedb.org/3/search/movie?api_key=${moviedbAPIKey}&query=${encodeURIComponent('good will hunting')}`, (err, response, body) => {
+  if (err) {
+    console.error(err);
+  } else {
+    console.log(JSON.parse(response.body).results[0]);
+  }
+});*/

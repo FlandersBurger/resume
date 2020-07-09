@@ -284,4 +284,8 @@ angular.module('app')
       }
     };
 
+    $scope.getMoviePics = () => {
+      BotsSvc.getMoviePics($scope.selectedList._id).then(response => $scope.selectList($scope.selectedList));
+    };
+
   });

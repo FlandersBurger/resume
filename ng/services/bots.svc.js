@@ -34,4 +34,8 @@ angular.module('app')
       return $http.delete('/api/bots/lists/' + list._id);
     };
 
+    svc.getMoviePics = function(list) {
+      return $http.get(`/api/bots/lists/${list._id}/movies`);
+    };
+
   });
