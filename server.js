@@ -6,6 +6,7 @@ const websocket = require('./websockets');
 const prototypes = require('./prototypes');
 const http = require('http');
 const net = require('net');
+require('dotenv').config();
 
 const serviceAccount = require('./keys/resume-172205-firebase-adminsdk-r34t7-0028c702be.json');
 
