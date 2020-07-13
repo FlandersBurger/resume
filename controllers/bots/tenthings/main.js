@@ -838,6 +838,10 @@ router.post('/', ({
     if (antispam[from]) {
       if (antispam[from].lastMessage < moment().subtract(10, 'seconds')) {
         delete antispam[from];
+      } else if (antispam[from].lastMessage > moment()) {
+        antispam[from].count++;
+        antispam[from].lastMessage = moment().add(10, 'seconds');
+        return res.sendStatus(200);
       } else if (antispam[from].count <= 30) {
         antispam[from].count++;
         if (antispam[from].count === 20) {
@@ -846,7 +850,7 @@ router.post('/', ({
           antispam[from].lastMessage = moment();
           bot.queueMessage(chat, `Ok, ${name}, calm down, I can't keep up.  Please stay silent for 10 seconds so I can process your stuff`);
         }
-      } else {
+      } else if (antispam[from].count > 35) {
         antispam[from].count++;
         if (antispam[from].count === 35) {
           bot.exportChatInviteLink(chat).then(url => {
@@ -854,10 +858,13 @@ router.post('/', ({
           }, err => {
             bot.notifyAdmin(`Possible spammer: ${name} (${from}) in chat ${chat} ${chat == config.groupChat ? ' - The main chat!' : ''}\n\n${message}\n\nURL: Not available`);
           });
-        } else if (antispam[from].count % 10 === 0) {
-          bot.notifyAdmin(`Possible spammer: ${name} (${from}) -> ${antispam[from].count} messages`);
+          /*
+                  } else if (antispam[from].count % 10 === 0) {
+                    bot.notifyAdmin(`Possible spammer: ${name} (${from}) -> ${antispam[from].count} messages`);*/
         }
         antispam[from].lastMessage = moment();
+        return res.sendStatus(200);
+      } else {
         return res.sendStatus(200);
       }
     } else {

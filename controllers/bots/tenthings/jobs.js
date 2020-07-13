@@ -1,4 +1,4 @@
-/*jslint esversion: 6*/
+/*jslint esversion: 10*/
 const schedule = require('node-schedule');
 const _ = require('underscore');
 const moment = require('moment');
@@ -12,7 +12,6 @@ const TenThings = require('../../../models/games/tenthings');
 const TenThingsStats = require('../../../models/stats/tenthings');
 
 if (process.env.NODE_ENV === 'production') {
-
   const pingBoozeCruise = schedule.scheduleJob('0 */25 * * * *', () => {
     request({
       method: 'GET',
@@ -359,6 +358,8 @@ if (process.env.NODE_ENV === 'production') {
       });
   });
 
+} else {
+  console.log('Schedules only run on production');
 }
 
 
