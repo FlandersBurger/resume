@@ -1,4 +1,7 @@
 /*jslint esversion: 10*/
+//-------------//
+redis.set('pause', true);
+//-------------//
 const router = require('express').Router();
 const _ = require('underscore');
 const FuzzyMatching = require('fuzzy-matching');
