@@ -1,7 +1,4 @@
 /*jslint esversion: 10*/
-//-------------//
-redis.set('pause', true);
-//-------------//
 const router = require('express').Router();
 const _ = require('underscore');
 const FuzzyMatching = require('fuzzy-matching');
@@ -18,6 +15,10 @@ const stats = require('./stats');
 const jobs = require('./jobs');
 const hints = require('./hints');
 const categories = require('./categories');
+
+//-------------//
+redis.set('pause', true);
+//-------------//
 
 const List = require('../../../models/list');
 const TenThings = require('../../../models/games/tenthings');
