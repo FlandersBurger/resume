@@ -1426,7 +1426,7 @@ const evaluateCommand = async (res, msg, game, player, isNew) => {
       if (msg.chat.id === config.masterChat) {
         redis.get('pause').then(value => {
           const pause = value === 'true';
-          bot.notifyAdmin(`Pause = ${pause}`);
+          bot.notifyAdmin(`Pause = ${!pause}`);
           redis.set('pause', !pause);
         });
       }
