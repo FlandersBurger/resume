@@ -17,7 +17,7 @@ const hints = require('./hints');
 const categories = require('./categories');
 
 //-------------//
-redis.set('pause', true);
+//redis.set('pause', true);
 //-------------//
 
 const List = require('../../../models/list');
@@ -838,7 +838,7 @@ router.post('/', async ({
     const chat = body.message ? body.message.chat.id : body.callback_query.message.chat.id;
     const message = body.message ? (body.message.text ? body.message.text : 'Not a callback or typed message') : body.callback_query.data;
     if (from != config.masterChat && await redis.get('pause') === 'true') {
-      console.log('game paused');
+      //console.log('game paused');
       return res.sendStatus(200);
     }
     if (BANNED_USERS.indexOf(from) >= 0) return res.sendStatus(200);
