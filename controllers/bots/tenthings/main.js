@@ -1313,6 +1313,7 @@ const evaluateCommand = async (res, msg, game, player, isNew) => {
           doSkip = true;
         }
         if (doSkip) {
+          activateGame(game);
           if (player) {
             player.skips++;
           } else {
@@ -1402,6 +1403,7 @@ const evaluateCommand = async (res, msg, game, player, isNew) => {
       }
       break;
     case '/hint':
+      activateGame(game);
       if (game.list.values.filter(({
           guesser
         }) => !guesser.first_name).length !== 0) {
