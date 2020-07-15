@@ -5,6 +5,11 @@ var TenThings = db('master').model('TenThings', {
     type: String,
     required: true
   },
+  enabled: {
+    type: Boolean,
+    required: true,
+    default: true
+  },
   hints: {
     type: Number,
     required: true,

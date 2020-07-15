@@ -1,6 +1,6 @@
 var Category = require('../../models/category');
 var router = require('express').Router();
-var pubsub = require('../../pubsub');
+var redis = require('../../redis');
 var websockets = require('../../websockets');
 
 router.get('/', function(req, res, next) {

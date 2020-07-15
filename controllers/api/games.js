@@ -1,5 +1,5 @@
 var router = require('express').Router();
-var pubsub = require('../../pubsub');
+var redis = require('../../redis');
 var websockets = require('../../websockets');
 const FuzzyMatching = require('fuzzy-matching');
 

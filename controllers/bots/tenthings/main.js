@@ -7,6 +7,7 @@ const Queue = require('bull');
 const moment = require('moment');
 const request = require('request');
 const config = require('../../../config');
+const redis = require('../../../redis');
 const bot = require('../../../bots/telegram');
 const messages = require('./messages');
 const keyboards = require('./keyboards');
@@ -820,11 +821,12 @@ function createMinigame(game, msg) {
 }
 
 
-router.post('/', ({
+router.post('/', async ({
   body
 }, res, next) => {
-
-  //return res.sendStatus(200);
+  if (await redis.get('pause')) {
+    return res.sendStatus(200);
+  }
   if (body.object === 'page') {
     res.status(200).send('EVENT_RECEIVED');
     return console.log(body);
@@ -1233,7 +1235,7 @@ function countBytes(s) {
   console.log(encodeURI(s).split(/%..|./).length - 1);
 }
 
-function evaluateCommand(res, msg, game, player, isNew) {
+const evaluateCommand = async (res, msg, game, player, isNew) => {
   //bot.notifyAdmin(tenthings);
   //bot.notifyAdmin(games[msg.chat.id].list);
   if (!msg.from.first_name) {
@@ -1242,6 +1244,9 @@ function evaluateCommand(res, msg, game, player, isNew) {
     return res.sendStatus(200);
   } else {
     res.sendStatus(200);
+  }
+  if (!game.enabled) {
+    return;
   }
   if (game.list.values.length === 0) {
     newRound(game);
@@ -1256,16 +1261,22 @@ function evaluateCommand(res, msg, game, player, isNew) {
     case '/logic':
       bot.queueMessage(msg.chat.id, messages.logic());
       break;
-      /*
-      case '/start':
-        bot.queueMessage(msg.chat.id, 'To start a game, type /new');
-        break;
-      */
+    case '/stop':
+      deactivateGame(game);
+      break;
     case '/new':
-      if (!isNew) {
-        bot.queueMessage(msg.chat.id, 'A game is already in progress');
-      } else {
+    case '/start':
+      activateGame(game);
+      if (isNew) {
         newRound(game);
+      } else {
+        stats.getList(game, list => {
+          let message = `<b>${game.list.name}</b> (${game.list.totalValues}) by ${game.list.creator.username}\n`;
+          message += game.list.categories.length > 0 ? `Categor${game.list.categories.length > 1 ? 'ies' : 'y'}: <b>${game.list.categories}</b>\n` : '';
+          message += game.list.description ? (game.list.description.includes('href') ? game.list.description : `<i>${angleBrackets(game.list.description)}</i>\n`) : '';
+          message += list;
+          bot.queueMessage(msg.chat.id, message);
+        });
       }
       break;
     case '/skip':
@@ -1326,6 +1337,7 @@ function evaluateCommand(res, msg, game, player, isNew) {
       break;
     case '/list':
       try {
+        activateGame(game);
         stats.getList(game, list => {
           let message = `<b>${game.list.name}</b> (${game.list.totalValues}) by ${game.list.creator.username}\n`;
           message += game.list.categories.length > 0 ? `Categor${game.list.categories.length > 1 ? 'ies' : 'y'}: <b>${game.list.categories}</b>\n` : '';
@@ -1409,6 +1421,15 @@ function evaluateCommand(res, msg, game, player, isNew) {
           });
       }
       break;
+    case '/pause':
+      if (msg.chat.id === config.masterChat) {
+        redis.get('pause').then(value => {
+          const pause = value === 'true';
+          bot.notifyAdmin(`Pause = ${pause}`);
+          redis.set('pause', !pause);
+        });
+      }
+      break;
     case '/me':
       stats.getStats(msg.chat.id, {
         id: 'p_'
@@ -1472,9 +1493,11 @@ function evaluateCommand(res, msg, game, player, isNew) {
       }, console.error);
       break;
     default:
-      queueGuess(game, msg);
+      if (game.lastPlayDate > moment().subtract(1, 'days')) {
+        queueGuess(game, msg);
+      }
   }
-}
+};
 
 module.exports = router;
 
@@ -1488,6 +1511,20 @@ const getQueue = async () => {
   message += `${webhook.pending_update_count} incoming messages pending in Telegram (max 100/sec)`;
   return message;
 };
+
+const activateGame = game => {
+  if (!game.enabled || game.lastPlayDate <= moment().subtract(1, 'days')) {
+    game.lastPlayDate = moment();
+    game.enabled = true;
+    bot.sendMessage(game.chat_id, 'Ten Things started');
+  }
+};
+
+const deactivateGame = game => {
+  game.enabled = false;
+  bot.sendMessage(game.chat_id, 'Ten Things stopped, type /list or /start to re-activate.\nInactive games will be deleted after 30 days');
+};
+
 /*
 getQueue().then(message => {
   bot.notifyAdmin(message);
@@ -1622,7 +1659,6 @@ TenThings.deleteOne({
   console.log(game);
 });
 */
-
 /*
 List.findOne({
     _id: '5eb69f1b5bcb682e62770f1a'
