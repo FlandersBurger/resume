@@ -841,8 +841,11 @@ router.post('/', async ({
 
     if (from != config.masterChat && await redis.get('pause') === 'true') return res.sendStatus(200);
     console.log(body.message.date);
+    console.log(date);
+    console.log(date);
+    console.log(date.diff(moment(), 'hours'));
     console.log(moment().subtract(1, 'hours'));
-    if (moment(date) < moment().subtract(1, 'hours')) return res.sendStatus(200);
+    if (ddate.diff(moment(), 'hours') > 1) return res.sendStatus(200);
     if (BANNED_USERS.indexOf(from) >= 0) return res.sendStatus(200);
 
     if (antispam[from]) {
