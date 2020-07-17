@@ -3,6 +3,10 @@ angular.module('app')
 
     var svc = this;
 
+    svc.getQueue = function() {
+      return $http.get(`/bots/tenthings/queue`);
+    };
+
     svc.getLists = function(user) {
       return $http.get(`/api/bots/lists`);
     };

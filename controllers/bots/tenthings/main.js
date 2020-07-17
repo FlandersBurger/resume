@@ -17,7 +17,7 @@ const hints = require('./hints');
 const categories = require('./categories');
 
 //-------------//
-redis.set('pause', true);
+//redis.set('pause', true);
 //-------------//
 
 const List = require('../../../models/list');
@@ -1507,6 +1507,10 @@ const evaluateCommand = async (res, msg, game, player, isNew) => {
   }
 };
 
+router.get('/queue', async (req, res, next) => {
+  res.json(await getQueue());
+});
+
 module.exports = router;
 
 const getQueue = async () => {
@@ -1519,6 +1523,7 @@ const getQueue = async () => {
   message += `${webhook.pending_update_count} incoming messages pending in Telegram (max 100/sec)`;
   return message;
 };
+
 
 const activateGame = game => {
   if (!game.enabled || game.lastPlayDate <= moment().subtract(1, 'days')) {
