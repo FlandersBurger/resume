@@ -840,7 +840,7 @@ router.post('/', async ({
     const message = body.message ? (body.message.text ? body.message.text : 'Not a callback or typed message') : body.callback_query.data;
 
     if (from != config.masterChat && await redis.get('pause') === 'true') return res.sendStatus(200);
-    console.log(moment(date));
+    console.log(body.message.date);
     console.log(moment().subtract(1, 'hours'));
     if (moment(date) < moment().subtract(1, 'hours')) return res.sendStatus(200);
     if (BANNED_USERS.indexOf(from) >= 0) return res.sendStatus(200);
