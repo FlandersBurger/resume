@@ -836,16 +836,13 @@ router.post('/', async ({
     const from = body.message ? body.message.from.id : body.callback_query.from.id;
     const name = body.message ? body.message.from.first_name : body.callback_query.from.first_name;
     const chat = body.message ? body.message.chat.id : body.callback_query.message.chat.id;
-    const date = body.message ? moment(body.message.date) : moment();
+    const date = body.message ? moment.unix(body.message.date) : moment();
     const message = body.message ? (body.message.text ? body.message.text : 'Not a callback or typed message') : body.callback_query.data;
-
-    if (from != config.masterChat && await redis.get('pause') === 'true') return res.sendStatus(200);
-    console.log(body.message.date);
-    console.log(date);
-    console.log(date);
     console.log(date.diff(moment(), 'hours'));
-    console.log(moment().subtract(1, 'hours'));
-    if (ddate.diff(moment(), 'hours') > 1) return res.sendStatus(200);
+    console.log(date);
+    console.log(moment());
+    if (from != config.masterChat && await redis.get('pause') === 'true') return res.sendStatus(200);
+    if (date.diff(moment(), 'hours') > 1) return res.sendStatus(200);
     if (BANNED_USERS.indexOf(from) >= 0) return res.sendStatus(200);
 
     if (antispam[from]) {
@@ -1687,7 +1684,6 @@ List.findOne({
     let score = list.votes.reduce((score, vote) => score + vote.vote, 0);
     console.log(score);
   });*/
-
 /*
 request(`https://api.themoviedb.org/3/search/movie?api_key=${moviedbAPIKey}&query=${encodeURIComponent('good will hunting')}`, (err, response, body) => {
   if (err) {
