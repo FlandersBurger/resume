@@ -838,11 +838,11 @@ router.post('/', async ({
     const chat = body.message ? body.message.chat.id : body.callback_query.message.chat.id;
     const date = body.message ? moment(body.message.date) : moment();
     const message = body.message ? (body.message.text ? body.message.text : 'Not a callback or typed message') : body.callback_query.data;
-    
+
     if (from != config.masterChat && await redis.get('pause') === 'true') return res.sendStatus(200);
-    if (date < moment().subtract(1, 'hours') return res.sendStatus(200);
+    if (date < moment().subtract(1, 'hours')) return res.sendStatus(200);
     if (BANNED_USERS.indexOf(from) >= 0) return res.sendStatus(200);
-    
+
     if (antispam[from]) {
       if (antispam[from].lastMessage < moment().subtract(10, 'seconds')) {
         delete antispam[from];
