@@ -101,7 +101,11 @@ if (process.env.NODE_ENV === 'production') {
           }) => {
             message += `\n- ${name}`;
           });
-          TenThings.find({}).select('chat_id')
+          TenThings.find({
+        'lastPlayDate': {
+          $lt: moment().subtract(7, 'days')
+        }, enabled: true
+          }).select('chat_id')
             .then(games => {
               bot.broadcast(games.map(game => game.chat_id), message);
               bot.notifyAdmins(message);
@@ -133,7 +137,11 @@ if (process.env.NODE_ENV === 'production') {
           }) => {
             message += `\n- ${name}`;
           });
-          TenThings.find({}).select('chat_id')
+          TenThings.find({
+        'lastPlayDate': {
+          $lt: moment().subtract(7, 'days')
+        }, enabled: true
+          }).select('chat_id')
             .then(games => {
               bot.broadcast(games.map(game => game.chat_id), message);
               bot.notifyAdmins(message);
