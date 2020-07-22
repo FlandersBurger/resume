@@ -17,7 +17,7 @@ const hints = require('./hints');
 const categories = require('./categories');
 
 //-------------//
-redis.set('pause', true);
+//redis.set('pause', true);
 //-------------//
 
 const List = require('../../../models/list');
