@@ -1251,10 +1251,7 @@ const evaluateCommand = async (res, msg, game, player, isNew) => {
   } else {
     res.sendStatus(200);
   }
-  /*
-    if (!game.enabled) {
-      return;
-    }*/
+
   if (game.list.values.length === 0) {
     newRound(game);
   }
@@ -1466,7 +1463,6 @@ const evaluateCommand = async (res, msg, game, player, isNew) => {
         bot.checkAdmin(game.chat_id, msg.from.id)
           .then(admin => {
             if (admin || game.chat_id > 0) {
-              bot.notifyAdmin(`Categories asked by ${msg.from.id} in ${game.chat_id}`);
               bot.sendKeyboard(game.chat_id, '<b>Categories</b>', keyboards.categories(game));
             }
           });
@@ -1502,7 +1498,7 @@ const evaluateCommand = async (res, msg, game, player, isNew) => {
       }, console.error);
       break;
     default:
-      if (game.lastPlayDate > moment().subtract(1, 'days')) {
+      if (game.enabled && game.lastPlayDate > moment().subtract(1, 'days')) {
         queueGuess(game, msg);
       }
   }
