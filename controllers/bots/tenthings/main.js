@@ -1250,9 +1250,10 @@ const evaluateCommand = async (res, msg, game, player, isNew) => {
   } else {
     res.sendStatus(200);
   }
-  if (!game.enabled) {
-    return;
-  }
+  /*
+    if (!game.enabled) {
+      return;
+    }*/
   if (game.list.values.length === 0) {
     newRound(game);
   }
