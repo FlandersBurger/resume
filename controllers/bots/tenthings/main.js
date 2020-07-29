@@ -290,7 +290,6 @@ const queueGuess = (game, msg) => {
     value
   }) => value.removeAllButLetters());
   const text = msg.text.removeAllButLetters();
-  const minigameAnswer = game.minigame.answer ? game.minigame.answer.removeAllButLetters() : '';
   const correctMatch = _.findIndex(values, value => value === text);
   if (correctMatch >= 0) {
     return queueingGuess({
@@ -329,6 +328,7 @@ const queueGuess = (game, msg) => {
       }, 2000 / 0.25 * (1 - guess.match.distance));
     }
   }
+  const minigameAnswer = game.minigame.answer ? game.minigame.answer.removeAllButLetters() : '';
   if (minigameAnswer && text.length / minigameAnswer.length > 0.75 && text.length / minigameAnswer.length < 1.25) {
     const fuzzyMatch = new FuzzyMatching([minigameAnswer]);
     const match = fuzzyMatch.get(text, {
@@ -429,8 +429,7 @@ const checkMinigame = (game, guess, msg) => {
         message += messages.guessed(game.minigame.answer, msg.from.first_name);
         message += `\n<pre>${player.scoreDaily - score} + ${score} points</pre>`;
         bot.queueMessage(msg.chat.id, message);
-        createMinigame(game, msg);
-        resolve();
+        createMinigame(game, msg).then(resolve);
       }
     });
   });
@@ -783,11 +782,12 @@ function getRandom(arr, n) {
   return result;
 }
 
-function createMinigame(game, msg) {
+const createMinigame = (game, msg) => new Promise(function(resolve, reject) {
   List
     .find()
     .lean()
     .exec((err, lists) => {
+      if (err) return reject(err);
       let answers = lists.reduce((answers, list) => {
         for (const value of list.values) {
           if (!answers[value.value]) answers[value.value] = [list.name];
@@ -817,12 +817,13 @@ function createMinigame(game, msg) {
       game.minigame.lists = minigame.lists;
 
       game.save(err => {
-        if (err) return console.error(err);
+        if (err) return reject(err);
+        resolve();
         //bot.notifyAdmin(`"<b>${foundList.name}</b>" ${data.vote > 0 ? 'up' : 'down'}voted by <i>${body.callback_query.from.first_name}</i>!`);
         //bot.notifyAdmin(`Can't save ${JSON.stringify(game.chat_id)}`);
       });
     });
-}
+});
 
 
 router.post('/', async ({
