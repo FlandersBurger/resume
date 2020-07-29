@@ -818,6 +818,8 @@ const createMinigame = (game, msg) => new Promise(function(resolve, reject) {
 
       game.save(err => {
         if (err) return reject(err);
+
+        bot.notifyAdmin(`${msg.chat.id} -> ${message}`);
         resolve();
         //bot.notifyAdmin(`"<b>${foundList.name}</b>" ${data.vote > 0 ? 'up' : 'down'}voted by <i>${body.callback_query.from.first_name}</i>!`);
         //bot.notifyAdmin(`Can't save ${JSON.stringify(game.chat_id)}`);
