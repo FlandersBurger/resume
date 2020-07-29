@@ -1498,7 +1498,7 @@ const evaluateCommand = async (res, msg, game, player, isNew) => {
       }, console.error);
       break;
     default:
-      if (game.enabled && game.lastPlayDate > moment().subtract(1, 'days')) {
+      if (game.enabled && game.lastPlayDate < moment().subtract(1, 'days')) {
         queueGuess(game, msg);
       }
   }
