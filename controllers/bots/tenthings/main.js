@@ -1501,7 +1501,6 @@ const evaluateCommand = async (res, msg, game, player, isNew) => {
       if (game.enabled && game.lastPlayDate >= moment().subtract(1, 'days')) {
         queueGuess(game, msg);
       } else if (game.enabled && game.lastPlayDate < moment().subtract(1, 'days')) {
-        bot.queueMessage(msg.chat.id, 'Going to sleep now, wake me up with /start, /new, /list or /minigame');
         deactivateGame(game);
       }
   }
@@ -1535,6 +1534,7 @@ const activateGame = game => {
 
 const deactivateGame = game => {
   game.enabled = false;
+  game.save();
   bot.sendMessage(game.chat_id, 'Ten Things stopped, type /list or /start to re-activate.\nInactive games will be deleted after 30 days');
 };
 
