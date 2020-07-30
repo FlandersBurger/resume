@@ -1525,7 +1525,7 @@ const getQueue = async () => {
 
 
 const activateGame = game => {
-  if (!game.enabled || game.lastPlayDate <= moment().subtract(1, 'days')) {
+  if (!game.enabled) {
     game.lastPlayDate = moment();
     game.enabled = true;
     bot.sendMessage(game.chat_id, 'Ten Things started');
