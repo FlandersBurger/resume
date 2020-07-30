@@ -411,6 +411,7 @@ const processGuess = guess => {
 
 const checkMinigame = (game, guess, msg) => {
   return new Promise(function(resolve, reject) {
+    console.log(`${msg.chat.id} -> ${guess}`);
     if (guess.answer !== game.minigame.answer) return resolve();
     const player = _.find(game.players, ({
       id
@@ -1500,7 +1501,7 @@ const evaluateCommand = async (res, msg, game, player, isNew) => {
       }, console.error);
       break;
     default:
-      if (game.enabled && game.lastPlayDate < moment().subtract(1, 'days')) {
+      if (game.enabled && game.lastPlayDate > moment().subtract(1, 'days')) {
         queueGuess(game, msg);
       }
   }
