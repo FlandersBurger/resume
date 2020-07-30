@@ -1498,8 +1498,11 @@ const evaluateCommand = async (res, msg, game, player, isNew) => {
       }, console.error);
       break;
     default:
-      if (game.enabled && game.lastPlayDate > moment().subtract(1, 'days')) {
+      if (game.enabled && game.lastPlayDate >= moment().subtract(1, 'days')) {
         queueGuess(game, msg);
+      } else if (game.enabled && game.lastPlayDate < moment().subtract(1, 'days')) {
+        bot.queueMessage(msg.chat.id, 'Going to sleep now, wake me up with /start, /new, /list or /minigame');
+        deactivateGame(game);
       }
   }
 };
