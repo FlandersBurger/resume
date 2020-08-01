@@ -1,12 +1,12 @@
 /*jslint esversion: 6*/
 angular.module('app')
   //AngularJs can't have an arrow function here
-  .controller('TenThingsCtrl', function($scope, BotsSvc) {
+  .controller('TenThingsCtrl', function($scope, BotSvc) {
     $scope.search = {
       name: '',
       values: ''
     };
-    BotsSvc.getCategories()
+    BotSvc.getCategories()
       .then(response => {
         $scope.categories = response.data;
         $scope.categoryFilters = $scope.categories.map(category => category);
@@ -14,7 +14,7 @@ angular.module('app')
         $scope.categoryFilters.push('Blank');
         $scope.categoryFilter = 'All';
       });
-    BotsSvc.getLanguages()
+    BotSvc.getLanguages()
       .then(response => {
         $scope.languages = response.data;
       });
@@ -107,7 +107,7 @@ angular.module('app')
     $scope.getLists = () => {
       if (!$scope.loading) {
         $scope.loading = true;
-        BotsSvc.getLists($scope.currentUser)
+        BotSvc.getLists($scope.currentUser)
           .then(({
             data
           }) => {
@@ -130,7 +130,7 @@ angular.module('app')
     };
 
     $scope.selectList = list => {
-      BotsSvc.getList(list)
+      BotSvc.getList(list)
         .then(({
           data
         }) => {
@@ -201,7 +201,7 @@ angular.module('app')
 
     $scope.reportList = list => {
       list.reported = true;
-      BotsSvc.reportList($scope.currentUser, list);
+      BotSvc.reportList($scope.currentUser, list);
     };
 
     $scope.saveList = list => {
@@ -211,7 +211,7 @@ angular.module('app')
         }) => value);
         if (list.values.length >= 10 && list.name && list.categories.length > 0) {
           $scope.saving = true;
-          BotsSvc.saveList($scope.currentUser, list)
+          BotSvc.saveList($scope.currentUser, list)
             .then(({
               data
             }) => {
@@ -261,7 +261,7 @@ angular.module('app')
         $scope.selectedList = null;
       } else {
         if (confirm('Are you sure you want to delete this list?')) {
-          BotsSvc.deleteList(list)
+          BotSvc.deleteList(list)
             .then(response => {
               $scope.getLists();
               $scope.selectedList = null;
@@ -285,7 +285,7 @@ angular.module('app')
     };
 
     $scope.getMoviePics = () => {
-      BotsSvc.getMoviePics($scope.selectedList).then(response => $scope.selectList($scope.selectedList));
+      BotSvc.getMoviePics($scope.selectedList).then(response => $scope.selectList($scope.selectedList));
     };
 
   });

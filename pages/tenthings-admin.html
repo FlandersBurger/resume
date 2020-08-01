@@ -2,6 +2,7 @@
      class="col-md-12"
      ng-if="currentUser.admin">
   <h1>Welcome to Ten Things Admin</h1>
+  <p ng-bind-html="queue" />
   <table class="table table-striped">
     <thead>
       <tr>

@@ -1,5 +1,5 @@
 angular.module('app')
-  .service('BotsSvc', function($http) {
+  .service('BotSvc', function($http) {
 
     var svc = this;
 

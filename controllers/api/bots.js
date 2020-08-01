@@ -155,6 +155,14 @@ router.post('/', (req, res, next) => {
   res.sendStatus(200);
 });
 
+router.get('/pause', (req, res, next) => {
+  redis.get('pause').then(value => {
+    const pause = value === 'true';
+    bot.notifyAdmin(`Pause = ${!pause}`);
+    redis.set('pause', !pause);
+  });
+});
+
 module.exports = router;
 
 const formatList = list => ({
