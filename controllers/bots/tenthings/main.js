@@ -1251,9 +1251,10 @@ const evaluateCommand = async (res, msg, game, player, isNew) => {
   } else {
     res.sendStatus(200);
   }
+  /*
   const flood = await floodChecker();
   if (flood) res.sendStatus(200);
-
+  */
   if (game.list.values.length === 0) {
     newRound(game);
   }
