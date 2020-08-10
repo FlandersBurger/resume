@@ -1251,6 +1251,8 @@ const evaluateCommand = async (res, msg, game, player, isNew) => {
   } else {
     res.sendStatus(200);
   }
+  const flood = await floodChecker();
+  if (flood) res.sendStatus(200);
 
   if (game.list.values.length === 0) {
     newRound(game);
@@ -1523,6 +1525,11 @@ const getQueue = async () => {
   message += `${outgoing} outgoing messages queued (max 30/sec)\n`;
   message += `${webhook.pending_update_count} incoming messages pending in Telegram (max 100/sec)`;
   return message;
+};
+
+const floodChecker = async () => {
+  const webhook = await bot.getWebhook();
+  return webhook.pending_update_count > 500;
 };
 
 
