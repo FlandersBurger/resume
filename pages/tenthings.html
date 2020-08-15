@@ -34,6 +34,21 @@
             <div class="dropdown">
               <button class="btn btn-default dropdown-toggle"
                       type="button"
+                      data-toggle="dropdown">{{updateFilter.capitalize()}}</button>
+              <ul class="dropdown-menu">
+                <li><a href="#"
+                     ng-click="setUpdateFilter('all')">All ({{getUpdateCount('all')}})</a></li>
+                <li><a href="#"
+                     ng-click="setUpdateFilter('static')">Never Changes ({{getUpdateCount('static')}})</a></li>
+                <li><a href="#"
+                     ng-click="setUpdateFilter('dynamic')">Changes Periodically ({{getUpdateCount('dynamic')}})</a></li>
+              </ul>
+            </div>
+          </div>
+          <div class="btn-group">
+            <div class="dropdown">
+              <button class="btn btn-default dropdown-toggle"
+                      type="button"
                       data-toggle="dropdown">{{categoryFilter ? categoryFilter : 'Category'}} ({{filteredLists().length}})</button>
               <ul class="dropdown-menu">
                 <li ng-repeat="category in categoryFilters | orderBy"><a href="#"
@@ -45,22 +60,24 @@
             <div class="dropdown">
               <button class="btn btn-default dropdown-toggle"
                       type="button"
-                      data-toggle="dropdown">Order by {{sortValue}} {{(sortDirection ? 'descending' : 'ascending')}}</button>
+                      data-toggle="dropdown">Order by {{sortLabel}} {{(sortDirection ? 'descending' : 'ascending')}}</button>
               <ul class="dropdown-menu">
                 <li><a href="#"
-                     ng-click="sort('name')">Name {{sortValue === 'name' ? (sortDirection ? 'Descending' : 'Ascending') : 'Ascending'}}</a></li>
+                     ng-click="sort('name', 'Name')">Name {{sortValue === 'name' ? (sortDirection ? 'Descending' : 'Ascending') : 'Ascending'}}</a></li>
                 <li><a href="#"
-                     ng-click="sort('date')">Date {{sortValue === 'date' ? (sortDirection ? 'Descending' : 'Ascending') : 'Ascending'}}</a></li>
+                     ng-click="sort('date', 'Creation Date')">Creation Date {{sortValue === 'date' ? (sortDirection ? 'Descending' : 'Ascending') : 'Ascending'}}</a></li>
                 <li><a href="#"
-                     ng-click="sort('skips')">Skips {{sortValue === 'skips' ? (sortDirection ? 'Descending' : 'Ascending') : 'Ascending'}}</a></li>
+                     ng-click="sort('modifyDate', 'Modify Date')">Modify Date {{sortValue === 'modifyDate' ? (sortDirection ? 'Descending' : 'Ascending') : 'Ascending'}}</a></li>
                 <li><a href="#"
-                     ng-click="sort('plays')">Plays {{sortValue === 'plays' ? (sortDirection ? 'Descending' : 'Ascending') : 'Ascending'}}</a></li>
+                     ng-click="sort('skips', '# of Skips')">Skips {{sortValue === 'skips' ? (sortDirection ? 'Descending' : 'Ascending') : 'Ascending'}}</a></li>
                 <li><a href="#"
-                     ng-click="sort('hints')">Hints {{sortValue === 'hints' ? (sortDirection ? 'Descending' : 'Ascending') : 'Ascending'}}</a></li>
+                     ng-click="sort('plays', '# of Plays')">Plays {{sortValue === 'plays' ? (sortDirection ? 'Descending' : 'Ascending') : 'Ascending'}}</a></li>
                 <li><a href="#"
-                     ng-click="sort('score')">Score {{sortValue === 'score' ? (sortDirection ? 'Descending' : 'Ascending') : 'Ascending'}}</a></li>
+                     ng-click="sort('hints', '# of Hints')">Hints {{sortValue === 'hints' ? (sortDirection ? 'Descending' : 'Ascending') : 'Ascending'}}</a></li>
                 <li><a href="#"
-                     ng-click="sort('answers')">Answers {{sortValue === 'answers' ? (sortDirection ? 'Descending' : 'Ascending') : 'Ascending'}}</a></li>
+                     ng-click="sort('score', 'Score')">Score {{sortValue === 'score' ? (sortDirection ? 'Descending' : 'Ascending') : 'Ascending'}}</a></li>
+                <li><a href="#"
+                     ng-click="sort('answers', '# of Answer')">Answers {{sortValue === 'answers' ? (sortDirection ? 'Descending' : 'Ascending') : 'Ascending'}}</a></li>
               </ul>
             </div>
           </div>

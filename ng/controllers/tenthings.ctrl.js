@@ -13,6 +13,7 @@ angular.module('app')
         $scope.categoryFilters.push('All');
         $scope.categoryFilters.push('Blank');
         $scope.categoryFilter = 'All';
+        $scope.updateFilter = 'all';
       });
     BotSvc.getLanguages()
       .then(response => {
@@ -46,19 +47,20 @@ angular.module('app')
     $scope.searchName = '';
     $scope.newItem = {};
 
-    $scope.setCategoryFilter = category => {
-      $scope.categoryFilter = category;
-    };
-    $scope.setUserFilter = user => {
-      $scope.userFilter = user;
-    };
+    $scope.setCategoryFilter = category => $scope.categoryFilter = category;
+    $scope.setUserFilter = user => $scope.userFilter = user;
+    $scope.setUpdateFilter = type => $scope.updateFilter = type;
 
     $scope.filteredLists = () => {
       if (!$scope.lists) return [];
       return $scope.lists.filter(({
         categories,
+        isDynamic,
         creator
       }) => {
+        if ($scope.updateFilter !== 'all') {
+          if (($scope.updateFilter === 'static' && isDynamic === true) || ($scope.updateFilter === 'dynamic' && isDynamic === false)) return false;
+        }
         if ($scope.categoryFilter === 'All' && $scope.userFilter === 'All') {
           return true;
         } else if ($scope.categoryFilter !== 'All' && $scope.userFilter === 'All') {
@@ -84,24 +86,28 @@ angular.module('app')
     });
 
 
-    $scope.sort = sortBy => {
-      if ($scope.sortValue === sortBy) {
+    $scope.sort = (sortValue, sortLabel) => {
+      $scope.sortLabel = sortLabel;
+      if ($scope.sortValue === sortValue) {
         $scope.sortDirection = !$scope.sortDirection;
       } else {
-        $scope.sortValue = sortBy;
+        $scope.sortValue = sortValue;
         $scope.sortDirection = true;
       }
       $scope.sorter = ($scope.sortDirection ? '+' : '-') + $scope.sortValue;
     };
 
-    $scope.sortValue = 'date';
-    $scope.sortDirection = true;
     $scope.sortList = 'value';
-    $scope.sort('date');
+    $scope.sort('date', 'Creation Date');
 
     $scope.getCategoryCount = category => {
       if (!$scope.lists) return 0;
-      return $scope.lists.filter(list => (category === 'All' || list.categories.indexOf(category) >= 0) && ($scope.userFilter === 'All' || list.creator === $scope.userFilter)).length;
+      return $scope.lists.filter(list => (category === 'All' || list.categories.indexOf(category) >= 0) && ($scope.userFilter === 'All' || list.creator === $scope.userFilter) && ($scope.updateFilter === 'all' || list.isDynamic === ($scope.updateFilter === 'dynamic'))).length;
+    };
+
+    $scope.getUpdateCount = type => {
+      if (!$scope.lists) return 0;
+      return $scope.lists.filter(list => type === 'all' || (list.isDynamic && type === 'dynamic') || (!list.isDynamic && type === 'static')).length;
     };
 
     $scope.getLists = () => {

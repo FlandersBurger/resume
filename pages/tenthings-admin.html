@@ -3,6 +3,8 @@
      ng-if="currentUser.admin">
   <h1>Welcome to Ten Things Admin</h1>
   <p ng-bind-html="queue" />
+  <button class="btn"
+          ng-class="{'btn-warning': paused, 'btn-default': !paused}">{{paused ? 'Unpause': 'Pause'}}</button>
   <table class="table table-striped">
     <thead>
       <tr>

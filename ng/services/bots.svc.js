@@ -42,4 +42,12 @@ angular.module('app')
       return $http.get(`/api/bots/lists/${list._id}/movies`);
     };
 
+    svc.getPause = function() {
+      return $http.get(`/api/bots/pause`);
+    };
+
+    svc.setPause = function() {
+      return $http.post(`/api/bots/pause`);
+    };
+
   });

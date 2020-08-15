@@ -30,13 +30,12 @@ router.get('/languages', (req, res, next) => {
   res.json(languages);
 });
 
-
 router.get('/lists', (req, res, next) => {
   if (req.auth.userid == '5ece428af848aa2fc392d099') {
     return res.sendStatus(401);
   }
   List.find({})
-    .select('_id plays skips score values.value date modifyDate creator name description categories language')
+    .select('_id plays skips score values.value date modifyDate creator name description categories language isDynamic')
     .populate('creator', 'username')
     .lean()
     .exec((err, result) => {
@@ -155,11 +154,17 @@ router.post('/', (req, res, next) => {
   res.sendStatus(200);
 });
 
-router.get('/pause', (req, res, next) => {
+router.post('/pause', (req, res, next) => {
   redis.get('pause').then(value => {
     const pause = value === 'true';
     bot.notifyAdmin(`Pause = ${!pause}`);
     redis.set('pause', !pause);
+  });
+});
+
+router.get('/pause', (req, res, next) => {
+  redis.get('pause').then(value => {
+    res.json(value === 'true');
   });
 });
 
@@ -179,6 +184,7 @@ const formatList = list => ({
   name: list.name,
   description: list.description,
   categories: list.categories,
+  isDynamic: list.isDynamic
 });
 /*
 User.findOne({
