@@ -833,6 +833,8 @@ router.post('/', async ({
     res.status(200).send('EVENT_RECEIVED');
     return console.log(body);
   }
+  console.log(body);
+  return res.sendStatus(200);
   if (body.message || body.callback_query) {
     const from = body.message ? body.message.from.id : body.callback_query.from.id;
     const name = body.message ? body.message.from.first_name : body.callback_query.from.first_name;
@@ -1208,6 +1210,7 @@ router.get('/', ({
 
 // Creates the endpoint for our webhook
 router.post('/webhook', (req, res) => {
+  console.log('here');
   const body = req.body;
   if (body.object === 'page') {
     // Iterates over each entry - there may be multiple if batched
