@@ -31,7 +31,7 @@ router.get('/languages', (req, res, next) => {
 });
 
 router.get('/lists', (req, res, next) => {
-  if (req.auth.userid == '5ece428af848aa2fc392d099') {
+  if (!req.auth || req.auth.userid == '5ece428af848aa2fc392d099') {
     return res.sendStatus(401);
   }
   List.find({})
