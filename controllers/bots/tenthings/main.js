@@ -833,7 +833,6 @@ router.post('/', ({
     res.status(200).send('EVENT_RECEIVED');
     return console.log(body);
   }
-  console.log(body);
   if (body.message || body.callback_query) {
     const from = body.message ? body.message.from.id : body.callback_query.from.id;
     const name = body.message ? body.message.from.first_name : body.callback_query.from.first_name;
