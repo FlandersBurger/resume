@@ -243,6 +243,7 @@ const TOKEN = config.tokens.telegram.tenthings;
 const b = new TelegramBot();
 b.init(TOKEN).then(() => {
   b.getWebhook().then(response => {
+    console.log(response);
     if (response && 'https://belgocanadian.com/bots/tenthings' === response.url) {
       console.log('Webhook Set');
     } else {
