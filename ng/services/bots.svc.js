@@ -46,7 +46,7 @@ angular.module('app')
       return $http.get(`/api/bots/pause`);
     };
 
-    svc.setPause = function() {
+    svc.togglePause = function() {
       return $http.post(`/api/bots/pause`);
     };
 

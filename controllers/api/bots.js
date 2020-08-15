@@ -5,6 +5,7 @@ var moment = require('moment');
 var _ = require('underscore');
 
 var config = require('../../config');
+const redis = require('../../redis');
 var bot = require('../../bots/telegram');
 var categories = require('../bots/tenthings/categories');
 var languages = require('../bots/tenthings/languages');
@@ -159,6 +160,7 @@ router.post('/pause', (req, res, next) => {
     const pause = value === 'true';
     bot.notifyAdmin(`Pause = ${!pause}`);
     redis.set('pause', !pause);
+    res.json(!pause);
   });
 });
 

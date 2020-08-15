@@ -3,8 +3,18 @@
      ng-if="currentUser.admin">
   <h1>Welcome to Ten Things Admin</h1>
   <p ng-bind-html="queue" />
-  <button class="btn"
-          ng-class="{'btn-warning': paused, 'btn-default': !paused}">{{paused ? 'Unpause': 'Pause'}}</button>
+  <div class="btn-group">
+    <button class="btn btn-default"
+            ng-click="getQueue()">
+      <i class="fa fa-sync"
+         ng-class="{ 'fa-spin': loading }"></i>
+    </button>
+    <button class="btn"
+            ng-class="{'btn-warning': paused, 'btn-default': !paused}"
+            ng-click="togglePause()">
+      {{paused ? 'Unpause': 'Pause'}}
+    </button>
+  </div>
   <table class="table table-striped">
     <thead>
       <tr>
