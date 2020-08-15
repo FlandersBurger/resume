@@ -9,7 +9,8 @@ router.use(express.static(__dirname + '/../sounds'));
 router.use(express.static(__dirname + '/../pages'));
 router.use(express.static(__dirname + '/../data'));
 
-router.get('/*', function (req, res) {
+router.get('/*', function(req, res) {
+  console.log(req.url);
   res.sendFile(path.resolve(__dirname + '/../index.html'));
 });
 
