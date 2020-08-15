@@ -17,7 +17,7 @@ const hints = require('./hints');
 const categories = require('./categories');
 
 //-------------//
-//redis.set('pause', true);
+redis.set('pause', true);
 //-------------//
 
 const List = require('../../../models/list');
@@ -829,7 +829,6 @@ const createMinigame = (game, msg) => new Promise(function(resolve, reject) {
 router.post('/', async ({
   body
 }, res, next) => {
-  console.log('here');
   if (body.object === 'page') {
     res.status(200).send('EVENT_RECEIVED');
     return console.log(body);
