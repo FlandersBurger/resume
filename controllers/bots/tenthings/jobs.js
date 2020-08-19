@@ -12,7 +12,9 @@ const TenThings = require('../../../models/games/tenthings');
 const TenThingsStats = require('../../../models/stats/tenthings');
 
 if (process.env.NODE_ENV === 'production') {
-  const pingBoozeCruise = schedule.scheduleJob('0 */25 * * * *', () => {
+
+  //const pingBoozeCruise = schedule.scheduleJob('0 */25 * * * *', () => {
+  /*
     request({
       method: 'GET',
       url: 'https://booze-cruise.herokuapp.com/api/ping'
@@ -21,6 +23,7 @@ if (process.env.NODE_ENV === 'production') {
       //bot.queueMessage('-1001399879250', 'Ping-Pong');
     });
   });
+  */
   /*
   const getJoke = schedule.scheduleJob('0 0 0 * * *', () => {
     request({
@@ -102,10 +105,11 @@ if (process.env.NODE_ENV === 'production') {
             message += `\n- ${name}`;
           });
           TenThings.find({
-        'lastPlayDate': {
-          $lt: moment().subtract(7, 'days')
-        }, enabled: true
-          }).select('chat_id')
+              'lastPlayDate': {
+                $lt: moment().subtract(7, 'days')
+              },
+              enabled: true
+            }).select('chat_id')
             .then(games => {
               bot.broadcast(games.map(game => game.chat_id), message);
               bot.notifyAdmins(message);
@@ -138,10 +142,11 @@ if (process.env.NODE_ENV === 'production') {
             message += `\n- ${name}`;
           });
           TenThings.find({
-        'lastPlayDate': {
-          $lt: moment().subtract(7, 'days')
-        }, enabled: true
-          }).select('chat_id')
+              'lastPlayDate': {
+                $lt: moment().subtract(7, 'days')
+              },
+              enabled: true
+            }).select('chat_id')
             .then(games => {
               bot.broadcast(games.map(game => game.chat_id), message);
               bot.notifyAdmins(message);
