@@ -3,6 +3,9 @@ const request = require('request');
 const Queue = require('bull');
 const config = require('../config');
 
+const TOKEN = config.tokens.telegram.tenthings;
+
+
 const messageQueue = new Queue('sendMessage', {
   redis: {
     port: config.redis.port,
@@ -237,10 +240,22 @@ function TelegramBot() {
   bot.introduceYourself = () => {
     console.log(`Hello, my name is ${bot.getName()}. You can talk to me through my username: @${bot.username}`);
   };
+
+  bot.reset = () => {
+    let url = `https://api.telegram.org/bot${TOKEN}/setWebhook?url=`;
+    request(url, (error, r, body) => {
+      if (error) return console.error(error);
+      url = `https://api.telegram.org/bot${TOKEN}/getUpdates?offset=-5`;
+      request(url, (error, r, body) => {
+        if (error) return console.error(error);
+        bot.init(TOKEN);
+      });
+    });
+  };
 }
 
-const TOKEN = config.tokens.telegram.tenthings;
 const b = new TelegramBot();
+
 b.init(TOKEN).then(() => {
   b.getWebhook().then(response => {
     console.log(response);
@@ -253,5 +268,17 @@ b.init(TOKEN).then(() => {
     }
   });
 });
+/*
 
+let url = `https://api.telegram.org/bot${TOKEN}/setWebhook?url=`;
+request(url, (error, r, body) => {
+  if (error) return console.error(error);
+  console.log(body);
+  url = `https://api.telegram.org/bot${TOKEN}/getUpdates?offset=-5`;
+  request(url, (error, r, body) => {
+    if (error) return console.error(error);
+    console.log(body);
+  });
+});
+*/
 module.exports = b;

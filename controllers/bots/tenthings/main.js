@@ -825,7 +825,6 @@ const createMinigame = (game, msg) => new Promise(function(resolve, reject) {
     });
 });
 
-
 router.post('/', async ({
   body
 }, res, next) => {
