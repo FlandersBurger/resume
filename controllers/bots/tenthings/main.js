@@ -567,7 +567,8 @@ const checkRound = (game) => {
             _id: game.list._id
           })
           .exec((err, foundList) => {
-            let message = `<b>${game.list.name}</b> by ${game.list.creator.username}\n`;
+            let message = `<b>${game.list.name}</b>`;
+            message += game.list.creator ? ` by ${game.list.creator.username}\n` : '\n';
             message += game.list.categories.length > 0 ? `Categor${game.list.categories.length > 1 ? 'ies' : 'y'}: <b>${game.list.categories}</b>\n` : '';
             message += list;
             message += messages.listStats(foundList);
@@ -1281,7 +1282,8 @@ const evaluateCommand = async (res, msg, game, player, isNew) => {
         newRound(game);
       } else {
         stats.getList(game, list => {
-          let message = `<b>${game.list.name}</b> (${game.list.totalValues}) by ${game.list.creator.username}\n`;
+          let message = `<b>${game.list.name}</b> (${game.list.totalValues})`;
+          message += game.list.creator ? `by ${game.list.creator.username}\n` : '\n';
           message += game.list.categories.length > 0 ? `Categor${game.list.categories.length > 1 ? 'ies' : 'y'}: <b>${game.list.categories}</b>\n` : '';
           message += game.list.description ? (game.list.description.includes('href') ? game.list.description : `<i>${angleBrackets(game.list.description)}</i>\n`) : '';
           message += list;
