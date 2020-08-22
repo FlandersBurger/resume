@@ -1165,6 +1165,7 @@ router.post('/', async ({
         });
       } else {
         let player;
+        console.log(existingGame.list);
         player = _.find(existingGame.players, existingPlayer => {
           if (!existingPlayer) {
             console.log('Empty Player!');
@@ -1681,11 +1682,19 @@ TenThings.findOne({
   });
 */
 /*
-TenThings.deleteOne({
-  _id: '5e8eda52318c09097b7b5e67'
-}).exec((err, game) => {
+TenThings.findOne({
+  'list.name': 'Things designed to hold liquids'
+}).populate('list.creator', 'username').exec((err, game) => {
   if (err) console.error(err);
   console.log(game);
+});
+*/
+/*
+User.findOne({
+  _id: '5ae15f14b5f7883ff0497339'
+}).exec((err, user) => {
+  if (err) console.error(err);
+  console.log(user);
 });
 */
 /*
