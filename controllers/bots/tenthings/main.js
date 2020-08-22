@@ -1352,9 +1352,8 @@ const evaluateCommand = async (res, msg, game, player, isNew) => {
       try {
         activateGame(game);
         stats.getList(game, list => {
-          console.log(game.list.name);
-          console.log(game.list.creator);
           let message = `<b>${game.list.name}</b> (${game.list.totalValues}) by ${game.list.creator.username}\n`;
+          message += game.list.creator ? `by ${game.list.creator.username}\n` : '\n';
           message += game.list.categories.length > 0 ? `Categor${game.list.categories.length > 1 ? 'ies' : 'y'}: <b>${game.list.categories}</b>\n` : '';
           message += game.list.description ? (game.list.description.includes('href') ? game.list.description : `<i>${angleBrackets(game.list.description)}</i>\n`) : '';
           message += list;
