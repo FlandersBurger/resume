@@ -3,20 +3,20 @@ const db = require('./db');
 const _ = require('underscore');
 const moment = require('moment');
 
-const srcCategory = require('./models_backup/category');
-const dstCategory = require('./models/category');
-const srcJoke = require('./models_backup/joke');
-const dstJoke = require('./models/joke');
-const srcList = require('./models_backup/list');
-const dstList = require('./models/list');
-const srcPost = require('./models_backup/post');
-const dstPost = require('./models/post');
-const srcUser = require('./models_backup/user');
-const dstUser = require('./models/user');
-const srcTenthings = require('./models_backup/games/tenthings');
-const dstTenthings = require('./models/games/tenthings');
-const srcTenthingsStats = require('./models_backup/stats/tenthings');
-const dstTenthingsStats = require('./models/stats/tenthings');
+const srcCategory = require('./models/category');
+const dstCategory = require('./models_backup/category');
+const srcJoke = require('./models/joke');
+const dstJoke = require('./models_backup/joke');
+const srcList = require('./models/list');
+const dstList = require('./models_backup/list');
+const srcPost = require('./models/post');
+const dstPost = require('./models_backup/post');
+const srcUser = require('./models/user');
+const dstUser = require('./models_backup/user');
+const srcTenthings = require('./models/games/tenthings');
+const dstTenthings = require('./models_backup/games/tenthings');
+const srcTenthingsStats = require('./models/stats/tenthings');
+const dstTenthingsStats = require('./models_backup/stats/tenthings');
 
 const syncDB = async () => {
 
