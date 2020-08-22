@@ -268,8 +268,8 @@ b.init(TOKEN).then(() => {
     }
   });
 });
-/*
 
+/*
 let url = `https://api.telegram.org/bot${TOKEN}/setWebhook?url=`;
 request(url, (error, r, body) => {
   if (error) return console.error(error);
