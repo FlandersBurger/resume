@@ -21,6 +21,7 @@ const categories = require('./categories');
 //-------------//
 
 const List = require('../../../models/list');
+const User = require('../../../models/user');
 const TenThings = require('../../../models/games/tenthings');
 
 const MAX_HINTS = hints.getMaxHints();
@@ -1689,14 +1690,14 @@ TenThings.findOne({
   console.log(game);
 });
 */
-/*
+
 User.findOne({
   _id: '5ae15f14b5f7883ff0497339'
 }).exec((err, user) => {
   if (err) console.error(err);
   console.log(user);
 });
-*/
+
 /*
 List.findOne({
     _id: '5eb69f1b5bcb682e62770f1a'
