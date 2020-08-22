@@ -1165,7 +1165,6 @@ router.post('/', async ({
         });
       } else {
         let player;
-        console.log(existingGame.list);
         player = _.find(existingGame.players, existingPlayer => {
           if (!existingPlayer) {
             console.log('Empty Player!');
