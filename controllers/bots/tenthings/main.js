@@ -391,7 +391,7 @@ const processGuess = guess => {
         if (guess.type === 'game') {
           checkGuess(game, guess, guess.msg)
             .then(() => {
-              console.log(`${guess.game} - Guess for ${game.list.name}: "${guess.msg.text}" by ${guess.msg.from.first_name}`);
+              //console.log(`${guess.game} - Guess for ${game.list.name}: "${guess.msg.text}" by ${guess.msg.from.first_name}`);
               resolve();
             }, (err) => {
               reject(err);
@@ -399,7 +399,7 @@ const processGuess = guess => {
         } else {
           checkMinigame(game, guess, guess.msg)
             .then(() => {
-              console.log(`${guess.game} - Minigame guess for ${game.minigame.answer}: "${guess.msg.text}" by ${guess.msg.from.first_name}`);
+              //console.log(`${guess.game} - Minigame guess for ${game.minigame.answer}: "${guess.msg.text}" by ${guess.msg.from.first_name}`);
               resolve();
             }, (err) => {
               console.error(err);
@@ -628,7 +628,7 @@ const newRound = (currentGame) => {
           game.playedLists.push(game.list._id);
           game.save(err => {
             if (err) return bot.notifyAdmin('newRound: ' + JSON.stringify(err) + '\n' + JSON.stringify(game));
-            console.log(`Game ${game._id} started new round with list -> "${list.name}"`);
+            //console.log(`Game ${game._id} started new round with list -> "${list.name}"`);
           });
         }, err => bot.notifyAdmin(JSON.stringify(err)));
     });
