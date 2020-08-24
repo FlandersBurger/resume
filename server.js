@@ -16,17 +16,6 @@ admin.initializeApp({
 });
 
 const app = express();
-app.use((req, res) => {
-  let buffs = [];
-  req.on('data', (chunk) => {
-    buffs.push(chunk);
-  });
-  req.on('end', () => {
-    res.write(Buffer.concat(buffs));
-    res.end();
-  });
-});
-
 app.use(bodyParser.json());
 
 app.use(require('./auth'));
@@ -48,9 +37,19 @@ app.use(logger('dev', {
 app.use('/bots/tenthings', require('./controllers/bots/tenthings/main'));
 
 app.use(require('./controllers/static'));
-
+/*
+app.use((req, res) => {
+  let buffs = [];
+  req.on('data', (chunk) => {
+    buffs.push(chunk);
+  });
+  req.on('end', () => {
+    res.write(Buffer.concat(buffs));
+    res.end();
+  });
+});
+*/
 const port = process.env.PORT || 3000;
-
 const server = http.createServer(app);
 
 server.listen(port, function() {
