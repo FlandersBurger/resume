@@ -40,7 +40,19 @@ app.use(require('./controllers/static'));
 
 const port = process.env.PORT || 3000;
 
+app.use((req, res) => {
+  let buffs = [];
+  req.on('data', (chunk) => {
+    buffs.push(chunk);
+  });
+  req.on('end', () => {
+    res.write(Buffer.concat(buffs));
+    res.end();
+  });
+});
+
 const server = http.createServer(app);
+
 server.listen(port, function() {
   console.log('Server ', process.pid, ' listening on', port);
 });
