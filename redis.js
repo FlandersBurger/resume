@@ -7,11 +7,12 @@ function newClient() {
   var client = process.env.NODE_ENV === 'development' ? redis.createClient(host.port, host.hostname) : redis.createClient({
     path: '/var/run/redis/redis.sock'
   });
+  console.log(process.env.NODE_ENV === 'development');
   client.auth(config.redis.password);
   return client;
 }
 
-var client = newClient();
+var keyStoreClient = newClient();
 
 client.on("error", function(error) {
   console.error(error);
@@ -29,10 +30,10 @@ exports.subscribe = function(topic, callback) {
   });
 };
 
-exports.set = (key, value) => client.set(key, value);
+exports.set = (key, value) => keyStoreClient.set(key, value);
 exports.get = key => new Promise(function(resolve, reject) {
   try {
-    client.get(key, (err, value) => {
+    keyStoreClient.get(key, (err, value) => {
       if (err) return reject(err);
       resolve(value);
     });
