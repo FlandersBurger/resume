@@ -4,10 +4,12 @@ var url = process.env.REDISTOGO_URL || 'redis://localhost:' + config.redis.port;
 var host = require('url').parse(url);
 
 const newClient = () => {
+  /*
   const client = process.env.NODE_ENV === 'development' ? redis.createClient(host.port, host.hostname) : redis.createClient({
     path: '/var/run/redis/redis.sock'
   });
-  console.log(process.env.NODE_ENV);
+  */
+  const client = redis.createClient(host.port, host.hostname);
   client.auth(config.redis.password);
   return client;
 };
