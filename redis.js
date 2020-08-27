@@ -3,16 +3,16 @@ var config = require('./config');
 var url = process.env.REDISTOGO_URL || 'redis://localhost:' + config.redis.port;
 var host = require('url').parse(url);
 
-function newClient() {
-  var client = process.env.NODE_ENV === 'development' ? redis.createClient(host.port, host.hostname) : redis.createClient({
+const newClient = () => {
+  const client = process.env.NODE_ENV === 'development' ? redis.createClient(host.port, host.hostname) : redis.createClient({
     path: '/var/run/redis/redis.sock'
   });
-  console.log(process.env.NODE_ENV === 'development');
+  console.log(process.env.NODE_ENV);
   client.auth(config.redis.password);
   return client;
-}
+};
 
-var keyStoreClient = newClient();
+const client = newClient();
 
 client.on("error", function(error) {
   console.error(error);
@@ -30,10 +30,10 @@ exports.subscribe = function(topic, callback) {
   });
 };
 
-exports.set = (key, value) => keyStoreClient.set(key, value);
+exports.set = (key, value) => client.set(key, value);
 exports.get = key => new Promise(function(resolve, reject) {
   try {
-    keyStoreClient.get(key, (err, value) => {
+    client.get(key, (err, value) => {
       if (err) return reject(err);
       resolve(value);
     });
