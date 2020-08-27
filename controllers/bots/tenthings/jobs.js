@@ -228,7 +228,8 @@ if (process.env.NODE_ENV === 'production') {
                       );
                       try {
                         stats.getList(game, list => {
-                          let message = `<b>${game.list.name}</b> (${game.list.totalValues}) by ${game.list.creator.username}\n`;
+                          let message = `<b>${game.list.name}</b> (${game.list.totalValues})`;
+                          message += game.list.creator ? ` by ${game.list.creator.username}\n` : '\n';
                           if (game.list.categories) {
                             message += game.list.categories.length > 0 ? `Categor${game.list.categories.length > 1 ? 'ies' : 'y'}: <b>${game.list.categories}</b>\n` : '';
                           }
