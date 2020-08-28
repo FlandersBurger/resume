@@ -291,7 +291,6 @@ const queueGuess = (game, msg) => {
     value
   }) => value.removeAllButLetters());
   const text = msg.text.removeAllButLetters();
-  console.log(text);
   const correctMatch = _.findIndex(values, value => value === text);
   if (correctMatch >= 0) {
     return queueingGuess({
@@ -387,7 +386,7 @@ const processGuess = guess => {
       }, {
         players: {
           $elemMatch: {
-            id: msg.from.id
+            id: guess.msg.from.id
           }
         }
       })
