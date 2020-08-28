@@ -1161,7 +1161,7 @@ router.post('/', async ({
           }*/
     )
     .populate('list.creator')
-    .select('chat_id enabled hints cycles lastCycleDate lastPlayDate listsPlayed guessers streak disabledCategories pickedLists list date minigame settings')
+    .select('chat_id enabled players hints cycles lastCycleDate lastPlayDate listsPlayed guessers streak disabledCategories pickedLists list date minigame settings')
     .exec((err, existingGame) => {
       if (err) {
         bot.notifyAdmin(`Error finding game: ${msg.chat.id}`);
