@@ -849,7 +849,6 @@ router.post('/', async ({
     const name = body.message ? body.message.from.first_name : body.callback_query.from.first_name;
     const chat = body.message ? body.message.chat.id : body.callback_query.message.chat.id;
     const date = body.message ? moment.unix(body.message.date) : moment();
-    console.log('here');
     const message = body.message ? (body.message.text ? body.message.text : 'Not a callback or typed message') : body.callback_query.data;
     if (from != config.masterChat && await redis.get('pause') === 'true') return res.sendStatus(200);
     //if (date.diff(moment(), 'hours') > 1) return res.sendStatus(200);
@@ -1162,7 +1161,8 @@ router.post('/', async ({
           }*/
     )
     .populate('list.creator')
-    .select('chat_id enabled players hints cycles lastCycleDate lastPlayDate listsPlayed guessers streak disabledCategories pickedLists list date minigame settings')
+    .select('-playedLists')
+    //.select('chat_id enabled players hints cycles lastCycleDate lastPlayDate listsPlayed guessers streak disabledCategories pickedLists list date minigame settings')
     .exec((err, existingGame) => {
       if (err) {
         bot.notifyAdmin(`Error finding game: ${msg.chat.id}`);
@@ -1300,6 +1300,7 @@ function countBytes(s) {
 const evaluateCommand = async (res, msg, game, player, isNew) => {
   //bot.notifyAdmin(tenthings);
   //bot.notifyAdmin(games[msg.chat.id].list);
+  console.log(`Evaluating: ${msg}`);
   if (!msg.from.first_name) {
     console.error('msg without a first_name?');
     console.error(msg);
