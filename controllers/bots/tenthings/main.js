@@ -1150,14 +1150,16 @@ router.post('/', async ({
     return res.sendStatus(200);
   }
   TenThings.findOne({
-      chat_id: msg.chat.id
-    }, {
-      players: {
-        $elemMatch: {
-          id: msg.from.id
-        }
+        chat_id: msg.chat.id
       }
-    })
+      /*, {
+            players: {
+              $elemMatch: {
+                id: msg.from.id
+              }
+            }
+          }*/
+    )
     .populate('list.creator')
     .select('chat_id enabled hints cycles lastCycleDate lastPlayDate listsPlayed guessers streak disabledCategories pickedLists list date minigame settings')
     .exec((err, existingGame) => {
@@ -1165,6 +1167,7 @@ router.post('/', async ({
         bot.notifyAdmin(`Error finding game: ${msg.chat.id}`);
         return next(err);
       }
+
       if (!existingGame) {
         const newGame = new TenThings({
           chat_id: msg.chat.id,
@@ -1178,88 +1181,70 @@ router.post('/', async ({
           return evaluateCommand(res, msg, newGame, player, true);
         });
       } else {
-        if (!existingGame.players || existingGame.players.length === 0) {
-          if (existingGame.players.length === 0) {
+        /*
+                        if (!existingGame.players) {
+                          TenThings.findOne({
+                              chat_id: msg.chat.id
+                            })
+                            .populate('list.creator')
+                            .select('-playedLists')
+                            .exec((err, existingGameWithPlayers) => {
+                              existingGameWithPlayers.players.push(msg.from);
+                              player = existingGameWithPlayers.players[existingGameWithPlayers.players.length - 1];
+                              existingGameWithPlayers.save(err => {
+                                if (err) {
+                                  bot.notifyAdmin('Can\'t add new player: ' + JSON.stringify(err));
+                                  console.error(err);
+                                  console.log(player);
+                                  console.log(msg.from);
+                                  res.sendStatus(200);
+                                } else {
+                                  return evaluateCommand(res, msg, existingGameWithPlayers, player, false);
+                                }
+                              });
+                            });
+                        } else if (existingGame.players.length === 0) {
+                          console.log(existingGame);
+                          console.log(`No player found with id: ${msg.from.id} in ${msg.chat.id}`);
+                        } else {
+                          let player = existingGame.players[0];
+                          player.first_name = msg.from.first_name;
+                          player.last_name = msg.from.last_name;
+                          player.username = msg.from.username;
+                          player.present = true;
+                          return evaluateCommand(res, msg, existingGame, player, false);
+                        }
+                        */
+        let player;
+        player = _.find(existingGame.players, existingPlayer => {
+          if (!existingPlayer) {
+            console.log('Empty Player!');
             console.log(existingGame);
-            console.log(`No player found with id: ${msg.from.id} in ${msg.chat.id}`);
+            return false;
           }
-          TenThings.findOne({
-              chat_id: msg.chat.id
-            })
-            .populate('list.creator')
-            .select('-playedLists')
-            .exec((err, existingGameWithPlayers) => {
-              let player;
-              player = _.find(existingGameWithPlayers.players, existingPlayer => {
-                if (!existingPlayer) {
-                  console.log('Empty Player!');
-                  console.log(existingGameWithPlayers);
-                  return false;
-                }
-                return existingPlayer.id == msg.from.id;
-              });
-              if (!player) {
-                existingGameWithPlayers.players.push(msg.from);
-                player = existingGameWithPlayers.players[existingGameWithPlayers.players.length - 1];
-                existingGameWithPlayers.save(err => {
-                  if (err) {
-                    bot.notifyAdmin('Can\'t add new player: ' + JSON.stringify(err));
-                    console.error(err);
-                    console.log(player);
-                    console.log(msg.from);
-                    res.sendStatus(200);
-                  } else {
-                    return evaluateCommand(res, msg, existingGameWithPlayers, player, false);
-                  }
-                });
-              } else {
-                console.log('player found if i do all players!!!!!!!!');
-                player.first_name = msg.from.first_name;
-                player.last_name = msg.from.last_name;
-                player.username = msg.from.username;
-                player.present = true;
-                return evaluateCommand(res, msg, existingGameWithPlayers, player, false);
-              }
-            });
+          return existingPlayer.id == msg.from.id;
+        });
+        if (!player) {
+          existingGame.players.push(msg.from);
+          player = existingGame.players[existingGame.players.length - 1];
+          existingGame.save(err => {
+            if (err) {
+              bot.notifyAdmin('Can\'t add new player: ' + JSON.stringify(err));
+              console.error(err);
+              console.log(player);
+              console.log(msg.from);
+              res.sendStatus(200);
+            } else {
+              return evaluateCommand(res, msg, existingGame, player, false);
+            }
+          });
         } else {
-          let player = existingGame.players[0];
           player.first_name = msg.from.first_name;
           player.last_name = msg.from.last_name;
           player.username = msg.from.username;
           player.present = true;
           return evaluateCommand(res, msg, existingGame, player, false);
         }
-        /*
-                let player;
-                player = _.find(existingGame.players, existingPlayer => {
-                  if (!existingPlayer) {
-                    console.log('Empty Player!');
-                    console.log(existingGame);
-                    return false;
-                  }
-                  return existingPlayer.id == msg.from.id;
-                });
-                if (!player) {
-                  existingGame.players.push(msg.from);
-                  player = existingGame.players[existingGame.players.length - 1];
-                  existingGame.save(err => {
-                    if (err) {
-                      bot.notifyAdmin('Can\'t add new player: ' + JSON.stringify(err));
-                      console.error(err);
-                      console.log(player);
-                      console.log(msg.from);
-                      res.sendStatus(200);
-                    } else {
-                      return evaluateCommand(res, msg, existingGame, player, false);
-                    }
-                  });
-                } else {
-                  player.first_name = msg.from.first_name;
-                  player.last_name = msg.from.last_name;
-                  player.username = msg.from.username;
-                  player.present = true;
-                  return evaluateCommand(res, msg, existingGame, player, false);
-                }*/
       }
     });
 });
@@ -1735,17 +1720,17 @@ TenThings.find({
 
 TenThings.findOne({
     //_id: '5ea571afe7076e790d20182d',
-    chat_id: '-100143153'
+    chat_id: config.groupChat
   }, {
     players: {
       $elemMatch: {
-        id: 903411579
+        id: '592503547'
       }
     }
   })
   .select('_id list guessers')
   .exec((err, game) => {
-    console.log(game);
+    console.log(game.players);
 
     //game.chat_id = '-1001195181419'; //'-1001380477486'
     //game.disabledCategories = ['Non-English'];
