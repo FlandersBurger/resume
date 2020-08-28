@@ -383,9 +383,15 @@ const processGuess = guess => {
   return new Promise((resolve, reject) => {
     TenThings.findOne({
         chat_id: guess.game
+      }, {
+        players: {
+          $elemMatch: {
+            id: msg.from.id
+          }
+        }
       })
       .populate('list.creator')
-      .select('_id chat_id players guessers list lastPlayDate hints streak settings minigame')
+      .select('_id chat_id guessers list lastPlayDate hints streak settings minigame')
       .exec((err, game) => {
         if (err) return reject();
         if (guess.type === 'game') {
@@ -1145,6 +1151,12 @@ router.post('/', async ({
   }
   TenThings.findOne({
       chat_id: msg.chat.id
+    }, {
+      players: {
+        $elemMatch: {
+          id: msg.from.id
+        }
+      }
     })
     .populate('list.creator')
     .select('-playedLists')
@@ -1166,30 +1178,29 @@ router.post('/', async ({
           return evaluateCommand(res, msg, newGame, player, true);
         });
       } else {
-        let player;
-        player = _.find(existingGame.players, existingPlayer => {
-          if (!existingPlayer) {
-            console.log('Empty Player!');
-            console.log(existingGame);
-            return false;
-          }
-          return existingPlayer.id == msg.from.id;
-        });
-        if (!player) {
-          existingGame.players.push(msg.from);
-          player = existingGame.players[existingGame.players.length - 1];
-          existingGame.save(err => {
-            if (err) {
-              bot.notifyAdmin('Can\'t add new player: ' + JSON.stringify(err));
-              console.error(err);
-              console.log(player);
-              console.log(msg.from);
-              res.sendStatus(200);
-            } else {
-              return evaluateCommand(res, msg, existingGame, player, false);
-            }
-          });
+        if (!existingGame.players) {
+          TenThings.findOne({
+              chat_id: msg.chat.id
+            })
+            .populate('list.creator')
+            .select('-playedLists')
+            .exec((err, existingGameWithPlayers) => {
+              existingGameWithPlayers.players.push(msg.from);
+              player = existingGameWithPlayers.players[existingGameWithPlayers.players.length - 1];
+              existingGameWithPlayers.save(err => {
+                if (err) {
+                  bot.notifyAdmin('Can\'t add new player: ' + JSON.stringify(err));
+                  console.error(err);
+                  console.log(player);
+                  console.log(msg.from);
+                  res.sendStatus(200);
+                } else {
+                  return evaluateCommand(res, msg, existingGameWithPlayers, player, false);
+                }
+              });
+            });
         } else {
+          let player = existingGame.players[0];
           player.first_name = msg.from.first_name;
           player.last_name = msg.from.last_name;
           player.username = msg.from.username;
@@ -1668,12 +1679,18 @@ TenThings.find({
     //game.save();
   });
   */
-/*
-TenThings.findOne({
+
+TenThings.find({
     //_id: '5ea571afe7076e790d20182d',
     chat_id: config.groupChat
+  }, {
+    players: {
+      $elemMatch: {
+        first_name: 'kl;l;;l'
+      }
+    }
   })
-  .select('_id disabledCategories')
+  .select('-playedLists')
   .exec((err, game) => {
     console.log(game);
 
@@ -1681,7 +1698,7 @@ TenThings.findOne({
     //game.disabledCategories = ['Non-English'];
     //game.save();
   });
-*/
+
 /*
 TenThings.findOne({
   'list.name': 'Things designed to hold liquids'
