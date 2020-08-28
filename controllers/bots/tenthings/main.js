@@ -291,6 +291,7 @@ const queueGuess = (game, msg) => {
     value
   }) => value.removeAllButLetters());
   const text = msg.text.removeAllButLetters();
+  console.log(text);
   const correctMatch = _.findIndex(values, value => value === text);
   if (correctMatch >= 0) {
     return queueingGuess({
@@ -1300,7 +1301,6 @@ function countBytes(s) {
 const evaluateCommand = async (res, msg, game, player, isNew) => {
   //bot.notifyAdmin(tenthings);
   //bot.notifyAdmin(games[msg.chat.id].list);
-  console.log(`Evaluating: ${msg}`);
   if (!msg.from.first_name) {
     console.error('msg without a first_name?');
     console.error(msg);
@@ -1733,7 +1733,7 @@ TenThings.findOne({
   })
   .select('_id list guessers')
   .exec((err, game) => {
-    console.log(game.players);
+    console.log(game);
 
     //game.chat_id = '-1001195181419'; //'-1001380477486'
     //game.disabledCategories = ['Non-English'];
