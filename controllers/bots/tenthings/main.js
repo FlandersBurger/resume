@@ -382,16 +382,18 @@ guessQueue.process(({
 const processGuess = guess => {
   return new Promise((resolve, reject) => {
     TenThings.findOne({
-        chat_id: guess.game
-      }, {
-        players: {
-          $elemMatch: {
-            id: guess.msg.from.id
-          }
+          chat_id: guess.game
         }
-      })
+        /*, {
+                players: {
+                  $elemMatch: {
+                    id: guess.msg.from.id
+                  }
+                }
+              }*/
+      )
       .populate('list.creator')
-      .select('_id chat_id guessers list lastPlayDate hints streak settings minigame')
+      .select('_id chat_id guessers list lastPlayDate hints streak settings minigame players')
       .exec((err, game) => {
         if (err) return reject();
         if (guess.type === 'game') {
