@@ -397,7 +397,7 @@ const processGuess = guess => {
         if (guess.type === 'game') {
           checkGuess(game, guess, guess.msg)
             .then(() => {
-              //console.log(`${guess.game} - Guess for ${game.list.name}: "${guess.msg.text}" by ${guess.msg.from.first_name}`);
+              console.log(`${guess.game} - Guess for ${game.list.name}: "${guess.msg.text}" by ${guess.msg.from.first_name}`);
               resolve();
             }, (err) => {
               reject(err);
@@ -405,7 +405,7 @@ const processGuess = guess => {
         } else {
           checkMinigame(game, guess, guess.msg)
             .then(() => {
-              //console.log(`${guess.game} - Minigame guess for ${game.minigame.answer}: "${guess.msg.text}" by ${guess.msg.from.first_name}`);
+              console.log(`${guess.game} - Minigame guess for ${game.minigame.answer}: "${guess.msg.text}" by ${guess.msg.from.first_name}`);
               resolve();
             }, (err) => {
               console.error(err);
@@ -1167,6 +1167,7 @@ router.post('/', async ({
         bot.notifyAdmin(`Error finding game: ${msg.chat.id}`);
         return next(err);
       }
+
 
       if (!existingGame) {
         const newGame = new TenThings({
