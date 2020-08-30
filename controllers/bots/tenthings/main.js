@@ -1190,7 +1190,6 @@ router.post('/', async ({
           .then(newGame => {
             if (err) bot.notifyAdmin('POST: ' + JSON.stringify(err) + '\n' + JSON.stringify(game));
             console.log('Game Saved!');
-            const player = newGame.players[0];
             return evaluateCommand(res, msg, newGame.game, newGame.player, true);
           });
       } else {
