@@ -260,7 +260,7 @@ const getGame = async (chat_id, user) => {
 const getPlayer = async (gameId, user) => {
   let player = await Player.findOne({
     game: gameId,
-    id: user.id
+    id: `${user.id}`
   }).exec();
   if (!player) player = await createPlayer(gameId, user);
   return player;
@@ -469,7 +469,7 @@ const checkGuess = async (game, player, guess, msg) => {
     bot.queueMessage(msg.chat.id, `Skip vetoed by ${msg.from.first_name} giving a correct answer\nNo skipping allowed for ${VETO_DELAY} seconds`);
   }
   if (!_.some(game.guessers, guesser => guesser == msg.from.id)) {
-    game.guessers.push(msg.from.id);
+    game.guessers.push(`${msg.from.id}`);
   }
   const match = game.list.values[guess.match.index];
   if (!player) {

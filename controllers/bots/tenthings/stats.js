@@ -269,7 +269,7 @@ exports.getStats = (chat_id, data, requestor) => {
       case 'p':
         Player.findOne({
           game: game._id,
-          id: (id ? id : requestor)
+          id: `${(id ? id : requestor)}`
         }).exec((err, player) => {
           bot.queueMessage(game.chat_id, messages.playerStats(player, data.requestor));
         });
