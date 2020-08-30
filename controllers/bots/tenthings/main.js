@@ -20,9 +20,9 @@ const categories = require('./categories');
 //redis.set('pause', true);
 //-------------//
 
-const Game = require('../../../models_backup/tenthings/game');
-const Player = require('../../../models_backup/tenthings/player');
-const List = require('../../../models_backup/tenthings/list');
+const Game = require('../../../models/tenthings/game');
+const Player = require('../../../models/tenthings/player');
+const List = require('../../../models/tenthings/list');
 
 const MAX_HINTS = hints.getMaxHints();
 const VETO_DELAY = 15;
