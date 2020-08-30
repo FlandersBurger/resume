@@ -372,6 +372,7 @@ const queueGuess = (game, player, msg) => {
         type: 'minigame',
         msg,
         game: game.chat_id,
+        player: player.id,
         answer: game.minigame.answer,
         match
       };
