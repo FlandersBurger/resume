@@ -1089,15 +1089,18 @@ router.post('/', async ({
     } else if (body.message.left_chat_participant) {
       Game.findOne({
         chat_id: body.message.chat.id
-      }).select('players').exec((err, game) => {
-        if (err || !game) return;
-        const player = _.find(game.players, ({
-          id
-        }) => id == body.message.left_chat_participant.id);
-        if (player) {
-          player.present = false;
-          game.save();
-        }
+      }).exec((err, game) => {
+        Player.findOne({
+            game: game._id,
+            id: body.message.left_chat_participant.id
+          })
+          .exec((err, player) => {
+            if (err || !player) return;
+            if (player) {
+              player.present = false;
+              player.save();
+            }
+          });
       });
       return res.sendStatus(200);
     } else if (
@@ -1181,6 +1184,7 @@ router.post('/', async ({
           });
       } else {
         Player.findOne({
+            game: existingGame._id,
             id: msg.from.id
           })
           .exec((err, player) => {
