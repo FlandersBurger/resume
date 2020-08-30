@@ -90,6 +90,7 @@ const getDailyScores = async ({
   const players = await Player.find({
     game: _id
   }).exec();
+  console.log(players);
   const message = players.filter(({
     scoreDaily
   }) => scoreDaily).sort((player1, player2) => player2.scoreDaily - player1.scoreDaily).slice(0, limit ? limit : players.length).reduce((str, {
