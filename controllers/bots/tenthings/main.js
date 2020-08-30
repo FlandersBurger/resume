@@ -625,7 +625,7 @@ const newRound = (currentGame, player) => {
         id: {
           $in: game.guessers
         }
-      });
+      }).exec();
       selectList(game)
         .then(async list => {
           list.plays++;
