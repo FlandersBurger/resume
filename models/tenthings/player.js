@@ -12,7 +12,7 @@ var Player = db('master').model('Player', {
   },
   first_name: {
     type: String,
-    required: false
+    required: true
   },
   last_name: {
     type: String,

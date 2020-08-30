@@ -1093,7 +1093,7 @@ router.post('/', async ({
       }).exec((err, game) => {
         Player.findOne({
             game: game._id,
-            id: body.message.left_chat_participant.id
+            id: `${body.message.left_chat_participant.id}`
           })
           .exec((err, player) => {
             if (err || !player) return;
@@ -1186,7 +1186,7 @@ router.post('/', async ({
       } else {
         Player.findOne({
             game: existingGame._id,
-            id: msg.from.id
+            id: `${msg.from.id}`
           })
           .exec((err, player) => {
             if (!player) {
