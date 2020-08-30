@@ -77,7 +77,7 @@ exports.getScores = (game_id, type) => {
           bot.queueMessage(game_id, str);
           break;
         default:
-          bot.queueMessage(game_id, stats.getDailyScores(game));
+          stats.getDailyScores(game).then(message => bot.queueMessage(game_id, message));
       }
     });
   });

@@ -591,13 +591,13 @@ const checkRound = (game) => {
           .findOne({
             _id: game.list._id
           })
-          .exec((err, foundList) => {
+          .exec(async (err, foundList) => {
             let message = `<b>${game.list.name}</b>`;
             message += game.list.creator ? ` by ${game.list.creator.username}\n` : '\n';
             message += game.list.categories.length > 0 ? `Categor${game.list.categories.length > 1 ? 'ies' : 'y'}: <b>${game.list.categories}</b>\n` : '';
             message += list;
             message += messages.listStats(foundList);
-            message += stats.getDailyScores(game, 5);
+            message += await stats.getDailyScores(game, 5);
             bot.queueMessage(game.chat_id, message);
             setTimeout(() => {
               rateList(game);
@@ -721,9 +721,9 @@ const skipList = async (game, skipper) => {
           foundList.skips = 0;
         }
         foundList.skips++;
-        foundList.save(err => {
+        foundList.save(async err => {
           if (err) return console.error(err);
-          bot.queueMessage(game.chat_id, stats.getDailyScores(game, 5));
+          bot.queueMessage(game.chat_id, await stats.getDailyScores(game, 5));
           newRound(game);
         });
       });
@@ -1481,7 +1481,7 @@ const evaluateCommand = async (res, msg, game, player, isNew) => {
       }, msg.from.id);
       break;
     case '/score':
-      bot.queueMessage(game.chat_id, stats.getDailyScores(game));
+      bot.queueMessage(game.chat_id, await stats.getDailyScores(game));
       break;
     case '/minigame':
       if (!game.minigame.answer) {
