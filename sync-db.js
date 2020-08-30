@@ -129,8 +129,8 @@ const makePlayers = () => {
         ]).exec();
         const insertedPlayers = await dstTenthingsPlayer.insertMany(players);
         console.log(`${players.length} players imported from ${game._id} (${i}/${games.length})`);
-        process.exit(22);
       }
+      process.exit(22);
     });
 };
 makePlayers();
