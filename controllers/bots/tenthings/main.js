@@ -543,8 +543,15 @@ const checkGuess = async (game, player, guess, msg) => {
     }
     */
   }
-  const savedPlayer = await player.save();
-  const savedGame = await game.save();
+  try {
+
+    const savedPlayer = await player.save();
+    const savedGame = await game.save();
+  } catch (e) {
+    console.log(player);
+    console.error(e);
+    console.trace();
+  }
 };
 
 const guessed = async ({
