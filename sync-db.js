@@ -83,7 +83,8 @@ const syncDB = async () => {
 
 
 //syncDB();
-const makePlayers = () => {
+const makePlayers = async () => {
+  await dstTenthingsPlayer.deleteMany({});
   dstTenthingsGame.find({})
     .select('_id')
     .exec(async (err, games) => {
