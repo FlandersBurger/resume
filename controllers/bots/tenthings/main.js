@@ -620,7 +620,7 @@ const newRound = (currentGame, player) => {
     .exec(async (err, game) => {
       if (err) return console.error(err);
       if (!game) return console.log('Game not found');
-      let players = Player.find({
+      let players = await Player.find({
         game: currentGame._id,
         id: {
           $in: game.guessers
