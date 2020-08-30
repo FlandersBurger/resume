@@ -88,7 +88,10 @@ const getDailyScores = async ({
   chat_id
 }, limit) => {
   const players = await Player.find({
-    game: _id
+    game: _id,
+    scoreDaily: {
+      $gt: 0
+    }
   }).exec();
   console.log(players);
   const message = players.filter(({
