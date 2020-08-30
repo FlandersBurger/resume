@@ -1,12 +1,10 @@
-/*jslint esversion: 6*/
-const _ = require('underscore');
-
 const moment = require('moment');
 const bot = require('../../../bots/telegram');
 const messages = require('./messages');
 const hints = require('./hints');
-const List = require('../../../models/list');
-const TenThings = require('../../../models/games/tenthings');
+const Game = require('../../../models/tenthings/game');
+const Player = require('../../../models/tenthings/player');
+const List = require('../../../models/tenthings/list');
 
 exports.getScores = (game_id, type) => {
   /*
@@ -15,77 +13,83 @@ exports.getScores = (game_id, type) => {
     bot.queueMessage(game_id, str);
   });
   */
-  TenThings.findOne({
+  Game.findOne({
     chat_id: game_id
-  }).select('players chat_id').exec((err, game) => {
-    let str = '';
-    switch (type) {
-      case 'td':
-        str = '<b>Top Daily Scores</b>\n';
-        str += '<i>Highest single day score</i>\n';
-        console.log(str);
-        game.players.filter(({
-          present
-        }) => present).sort((player1, player2) => player2.highScore - player1.highScore).slice(0, 10).forEach(({
-          first_name,
-          highScore
-        }, index) => {
-          str += `${index + 1}: ${first_name}: ${highScore}\n`;
-        });
-        bot.queueMessage(game_id, str);
-        break;
-      case 'tr':
-        str = '<b>Top Win Ratio</b>\n';
-        str += '<i>Days won / Days played</i>\n';
-        game.players.filter(({
-          present
-        }) => present).sort((player1, player2) => (player2.plays === 0 ? 0 : player2.wins / player2.plays) - (player1.plays === 0 ? 0 : player1.wins / player1.plays)).slice(0, 10).forEach(({
-          first_name,
-          wins,
-          plays
-        }, index) => {
-          str += `${index + 1}: ${first_name}: ${wins}/${plays} (${Math.round(plays === 0 ? 0 : wins / plays * 10000) / 100}%)\n`;
-        });
-        bot.queueMessage(game_id, str);
-        break;
-      case 'ts':
-        str = '<b>Top Overall Score</b>\n';
-        str += '<i>Highest sum of all scores</i>\n';
-        console.log(str);
-        game.players.filter(({
-          present
-        }) => present).sort((player1, player2) => player2.score - player1.score).slice(0, 10).forEach(({
-          first_name,
-          score
-        }, index) => {
-          str += `${index + 1}: ${first_name}: ${score}\n`;
-        });
-        bot.queueMessage(game_id, str);
-        break;
-      case 'ta':
-        str = '<b>Top Average Daily Score</b>\n';
-        str += '<i>Overall score / Days played</i>\n';
-        game.players.filter(({
-          present
-        }) => present).sort((player1, player2) => (player2.plays === 0 ? 0 : player2.score / player2.plays) - (player1.plays === 0 ? 0 : player1.score / player1.plays)).slice(0, 10).forEach(({
-          first_name,
-          plays,
-          score
-        }, index) => {
-          str += `${index + 1}: ${first_name}: ${Math.round(plays === 0 ? 0 : score / plays)}\n`;
-        });
-        bot.queueMessage(game_id, str);
-        break;
-      default:
-        bot.queueMessage(game_id, stats.getDailyScores(game));
-    }
+  }).select('chat_id').exec((err, game) => {
+    Player.find({
+      game: game._id
+    }).exec((err, players) => {
+      let str = '';
+      switch (type) {
+        case 'td':
+          str = '<b>Top Daily Scores</b>\n';
+          str += '<i>Highest single day score</i>\n';
+          console.log(str);
+          players.filter(({
+            present
+          }) => present).sort((player1, player2) => player2.highScore - player1.highScore).slice(0, 10).forEach(({
+            first_name,
+            highScore
+          }, index) => {
+            str += `${index + 1}: ${first_name}: ${highScore}\n`;
+          });
+          bot.queueMessage(game_id, str);
+          break;
+        case 'tr':
+          str = '<b>Top Win Ratio</b>\n';
+          str += '<i>Days won / Days played</i>\n';
+          players.filter(({
+            present
+          }) => present).sort((player1, player2) => (player2.plays === 0 ? 0 : player2.wins / player2.plays) - (player1.plays === 0 ? 0 : player1.wins / player1.plays)).slice(0, 10).forEach(({
+            first_name,
+            wins,
+            plays
+          }, index) => {
+            str += `${index + 1}: ${first_name}: ${wins}/${plays} (${Math.round(plays === 0 ? 0 : wins / plays * 10000) / 100}%)\n`;
+          });
+          bot.queueMessage(game_id, str);
+          break;
+        case 'ts':
+          str = '<b>Top Overall Score</b>\n';
+          str += '<i>Highest sum of all scores</i>\n';
+          players.filter(({
+            present
+          }) => present).sort((player1, player2) => player2.score - player1.score).slice(0, 10).forEach(({
+            first_name,
+            score
+          }, index) => {
+            str += `${index + 1}: ${first_name}: ${score}\n`;
+          });
+          bot.queueMessage(game_id, str);
+          break;
+        case 'ta':
+          str = '<b>Top Average Daily Score</b>\n';
+          str += '<i>Overall score / Days played</i>\n';
+          players.filter(({
+            present
+          }) => present).sort((player1, player2) => (player2.plays === 0 ? 0 : player2.score / player2.plays) - (player1.plays === 0 ? 0 : player1.score / player1.plays)).slice(0, 10).forEach(({
+            first_name,
+            plays,
+            score
+          }, index) => {
+            str += `${index + 1}: ${first_name}: ${Math.round(plays === 0 ? 0 : score / plays)}\n`;
+          });
+          bot.queueMessage(game_id, str);
+          break;
+        default:
+          bot.queueMessage(game_id, stats.getDailyScores(game));
+      }
+    });
   });
 };
 
-const getDailyScores = ({
-  players,
+const getDailyScores = async ({
+  _id,
   chat_id
 }, limit) => {
+  const players = await Player.find({
+    game: game._id
+  }).exec();
   const message = players.filter(({
     scoreDaily
   }) => scoreDaily).sort((player1, player2) => player2.scoreDaily - player1.scoreDaily).slice(0, limit ? limit : players.length).reduce((str, {
@@ -122,13 +126,16 @@ exports.getStats = (chat_id, data, requestor) => {
   const type = data.id.split('_')[0];
   const id = data.id.split('_')[1];
   let message = '';
-  TenThings.findOne({
+  Game.findOne({
     chat_id
-  }).then(game => {
+  }).then(async game => {
     switch (type) {
       case 'players':
+        const players = await Player.find({
+          game: game._id
+        }).exec();
         const keyboard = [];
-        game.players.sort((player1, player2) => {
+        players.sort((player1, player2) => {
           const nameA = player1.first_name.toUpperCase(); // ignore upper and lowercase
           const nameB = player2.first_name.toUpperCase(); // ignore upper and lowercase
           if (nameA < nameB) {
@@ -163,52 +170,49 @@ exports.getStats = (chat_id, data, requestor) => {
         });
         break;
       case 'global':
-        TenThings.aggregate([{
+        Player.aggregate([{
             $match: {
-              'players.present': true
+              'present': true
             }
-          },
-          {
-            $unwind: '$players'
           },
           {
             $group: {
               _id: 'stats',
               'overallHighScore': {
-                $max: '$players.highScore'
+                $max: '$highScore'
               },
               'overallTotalScore': {
-                $sum: '$players.score'
+                $sum: '$score'
               },
               'dailyHighScore': {
-                $max: '$players.scoreDaily'
+                $max: '$scoreDaily'
               },
               'dailyTotalScore': {
-                $sum: '$players.scoreDaily'
+                $sum: '$scoreDaily'
               },
               'answerStreak': {
-                $max: '$players.streak'
+                $max: '$streak'
               },
               'playStreak': {
-                $max: '$players.maxPlayStreak'
+                $max: '$maxPlayStreak'
               },
               'noHintStreak': {
-                $max: '$players.maxHintStreak'
+                $max: '$maxHintStreak'
               },
               'answers': {
-                $sum: '$players.answers'
+                $sum: '$panswers'
               },
               'snubs': {
-                $sum: '$players.snubs'
+                $sum: '$snubs'
               },
               'hints': {
-                $sum: '$players.hints'
+                $sum: '$hints'
               },
               'skips': {
-                $sum: '$players.skips'
+                $sum: '$skips'
               },
               'suggestions': {
-                $sum: '$players.suggestions'
+                $sum: '$suggestions'
               },
             }
           },
@@ -263,11 +267,10 @@ exports.getStats = (chat_id, data, requestor) => {
         });
         break;
       case 'p':
-        const findPlayer = new Promise((resolve, reject) => {
-          const player = _.find(game.players, existingPlayer => existingPlayer.id == (id ? id : requestor));
-          resolve(player);
-        });
-        findPlayer.then(player => {
+        Player.findOne({
+          game: game._id,
+          id: (id ? id : requestor)
+        }).exec((err, player) => {
           bot.queueMessage(game.chat_id, messages.playerStats(player, data.requestor));
         });
         break;
@@ -380,10 +383,12 @@ const listStats = ({
   });
 };
 
-const playerStats = ({
-  players,
-  chat_id
+const playerStats = async ({
+  _id
 }, field, divisor, ratio, title, description, sorter, requestor) => {
+  const players = await Player.find({
+    game: _id
+  }).exec();
   let message = `<b>${title}</b>\n`;
   message += description ? `<i>${description}</i>\n` : '';
   players.filter(player => player.present && player[field] > 0).sort((a, b) => {
@@ -399,10 +404,12 @@ const playerStats = ({
   bot.queueMessage(chat_id, message);
 };
 
-const voteStats = ({
-  players,
+const voteStats = async ({
   chat_id
 }, sorter, title) => {
+  const players = await Player.find({
+    game: _id
+  }).exec();
   List.aggregate([{
       $unwind: '$votes'
     },
@@ -431,10 +438,12 @@ const voteStats = ({
 };
 
 
-const voteSentimentStats = ({
-  players,
+const voteSentimentStats = async ({
   chat_id
 }, sorter, title) => {
+  const players = await Player.find({
+    game: _id
+  }).exec();
   List.aggregate([{
       $match: {
         'votes.vote': sorter
@@ -468,41 +477,43 @@ const voteSentimentStats = ({
 };
 
 const tenThingsStats = (game, sorter, field, title) => {
-  TenThings.aggregate([{
-      $unwind: '$players'
+  Player.aggregate([{
+      $match: {
+        game: game._id
+      }
     },
     {
       $group: {
         '_id': {
-          _id: '$players._id',
-          first_name: '$players.first_name'
+          _id: '$_id',
+          first_name: '$first_name'
         },
         'score': {
-          $sum: '$players.score'
+          $sum: '$score'
         },
         'plays': {
-          $sum: '$players.plays'
+          $sum: '$plays'
         },
         'wins': {
-          $sum: '$players.wins'
+          $sum: '$wins'
         },
         'answers': {
-          $sum: '$players.answers'
+          $sum: '$answers'
         },
         'snubs': {
-          $sum: '$players.snubs'
+          $sum: '$snubs'
         },
         'hints': {
-          $sum: '$players.hints'
+          $sum: '$hints'
         },
         'skips': {
-          $sum: '$players.skips'
+          $sum: '$skips'
         },
         'answerStreaks': {
-          $max: '$players.streak'
+          $max: '$streak'
         },
         'playStreaks': {
-          $max: '$players.maxPlayStreak'
+          $max: '$maxPlayStreak'
         }
       }
     },

@@ -10,12 +10,12 @@ var bot = require('../../bots/telegram');
 var categories = require('../bots/tenthings/categories');
 var languages = require('../bots/tenthings/languages');
 
-var List = require('../../models/list');
+var TenThingsList = require('../../models/tenthings/list');
 var User = require('../../models/user');
-var TenThings = require('../../models/games/tenthings');
+var TenThingsGame = require('../../models/tenthings/game');
 
 router.get('/names', (req, res, next) => {
-  List.find({})
+  TenThingsList.find({})
     .select('_id name')
     .exec((err, result) => {
       if (err) return next(err);
@@ -35,7 +35,7 @@ router.get('/lists', (req, res, next) => {
   if (!req.auth || req.auth.userid == '5ece428af848aa2fc392d099') {
     return res.sendStatus(401);
   }
-  List.find({})
+  TenThingsList.find({})
     .select('_id plays skips score values.value date modifyDate creator name description categories language isDynamic')
     .populate('creator', 'username')
     .lean()
@@ -48,7 +48,7 @@ router.get('/lists', (req, res, next) => {
 });
 
 router.get('/lists/:id/report/:user', (req, res, next) => {
-  List.findOne({
+  TenThingsList.findOne({
       _id: req.params.id
     })
     .exec((err, list) => {
@@ -62,7 +62,7 @@ router.get('/lists/:id/report/:user', (req, res, next) => {
 });
 
 router.get('/lists/:id', (req, res, next) => {
-  List.findOne({
+  TenThingsList.findOne({
       _id: req.params.id
     })
     .populate('creator')
@@ -72,7 +72,7 @@ router.get('/lists/:id', (req, res, next) => {
 });
 
 router.get('/lists/:id/movies', async (req, res, next) => {
-  let list = await List.findOne({
+  let list = await TenThingsList.findOne({
     _id: req.params.id
   });
   if (list) {
@@ -108,12 +108,12 @@ router.put('/lists', (req, res, next) => {
   var yesterday = moment().subtract(1, 'days');
   var previousModifyDate = moment(req.body.list.modifyDate);
   req.body.list.modifyDate = new Date();
-  List.findByIdAndUpdate(req.body.list._id ? req.body.list._id : new mongoose.Types.ObjectId(), req.body.list, {
+  TenThingsList.findByIdAndUpdate(req.body.list._id ? req.body.list._id : new mongoose.Types.ObjectId(), req.body.list, {
     new: true,
     upsert: true
   }, function(err, list) {
     if (err) return next(err);
-    List.findOne({
+    TenThingsList.findOne({
         _id: list._id
       })
       .populate('creator')
@@ -135,9 +135,9 @@ router.delete('/lists/:id', (req, res, next) => {
     })
     .exec((err, user) => {
       if (err) return next(err);
-      List.findOne(req.params.id, (err, list) => {
+      TenThingsList.findOne(req.params.id, (err, list) => {
         if (config.admins.indexOf(req.auth.userid) >= 0 || req.auth.userid === list.creator) {
-          List.findByIdAndRemove(req.params.id, (err, list) => {
+          TenThingsList.findByIdAndRemove(req.params.id, (err, list) => {
             if (err) return next(err);
             bot.notifyAdmins('<b>' + list.name + '</b> deleted by ' + user.username);
             res.sendStatus(200);
@@ -205,14 +205,14 @@ ListBackup.find({})
 
 */
 /*
-List.find({
+TenThingsList.find({
     'values.creator': '5ece428af848aa2fc392d099'
   })
   .exec((err, lists) => {
     console.log(lists.map(list => list.name));
   });*/
 /*
-List.find({})
+TenThingsList.find({})
   .lean()
   .select('_id name')
   .exec((err, existingLists) => {
@@ -238,7 +238,7 @@ List.find({})
   });
 */
 /*
-List.find({})
+TenThingsList.find({})
   .lean()
   .select('_id name')
   .exec((err, existingLists) => {
@@ -249,7 +249,7 @@ List.find({})
       })
       .exec((err, missingLists) => {
 
-        // List.insertMany(missingLists
+        // TenThingsList.insertMany(missingLists
         //   .map(list => ({
         //     name: list.name,
         //     description: list.description,

@@ -1,6 +1,6 @@
 var db = require('../../db');
 
-var TenThings = db('master').model('TenThings', {
+var Game = db('master').model('TenThings', {
   chat_id: {
     type: String,
     required: true
@@ -247,4 +247,4 @@ var TenThings = db('master').model('TenThings', {
   }
 });
 
-module.exports = TenThings;
+module.exports = Game;

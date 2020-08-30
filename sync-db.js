@@ -1,22 +1,29 @@
-const db = require('./db');
-
 const _ = require('underscore');
 const moment = require('moment');
 
 const srcCategory = require('./models_backup/category');
 const dstCategory = require('./models/category');
+
 const srcJoke = require('./models_backup/joke');
 const dstJoke = require('./models/joke');
-const srcList = require('./models_backup/list');
-const dstList = require('./models/list');
+
+const srcList = require('./models_backup/tenthings/list');
+const dstList = require('./models/tenthings/list');
+
 const srcPost = require('./models_backup/post');
 const dstPost = require('./models/post');
+
 const srcUser = require('./models_backup/user');
 const dstUser = require('./models/user');
-const srcTenthings = require('./models_backup/games/tenthings');
-const dstTenthings = require('./models/games/tenthings');
-const srcTenthingsStats = require('./models_backup/stats/tenthings');
-const dstTenthingsStats = require('./models/stats/tenthings');
+
+const srcTenthingsGame = require('./models_backup/tenthings/game');
+const dstTenthingsGame = require('./models/tenthings/game');
+
+const srcTenthingsPlayer = require('./models_backup/tenthings/player');
+const dstTenthingsPlayer = require('./models/tenthings/player');
+
+const srcTenthingsStats = require('./models_backup/tenthings/stats');
+const dstTenthingsStats = require('./models/tenthings/stats');
 
 const syncDB = async () => {
 
@@ -60,14 +67,14 @@ const syncDB = async () => {
   console.log(`${stats.length} stats synced`);
 
 
-  await dstTenthings.deleteMany({});
+  await dstTenthingsGame.deleteMany({});
   N = 0;
-  const tenthingsCursor = await srcTenthings.find().cursor();
+  const tenthingsCursor = await srcTenthingsGame.find().cursor();
   await tenthingsCursor.eachAsync(game => {
     N++;
     if (N % 50 === 0) console.log(`${N} games synced`);
     //console.log(`id of the ${N}th game: ${game.chat_id}`);
-    return dstTenthings.insertMany([game]);
+    return dstTenthingsGame.insertMany([game]);
   });
   console.log(`loop all ${N} games success`);
 
@@ -75,5 +82,91 @@ const syncDB = async () => {
 };
 
 
-syncDB();
-//updateImages();
+//syncDB();
+const makePlayers = () => {
+  dstTenthingsGame.find({})
+    .select('_id')
+    .exec(async (err, games) => {
+      let i = 0;
+      for (const game of games) {
+        i++;
+        const players = await dstTenthingsGame.aggregate([{
+            $match: {
+              _id: game._id
+            }
+          },
+          {
+            $unwind: "$players"
+          }, {
+            $project: {
+              _id: "$players._id",
+              game: "$_id",
+              id: "$players.id",
+              first_name: "$players.first_name",
+              last_name: "$players.last_name",
+              username: "$players.username",
+              score: "$players.score",
+              highScore: "$players.highScore",
+              scoreDaily: "$players.scoreDaily",
+              plays: "$players.plays",
+              wins: "$players.wins",
+              answers: "$players.answers",
+              lists: "$players.lists",
+              hints: "$players.hints",
+              snubs: "$players.snubs",
+              skips: "$players.skips",
+              suggestions: "$players.suggestions",
+              streak: "$players.streak",
+              playStreak: "$players.playStreak",
+              maxPlayStreak: "$players.maxPlayStreak",
+              hintStreak: "$players.hintStreak",
+              maxHintStreak: "$players.maxHintStreak",
+              lastPlayDate: "$players.lastPlayDate",
+              present: "$players.present",
+              minigamePlays: "$players.minigamePlays",
+            }
+          }
+        ]).exec();
+        const insertedPlayers = await dstTenthingsPlayer.insertMany(players);
+        console.log(`${players.length} players imported from ${game._id} (${i}/${games.length})`);
+        process.exit(22);
+      }
+    });
+};
+makePlayers();
+
+
+/*
+const createGame = async (chat_id, user) => {
+  const game = new srcTenthingsGame({
+    chat_id
+  });
+  const savedGame = await game.save();
+  const savedPlayer = await createPlayer(savedGame._id, user);
+  console.log(savedGame);
+  console.log(savedPlayer);
+  return {
+    game: savedGame,
+    player: savedPlayer
+  };
+};
+
+const createPlayer = async (game, user) => {
+  const player = new srcTenthingsPlayer({
+    game,
+    ...user
+  });
+  let savedPlayer = await player.save();
+  savedPlayer.first_name = 'something else';
+  const nextSavedPlayer = await savedPlayer.save();
+  return nextSavedPlayer;
+};
+
+createGame('something', {
+  id: 'someone',
+  first_name: 'Somebody',
+  last_name: 'That I Used to Know',
+  username: 'Gotye',
+  present: true,
+});
+*/

@@ -6,10 +6,11 @@ const request = require('request');
 const config = require('../../../config');
 const bot = require('../../../bots/telegram');
 const stats = require('./stats');
-const List = require('../../../models/list');
+const List = require('../../../models/tenthings/list');
 const Joke = require('../../../models/joke');
-const TenThings = require('../../../models/games/tenthings');
-const TenThingsStats = require('../../../models/stats/tenthings');
+const TenThingsGame = require('../../../models/tenthings/game');
+const TenThingsPlayer = require('../../../models/tenthings/player');
+const TenThingsStats = require('../../../models/tenthings/stats');
 
 if (process.env.NODE_ENV === 'production') {
 
@@ -55,7 +56,7 @@ if (process.env.NODE_ENV === 'production') {
   console.log(`Time: ${moment().utc().hour()}`);
 
   /*
-  TenThings.find()
+  TenThingsGame.find()
   .then(function(games) {
     games.forEach(function(game, index) {
       setTimeout(function() {
@@ -104,7 +105,7 @@ if (process.env.NODE_ENV === 'production') {
           }) => {
             message += `\n- ${name}`;
           });
-          TenThings.find({
+          TenThingsGame.find({
               'lastPlayDate': {
                 $lt: moment().subtract(7, 'days')
               },
@@ -141,7 +142,7 @@ if (process.env.NODE_ENV === 'production') {
           }) => {
             message += `\n- ${name}`;
           });
-          TenThings.find({
+          TenThingsGame.find({
               'lastPlayDate': {
                 $lt: moment().subtract(7, 'days')
               },
@@ -162,22 +163,28 @@ if (process.env.NODE_ENV === 'production') {
   const resetDailyScore = () => {
     if (moment().utc().hour() === 1) {
       bot.notifyAdmin(`Score Reset Triggered; ${moment().format('DD-MMM-YYYY hh:mm')}`);
-      TenThings.find({
-          'players.scoreDaily': {
-            $gt: 0
+      TenThingsGame.find({
+          lastPlayDate: {
+            $gte: moment().subtract(1, 'days')
           }
         })
         .lean()
-        .select('chat_id list players')
+        .select('chat_id list')
         .populate('list.creator')
         .then(games => {
           const uniquePlayers = [];
-          const players = games.reduce((players, game) => {
+          const players = games.reduce(async (dailyPlayers, game) => {
             bot.queueMessage(game.chat_id, stats.getDailyScores(game));
-            getHighScore(game).then(highScore => {
+            const players = await TenThingsPlayer.find({
+              game: game._id,
+              lastPlayDate: {
+                $gte: moment().subtract(1, 'days')
+              }
+            }).exec();
+            getHighScore(players).then(highScore => {
               let message = '';
               const winners = [];
-              game.players
+              players
                 .filter(player => player.scoreDaily === highScore)
                 .forEach(({
                   _id,
@@ -193,17 +200,17 @@ if (process.env.NODE_ENV === 'production') {
                     setTimeout(() => {
                       bot.queueMessage(game.chat_id, `<b>${message} won with ${highScore} points!</b>${game.chat_id != config.groupChat ? '\n\nCome join us in the <a href="https://t.me/tenthings">Ten Things Supergroup</a>!' : ''}`);
                       //console.log(message);
-                      TenThings.updateMany({
+                      TenThingsPlayer.updateMany({
                           _id: game._id
                         }, {
                           $inc: {
-                            'players.$[winner].wins': 1,
-                            'players.$[player].plays': 1,
-                            'players.$[player].playStreak': 1,
+                            '$winner.wins': 1,
+                            '$player.plays': 1,
+                            '$player.playStreak': 1,
                           },
                           $set: {
-                            'players.$[player].scoreDaily': 0,
-                            'players.$[idler].playStreak': 0
+                            '$player.scoreDaily': 0,
+                            '$idler.playStreak': 0
                           }
                         }, {
                           arrayFilters: [{
@@ -245,7 +252,7 @@ if (process.env.NODE_ENV === 'production') {
                   }
                 });
             });
-            return players.concat(game.players.filter(({
+            return dailyPlayers.concat(players.filter(({
               scoreDaily
             }) => scoreDaily).map(player => player.id));
           }, []);
@@ -262,11 +269,12 @@ if (process.env.NODE_ENV === 'production') {
   //var dailyScore = schedule.scheduleJob('*/10 * * * * *', function() {
   const dailyScore = schedule.scheduleJob('0 2 1 * * *', resetDailyScore);
   //resetDailyScore()
+  /*
   const deleteStaleGames = schedule.scheduleJob('0 0 4 * * *', () => {
     //Delete stale games
-    TenThings.find({
-        'players.highScore': {
-          $gt: 0
+    TenThingsGame.find({
+        lastPlayDate: {
+          $lt: moment().subtract(1, 'days')
         }
       })
       .select('_id date')
@@ -275,7 +283,7 @@ if (process.env.NODE_ENV === 'production') {
           _id
         }) => _id);
         if (ids.length > 0) {
-          TenThings.find({
+          TenThingsGame.find({
               '_id': {
                 $nin: ids
               },
@@ -294,7 +302,7 @@ if (process.env.NODE_ENV === 'production') {
   });
 
   const inactiveChats = schedule.scheduleJob('0 0 3 * * *', () => {
-    TenThings.find({
+    TenThingsGame.find({
         'lastPlayDate': {
           $lt: moment().subtract(30, 'days')
         }
@@ -306,7 +314,7 @@ if (process.env.NODE_ENV === 'production') {
           }))
           .then(chats => {
             const inactiveChats = chats.filter(chat => chat.code === 404).map(chat => chat.id);
-            TenThings.deleteMany({
+            TenThingsGame.deleteMany({
               chat_id: {
                 $in: inactiveChats
               }
@@ -317,8 +325,9 @@ if (process.env.NODE_ENV === 'production') {
           }, err => console.error(err));
       });
   });
+  */
   /*
-  TenThings.find({ 'players.playStreak': { $gt: 0 } })
+  TenThingsGame.find({ 'players.playStreak': { $gt: 0 } })
   .then(games => {
 
     const activePlayers = games.reduce((players, game) => {
@@ -342,31 +351,26 @@ if (process.env.NODE_ENV === 'production') {
 
   const playStreak = schedule.scheduleJob('0 0 2 * * *', () => {
     //Update play streaks
-    TenThings.find({
-        'players.playStreak': {
+    TenThingsPlayer.find({
+        'playStreak': {
           $gt: 0
         }
       })
-      .select('_id players')
-      .then(games => {
-        const activePlayers = games.reduce((players, game) => {
-          return players.concat(game.players.filter(player => player.playStreak));
-        }, []).length;
-        if (games.length > 0) bot.notifyAdmin(`${activePlayers} game streaks updated in ${games.length} games`);
-        games.forEach(game => {
-          for (const player of game.players) {
-            if (player.playStreak > 0) {
-              if (player.playStreak > player.maxPlayStreak) {
-                player.maxPlayStreak = player.playStreak;
-              }
-              if (player.lastPlayDate <= moment().subtract(1, 'days')) {
-                player.playStreak = 0;
-              }
+      .then(players => {
+        const uniqueGames = _.uniq(players.map(player => player.game));
+        if (players.length > 0) bot.notifyAdmin(`${players.length} game streaks updated in ${uniqueGames.length} games`);
+        players.forEach(player => {
+          if (player.playStreak > 0) {
+            if (player.playStreak > player.maxPlayStreak) {
+              player.maxPlayStreak = player.playStreak;
+            }
+            if (player.lastPlayDate <= moment().subtract(1, 'days')) {
+              player.playStreak = 0;
             }
           }
-          game.save((err, saved, rows) => {
+          player.save((err, saved, rows) => {
             if (err) console.error(err);
-            console.log(saved, game._id);
+            console.log(saved, player._id);
           });
         });
       });
@@ -377,9 +381,9 @@ if (process.env.NODE_ENV === 'production') {
 }
 
 
-const getHighScore = (game) => new Promise((resolve, reject) => {
+const getHighScore = (players) => new Promise((resolve, reject) => {
   try {
-    resolve(game.players.reduce((highScore, {
+    resolve(players.reduce((highScore, {
       id,
       scoreDaily
     }) => {
@@ -414,41 +418,35 @@ const updateDailyStats = (gamesPlayed, totalPlayers, uniquePlayers) => {
       base: true
     })
     .then(base => {
-      TenThings
+      TenThingsPlayer
         .find({
-          'players.present': true
+          'present': true
         })
         .lean()
-        .exec((err, games) => {
+        .exec((err, players) => {
           if (err) return console.error(err);
-          const allPlayers = games.reduce((allPlayers, {
-            players
-          }, index) => allPlayers.concat(players), []);
-          const listsPlayed = games.reduce((count, {
+          const listsPlayed = players.reduce((count, {
             listsPlayed
           }) => count + (listsPlayed ? listsPlayed : 0), 0);
-          const hints = allPlayers.reduce((count, {
+          const hints = players.reduce((count, {
             hints
           }) => count + (hints ? hints : 0), 0);
-          const cycles = games.reduce((count, {
-            cycles
-          }) => count + (cycles ? cycles : 0), 0);
-          const score = allPlayers.reduce((count, {
+          const score = players.reduce((count, {
             score
           }) => count + (score ? score : 0), 0);
-          const highScore = allPlayers.reduce((score, {
+          const highScore = players.reduce((score, {
             scoreDaily
           }) => scoreDaily ? score > scoreDaily ? score : scoreDaily : score, 0);
-          const answers = allPlayers.reduce((count, {
+          const answers = players.reduce((count, {
             answers
           }) => count + (answers ? answers : 0), 0);
-          const snubs = allPlayers.reduce((count, {
+          const snubs = players.reduce((count, {
             snubs
           }) => count + (snubs ? snubs : 0), 0);
-          const skips = allPlayers.reduce((count, {
+          const skips = players.reduce((count, {
             skips
           }) => count + (skips ? skips : 0), 0);
-          const suggestions = allPlayers.reduce((count, {
+          const suggestions = players.reduce((count, {
             suggestions
           }) => count + (suggestions ? suggestions : 0), 0);
           let message = `${gamesPlayed} games played today with ${totalPlayers} players of which ${uniquePlayers} unique\n`;
@@ -457,13 +455,11 @@ const updateDailyStats = (gamesPlayed, totalPlayers, uniquePlayers) => {
           message += `${answers - base.answers} answers given\n`;
           message += `${snubs - base.snubs} answers snubbed\n`;
           message += `${hints - base.hints} hints asked\n`;
-          message += `${cycles - base.cycles} new cycles started\n`;
           message += `${score - base.score} points scored overall\n`;
           message += `${suggestions - base.suggestions} suggestions given`;
           bot.notifyAdmins(message);
           const dailyStats = new TenThingsStats({
             hints: hints - base.hints,
-            cycles: cycles - base.cycles,
             chats: gamesPlayed,
             listsPlayed: listsPlayed - base.listsPlayed,
             totalPlayers: totalPlayers,
@@ -479,7 +475,6 @@ const updateDailyStats = (gamesPlayed, totalPlayers, uniquePlayers) => {
             if (err) return console.error(err);
             console.log('Daily Stats Saved!');
             base.hints = hints;
-            base.cycles = cycles;
             base.listsPlayed = listsPlayed;
             base.score = score;
             base.answers = answers;

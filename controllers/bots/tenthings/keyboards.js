@@ -112,14 +112,15 @@ module.exports = {
               type: 'stat',
               id: 'p_'
             })
-          },
-          {
-            'text': 'Other Player Stats',
-            'callback_data': JSON.stringify({
-              type: 'stat',
-              id: 'players'
-            })
           }
+          /*,
+                    {
+                      'text': 'Other Player Stats',
+                      'callback_data': JSON.stringify({
+                        type: 'stat',
+                        id: 'players'
+                      })
+                    }*/
         ],
         [{
             'text': 'Daily Score',
