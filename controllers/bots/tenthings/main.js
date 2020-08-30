@@ -1190,6 +1190,7 @@ router.post('/', async ({
           })
           .exec((err, player) => {
             if (!player) {
+              console.log(`Player ${msg.from.id} not found for chat ${existingGame._id}`);
               createPlayer(existingGame._id, msg.from)
                 .then(newPlayer => {
                   return evaluateCommand(res, msg, existingGame, newPlayer, false);
