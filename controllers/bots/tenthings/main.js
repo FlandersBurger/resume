@@ -420,7 +420,9 @@ const processGuess = guess => {
       .select('_id chat_id guessers list lastPlayDate hints streak settings minigame')
       .exec(async (err, game) => {
         if (err) return reject();
-        let player = await getPlayer(game._id, guess.player);
+        let player = await getPlayer(game._id, {
+          id: guess.player
+        });
         if (guess.type === 'game') {
           checkGuess(game, player, guess, guess.msg)
             .then(() => {
