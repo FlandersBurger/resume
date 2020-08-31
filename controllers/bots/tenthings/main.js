@@ -459,7 +459,7 @@ const checkMinigame = async (game, player, guess, msg) => {
   message += messages.guessed(game.minigame.answer, msg.from.first_name);
   message += `\n<pre>${player.scoreDaily - score} + ${score} points</pre>`;
   bot.queueMessage(msg.chat.id, message);
-  createMinigame(game, msg).then(result => resolve());
+  return await createMinigame(game, msg);
 };
 
 const checkGuess = async (game, player, guess, msg) => {
@@ -547,13 +547,14 @@ const checkGuess = async (game, player, guess, msg) => {
     */
   }
   try {
-
     const savedPlayer = await player.save();
     const savedGame = await game.save();
+    return true;
   } catch (e) {
     console.log(player);
     console.error(e);
     console.trace();
+    throw e;
   }
 };
 
