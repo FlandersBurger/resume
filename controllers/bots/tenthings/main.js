@@ -770,7 +770,7 @@ const hint = async (game, player, callback) => {
       }
       return str;
     }, '');
-    bot.queueMessage(msg.chat.id, message);
+    bot.queueMessage(game.chat_id, message);
     cooldowns[game.id] = 10;
     cooldownHint(game.id);
     const savedGame = await game.save();
