@@ -745,7 +745,7 @@ function cooldownSkip(game, skipper) {
   }
 }
 
-function hint(game, player, callback) {
+const hint = async (game, player, callback) => {
   if (game.hints >= MAX_HINTS) {
     bot.queueMessage(game.chat_id, 'What? Another hint? I\'m just gonna ignore that request');
   } else if (cooldowns[game.id] && cooldowns[game.id] > 0) {
@@ -755,9 +755,10 @@ function hint(game, player, callback) {
     if (player) {
       player.hints++;
       player.hintStreak = 0;
-      player.save();
+      const savedPlayer = await player.save();
     }
-    callback(game.list.values.reduce((str, {
+    let message = `<b>${game.list.name}</b>\n`;
+    message += game.list.values.reduce((str, {
       guesser,
       value
     }, index) => {
@@ -768,23 +769,24 @@ function hint(game, player, callback) {
         str += '\n';
       }
       return str;
-    }, ''));
+    }, '');
+    bot.queueMessage(msg.chat.id, message);
     cooldowns[game.id] = 10;
     cooldownHint(game.id);
-    game.save();
-    List.findOne({
+    const savedGame = await game.save();
+    let list = await List.findOne({
       _id: game.list._id
-    }).exec((err, list) => {
-      if (list) {
-        if (!list.hints) {
-          list.hints = 0;
-        }
-        list.hints++;
-        list.save();
+    }).exec();
+    if (list) {
+      if (!list.hints) {
+        list.hints = 0;
       }
-    });
+      list.hints++;
+      const saved = await list.save();
+    }
   }
-}
+  return true;
+};
 
 
 function cooldownHint(gameId) {
@@ -1443,15 +1445,11 @@ const evaluateCommand = async (res, msg, game, player, isNew) => {
       }
       break;
     case '/hint':
-      activateGame(game, true);
+      activateGame(game, false);
       if (game.list.values.filter(({
           guesser
         }) => !guesser.first_name).length !== 0) {
-        hint(game, player, hints => {
-          let message = `<b>${game.list.name}</b>\n`;
-          message += hints;
-          bot.queueMessage(msg.chat.id, message);
-        });
+        hint(game, player);
       }
       break;
     case '/notify':
