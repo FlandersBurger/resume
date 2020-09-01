@@ -1,6 +1,11 @@
 var db = require('../../db');
 
 var Player = db('backup').model('Player', {
+  game: {
+    type: String,
+    ref: 'TenThings',
+    required: true
+  },
   id: {
     type: String,
     required: true

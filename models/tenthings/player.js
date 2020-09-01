@@ -3,6 +3,7 @@ var db = require('../../db');
 var Player = db('master').model('Player', {
   game: {
     type: String,
+    ref: 'TenThings',
     required: true
   },
   id: {
