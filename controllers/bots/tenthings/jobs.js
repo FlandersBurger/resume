@@ -174,6 +174,8 @@ if (process.env.NODE_ENV === 'production') {
         .then(games => {
           const uniquePlayers = [];
           const players = games.reduce(async (dailyPlayers, game) => {
+            console.log('-----------------');
+            console.log(dailyPlayers);
             bot.queueMessage(game.chat_id, stats.getDailyScores(game));
             const players = await TenThingsPlayer.find({
               game: game._id,
@@ -198,7 +200,7 @@ if (process.env.NODE_ENV === 'production') {
                   message += `${first_name} & `;
                 } else {
                   message += first_name;
-                  bot.queueMessage(game.chat_id, `<b>${message} won with ${highScore} points!</b>${game.chat_id != config.groupChat ? '\n\nCome join us in the <a href="https://t.me/tenthings">Ten Things Supergroup</a>!' : ''}`);
+                  //bot.queueMessage(game.chat_id, `<b>${message} won with ${highScore} points!</b>${game.chat_id != config.groupChat ? '\n\nCome join us in the <a href="https://t.me/tenthings">Ten Things Supergroup</a>!' : ''}`);
                   //console.log(message);
                 }
                 const savedPlayers = await TenThingsPlayer.updateMany({
@@ -237,7 +239,7 @@ if (process.env.NODE_ENV === 'production') {
                   }
                   message += game.list.description ? (game.list.description.includes('href') ? game.list.description : `<i>${angleBrackets(game.list.description)}</i>\n`) : '';
                   message += await stats.getList(game);
-                  bot.queueMessage(game.chat_id, message);
+                  //bot.queueMessage(game.chat_id, message);
                 } catch (e) {
                   console.error('here');
                   console.error(e);
