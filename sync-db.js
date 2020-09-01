@@ -97,13 +97,13 @@ const syncDB = async () => {
 //syncDB();
 const makePlayers = async () => {
   await dstTenthingsPlayer.deleteMany({});
-  dstTenthingsGame.find({})
+  srcTenthingsGame.find({})
     .select('_id')
     .exec(async (err, games) => {
       let i = 0;
       for (const game of games) {
         i++;
-        const players = await dstTenthingsGame.aggregate([{
+        const players = await srcTenthingsGame.aggregate([{
             $match: {
               _id: game._id
             }
