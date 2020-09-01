@@ -196,7 +196,7 @@ if (process.env.NODE_ENV === 'production') {
             let winners = players.filter(player => player.scoreDaily === highScore);
             let message = winners.reduce((msg, {
               first_name
-            }, i, length) => {
+            }, index, length) => {
               if (index < length - 1) {
                 msg += `${first_name} & `;
               } else {
