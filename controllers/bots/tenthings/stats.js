@@ -107,22 +107,24 @@ const getDailyScores = async ({
 
 exports.getDailyScores = getDailyScores;
 
-exports.getList = (game, callback) => {
-  let str = '';
-  game.list.values.forEach(({
-    guesser,
-    value
-  }, index) => {
-    str += `<i>${index + 1}:</i> `;
-    if (!guesser || !guesser.first_name) {
-      str += `<b>${hints.getHint(game.hints, value)}</b>`;
-      str += '\n';
-    } else {
-      str += `${value} - <i>${guesser.first_name}</i>`;
-      str += '\n';
-    }
+exports.getList = (game) => {
+  new Promise(function(resolve, reject) {
+    let str = '';
+    game.list.values.forEach(({
+      guesser,
+      value
+    }, index) => {
+      str += `<i>${index + 1}:</i> `;
+      if (!guesser || !guesser.first_name) {
+        str += `<b>${hints.getHint(game.hints, value)}</b>`;
+        str += '\n';
+      } else {
+        str += `${value} - <i>${guesser.first_name}</i>`;
+        str += '\n';
+      }
+    });
+    resolve(str);
   });
-  callback(str);
 };
 
 exports.getStats = (chat_id, data, requestor) => {

@@ -160,8 +160,8 @@ if (process.env.NODE_ENV === 'production') {
   //bot.sendPhoto(config.masterChat, 'https://m.media-amazon.com/images/M/MV5BNmE1OWI2ZGItMDUyOS00MmU5LWE0MzUtYTQ0YzA1YTE5MGYxXkEyXkFqcGdeQXVyMDM5ODIyNw@@._V1._SX40_CR0,0,40,54_.jpg')
 
 
-  const resetDailyScore = () => {
-    if (moment().utc().hour() === 1) {
+  const resetDailyScore = (force = false) => {
+    if (moment().utc().hour() === 1 || force) {
       bot.notifyAdmin(`Score Reset Triggered; ${moment().format('DD-MMM-YYYY hh:mm')}`);
       TenThingsGame.find({
           lastPlayDate: {
@@ -181,77 +181,70 @@ if (process.env.NODE_ENV === 'production') {
                 $gte: moment().subtract(1, 'days')
               }
             }).exec();
-            getHighScore(players).then(highScore => {
-              let message = '';
-              const winners = [];
+            const highScore = await getHighScore(players);
+            let message = '';
+            const updatedPlayers = await Promise.all(
               players
-                .filter(player => player.scoreDaily === highScore)
-                .forEach(({
-                  _id,
-                  first_name
-                }, index, {
-                  length
-                }) => {
-                  winners.push(_id);
-                  if (index < length - 1) {
-                    message += `${first_name} & `;
-                  } else {
-                    message += first_name;
-                    setTimeout(() => {
-                      bot.queueMessage(game.chat_id, `<b>${message} won with ${highScore} points!</b>${game.chat_id != config.groupChat ? '\n\nCome join us in the <a href="https://t.me/tenthings">Ten Things Supergroup</a>!' : ''}`);
-                      //console.log(message);
-                      TenThingsPlayer.updateMany({
-                          _id: game._id
-                        }, {
-                          $inc: {
-                            '$winner.wins': 1,
-                            '$player.plays': 1,
-                            '$player.playStreak': 1,
-                          },
-                          $set: {
-                            '$player.scoreDaily': 0,
-                            '$idler.playStreak': 0
-                          }
-                        }, {
-                          arrayFilters: [{
-                              'winner._id': {
-                                $in: winners
-                              }
-                            },
-                            {
-                              'player.scoreDaily': {
-                                $gt: 0
-                              }
-                            },
-                            {
-                              'idler.scoreDaily': 0
-                            }
-                          ]
-                        },
-                        (err, saved) => {
-                          if (err) return notifyAdmin(JSON.stringify(e));
-                          console.log(`Win recorded for ${winners}`);
-                        }
-                      );
-                      try {
-                        stats.getList(game, list => {
-                          let message = `<b>${game.list.name}</b> (${game.list.totalValues})`;
-                          message += game.list.creator ? ` by ${game.list.creator.username}\n` : '\n';
-                          if (game.list.categories) {
-                            message += game.list.categories.length > 0 ? `Categor${game.list.categories.length > 1 ? 'ies' : 'y'}: <b>${game.list.categories}</b>\n` : '';
-                          }
-                          message += game.list.description ? (game.list.description.includes('href') ? game.list.description : `<i>${angleBrackets(game.list.description)}</i>\n`) : '';
-                          message += list;
-                          bot.queueMessage(game.chat_id, message);
-                        });
-                      } catch (e) {
-                        console.error(e);
-                        bot.notifyAdmin(e);
-                      }
-                    }, index * 50);
+              .filter(player => player.scoreDaily === highScore)
+              .map(async ({
+                _id,
+                first_name
+              }, index, {
+                length
+              }) => {
+                winners.push(_id);
+                if (index < length - 1) {
+                  message += `${first_name} & `;
+                } else {
+                  message += first_name;
+                  bot.queueMessage(game.chat_id, `<b>${message} won with ${highScore} points!</b>${game.chat_id != config.groupChat ? '\n\nCome join us in the <a href="https://t.me/tenthings">Ten Things Supergroup</a>!' : ''}`);
+                  //console.log(message);
+                }
+                const savedPlayers = await TenThingsPlayer.updateMany({
+                  _id: game._id
+                }, {
+                  $inc: {
+                    '$winner.wins': 1,
+                    '$player.plays': 1,
+                    '$player.playStreak': 1,
+                  },
+                  $set: {
+                    '$player.scoreDaily': 0,
+                    '$idler.playStreak': 0
                   }
-                });
-            });
+                }, {
+                  arrayFilters: [{
+                      'winner._id': {
+                        $in: winners
+                      }
+                    },
+                    {
+                      'player.scoreDaily': {
+                        $gt: 0
+                      }
+                    },
+                    {
+                      'idler.scoreDaily': 0
+                    }
+                  ]
+                }).exec();
+                try {
+                  let message = `<b>${game.list.name}</b> (${game.list.totalValues})`;
+                  message += game.list.creator ? ` by ${game.list.creator.username}\n` : '\n';
+                  if (game.list.categories) {
+                    message += game.list.categories.length > 0 ? `Categor${game.list.categories.length > 1 ? 'ies' : 'y'}: <b>${game.list.categories}</b>\n` : '';
+                  }
+                  message += game.list.description ? (game.list.description.includes('href') ? game.list.description : `<i>${angleBrackets(game.list.description)}</i>\n`) : '';
+                  message += await stats.getList(game);
+                  bot.queueMessage(game.chat_id, message);
+                } catch (e) {
+                  console.error(e);
+                  bot.notifyAdmin(e);
+                }
+                return Promise.resolve();
+              })
+            );
+            console.log(players);
             return dailyPlayers.concat(players.filter(({
               scoreDaily
             }) => scoreDaily).map(player => player.id));
@@ -265,6 +258,8 @@ if (process.env.NODE_ENV === 'production') {
       bot.notifyAdmin(`Schedule incorrectly triggered: ${moment().format('DD-MMM-YYYY hh:mm')}`);
     }
   };
+
+  resetDailyScore(true);
 
   //var dailyScore = schedule.scheduleJob('*/10 * * * * *', function() {
   const dailyScore = schedule.scheduleJob('0 2 1 * * *', resetDailyScore);
