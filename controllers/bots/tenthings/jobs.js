@@ -182,7 +182,7 @@ if (process.env.NODE_ENV === 'production') {
             }
           }).select('_id').exec();
           for (let game of games) {
-            //bot.queueMessage(game.chat_id, stats.getDailyScores(game));
+            bot.queueMessage(game.chat_id, stats.getDailyScores(game));
             const players = await TenThingsPlayer.find({
               game: game._id,
               scoreDaily: {
@@ -204,36 +204,38 @@ if (process.env.NODE_ENV === 'production') {
               }
               return msg;
             }, '');
-            //bot.queueMessage(game.chat_id, `<b>${msg} won with ${highScore} points!</b>${game.chat_id != config.groupChat ? '\n\nCome join us in the <a href="https://t.me/tenthings">Ten Things Supergroup</a>!' : ''}`);
-            console.log(message);
-
-            const savedPlayers = await TenThingsPlayer.updateMany({
-              _id: game._id
+            bot.queueMessage(game.chat_id, `<b>${message} won with ${highScore} points!</b>${game.chat_id != config.groupChat ? '\n\nCome join us in the <a href="https://t.me/tenthings">Ten Things Supergroup</a>!' : ''}`);
+            const savedIdlers = await TenThingsPlayer.updateMany({
+              game: game._id,
+              scoreDaily: 0
             }, {
-              $inc: {
-                '$winner.wins': 1,
-                '$player.plays': 1,
-                '$player.playStreak': 1,
-              },
               $set: {
-                '$player.scoreDaily': 0,
-                '$idler.playStreak': 0
+                'playStreak': 0,
+              }
+            });
+            const savedWinners = await TenThingsPlayer.updateMany({
+              game: game._id,
+              _id: {
+                $in: winners.map(winner => winner._id)
               }
             }, {
-              arrayFilters: [{
-                  'winner._id': {
-                    $in: winners
-                  }
-                },
-                {
-                  'player.scoreDaily': {
-                    $gt: 0
-                  }
-                },
-                {
-                  'idler.scoreDaily': 0
-                }
-              ]
+              $inc: {
+                'wins': 1,
+              }
+            }).exec();
+            const savedPlayers = await TenThingsPlayer.updateMany({
+              game: game._id,
+              scoreDaily: {
+                $gt: 0
+              }
+            }, {
+              $inc: {
+                'plays': 1,
+                'playStreak': 1,
+              },
+              $set: {
+                'scoreDaily': 0
+              }
             }).exec();
             message = `<b>${game.list.name}</b> (${game.list.totalValues})`;
             message += game.list.creator ? ` by ${game.list.creator.username}\n` : '\n';
@@ -252,9 +254,7 @@ if (process.env.NODE_ENV === 'production') {
       bot.notifyAdmin(`Schedule incorrectly triggered: ${moment().format('DD-MMM-YYYY hh:mm')}`);
     }
   };
-
   resetDailyScore(true);
-
   //var dailyScore = schedule.scheduleJob('*/10 * * * * *', function() {
   const dailyScore = schedule.scheduleJob('0 2 1 * * *', resetDailyScore);
   //resetDailyScore()
