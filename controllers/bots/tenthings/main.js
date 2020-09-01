@@ -586,26 +586,27 @@ const checkRound = (game) => {
   if (game.list.values.filter(({
       guesser
     }) => !guesser.first_name).length === 0) {
-    setTimeout(async () => {
-      const list = await stats.getList(game);
-      const foundList = await List
-        .findOne({
-          _id: game.list._id
-        })
-        .exec();
-      let message = `<b>${game.list.name}</b>`;
-      message += game.list.creator ? ` by ${game.list.creator.username}\n` : '\n';
-      message += game.list.categories.length > 0 ? `Categor${game.list.categories.length > 1 ? 'ies' : 'y'}: <b>${game.list.categories}</b>\n` : '';
-      message += list;
-      message += messages.listStats(foundList);
-      message += await stats.getDailyScores(game, 5);
-      bot.queueMessage(game.chat_id, message);
-      setTimeout(() => {
-        rateList(game);
+    setTimeout(() => {
+      stats.getList(game, async list => {
+        const foundList = await List
+          .findOne({
+            _id: game.list._id
+          })
+          .exec();
+        let message = `<b>${game.list.name}</b>`;
+        message += game.list.creator ? ` by ${game.list.creator.username}\n` : '\n';
+        message += game.list.categories.length > 0 ? `Categor${game.list.categories.length > 1 ? 'ies' : 'y'}: <b>${game.list.categories}</b>\n` : '';
+        message += list;
+        message += messages.listStats(foundList);
+        message += await stats.getDailyScores(game, 5);
+        bot.queueMessage(game.chat_id, message);
         setTimeout(() => {
-          newRound(game);
+          rateList(game);
+          setTimeout(() => {
+            newRound(game);
+          }, 1000);
         }, 1000);
-      }, 1000);
+      });
     }, 1000);
   }
 };
@@ -705,23 +706,24 @@ const skipList = async (game, skipper) => {
     $set: {
       hintStreak: 0
     }
-  }).exec(async (err, updatedPlayers) => {
-    const list = await stats.getList(game);
-    let message = `<b>${game.list.name}</b> skipped!\n`;
-    message += list;
-    bot.queueMessage(game.chat_id, message);
-    delete skips[game.id];
-    let foundList = await List.findOne({
-      _id: game.list._id
-    }).exec();
-    if (!foundList) return newRound(game);
-    if (!foundList.skips) {
-      foundList.skips = 0;
-    }
-    foundList.skips++;
-    const savedList = await foundList.save();
-    bot.queueMessage(game.chat_id, await stats.getDailyScores(game, 5));
-    newRound(game);
+  }).exec((err, updatedPlayers) => {
+    stats.getList(game, async list => {
+      let message = `<b>${game.list.name}</b> skipped!\n`;
+      message += list;
+      bot.queueMessage(game.chat_id, message);
+      delete skips[game.id];
+      let foundList = await List.findOne({
+        _id: game.list._id
+      }).exec();
+      if (!foundList) return newRound(game);
+      if (!foundList.skips) {
+        foundList.skips = 0;
+      }
+      foundList.skips++;
+      const savedList = await foundList.save();
+      bot.queueMessage(game.chat_id, await stats.getDailyScores(game, 5));
+      newRound(game);
+    });
   });
 };
 
@@ -1300,14 +1302,15 @@ const evaluateCommand = async (res, msg, game, player, isNew) => {
       if (isNew) {
         newRound(game);
       } else {
-        const list = await stats.getList(game);
-        let message = `<b>${game.list.name}</b> (${game.list.totalValues})`;
-        message += game.list.creator ? ` by ${game.list.creator.username}\n` : '\n';
-        message += game.list.categories.length > 0 ? `Categor${game.list.categories.length > 1 ? 'ies' : 'y'}: <b>${game.list.categories}</b>\n` : '';
-        message += game.list.description ? (game.list.description.includes('href') ? game.list.description : `<i>${angleBrackets(game.list.description)}</i>\n`) : '';
-        message += list;
-        bot.queueMessage(msg.chat.id, message);
-        game.save();
+        stats.getList(game, async list => {
+          let message = `<b>${game.list.name}</b> (${game.list.totalValues})`;
+          message += game.list.creator ? ` by ${game.list.creator.username}\n` : '\n';
+          message += game.list.categories.length > 0 ? `Categor${game.list.categories.length > 1 ? 'ies' : 'y'}: <b>${game.list.categories}</b>\n` : '';
+          message += game.list.description ? (game.list.description.includes('href') ? game.list.description : `<i>${angleBrackets(game.list.description)}</i>\n`) : '';
+          message += list;
+          bot.queueMessage(msg.chat.id, message);
+          await game.save();
+        });
       }
       break;
     case '/skip':
@@ -1371,14 +1374,15 @@ const evaluateCommand = async (res, msg, game, player, isNew) => {
     case '/list':
       try {
         activateGame(game);
-        const list = await stats.getList(game);
-        let message = `<b>${game.list.name}</b> (${game.list.totalValues})`;
-        message += game.list.creator ? ` by ${game.list.creator.username}\n` : '\n';
-        message += game.list.categories.length > 0 ? `Categor${game.list.categories.length > 1 ? 'ies' : 'y'}: <b>${game.list.categories}</b>\n` : '';
-        message += game.list.description ? (game.list.description.includes('href') ? game.list.description : `<i>${angleBrackets(game.list.description)}</i>\n`) : '';
-        message += list;
-        bot.queueMessage(msg.chat.id, message);
-        game.save();
+        stats.getList(game, list => {
+          let message = `<b>${game.list.name}</b> (${game.list.totalValues})`;
+          message += game.list.creator ? ` by ${game.list.creator.username}\n` : '\n';
+          message += game.list.categories.length > 0 ? `Categor${game.list.categories.length > 1 ? 'ies' : 'y'}: <b>${game.list.categories}</b>\n` : '';
+          message += game.list.description ? (game.list.description.includes('href') ? game.list.description : `<i>${angleBrackets(game.list.description)}</i>\n`) : '';
+          message += list;
+          bot.queueMessage(msg.chat.id, message);
+          game.save();
+        });
       } catch (e) {
         console.error(e);
       }

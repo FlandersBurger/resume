@@ -171,88 +171,79 @@ if (process.env.NODE_ENV === 'production') {
         .lean()
         .select('chat_id list')
         .populate('list.creator')
-        .then(games => {
+        .then(async games => {
           const uniquePlayers = [];
-          const players = games.reduce(async (dailyPlayers, game) => {
-            console.log('-----------------');
-            console.log(dailyPlayers);
-            bot.queueMessage(game.chat_id, stats.getDailyScores(game));
+          const dailyPlayers = await TenThingsPlayer.find({
+            scoreDaily: {
+              $gt: 0
+            },
+            lastPlayDate: {
+              $gte: moment().subtract(1, 'days')
+            }
+          }).select('_id').exec();
+          for (let game of games) {
+            //bot.queueMessage(game.chat_id, stats.getDailyScores(game));
             const players = await TenThingsPlayer.find({
               game: game._id,
+              scoreDaily: {
+                $gt: 0
+              },
               lastPlayDate: {
                 $gte: moment().subtract(1, 'days')
               }
             }).exec();
             const highScore = await getHighScore(players);
-            let message = '';
-            let winners = [];
-            const updatedPlayers = await Promise.all(
-              players
-              .filter(player => player.scoreDaily === highScore)
-              .map(async ({
-                _id,
-                first_name
-              }, index, {
-                length
-              }) => {
-                winners.push(_id);
-                if (index < length - 1) {
-                  message += `${first_name} & `;
-                } else {
-                  message += first_name;
-                  //bot.queueMessage(game.chat_id, `<b>${message} won with ${highScore} points!</b>${game.chat_id != config.groupChat ? '\n\nCome join us in the <a href="https://t.me/tenthings">Ten Things Supergroup</a>!' : ''}`);
-                  //console.log(message);
-                }
-                const savedPlayers = await TenThingsPlayer.updateMany({
-                  _id: game._id
-                }, {
-                  $inc: {
-                    '$winner.wins': 1,
-                    '$player.plays': 1,
-                    '$player.playStreak': 1,
-                  },
-                  $set: {
-                    '$player.scoreDaily': 0,
-                    '$idler.playStreak': 0
+            let winners = players.filter(player => player.scoreDaily === highScore);
+            let message = winners.reduce((msg, {
+              first_name
+            }, i, length) => {
+              if (index < length - 1) {
+                msg += `${first_name} & `;
+              } else {
+                msg += first_name;
+              }
+              return msg;
+            }, '');
+            //bot.queueMessage(game.chat_id, `<b>${msg} won with ${highScore} points!</b>${game.chat_id != config.groupChat ? '\n\nCome join us in the <a href="https://t.me/tenthings">Ten Things Supergroup</a>!' : ''}`);
+            console.log(message);
+
+            const savedPlayers = await TenThingsPlayer.updateMany({
+              _id: game._id
+            }, {
+              $inc: {
+                '$winner.wins': 1,
+                '$player.plays': 1,
+                '$player.playStreak': 1,
+              },
+              $set: {
+                '$player.scoreDaily': 0,
+                '$idler.playStreak': 0
+              }
+            }, {
+              arrayFilters: [{
+                  'winner._id': {
+                    $in: winners
                   }
-                }, {
-                  arrayFilters: [{
-                      'winner._id': {
-                        $in: winners
-                      }
-                    },
-                    {
-                      'player.scoreDaily': {
-                        $gt: 0
-                      }
-                    },
-                    {
-                      'idler.scoreDaily': 0
-                    }
-                  ]
-                }).exec();
-                try {
-                  let message = `<b>${game.list.name}</b> (${game.list.totalValues})`;
-                  message += game.list.creator ? ` by ${game.list.creator.username}\n` : '\n';
-                  if (game.list.categories) {
-                    message += game.list.categories.length > 0 ? `Categor${game.list.categories.length > 1 ? 'ies' : 'y'}: <b>${game.list.categories}</b>\n` : '';
+                },
+                {
+                  'player.scoreDaily': {
+                    $gt: 0
                   }
-                  message += game.list.description ? (game.list.description.includes('href') ? game.list.description : `<i>${angleBrackets(game.list.description)}</i>\n`) : '';
-                  message += await stats.getList(game);
-                  //bot.queueMessage(game.chat_id, message);
-                } catch (e) {
-                  console.error('here');
-                  console.error(e);
-                  bot.notifyAdmin(e);
+                },
+                {
+                  'idler.scoreDaily': 0
                 }
-                return Promise.resolve();
-              })
-            );
-            return Promise.resolve(dailyPlayers.concat(players.filter(({
-              scoreDaily
-            }) => scoreDaily).map(player => player.id)));
-          }, []);
-          updateDailyStats(games.length, players.length, _.uniq(players, player => player).length);
+              ]
+            }).exec();
+            message = `<b>${game.list.name}</b> (${game.list.totalValues})`;
+            message += game.list.creator ? ` by ${game.list.creator.username}\n` : '\n';
+            if (game.list.categories) {
+              message += game.list.categories.length > 0 ? `Categor${game.list.categories.length > 1 ? 'ies' : 'y'}: <b>${game.list.categories}</b>\n` : '';
+            }
+            message += game.list.description ? (game.list.description.includes('href') ? game.list.description : `<i>${angleBrackets(game.list.description)}</i>\n`) : '';
+            stats.getList(game, list => bot.queueMessage(game.chat_id, message + list));
+          }
+          updateDailyStats(games.length, dailyPlayers.length, _.uniq(dailyPlayers, player => player).length);
         }, err => {
           console.error(err);
           bot.notifyAdmin(`Update daily score error\n${err}`);
