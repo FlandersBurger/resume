@@ -183,6 +183,7 @@ if (process.env.NODE_ENV === 'production') {
             }).exec();
             const highScore = await getHighScore(players);
             let message = '';
+            let winners = [];
             const updatedPlayers = await Promise.all(
               players
               .filter(player => player.scoreDaily === highScore)
