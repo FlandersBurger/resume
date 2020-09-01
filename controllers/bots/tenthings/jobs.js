@@ -254,7 +254,7 @@ if (process.env.NODE_ENV === 'production') {
       bot.notifyAdmin(`Schedule incorrectly triggered: ${moment().format('DD-MMM-YYYY hh:mm')}`);
     }
   };
-  resetDailyScore(true);
+  //resetDailyScore(true);
   //var dailyScore = schedule.scheduleJob('*/10 * * * * *', function() {
   const dailyScore = schedule.scheduleJob('0 2 1 * * *', resetDailyScore);
   //resetDailyScore()
