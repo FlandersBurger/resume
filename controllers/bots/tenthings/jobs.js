@@ -245,7 +245,7 @@ if (process.env.NODE_ENV === 'production') {
                 return Promise.resolve();
               })
             );
-            console.log(players);
+            console.log(dailyPlayers);
             return dailyPlayers.concat(players.filter(({
               scoreDaily
             }) => scoreDaily).map(player => player.id));
