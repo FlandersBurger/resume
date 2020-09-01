@@ -78,23 +78,23 @@ const syncDB = async () => {
   });
   console.log(`loop all ${N} games success`);
 
-
-  await dstTenthingsPlayer.deleteMany({});
-  N = 0;
-  const tenthingsPlayerCursor = await srcTenthingsPlayer.find().cursor();
-  await tenthingsPlayerCursor.eachAsync(game => {
-    N++;
-    if (N % 1000 === 0) console.log(`${N} games synced`);
-    //console.log(`id of the ${N}th game: ${game.chat_id}`);
-    return dstTenthingsPlayer.insertMany([game]);
-  });
-  console.log(`loop all ${N} games success`);
+  /*
+    await dstTenthingsPlayer.deleteMany({});
+    N = 0;
+    const tenthingsPlayerCursor = await srcTenthingsPlayer.find().cursor();
+    await tenthingsPlayerCursor.eachAsync(game => {
+      N++;
+      if (N % 1000 === 0) console.log(`${N} games synced`);
+      //console.log(`id of the ${N}th game: ${game.chat_id}`);
+      return dstTenthingsPlayer.insertMany([game]);
+    });
+    console.log(`loop all ${N} games success`);*/
 
   process.exit(22);
 };
 
 
-syncDB();
+//syncDB();
 const makePlayers = async () => {
   await dstTenthingsPlayer.deleteMany({});
   dstTenthingsGame.find({})
@@ -146,7 +146,7 @@ const makePlayers = async () => {
       process.exit(22);
     });
 };
-//makePlayers();
+makePlayers();
 
 
 /*
