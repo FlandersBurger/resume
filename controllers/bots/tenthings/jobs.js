@@ -239,16 +239,16 @@ if (process.env.NODE_ENV === 'production') {
                   message += await stats.getList(game);
                   bot.queueMessage(game.chat_id, message);
                 } catch (e) {
+                  console.error('here');
                   console.error(e);
                   bot.notifyAdmin(e);
                 }
                 return Promise.resolve();
               })
             );
-            console.log(dailyPlayers);
-            return dailyPlayers.concat(players.filter(({
+            return Promise.resolve(dailyPlayers.concat(players.filter(({
               scoreDaily
-            }) => scoreDaily).map(player => player.id));
+            }) => scoreDaily).map(player => player.id)));
           }, []);
           updateDailyStats(games.length, players.length, _.uniq(players, player => player).length);
         }, err => {
