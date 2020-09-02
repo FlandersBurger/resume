@@ -174,71 +174,83 @@ bot.exportChatInviteLink('-1001394022777').then(function(chat) {
 
 function selectList(game) {
   return new Promise(function(resolve, reject) {
-    List.countDocuments({
-        _id: {
-          $nin: game.playedLists
-        },
-        categories: {
-          $nin: game.disabledCategories
-        }
-      })
-      .exec((err, count) => {
-        if (err) return notifyAdmin(JSON.stringify(err));
-        if (count === 0) {
-          game.playedLists = [];
-          game.cycles++;
-          game.lastCycleDate = moment();
-          game.save(err => {
-            if (err) reject(err);
-            //bot.queueMessage(game.chat_id, 'All lists have been played, a new cycle will now start.');
-            List.countDocuments({
-              categories: {
-                $nin: game.disabledCategories
-              }
-            }).exec(function(err, count) {
-              if (count === 0) {
-                List.find({
-                    categories: {
-                      $in: _.difference(categories, game.disabledCategories)
-                    }
-                  })
-                  .select('-votes')
-                  .populate('creator')
-                  .limit(1)
-                  .lean()
-                  .skip(Math.floor(Math.random() * 2000))
-                  .exec((err, lists) => resolve(lists[0]));
-              } else {
-                List.find({
-                    categories: {
-                      $nin: game.disabledCategories
-                    }
-                  })
-                  .select('-votes')
-                  .populate('creator')
-                  .limit(1)
-                  .lean()
-                  .skip(Math.floor(Math.random() * count))
-                  .exec((err, lists) => resolve(lists[0]));
-              }
+    if (game.pickedLists.length > 0) {
+      List.findOne({
+          _id: game.pickedLists.shift()
+        })
+        .select('-votes')
+        .populate('creator')
+        .lean()
+        .exec((err, list) => {
+          resolve(list);
+        });
+    } else {
+      List.countDocuments({
+          _id: {
+            $nin: game.playedLists
+          },
+          categories: {
+            $nin: game.disabledCategories
+          }
+        })
+        .exec((err, count) => {
+          if (err) return notifyAdmin(JSON.stringify(err));
+          if (count === 0) {
+            game.playedLists = [];
+            game.cycles++;
+            game.lastCycleDate = moment();
+            game.save(err => {
+              if (err) reject(err);
+              //bot.queueMessage(game.chat_id, 'All lists have been played, a new cycle will now start.');
+              List.countDocuments({
+                categories: {
+                  $nin: game.disabledCategories
+                }
+              }).exec(function(err, count) {
+                if (count === 0) {
+                  List.find({
+                      categories: {
+                        $in: _.difference(categories, game.disabledCategories)
+                      }
+                    })
+                    .select('-votes')
+                    .populate('creator')
+                    .limit(1)
+                    .lean()
+                    .skip(Math.floor(Math.random() * 2000))
+                    .exec((err, lists) => resolve(lists[0]));
+                } else {
+                  List.find({
+                      categories: {
+                        $nin: game.disabledCategories
+                      }
+                    })
+                    .select('-votes')
+                    .populate('creator')
+                    .limit(1)
+                    .lean()
+                    .skip(Math.floor(Math.random() * count))
+                    .exec((err, lists) => resolve(lists[0]));
+                }
+              });
             });
-          });
-        } else {
-          List.find({
-              _id: {
-                $nin: game.playedLists
-              },
-              categories: {
-                $nin: game.disabledCategories
-              }
-            })
-            .select('-votes')
-            .populate('creator')
-            .limit(1)
-            .skip(Math.floor(Math.random() * count))
-            .exec((err, lists) => resolve(lists[0]));
-        }
-      });
+          } else {
+            List.find({
+                _id: {
+                  $nin: game.playedLists
+                },
+                categories: {
+                  $nin: game.disabledCategories
+                }
+              })
+              .select('-votes')
+              .populate('creator')
+              .limit(1)
+              .skip(Math.floor(Math.random() * count))
+              .exec((err, lists) => resolve(lists[0]));
+          }
+        });
+    }
   });
 }
 
@@ -1059,6 +1071,19 @@ router.post('/', async ({
             bot.notifyAdmin(JSON.stringify(err));
           });
       }
+    } else if (data.type === 'pick') {
+      Game.findOne({
+        chat_id: body.callback_query.message.chat.id
+      }).select('chat_id pickedLists').exec((err, game) => {
+        if (err) return bot.notifyAdmin(JSON.stringify(err));
+        const foundList = _.find(game.pickedLists, pickedList => pickedList._id === data.list);
+        if (foundList) {
+          bot.queueMessage(body.callback_query.message.chat.id, `<b>${foundList.name}</b> is already in the queue`);
+        } else {
+          game.pickedLists.push(data.list);
+          game.save();
+        }
+      });
     }
     return res.sendStatus(200);
     /*
@@ -1413,9 +1438,10 @@ const evaluateCommand = async (res, msg, game, player, isNew) => {
               return bot.notifyAdmin(message);
             }
             if (lists.length > 0) {
-              message = `I found some similar lists that already exist with ${msg.text.substring(msg.command.length + 1, msg.text.length)}, ${msg.from.first_name}!\nPlease refine your suggestion to be more specific.\n${lists.reduce((txt, list) => `${txt}\n - ${list.name}`, '<b>Lists:</b>')}`;
-              bot.notifyAdmin(message);
-              bot.queueMessage(msg.chat.id, message);
+              //message = `I found some similar lists that already exist with ${msg.text.substring(msg.command.length + 1, msg.text.length)}, ${msg.from.first_name}!\nPlease refine your suggestion to be more specific.\n${lists.reduce((txt, list) => `${txt}\n - ${list.name}`, '<b>Lists:</b>')}`;
+              //bot.notifyAdmin(message);
+              bot.sendKeyboard(game.chat_id, `I found some similar lists that already exist with ${msg.text.substring(msg.command.length + 1, msg.text.length)}\n<b>Add one to queue</b>`, keyboards.lists(lists));
+              //bot.queueMessage(msg.chat.id, message);
             } else {
               bot.notify(message);
               bot.notifyAdmins(message);
@@ -1529,6 +1555,24 @@ const evaluateCommand = async (res, msg, game, player, isNew) => {
       getQueue().then(message => {
         bot.sendMessage(msg.chat.id, message);
       }, console.error);
+      break;
+    case '/lists':
+      if (game.pickedLists.length > 0) {
+        List.find({
+            _id: {
+              $in: game.pickedLists
+            }
+          })
+          .exec((err, lists) => {
+            let message = '<b>Upcoming lists</b>\n';
+            for (const list of lists.slice(0, 10)) {
+              message += `- ${list.name}\n`;
+            }
+            bot.queueMessage(msg.chat.id, message);
+          });
+      } else {
+        bot.queueMessage(msg.chat.id, 'There are no lists queued, use the /suggest [message] command to find some');
+      }
       break;
     default:
       if (game.enabled && game.lastPlayDate >= moment().subtract(1, 'days')) {
