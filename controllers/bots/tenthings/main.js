@@ -176,13 +176,13 @@ function selectList(game) {
   return new Promise(function(resolve, reject) {
     if (game.pickedLists.length > 0) {
       List.findOne({
-          _id: game.pickedLists.shift()
+          _id: game.pickedLists[0]
         })
         .select('-votes')
         .populate('creator')
         .exec((err, list) => {
           if (err) return reject(err);
-          resolve(list);
+          resolve(list, true);
         });
     } else {
       List.countDocuments({
@@ -218,7 +218,7 @@ function selectList(game) {
                     .limit(1)
                     .lean()
                     .skip(Math.floor(Math.random() * 2000))
-                    .exec((err, lists) => resolve(lists[0]));
+                    .exec((err, lists) => resolve(lists[0], false));
                 } else {
                   List.find({
                       categories: {
@@ -230,7 +230,7 @@ function selectList(game) {
                     .limit(1)
                     .lean()
                     .skip(Math.floor(Math.random() * count))
-                    .exec((err, lists) => resolve(lists[0]));
+                    .exec((err, lists) => resolve(lists[0], false));
                 }
               });
             });
@@ -639,12 +639,15 @@ const newRound = (currentGame, player) => {
         }
       }).exec();
       selectList(game)
-        .then(async list => {
+        .then(async (list, queued) => {
           list.plays++;
           list.save();
           for (let player of players) {
             player.lists++;
             const savedPlayer = await player.save();
+          }
+          if (queued) {
+            game.pickedLists.shift();
           }
           game.list = JSON.parse(JSON.stringify(list));
           game.list.totalValues = game.list.values.length;
@@ -1075,7 +1078,8 @@ router.post('/', async ({
       Game.findOne({
         chat_id: body.callback_query.message.chat.id
       }).select('chat_id pickedLists').exec((err, game) => {
-        if (err) return bot.notifyAdmin(JSON.stringify(err));
+        if (err) return bot.notifyAdmin('Pick list button\n' + JSON.stringify(err));
+        console.log(game.pickedLists);
         const foundList = _.find(game.pickedLists, pickedList => pickedList._id == data.list);
         if (foundList) {
           bot.queueMessage(body.callback_query.message.chat.id, `<b>${foundList.name}</b> is already in the queue`);
