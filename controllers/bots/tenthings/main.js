@@ -630,7 +630,7 @@ const newRound = (currentGame, player) => {
     .select('_id chat_id playedLists list listsPlayed pickedLists cycles guessers hintCooldown hints disabledCategories')
     .populate('list.creator')
     .exec(async (err, game) => {
-      console.log(game.pickedLists);
+
       if (err) return console.error(err);
       if (!game) return console.log('Game not found');
       let players = await Player.find({
@@ -641,11 +641,14 @@ const newRound = (currentGame, player) => {
       }).exec();
       selectList(game)
         .then(async list => {
-          console.log(game.pickedLists);
           if (game.pickedLists.length > 0) {
-            game.pickedLists.shift(); // = game.pickedLists.filter(pickedList => pickedList != list._id);
+            console.log('----');
+            console.log(game.pickedLists);
+            console.log(list._id);
+            game.pickedLists = game.pickedLists.filter(pickedList => pickedList != list._id);
+            console.log(game.pickedLists);
+            console.log('----------');
           }
-          console.log(game.pickedLists);
           list.plays++;
           list.save();
           for (let player of players) {
