@@ -375,5 +375,22 @@ module.exports = {
         ]
       ]
     };
-  }
+  },
+  lists: lists => ({
+    inline_keyboard: lists.slice(0, 10).sort().reduce((result, list, i) => {
+      const button = {
+        'text': `${list.name}`,
+        'callback_data': JSON.stringify({
+          type: 'pick',
+          list: list._id
+        })
+      };
+      if (i % 2 === 0) {
+        result.push([button]);
+      } else {
+        result[result.length - 1].push(button);
+      }
+      return result;
+    }, [])
+  })
 };

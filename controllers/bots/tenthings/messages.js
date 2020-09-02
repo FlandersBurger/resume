@@ -114,7 +114,7 @@ module.exports = {
     message += 'Modified on: ' + moment(list.modifyDate).format("DD-MMM-YYYY") + '\n';
     return message;
   },
-  playerStats: function(player, requestor) {
+  playerStats: function(player, requestor = null) {
     var message = '';
     message += requestor ? `<i>Requested by ${requestor}</i>\n` : '';
     message += '<b>Personal Stats for ' + player.first_name + '</b>\n';
@@ -154,7 +154,8 @@ module.exports = {
           'A breath of fresh air',
           'Back to square one',
           'Shaking things up',
-          'Numero Uno'
+          'Numero Uno',
+          'Combo Breaker'
         ];
         break;
       case 2:
@@ -215,12 +216,15 @@ module.exports = {
         messages = [
           'James Bond',
           'Lucky Number Seven',
-          'Seven Year Itch'
+          'Seven Year Itch',
+          'Rainbow',
+          'Sail the Seven Seas'
         ];
         break;
       case 8:
         messages = [
           '8-ball',
+          'The Ocho'
         ];
         break;
       case 9:
@@ -237,7 +241,8 @@ module.exports = {
           'Alexander Hamilton',
           'Double Digits',
           'Downing Street',
-          'Perfect Ten'
+          'Perfect Ten',
+          'Decathlon'
         ];
         break;
       case 11:
@@ -263,6 +268,9 @@ module.exports = {
         break;
       case 40:
         messages = ['Dominating', 'Forty Winks'];
+        break;
+      case 42:
+        messages = ['Life, The Universe and Everything'];
         break;
       case 50:
         messages = [
@@ -291,7 +299,7 @@ module.exports = {
         messages = ['You know you can make your own lists?'];
         break;
       case 152:
-        messages = ['Go to https://belgocanadian.com/bots'];
+        messages = ['Go to https://belgocanadian.com/tenthings'];
         break;
       case 180:
         messages = ['ONE HUNDRED AND EIGHTY!'];
@@ -314,13 +322,19 @@ module.exports = {
       case 1000:
         messages = ['One in a Thousand'];
         break;
+      case 2001:
+        messages = ['Hello Dave, You\'re looking well today'];
+        break;
+      case 10000:
+        messages = ['Ten thousand years will give you such a crick in the neck'];
+        break;
       case 1000000:
         messages = ['One in a Million', 'Holy Shite, A Million Answers'];
         break;
       default:
         return '';
     }
-    return '\n--- ' + messages[Math.floor(Math.random() * messages.length)] + ' ---';
+    return '\n--- ' + (message.length > 0 ? messages[Math.floor(Math.random() * messages.length)] : `Streak: ${streak}`) + ' ---';
   },
   sass: text => new Promise((resolve, reject) => {
     var messages = [];
