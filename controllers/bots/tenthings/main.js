@@ -642,12 +642,7 @@ const newRound = (currentGame, player) => {
       selectList(game)
         .then(async list => {
           if (game.pickedLists.length > 0) {
-            console.log('----');
-            console.log(game.pickedLists);
-            console.log(list._id);
             game.pickedLists = game.pickedLists.filter(pickedList => pickedList != list._id);
-            console.log(game.pickedLists);
-            console.log('----------');
           }
           list.plays++;
           list.save();
@@ -1096,7 +1091,7 @@ router.post('/', async ({
               if (list) {
                 game.pickedLists.push(list._id);
                 game.save();
-                bot.queueMessage(body.callback_query.message.chat.id, `<b>${list.name}</b> added to the queue`);
+                bot.queueMessage(body.callback_query.message.chat.id, `<b>${list.name}</b> added to the queue.\nType /lists to see the queue`);
               } else {
                 bot.queueMessage(body.callback_query.message.chat.id, `This list no longer exists`);
               }

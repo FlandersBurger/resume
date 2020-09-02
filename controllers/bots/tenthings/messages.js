@@ -42,7 +42,8 @@ module.exports = {
     message += '/settings - Bot behaviour settings\n';
     message += '/categories - Select which categories to include\n';
     message += '/typo [message] - Flag a typo in the current list\n';
-    message += '/suggest [message] - Suggest something to the admins\n';
+    message += '/suggest [message] - Find a list or suggest it to the admins\n';
+    message += '/lists - See queued lists\n';
     return message;
   },
   guessed: function(match, player) {
