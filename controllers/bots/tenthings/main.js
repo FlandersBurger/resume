@@ -1083,7 +1083,16 @@ router.post('/', async ({
         } else {
           game.pickedLists.push(data.list);
           game.save();
-          bot.queueMessage(body.callback_query.message.chat.id, `<b>${foundList.name}</b> added to the queue`);
+          List.findOne({
+              _id: data.list
+            })
+            .exec((err, list) => {
+              if (list) {
+                bot.queueMessage(body.callback_query.message.chat.id, `<b>${list.name}</b> added to the queue`);
+              } else {
+                bot.queueMessage(body.callback_query.message.chat.id, `This list no longer exists`);
+              }
+            });
         }
       });
     }
