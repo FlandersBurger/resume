@@ -646,9 +646,11 @@ const newRound = (currentGame, player) => {
             player.lists++;
             const savedPlayer = await player.save();
           }
+          console.log(game.pickedLists);
           if (queued) {
             game.pickedLists = game.pickedLists.filter(pickedList => pickedList != list._id);
           }
+          console.log(game.pickedLists);
           game.list = JSON.parse(JSON.stringify(list));
           game.list.totalValues = game.list.values.length;
           game.list.values = getRandom(game.list.values, 10);
