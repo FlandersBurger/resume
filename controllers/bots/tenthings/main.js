@@ -1079,23 +1079,23 @@ router.post('/', async ({
         chat_id: body.callback_query.message.chat.id
       }).select('chat_id pickedLists').exec((err, game) => {
         if (err) return bot.notifyAdmin('Pick list button\n' + JSON.stringify(err));
-        const foundList = _.find(game.pickedLists, pickedList => pickedList == data.list);
-        if (foundList) {
-          bot.queueMessage(body.callback_query.message.chat.id, `<b>${foundList.name}</b> is already in the queue`);
-        } else {
-          game.pickedLists.push(data.list);
-          game.save();
-          List.findOne({
-              _id: data.list
-            })
-            .exec((err, list) => {
+        List.findOne({
+            _id: data.list
+          })
+          .exec((err, list) => {
+            const foundList = _.find(game.pickedLists, pickedList => pickedList == list._id);
+            if (foundList) {
+              bot.queueMessage(body.callback_query.message.chat.id, `<b>${list.name}</b> is already in the queue`);
+            } else {
               if (list) {
+                game.pickedLists.push(list._id);
+                game.save();
                 bot.queueMessage(body.callback_query.message.chat.id, `<b>${list.name}</b> added to the queue`);
               } else {
                 bot.queueMessage(body.callback_query.message.chat.id, `This list no longer exists`);
               }
-            });
-        }
+            }
+          });
       });
     }
     return res.sendStatus(200);
