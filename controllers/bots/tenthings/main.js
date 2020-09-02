@@ -182,7 +182,7 @@ function selectList(game) {
         .populate('creator')
         .exec((err, list) => {
           if (err) return reject(err);
-          resolve(list, true);
+          resolve(list);
         });
     } else {
       List.countDocuments({
@@ -218,7 +218,7 @@ function selectList(game) {
                     .limit(1)
                     .lean()
                     .skip(Math.floor(Math.random() * 2000))
-                    .exec((err, lists) => resolve(lists[0], false));
+                    .exec((err, lists) => resolve(lists[0]));
                 } else {
                   List.find({
                       categories: {
@@ -230,7 +230,7 @@ function selectList(game) {
                     .limit(1)
                     .lean()
                     .skip(Math.floor(Math.random() * count))
-                    .exec((err, lists) => resolve(lists[0], false));
+                    .exec((err, lists) => resolve(lists[0]));
                 }
               });
             });
@@ -640,18 +640,18 @@ const newRound = (currentGame, player) => {
         }
       }).exec();
       selectList(game)
-        .then(async (list, queued) => {
+        .then(async list => {
+          console.log(game.pickedLists);
+          if (game.pickedLists.length > 0) {
+            game.pickedLists.shift(); // = game.pickedLists.filter(pickedList => pickedList != list._id);
+          }
+          console.log(game.pickedLists);
           list.plays++;
           list.save();
           for (let player of players) {
             player.lists++;
             const savedPlayer = await player.save();
           }
-          console.log(game.pickedLists);
-          if (queued) {
-            game.pickedLists = game.pickedLists.filter(pickedList => pickedList != list._id);
-          }
-          console.log(game.pickedLists);
           game.list = JSON.parse(JSON.stringify(list));
           game.list.totalValues = game.list.values.length;
           game.list.values = getRandom(game.list.values, 10);
