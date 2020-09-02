@@ -1079,10 +1079,7 @@ router.post('/', async ({
         chat_id: body.callback_query.message.chat.id
       }).select('chat_id pickedLists').exec((err, game) => {
         if (err) return bot.notifyAdmin('Pick list button\n' + JSON.stringify(err));
-        console.log(game.pickedLists);
-        console.log(data.list);
-        const foundList = _.find(game.pickedLists, pickedList => pickedList._id == data.list);
-        console.log(foundList);
+        const foundList = _.find(game.pickedLists, pickedList => pickedList == data.list);
         if (foundList) {
           bot.queueMessage(body.callback_query.message.chat.id, `<b>${foundList.name}</b> is already in the queue`);
         } else {
