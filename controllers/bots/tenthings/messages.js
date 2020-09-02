@@ -334,7 +334,7 @@ module.exports = {
       default:
         return '';
     }
-    return '\n--- ' + (message.length > 0 ? messages[Math.floor(Math.random() * messages.length)] : `Streak: ${streak}`) + ' ---';
+    return '\n--- ' + (messages.length > 0 ? messages[Math.floor(Math.random() * messages.length)] : `Streak: ${streak}`) + ' ---';
   },
   sass: text => new Promise((resolve, reject) => {
     var messages = [];
