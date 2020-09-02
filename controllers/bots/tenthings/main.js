@@ -1082,6 +1082,7 @@ router.post('/', async ({
         } else {
           game.pickedLists.push(data.list);
           game.save();
+          bot.queueMessage(body.callback_query.message.chat.id, `<b>${foundList.name}</b> added to the queue`);
         }
       });
     }
