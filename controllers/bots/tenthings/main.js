@@ -182,6 +182,7 @@ function selectList(game) {
         .populate('creator')
         .lean()
         .exec((err, list) => {
+          if (err) return reject(err);
           resolve(list);
         });
     } else {
@@ -627,7 +628,7 @@ const newRound = (currentGame, player) => {
   Game.findOne({
       _id: currentGame._id
     })
-    .select('_id chat_id playedLists list listsPlayed cycles guessers hintCooldown hints disabledCategories')
+    .select('_id chat_id playedLists list listsPlayed pickedLists cycles guessers hintCooldown hints disabledCategories')
     .populate('list.creator')
     .exec(async (err, game) => {
       if (err) return console.error(err);

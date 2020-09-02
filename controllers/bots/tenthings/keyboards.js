@@ -349,11 +349,6 @@ module.exports = {
     };
   },
   like: function(game) {
-    console.log(JSON.stringify({
-      type: 'rate',
-      list: game.list._id,
-      vote: 1
-    }).length);
     return {
       inline_keyboard: [
         [{
