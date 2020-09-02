@@ -652,7 +652,7 @@ const newRound = (currentGame, player) => {
           game.playedLists.push(game.list._id);
           game.save(err => {
             if (err) return bot.notifyAdmin('newRound: ' + JSON.stringify(err) + '\n' + JSON.stringify(game));
-            //console.log(`Game ${game._id} started new round with list -> "${list.name}"`);
+            console.log(`${game.chat_id} - New round started -> "${list.name}"`);
           });
         }, err => bot.notifyAdmin(JSON.stringify(err)));
     });
