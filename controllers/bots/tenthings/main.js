@@ -680,7 +680,7 @@ function skip(game, skipper) {
   } else if (skips[game.id] && skips[game.id].player === skipper.id) {
     bot.queueMessage(game.chat_id, 'Get someone else to confirm your skip request!');
   } else {
-    bot.queueMessage(game.chat_id, `Skipping <b>${game.list.name}</b> in 15 seconds.\nType /veto to cancel or /skip to confirm.`);
+    bot.queueMessage(game.chat_id, `Skipping <b>${game.list.name}</b> in 15 seconds.\nType /veto to cancel or have someone else type /skip to confirm.`);
     skips[game.id] = {
       timer: 15,
       player: skipper.id
@@ -1287,29 +1287,31 @@ const evaluateCommand = async (res, msg, game, player, isNew) => {
     case '/error':
       bot.queueMessage(msg.chat.id, msg.text);
       break;
-    case '/info':
+    case '/intro':
       bot.queueMessage(msg.chat.id, messages.introduction(msg.from.first_name));
       break;
     case '/logic':
       bot.queueMessage(msg.chat.id, messages.logic());
+      break;
+    case '/commands':
+      bot.queueMessage(msg.chat.id, messages.commands());
       break;
     case '/stop':
       deactivateGame(game);
       break;
     case '/new':
     case '/start':
-      activateGame(game);
       if (isNew) {
         newRound(game);
       } else {
-        stats.getList(game, async list => {
+        stats.getList(game, list => {
           let message = `<b>${game.list.name}</b> (${game.list.totalValues})`;
           message += game.list.creator ? ` by ${game.list.creator.username}\n` : '\n';
           message += game.list.categories.length > 0 ? `Categor${game.list.categories.length > 1 ? 'ies' : 'y'}: <b>${game.list.categories}</b>\n` : '';
           message += game.list.description ? (game.list.description.includes('href') ? game.list.description : `<i>${angleBrackets(game.list.description)}</i>\n`) : '';
           message += list;
           bot.queueMessage(msg.chat.id, message);
-          await game.save();
+          activateGame(game, true);
         });
       }
       break;
@@ -1373,7 +1375,6 @@ const evaluateCommand = async (res, msg, game, player, isNew) => {
       break;
     case '/list':
       try {
-        activateGame(game);
         stats.getList(game, list => {
           let message = `<b>${game.list.name}</b> (${game.list.totalValues})`;
           message += game.list.creator ? ` by ${game.list.creator.username}\n` : '\n';
@@ -1381,7 +1382,7 @@ const evaluateCommand = async (res, msg, game, player, isNew) => {
           message += game.list.description ? (game.list.description.includes('href') ? game.list.description : `<i>${angleBrackets(game.list.description)}</i>\n`) : '';
           message += list;
           bot.queueMessage(msg.chat.id, message);
-          game.save();
+          activateGame(game, true);
         });
       } catch (e) {
         console.error(e);
@@ -1434,7 +1435,7 @@ const evaluateCommand = async (res, msg, game, player, isNew) => {
         message += `\nList: ${game.list.name}`;
         bot.notifyAdmins(message);
         bot.notify(message);
-        bot.queueMessage(msg.chat.id, `Typo noted, ${msg.from.first_name}!`);
+        bot.queueMessage(msg.chat.id, `Typo noted for list "${game.list.name}", ${msg.from.first_name}!`);
       } else {
         bot.queueMessage(msg.chat.id, `You didn't say anything, ${msg.from.first_name}. Add your message after /typo`);
       }
@@ -1573,7 +1574,7 @@ const activateGame = (game, save = false) => {
 const deactivateGame = game => {
   game.enabled = false;
   game.save();
-  bot.sendMessage(game.chat_id, 'Ten Things stopped, type /list or /start to re-activate.\nInactive games will be deleted after 30 days');
+  bot.sendMessage(game.chat_id, 'I am sleeping, type /list or /start to wake me up.\nInactive games will be deleted after 30 days');
 };
 
 /*

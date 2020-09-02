@@ -6,12 +6,9 @@ const MAXHINTS = 6;
 module.exports = {
   introduction: function(player) {
     var message = 'Hi ' + player + ',\n';
-    message += 'My name is 10 Things and I am a game bot.\n';
-    message += 'The game will give you a category and then you answer anything that comes to mind in that category.\n';
-    message += 'There\'s a game within the game when you type /minigame\n';
-    message += 'I have a few things you can ask of me, just type a slash (/) to see the commands.\n';
+    message += 'Ten Things, yours truly, is a game which will give you a subject and then you answer anything that comes to mind in that category.\n';
+    message += 'Type /commands to see all the things you can ask me\n';
     message += 'If you want to add your own lists, please go to https://belgocanadian.com/tenthings\n';
-    message += 'And last but not least if you want to suggest anything (new lists or features) type "/suggest" followed by your suggestion!\n\n';
     message += 'Have fun!';
     return message;
   },
@@ -29,6 +26,23 @@ module.exports = {
     message += rule++ + ': If a skip is vetoed, new skips will be ignored for 15 seconds\n';
     message += rule++ + ': Every day at midnight (universal time) the daily scores will be reset and a winner recorded\n';
     message += rule++ + ': Spammers will be ignored until they are silent for at least 10 seconds\n';
+    return message;
+  },
+  commands: function() {
+    var message = '';
+    message += '/list - Guessed answers in the current round\n';
+    message += '/hint - Give a hint\n';
+    message += '/skip - Skip the current round\n';
+    message += '/minigame - Reverse trivia question\n';
+    message += '/score - Daily score standing\n';
+    message += '/stats - Statistics on the game\n';
+    message += '/me - My stats\n';
+    message += '/intro - What am I?\n';
+    message += '/logic - An explanation of the logic used\n';
+    message += '/settings - Bot behaviour settings\n';
+    message += '/categories - Select which categories to include\n';
+    message += '/typo [message] - Flag a typo in the current list\n';
+    message += '/suggest [message] - Suggest something to the admins\n';
     return message;
   },
   guessed: function(match, player) {
