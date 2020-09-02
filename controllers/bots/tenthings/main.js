@@ -647,7 +647,7 @@ const newRound = (currentGame, player) => {
             const savedPlayer = await player.save();
           }
           if (queued) {
-            game.pickedLists.shift();
+            game.pickedLists = game.pickedLists.filter(pickedList => pickedList != list._id);
           }
           game.list = JSON.parse(JSON.stringify(list));
           game.list.totalValues = game.list.values.length;
