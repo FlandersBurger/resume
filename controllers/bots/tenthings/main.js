@@ -630,6 +630,7 @@ const newRound = (currentGame, player) => {
     .select('_id chat_id playedLists list listsPlayed pickedLists cycles guessers hintCooldown hints disabledCategories')
     .populate('list.creator')
     .exec(async (err, game) => {
+      console.log(game.pickedLists);
       if (err) return console.error(err);
       if (!game) return console.log('Game not found');
       let players = await Player.find({
