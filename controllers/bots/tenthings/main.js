@@ -180,7 +180,6 @@ function selectList(game) {
         })
         .select('-votes')
         .populate('creator')
-        .lean()
         .exec((err, list) => {
           if (err) return reject(err);
           resolve(list);
