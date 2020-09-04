@@ -691,15 +691,15 @@ console.log(hints.getHint(6, string));
 */
 
 function skip(game, skipper) {
-  if (skips[game.id] && skips[game.id].player !== skipper.id) {
-    skips[game.id].timer = 2;
-  } else if (skips[game.id] && skips[game.id].player === skipper.id) {
+  if (skips[game._id] && skips[game._id].player !== skipper._id) {
+    skips[game._id].timer = 2;
+  } else if (skips[game._id] && skips[game._id].player === skipper._id) {
     bot.queueMessage(game.chat_id, 'Get someone else to confirm your skip request!');
   } else {
     bot.queueMessage(game.chat_id, `Skipping <b>${game.list.name}</b> in 15 seconds.\nType /veto to cancel or have someone else type /skip to confirm.`);
-    skips[game.id] = {
+    skips[game._id] = {
       timer: 15,
-      player: skipper.id
+      player: skipper._id
     };
     cooldownSkip(game, skipper);
   }
@@ -716,18 +716,21 @@ const skipList = async (game, skipper) => {
   Player.updateMany({
     game: game._id,
     id: {
-      $in: [skips[game.id].player, skipper.id]
+      $in: [skips[game._id].player, skipper._id]
     }
   }, {
     $set: {
       hintStreak: 0
+    },
+    $inc: {
+      skips: 1
     }
   }).exec((err, updatedPlayers) => {
     stats.getList(game, async list => {
       let message = `<b>${game.list.name}</b> skipped!\n`;
       message += list;
       bot.queueMessage(game.chat_id, message);
-      delete skips[game.id];
+      delete skips[game._id];
       let foundList = await List.findOne({
         _id: game.list._id
       }).exec();
@@ -1376,12 +1379,6 @@ const evaluateCommand = async (res, msg, game, player, isNew) => {
         }
         if (doSkip) {
           activateGame(game, true);
-          if (player) {
-            player.skips++;
-          } else {
-            console.error(`Error in game: ${game.id}`);
-            console.error(`From: ${msg.from}`);
-          }
           skip(game, player);
         }
       }

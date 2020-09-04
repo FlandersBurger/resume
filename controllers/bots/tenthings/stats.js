@@ -207,7 +207,7 @@ exports.getStats = async (chat_id, data, requestor) => {
               $max: '$maxHintStreak'
             },
             'answers': {
-              $sum: '$panswers'
+              $sum: '$answers'
             },
             'snubs': {
               $sum: '$snubs'
@@ -301,16 +301,16 @@ exports.getStats = async (chat_id, data, requestor) => {
       listStats(game, 'hints', 'plays', 1 / 6, 'Least Hinted Lists', '(Hint commands / 6) / Amount played', -1, data.requestor);
       break;
     case 'mostvoted':
-      voteStats(game, -1, 'Voted Most on Lists', data.requestor);
+      voteStats(game, players, -1, 'Voted Most on Lists', data.requestor);
       break;
     case 'leastvoted':
-      voteStats(game, 1, 'Voted Least on Lists', data.requestor);
+      voteStats(game, players, 1, 'Voted Least on Lists', data.requestor);
       break;
     case 'mostpositive':
-      voteSentimentStats(game, 1, 'Voted Most Positively on Lists', data.requestor);
+      voteSentimentStats(game, players, 1, 'Voted Most Positively on Lists', data.requestor);
       break;
     case 'mostnegative':
-      voteSentimentStats(game, -1, 'Voted Most Negatively on Lists', data.requestor);
+      voteSentimentStats(game, players, -1, 'Voted Most Negatively on Lists', data.requestor);
       break;
     case 'mostplayed':
       listStats(game, 'plays', '', 1, 'Most Played Lists', 'Sum of plays', 1, data.requestor);
@@ -409,10 +409,7 @@ const playerStats = async ({
 
 const voteStats = async ({
   chat_id
-}, sorter, title) => {
-  const players = await Player.find({
-    game: _id
-  }).exec();
+}, players, sorter, title) => {
   List.aggregate([{
       $unwind: '$votes'
     },
@@ -443,10 +440,7 @@ const voteStats = async ({
 
 const voteSentimentStats = async ({
   chat_id
-}, sorter, title) => {
-  const players = await Player.find({
-    game: _id
-  }).exec();
+}, players, sorter, title) => {
   List.aggregate([{
       $match: {
         'votes.vote': sorter
