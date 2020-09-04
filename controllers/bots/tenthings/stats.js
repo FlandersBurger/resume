@@ -1,4 +1,5 @@
 const moment = require('moment');
+const _ = require('underscore');
 const bot = require('../../../bots/telegram');
 const messages = require('./messages');
 const hints = require('./hints');
@@ -393,7 +394,7 @@ const voteStats = async ({
     let message = `<b>${title}</b>\n`;
     let i = 1;
     voters.forEach((voter) => {
-      const player = _.find(players, player => voter._id == player.id);
+      const player = _.find(players, player => voter._id == player._id);
       if (player) {
         message += `${i++}. ${player.first_name} (${voter.votes})\n`;
       }
@@ -429,7 +430,7 @@ const voteSentimentStats = async ({
     let message = `<b>${title}</b>\n`;
     let i = 1;
     voters.forEach((voter) => {
-      const player = _.find(players, player => voter._id == player.id);
+      const player = _.find(players, player => voter._id == player._id);
       if (player) {
         message += `${i++}. ${player.first_name} (${voter.votes})\n`;
       }
