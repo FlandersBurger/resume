@@ -607,7 +607,7 @@ const checkRound = (game) => {
           .exec();
         let message = `<b>${game.list.name}</b>`;
         message += game.list.creator ? ` by ${game.list.creator.username}\n` : '\n';
-        message += game.list.categories.length > 0 ? `<b>|${game.list.categories.join(' | ')}|</b>\n` : '';
+        message += game.list.categories.length > 0 ? `Categor${game.list.categories.length > 1 ? 'ies' : 'y'}: <b>${game.list.categories.join(', ')}</b>\n` : '';
         message += list;
         message += messages.listStats(foundList);
         message += await stats.getDailyScores(game, 5);
@@ -1343,7 +1343,7 @@ const evaluateCommand = async (res, msg, game, player, isNew) => {
         stats.getList(game, list => {
           let message = `<b>${game.list.name}</b> (${game.list.totalValues})`;
           message += game.list.creator ? ` by ${game.list.creator.username}\n` : '\n';
-          message += game.list.categories.length > 0 ? `<b>|${game.list.categories.join(' | ')}|</b>\n` : '';
+          message += game.list.categories.length > 0 ? `Categor${game.list.categories.length > 1 ? 'ies' : 'y'}: <b>${game.list.categories.join(', ')}</b>\n` : '';
           message += game.list.description ? (game.list.description.includes('href') ? game.list.description : `<i>${angleBrackets(game.list.description)}</i>\n`) : '';
           message += list;
           bot.queueMessage(msg.chat.id, message);
@@ -1408,7 +1408,7 @@ const evaluateCommand = async (res, msg, game, player, isNew) => {
         stats.getList(game, list => {
           let message = `<b>${game.list.name}</b> (${game.list.totalValues})`;
           message += game.list.creator ? ` by ${game.list.creator.username}\n` : '\n';
-          message += game.list.categories.length > 0 ? `<b>|${game.list.categories.join(' | ')}|</b>\n` : '';
+          message += game.list.categories.length > 0 ? `Categor${game.list.categories.length > 1 ? 'ies' : 'y'}: <b>${game.list.categories.join(', ')}</b>\n` : '';
           message += game.list.description ? (game.list.description.includes('href') ? game.list.description : `<i>${angleBrackets(game.list.description)}</i>\n`) : '';
           message += list;
           bot.queueMessage(msg.chat.id, message);
