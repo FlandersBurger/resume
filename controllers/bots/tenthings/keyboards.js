@@ -40,6 +40,7 @@ module.exports = {
     };
   },
   stats_list: function(game) {
+    console.log('here');
     return {
       inline_keyboard: [
         [{

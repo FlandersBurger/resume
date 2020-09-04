@@ -1005,6 +1005,7 @@ router.post('/', async ({
                   break;
                 case 'player':
                   bot.answerCallback(body.callback_query.id, 'Player Stats');
+                  console.log(keyboards.stats_player(game));
                   bot.sendKeyboard(game.chat_id, '<b>Player Stats</b>', keyboards.stats_player(game));
                   break;
                 case 'global':
