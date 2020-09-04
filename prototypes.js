@@ -355,10 +355,6 @@ String.prototype.conceal = function(extra) {
   return this.replace(new RegExp(`[^${SPECIAL_CHARACTERS}${extra}]`, 'gi'), '*');
 };
 
-String.prototype.highlightedConceal = function(extra) {
-  return this.replace(new RegExp(`[^${SPECIAL_CHARACTERS}${extra}]`, 'gi'), '<b>*</b>');
-};
-
 String.prototype.capitalize = function() {
   return this.charAt(0).toUpperCase() + this.slice(1);
 };
