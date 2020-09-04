@@ -113,15 +113,14 @@ module.exports = {
               type: 'stat',
               id: 'p_'
             })
-          }
-          /*,
-                    {
-                      'text': 'Other Player Stats',
-                      'callback_data': JSON.stringify({
-                        type: 'stat',
-                        id: 'players'
-                      })
-                    }*/
+          },
+          {
+            'text': 'Most Minigames Answered',
+            'callback_data': JSON.stringify({
+              type: 'stat',
+              id: 'minigames'
+            })
+          },
         ],
         [{
             'text': 'Daily Score',
@@ -288,13 +287,6 @@ module.exports = {
             })
           }
         ],
-        [{
-          'text': 'Most Minigames Answered',
-          'callback_data': JSON.stringify({
-            type: 'stat',
-            id: 'minigames'
-          })
-        }, ],
       ]
     };
   },
