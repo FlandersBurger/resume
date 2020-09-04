@@ -13,6 +13,7 @@ exports.getScores = (game_id, type) => {
     bot.queueMessage(game_id, str);
   });
   */
+  console.log(type);
   Game.findOne({
     chat_id: game_id
   }).select('chat_id').exec((err, game) => {
