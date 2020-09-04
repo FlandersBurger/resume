@@ -732,7 +732,6 @@ const skipList = (game, skipper) => {
     }
   }).exec((err, updatedPlayers) => {
     if (err) return bot.notifyAdmin(err);
-    console.log(updatedPlayers);
     stats.getList(game, async list => {
       let message = `<b>${game.list.name}</b> skipped!\n`;
       message += list;

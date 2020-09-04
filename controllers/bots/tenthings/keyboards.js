@@ -1,4 +1,5 @@
 const moment = require('moment');
+const _ = require('underscore');
 const categories = require('./categories');
 
 module.exports = {
@@ -372,7 +373,7 @@ module.exports = {
     };
   },
   lists: lists => ({
-    inline_keyboard: lists.slice(0, 10).sort().reduce((result, list, i) => {
+    inline_keyboard: _.shuffle(lists).slice(0, 16).sort().reduce((result, list, i) => {
       const button = {
         'text': `${list.name}`,
         'callback_data': JSON.stringify({
