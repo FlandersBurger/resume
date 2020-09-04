@@ -40,7 +40,6 @@ module.exports = {
     };
   },
   stats_list: function(game) {
-    console.log('here');
     return {
       inline_keyboard: [
         [{
@@ -106,7 +105,8 @@ module.exports = {
     };
   },
   stats_player: function(game) {
-    return {
+    console.log('here');
+    let keyboard = {
       inline_keyboard: [
         [{
             'text': 'My Stats',
@@ -290,6 +290,8 @@ module.exports = {
         ],
       ]
     };
+    console.log(keyboard);
+    return keyboard
   },
   categories: ({
     chat_id,
