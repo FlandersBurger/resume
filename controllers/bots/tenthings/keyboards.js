@@ -374,16 +374,13 @@ module.exports = {
   },
   lists: lists => ({
     inline_keyboard: _.shuffle(lists).slice(0, 10).sort().reduce((result, list, i) => {
-      const button = {
+      result.push([{
         'text': `${list.name}`,
         'callback_data': JSON.stringify({
           type: 'pick',
           list: list._id
         })
-      };
-      result.push([
-        [button]
-      ]);
+      }]);
       return result;
     }, [])
   })
