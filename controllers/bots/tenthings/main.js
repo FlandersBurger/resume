@@ -691,21 +691,26 @@ console.log(hints.getHint(6, string));
 */
 
 function skip(game, skipper) {
-  if (skips[game._id] && skips[game._id].player !== skipper._id) {
-    skips[game._id].timer = 2;
-  } else if (skips[game._id] && skips[game._id].player === skipper._id) {
-    bot.queueMessage(game.chat_id, 'Get someone else to confirm your skip request!');
+  if (game.chat_id < 0) {
+    if (skips[game._id] && skips[game._id].player !== skipper._id) {
+      skips[game._id].timer = 2;
+    } else if (skips[game._id] && skips[game._id].player === skipper._id) {
+      bot.queueMessage(game.chat_id, 'Get someone else to confirm your skip request!');
+    } else {
+      bot.queueMessage(game.chat_id, `Skipping <b>${game.list.name}</b> in 15 seconds.\nType /veto to cancel or have someone else type /skip to confirm.`);
+      skips[game._id] = {
+        timer: 15,
+        player: skipper._id
+      };
+      cooldownSkip(game, skipper);
+    }
   } else {
-    bot.queueMessage(game.chat_id, `Skipping <b>${game.list.name}</b> in 15 seconds.\nType /veto to cancel or have someone else type /skip to confirm.`);
-    skips[game._id] = {
-      timer: 15,
-      player: skipper._id
-    };
-    cooldownSkip(game, skipper);
+    //No need to have a delay in a personal chat
+    skipList(game, skipper);
   }
 }
 
-const skipList = async (game, skipper) => {
+const skipList = (game, skipper) => {
   game.list.values.forEach(function({
     guesser
   }, index) {
