@@ -1012,11 +1012,14 @@ router.post('/', async ({
         });
     } else if (data.type === 'stat') {
       //bot.notifyAdmin(`${body.callback_query.from.id} (${body.callback_query.from.first_name}) requested stats`);
+      console.log(data);
       bot.checkAdmin(body.callback_query.message.chat.id, body.callback_query.from.id)
         .then(isAdmin => {
           if (isAdmin) {
             bot.answerCallback(body.callback_query.id, '');
             stats.getStats(body.callback_query.message.chat.id, data, body.callback_query.from.id);
+          } else {
+            console.log('not an admin!');
           }
         });
     } else if (data.type === 'score') {
