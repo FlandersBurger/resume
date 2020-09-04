@@ -373,7 +373,7 @@ module.exports = {
     };
   },
   lists: lists => ({
-    inline_keyboard: _.shuffle(lists).slice(0, 16).sort().reduce((result, list, i) => {
+    inline_keyboard: _.shuffle(lists).slice(0, 10).sort().reduce((result, list, i) => {
       const button = {
         'text': `${list.name}`,
         'callback_data': JSON.stringify({
@@ -381,11 +381,9 @@ module.exports = {
           list: list._id
         })
       };
-      if (i % 2 === 0) {
-        result.push([button]);
-      } else {
-        result[result.length - 1].push(button);
-      }
+      result.push([
+        [button]
+      ]);
       return result;
     }, [])
   })
