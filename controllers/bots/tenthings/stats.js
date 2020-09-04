@@ -202,7 +202,7 @@ exports.getStats = async (chat_id, data, requestor) => {
         message += `Minigame Answers Given: ${stats.minigamePlays}\n`;
         message += `Answer Snubs: ${stats.snubs}\n`;
         message += `Hints Asked: ${stats.hints}\n`;
-        message += `Suggestions given: ${stats.hints}\n`;
+        message += `Suggestions given: ${stats.suggestions}\n`;
         message += `Lists Skipped: ${stats.skips}\n`;
         //message += `${allPlayers.filter(({scoreDaily}) => scoreDaily).length} out of ${allPlayers.filter(({present}) => present).length} players played today\n`;
         //message += `Cycled through all lists ${games.reduce((count, {cycles}) => count + (cycles ? cycles : 0), 0)} times\n`;
