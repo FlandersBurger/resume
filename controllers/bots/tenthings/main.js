@@ -720,9 +720,9 @@ const skipList = (game, skipper) => {
   }, game.list.values);
   Player.updateMany({
     game: game._id,
-    _id: {
+    _id: skips[game._id] ? {
       $in: [skips[game._id].player, skipper._id]
-    }
+    } : skipper._id
   }, {
     $set: {
       hintStreak: 0
