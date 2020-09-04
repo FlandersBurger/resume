@@ -137,45 +137,6 @@ exports.getStats = async (chat_id, data, requestor) => {
     game: game._id
   }).exec();
   switch (type) {
-    case 'players':
-      const players = await Player.find({
-        game: game._id
-      }).exec();
-      const keyboard = [];
-      players.sort((player1, player2) => {
-        const nameA = player1.first_name.toUpperCase(); // ignore upper and lowercase
-        const nameB = player2.first_name.toUpperCase(); // ignore upper and lowercase
-        if (nameA < nameB) {
-          return -1;
-        }
-        if (nameA > nameB) {
-          return 1;
-        }
-        // names must be equal
-        return 0;
-      }).forEach((player, index) => {
-        if (index % 3 === 0) {
-          keyboard.push([{
-            'text': player.first_name,
-            'callback_data': JSON.stringify({
-              type: 'stat',
-              id: `p_${player.id}`
-            })
-          }]);
-        } else {
-          keyboard[Math.floor(index / 3)].push({
-            'text': player.first_name,
-            'callback_data': JSON.stringify({
-              type: 'stat',
-              id: `p_${player.id}`
-            })
-          });
-        }
-      });
-      bot.sendKeyboard(game.chat_id, 'Which player?', {
-        inline_keyboard: keyboard
-      });
-      break;
     case 'global':
       Player.aggregate([{
           $match: {
@@ -247,31 +208,35 @@ exports.getStats = async (chat_id, data, requestor) => {
       });
       break;
     case 'g':
-      List.find().exec((err, {
-        length
-      }) => {
-        message = '<b>Game Stats</b>\n';
-        message += data.requestor ? `<i>Requested by ${data.requestor}</i>\n` : '';
-        message += `Started ${moment(game.date).format("DD-MMM-YYYY")}\n`;
-        message += `Highest Overall Score: ${players.reduce((score, {highScore}) => highScore ? score > highScore ? score : highScore : score, 0)}\n`;
-        message += `Highest Score Today: ${players.reduce((score, {scoreDaily}) => scoreDaily ? score > scoreDaily ? score : scoreDaily : score, 0)}\n`;
-        message += `Total Score: ${players.reduce((count, {score}) => count + (score ? score : 0), 0)}\n`;
-        message += `Best Answer Streak: ${players.reduce((score, {streak}) => streak ? score > streak ? score : streak : score, 0)}\n`;
-        message += `Best Play Streak: ${players.reduce((score, {maxPlayStreak}) => maxPlayStreak ? score > maxPlayStreak ? score : maxPlayStreak : score, 0)}\n`;
-        message += `Best No Hint Streak: ${players.reduce((score, {maxHintStreak}) => maxHintStreak ? score > maxHintStreak ? score : maxHintStreak : score, 0)}\n`;
-        message += `Answers Given: ${players.reduce((count, {answers}) => count + answers, 0)}\n`;
-        message += `Answer Snubs: ${players.reduce((count, {snubs}) => count + (snubs ? snubs : 0), 0)}\n`;
-        message += `Hints Asked: ${players.reduce((count, {hints}) => count + (hints ? hints : 0), 0)}\n`;
-        message += `Suggestions given: ${players.reduce((count, {suggestions}) => count + (suggestions ? suggestions : 0), 0)}\n`;
-        message += `Lists Skipped: ${players.reduce((count, {skips}) => count + skips, 0)}\n`;
-        message += `Current Answer Streak: ${game.streak.count}\n`;
-        message += `${players.filter(({scoreDaily}) => scoreDaily).length} out of ${players.filter(({present}) => present).length} players played today\n`;
-        message += `Cycled through all lists ${game.cycles} times\n`;
-        message += game.cycles ? `Last cycled: ${moment(game.lastCycleDate).format("DD-MMM-YYYY")}\n` : '';
-        message += `${game.playedLists.length} of ${length} lists played (${Math.round(game.playedLists.length / length * 100).toFixed(0)}%)\n`;
-        message += '\n';
-        bot.queueMessage(game.chat_id, message);
-      });
+      try {
+
+        List.find().exec((err, {
+          length
+        }) => {
+          message = '<b>Game Stats</b>\n';
+          message += data.requestor ? `<i>Requested by ${data.requestor}</i>\n` : '';
+          message += `Started ${moment(game.date).format("DD-MMM-YYYY")}\n`;
+          message += `Highest Overall Score: ${players.reduce((score, {highScore}) => highScore ? score > highScore ? score : highScore : score, 0)}\n`;
+          message += `Highest Score Today: ${players.reduce((score, {scoreDaily}) => scoreDaily ? score > scoreDaily ? score : scoreDaily : score, 0)}\n`;
+          message += `Total Score: ${players.reduce((count, {score}) => count + (score ? score : 0), 0)}\n`;
+          message += `Best Answer Streak: ${players.reduce((score, {streak}) => streak ? score > streak ? score : streak : score, 0)}\n`;
+          message += `Best Play Streak: ${players.reduce((score, {maxPlayStreak}) => maxPlayStreak ? score > maxPlayStreak ? score : maxPlayStreak : score, 0)}\n`;
+          message += `Best No Hint Streak: ${players.reduce((score, {maxHintStreak}) => maxHintStreak ? score > maxHintStreak ? score : maxHintStreak : score, 0)}\n`;
+          message += `Answers Given: ${players.reduce((count, {answers}) => count + answers, 0)}\n`;
+          message += `Answer Snubs: ${players.reduce((count, {snubs}) => count + (snubs ? snubs : 0), 0)}\n`;
+          message += `Hints Asked: ${players.reduce((count, {hints}) => count + (hints ? hints : 0), 0)}\n`;
+          message += `Suggestions given: ${players.reduce((count, {suggestions}) => count + (suggestions ? suggestions : 0), 0)}\n`;
+          message += `Lists Skipped: ${players.reduce((count, {skips}) => count + skips, 0)}\n`;
+          message += `Current Answer Streak: ${game.streak.count}\n`;
+          message += `${players.filter(({scoreDaily}) => scoreDaily).length} out of ${players.filter(({present}) => present).length} players played today\n`;
+          message += game.cycles ? `Last cycled: ${moment(game.lastCycleDate).format("DD-MMM-YYYY")}\n` : '';
+          message += `${game.playedLists.length} of ${length} lists played (${Math.round(game.playedLists.length / length * 100).toFixed(0)}%)\n`;
+          message += '\n';
+          bot.queueMessage(game.chat_id, message);
+        });
+      } catch (e) {
+        console.error(e);
+      }
       break;
     case 'p':
       Player.findOne({
