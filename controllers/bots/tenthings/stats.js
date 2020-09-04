@@ -132,7 +132,7 @@ exports.getStats = async (chat_id, data, requestor) => {
   const game = await Game.findOne({
     chat_id
   }).exec();
-  const players = await Game.findOne({
+  const players = await Player.find({
     game: game._id
   }).exec();
   switch (type) {
