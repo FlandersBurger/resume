@@ -288,6 +288,13 @@ module.exports = {
             })
           }
         ],
+        [{
+          'text': 'Most Minigames Answered',
+          'callback_data': JSON.stringify({
+            type: 'stat',
+            id: 'minigames'
+          })
+        }, ],
       ]
     };
   },

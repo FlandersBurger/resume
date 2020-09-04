@@ -359,6 +359,10 @@ String.prototype.capitalize = function() {
   return this.charAt(0).toUpperCase() + this.slice(1);
 };
 
+Number.prototype.makeReadable = function() {
+  return this.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+};
+
 const sortObject = (obj, direction) => {
   let arr = [];
   for (const key in obj) {

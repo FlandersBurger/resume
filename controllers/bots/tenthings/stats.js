@@ -182,6 +182,9 @@ exports.getStats = async (chat_id, data, requestor) => {
             'suggestions': {
               $sum: '$suggestions'
             },
+            'minigamePlays': {
+              $sum: 'minigamePlays'
+            },
           }
         },
       ]).exec((err, stats) => {
@@ -196,6 +199,7 @@ exports.getStats = async (chat_id, data, requestor) => {
         message += `Best Play Streak: ${stats.playStreak}\n`;
         message += `Best No Hint Streak: ${stats.noHintStreak}\n`;
         message += `Answers Given: ${stats.answers}\n`;
+        message += `Minigame Answers Given: ${stats.minigamePlays}\n`;
         message += `Answer Snubs: ${stats.snubs}\n`;
         message += `Hints Asked: ${stats.hints}\n`;
         message += `Suggestions given: ${stats.hints}\n`;
@@ -219,6 +223,7 @@ exports.getStats = async (chat_id, data, requestor) => {
       message += `Best Play Streak: ${players.reduce((score, {maxPlayStreak}) => maxPlayStreak ? score > maxPlayStreak ? score : maxPlayStreak : score, 0)}\n`;
       message += `Best No Hint Streak: ${players.reduce((score, {maxHintStreak}) => maxHintStreak ? score > maxHintStreak ? score : maxHintStreak : score, 0)}\n`;
       message += `Answers Given: ${players.reduce((count, {answers}) => count + answers, 0)}\n`;
+      message += `Minigame Answers Given: ${players.reduce((count, {minigamePlays}) => count + minigamePlays, 0)}\n`;
       message += `Answer Snubs: ${players.reduce((count, {snubs}) => count + (snubs ? snubs : 0), 0)}\n`;
       message += `Hints Asked: ${players.reduce((count, {hints}) => count + (hints ? hints : 0), 0)}\n`;
       message += `Suggestions given: ${players.reduce((count, {suggestions}) => count + (suggestions ? suggestions : 0), 0)}\n`;
@@ -286,6 +291,9 @@ exports.getStats = async (chat_id, data, requestor) => {
       break;
     case 'answers':
       playerStats(game, players, 'answers', 'lists', 0.1, 'Most Correct Answers', '(Correct answers given / 10) / Lists played', 1, data.requestor);
+      break;
+    case 'minigames':
+      playerStats(game, players, 'minigamePlays', '', 1, 'Most Correct Minigame Answers', 'Sum of correct answers', 1, data.requestor);
       break;
     case 'snubs':
       playerStats(game, players, 'snubs', 'answers', 1, 'Most Snubs', 'Answers that were already answered / Total answers', 1, data.requestor);
