@@ -207,12 +207,10 @@ exports.getStats = async (chat_id, data, requestor) => {
       });
       break;
     case 'g':
-      const lists = await List.find().exec();
+      const count = await List.countDocuments().exec();
       let message = '<b>Game Stats</b>\n';
-      console.log(message);
       message += data.requestor ? `<i>Requested by ${data.requestor}</i>\n` : '';
       message += `Started ${moment(game.date).format("DD-MMM-YYYY")}\n`;
-      console.log(message);
       message += `Highest Overall Score: ${players.reduce((score, {highScore}) => highScore ? score > highScore ? score : highScore : score, 0)}\n`;
       message += `Highest Score Today: ${players.reduce((score, {scoreDaily}) => scoreDaily ? score > scoreDaily ? score : scoreDaily : score, 0)}\n`;
       message += `Total Score: ${players.reduce((count, {score}) => count + (score ? score : 0), 0)}\n`;
@@ -220,19 +218,15 @@ exports.getStats = async (chat_id, data, requestor) => {
       message += `Best Play Streak: ${players.reduce((score, {maxPlayStreak}) => maxPlayStreak ? score > maxPlayStreak ? score : maxPlayStreak : score, 0)}\n`;
       message += `Best No Hint Streak: ${players.reduce((score, {maxHintStreak}) => maxHintStreak ? score > maxHintStreak ? score : maxHintStreak : score, 0)}\n`;
       message += `Answers Given: ${players.reduce((count, {answers}) => count + answers, 0)}\n`;
-      console.log(message);
       message += `Answer Snubs: ${players.reduce((count, {snubs}) => count + (snubs ? snubs : 0), 0)}\n`;
       message += `Hints Asked: ${players.reduce((count, {hints}) => count + (hints ? hints : 0), 0)}\n`;
       message += `Suggestions given: ${players.reduce((count, {suggestions}) => count + (suggestions ? suggestions : 0), 0)}\n`;
       message += `Lists Skipped: ${players.reduce((count, {skips}) => count + skips, 0)}\n`;
       message += `Current Answer Streak: ${game.streak.count}\n`;
-      console.log(message);
       message += `${players.filter(({scoreDaily}) => scoreDaily).length} out of ${players.filter(({present}) => present).length} players played today\n`;
       message += game.cycles ? `Last cycled: ${moment(game.lastCycleDate).format("DD-MMM-YYYY")}\n` : '';
-      console.log(message);
-      message += `${game.playedLists.length} of ${lists.length} lists played (${Math.round(game.playedLists.length / length * 100).toFixed(0)}%)\n`;
+      message += `${game.playedLists.length} of ${count} lists played (${Math.round(game.playedLists.length / count * 100).toFixed(0)}%)\n`;
       message += '\n';
-      console.log(message);
       bot.queueMessage(game.chat_id, message);
       break;
     case 'p':
