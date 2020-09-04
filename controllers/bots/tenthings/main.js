@@ -715,7 +715,7 @@ const skipList = async (game, skipper) => {
   }, game.list.values);
   Player.updateMany({
     game: game._id,
-    id: {
+    _id: {
       $in: [skips[game._id].player, skipper._id]
     }
   }, {
