@@ -1012,16 +1012,8 @@ router.post('/', async ({
         });
     } else if (data.type === 'stat') {
       //bot.notifyAdmin(`${body.callback_query.from.id} (${body.callback_query.from.first_name}) requested stats`);
-      console.log(data);
-      bot.checkAdmin(body.callback_query.message.chat.id, body.callback_query.from.id)
-        .then(isAdmin => {
-          if (isAdmin) {
-            bot.answerCallback(body.callback_query.id, '');
-            stats.getStats(body.callback_query.message.chat.id, data, body.callback_query.from.id);
-          } else {
-            console.log('not an admin!');
-          }
-        });
+      bot.answerCallback(body.callback_query.id, '');
+      stats.getStats(body.callback_query.message.chat.id, data, body.callback_query.from.id);
     } else if (data.type === 'score') {
       if (body.callback_query.from.first_name === '^') return '';
       //bot.notifyAdmin(`${body.callback_query.from.id} (${body.callback_query.from.first_name}) requested stats`);
@@ -1029,54 +1021,47 @@ router.post('/', async ({
       stats.getScores(body.callback_query.message.chat.id, data.id);
     } else if (data.type === 'cat') {
       if (body.callback_query.message.chat.id != config.masterChat && body.callback_query.message.chat.id != config.groupChat) {
-        bot.checkAdmin(body.callback_query.message.chat.id, body.callback_query.from.id)
-          .then(admin => {
-            Game.findOne({
-              chat_id: body.callback_query.message.chat.id
-            }).select('chat_id disabledCategories').exec((err, game) => {
-              if (err) return bot.notifyAdmin(JSON.stringify(err));
-              const categoryIndex = game.disabledCategories.indexOf(data.id);
-              if (categoryIndex >= 0) {
-                game.disabledCategories.splice(categoryIndex, 1);
-              } else {
-                if (game.disabledCategories.length === categories.length - 1) {
-                  return bot.queueMessage(body.callback_query.message.chat.id, 'A minimum of 1 category is required');
-                }
-                game.disabledCategories.push(data.id);
-              }
-              game.save((err, savedGame) => {
-                if (err) return bot.notifyAdmin(JSON.stringify(err));
-                bot.answerCallback(body.callback_query.id, `${data.id} -> ${categoryIndex >= 0 ? 'On' : 'Off'}`);
-                bot.editKeyboard(body.callback_query.message.chat.id, body.callback_query.message.message_id, keyboards.categories(game));
-              });
-            });
-          });
+        const isAdmin = body.callback_query.message.chat.id > 0 || await bot.checkAdmin(body.callback_query.message.chat.id, body.callback_query.from.id);
+        let game = await Game.findOne({
+          chat_id: body.callback_query.message.chat.id
+        }).select('chat_id disabledCategories').exec();
+        const categoryIndex = game.disabledCategories.indexOf(data.id);
+        if (categoryIndex >= 0) {
+          game.disabledCategories.splice(categoryIndex, 1);
+        } else {
+          if (game.disabledCategories.length === categories.length - 1) {
+            return bot.queueMessage(body.callback_query.message.chat.id, 'A minimum of 1 category is required');
+          }
+          game.disabledCategories.push(data.id);
+        }
+        game.save((err, savedGame) => {
+          if (err) return bot.notifyAdmin(JSON.stringify(err));
+          bot.answerCallback(body.callback_query.id, `${data.id} -> ${categoryIndex >= 0 ? 'On' : 'Off'}`);
+          bot.editKeyboard(body.callback_query.message.chat.id, body.callback_query.message.message_id, keyboards.categories(game));
+        });
+
       } else {
         bot.notifyAdmin(JSON.stringify(body.callback_query.message));
       }
     } else if (data.type === 'setting') {
       if (body.callback_query.message.chat_id != config.masterChat) {
-        bot.checkAdmin(body.callback_query.message.chat.id, body.callback_query.from.id)
-          .then(admin => {
-            if (admin || body.callback_query.message.chat.id > 0) {
-              Game.findOne({
-                chat_id: body.callback_query.message.chat.id
-              }).select('chat_id settings').exec((err, game) => {
-                if (err) return bot.notifyAdmin(JSON.stringify(err));
-                console.log(`${data.id} toggled for ${game._id}`);
-                game.settings[data.id] = !game.settings[data.id];
-                game.save((err, savedGame) => {
-                  if (err) return bot.notifyAdmin(JSON.stringify(err));
-                  bot.answerCallback(body.callback_query.id, `${data.id} -> ${game.settings[data.id] ? 'On' : 'Off'}`);
-                  bot.editKeyboard(body.callback_query.message.chat.id, body.callback_query.message.message_id, keyboards.settings(game));
-                });
-              });
-            } else {
-              bot.queueMessage(body.callback_query.message.chat.id, `Nice try ${body.callback_query.from.first_name} but that's an admin function`);
-            }
-          }, err => {
-            bot.notifyAdmin(JSON.stringify(err));
+        const isAdmin = body.callback_query.message.chat.id > 0 || await bot.checkAdmin(body.callback_query.message.chat.id, body.callback_query.from.id);
+        if (isAdmin) {
+          Game.findOne({
+            chat_id: body.callback_query.message.chat.id
+          }).select('chat_id settings').exec((err, game) => {
+            if (err) return bot.notifyAdmin(JSON.stringify(err));
+            console.log(`${data.id} toggled for ${game._id}`);
+            game.settings[data.id] = !game.settings[data.id];
+            game.save((err, savedGame) => {
+              if (err) return bot.notifyAdmin(JSON.stringify(err));
+              bot.answerCallback(body.callback_query.id, `${data.id} -> ${game.settings[data.id] ? 'On' : 'Off'}`);
+              bot.editKeyboard(body.callback_query.message.chat.id, body.callback_query.message.message_id, keyboards.settings(game));
+            });
           });
+        } else {
+          bot.queueMessage(body.callback_query.message.chat.id, `Nice try ${body.callback_query.from.first_name} but that's an admin function`);
+        }
       }
     } else if (data.type === 'pick') {
       Game.findOne({
