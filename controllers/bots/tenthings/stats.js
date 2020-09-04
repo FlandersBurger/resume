@@ -14,7 +14,6 @@ exports.getScores = (game_id, type) => {
     bot.queueMessage(game_id, str);
   });
   */
-  console.log(type);
   Game.findOne({
     chat_id: game_id
   }).select('chat_id').exec((err, game) => {
@@ -356,7 +355,7 @@ const listStats = ({
 };
 
 const playerStats = async ({
-  _id
+  chat_id
 }, players, field, divisor, ratio, title, description, sorter, requestor) => {
   let message = `<b>${title}</b>\n`;
   message += description ? `<i>${description}</i>\n` : '';
@@ -394,7 +393,7 @@ const voteStats = async ({
     let message = `<b>${title}</b>\n`;
     let i = 1;
     voters.forEach((voter) => {
-      const player = _.find(players, player => voter._id == player._id);
+      const player = _.find(players, player => voter._id == player.id);
       if (player) {
         message += `${i++}. ${player.first_name} (${voter.votes})\n`;
       }
@@ -430,7 +429,7 @@ const voteSentimentStats = async ({
     let message = `<b>${title}</b>\n`;
     let i = 1;
     voters.forEach((voter) => {
-      const player = _.find(players, player => voter._id == player._id);
+      const player = _.find(players, player => voter._id == player.id);
       if (player) {
         message += `${i++}. ${player.first_name} (${voter.votes})\n`;
       }
