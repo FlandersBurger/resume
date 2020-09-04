@@ -24,18 +24,18 @@ exports.getHint = (hints, value) => {
   let str = '';
   switch (hints) {
     case 0:
-      return value.conceal('');
+      return value.highlightedConceal('');
     case 1:
-      str = value[0] + value.substring(1, value.length).conceal('');
+      str = value[0] + value.substring(1, value.length).highlightedConceal('');
       break;
     case 2:
-      str = conceal(value);
+      str = highlightedConceal(value);
       break;
     case 3:
-      str = conceal(value, VOWELS);
+      str = highlightedConceal(value, VOWELS);
       break;
     default:
-      str = conceal(value, VOWELS + tester);
+      str = highlightedConceal(value, VOWELS + tester);
   }
   for (i = 1; i < value.length - 2; i++) {
     switch (hints) {

@@ -114,11 +114,12 @@ exports.getList = (game, callback) => {
     guesser,
     value
   }, index) => {
-    str += `<i>${index + 1}:</i> `;
     if (!guesser || !guesser.first_name) {
-      str += `<b>${hints.getHint(game.hints, value)}</b>`;
+      str += `<b>${index + 1}:</b> `;
+      str += `${hints.getHint(game.hints, value)}`;
       str += '\n';
     } else {
+      str += `${index + 1}: `;
       str += `${value} - <i>${guesser.first_name}</i>`;
       str += '\n';
     }
