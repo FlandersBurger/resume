@@ -17,6 +17,10 @@ const messageQueue = new Queue('sendMessage', {
     duration: 1000
   }
 });
+messageQueue.on('completed', function(job) {
+  //Job finished we remove it
+  job.remove();
+});
 
 function TelegramBot() {
   const bot = this;
@@ -259,7 +263,7 @@ const b = new TelegramBot();
 
 b.init(TOKEN).then(() => {
   b.getWebhook().then(response => {
-    console.log(response);
+    //console.log(response);
     if (response && 'https://belgocanadian.com/bots/tenthings' === response.url) {
       console.log('Webhook Set');
     } else {

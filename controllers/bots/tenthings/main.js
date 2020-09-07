@@ -107,6 +107,11 @@ const guessQueue = new Queue('processGuess', {
     password: config.redis.password
   }
 });
+guessQueue.on('completed', function(job) {
+  //Job finished we remove it
+  job.remove();
+});
+
 
 
 //addJob();
@@ -1426,14 +1431,15 @@ const evaluateCommand = async (res, msg, game, player, isNew) => {
         break;
       */
     case '/suggest':
-      const suggestion = msg.text.substring(msg.command.length + 1, msg.text.length).replace(/\s/g, '');
+      const suggestion = msg.text.substring(msg.command.length + 1, msg.text.length);
       if (suggestion && suggestion != 'TenThings_Bot' && suggestion != '@TenThings_Bot') {
         player.suggestions++;
         player.save();
-        let message = `<b>Suggestion</b>\n${msg.text.substring(msg.command.length + 1, msg.text.length)}\n<i>${msg.from.username ? msg.from.username : msg.from.first_name}</i>`;
+        let message = `<b>Suggestion</b>\n${suggestion}\n<i>${msg.from.username ? msg.from.username : msg.from.first_name}</i>`;
+        const regex = suggestion.replace(new RegExp('[^a-zA-Z0-9 ]+', 'g'), '.*').split(' ').reduce((result, word) => `${result}(?=.*\\b${word}\\b)`, '');
         List.find({
             name: {
-              $regex: `.*${msg.text.substring(msg.command.length + 1, msg.text.length).replace(new RegExp('[^a-zA-Z0-9]+','g'), '.*')}.*`,
+              $regex: `.*${regex}.*`,
               $options: 'gi'
             }
           })
@@ -1814,4 +1820,10 @@ request(`https://api.themoviedb.org/3/search/movie?api_key=${moviedbAPIKey}&quer
   } else {
     console.log(JSON.parse(response.body).results[0]);
   }
+});*/
+
+/*
+List.fuzzySearch('minaj').select('name').exec((err, lists) => {
+  if (err) return console.error(err);
+  console.log(lists);
 });*/

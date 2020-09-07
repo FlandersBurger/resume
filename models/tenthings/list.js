@@ -102,6 +102,6 @@ var listSchema = new mongoose.Schema({
 listSchema.virtual('answers').get(() => this.values.length);
 listSchema.virtual('blurbs').get(() => this.values.filter(item => item.blurb).length);
 */
-var List = db('master').model('List', listSchema);
 
+var List = db('master').model('List', listSchema);
 module.exports = List;

@@ -182,7 +182,7 @@ if (process.env.NODE_ENV === 'production') {
             }
           }).select('_id').exec();
           for (let game of games) {
-            bot.queueMessage(game.chat_id, stats.getDailyScores(game));
+            bot.queueMessage(game.chat_id, await stats.getDailyScores(game));
             const players = await TenThingsPlayer.find({
               game: game._id,
               scoreDaily: {

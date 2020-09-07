@@ -79,7 +79,6 @@ router.get('/lists/:id/movies', async (req, res, next) => {
     let changed = false;
     for (let value of list.values) {
       const movieDB = await request(`https://api.themoviedb.org/3/search/movie?api_key=${config.tokens.tmdbapi}&query=${encodeURIComponent(value.value)}`);
-
       try {
         const posterPath = JSON.parse(movieDB).results[0].poster_path;
         if (posterPath) {
