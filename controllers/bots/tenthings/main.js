@@ -1436,12 +1436,21 @@ const evaluateCommand = async (res, msg, game, player, isNew) => {
         player.suggestions++;
         player.save();
         let message = `<b>Suggestion</b>\n${suggestion}\n<i>${msg.from.username ? msg.from.username : msg.from.first_name}</i>`;
-        const regex = suggestion.replace(new RegExp('[^a-zA-Z0-9 ]+', 'g'), '.*').split(' ').reduce((result, word) => `${result}(?=.*\\b${word}\\b)`, '');
+        const regex = suggestion.replace(new RegExp('[^a-zA-Z0-9 ]+', 'g'), '.*').split(' ').reduce((result, word) => `${result}(?=.*${word}.*)`, '');
         List.find({
-            name: {
-              $regex: `.*${regex}.*`,
-              $options: 'gi'
-            }
+            $or: [{
+                search: {
+                  $regex: `.*${regex}.*`,
+                  $options: 'gi'
+                }
+              },
+              {
+                categories: {
+                  $regex: `.*${regex}.*`,
+                  $options: 'gi'
+                }
+              }
+            ]
           })
           .select('name')
           .exec((err, lists) => {
@@ -1821,32 +1830,3 @@ request(`https://api.themoviedb.org/3/search/movie?api_key=${moviedbAPIKey}&quer
     console.log(JSON.parse(response.body).results[0]);
   }
 });*/
-
-
-const regex = 'pokemon'.replace(new RegExp('[^a-zA-Z0-9 ]+', 'g'), '.*').split(' ').reduce((result, word) => `${result}(?=.*${word}.*)`, '');
-console.log(`.*${regex}.*`);
-List.find({
-  search: {
-    $regex: `.*${regex}.*`,
-    $options: 'gi'
-  }
-}).collation({
-  locale: "en",
-  strength: 1
-}).select('name').exec((err, lists) => {
-  if (err) return console.error(err);
-  console.log(lists);
-});
-
-
-List.find({
-  search: null
-}).exec(async (err, lists) => {
-  let i = 0;
-  for (let list of lists) {
-    i++;
-    list.search = list.name.removeAllButLetters();
-    const savedList = await list.save();
-    console.log(`${i}/${lists.length}`);
-  }
-});
