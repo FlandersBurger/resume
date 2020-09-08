@@ -107,6 +107,7 @@ router.put('/lists', (req, res, next) => {
   var yesterday = moment().subtract(1, 'days');
   var previousModifyDate = moment(req.body.list.modifyDate);
   req.body.list.modifyDate = new Date();
+  req.body.list.search = req.body.list.name.removeAllButLetters();
   TenThingsList.findByIdAndUpdate(req.body.list._id ? req.body.list._id : new mongoose.Types.ObjectId(), req.body.list, {
     new: true,
     upsert: true

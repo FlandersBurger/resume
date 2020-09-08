@@ -3,6 +3,7 @@ var mongoose = require('mongoose');
 
 var listSchema = new mongoose.Schema({
   name: String,
+  search: String,
   description: String,
   category: String,
   language: {
@@ -102,6 +103,11 @@ var listSchema = new mongoose.Schema({
 listSchema.virtual('answers').get(() => this.values.length);
 listSchema.virtual('blurbs').get(() => this.values.filter(item => item.blurb).length);
 */
-
+/*
+listSchema.virtual('search').get(function() {
+  return this.name.removeAllButLetters();
+});
+*/
 var List = db('master').model('List', listSchema);
+
 module.exports = List;

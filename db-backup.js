@@ -3,6 +3,7 @@ const config = require('./config');
 const url = config.mongoBackup;
 
 mongoose.connect(url, {
+  useCreateIndex: true,
   useNewUrlParser: true,
   useUnifiedTopology: true,
   useFindAndModify: false

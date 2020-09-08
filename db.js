@@ -4,6 +4,7 @@ const connections = {};
 
 config.mongoDBs.forEach(db => {
   connections[db.name] = mongoose.createConnection(db.url, {
+    useCreateIndex: true,
     useNewUrlParser: true,
     useUnifiedTopology: true,
     useFindAndModify: false
