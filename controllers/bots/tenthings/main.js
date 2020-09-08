@@ -1838,7 +1838,10 @@ List.find({
   console.log(lists);
 });
 
-List.find({}).exec(async (err, lists) => {
+
+List.find({
+  search: null
+}).exec(async (err, lists) => {
   let i = 0;
   for (let list of lists) {
     i++;
