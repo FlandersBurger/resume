@@ -17,8 +17,9 @@ const messageQueue = new Queue('sendMessage', {
     duration: 1000
   }
 });
-messageQueue.on('completed', function(job) {
+messageQueue.on('completed', function(job, result) {
   //Job finished we remove it
+  console.log(result);
   job.remove();
 });
 
