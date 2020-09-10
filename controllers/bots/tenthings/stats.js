@@ -120,7 +120,7 @@ exports.getList = (game, callback) => {
       str += '\n';
     } else {
       str += `${index + 1}: `;
-      str += `${value} - <i>${guesser.first_name}</i>`;
+      str += `${value} - <i>${guesser.first_name.removeHTML()}</i>`;
       str += '\n';
     }
   });

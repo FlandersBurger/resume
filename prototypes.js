@@ -359,6 +359,10 @@ String.prototype.capitalize = function() {
   return this.charAt(0).toUpperCase() + this.slice(1);
 };
 
+String.prototype.removeHTML = function() {
+  return this.replace('>', '\u003E').replace('<', '\u003C');
+};
+
 Number.prototype.makeReadable = function() {
   return this.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
 };
