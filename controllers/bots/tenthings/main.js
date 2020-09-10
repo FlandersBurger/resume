@@ -1421,8 +1421,6 @@ const evaluateCommand = async (res, msg, game, player, isNew) => {
           message += game.list.categories.length > 0 ? `Categor${game.list.categories.length > 1 ? 'ies' : 'y'}: <b>${game.list.categories.join(', ')}</b>\n` : '';
           message += game.list.description ? (game.list.description.includes('href') ? game.list.description : `<i>${angleBrackets(game.list.description)}</i>\n`) : '';
           message += list;
-          console.log(msg.chat.id);
-          console.log(message);
           bot.queueMessage(msg.chat.id, message);
           activateGame(game, true);
         });

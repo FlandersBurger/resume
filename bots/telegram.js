@@ -81,6 +81,9 @@ function TelegramBot() {
           console.error('Send Fail');
           console.error(err);
           //return reject(err);
+        } else {
+          console.log('Send success');
+          console.log(message);
         }
       });
       resolve();
