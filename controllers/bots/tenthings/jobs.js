@@ -510,35 +510,3 @@ const updateDailyStats = async (games, totalPlayers, uniquePlayers) => {
     console.log('Game Saved!');
   });
 */
-
-TenThingsPlayer.aggregate([{
-    $group: {
-      _id: 'total',
-      'hints': {
-        $sum: '$hints'
-      },
-      'score': {
-        $sum: '$score'
-      },
-      'scoreDaily': {
-        $sum: '$scoreDaily'
-      },
-      'answers': {
-        $sum: '$answers'
-      },
-      'snubs': {
-        $sum: '$snubs'
-      },
-      'skips': {
-        $sum: '$skips'
-      },
-      'suggestions': {
-        $sum: '$suggestions'
-      },
-      'minigamePlays': {
-        $sum: '$minigamePlays'
-      }
-    }
-  }]).exec((err, result) => {
-      console.log(err);
-      console.log(result);
