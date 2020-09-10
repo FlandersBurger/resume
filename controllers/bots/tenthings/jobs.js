@@ -245,7 +245,7 @@ if (process.env.NODE_ENV === 'production') {
             message += game.list.description ? (game.list.description.includes('href') ? game.list.description : `<i>${angleBrackets(game.list.description)}</i>\n`) : '';
             stats.getList(game, list => bot.queueMessage(game.chat_id, message + list));
           }
-          updateDailyStats(games.length, dailyPlayers.length, _.uniq(dailyPlayers, player => player).length);
+          updateDailyStats(games, dailyPlayers.length, _.uniq(dailyPlayers, player => player._id).length);
         }, err => {
           console.error(err);
           bot.notifyAdmin(`Update daily score error\n${err}`);
@@ -345,6 +345,7 @@ if (process.env.NODE_ENV === 'production') {
           $gt: 0
         }
       })
+      .select('game playStreak maxPlayStreak lastPlayDate')
       .then(players => {
         const uniqueGames = _.uniq(players.map(player => player.game));
         if (players.length > 0) bot.notifyAdmin(`${players.length} game streaks updated in ${uniqueGames.length} games`);
@@ -402,7 +403,7 @@ TenThingsStats.find()
     console.log(stats.forEach(stat => console.log(stat.date)));
   });*/
 
-const updateDailyStats = (gamesPlayed, totalPlayers, uniquePlayers) => {
+const updateDailyStats = (games, totalPlayers, uniquePlayers) => {
   TenThingsStats.findOne({
       base: true
     })
@@ -414,38 +415,47 @@ const updateDailyStats = (gamesPlayed, totalPlayers, uniquePlayers) => {
         .lean()
         .exec((err, players) => {
           if (err) return console.error(err);
-          const listsPlayed = players.reduce((count, {
+          const listsPlayed = games.reduce((count, {
             listsPlayed
           }) => count + (listsPlayed ? listsPlayed : 0), 0);
-          const hints = players.reduce((count, {
-            hints
-          }) => count + (hints ? hints : 0), 0);
-          const score = players.reduce((count, {
-            score
-          }) => count + (score ? score : 0), 0);
-          const highScore = players.reduce((score, {
-            scoreDaily
-          }) => scoreDaily ? score > scoreDaily ? score : scoreDaily : score, 0);
-          const answers = players.reduce((count, {
-            answers
-          }) => count + (answers ? answers : 0), 0);
-          const snubs = players.reduce((count, {
-            snubs
-          }) => count + (snubs ? snubs : 0), 0);
-          const skips = players.reduce((count, {
-            skips
-          }) => count + (skips ? skips : 0), 0);
-          const suggestions = players.reduce((count, {
-            suggestions
-          }) => count + (suggestions ? suggestions : 0), 0);
-          let message = `${gamesPlayed} games played today with ${totalPlayers} players of which ${uniquePlayers} unique\n`;
+          const playerStats = players.reduce((count, {
+            hints,
+            score,
+            scoreDaily,
+            answers,
+            snubs,
+            skips,
+            suggestions,
+            minigamePlays
+          }) => ({
+            hints: count.hints + (hints ? hints : 0),
+            score: count.score + (score ? score : 0),
+            scoreDaily: count.scoreDaily + (scoreDaily ? scoreDaily : 0),
+            answers: count.answers + (answers ? answers : 0),
+            snubs: count.snubs + (snubs ? snubs : 0),
+            skips: count.skips + (skips ? skips : 0),
+            suggestions: count.suggestions + (suggestions ? suggestions : 0),
+            minigamePlays: count.minigamePlays + (minigamePlays ? minigamePlays : 0)
+          }), {
+            hints: 0,
+            score: 0,
+            scoreDaily: 0,
+            answers: 0,
+            snubs: 0,
+            skips: 0,
+            suggestions: 0,
+            minigamePlays: 0
+          });
+
+          let message = `${games.length} games played today with ${totalPlayers} players of which ${uniquePlayers} unique\n`;
           message += `${listsPlayed - base.listsPlayed} lists played\n`;
-          message += `${skips - base.skips} lists skipped\n`;
-          message += `${answers - base.answers} answers given\n`;
-          message += `${snubs - base.snubs} answers snubbed\n`;
-          message += `${hints - base.hints} hints asked\n`;
-          message += `${score - base.score} points scored overall\n`;
-          message += `${suggestions - base.suggestions} suggestions given`;
+          message += `${playerStats.skips - base.skips} lists skipped\n`;
+          message += `${playerStats.answers - base.answers} answers given\n`;
+          message += `${playerStats.snubs - base.snubs} answers snubbed\n`;
+          message += `${playerStats.minigamePlays - base.minigamePlays} minigame answers given\n`;
+          message += `${playerStats.hints - base.hints} hints asked\n`;
+          message += `${playerStats.score - base.score} points scored overall\n`;
+          message += `${playerStats.suggestions - base.suggestions} suggestions given`;
           bot.notifyAdmins(message);
           const dailyStats = new TenThingsStats({
             hints: hints - base.hints,
@@ -496,3 +506,72 @@ const updateDailyStats = (gamesPlayed, totalPlayers, uniquePlayers) => {
     console.log('Game Saved!');
   });
 */
+
+TenThingsPlayer.aggregate([{
+  $group: {
+    _id: 'total',
+    'hints': {
+      $sum: '$hints'
+    },
+    'score': {
+      $sum: '$score'
+    },
+    'scoreDaily': {
+      $sum: '$scoreDaily'
+    },
+    'answers': {
+      $sum: '$answers'
+    },
+    'snubs': {
+      $sum: '$snubs'
+    },
+    'skips': {
+      $sum: '$skips'
+    },
+    'suggestions': {
+      $sum: '$suggestions'
+    },
+    'minigamePlays': {
+      $sum: '$minigamePlays'
+    }
+  }
+}]).exec((err, result) => {
+  console.log(err);
+  console.log(result);
+});
+/*
+TenThingsPlayer
+  .find()
+  .lean()
+  .exec((err, players) => {
+    if (err) return console.error(err);
+    const playerStats = players.reduce((count, {
+      hints,
+      score,
+      scoreDaily,
+      answers,
+      snubs,
+      skips,
+      suggestions,
+      minigamePlays
+    }) => ({
+      hints: count.hints + (hints ? hints : 0),
+      score: count.score + (score ? score : 0),
+      scoreDaily: count.scoreDaily + (scoreDaily ? scoreDaily : 0),
+      answers: count.answers + (answers ? answers : 0),
+      snubs: count.snubs + (snubs ? snubs : 0),
+      skips: count.skips + (skips ? skips : 0),
+      suggestions: count.suggestions + (suggestions ? suggestions : 0),
+      minigamePlays: count.minigamePlays + (minigamePlays ? minigamePlays : 0)
+    }), {
+      hints: 0,
+      score: 0,
+      scoreDaily: 0,
+      answers: 0,
+      snubs: 0,
+      skips: 0,
+      suggestions: 0,
+      minigamePlays: 0
+    });
+    console.log(playerStats);
+  });*/
