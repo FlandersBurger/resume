@@ -1421,6 +1421,7 @@ const evaluateCommand = async (res, msg, game, player, isNew) => {
           message += game.list.categories.length > 0 ? `Categor${game.list.categories.length > 1 ? 'ies' : 'y'}: <b>${game.list.categories.join(', ')}</b>\n` : '';
           message += game.list.description ? (game.list.description.includes('href') ? game.list.description : `<i>${angleBrackets(game.list.description)}</i>\n`) : '';
           message += list;
+          console.log(message);
           bot.queueMessage(msg.chat.id, message);
           activateGame(game, true);
         });
@@ -1834,12 +1835,15 @@ request(`https://api.themoviedb.org/3/search/movie?api_key=${moviedbAPIKey}&quer
     console.log(JSON.parse(response.body).results[0]);
   }
 });*/
-
-
+/*
+var parseString = require('xml2js').parseString;
 request(`https://www.goodreads.com/search/index.xml?key=q9oPMQxkQUczpn4mmE1Q&q=Ender%27s+Game}`, (err, response, body) => {
   if (err) {
     console.error(err);
   } else {
-    console.log(body);
+    parseString(body, function(err, result) {
+      console.log(result.GoodreadsResponse.search[0].results[0].work[0].best_book);
+    });
   }
 });
+*/
