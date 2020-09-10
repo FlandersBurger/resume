@@ -62,14 +62,26 @@ const backupDB = async () => {
 
   await dstTenthingsGame.deleteMany({});
   N = 0;
-  const tenthingsCursor = await srcTenthingsGame.find().cursor();
-  await tenthingsCursor.eachAsync(game => {
+  const tenthingsGameCursor = await srcTenthingsGame.find().cursor();
+  await tenthingsGameCursor.eachAsync(game => {
     N++;
     if (N % 50 === 0) console.log(`${N} games synced`);
     //console.log(`id of the ${N}th game: ${game.chat_id}`);
     return dstTenthingsGame.insertMany([game]);
   });
   console.log(`loop all ${N} games success`);
+
+  await dstTenthingsPlayer.deleteMany({});
+  N = 0;
+  const tenthingsPlayerCursor = await srcTenthingsPlayer.find().cursor();
+  await tenthingsPlayerCursor.eachAsync(game => {
+    N++;
+    if (N % 50 === 0) console.log(`${N} games synced`);
+    //console.log(`id of the ${N}th game: ${game.chat_id}`);
+    return dstTenthingsPlayer.insertMany([game]);
+  });
+  console.log(`loop all ${N} players success`);
+
 
   process.exit(22);
 };

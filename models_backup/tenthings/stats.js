@@ -73,6 +73,11 @@ var TenThingsStats = db('backup').model('TenThingsStats', {
     required: false,
     default: 0
   },
+  minigamePlays: {
+    type: Number,
+    required: false,
+    default: 0
+  },
 });
 
 module.exports = TenThingsStats;

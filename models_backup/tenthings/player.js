@@ -77,6 +77,11 @@ var Player = db('backup').model('Player', {
     required: false,
     default: 0
   },
+  votes: {
+    type: Number,
+    required: false,
+    default: 0
+  },
   streak: {
     type: Number,
     required: false,

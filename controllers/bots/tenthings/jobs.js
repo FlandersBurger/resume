@@ -403,90 +403,94 @@ TenThingsStats.find()
     console.log(stats.forEach(stat => console.log(stat.date)));
   });*/
 
-const updateDailyStats = (games, totalPlayers, uniquePlayers) => {
-  TenThingsStats.findOne({
-      base: true
-    })
-    .then(base => {
-      TenThingsPlayer
-        .find({
-          'present': true
-        })
-        .lean()
-        .exec((err, players) => {
-          if (err) return console.error(err);
-          const listsPlayed = games.reduce((count, {
-            listsPlayed
-          }) => count + (listsPlayed ? listsPlayed : 0), 0);
-          const playerStats = players.reduce((count, {
-            hints,
-            score,
-            scoreDaily,
-            answers,
-            snubs,
-            skips,
-            suggestions,
-            minigamePlays
-          }) => ({
-            hints: count.hints + (hints ? hints : 0),
-            score: count.score + (score ? score : 0),
-            scoreDaily: count.scoreDaily + (scoreDaily ? scoreDaily : 0),
-            answers: count.answers + (answers ? answers : 0),
-            snubs: count.snubs + (snubs ? snubs : 0),
-            skips: count.skips + (skips ? skips : 0),
-            suggestions: count.suggestions + (suggestions ? suggestions : 0),
-            minigamePlays: count.minigamePlays + (minigamePlays ? minigamePlays : 0)
-          }), {
-            hints: 0,
-            score: 0,
-            scoreDaily: 0,
-            answers: 0,
-            snubs: 0,
-            skips: 0,
-            suggestions: 0,
-            minigamePlays: 0
-          });
+const updateDailyStats = async (games, totalPlayers, uniquePlayers) => {
+  let base = await TenThingsStats.findOne({
+    base: true
+  }).exec();
+  const listStats = await List.aggregate([{
+    $group: {
+      _id: 'total',
+      'plays': {
+        $size: '$plays'
+      },
+    }
+  }]).exec();
+  const playerStats = await TenThingsPlayer.aggregate([{
+    $group: {
+      _id: 'total',
+      'hints': {
+        $sum: '$hints'
+      },
+      'score': {
+        $sum: '$score'
+      },
+      'scoreDaily': {
+        $sum: '$scoreDaily'
+      },
+      'answers': {
+        $sum: '$answers'
+      },
+      'snubs': {
+        $sum: '$snubs'
+      },
+      'skips': {
+        $sum: '$skips'
+      },
+      'suggestions': {
+        $sum: '$suggestions'
+      },
+      'minigamePlays': {
+        $sum: '$minigamePlays'
+      },
+      'votes': {
+        $sum: '$votes'
+      }
+    }
+  }]).exec();
 
-          let message = `${games.length} games played today with ${totalPlayers} players of which ${uniquePlayers} unique\n`;
-          message += `${listsPlayed - base.listsPlayed} lists played\n`;
-          message += `${playerStats.skips - base.skips} lists skipped\n`;
-          message += `${playerStats.answers - base.answers} answers given\n`;
-          message += `${playerStats.snubs - base.snubs} answers snubbed\n`;
-          message += `${playerStats.minigamePlays - base.minigamePlays} minigame answers given\n`;
-          message += `${playerStats.hints - base.hints} hints asked\n`;
-          message += `${playerStats.score - base.score} points scored overall\n`;
-          message += `${playerStats.suggestions - base.suggestions} suggestions given`;
-          bot.notifyAdmins(message);
-          const dailyStats = new TenThingsStats({
-            hints: hints - base.hints,
-            chats: gamesPlayed,
-            listsPlayed: listsPlayed - base.listsPlayed,
-            totalPlayers: totalPlayers,
-            uniquePlayers: uniquePlayers,
-            score: score - base.score,
-            highScore: highScore,
-            answers: answers - base.answers,
-            snubs: snubs - base.snubs,
-            skips: skips - base.skips,
-            suggestions: suggestions - base.suggestions
-          });
-          dailyStats.save(err => {
-            if (err) return console.error(err);
-            console.log('Daily Stats Saved!');
-            base.hints = hints;
-            base.listsPlayed = listsPlayed;
-            base.score = score;
-            base.answers = answers;
-            base.snubs = snubs;
-            base.skips = skips;
-            base.suggestions = suggestions;
-            base.save(err => {
-              if (err) return console.error(err);
-              console.log('Base Stats Updated!');
-            });
-          });
-        });
+  let message = `${games.length} games played today with ${totalPlayers} players of which ${uniquePlayers} unique\n`;
+  message += `${listStats[0].plays - base.listsPlayed} lists played\n`;
+  message += `${playerStats[0].skips - base.skips} lists skipped\n`;
+  message += `${playerStats[0].answers - base.answers} answers given\n`;
+  message += `${playerStats[0].snubs - base.snubs} answers snubbed\n`;
+  message += `${playerStats[0].minigamePlays - base.minigamePlays} minigame answers given\n`;
+  message += `${playerStats[0].hints - base.hints} hints asked\n`;
+  message += `${playerStats[0].score - base.score} points scored overall\n`;
+  message += `${playerStats[0].suggestions - base.suggestions} suggestions given`;
+  message += `${playerStats[0].votes - base.votes} list votes given`;
+  bot.notifyAdmins(message);
+  const dailyStats = new TenThingsStats({
+    hints: playerStats[0].hints - base.hints,
+    chats: games.length,
+    listsPlayed: listStats[0].plays - base.listsPlayed,
+    totalPlayers: totalPlayers,
+    uniquePlayers: uniquePlayers,
+    score: playerStats[0].score - base.score,
+    highScore: highScore,
+    answers: playerStats[0].answers - base.answers,
+    snubs: playerStats[0].snubs - base.snubs,
+    skips: playerStats[0].skips - base.skips,
+    suggestions: playerStats[0].suggestions - base.suggestions,
+    votes: playerStats[0].votes - base.votes,
+    minigamePlays: playerStats[0].minigamePlays - base.minigamePlays
+  });
+  dailyStats.save(err => {
+    if (err) return console.error(err);
+    console.log('Daily Stats Saved!');
+    base.listsPlayed = listStats[0].plays;
+    base.hints = playerStats[0].hints;
+    base.score = playerStats[0].score;
+    base.answers = playerStats[0].answers;
+    base.snubs = playerStats[0].snubs;
+    base.skips = playerStats[0].skips;
+    base.suggestions = playerStats[0].suggestions;
+    base.votes = playerStats[0].votes;
+    base.minigamePlays = playerStats[0].minigamePlays;
+    base.save(err => {
+      if (err) return console.error(err);
+      console.log('Base Stats Updated!');
     });
+  });
 };
 /*
   const game = new TenThingsStats({
@@ -508,70 +512,33 @@ const updateDailyStats = (games, totalPlayers, uniquePlayers) => {
 */
 
 TenThingsPlayer.aggregate([{
-  $group: {
-    _id: 'total',
-    'hints': {
-      $sum: '$hints'
-    },
-    'score': {
-      $sum: '$score'
-    },
-    'scoreDaily': {
-      $sum: '$scoreDaily'
-    },
-    'answers': {
-      $sum: '$answers'
-    },
-    'snubs': {
-      $sum: '$snubs'
-    },
-    'skips': {
-      $sum: '$skips'
-    },
-    'suggestions': {
-      $sum: '$suggestions'
-    },
-    'minigamePlays': {
-      $sum: '$minigamePlays'
+    $group: {
+      _id: 'total',
+      'hints': {
+        $sum: '$hints'
+      },
+      'score': {
+        $sum: '$score'
+      },
+      'scoreDaily': {
+        $sum: '$scoreDaily'
+      },
+      'answers': {
+        $sum: '$answers'
+      },
+      'snubs': {
+        $sum: '$snubs'
+      },
+      'skips': {
+        $sum: '$skips'
+      },
+      'suggestions': {
+        $sum: '$suggestions'
+      },
+      'minigamePlays': {
+        $sum: '$minigamePlays'
+      }
     }
-  }
-}]).exec((err, result) => {
-  console.log(err);
-  console.log(result);
-});
-/*
-TenThingsPlayer
-  .find()
-  .lean()
-  .exec((err, players) => {
-    if (err) return console.error(err);
-    const playerStats = players.reduce((count, {
-      hints,
-      score,
-      scoreDaily,
-      answers,
-      snubs,
-      skips,
-      suggestions,
-      minigamePlays
-    }) => ({
-      hints: count.hints + (hints ? hints : 0),
-      score: count.score + (score ? score : 0),
-      scoreDaily: count.scoreDaily + (scoreDaily ? scoreDaily : 0),
-      answers: count.answers + (answers ? answers : 0),
-      snubs: count.snubs + (snubs ? snubs : 0),
-      skips: count.skips + (skips ? skips : 0),
-      suggestions: count.suggestions + (suggestions ? suggestions : 0),
-      minigamePlays: count.minigamePlays + (minigamePlays ? minigamePlays : 0)
-    }), {
-      hints: 0,
-      score: 0,
-      scoreDaily: 0,
-      answers: 0,
-      snubs: 0,
-      skips: 0,
-      suggestions: 0,
-      minigamePlays: 0
-    });
-    console.log(playerStats);
-  });*/
+  }]).exec((err, result) => {
+      console.log(err);
+      console.log(result);
