@@ -80,10 +80,10 @@ function TelegramBot() {
         if (err) {
           console.error('Send Fail');
           console.error(err);
-          return reject(err);
+          //return reject(err);
         }
-        resolve();
       });
+      resolve();
     });
   };
 
