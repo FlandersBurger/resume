@@ -333,8 +333,6 @@ module.exports = {
       case 1000000:
         messages = ['One in a Million', 'Holy Shite, A Million Answers'];
         break;
-      default:
-        return '';
     }
     return '\n--- ' + (messages.length > 0 ? messages[Math.floor(Math.random() * messages.length)] : `Streak: ${streak}`) + ' ---';
   },

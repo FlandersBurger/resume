@@ -109,58 +109,6 @@ const syncPlayers = async () => {
 syncPlayers();
 
 //syncDB();
-const makePlayers = async () => {
-  await dstTenthingsPlayer.deleteMany({});
-  srcTenthingsGame.find({})
-    .select('_id')
-    .exec(async (err, games) => {
-      let i = 0;
-      for (const game of games) {
-        i++;
-        const players = await srcTenthingsGame.aggregate([{
-            $match: {
-              _id: game._id
-            }
-          },
-          {
-            $unwind: "$players"
-          }, {
-            $project: {
-              _id: "$players._id",
-              game: "$_id",
-              id: "$players.id",
-              first_name: "$players.first_name",
-              last_name: "$players.last_name",
-              username: "$players.username",
-              score: "$players.score",
-              highScore: "$players.highScore",
-              scoreDaily: "$players.scoreDaily",
-              plays: "$players.plays",
-              wins: "$players.wins",
-              answers: "$players.answers",
-              lists: "$players.lists",
-              hints: "$players.hints",
-              snubs: "$players.snubs",
-              skips: "$players.skips",
-              suggestions: "$players.suggestions",
-              streak: "$players.streak",
-              playStreak: "$players.playStreak",
-              maxPlayStreak: "$players.maxPlayStreak",
-              hintStreak: "$players.hintStreak",
-              maxHintStreak: "$players.maxHintStreak",
-              lastPlayDate: "$players.lastPlayDate",
-              present: "$players.present",
-              minigamePlays: "$players.minigamePlays",
-            }
-          }
-        ]).exec();
-        const insertedPlayers = await dstTenthingsPlayer.insertMany(players);
-        console.log(`${players.length} players imported from ${game._id} (${i}/${games.length})`);
-      }
-      process.exit(22);
-    });
-};
-//makePlayers();
 
 
 /*

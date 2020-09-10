@@ -251,10 +251,10 @@ exports.getStats = async (chat_id, data, requestor) => {
       });
       break;
     case 'mostskipped':
-      listStats(game, 'skips', 'plays', 1, 'Most Skipped Lists', '(Skip commands / 6) / Amount played', 1, data.requestor);
+      listStats(game, 'skips', 'plays', 1, 'Most Skipped Lists', 'Skip commands / Amount played', 1, data.requestor);
       break;
     case 'leastskipped':
-      listStats(game, 'skips', 'plays', 1, 'Least Skipped Lists', '(Skip commands / 6) / Amount played', -1, data.requestor);
+      listStats(game, 'skips', 'plays', 1, 'Least Skipped Lists', 'Skip commands / Amount played', -1, data.requestor);
       break;
     case 'mosthinted':
       listStats(game, 'hints', 'plays', 1 / 6, 'Most Hinted Lists', '(Hint commands / 6) / Amount played', 1, data.requestor);
@@ -339,7 +339,7 @@ const listStats = ({
     plays: {
       $gt: 0
     }
-  }).exec((err, lists) => {
+  }).select(`${field} ${divisor}`).exec((err, lists) => {
     lists.sort((a, b) => {
       if (divisor) {
         return (b[field] / (b[divisor] ? b[divisor] : 1) - a[field] / (a[divisor] ? a[divisor] : 1)) * sorter;

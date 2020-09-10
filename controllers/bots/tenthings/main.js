@@ -185,8 +185,12 @@ function selectList(game) {
         })
         .select('-votes')
         .populate('creator')
-        .exec((err, list) => {
+        .exec(async (err, list) => {
           if (err) return reject(err);
+          if (!_.some(game.playedLists, playedList => playedList == list._id)) {
+            game.playedLists.push(list._id);
+            await game.save();
+          }
           resolve(list);
         });
     } else {
@@ -1830,3 +1834,12 @@ request(`https://api.themoviedb.org/3/search/movie?api_key=${moviedbAPIKey}&quer
     console.log(JSON.parse(response.body).results[0]);
   }
 });*/
+
+
+request(`https://www.goodreads.com/search/index.xml?key=q9oPMQxkQUczpn4mmE1Q&q=Ender%27s+Game}`, (err, response, body) => {
+  if (err) {
+    console.error(err);
+  } else {
+    console.log(body);
+  }
+});

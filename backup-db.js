@@ -76,7 +76,7 @@ const backupDB = async () => {
   const tenthingsPlayerCursor = await srcTenthingsPlayer.find().cursor();
   await tenthingsPlayerCursor.eachAsync(game => {
     N++;
-    if (N % 50 === 0) console.log(`${N} games synced`);
+    if (N % 50 === 0) console.log(`${N} players synced`);
     //console.log(`id of the ${N}th game: ${game.chat_id}`);
     return dstTenthingsPlayer.insertMany([game]);
   });
