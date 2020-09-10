@@ -360,7 +360,7 @@ String.prototype.capitalize = function() {
 };
 
 String.prototype.removeHTML = function() {
-  return this.replace('>', '\u003E').replace('<', '\u003C');
+  return this.replace('>', '\u227B').replace('<', '\u227A');
 };
 
 Number.prototype.makeReadable = function() {
