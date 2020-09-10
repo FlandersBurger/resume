@@ -17,9 +17,8 @@ const messageQueue = new Queue('sendMessage', {
     duration: 1000
   }
 });
-messageQueue.on('completed', function(job, result) {
-  //Job finished we remove it
-  console.log(result);
+messageQueue.on('completed', function(job) {
+  //Job finished we remove it]
   job.remove();
 });
 
@@ -81,11 +80,10 @@ function TelegramBot() {
         if (err) {
           console.error('Send Fail');
           console.error(err);
-          //return reject();
+          return reject(err);
         }
-        //resolve();
+        resolve();
       });
-      resolve();
     });
   };
 
@@ -96,9 +94,9 @@ function TelegramBot() {
     });
   };
 
-  messageQueue.process(({
+  messageQueue.process(async ({
     data
-  }) => bot.sendMessage(data.channel, data.message));
+  }) => await bot.sendMessage(data.channel, data.message));
 
   bot.getQueue = async () => await messageQueue.count();
 
