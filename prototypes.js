@@ -352,7 +352,7 @@ String.prototype.removeAllButLetters = function() {
 };
 
 String.prototype.conceal = function(extra) {
-  return this.replace(new RegExp(`[^${SPECIAL_CHARACTERS}${extra}]`, 'gi'), '∗');
+  return this.replace(new RegExp(`[^${SPECIAL_CHARACTERS}${extra}]`, 'gi'), '⁎');
 };
 
 String.prototype.capitalize = function() {
