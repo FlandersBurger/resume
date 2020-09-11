@@ -411,7 +411,7 @@ const updateDailyStats = async (games, totalPlayers, uniquePlayers) => {
     $group: {
       _id: 'total',
       'plays': {
-        $size: '$plays'
+        $sum: '$plays'
       },
     }
   }]).exec();
