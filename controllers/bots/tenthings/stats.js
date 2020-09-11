@@ -119,16 +119,8 @@ exports.getList = (game, callback) => {
       str += `<b>${hints.getHint(game.hints, value)}</b>`;
       str += '\n';
     } else {
-      str += `
-      $ {
-        index + 1
-      }: `;
-      str += `
-      $ {
-        value
-      } - < i > $ {
-        guesser.first_name.removeHTML()
-      } < /i>`;
+      str += `${index + 1}: `;
+      str += `${value} - <i>${guesser.first_name.removeHTML()}</i>`;
       str += '\n';
     }
   });

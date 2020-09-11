@@ -1422,6 +1422,7 @@ const evaluateCommand = async (res, msg, game, player, isNew) => {
           message += game.list.description ? (game.list.description.includes('href') ? game.list.description : `<i>${angleBrackets(game.list.description)}</i>\n`) : '';
           message += list;
           bot.queueMessage(msg.chat.id, message);
+          console.log(message);
           activateGame(game, true);
         });
       } catch (e) {
