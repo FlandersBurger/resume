@@ -42,6 +42,10 @@ angular.module('app')
       return $http.get(`/api/bots/lists/${list._id}/movies`);
     };
 
+    svc.getBookPics = function(list) {
+      return $http.get(`/api/bots/lists/${list._id}/books`);
+    };
+
     svc.getPause = function() {
       return $http.get(`/api/bots/pause`);
     };

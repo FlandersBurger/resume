@@ -3,6 +3,7 @@ var mongoose = require('mongoose');
 var request = require('request-promise');
 var moment = require('moment');
 var _ = require('underscore');
+var parseString = require('xml2js').parseString;
 
 var config = require('../../config');
 const redis = require('../../redis');
@@ -83,6 +84,38 @@ router.get('/lists/:id/movies', async (req, res, next) => {
         const posterPath = JSON.parse(movieDB).results[0].poster_path;
         if (posterPath) {
           value.blurb = `http://image.tmdb.org/t/p/w500${posterPath}`;
+        }
+        changed = true;
+      } catch (e) {
+        console.error(`No Poster for ${value.value}`);
+      }
+    }
+    if (changed) {
+      const saved = await list.save();
+      res.sendStatus(200);
+    } else {
+      res.sendStatus(304);
+    }
+  } else {
+    res.sendStatus(404);
+  }
+});
+
+
+router.get('/lists/:id/books', async (req, res, next) => {
+  let list = await TenThingsList.findOne({
+    _id: req.params.id
+  });
+  if (list) {
+    let changed = false;
+    for (let value of list.values) {
+      const goodreadsDB = await request(`https://www.goodreads.com/search/index.xml?key=${config.tokens.goodreadsapi}&q=${encodeURIComponent(value.value)}`);
+      try {
+        console.log(await parseString(goodreadsDB));
+        const posterPath = await parseString(goodreadsDB).GoodreadsResponse.search[0].results[0].work[0].best_book[0].image_url[0];
+
+        if (posterPath) {
+          value.blurb = posterPath;
         }
         changed = true;
       } catch (e) {

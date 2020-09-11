@@ -156,7 +156,9 @@ function getLanguage(language) {
   */
 }
 
-bot.notifyAdmin('<b>Started Ten Things</b>');
+if (process.env.NODE_ENV === 'production') {
+  bot.notifyAdmin('<b>Started Ten Things</b>');
+}
 
 //bot.queueMessage('-1001394022777', "test<a href=\'https://upload.wikimedia.org/wikipedia/commons/thumb/8/89/Regular_Hexagon_Inscribed_in_a_Circle.gif/360px-Regular_Hexagon_Inscribed_in_a_Circle.gif\'>&#8204;</a>\nsome other stuff")
 //var url = 'https://upload.wikimedia.org/wikipedia/commons/d/d8/Olympique_Marseille_logo.svg';
@@ -1835,15 +1837,3 @@ request(`https://api.themoviedb.org/3/search/movie?api_key=${moviedbAPIKey}&quer
     console.log(JSON.parse(response.body).results[0]);
   }
 });*/
-/*
-var parseString = require('xml2js').parseString;
-request(`https://www.goodreads.com/search/index.xml?key=q9oPMQxkQUczpn4mmE1Q&q=Ender%27s+Game}`, (err, response, body) => {
-  if (err) {
-    console.error(err);
-  } else {
-    parseString(body, function(err, result) {
-      console.log(result.GoodreadsResponse.search[0].results[0].work[0].best_book);
-    });
-  }
-});
-*/
