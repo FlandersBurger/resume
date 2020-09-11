@@ -339,7 +339,7 @@ const listStats = ({
     plays: {
       $gt: 0
     }
-  }).select(`${field} ${divisor}`).exec((err, lists) => {
+  }).select(`${field} ${divisor} name`).exec((err, lists) => {
     lists.sort((a, b) => {
       if (divisor) {
         return (b[field] / (b[divisor] ? b[divisor] : 1) - a[field] / (a[divisor] ? a[divisor] : 1)) * sorter;
