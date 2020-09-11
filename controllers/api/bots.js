@@ -3,7 +3,7 @@ var mongoose = require('mongoose');
 var request = require('request-promise');
 var moment = require('moment');
 var _ = require('underscore');
-var parseString = require('xml2js').parseString;
+var parseString = require('xml2js').parseStringPromise;
 
 var config = require('../../config');
 const redis = require('../../redis');
@@ -109,17 +109,19 @@ router.get('/lists/:id/books', async (req, res, next) => {
   if (list) {
     let changed = false;
     for (let value of list.values) {
-      const goodreadsDB = await request(`https://www.goodreads.com/search/index.xml?key=${config.tokens.goodreadsapi}&q=${encodeURIComponent(value.value)}`);
-      try {
-        console.log(await parseString(goodreadsDB));
-        const posterPath = await parseString(goodreadsDB).GoodreadsResponse.search[0].results[0].work[0].best_book[0].image_url[0];
-
-        if (posterPath) {
-          value.blurb = posterPath;
+      if (!value.blurb) {
+        const author = list.name.indexOf('Written by ') === 0 ? list.name.substring(11) : '';
+        const goodreadsDB = await request(`https://www.goodreads.com/search/index.xml?key=${config.tokens.goodreadsapi}&q=${author}%20${encodeURIComponent(value.value)}`);
+        try {
+          const parsedXML = await parseString(goodreadsDB);
+          const posterPath = await parsedXML.GoodreadsResponse.search[0].results[0].work[0].best_book[0].image_url[0];
+          if (posterPath && posterPath.indexOf('nophoto') < 0) {
+            value.blurb = posterPath;
+          }
+          changed = true;
+        } catch (e) {
+          console.error(`No Poster for ${value.value}`);
         }
-        changed = true;
-      } catch (e) {
-        console.error(`No Poster for ${value.value}`);
       }
     }
     if (changed) {
