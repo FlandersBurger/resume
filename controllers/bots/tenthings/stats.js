@@ -116,11 +116,19 @@ exports.getList = (game, callback) => {
   }, index) => {
     if (!guesser || !guesser.first_name) {
       str += `<b>${index + 1}:</b> `;
-      str += `<b>${hints.getHint(game.hints, value)}</b>${value.indexOf('*') >= 0 ? ' - <i>WARNING: * in answer</i>' : ''}`;
+      str += `<b>${hints.getHint(game.hints, value)}</b>`;
       str += '\n';
     } else {
-      str += `${index + 1}: `;
-      str += `${value} - <i>${guesser.first_name.removeHTML()}</i>`;
+      str += `
+      $ {
+        index + 1
+      }: `;
+      str += `
+      $ {
+        value
+      } - < i > $ {
+        guesser.first_name.removeHTML()
+      } < /i>`;
       str += '\n';
     }
   });
