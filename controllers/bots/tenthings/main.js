@@ -1081,7 +1081,7 @@ router.post('/', async ({
             });
           });
         } else {
-          bot.queueMessage(body.callback_query.message.chat.id, `Nice try ${data.requestor } but that's an admin function`);
+          bot.queueMessage(body.callback_query.message.chat.id, `Nice try ${data.requestor} but that's an admin function`);
         }
       }
     } else if (data.type === 'pick') {
@@ -1095,12 +1095,12 @@ router.post('/', async ({
           .exec((err, list) => {
             const foundList = _.find(game.pickedLists, pickedList => pickedList == list._id);
             if (foundList) {
-              bot.queueMessage(body.callback_query.message.chat.id, `<b>${list.name}</b> is already in the queue`);
+              bot.queueMessage(body.callback_query.message.chat.id, `<b>${list.name}</b> is already in the queue, ${data.requestor}`);
             } else {
               if (list) {
                 game.pickedLists.push(list._id);
                 game.save();
-                bot.queueMessage(body.callback_query.message.chat.id, `<b>${list.name}</b> added to the queue.\nType /lists to see the queue`);
+                bot.queueMessage(body.callback_query.message.chat.id, `<b>${list.name}</b> added to the queue, ${data.requestor}.\nType /lists to see the queue`);
               } else {
                 bot.queueMessage(body.callback_query.message.chat.id, `This list no longer exists`);
               }
