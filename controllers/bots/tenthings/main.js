@@ -1471,7 +1471,7 @@ const evaluateCommand = async (res, msg, game, player, isNew) => {
               //bot.queueMessage(msg.chat.id, message);
             } else {
               bot.notify(message);
-              bot.notifyAdmins(message);
+              //bot.notifyAdmins(message);
               bot.queueMessage(msg.chat.id, `Suggestion noted, ${msg.from.first_name}!\nNote that you can add your own lists at https://belgocanadian.com/tenthings`);
             }
           });
