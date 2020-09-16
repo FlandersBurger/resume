@@ -564,27 +564,28 @@ module.exports = [
       code: 'TY',
       name: 'Tahitian',
       native: 'Reo Tahiti; Reo Mā\'ohi'
-    },
-    {
-      code: 'TA',
-      name: 'Tamil',
-      native: 'தமிழ்'
-    },
-    {
-      code: 'TT',
-      name: 'Tatar',
-      native: 'татар теле / tatar tele / تاتار'
-    },
-    {
-      code: 'TE',
-      name: 'Telugu',
-      native: 'తెలుగు'
-    },
-    {
-      code: 'TG',
-      name: 'Tajik',
-      native: 'тоҷикӣ / tojikī'
     },*/
+  {
+    code: 'TA',
+    name: 'Tamil',
+    native: 'தமிழ்'
+  },
+  /*
+      {
+        code: 'TT',
+        name: 'Tatar',
+        native: 'татар теле / tatar tele / تاتار'
+      },
+      {
+        code: 'TE',
+        name: 'Telugu',
+        native: 'తెలుగు'
+      },
+      {
+        code: 'TG',
+        name: 'Tajik',
+        native: 'тоҷикӣ / tojikī'
+      },*/
   {
     code: 'TL',
     name: 'Tagalog',
