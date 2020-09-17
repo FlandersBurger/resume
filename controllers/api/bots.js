@@ -102,6 +102,36 @@ router.get('/lists/:id/movies', async (req, res, next) => {
 });
 
 
+router.get('/lists/:id/actors', async (req, res, next) => {
+  let list = await TenThingsList.findOne({
+    _id: req.params.id
+  });
+  if (list) {
+    let changed = false;
+    for (let value of list.values) {
+      const movieDB = await request(`https://api.themoviedb.org/3/search/person?api_key=${config.tokens.tmdbapi}&query=${encodeURIComponent(value.value)}`);
+      try {
+        const posterPath = JSON.parse(movieDB).results[0].profile_path;
+        if (posterPath) {
+          value.blurb = `http://image.tmdb.org/t/p/w500${posterPath}`;
+        }
+        changed = true;
+      } catch (e) {
+        console.error(`No Poster for ${value.value}`);
+      }
+    }
+    if (changed) {
+      const saved = await list.save();
+      res.sendStatus(200);
+    } else {
+      res.sendStatus(304);
+    }
+  } else {
+    res.sendStatus(404);
+  }
+});
+
+
 router.get('/lists/:id/books', async (req, res, next) => {
   let list = await TenThingsList.findOne({
     _id: req.params.id

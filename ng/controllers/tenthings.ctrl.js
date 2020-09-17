@@ -296,6 +296,10 @@ angular.module('app')
       BotSvc.getMoviePics($scope.selectedList).then(response => $scope.selectList($scope.selectedList));
     };
 
+    $scope.getActorPics = () => {
+      BotSvc.getActorPics($scope.selectedList).then(response => $scope.selectList($scope.selectedList));
+    };
+
     $scope.getBookPics = () => {
       BotSvc.getBookPics($scope.selectedList).then(response => $scope.selectList($scope.selectedList));
     };
