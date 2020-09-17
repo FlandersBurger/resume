@@ -187,9 +187,9 @@
             </button>
             <button class="btn btn-default"
                     ng-click="getActorPics()"
-                    ng-if="selectedList.categories.indexOf('Movies') >= 0"
+                    ng-if="selectedList.categories.indexOf('Movies') >= 0 || selectedList.categories.indexOf('Television') >= 0"
                     ng-disabled="!selectedList || (!currentUser.admin && selectedList.creator._id !== currentUser._id && selectedList._id)">
-              Get Actor Posters
+              Get Actor Pics
             </button>
             <button class="btn btn-default"
                     ng-click="getBookPics()"
