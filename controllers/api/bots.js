@@ -165,6 +165,37 @@ router.get('/lists/:id/books', async (req, res, next) => {
   }
 });
 
+router.get('/lists/:id/musicvideos', async (req, res, next) => {
+  let list = await TenThingsList.findOne({
+    _id: req.params.id
+  });
+  if (list) {
+    let changed = false;
+    const artist = list.name.substring(0, list.name.indexOf(' - ')).replace(/\s/, '+');
+    console.log(artist);
+    for (let value of list.values) {
+      const youtubeDB = await request(`https://www.googleapis.com/youtube/v3/search?key=${config.tokens.youtubeapi}&order=relevance&videoDefinition=high&type=video&maxResults=1&part=snippet&q=${artist}+VEVO+${encodeURIComponent(value.value.replace(' ', '+'))}`);
+      try {
+        const videoPath = JSON.parse(youtubeDB).items[0].id.videoId;
+        if (videoPath) {
+          value.blurb = `https://www.youtube.com/watch?v=${videoPath}`;
+        }
+        changed = true;
+      } catch (e) {
+        console.error(`No Poster for ${value.value}`);
+      }
+    }
+    if (changed) {
+      const saved = await list.save();
+      res.sendStatus(200);
+    } else {
+      res.sendStatus(304);
+    }
+  } else {
+    res.sendStatus(404);
+  }
+});
+
 router.put('/lists', (req, res, next) => {
   if (req.auth.userid == '5ece428af848aa2fc392d099') {
     return res.sendStatus(401);

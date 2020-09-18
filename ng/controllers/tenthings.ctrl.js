@@ -304,4 +304,8 @@ angular.module('app')
       BotSvc.getBookPics($scope.selectedList).then(response => $scope.selectList($scope.selectedList));
     };
 
+    $scope.getMusicVideos = () => {
+      BotSvc.getMusicVideos($scope.selectedList).then(response => $scope.selectList($scope.selectedList));
+    };
+
   });

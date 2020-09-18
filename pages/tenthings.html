@@ -197,6 +197,12 @@
                     ng-disabled="!selectedList || (!currentUser.admin && selectedList.creator._id !== currentUser._id && selectedList._id)">
               Get Book Covers
             </button>
+            <button class="btn btn-default"
+                    ng-click="getMusicVideos()"
+                    ng-if="selectedList.categories.indexOf('Music') >= 0"
+                    ng-disabled="!selectedList || (!currentUser.admin && selectedList.creator._id !== currentUser._id && selectedList._id)">
+              Get Music Videos
+            </button>
           </div>
           <!--div id="category-select">
             <button class="btn btn-sm"
@@ -241,8 +247,15 @@
                    ng-model="item.value"
                    placeholder="Answer {{selectedList.values.length - $index}}"
                    ng-disabled="!loggedIn || !currentUser.admin && selectedList.creator._id !== currentUser._id && item.creator !== currentUser._id" />
-            <span class="input-group-addon"><img ng-src="{{item.blurb}}"
-                   ng-if="item.blurb.substring(0, 4) === 'http'" /></span>
+            <span class="input-group-addon">
+              <img ng-src="{{item.blurb}}"
+                   ng-if="item.blurb.substring(0, 4) === 'http' && item.blurb.indexOf('youtu') < 0" />
+              <a href="{{item.blurb}}"
+                 target="_blank"
+                 ng-if="item.blurb.substring(0, 4) === 'http' && item.blurb.indexOf('youtu') >= 0">
+                <i class="fab fa-youtube"></i>
+              </a>
+            </span>
             <input class="form-control"
                    ng-model="item.blurb"
                    placeholder="Display after guessing {{item.value}} (Can be an image URL)"
