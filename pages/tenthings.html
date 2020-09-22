@@ -186,7 +186,7 @@
               Get Movie Posters
             </button>
             <button class="btn btn-default"
-                    ng-click="getMoviePics()"
+                    ng-click="getTVPics()"
                     ng-if="selectedList.categories.indexOf('Television') >= 0"
                     ng-disabled="gettingBlurbs || !selectedList || (!currentUser.admin && selectedList.creator._id !== currentUser._id && selectedList._id)">
               Get TV Posters
