@@ -1147,6 +1147,8 @@ router.post('/', async ({
       Game.findOne({
         chat_id: body.message.chat.id
       }).exec((err, game) => {
+        if (err) return console.error(err);
+        if (!game) return;
         Player.findOne({
             game: game._id,
             id: `${body.message.left_chat_participant.id}`

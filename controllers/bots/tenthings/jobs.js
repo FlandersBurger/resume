@@ -360,7 +360,7 @@ if (process.env.NODE_ENV === 'production') {
           }
           player.save((err, saved, rows) => {
             if (err) console.error(err);
-            console.log(saved, player._id);
+            //console.log(saved, player._id);
           });
         });
       });
