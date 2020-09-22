@@ -299,6 +299,14 @@ angular.module('app')
       });
     };
 
+    $scope.getTVPics = () => {
+      $scope.gettingBlurbs = true;
+      BotSvc.getTVPics($scope.selectedList).then(response => {
+        $scope.selectList($scope.selectedList);
+        $scope.gettingBlurbs = false;
+      });
+    };
+
     $scope.getActorPics = () => {
       $scope.gettingBlurbs = true;
       BotSvc.getActorPics($scope.selectedList).then(response => {

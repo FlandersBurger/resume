@@ -186,6 +186,12 @@
               Get Movie Posters
             </button>
             <button class="btn btn-default"
+                    ng-click="getMoviePics()"
+                    ng-if="selectedList.categories.indexOf('Television') >= 0"
+                    ng-disabled="gettingBlurbs || !selectedList || (!currentUser.admin && selectedList.creator._id !== currentUser._id && selectedList._id)">
+              Get TV Posters
+            </button>
+            <button class="btn btn-default"
                     ng-click="getActorPics()"
                     ng-if="selectedList.categories.indexOf('Movies') >= 0 || selectedList.categories.indexOf('Television') >= 0"
                     ng-disabled="gettingBlurbs || !selectedList || (!currentUser.admin && selectedList.creator._id !== currentUser._id && selectedList._id)">
