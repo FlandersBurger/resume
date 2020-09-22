@@ -27,18 +27,18 @@ const backupDB = async () => {
   await dstCategory.insertMany(categories);
   console.log(`${categories.length} categories synced`);
 
-  await dstJoke.deleteMany({});
+  await dstJoke.drop();
   const jokes = await srcJoke.find({}).exec();
   await dstJoke.insertMany(jokes);
   console.log(`${jokes.length} jokes synced`);
 
-  await dstPost.deleteMany({});
+  await dstPost.drop();
   const posts = await srcPost.find({}).exec();
   await dstPost.insertMany(posts);
   console.log(`${posts.length} posts synced`);
 
-  const users = await srcUser.find({}).exec();
   await dstUser.deleteMany({});
+  const users = await srcUser.find({}).exec();
   await dstUser.insertMany(users);
   console.log(`${users.length} users synced`);
 
