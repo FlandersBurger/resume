@@ -1,4 +1,3 @@
-/*jslint esversion: 6*/
 angular.module('app')
   //AngularJs can't have an arrow function here
   .controller('TenThingsCtrl', function($scope, BotSvc) {
@@ -293,19 +292,35 @@ angular.module('app')
     };
 
     $scope.getMoviePics = () => {
-      BotSvc.getMoviePics($scope.selectedList).then(response => $scope.selectList($scope.selectedList));
+      $scope.gettingBlurbs = true;
+      BotSvc.getMoviePics($scope.selectedList).then(response => {
+        $scope.selectList($scope.selectedList);
+        $scope.gettingBlurbs = false;
+      });
     };
 
     $scope.getActorPics = () => {
-      BotSvc.getActorPics($scope.selectedList).then(response => $scope.selectList($scope.selectedList));
+      $scope.gettingBlurbs = true;
+      BotSvc.getActorPics($scope.selectedList).then(response => {
+        $scope.selectList($scope.selectedList);
+        $scope.gettingBlurbs = false;
+      });
     };
 
     $scope.getBookPics = () => {
-      BotSvc.getBookPics($scope.selectedList).then(response => $scope.selectList($scope.selectedList));
+      $scope.gettingBlurbs = true;
+      BotSvc.getBookPics($scope.selectedList).then(response => {
+        $scope.selectList($scope.selectedList);
+        $scope.gettingBlurbs = false;
+      });
     };
 
     $scope.getMusicVideos = () => {
-      BotSvc.getMusicVideos($scope.selectedList).then(response => $scope.selectList($scope.selectedList));
+      $scope.gettingBlurbs = true;
+      BotSvc.getMusicVideos($scope.selectedList).then(response => {
+        $scope.selectList($scope.selectedList);
+        $scope.gettingBlurbs = false;
+      });
     };
 
   });

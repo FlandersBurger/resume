@@ -182,25 +182,25 @@
             <button class="btn btn-default"
                     ng-click="getMoviePics()"
                     ng-if="selectedList.categories.indexOf('Movies') >= 0"
-                    ng-disabled="!selectedList || (!currentUser.admin && selectedList.creator._id !== currentUser._id && selectedList._id)">
+                    ng-disabled="gettingBlurbs || !selectedList || (!currentUser.admin && selectedList.creator._id !== currentUser._id && selectedList._id)">
               Get Movie Posters
             </button>
             <button class="btn btn-default"
                     ng-click="getActorPics()"
                     ng-if="selectedList.categories.indexOf('Movies') >= 0 || selectedList.categories.indexOf('Television') >= 0"
-                    ng-disabled="!selectedList || (!currentUser.admin && selectedList.creator._id !== currentUser._id && selectedList._id)">
+                    ng-disabled="gettingBlurbs || !selectedList || (!currentUser.admin && selectedList.creator._id !== currentUser._id && selectedList._id)">
               Get Actor Pics
             </button>
             <button class="btn btn-default"
                     ng-click="getBookPics()"
                     ng-if="selectedList.categories.indexOf('Literature') >= 0"
-                    ng-disabled="!selectedList || (!currentUser.admin && selectedList.creator._id !== currentUser._id && selectedList._id)">
+                    ng-disabled="gettingBlurbs || !selectedList || (!currentUser.admin && selectedList.creator._id !== currentUser._id && selectedList._id)">
               Get Book Covers
             </button>
             <button class="btn btn-default"
                     ng-click="getMusicVideos()"
                     ng-if="selectedList.categories.indexOf('Music') >= 0"
-                    ng-disabled="!selectedList || (!currentUser.admin && selectedList.creator._id !== currentUser._id && selectedList._id)">
+                    ng-disabled="gettingBlurbs || !selectedList || (!currentUser.admin && selectedList.creator._id !== currentUser._id && selectedList._id)">
               Get Music Videos
             </button>
           </div>

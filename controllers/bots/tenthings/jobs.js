@@ -245,7 +245,7 @@ if (process.env.NODE_ENV === 'production') {
             message += game.list.description ? (game.list.description.includes('href') ? game.list.description : `<i>${angleBrackets(game.list.description)}</i>\n`) : '';
             stats.getList(game, list => bot.queueMessage(game.chat_id, message + list));
           }
-          updateDailyStats(games, dailyPlayers.length, _.uniq(dailyPlayers, player => player._id).length);
+          updateDailyStats(games, dailyPlayers.length, _.uniq(dailyPlayers, player => player.id).length);
         }, err => {
           console.error(err);
           bot.notifyAdmin(`Update daily score error\n${err}`);
