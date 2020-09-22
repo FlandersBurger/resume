@@ -32,13 +32,12 @@ const backupDB = async () => {
   await dstJoke.insertMany(jokes);
   console.log(`${jokes.length} jokes synced`);
 
-  await dstPost.deleteMany();
-  await dstUser.deleteMany({});
-
+  await dstPost.collection.drop({});
   const posts = await srcPost.find({}).exec();
   await dstPost.insertMany(posts);
   console.log(`${posts.length} posts synced`);
 
+  await dstUser.collection.drop({});
   const users = await srcUser.find({}).exec();
   await dstUser.insertMany(users);
   console.log(`${users.length} users synced`);
