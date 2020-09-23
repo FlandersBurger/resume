@@ -251,6 +251,7 @@
             <input id="value{{$index}}"
                    class="form-control"
                    ng-model="item.value"
+                   ng-class="{'bg-info': selectedList.creator._id !== currentUser._id && item.creator !== currentUser._id, 'bg-success': selectedList.creator._id !== currentUser._id && item.creator === currentUser._id, }"
                    placeholder="Answer {{selectedList.values.length - $index}}"
                    ng-disabled="!loggedIn || !currentUser.admin && selectedList.creator._id !== currentUser._id && item.creator !== currentUser._id" />
             <span class="input-group-addon">
@@ -264,6 +265,7 @@
             </span>
             <input class="form-control"
                    ng-model="item.blurb"
+                   ng-class="{'bg-info': selectedList.creator._id !== currentUser._id && item.creator !== currentUser._id, 'bg-success': selectedList.creator._id !== currentUser._id && item.creator === currentUser._id, }"
                    placeholder="Display after guessing {{item.value}} (Can be an image URL)"
                    ng-disabled="!loggedIn || !currentUser.admin && selectedList.creator._id !== currentUser._id && item.creator !== currentUser._id" />
           </div>
