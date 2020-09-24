@@ -180,7 +180,7 @@ if (process.env.NODE_ENV === 'production') {
             lastPlayDate: {
               $gte: moment().subtract(1, 'days')
             }
-          }).select('_id').exec();
+          }).select('_id id').exec();
           for (let game of games) {
             bot.queueMessage(game.chat_id, await stats.getDailyScores(game));
             const players = await TenThingsPlayer.find({
