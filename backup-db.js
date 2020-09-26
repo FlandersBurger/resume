@@ -18,7 +18,7 @@ const dstTenthingsPlayer = require('./models_backup/tenthings/player');
 const srcTenthingsStats = require('./models/tenthings/stats');
 const dstTenthingsStats = require('./models_backup/tenthings/stats');
 
-const backupDB = async () => {
+module.exports = async () => {
 
   let N = 0;
 
@@ -32,12 +32,12 @@ const backupDB = async () => {
   await dstJoke.insertMany(jokes);
   console.log(`${jokes.length} jokes synced`);
 
-  await dstPost.collection.drop({});
+  await dstPost.deleteMany();
   const posts = await srcPost.find({}).exec();
   await dstPost.insertMany(posts);
   console.log(`${posts.length} posts synced`);
 
-  await dstUser.collection.drop({});
+  await dstUser.deleteMany();
   const users = await srcUser.find({}).exec();
   await dstUser.insertMany(users);
   console.log(`${users.length} users synced`);
@@ -87,9 +87,5 @@ const backupDB = async () => {
   });
   console.log(`loop all ${N} players success`);
 
-
-  process.exit(22);
+  return true;
 };
-
-
-backupDB();

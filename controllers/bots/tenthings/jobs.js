@@ -6,6 +6,7 @@ const request = require('request');
 const config = require('../../../config');
 const bot = require('../../../bots/telegram');
 const stats = require('./stats');
+const backup = require('../../../backup-db');
 const List = require('../../../models/tenthings/list');
 const Joke = require('../../../models/joke');
 const TenThingsGame = require('../../../models/tenthings/game');
@@ -180,7 +181,7 @@ if (process.env.NODE_ENV === 'production') {
             lastPlayDate: {
               $gte: moment().subtract(1, 'days')
             }
-          }).select('_id id').exec();
+          }).lean().select('_id id').exec();
           for (let game of games) {
             bot.queueMessage(game.chat_id, await stats.getDailyScores(game));
             const players = await TenThingsPlayer.find({
@@ -191,7 +192,7 @@ if (process.env.NODE_ENV === 'production') {
               lastPlayDate: {
                 $gte: moment().subtract(1, 'days')
               }
-            }).exec();
+            }).select('_id id scoreDaily').exec();
             const highScore = await getHighScore(players);
             let winners = players.filter(player => player.scoreDaily === highScore);
             let message = winners.reduce((msg, {
@@ -254,6 +255,8 @@ if (process.env.NODE_ENV === 'production') {
       bot.notifyAdmin(`Schedule incorrectly triggered: ${moment().format('DD-MMM-YYYY hh:mm')}`);
     }
   };
+
+
   //resetDailyScore(true);
   //var dailyScore = schedule.scheduleJob('*/10 * * * * *', function() {
   const dailyScore = schedule.scheduleJob('0 2 1 * * *', resetDailyScore);
@@ -338,7 +341,7 @@ if (process.env.NODE_ENV === 'production') {
   */
 
 
-  const playStreak = schedule.scheduleJob('0 0 2 * * *', () => {
+  const updatePlayStreak = schedule.scheduleJob('0 0 2 * * *', () => {
     //Update play streaks
     TenThingsPlayer.find({
         'playStreak': {
@@ -370,6 +373,14 @@ if (process.env.NODE_ENV === 'production') {
   console.log('Schedules only run on production');
 }
 
+const backupDatabase = schedule.scheduleJob('0 0 4 * * *', () => {
+  backup()
+    .then(success => {
+      bot.notifyAdmin(`Database backed up successfuly`);
+    }, err => {
+      bot.notifyAdmin(`Database Backup Failed\n${err}`);
+    });
+});
 
 const getHighScore = (players) => new Promise((resolve, reject) => {
   try {
@@ -402,17 +413,27 @@ TenThingsStats.find()
   .then(stats => {
     console.log(stats.forEach(stat => console.log(stat.date)));
   });*/
-
 const updateDailyStats = async (games, totalPlayers, uniquePlayers) => {
   let base = await TenThingsStats.findOne({
     base: true
   }).exec();
   const listStats = await List.aggregate([{
+    $project: {
+      _id: 1,
+      plays: 1,
+      votes: {
+        $size: '$votes'
+      }
+    }
+  }, {
     $group: {
       _id: 'total',
       'plays': {
         $sum: '$plays'
       },
+      'votes': {
+        $sum: '$votes'
+      }
     }
   }]).exec();
   const playerStats = await TenThingsPlayer.aggregate([{
@@ -442,22 +463,19 @@ const updateDailyStats = async (games, totalPlayers, uniquePlayers) => {
       'minigamePlays': {
         $sum: '$minigamePlays'
       },
-      'votes': {
-        $sum: '$votes'
-      }
     }
   }]).exec();
 
   let message = `${games.length} games played today with ${totalPlayers} players of which ${uniquePlayers} unique\n`;
-  message += `${listStats[0].plays - base.listsPlayed} lists played\n`;
-  message += `${playerStats[0].skips - base.skips} lists skipped\n`;
-  message += `${playerStats[0].answers - base.answers} answers given\n`;
-  message += `${playerStats[0].snubs - base.snubs} answers snubbed\n`;
-  message += `${playerStats[0].minigamePlays - base.minigamePlays} minigame answers given\n`;
-  message += `${playerStats[0].hints - base.hints} hints asked\n`;
-  message += `${playerStats[0].score - base.score} points scored overall\n`;
-  message += `${playerStats[0].suggestions - base.suggestions} suggestions given`;
-  message += `${playerStats[0].votes - base.votes} list votes given`;
+  message += `${(listStats[0].plays - base.listsPlayed).makeReadable()} lists played\n`;
+  message += `${(listStats[0].votes - base.votes)} list votes given\n`;
+  message += `${(playerStats[0].skips - base.skips).makeReadable()} lists skipped\n`;
+  message += `${(playerStats[0].answers - base.answers).makeReadable()} answers given\n`;
+  message += `${(playerStats[0].snubs - base.snubs).makeReadable()} answers snubbed\n`;
+  message += `${(playerStats[0].minigamePlays - base.minigamePlays).makeReadable()} minigame answers given\n`;
+  message += `${(playerStats[0].hints - base.hints).makeReadable()} hints asked\n`;
+  message += `${(playerStats[0].score - base.score).makeReadable()} points scored overall\n`;
+  message += `${(playerStats[0].suggestions - base.suggestions).makeReadable()} suggestions given\n`;
   bot.notifyAdmins(message);
   const dailyStats = new TenThingsStats({
     hints: playerStats[0].hints - base.hints,
@@ -471,12 +489,12 @@ const updateDailyStats = async (games, totalPlayers, uniquePlayers) => {
     snubs: playerStats[0].snubs - base.snubs,
     skips: playerStats[0].skips - base.skips,
     suggestions: playerStats[0].suggestions - base.suggestions,
-    votes: playerStats[0].votes - base.votes,
+    votes: listStats[0].votes - base.votes,
     minigamePlays: playerStats[0].minigamePlays - base.minigamePlays
   });
   dailyStats.save(err => {
-    if (err) return console.error(err);
-    console.log('Daily Stats Saved!');
+    if (err) return bot.notifyAdmin(`Daily stat save issue\n${err}`);
+    bot.notifyAdmin('Daily Stats Updated!');
     base.listsPlayed = listStats[0].plays;
     base.hints = playerStats[0].hints;
     base.score = playerStats[0].score;
@@ -487,11 +505,23 @@ const updateDailyStats = async (games, totalPlayers, uniquePlayers) => {
     base.votes = playerStats[0].votes;
     base.minigamePlays = playerStats[0].minigamePlays;
     base.save(err => {
-      if (err) return console.error(err);
-      console.log('Base Stats Updated!');
+      if (err) return bot.notifyAdmin(`Base stat update issue\n${err}`);
+      bot.notifyAdmin('Base Stats Updated!');
     });
   });
 };
+
+
+TenThingsPlayer.find({
+  scoreDaily: {
+    $gt: 0
+  },
+  lastPlayDate: {
+    $gte: moment().subtract(1, 'days')
+  }
+}).lean().select('_id id').exec((err, players) => {
+  console.log(_.uniq(players, player => player.id).length);
+});
 /*
   const game = new TenThingsStats({
     base: true,

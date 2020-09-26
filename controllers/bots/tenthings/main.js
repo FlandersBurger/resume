@@ -971,35 +971,33 @@ router.post('/', async ({
         doVote = true;
       }
       if (doVote) {
-        List.findOne({
+        let foundList = await List.findOne({
             _id: data.list
           })
           .select('name votes modifyDate score')
-          .exec((err, foundList) => {
-            if (err) return console.error(err);
-            let voter = _.find(foundList.votes, vote => vote.voter == body.callback_query.from.id);
-            if (!voter) {
-              foundList.votes.push({
-                voter: body.callback_query.from.id,
-                vote: data.vote
-              });
-              voter = foundList.votes[foundList.votes.length - 1];
-            } else {
-              voter.vote = data.vote;
-              voter.modifyDate = new Date();
-            }
-            foundList.score = foundList.votes.reduce((score, vote) => score += vote.vote, 0);
-            delete foundList.voters;
-            foundList.save(err => {
-              if (err) return console.error(err);
-              bot.answerCallback(body.callback_query.id, data.vote > 0 ? '\ud83d\udc4d' : '\ud83d\udc4e');
-              //bot.notifyAdmin(`"<b>${foundList.name}</b>" ${data.vote > 0 ? 'up' : 'down'}voted by <i>${body.callback_query.from.first_name}</i>!`);
-              let score = foundList.votes.reduce((score, vote) => score + vote.vote, 0);
-              if (moment(data.date) > moment().subtract(1, 'days')) {
-                bot.queueMessage(body.callback_query.message.chat.id, ` ${data.vote > 0 ? '\ud83d\udc4d' : '\ud83d\udc4e'} ${body.callback_query.from.first_name} ${data.vote > 0 ? '' : 'dis'}likes <b>${foundList.name}</b> (${score})`);
-              }
-            });
+          .exec();
+        let voter = _.find(foundList.votes, vote => vote.voter == body.callback_query.from.id);
+        if (!voter) {
+          foundList.votes.push({
+            voter: body.callback_query.from.id,
+            vote: data.vote
           });
+          voter = foundList.votes[foundList.votes.length - 1];
+        } else {
+          voter.vote = data.vote;
+          voter.modifyDate = new Date();
+        }
+        foundList.score = foundList.votes.reduce((score, vote) => score += vote.vote, 0);
+        delete foundList.voters;
+        foundList.save(err => {
+          if (err) return console.error(err);
+          bot.answerCallback(body.callback_query.id, data.vote > 0 ? '\ud83d\udc4d' : '\ud83d\udc4e');
+          //bot.notifyAdmin(`"<b>${foundList.name}</b>" ${data.vote > 0 ? 'up' : 'down'}voted by <i>${body.callback_query.from.first_name}</i>!`);
+          let score = foundList.votes.reduce((score, vote) => score + vote.vote, 0);
+          if (moment(data.date) > moment().subtract(1, 'days')) {
+            bot.queueMessage(body.callback_query.message.chat.id, ` ${data.vote > 0 ? '\ud83d\udc4d' : '\ud83d\udc4e'} ${body.callback_query.from.first_name} ${data.vote > 0 ? '' : 'dis'}likes <b>${foundList.name}</b> (${score})`);
+          }
+        });
       }
     } else if (data.type === 'stats') {
       const isAdmin = body.callback_query.message.chat.id > 0 || await bot.checkAdmin(body.callback_query.message.chat.id, body.callback_query.from.id);
