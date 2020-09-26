@@ -23,26 +23,30 @@ const backup = async () => {
   let N = 0;
 
   const categories = await srcCategory.find({}).exec();
-  await dstCategory.deleteMany({});
+  await dstCategory.collection.drop({});
   await dstCategory.insertMany(categories);
   console.log(`${categories.length} categories synced`);
 
-  await dstJoke.deleteMany();
+  await dstJoke.collection.drop({});
+  await dstPost.collection.drop({});
+  await dstUser.collection.drop({});
+  await dstList.collection.drop({});
+  await dstTenthingsStats.collection.drop({});
+  await dstTenthingsPlayer.collection.drop({});
+  await dstTenthingsGame.collection.drop({});
+
   const jokes = await srcJoke.find({}).exec();
   await dstJoke.insertMany(jokes);
   console.log(`${jokes.length} jokes synced`);
 
-  await dstPost.deleteMany();
   const posts = await srcPost.find({}).exec();
   await dstPost.insertMany(posts);
   console.log(`${posts.length} posts synced`);
 
-  await dstUser.deleteMany();
   const users = await srcUser.find({}).exec();
   await dstUser.insertMany(users);
   console.log(`${users.length} users synced`);
 
-  await dstList.deleteMany({});
   N = 0;
   const listCursor = await srcList.find().cursor();
   await listCursor.eachAsync(list => {
@@ -54,18 +58,16 @@ const backup = async () => {
 
   /*
     const posts = await srcPost.find({}).exec();
-    await dstPost.deleteMany({});
+    await dstPost.collection.drop({});
     await dstPost.insertMany(posts);
     console.log(`${posts.length} posts synced`);
   	*/
 
   const stats = await srcTenthingsStats.find({}).exec();
-  await dstTenthingsStats.deleteMany({});
   await dstTenthingsStats.insertMany(stats);
   console.log(`${stats.length} stats synced`);
 
 
-  await dstTenthingsGame.deleteMany({});
   N = 0;
   const tenthingsGameCursor = await srcTenthingsGame.find().cursor();
   await tenthingsGameCursor.eachAsync(game => {
@@ -76,7 +78,6 @@ const backup = async () => {
   });
   console.log(`loop all ${N} games success`);
 
-  await dstTenthingsPlayer.deleteMany({});
   N = 0;
   const tenthingsPlayerCursor = await srcTenthingsPlayer.find().cursor();
   await tenthingsPlayerCursor.eachAsync(game => {
