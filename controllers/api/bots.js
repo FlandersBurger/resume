@@ -72,6 +72,19 @@ router.get('/lists/:id', (req, res, next) => {
     });
 });
 
+TenThingsList.find({
+    categories: 'Mathemathics'
+  })
+  .select('name categories')
+  .exec(async (err, lists) => {
+    for (let list of lists) {
+
+      console.log(list);
+      list.categories = list.categories.filter(category => category !== 'Mathemathics');
+      await list.save();
+    }
+  });
+
 router.get('/lists/:id/movies', async (req, res, next) => {
   let list = await TenThingsList.findOne({
     _id: req.params.id
