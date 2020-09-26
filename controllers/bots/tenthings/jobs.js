@@ -510,18 +510,6 @@ const updateDailyStats = async (games, totalPlayers, uniquePlayers) => {
     });
   });
 };
-
-
-TenThingsPlayer.find({
-  scoreDaily: {
-    $gt: 0
-  },
-  lastPlayDate: {
-    $gte: moment().subtract(1, 'days')
-  }
-}).lean().select('_id id').exec((err, players) => {
-  console.log(_.uniq(players, player => player.id).length);
-});
 /*
   const game = new TenThingsStats({
     base: true,

@@ -90,4 +90,6 @@ const backup = async () => {
   return true;
 };
 
+backup();
+
 module.exports = backup;
