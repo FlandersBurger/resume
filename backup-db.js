@@ -21,19 +21,22 @@ const dstTenthingsStats = require('./models_backup/tenthings/stats');
 const backup = async () => {
 
   let N = 0;
+  try {
+    await dstCategory.collection.drop({});
+    await dstJoke.collection.drop({});
+    await dstPost.collection.drop({});
+    await dstUser.collection.drop({});
+    await dstList.collection.drop({});
+    await dstTenthingsStats.collection.drop({});
+    await dstTenthingsPlayer.collection.drop({});
+    await dstTenthingsGame.collection.drop({});
+  } catch (e) {
+    console.error(e);
+  }
 
   const categories = await srcCategory.find({}).exec();
-  await dstCategory.collection.drop({});
   await dstCategory.insertMany(categories);
   console.log(`${categories.length} categories synced`);
-
-  await dstJoke.collection.drop({});
-  await dstPost.collection.drop({});
-  await dstUser.collection.drop({});
-  await dstList.collection.drop({});
-  await dstTenthingsStats.collection.drop({});
-  await dstTenthingsPlayer.collection.drop({});
-  await dstTenthingsGame.collection.drop({});
 
   const jokes = await srcJoke.find({}).exec();
   await dstJoke.insertMany(jokes);
