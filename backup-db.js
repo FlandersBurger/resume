@@ -18,7 +18,7 @@ const dstTenthingsPlayer = require('./models_backup/tenthings/player');
 const srcTenthingsStats = require('./models/tenthings/stats');
 const dstTenthingsStats = require('./models_backup/tenthings/stats');
 
-module.exports = async () => {
+const backup = async () => {
 
   let N = 0;
 
@@ -89,3 +89,5 @@ module.exports = async () => {
 
   return true;
 };
+
+module.exports = backup;
