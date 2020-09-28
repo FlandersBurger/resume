@@ -108,9 +108,7 @@ const resetDailyScore = (force = false) => {
     bot.notifyAdmin(`Schedule incorrectly triggered: ${moment().format('DD-MMM-YYYY hh:mm')}`);
   }
 };
-
-
-resetDailyScore(true);
+//resetDailyScore(true);
 const backupDatabase = schedule.scheduleJob('0 0 4 * * *', () => {
   backup()
     .then(success => {
