@@ -278,8 +278,8 @@ angular.module('app')
     };
 
     $scope.listButtonClass = list => {
-      const values = list.values;
-      const blurbs = list.blurbs;
+      const values = list.values.length;
+      const blurbs = list.blurbs.length;
       if (values === blurbs && list.description) {
         return 'btn-default';
       } else if (blurbs === 0 && !list.description) {
