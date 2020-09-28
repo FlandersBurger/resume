@@ -37,12 +37,13 @@ router.get('/lists', (req, res, next) => {
     return res.sendStatus(401);
   }
   TenThingsList.find({})
-    .select('_id plays skips score values.value date modifyDate creator name description categories language isDynamic')
+    .select('_id plays skips score values date modifyDate creator name description categories language isDynamic')
     .populate('creator', 'username')
-    .lean()
+    .lean({
+      virtuals: true
+    })
     .exec((err, result) => {
       if (err) return next(err);
-      //var lists = result.map(list => console.log(list.blurbs));
       var lists = result.map(formatList);
       res.json(lists);
     });
@@ -301,11 +302,12 @@ module.exports = router;
 const formatList = list => ({
   _id: list._id,
   plays: list.plays,
+  blurbs: list.blurbs,
   skips: list.skips,
   score: list.score,
   answers: list.values.length,
+  //blurbs: list.values.filter(item => item.blurb).length,
   values: list.values.map(item => item.value),
-  blurbs: list.values.filter(item => item.blurb).length,
   date: list.date,
   modifyDate: list.modifyDate,
   creator: list.creator.username,

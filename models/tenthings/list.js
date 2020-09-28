@@ -1,5 +1,6 @@
-var db = require('../../db');
-var mongoose = require('mongoose');
+const db = require('../../db');
+const mongoose = require('mongoose');
+const mongooseLeanVirtuals = require('mongoose-lean-virtuals');
 
 var listSchema = new mongoose.Schema({
   name: String,
@@ -28,8 +29,16 @@ var listSchema = new mongoose.Schema({
     default: true
   },
   values: [{
-    value: String,
-    blurb: String,
+    value: {
+      type: String,
+      default: '',
+      required: true
+    },
+    blurb: {
+      type: String,
+      default: '',
+      required: true
+    },
     creator: {
       type: String,
       ref: 'User',
@@ -99,10 +108,15 @@ var listSchema = new mongoose.Schema({
     getters: true
   }
 });
-/*
-listSchema.virtual('answers').get(() => this.values.length);
-listSchema.virtual('blurbs').get(() => this.values.filter(item => item.blurb).length);
-*/
+
+
+//listSchema.virtual('answers').get(() => this.values.length);
+listSchema.virtual('blurbs').get(function() {
+  return this.values.filter(item => item.blurb).length;
+});
+
+listSchema.plugin(mongooseLeanVirtuals);
+
 /*
 listSchema.virtual('search').get(function() {
   return this.name.removeAllButLetters();
