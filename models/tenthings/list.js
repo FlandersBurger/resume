@@ -37,7 +37,7 @@ var listSchema = new mongoose.Schema({
     blurb: {
       type: String,
       default: '',
-      required: true
+      required: false
     },
     creator: {
       type: String,
