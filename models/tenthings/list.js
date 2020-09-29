@@ -112,7 +112,7 @@ var listSchema = new mongoose.Schema({
 
 //listSchema.virtual('answers').get(() => this.values.length);
 listSchema.virtual('blurbs').get(function() {
-  return this.values.filter(item => item.blurb).length;
+  return this.values ? this.values.filter(item => item.blurb).length : 0;
 });
 
 listSchema.plugin(mongooseLeanVirtuals);
