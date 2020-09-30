@@ -94,6 +94,6 @@ const backup = async () => {
   return true;
 };
 
-//backup();
+backup();
 
 module.exports = backup;
