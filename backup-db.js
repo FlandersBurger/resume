@@ -54,6 +54,7 @@ const backup = async () => {
 
   N = 0;
   const listCursor = await srcList.find().cursor();
+  await dstList.deleteMany({});
   await listCursor.eachAsync(list => {
     N++;
     if (N % 50 === 0) console.log(`${N} lists synced`);
@@ -69,12 +70,14 @@ const backup = async () => {
   	*/
 
   const stats = await srcTenthingsStats.find({}).exec();
+  await dstTenthingsStats.deleteMany({});
   await dstTenthingsStats.insertMany(stats);
   console.log(`${stats.length} stats synced`);
 
 
   N = 0;
   const tenthingsGameCursor = await srcTenthingsGame.find().cursor();
+  await dstTenthingsGame.deleteMany({});
   await tenthingsGameCursor.eachAsync(game => {
     N++;
     if (N % 50 === 0) console.log(`${N} games synced`);
@@ -85,6 +88,7 @@ const backup = async () => {
 
   N = 0;
   const tenthingsPlayerCursor = await srcTenthingsPlayer.find().cursor();
+  await dstTenthingsPlayer.deleteMany({});
   await tenthingsPlayerCursor.eachAsync(game => {
     N++;
     if (N % 50 === 0) console.log(`${N} players synced`);
