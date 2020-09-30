@@ -86,7 +86,7 @@ const backup = async () => {
     try {
       await dstList.insertMany([list]);
     } catch (e) {
-      console.error(list.name);
+      console.error(`${list._id} - ${list.name}`);
     }
     return Promise.resolve();
   });
@@ -127,6 +127,6 @@ const backup = async () => {
   return true;
 };
 
-backup();
+//backup();
 
 module.exports = backup;
