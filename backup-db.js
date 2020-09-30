@@ -23,17 +23,44 @@ const backup = async () => {
   let N = 0;
   try {
     await dstCategory.collection.drop({});
+  } catch (e) {
+    await dstCategory.deleteMany({});
+  }
+  try {
     await dstJoke.collection.drop({});
+  } catch (e) {
+    await dstJoke.deleteMany({});
+  }
+  try {
     await dstPost.collection.drop({});
+  } catch (e) {
+    await dstPost.deleteMany({});
+  }
+  try {
     await dstUser.collection.drop({});
+  } catch (e) {
+    await dstUser.deleteMany({});
+  }
+  try {
     await dstList.collection.drop({});
+  } catch (e) {
+    await dstList.deleteMany({});
+  }
+  try {
     await dstTenthingsStats.collection.drop({});
+  } catch (e) {
+    await dstTenthingsStats.deleteMany({});
+  }
+  try {
     await dstTenthingsPlayer.collection.drop({});
+  } catch (e) {
+    await dstTenthingsPlayer.deleteMany({});
+  }
+  try {
     await dstTenthingsGame.collection.drop({});
   } catch (e) {
-    console.error(e);
+    await dstTenthingsGame.deleteMany({});
   }
-
   const categories = await srcCategory.find({}).exec();
   await dstCategory.insertMany(categories);
   console.log(`${categories.length} categories synced`);
@@ -48,17 +75,20 @@ const backup = async () => {
 
   const users = await srcUser.find({}).exec();
   console.log(`${users.length} users to sync`);
-  await dstUser.deleteMany({});
   await dstUser.insertMany(_.uniq(users, user => user._id));
   console.log(`${users.length} users synced`);
 
   N = 0;
   const listCursor = await srcList.find().cursor();
-  await dstList.deleteMany({});
-  await listCursor.eachAsync(list => {
+  await listCursor.eachAsync(async list => {
     N++;
     if (N % 50 === 0) console.log(`${N} lists synced`);
-    return dstList.insertMany([list]);
+    try {
+      await dstList.insertMany([list]);
+    } catch (e) {
+      console.error(list.name);
+    }
+    return Promise.resolve();
   });
   console.log(`loop all ${N} lists success`);
 
@@ -70,14 +100,12 @@ const backup = async () => {
   	*/
 
   const stats = await srcTenthingsStats.find({}).exec();
-  await dstTenthingsStats.deleteMany({});
   await dstTenthingsStats.insertMany(stats);
   console.log(`${stats.length} stats synced`);
 
 
   N = 0;
   const tenthingsGameCursor = await srcTenthingsGame.find().cursor();
-  await dstTenthingsGame.deleteMany({});
   await tenthingsGameCursor.eachAsync(game => {
     N++;
     if (N % 50 === 0) console.log(`${N} games synced`);
@@ -88,7 +116,6 @@ const backup = async () => {
 
   N = 0;
   const tenthingsPlayerCursor = await srcTenthingsPlayer.find().cursor();
-  await dstTenthingsPlayer.deleteMany({});
   await tenthingsPlayerCursor.eachAsync(game => {
     N++;
     if (N % 50 === 0) console.log(`${N} players synced`);
