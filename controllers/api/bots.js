@@ -11,9 +11,9 @@ var bot = require('../../bots/telegram');
 var categories = require('../bots/tenthings/categories');
 var languages = require('../bots/tenthings/languages');
 
-var TenThingsList = require('../../models/tenthings/list');
-var User = require('../../models/user');
-var TenThingsGame = require('../../models/tenthings/game');
+var TenThingsList = require('../../models/tenthings/list')();
+var User = require('../../models/user')();
+var TenThingsGame = require('../../models/tenthings/game')();
 
 router.get('/names', (req, res, next) => {
   TenThingsList.find({})

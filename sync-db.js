@@ -1,29 +1,29 @@
 const _ = require('underscore');
 const moment = require('moment');
 
-const srcCategory = require('./models_backup/category');
-const dstCategory = require('./models/category');
+const srcCategory = require('./models/category')('backup');
+const dstCategory = require('./models/category')('master');
 
-const srcJoke = require('./models_backup/joke');
-const dstJoke = require('./models/joke');
+const srcJoke = require('./models/joke')('backup');
+const dstJoke = require('./models/joke')('master');
 
-const srcList = require('./models_backup/tenthings/list');
-const dstList = require('./models/tenthings/list');
+const srcList = require('./models/tenthings/list')('backup');
+const dstList = require('./models/tenthings/list')('master');
 
-const srcPost = require('./models_backup/post');
-const dstPost = require('./models/post');
+const srcPost = require('./models/post')('backup');
+const dstPost = require('./models/post')('master');
 
-const srcUser = require('./models_backup/user');
-const dstUser = require('./models/user');
+const srcUser = require('./models/user')('backup');
+const dstUser = require('./models/user')('master');
 
-const srcTenthingsGame = require('./models_backup/tenthings/game');
-const dstTenthingsGame = require('./models/tenthings/game');
+const srcTenthingsGame = require('./models/tenthings/game')('backup');
+const dstTenthingsGame = require('./models/tenthings/game')('master');
 
-const srcTenthingsPlayer = require('./models_backup/tenthings/player');
-const dstTenthingsPlayer = require('./models/tenthings/player');
+const srcTenthingsPlayer = require('./models/tenthings/player')('backup');
+const dstTenthingsPlayer = require('./models/tenthings/player')('master');
 
-const srcTenthingsStats = require('./models_backup/tenthings/stats');
-const dstTenthingsStats = require('./models/tenthings/stats');
+const srcTenthingsStats = require('./models/tenthings/stats')('backup');
+const dstTenthingsStats = require('./models/tenthings/stats')('master');
 
 const syncDB = async () => {
 

@@ -1,6 +1,7 @@
 const db = require('../../db');
 const mongoose = require('mongoose');
 const mongooseLeanVirtuals = require('mongoose-lean-virtuals');
+var List = {};
 
 var listSchema = new mongoose.Schema({
   name: String,
@@ -122,6 +123,9 @@ listSchema.virtual('search').get(function() {
   return this.name.removeAllButLetters();
 });
 */
-var List = db('master').model('List', listSchema);
 
-module.exports = List;
+for (const name in db) {
+  List[name] = db[name].model('List', listSchema);
+}
+
+module.exports = (database = 'master') => List[database];

@@ -7,11 +7,11 @@ const config = require('../../../config');
 const bot = require('../../../bots/telegram');
 const stats = require('./stats');
 const backup = require('../../../backup-db');
-const List = require('../../../models/tenthings/list');
-const Joke = require('../../../models/joke');
-const TenThingsGame = require('../../../models/tenthings/game');
-const TenThingsPlayer = require('../../../models/tenthings/player');
-const TenThingsStats = require('../../../models/tenthings/stats');
+const List = require('../../../models/tenthings/list')();
+const Joke = require('../../../models/joke')();
+const TenThingsGame = require('../../../models/tenthings/game')();
+const TenThingsPlayer = require('../../../models/tenthings/player')();
+const TenThingsStats = require('../../../models/tenthings/stats')();
 
 
 const resetDailyScore = (force = false) => {

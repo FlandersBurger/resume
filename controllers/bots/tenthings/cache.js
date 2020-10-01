@@ -1,6 +1,6 @@
 const redis = require('redis');
-const Game = require('../../../models/tenthings/game');
-const List = require('../../../models/tenthings/list');
+const Game = require('../../../models/tenthings/game')();
+const List = require('../../../models/tenthings/list')();
 
 exports.getGame = async chat_id => {
   const cachedGame = await redis.get(chat_id);

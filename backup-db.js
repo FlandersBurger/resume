@@ -1,22 +1,22 @@
 const _ = require('underscore');
 const moment = require('moment');
 
-const srcCategory = require('./models/category');
-const dstCategory = require('./models_backup/category');
-const srcJoke = require('./models/joke');
-const dstJoke = require('./models_backup/joke');
-const srcList = require('./models/tenthings/list');
-const dstList = require('./models_backup/tenthings/list');
-const srcPost = require('./models/post');
-const dstPost = require('./models_backup/post');
-const srcUser = require('./models/user');
-const dstUser = require('./models_backup/user');
-const srcTenthingsGame = require('./models/tenthings/game');
-const dstTenthingsGame = require('./models_backup/tenthings/game');
-const srcTenthingsPlayer = require('./models/tenthings/player');
-const dstTenthingsPlayer = require('./models_backup/tenthings/player');
-const srcTenthingsStats = require('./models/tenthings/stats');
-const dstTenthingsStats = require('./models_backup/tenthings/stats');
+const srcCategory = require('./models/category')('master');
+const dstCategory = require('./models/category')('backup');
+const srcJoke = require('./models/joke')('master');
+const dstJoke = require('./models/joke')('backup');
+const srcList = require('./models/tenthings/list')('master');
+const dstList = require('./models/tenthings/list')('backup');
+const srcPost = require('./models/post')('master');
+const dstPost = require('./models/post')('backup');
+const srcUser = require('./models/user')('master');
+const dstUser = require('./models/user')('backup');
+const srcTenthingsGame = require('./models/tenthings/game')('master');
+const dstTenthingsGame = require('./models/tenthings/game')('backup');
+const srcTenthingsPlayer = require('./models/tenthings/player')('master');
+const dstTenthingsPlayer = require('./models/tenthings/player')('backup');
+const srcTenthingsStats = require('./models/tenthings/stats')('master');
+const dstTenthingsStats = require('./models/tenthings/stats')('backup');
 
 const backup = async () => {
 

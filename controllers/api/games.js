@@ -3,7 +3,7 @@ var redis = require('../../redis');
 var websockets = require('../../websockets');
 const FuzzyMatching = require('fuzzy-matching');
 
-var User = require('../../models/user');
+var User = require('../../models/user')();
 
 var players = [];
 

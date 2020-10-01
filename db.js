@@ -14,4 +14,4 @@ config.mongoDBs.forEach(db => {
   });
 });
 
-module.exports = name => connections[name];
+module.exports = connections;

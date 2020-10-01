@@ -1,4 +1,4 @@
-var Category = require('../../models/category');
+var Category = require('../../models/category')();
 var router = require('express').Router();
 var redis = require('../../redis');
 var websockets = require('../../websockets');

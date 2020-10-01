@@ -3,7 +3,7 @@ var bcrypt = require('bcryptjs');
 var jwt = require('jwt-simple');
 var admin = require('firebase-admin');
 var config = require('../../config');
-var User = require('../../models/user');
+var User = require('../../models/user')();
 
 router.get('/', function(req, res, next) {
   if (!req.auth.userid) {

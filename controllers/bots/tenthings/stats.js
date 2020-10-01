@@ -3,9 +3,9 @@ const _ = require('underscore');
 const bot = require('../../../bots/telegram');
 const messages = require('./messages');
 const hints = require('./hints');
-const Game = require('../../../models/tenthings/game');
-const Player = require('../../../models/tenthings/player');
-const List = require('../../../models/tenthings/list');
+const Game = require('../../../models/tenthings/game')();
+const Player = require('../../../models/tenthings/player')();
+const List = require('../../../models/tenthings/list')();
 
 exports.getScores = (game_id, type) => {
   /*

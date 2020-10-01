@@ -1,4 +1,3 @@
-/*jslint esversion: 6*/
 const moment = require('moment');
 const request = require('request');
 const MAXHINTS = 6;
