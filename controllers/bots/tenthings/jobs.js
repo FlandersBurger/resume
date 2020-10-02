@@ -45,7 +45,7 @@ const resetDailyScore = (force = false) => {
             lastPlayDate: {
               $gte: moment().subtract(1, 'days')
             }
-          }).select('_id id scoreDaily').exec();
+          }).select('_id id scoreDaily first_name').exec();
           const highScore = await getHighScore(players);
           let winners = players.filter(player => player.scoreDaily === highScore);
           let message = winners.reduce((msg, {

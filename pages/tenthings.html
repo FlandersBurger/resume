@@ -209,6 +209,12 @@
                     ng-disabled="gettingBlurbs || !selectedList || (!currentUser.admin && selectedList.creator._id !== currentUser._id && selectedList._id)">
               Get Music Videos
             </button>
+            <button class="btn btn-default"
+                    ng-click="getPics()"
+                    ng-if="selectedList.categories.indexOf('Nature') >= 0"
+                    ng-disabled="gettingBlurbs || !selectedList || (!currentUser.admin && selectedList.creator._id !== currentUser._id && selectedList._id)">
+              Get Pics
+            </button>
           </div>
           <!--div id="category-select">
             <button class="btn btn-sm"

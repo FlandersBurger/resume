@@ -690,7 +690,7 @@ const angleBrackets = (str) => {
 };
 
 /*
-var string = 'The qui-ck bro"wn f\'ox jump+ed over the lazy dog';
+var string = 'Coinage metals';
 //string = 'TERA';
 console.log(hints.getHint(0, string));
 console.log(hints.getHint(1, string));

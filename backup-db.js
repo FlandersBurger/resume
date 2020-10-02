@@ -74,7 +74,6 @@ const backup = async () => {
   console.log(`${posts.length} posts synced`);
 
   const users = await srcUser.find({}).exec();
-  console.log(`${users.length} users to sync`);
   await dstUser.insertMany(_.uniq(users, user => user._id));
   console.log(`${users.length} users synced`);
 

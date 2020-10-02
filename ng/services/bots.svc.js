@@ -58,6 +58,10 @@ angular.module('app')
       return $http.get(`/api/bots/lists/${list._id}/musicvideos`);
     };
 
+    svc.getPics = function(list) {
+      return $http.get(`/api/bots/lists/${list._id}/pics`);
+    };
+
     svc.getPause = function() {
       return $http.get(`/api/bots/pause`);
     };

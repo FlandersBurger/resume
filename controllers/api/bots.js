@@ -227,6 +227,36 @@ router.get('/lists/:id/musicvideos', async (req, res, next) => {
   }
 });
 
+
+router.get('/lists/:id/pics', async (req, res, next) => {
+  let list = await TenThingsList.findOne({
+    _id: req.params.id
+  });
+  if (list) {
+    let changed = false;
+    for (let value of list.values) {
+      const unsplashDB = await request(`https://api.unsplash.com/search/photos?client_id=${config.tokens.unsplashapi.key}&query=${encodeURIComponent(value.value.replace(' ', '+'))}`);
+      try {
+        const picPath = JSON.parse(unsplashDB).results[0].urls.regular;
+        if (picPath) {
+          value.blurb = picPath;
+        }
+        changed = true;
+      } catch (e) {
+        console.error(`No Poster for ${value.value}`);
+      }
+    }
+    if (changed) {
+      const saved = await list.save();
+      res.sendStatus(200);
+    } else {
+      res.sendStatus(304);
+    }
+  } else {
+    res.sendStatus(404);
+  }
+});
+
 router.put('/lists', (req, res, next) => {
   if (req.auth.userid == '5ece428af848aa2fc392d099') {
     return res.sendStatus(401);

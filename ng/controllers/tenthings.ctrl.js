@@ -331,4 +331,12 @@ angular.module('app')
       });
     };
 
+    $scope.getPics = () => {
+      $scope.gettingBlurbs = true;
+      BotSvc.getPics($scope.selectedList).then(response => {
+        $scope.selectList($scope.selectedList);
+        $scope.gettingBlurbs = false;
+      });
+    };
+
   });
