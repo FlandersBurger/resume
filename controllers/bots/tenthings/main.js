@@ -1098,6 +1098,7 @@ router.post('/', async ({
               if (list) {
                 game.pickedLists.push(list._id);
                 game.save();
+                bot.answerCallback(body.callback_query.id, `${list.name} added`);
                 bot.queueMessage(body.callback_query.message.chat.id, `<b>${list.name}</b> added to the queue, ${data.requestor}.\nType /lists to see the queue`);
               } else {
                 bot.queueMessage(body.callback_query.message.chat.id, `This list no longer exists`);
@@ -1108,6 +1109,7 @@ router.post('/', async ({
     } else if (data.type === 'suggest') {
       const suggestion = body.callback_query.message.text.substring(body.callback_query.message.text.indexOf(' "') + 2, body.callback_query.message.text.indexOf('",'));
       bot.notify(`<b>${data.id.capitalize()} suggestion</b>\n${suggestion}\n<i>${data.requestor}</i>`);
+      bot.answerCallback(body.callback_query.id, `Suggestion noted`);
       bot.queueMessage(body.callback_query.message.chat.id, `Suggestion noted, ${data.requestor}!\n${data.id === 'list' ? 'Note that you can add your own lists at https://belgocanadian.com/tenthings' : ''}`);
     }
     return res.sendStatus(200);
@@ -1445,7 +1447,7 @@ const evaluateCommand = async (res, msg, game, player, isNew) => {
       if (suggestion && suggestion != 'TenThings_Bot' && suggestion != '@TenThings_Bot') {
         player.suggestions++;
         player.save();
-        let message = `<b>Suggestion</b>\n${suggestion}\n<i>${msg.from.username ? msg.from.username : msg.from.first_name}</i>`;
+        let message = `<b>Suggestion</b>\n${suggestion}\n<i>${msg.from.username ? `@${msg.from.username}` : msg.from.first_name}</i>`;
         const regex = suggestion.replace(new RegExp('[^a-zA-Z0-9 ]+', 'g'), '.*').split(' ').reduce((result, word) => `${result}(?=.*${word}.*)`, '');
         List.find({
             $or: [{
@@ -1483,7 +1485,7 @@ const evaluateCommand = async (res, msg, game, player, isNew) => {
       if (typo && typo != 'tenthings_bot' && typo != '@tenthings_bot') {
         player.suggestions++;
         player.save();
-        let message = `<b>Typo</b>\n${msg.text.substring(msg.command.length + 1, msg.text.length)}\n<i>${msg.from.username ? msg.from.username : msg.from.first_name}</i>`;
+        let message = `<b>Typo</b>\n${msg.text.substring(msg.command.length + 1, msg.text.length)}\n<i>${msg.from.username ? `@${msg.from.username}` : msg.from.first_name}</i>`;
         message += `\nList: ${game.list.name}`;
         bot.notifyAdmins(message);
         bot.notify(message);
