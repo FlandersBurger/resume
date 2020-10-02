@@ -1107,6 +1107,7 @@ router.post('/', async ({
       });
     } else if (data.type === 'suggest') {
       const suggestion = body.callback_query.message.text.substring(body.callback_query.message.text.indexOf('<i>' + 3), body.callback_query.message.text.indexOf('</i>'));
+      bot.notify(JSON.stringify(body.callback_query));
       bot.notify(`<b>${data.id.capitalize()} suggestion</b>\n${suggestion}\n<i>${data.requestor}</i>`);
       //bot.notifyAdmins(message);
       bot.queueMessage(msg.chat.id, `Suggestion noted, ${msg.from.first_name}!\nNote that you can add your own lists at https://belgocanadian.com/tenthings`);
