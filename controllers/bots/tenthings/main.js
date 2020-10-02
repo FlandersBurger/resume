@@ -742,7 +742,7 @@ const skipList = (game, skipper) => {
       skips: 1
     }
   }).exec((err, updatedPlayers) => {
-    if (err) return bot.notifyAdmin(err);
+    if (err) return bot.notifyAdmin(`Skip List Error:\n${err}`);
     stats.getList(game, async list => {
       let message = `<b>${game.list.name}</b> skipped!\n`;
       message += list;
@@ -955,7 +955,7 @@ router.post('/', async ({
   let msg, i, item;
   if (body.callback_query) {
     const data = JSON.parse(body.callback_query.data);
-    data.requestor = body.callback_query.from.first_name;
+    data.requestor = body.callback_query.from.username ? `@${body.callback_query.from.username}` : `${body.callback_query.from.first_name} ${body.callback_query.from.last_name ? body.callback_query.from.last_name : ''}`;
     if (data.type === 'rate') {
       let doVote = false;
       if (voters[body.callback_query.from.id]) {
@@ -1052,7 +1052,7 @@ router.post('/', async ({
             game.disabledCategories.push(data.id);
           }
           game.save((err, savedGame) => {
-            if (err) return bot.notifyAdmin(JSON.stringify(err));
+            if (err) return bot.notifyAdmin(`Category Save Error: \n${JSON.stringify(err)}`);
             bot.answerCallback(body.callback_query.id, `${data.id} -> ${categoryIndex >= 0 ? 'On' : 'Off'}`);
             bot.editKeyboard(body.callback_query.message.chat.id, body.callback_query.message.message_id, keyboards.categories(game));
           });
@@ -1069,11 +1069,11 @@ router.post('/', async ({
           Game.findOne({
             chat_id: body.callback_query.message.chat.id
           }).select('chat_id settings').exec((err, game) => {
-            if (err) return bot.notifyAdmin(JSON.stringify(err));
+            if (err) return bot.notifyAdmin(`Settings Find Error: \n${JSON.stringify(err)}`);
             console.log(`${data.id} toggled for ${game._id}`);
             game.settings[data.id] = !game.settings[data.id];
             game.save((err, savedGame) => {
-              if (err) return bot.notifyAdmin(JSON.stringify(err));
+              if (err) return bot.notifyAdmin(`Settings Save Error: \n${JSON.stringify(err)}`);
               bot.answerCallback(body.callback_query.id, `${data.id} -> ${game.settings[data.id] ? 'On' : 'Off'}`);
               bot.editKeyboard(body.callback_query.message.chat.id, body.callback_query.message.message_id, keyboards.settings(game));
             });
@@ -1105,6 +1105,11 @@ router.post('/', async ({
             }
           });
       });
+    } else if (data.type === 'suggest') {
+      const suggestion = body.callback_query.message.text.substring(body.callback_query.message.text.indexOf('<i>' + 3), body.callback_query.message.text.indexOf('</i>'));
+      bot.notify(`<b>${data.id.capitalize()} suggestion</b>\n${suggestion}\n<i>${data.requestor}</i>`);
+      //bot.notifyAdmins(message);
+      bot.queueMessage(msg.chat.id, `Suggestion noted, ${msg.from.first_name}!\nNote that you can add your own lists at https://belgocanadian.com/tenthings`);
     }
     return res.sendStatus(200);
     /*
@@ -1128,7 +1133,7 @@ router.post('/', async ({
       Game.findOne({
         chat_id: body.message.chat.id
       }).select('settings').exec((err, game) => {
-        if (err) return notifyAdmin(err);
+        if (err) return notifyAdmin(`New Participant Error:\n${err}`);
         if (game && game.settings.intro) {
           bot.queueMessage(body.message.chat.id, messages.introduction(body.message.new_chat_participant.first_name));
         }
@@ -1212,12 +1217,12 @@ router.post('/', async ({
   }
   try {
     if (!msg.from || !msg.from.id) {
-      bot.notifyAdmin(JSON.stringify(body));
+      bot.notifyAdmin(`No From in message:\n${JSON.stringify(body)}`);
       return res.sendStatus(200);
     }
   } catch (e) {
     console.error(e);
-    bot.notifyAdmin(JSON.stringify(msg));
+    bot.notifyAdmin(`Can't send message:\n${JSON.stringify(msg)}`);
     return res.sendStatus(200);
   }
   Game.findOne({
@@ -1460,19 +1465,14 @@ const evaluateCommand = async (res, msg, game, player, isNew) => {
           })
           .select('name')
           .exec((err, lists) => {
-            if (err) {
-              console.error(err);
-              return bot.notifyAdmin(message);
-            }
+            if (err) return bot.notifyAdmin(`Error finding lists:\n${message}`);
             if (lists.length > 0) {
               //message = `I found some similar lists that already exist with ${msg.text.substring(msg.command.length + 1, msg.text.length)}, ${msg.from.first_name}!\nPlease refine your suggestion to be more specific.\n${lists.reduce((txt, list) => `${txt}\n - ${list.name}`, '<b>Lists:</b>')}`;
               //bot.notifyAdmin(message);
               bot.sendKeyboard(game.chat_id, `I found some similar lists that already exist with ${msg.text.substring(msg.command.length + 1, msg.text.length)}\n<b>Add one to queue</b>`, keyboards.lists(lists));
               //bot.queueMessage(msg.chat.id, message);
             } else {
-              bot.notify(message);
-              //bot.notifyAdmins(message);
-              bot.queueMessage(msg.chat.id, `Suggestion noted, ${msg.from.first_name}!\nNote that you can add your own lists at https://belgocanadian.com/tenthings`);
+              bot.sendKeyboard(game.chat_id, `To request <i>${suggestion}</i>, let us know what type of request it is:`, keyboards.suggestion());
             }
           });
       } else {

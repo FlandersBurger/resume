@@ -290,6 +290,25 @@ module.exports = {
       ]
     };
   },
+  suggestion: {
+    inline_keyboard: [
+      [{
+          'text': `List`,
+          'callback_data': JSON.stringify({
+            type: 'suggest',
+            id: 'list',
+          })
+        },
+        {
+          'text': `Feature`,
+          'callback_data': JSON.stringify({
+            type: 'suggest',
+            id: 'feat'
+          })
+        }
+      ]
+    ]
+  },
   categories: ({
     chat_id,
     disabledCategories
