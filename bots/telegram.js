@@ -86,12 +86,10 @@ function TelegramBot() {
     });
   };
 
-
   bot.deleteMessage = (channel, message_id) => {
     const url = `https://api.telegram.org/beta/bot${bot.token}/deleteMessage?chat_id=${channel}&message_id=${message_id}`;
     request(url, (error, r, body) => {
       if (error) return;
-      resolve(body);
     });
   };
 
