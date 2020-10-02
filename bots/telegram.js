@@ -1,4 +1,3 @@
-/*jslint esversion: 10*/
 const request = require('request');
 const Queue = require('bull');
 const config = require('../config');
@@ -84,6 +83,15 @@ function TelegramBot() {
         }
       });
       resolve();
+    });
+  };
+
+
+  bot.deleteMessage = (channel, message_id) => {
+    const url = `https://api.telegram.org/beta/bot${bot.token}/deleteMessage?chat_id=${channel}&message_id=${message_id}`;
+    request(url, (error, r, body) => {
+      if (error) return;
+      resolve(body);
     });
   };
 
