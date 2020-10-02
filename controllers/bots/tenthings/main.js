@@ -1108,8 +1108,8 @@ router.post('/', async ({
     } else if (data.type === 'suggest') {
       const suggestion = body.callback_query.message.text.substring(body.callback_query.message.text.indexOf('"' + 1), body.callback_query.message.text.indexOf('",'));
       bot.notify(`<b>${data.id.capitalize()} suggestion</b>\n${suggestion}\n<i>${data.requestor}</i>`);
-      //bot.notifyAdmins(message);
-      bot.queueMessage(msg.chat.id, `Suggestion noted, ${msg.from.first_name}!\nNote that you can add your own lists at https://belgocanadian.com/tenthings`);
+      bot.notify(JSON.stringify(body.callback_query));
+      bot.queueMessage(body.callback_query.message.chat.id, `Suggestion noted, ${msg.from.first_name}!\nNote that you can add your own lists at https://belgocanadian.com/tenthings`);
     }
     return res.sendStatus(200);
     /*
