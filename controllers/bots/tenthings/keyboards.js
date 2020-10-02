@@ -303,7 +303,7 @@ module.exports = {
           'text': `Feature`,
           'callback_data': JSON.stringify({
             type: 'suggest',
-            id: 'feat'
+            id: 'feature'
           })
         }
       ]

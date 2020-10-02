@@ -1106,9 +1106,8 @@ router.post('/', async ({
           });
       });
     } else if (data.type === 'suggest') {
-      const suggestion = body.callback_query.message.text.substring(body.callback_query.message.text.indexOf('"' + 1), body.callback_query.message.text.indexOf('",'));
+      const suggestion = body.callback_query.message.text.substring(body.callback_query.message.text.indexOf(' "' + 2), body.callback_query.message.text.indexOf('",'));
       bot.notify(`<b>${data.id.capitalize()} suggestion</b>\n${suggestion}\n<i>${data.requestor}</i>`);
-      bot.notify(JSON.stringify(body.callback_query));
       bot.queueMessage(body.callback_query.message.chat.id, `Suggestion noted, ${data.requestor}!\n${data.id === 'list' ? 'Note that you can add your own lists at https://belgocanadian.com/tenthings' : ''}`);
     }
     return res.sendStatus(200);
