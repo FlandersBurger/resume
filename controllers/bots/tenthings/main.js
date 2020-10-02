@@ -1473,7 +1473,7 @@ const evaluateCommand = async (res, msg, game, player, isNew) => {
               bot.sendKeyboard(game.chat_id, `I found some similar lists that already exist with ${msg.text.substring(msg.command.length + 1, msg.text.length)}\n<b>Add one to queue</b>`, keyboards.lists(lists));
               //bot.queueMessage(msg.chat.id, message);
             } else {
-              bot.sendKeyboard(game.chat_id, `To request <b>"${suggestion}"</b>, let us know what type of request it is:`, keyboards.suggestion);
+              bot.sendKeyboard(game.chat_id, `I didn't find any corresponding lists, ${msg.from.first_name}. If you want to request <b>"${suggestion}"</b>, let us know what type of request it is:`, keyboards.suggestion);
             }
           });
       } else {
