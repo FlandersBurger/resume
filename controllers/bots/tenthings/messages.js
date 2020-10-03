@@ -38,11 +38,12 @@ module.exports = {
     message += '/me - My stats\n';
     message += '/intro - What am I?\n';
     message += '/logic - An explanation of the logic used\n';
-    message += '/settings - Bot behaviour settings\n';
-    message += '/categories - Select which categories to include\n';
+    message += '/settings - Bot behaviour settings (Admin Only)\n';
+    message += '/categories - Select which categories to include (Admin Only)\n';
     message += '/typo [message] - Flag a typo in the current list\n';
     message += '/suggest [message] - Find a list or suggest it to the admins\n';
     message += '/lists - See queued lists\n';
+    message += '/stop - Switch me off\n';
     return message;
   },
   guessed: function(match, player) {
