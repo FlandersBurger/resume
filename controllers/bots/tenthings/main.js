@@ -847,8 +847,7 @@ function getRandom(arr, n) {
 }
 
 const createMinigame = async (game, msg) => {
-  let items = await
-  List.aggregate([{
+  let items = await List.aggregate([{
       $project: {
         categories: 1,
         values: 1,
@@ -883,11 +882,10 @@ const createMinigame = async (game, msg) => {
     }
     return answers;
   }, []).map(answer => ({
-    name: answer.name,
-    lean: answer.lean,
+    answer: answer._id,
+    lean: answer._id.removeAllButLetters(),
     lists: _.uniq(answer.lists)
   })).filter(answer => answer.lists.length > 2);
-  console.log(answers);
   let minigame = answers[Math.floor(Math.random() * answers.length)];
   console.log(minigame);
   let message = '<b>Find the connection</b>\n';
@@ -895,9 +893,9 @@ const createMinigame = async (game, msg) => {
     msg += `- ${list}\n`;
     return msg;
   }, '');
-  message += `<b>${minigame.name.conceal('')}</b>`;
+  message += `<b>${minigame.answer.conceal('')}</b>`;
   bot.queueMessage(msg.chat.id, message);
-  game.minigame.answer = minigame.name;
+  game.minigame.answer = minigame.answer;
   game.minigame.date = moment();
   game.minigame.lists = minigame.lists;
 
