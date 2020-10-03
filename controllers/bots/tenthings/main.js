@@ -878,7 +878,7 @@ const createMinigame = (game, msg) => new Promise(function(resolve, reject) {
         msg += `- ${list}\n`;
         return msg;
       }, '');
-      message += minigame.answer.conceal('');
+      message += `<b>${minigame.answer.conceal('')}</b>`;
       bot.queueMessage(msg.chat.id, message);
       game.minigame.answer = minigame.answer;
       game.minigame.date = moment();
