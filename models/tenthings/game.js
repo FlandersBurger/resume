@@ -245,6 +245,11 @@ for (const name in db) {
         type: Boolean,
         required: true,
         default: true
+      },
+      updates: {
+        type: Boolean,
+        required: true,
+        default: true
       }
     }
   });

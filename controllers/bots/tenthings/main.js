@@ -1219,7 +1219,6 @@ router.post('/', async ({
   }
   try {
     if (!msg.from || !msg.from.id) {
-      bot.notifyAdmin(`No From in message:\n${JSON.stringify(body)}`);
       return res.sendStatus(200);
     }
   } catch (e) {
@@ -1242,7 +1241,7 @@ router.post('/', async ({
         createGame(msg.chat.id, msg.from)
           .then(newGame => {
             if (err) bot.notifyAdmin('POST: ' + JSON.stringify(err) + '\n' + JSON.stringify(game));
-            console.log('Game Saved!');
+            console.log(`New game created for ${msg.chat.id}`);
             return evaluateCommand(res, msg, newGame.game, newGame.player, true);
           });
       } else {
@@ -1606,6 +1605,16 @@ const evaluateCommand = async (res, msg, game, player, isNew) => {
       }
   }
 };
+
+Game.updateMany({}, {
+  $unset: {
+    players: '',
+    category: ''
+  }
+}).exec((err, done) => {
+  if (err) return console.error(err);
+  console.log(done);
+});
 
 router.get('/queue', async (req, res, next) => {
   res.json(await getQueue());

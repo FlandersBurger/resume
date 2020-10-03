@@ -204,7 +204,6 @@ const updateDailyStats = async (games, totalPlayers, uniquePlayers) => {
       },
     }
   }]).exec();
-  console.log('here');
   let message = `${games.length} games played today with ${totalPlayers} players of which ${uniquePlayers} unique\n`;
   message += `${(listStats[0].plays - base.listsPlayed).makeReadable()} lists played\n`;
   message += `${(listStats[0].votes - base.votes).makeReadable()} list votes given\n`;
@@ -364,9 +363,7 @@ if (process.env.NODE_ENV === 'production') {
             message += `\n- ${name}`;
           });
           TenThingsGame.find({
-              'lastPlayDate': {
-                $lt: moment().subtract(7, 'days')
-              },
+              'settings.updates': true,
               enabled: true
             }).select('chat_id')
             .then(games => {
@@ -400,10 +397,9 @@ if (process.env.NODE_ENV === 'production') {
           }) => {
             message += `\n- ${name}`;
           });
+          message += '\n<i>Switch off daily updates through /settings</i>';
           TenThingsGame.find({
-              'lastPlayDate': {
-                $lt: moment().subtract(7, 'days')
-              },
+              'settings.updates': true,
               enabled: true
             }).select('chat_id')
             .then(games => {

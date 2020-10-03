@@ -293,17 +293,32 @@ module.exports = {
   suggestion: {
     inline_keyboard: [
       [{
-          'text': `List`,
+          'text': `☰ List`,
           'callback_data': JSON.stringify({
             type: 'suggest',
             id: 'list',
           })
         },
         {
-          'text': `Feature`,
+          'text': `☑ Feature`,
           'callback_data': JSON.stringify({
             type: 'suggest',
             id: 'feature'
+          })
+        }
+      ],
+      [{
+          'text': `⚠ Typo`,
+          'callback_data': JSON.stringify({
+            type: 'suggest',
+            id: 'typo',
+          })
+        },
+        {
+          'text': `⛐ Bug`,
+          'callback_data': JSON.stringify({
+            type: 'suggest',
+            id: 'bug'
           })
         }
       ]
@@ -351,6 +366,15 @@ module.exports = {
             'callback_data': JSON.stringify({
               type: 'setting',
               id: 'sass',
+              game: chat_id
+            })
+          }
+        ],
+        [{
+            'text': `Daily updates: ${settings.updates ? 'On' : 'Off'}`,
+            'callback_data': JSON.stringify({
+              type: 'setting',
+              id: 'update',
               game: chat_id
             })
           },
