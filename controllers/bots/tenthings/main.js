@@ -1606,16 +1606,6 @@ const evaluateCommand = async (res, msg, game, player, isNew) => {
   }
 };
 
-Game.updateMany({}, {
-  $unset: {
-    players: '',
-    category: ''
-  }
-}).exec((err, done) => {
-  if (err) return console.error(err);
-  console.log(done);
-});
-
 router.get('/queue', async (req, res, next) => {
   res.json(await getQueue());
 });
