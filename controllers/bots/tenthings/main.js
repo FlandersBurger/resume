@@ -889,6 +889,7 @@ const createMinigame = async (game, msg) => {
   })).filter(answer => answer.lists.length > 2);
   console.log(answers);
   let minigame = answers[Math.floor(Math.random() * answers.length)];
+  console.log(minigame);
   let message = '<b>Find the connection</b>\n';
   message += getRandom(minigame.lists, 10).reduce((msg, list) => {
     msg += `- ${list}\n`;
