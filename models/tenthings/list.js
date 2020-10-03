@@ -7,7 +7,6 @@ var listSchema = new mongoose.Schema({
   name: String,
   search: String,
   description: String,
-  category: String,
   language: {
     type: String,
     required: true,

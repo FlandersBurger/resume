@@ -1605,7 +1605,7 @@ const evaluateCommand = async (res, msg, game, player, isNew) => {
       }
   }
 };
-
+/*
 List.updateMany({}, {
   $unset: {
     category: ''
@@ -1614,7 +1614,7 @@ List.updateMany({}, {
   if (err) return console.error(err);
   console.log(done);
 });
-
+*/
 router.get('/queue', async (req, res, next) => {
   res.json(await getQueue());
 });
