@@ -887,13 +887,14 @@ const createMinigame = async (game, msg) => {
     lean: answer.lean,
     lists: _.uniq(answer.lists)
   })).filter(answer => answer.lists.length > 2);
+  console.log(answers);
   let minigame = answers[Math.floor(Math.random() * answers.length)];
   let message = '<b>Find the connection</b>\n';
   message += getRandom(minigame.lists, 10).reduce((msg, list) => {
     msg += `- ${list}\n`;
     return msg;
   }, '');
-  message += `<b>${minigame.answer.conceal('')}</b>`;
+  message += `<b>${minigame.name.conceal('')}</b>`;
   bot.queueMessage(msg.chat.id, message);
   game.minigame.answer = minigame.name;
   game.minigame.date = moment();
