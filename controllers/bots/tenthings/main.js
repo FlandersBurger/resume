@@ -846,52 +846,62 @@ function getRandom(arr, n) {
   return result;
 }
 
-const createMinigame = (game, msg) => new Promise(function(resolve, reject) {
-  List
-    .find({
-      categories: {
-        $nin: game.disabledCategories
+const createMinigame = async (game, msg) => {
+  let lists = await
+  List.aggregate([{
+      $project: {
+        categories: 1,
+        values: 1,
+        name: 1
       }
-    })
-    .lean()
-    .exec((err, lists) => {
-      if (err) return reject(err);
-      let answers = lists.reduce((answers, list) => {
-        for (const value of list.values) {
-          if (!answers[value.value]) answers[value.value] = [list.name];
-          else answers[value.value].push(list.name);
+    },
+    {
+      $match: {
+        categories: {
+          $nin: game.disabledCategories
         }
-        return answers;
-      }, {});
-      let result = Object.keys(answers).reduce((result, answer) => {
-        if (answers[answer] && answers[answer].length > 2) {
-          result.push({
-            answer: answer,
-            lists: answers[answer]
-          });
-        }
-        return result;
-      }, []);
-      let minigame = result[Math.floor(Math.random() * result.length)];
-      let message = '<b>Find the connection</b>\n';
-      message += getRandom(minigame.lists, 10).reduce((msg, list) => {
-        msg += `- ${list}\n`;
-        return msg;
-      }, '');
-      message += minigame.answer.conceal('');
-      bot.queueMessage(msg.chat.id, message);
-      game.minigame.answer = minigame.answer;
-      game.minigame.date = moment();
-      game.minigame.lists = minigame.lists;
+      }
+    },
+    {
+      $unwind: '$values'
+    },
+    {
+      $group: {
+        _id: '$values.value',
+        lists: {
+          $push: '$name'
+        },
+      }
+    }
+  ]);
+  const answers = items.reduce((answers, item, i) => {
+    let answer = _.find(answers, answer => answer.lean === item.lean && answer.name !== item.name);
+    if (answer) {
+      answer.lists.concat(item.lists);
+    } else {
+      answers.push(item);
+    }
+    return answers;
+  }, []).map(answer => ({
+    name: answer.name,
+    lean: answer.lean,
+    lists: _.uniq(answer.lists)
+  })).filter(answer => answer.lists.length > 2);
+  let minigame = answers[Math.floor(Math.random() * answers.length)];
+  let message = '<b>Find the connection</b>\n';
+  message += getRandom(minigame.lists, 10).reduce((msg, list) => {
+    msg += `- ${list}\n`;
+    return msg;
+  }, '');
+  message += `<b>${minigame.answer.conceal('')}</b>`;
+  bot.queueMessage(msg.chat.id, message);
+  game.minigame.answer = minigame.name;
+  game.minigame.date = moment();
+  game.minigame.lists = minigame.lists;
 
-      game.save(err => {
-        if (err) return reject(err);
-        resolve();
-        //bot.notifyAdmin(`"<b>${foundList.name}</b>" ${data.vote > 0 ? 'up' : 'down'}voted by <i>${body.callback_query.from.first_name}</i>!`);
-        //bot.notifyAdmin(`Can't save ${JSON.stringify(game.chat_id)}`);
-      });
-    });
-});
+  await game.save();
+  return;
+};
 
 router.post('/', async ({
   body
