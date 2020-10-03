@@ -1437,12 +1437,9 @@ const evaluateCommand = async (res, msg, game, player, isNew) => {
         console.error(e);
       }
       break;
-      /*
-      case '/stop':
-        delete games[msg.chat.id];
-        bot.queueMessage(msg.chat.id, 'Game stopped');
-        break;
-      */
+    case '/stop':
+      deactivateGame(game);
+      break;
     case '/suggest':
       const suggestion = msg.text.substring(msg.command.length + 1, msg.text.length);
       if (suggestion && suggestion != 'TenThings_Bot' && suggestion != '@TenThings_Bot') {
@@ -1604,13 +1601,22 @@ const evaluateCommand = async (res, msg, game, player, isNew) => {
       }
       break;
     default:
-      if (game.enabled && game.lastPlayDate >= moment().subtract(1, 'days')) {
+      if (game.enabled) {
         queueGuess(game, player, msg);
-      } else if (game.enabled && game.lastPlayDate < moment().subtract(1, 'days')) {
-        deactivateGame(game);
       }
   }
 };
+
+Game.updateMany({
+  enabled: false
+}, {
+  $set: {
+    enabled: true
+  }
+}).exec((err, done) => {
+  if (err) return console.error(err);
+  console.log(done);
+});
 
 router.get('/queue', async (req, res, next) => {
   res.json(await getQueue());
@@ -1647,7 +1653,7 @@ const activateGame = (game, save = false) => {
 const deactivateGame = game => {
   game.enabled = false;
   game.save();
-  bot.sendMessage(game.chat_id, 'I am sleeping, type /list or /start to wake me up.\nInactive games will be deleted after 30 days');
+  bot.sendMessage(game.chat_id, 'I am now sleeping, type /list or /start to wake me up.\nInactive games will be deleted after 30 days');
 };
 
 /*
