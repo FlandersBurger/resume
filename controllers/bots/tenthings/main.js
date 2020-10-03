@@ -874,19 +874,20 @@ const createMinigame = async (game, msg) => {
     }
   ]);
   const answers = items.reduce((answers, item, i) => {
-    let answer = _.find(answers, answer => answer.lean === item.lean && answer.name !== item.name);
+    let answer = answers[item.lean];
     if (answer) {
-      answer.lists.concat(item.lists);
+      answer.lists = _.uniq(answer.lists.concat(item.lists));
     } else {
-      answers.push(item);
+      answers[item.lean] = {
+        answer: item._id,
+        lean: item._id.removeAllButLetters(),
+        lists: item.lists
+      };
     }
     return answers;
-  }, []).map(answer => ({
-    answer: answer._id,
-    lean: answer._id.removeAllButLetters(),
-    lists: _.uniq(answer.lists)
-  })).filter(answer => answer.lists.length > 2);
-  let minigame = answers[Math.floor(Math.random() * answers.length)];
+  }, {});
+  const minigames = Object.values(answers).filter(answer => answer.lists.length > 2);
+  let minigame = minigames[Math.floor(Math.random() * minigames.length)];
   console.log(minigame);
   let message = '<b>Find the connection</b>\n';
   message += getRandom(minigame.lists, 10).reduce((msg, list) => {
