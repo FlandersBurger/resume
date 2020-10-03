@@ -847,7 +847,7 @@ function getRandom(arr, n) {
 }
 
 const createMinigame = async (game, msg) => {
-  let lists = await
+  let items = await
   List.aggregate([{
       $project: {
         categories: 1,
