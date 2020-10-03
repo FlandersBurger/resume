@@ -441,7 +441,7 @@ const processGuess = guess => {
         chat_id: guess.game
       })
       .populate('list.creator')
-      .select('_id chat_id guessers list lastPlayDate hints streak settings minigame')
+      .select('_id chat_id guessers list lastPlayDate hints streak settings minigame disabledCategories')
       .exec(async (err, game) => {
         if (err) return reject();
         let player = await getPlayer(game._id, {
@@ -858,7 +858,7 @@ const createMinigame = async (game, msg) => {
     {
       $match: {
         categories: {
-          $nin: game.disabledCategories
+          $nin: game.disabledCategories ? game.disabledCategories : []
         }
       }
     },
