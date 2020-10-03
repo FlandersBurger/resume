@@ -292,11 +292,15 @@ router.delete('/lists/:id', (req, res, next) => {
     })
     .exec((err, user) => {
       if (err) return next(err);
-      TenThingsList.findOne(req.params.id, (err, list) => {
+      TenThingsList.findOne({
+        _id: req.params.id
+      }, (err, list) => {
         if (err) return next(err);
         if (list) {
           if (config.admins.indexOf(req.auth.userid) >= 0 || req.auth.userid === list.creator) {
-            TenThingsList.findByIdAndRemove(req.params.id, (err, list) => {
+            TenThingsList.findByIdAndRemove({
+              _id: req.params.id
+            }, (err, list) => {
               if (err) return next(err);
               bot.notifyAdmins('<b>' + list.name + '</b> deleted by ' + user.username);
               res.sendStatus(200);
