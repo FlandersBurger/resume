@@ -848,7 +848,11 @@ function getRandom(arr, n) {
 
 const createMinigame = (game, msg) => new Promise(function(resolve, reject) {
   List
-    .find()
+    .find({
+      categories: {
+        $nin: game.disabledCategories
+      }
+    })
     .lean()
     .exec((err, lists) => {
       if (err) return reject(err);
