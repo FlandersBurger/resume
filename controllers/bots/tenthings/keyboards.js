@@ -293,7 +293,7 @@ module.exports = {
   suggestion: {
     inline_keyboard: [
       [{
-          'text': `☰ List`,
+          'text': `🆕 List`,
           'callback_data': JSON.stringify({
             type: 'suggest',
             id: 'list',
@@ -315,7 +315,7 @@ module.exports = {
           })
         },
         {
-          'text': `⛐ Bug`,
+          'text': `⛔ Bug`,
           'callback_data': JSON.stringify({
             type: 'suggest',
             id: 'bug'
