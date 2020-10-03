@@ -1448,6 +1448,7 @@ const evaluateCommand = async (res, msg, game, player, isNew) => {
     case '/stop':
       deactivateGame(game);
       break;
+    case '/typo':
     case '/suggest':
       const suggestion = msg.text.substring(msg.command.length + 1, msg.text.length);
       if (suggestion && suggestion != 'TenThings_Bot' && suggestion != '@TenThings_Bot') {
@@ -1484,20 +1485,6 @@ const evaluateCommand = async (res, msg, game, player, isNew) => {
           });
       } else {
         bot.queueMessage(msg.chat.id, `You didn't suggest anything ${msg.from.first_name}. Add your message after /suggest`);
-      }
-      break;
-    case '/typo':
-      const typo = msg.text.substring(msg.command.length + 1, msg.text.length).replace(/\s/g, '').toLowerCase();
-      if (typo && typo != 'tenthings_bot' && typo != '@tenthings_bot') {
-        player.suggestions++;
-        player.save();
-        let message = `<b>Typo</b>\n${msg.text.substring(msg.command.length + 1, msg.text.length)}\n<i>${msg.from.username ? `@${msg.from.username}` : msg.from.first_name}</i>`;
-        message += `\nList: ${game.list.name}`;
-        bot.notifyAdmins(message);
-        bot.notify(message);
-        bot.queueMessage(msg.chat.id, `Typo noted for list "${game.list.name}", ${msg.from.first_name}!`);
-      } else {
-        bot.queueMessage(msg.chat.id, `You didn't say anything, ${msg.from.first_name}. Add your message after /typo`);
       }
       break;
     case '/hint':
