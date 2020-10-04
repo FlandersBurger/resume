@@ -1115,14 +1115,14 @@ router.post('/', async ({
         chat_id: body.callback_query.message.chat.id
       }).select('chat_id list').exec((err, game) => {
         const suggestion = body.callback_query.message.text.substring(body.callback_query.message.text.indexOf(' "') + 2, body.callback_query.message.text.indexOf('",'));
-        bot.notify(`<b>${data.id.capitalize()}</b>\n${suggestion}\n<i>${data.requestor}</i>`);
-        bot.notifyAdmins(`<b>${data.id.capitalize()}</b>\n${suggestion}\n<i>${data.requestor}</i>`);
+
+        let message = `<b>${data.id.capitalize()}</b>\n${suggestion}\n<i>By ${data.requestor}</i>`;
+        message += data.id === 'typo' ? `List: ${game.list.name}` : '';
+        bot.notify(message);
+        bot.notifyAdmins(message);
+        message += data.id === 'list' ? 'Note that you can add your own lists at https://belgocanadian.com/tenthings' : '';
         bot.answerCallback(body.callback_query.id, `Suggestion noted`);
         bot.deleteMessage(body.callback_query.message.chat.id, body.callback_query.message.message_id);
-        let message = `<b>${data.id.capitalize()} noted, ${data.requestor}!</b>\n`;
-        message += `<i>${suggestion}</i>\n`;
-        message += data.id === 'list' ? 'Note that you can add your own lists at https://belgocanadian.com/tenthings' : '';
-        message += data.id === 'typo' ? `List: ${game.list.name}` : '';
         bot.queueMessage(body.callback_query.message.chat.id, message);
       });
     }
