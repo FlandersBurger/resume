@@ -4,6 +4,7 @@ var request = require('request-promise');
 var moment = require('moment');
 var _ = require('underscore');
 var parseString = require('xml2js').parseStringPromise;
+const FuzzyMatching = require('fuzzy-matching');
 
 var config = require('../../config');
 const redis = require('../../redis');
@@ -203,7 +204,6 @@ router.get('/lists/:id/musicvideos', async (req, res, next) => {
   if (list) {
     let changed = false;
     const artist = list.name.substring(0, list.name.indexOf(' - ')).replace(/\s/, '+');
-    console.log(artist);
     for (let value of list.values) {
       const youtubeDB = await request(`https://www.googleapis.com/youtube/v3/search?key=${config.tokens.youtubeapi}&order=relevance&videoDefinition=high&type=video&maxResults=1&part=snippet&q=${artist}+VEVO+${encodeURIComponent(value.value.replace(' ', '+'))}`);
       try {
@@ -228,39 +228,33 @@ router.get('/lists/:id/musicvideos', async (req, res, next) => {
 });
 
 
-router.get('/lists/:id/pics', async (req, res, next) => {
-  let list = await TenThingsList.findOne({
-    _id: req.params.id
-  });
-  if (list) {
-    let changed = false;
-    for (let value of list.values) {
-      const unsplashDB = await request(`https://api.unsplash.com/search/photos?client_id=${config.tokens.unsplashapi.key}&query=${encodeURIComponent(value.value.replace(' ', '+'))}`);
-      try {
-        const picPath = JSON.parse(unsplashDB).results[0].urls.regular;
-        if (picPath) {
-          value.blurb = picPath;
-        }
-        changed = true;
-      } catch (e) {
-        console.error(`No Poster for ${value.value}`);
-      }
-    }
-    if (changed) {
-      const saved = await list.save();
-      res.sendStatus(200);
-    } else {
-      res.sendStatus(304);
-    }
-  } else {
-    res.sendStatus(404);
-  }
-});
-
 const getWikiImage = async (query) => {
-  const wikiDB = await request(`https://en.wikipedia.org/w/api.php?action=query&format=json&prop=images&titles=Earth&generator=prefixsearch&gpssearch=${encodeURIComponent(query)}`);
-  const pages = JSON.parse(wikiDB).query.pages;
-  return `https://en.wikipedia.org/wiki/${pages[Object.keys(pages)[0]].images[0].title}`;
+  let url = '';
+  try {
+    console.log(`here for ${query}`);
+    const wikiDB = await request(`https://en.wikipedia.org/w/api.php?action=query&format=json&prop=images&titles=Earth&generator=prefixsearch&gpssearch=${encodeURIComponent(query)}`);
+    const pages = Object.values(JSON.parse(wikiDB).query.pages).map(page => ({
+      ...page,
+      lean: page.title.removeAllButLetters()
+    })).filter(page => page.images && page.images.filter(image => ['jpg', 'jpeg', 'png'].indexOf(image.title.substring(image.title.lastIndexOf('.') + 1).toLowerCase()) >= 0).length > 0);
+    let filename = '';
+    const fuzzyMatchPages = new FuzzyMatching(pages.map(page => page.lean));
+    const matchPage = fuzzyMatchPages.get(query.removeAllButLetters(), {});
+    const page = _.find(pages, page => page.lean === matchPage.value);
+    const images = page.images.map(image => ({
+      ...image,
+      lean: image.title.substring(4, image.title.lastIndexOf('.')).removeAllButLetters(),
+      ext: image.title.substring(image.title.lastIndexOf('.') + 1).toLowerCase()
+    })).filter(image => ['jpg', 'jpeg', 'png'].indexOf(image.ext) >= 0);
+    const fuzzyMatchImages = new FuzzyMatching(images.map(image => image.lean));
+    const matchImage = fuzzyMatchImages.get(query.removeAllButLetters(), {});
+    const image = _.find(images, image => image.lean === matchImage.value);
+    if (!image) console.log(pages.map(page => page.images));
+    url = `https://commons.wikimedia.org/wiki/Special:FilePath/${image.title.substring(5)}`;
+  } catch (e) {
+    console.error(e);
+  }
+  return url;
 };
 
 router.get('/lists/:id/pics', async (req, res, next) => {
@@ -272,9 +266,10 @@ router.get('/lists/:id/pics', async (req, res, next) => {
     for (let value of list.values) {
       let picPath = '';
       try {
-        picpath = await getWikiImage(value);
+        picPath = await getWikiImage(value.value);
+        console.log(picPath);
       } catch (e) {
-        console.error(`Unsplash failed for ${value.value}`);
+        console.error(`Wiki failed for ${value.value}`);
         try {
           const unsplashDB = await request(`https://api.unsplash.com/search/photos?client_id=${config.tokens.unsplashapi.key}&query=${encodeURIComponent(value.value.replace(' ', '+'))}`);
           picPath = JSON.parse(unsplashDB).results[0].urls.regular;
