@@ -272,12 +272,12 @@ router.get('/lists/:id/pics', async (req, res, next) => {
     for (let value of list.values) {
       let picPath = '';
       try {
-        const unsplashDB = await request(`https://api.unsplash.com/search/photos?client_id=${config.tokens.unsplashapi.key}&query=${encodeURIComponent(value.value.replace(' ', '+'))}`);
-        picPath = JSON.parse(unsplashDB).results[0].urls.regular;
+        picpath = await getWikiImage(value);
       } catch (e) {
         console.error(`Unsplash failed for ${value.value}`);
         try {
-          picpath = await getWikiImage(value);
+          const unsplashDB = await request(`https://api.unsplash.com/search/photos?client_id=${config.tokens.unsplashapi.key}&query=${encodeURIComponent(value.value.replace(' ', '+'))}`);
+          picPath = JSON.parse(unsplashDB).results[0].urls.regular;
         } catch (e) {
           console.error(`No Poster for ${value.value}`);
         }
