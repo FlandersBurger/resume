@@ -5,7 +5,7 @@ module.exports = [{
     'Television': ['Seasons', 'Characters', 'Cast', 'Reality', 'Titles', 'K-drama', 'Animation', 'Anime']
   },
   {
-    'Movies': ['Awards', 'Cast', 'Actors', 'Characters', 'Titles', 'Marvel/DC']
+    'Movies': ['Awards', 'Cast', 'Actors', 'Characters', 'Titles', 'Marvel/DC', 'Star Wars', 'Animation', 'Anime']
   },
   {
     'Culture': []
@@ -53,7 +53,7 @@ module.exports = [{
     'Art': []
   },
   {
-    'Literature': []
+    'Literature': ['Harry Potter', 'Middle-Earth', 'Manga', 'Book Series', 'Authors']
   },
   {
     'Misc': []
@@ -83,16 +83,7 @@ module.exports = [{
     'Internet': []
   },
   {
-    'K-pop': []
-  },
-  {
     'Entertainment': []
-  },
-  {
-    'Animation': []
-  },
-  {
-    'Anime/Manga': []
   },
   {
     'Non-English': []

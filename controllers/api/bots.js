@@ -257,6 +257,47 @@ router.get('/lists/:id/pics', async (req, res, next) => {
   }
 });
 
+const getWikiImage = async (query) => {
+  const wikiDB = await request(`https://en.wikipedia.org/w/api.php?action=query&format=json&prop=images&titles=Earth&generator=prefixsearch&gpssearch=${encodeURIComponent(query)}`);
+  const pages = JSON.parse(wikiDB).query.pages;
+  return `https://en.wikipedia.org/wiki/${pages[Object.keys(pages)[0]].images[0].title}`;
+};
+
+router.get('/lists/:id/pics', async (req, res, next) => {
+  let list = await TenThingsList.findOne({
+    _id: req.params.id
+  });
+  if (list) {
+    let changed = false;
+    for (let value of list.values) {
+      let picPath = '';
+      try {
+        const unsplashDB = await request(`https://api.unsplash.com/search/photos?client_id=${config.tokens.unsplashapi.key}&query=${encodeURIComponent(value.value.replace(' ', '+'))}`);
+        picPath = JSON.parse(unsplashDB).results[0].urls.regular;
+      } catch (e) {
+        console.error(`Unsplash failed for ${value.value}`);
+        try {
+          picpath = await getWikiImage(value);
+        } catch (e) {
+          console.error(`No Poster for ${value.value}`);
+        }
+      }
+      if (picPath) {
+        value.blurb = picPath;
+        changed = true;
+      }
+    }
+    if (changed) {
+      const saved = await list.save();
+      res.sendStatus(200);
+    } else {
+      res.sendStatus(304);
+    }
+  } else {
+    res.sendStatus(404);
+  }
+});
+
 router.put('/lists', (req, res, next) => {
   if (req.auth.userid == '5ece428af848aa2fc392d099') {
     return res.sendStatus(401);
