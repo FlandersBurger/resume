@@ -107,7 +107,7 @@ const guessQueue = new Queue('processGuess', {
     password: config.redis.password
   }
 });
-guessQueue.on('completed', function(job) {
+guessQueue.on('completed', function (job) {
   //Job finished we remove it
   job.remove();
 });
@@ -180,7 +180,7 @@ bot.exportChatInviteLink('-1001394022777').then(function(chat) {
 */
 
 function selectList(game) {
-  return new Promise(function(resolve, reject) {
+  return new Promise(function (resolve, reject) {
     if (game.pickedLists.length > 0) {
       List.findOne({
           _id: game.pickedLists[0]
@@ -217,7 +217,7 @@ function selectList(game) {
                 categories: {
                   $nin: game.disabledCategories
                 }
-              }).exec(function(err, count) {
+              }).exec(function (err, count) {
                 if (count === 0) {
                   List.find({
                       categories: {
@@ -722,7 +722,7 @@ function skip(game, skipper) {
 }
 
 const skipList = (game, skipper) => {
-  game.list.values.forEach(function({
+  game.list.values.forEach(function ({
     guesser
   }, index) {
     if (!guesser.first_name) {
@@ -846,51 +846,49 @@ function getRandom(arr, n) {
   return result;
 }
 
-const createMinigame = (game, msg) => new Promise(function(resolve, reject) {
-  List
+const createMinigame = (game, msg) => new Promise(async (resolve, reject) => {
+  let lists = await List
     .find({
       categories: {
         $nin: game.disabledCategories
       }
     })
-    .lean()
-    .exec((err, lists) => {
-      if (err) return reject(err);
-      let answers = lists.reduce((answers, list) => {
-        for (const value of list.values) {
-          if (!answers[value.value]) answers[value.value] = [list.name];
-          else answers[value.value].push(list.name);
-        }
-        return answers;
-      }, {});
-      let result = Object.keys(answers).reduce((result, answer) => {
-        if (answers[answer] && answers[answer].length > 2) {
-          result.push({
-            answer: answer,
-            lists: answers[answer]
-          });
-        }
-        return result;
-      }, []);
-      let minigame = result[Math.floor(Math.random() * result.length)];
-      let message = '<b>Find the connection</b>\n';
-      message += getRandom(minigame.lists, 10).reduce((msg, list) => {
-        msg += `- ${list}\n`;
-        return msg;
-      }, '');
-      message += `<b>${minigame.answer.conceal('')}</b>`;
-      bot.queueMessage(msg.chat.id, message);
-      game.minigame.answer = minigame.answer;
-      game.minigame.date = moment();
-      game.minigame.lists = minigame.lists;
-
-      game.save(err => {
-        if (err) return reject(err);
-        resolve();
-        //bot.notifyAdmin(`"<b>${foundList.name}</b>" ${data.vote > 0 ? 'up' : 'down'}voted by <i>${body.callback_query.from.first_name}</i>!`);
-        //bot.notifyAdmin(`Can't save ${JSON.stringify(game.chat_id)}`);
+    .lean();
+  if (lists.length === 0) lists = await List.find({}).lean();
+  let answers = lists.reduce((answers, list) => {
+    for (const value of list.values) {
+      if (!answers[value.value]) answers[value.value] = [list.name];
+      else answers[value.value].push(list.name);
+    }
+    return answers;
+  }, {});
+  let result = Object.keys(answers).reduce((result, answer) => {
+    if (answers[answer] && answers[answer].length > 2) {
+      result.push({
+        answer: answer,
+        lists: answers[answer]
       });
-    });
+    }
+    return result;
+  }, []);
+  let minigame = result[Math.floor(Math.random() * result.length)];
+  let message = '<b>Find the connection</b>\n';
+  message += getRandom(minigame.lists, 10).reduce((msg, list) => {
+    msg += `- ${list}\n`;
+    return msg;
+  }, '');
+  message += `<b>${minigame.answer.conceal('')}</b>`;
+  bot.queueMessage(msg.chat.id, message);
+  game.minigame.answer = minigame.answer;
+  game.minigame.date = moment();
+  game.minigame.lists = minigame.lists;
+
+  game.save(err => {
+    if (err) return reject(err);
+    resolve();
+    //bot.notifyAdmin(`"<b>${foundList.name}</b>" ${data.vote > 0 ? 'up' : 'down'}voted by <i>${body.callback_query.from.first_name}</i>!`);
+    //bot.notifyAdmin(`Can't save ${JSON.stringify(game.chat_id)}`);
+  });
 });
 
 router.post('/', async ({
@@ -1453,14 +1451,38 @@ const evaluateCommand = async (res, msg, game, player, isNew) => {
       deactivateGame(game);
       break;
     case '/typo':
-    case '/suggest':
-      const suggestion = msg.text.substring(msg.command.length + 1, msg.text.length);
-      if (suggestion && suggestion != 'TenThings_Bot' && suggestion != '@TenThings_Bot') {
+      const typo = msg.text.substring(msg.command.length + 1, msg.text.length);
+      if (typo && typo != 'TenThings_Bot' && typo != '@TenThings_Bot') {
         player.suggestions++;
         player.save();
-        let message = `<b>Suggestion</b>\n${suggestion}\n<i>${msg.from.username ? `@${msg.from.username}` : msg.from.first_name}</i>`;
+        let message = `<b>Typo</b>\n${typo}\nin "${game.list.name}\n"<i>${msg.from.username ? `@${msg.from.username}` : msg.from.first_name}</i>`;
+        bot.notifyAdmins(message);
+        message = `<b>Typo</b>\n<i>${typo}</i>\nNoted, ${msg.from.username ? `@${msg.from.username}` : msg.from.first_name}`;
+        bot.queueMessage(msg.chat.id, message);
+      } else {
+        bot.queueMessage(msg.chat.id, `You didn't suggest anything ${msg.from.first_name}. Add your message after /suggest`);
+      }
+      break;
+    case '/bug':
+      const bug = msg.text.substring(msg.command.length + 1, msg.text.length);
+      if (bug && bug != 'TenThings_Bot' && bug != '@TenThings_Bot') {
+        player.suggestions++;
+        player.save();
+        let message = `<b>Bug</b>\n${bug}\nin "${game.list.name}\n"<i>${msg.from.username ? `@${msg.from.username}` : msg.from.first_name}</i>`;
+        bot.notifyAdmins(message);
+        message = `<b>Bug</b>\n<i>${bug}</i>\nNoted, ${msg.from.username ? `@${msg.from.username}` : msg.from.first_name}`;
+        bot.queueMessage(msg.chat.id, message);
+      } else {
+        bot.queueMessage(msg.chat.id, `You didn't suggest anything ${msg.from.first_name}. Add your message after /suggest`);
+      }
+      break;
+    case '/search':
+      const suggestion = msg.text.substring(msg.command.length + 1, msg.text.length);
+      if (suggestion && suggestion != 'TenThings_Bot' && suggestion != '@TenThings_Bot') {
+        player.searches++;
+        player.save();
         const regex = suggestion.replace(new RegExp('[^a-zA-Z0-9 ]+', 'g'), '.*').split(' ').reduce((result, word) => `${result}(?=.*${word}.*)`, '');
-        List.find({
+        let lists = await List.find({
             $or: [{
                 search: {
                   $regex: `.*${regex}.*`,
@@ -1476,20 +1498,29 @@ const evaluateCommand = async (res, msg, game, player, isNew) => {
             ]
           })
           .select('name')
-          .exec((err, lists) => {
-            if (err) return bot.notifyAdmin(`Error finding lists:\n${message}`);
-            if (lists.length > 0) {
-              //message = `I found some similar lists that already exist with ${msg.text.substring(msg.command.length + 1, msg.text.length)}, ${msg.from.first_name}!\nPlease refine your suggestion to be more specific.\n${lists.reduce((txt, list) => `${txt}\n - ${list.name}`, '<b>Lists:</b>')}`;
-              //bot.notifyAdmin(message);
-              bot.sendKeyboard(game.chat_id, `I found some similar lists that already exist with ${msg.text.substring(msg.command.length + 1, msg.text.length)}\n<b>Add one to queue</b>`, keyboards.lists(lists));
-              //bot.queueMessage(msg.chat.id, message);
-            } else {
-              bot.sendKeyboard(game.chat_id, `I didn't find any corresponding lists, ${msg.from.first_name}. If you want to request <b>"${suggestion}"</b>, let us know what type of request it is:`, keyboards.suggestion);
+        if (lists.length === 0) lists = await List.find({
+            'values.value': {
+              $regex: `.*${regex}.*`,
+              $options: 'gi'
             }
-          });
+          })
+          .select('name');
+        if (lists.length > 0) {
+          bot.sendKeyboard(game.chat_id, `<b>Which list would you like to queue?</b>`, keyboards.lists(lists));
+        } else {
+          bot.queueMessage(game.chat_id, `I didn't find any corresponding lists for <b>"${suggestion}"</b>, ${msg.from.first_name}.\nSimpler queries return better results.`);
+        }
       } else {
         bot.queueMessage(msg.chat.id, `You didn't suggest anything ${msg.from.first_name}. Add your message after /suggest`);
       }
+      break;
+    case '/suggest':
+      let message = 'The suggest command has been retired.\nPlease use one of the following commands instead:\n';
+      message += '/typo -> Report a typo in the current list\n';
+      message += '/bug -> Report a bug with the bot\n';
+      message += '/search -> Search lists to queue\n';
+      message += '<i>Note that lists can be added and enhanced by anyone at https://belgocanadian.com/tenthings</i>'
+      bot.queueMessage(game.chat_id, message);
       break;
     case '/hint':
       activateGame(game, false);

@@ -84,6 +84,11 @@ for (const name in db) {
       required: false,
       default: 0
     },
+    searches: {
+      type: Number,
+      required: false,
+      default: 0
+    },
     streak: {
       type: Number,
       required: false,

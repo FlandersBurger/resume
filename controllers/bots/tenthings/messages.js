@@ -3,7 +3,7 @@ const request = require('request');
 const MAXHINTS = 6;
 
 module.exports = {
-  introduction: function(player) {
+  introduction: function (player) {
     var message = 'Hi ' + player + ',\n';
     message += 'Ten Things, yours truly, is a game which will give you a subject and then you answer anything that comes to mind in that category.\n';
     message += 'Type /commands to see all the things you can ask me\n';
@@ -11,7 +11,7 @@ module.exports = {
     message += 'Have fun!';
     return message;
   },
-  logic: function() {
+  logic: function () {
     var message = '';
     var rule = 1;
     message += rule++ + ': If an answer is over 100% correct it will immediately be awarded to the guesser\n';
@@ -27,7 +27,7 @@ module.exports = {
     message += rule++ + ': Spammers will be ignored until they are silent for at least 10 seconds\n';
     return message;
   },
-  commands: function() {
+  commands: function () {
     var message = '';
     message += '/list - Guessed answers in the current round\n';
     message += '/hint - Give a hint\n';
@@ -40,17 +40,19 @@ module.exports = {
     message += '/logic - An explanation of the logic used\n';
     message += '/settings - Bot behaviour settings (Admin Only)\n';
     message += '/categories - Select which categories to include (Admin Only)\n';
-    message += '/suggest [message] - Find a list or suggest something to the admins\n';
+    message += '/typo - Report a typo in the current list\n';
+    message += '/bug - Report a bug with the bot\n';
+    message += '/search - Search lists to queue\n';
     message += '/lists - See queued lists\n';
     message += '/stop - Switch me off\n';
     return message;
   },
-  guessed: function(match, player) {
+  guessed: function (match, player) {
     var message = '';
     message += '<b>' + player + ' got ' + match + '</b> ';
     return message;
   },
-  alreadyGuessed: function(match, loser, winner) {
+  alreadyGuessed: function (match, loser, winner) {
     var random = Math.floor(Math.random() * 9);
     if (loser.id != winner.id) {
       switch (random) {
@@ -100,7 +102,7 @@ module.exports = {
       }
     }
   },
-  listStats: function(list, requestor = null) {
+  listStats: function (list, requestor = null) {
     var message = '';
     message += requestor ? `<i>Requested by ${requestor}</i>\n` : '';
     message += '<b>Stats for ' + list.name + '</b>\n';
@@ -114,7 +116,7 @@ module.exports = {
     message += 'Modified on: ' + moment(list.modifyDate).format("DD-MMM-YYYY") + '\n';
     return message;
   },
-  playerStats: function(player, requestor = null) {
+  playerStats: function (player, requestor = null) {
     var message = '';
     message += requestor ? `<i>Requested by ${requestor}</i>\n` : '';
     message += '<b>Personal Stats for ' + player.first_name + '</b>\n';
@@ -136,7 +138,7 @@ module.exports = {
     message += 'Best no hint streak: ' + player.maxHintStreak + '\n';
     return message;
   },
-  streak: function(streak) {
+  streak: function (streak) {
     var messages;
     switch (streak) {
       case 1:
