@@ -1117,10 +1117,10 @@ router.post('/', async ({
         const suggestion = body.callback_query.message.text.substring(body.callback_query.message.text.indexOf(' "') + 2, body.callback_query.message.text.indexOf('",'));
 
         let message = `<b>${data.id.capitalize()}</b>\n${suggestion}\n<i>By ${data.requestor}</i>`;
-        message += data.id === 'typo' ? `List: ${game.list.name}` : '';
+        message += data.id === 'typo' ? `\nList: ${game.list.name}` : '';
         bot.notify(message);
         bot.notifyAdmins(message);
-        message += data.id === 'list' ? 'Note that you can add your own lists at https://belgocanadian.com/tenthings' : '';
+        message += data.id === 'list' ? '\nNote that you can add your own lists at https://belgocanadian.com/tenthings' : '';
         bot.answerCallback(body.callback_query.id, `Suggestion noted`);
         bot.deleteMessage(body.callback_query.message.chat.id, body.callback_query.message.message_id);
         bot.queueMessage(body.callback_query.message.chat.id, message);
