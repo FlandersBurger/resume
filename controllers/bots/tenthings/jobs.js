@@ -149,6 +149,27 @@ TenThingsStats.find()
   .then(stats => {
     console.log(stats.forEach(stat => console.log(stat.date)));
   });*/
+
+  
+  List.aggregate([{
+    $project: {
+      _id: 1,
+      plays: 1,
+      votes: {
+        $size: '$votes'
+      }
+    }
+  }, {
+    $group: {
+      _id: 'total',
+      'plays': {
+        $sum: '$plays'
+      },
+      'votes': {
+        $sum: '$votes'
+      }
+    }
+  }]).exec((err, stats) => console.log(stats));
 const updateDailyStats = async (games, totalPlayers, uniquePlayers) => {
   let base = await TenThingsStats.findOne({
     base: true
