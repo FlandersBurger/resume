@@ -69,6 +69,7 @@ router.get('/lists/:id', (req, res, next) => {
       _id: req.params.id
     })
     .populate('creator')
+    .populate('values.creator')
     .exec((err, list) => {
       res.json(list);
     });
