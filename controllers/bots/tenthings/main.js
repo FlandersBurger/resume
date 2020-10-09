@@ -1457,7 +1457,7 @@ const evaluateCommand = async (res, msg, game, player, isNew) => {
         player.save();
         let message = `<b>Typo</b>\n${typo}\nin "${game.list.name}\n"<i>${msg.from.username ? `@${msg.from.username}` : msg.from.first_name}</i>`;
         bot.notifyAdmins(message);
-        message = `<b>Typo</b>\n<i>${typo}</i>\nNoted, ${msg.from.username ? `@${msg.from.username}` : msg.from.first_name}`;
+        message = `<b>Typo</b>\n<i>${typo}</i>\nThank you, ${msg.from.username ? `@${msg.from.username}` : msg.from.first_name}`;
         bot.queueMessage(msg.chat.id, message);
       } else {
         bot.queueMessage(msg.chat.id, `You didn't suggest anything ${msg.from.first_name}. Add your message after /suggest`);
@@ -1468,9 +1468,9 @@ const evaluateCommand = async (res, msg, game, player, isNew) => {
       if (bug && bug != 'TenThings_Bot' && bug != '@TenThings_Bot') {
         player.suggestions++;
         player.save();
-        let message = `<b>Bug</b>\n${bug}\nin "${game.list.name}\n"<i>${msg.from.username ? `@${msg.from.username}` : msg.from.first_name}</i>`;
+        let message = `<b>Bug</b>\n${bug}\n<i>${msg.from.username ? `@${msg.from.username}` : msg.from.first_name}</i>`;
         bot.notifyAdmins(message);
-        message = `<b>Bug</b>\n<i>${bug}</i>\nNoted, ${msg.from.username ? `@${msg.from.username}` : msg.from.first_name}`;
+        message = `<b>Bug</b>\n<i>${bug}</i>\nThank you, ${msg.from.username ? `@${msg.from.username}` : msg.from.first_name}`;
         bot.queueMessage(msg.chat.id, message);
       } else {
         bot.queueMessage(msg.chat.id, `You didn't suggest anything ${msg.from.first_name}. Add your message after /suggest`);
@@ -1748,12 +1748,20 @@ List.find({})
   */
 /*
 List
-  .find({
-    name: ''
-  })
+  .aggregate([{
+    $unwind: '$values'
+  }, {
+    $group: {
+      _id: '$name',
+      creators: {
+        $push: '$values.creator'
+      }
+    }
+  }])
   .exec((err, lists) => {
-    console.log(lists);
-  });*/
+    console.log(lists.filter(list => _.uniq(list.creators).length > 1));
+  });
+  */
 /*
 List
 .find()

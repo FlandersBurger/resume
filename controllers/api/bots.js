@@ -304,7 +304,7 @@ router.put('/lists', (req, res, next) => {
   TenThingsList.findByIdAndUpdate(req.body.list._id ? req.body.list._id : new mongoose.Types.ObjectId(), req.body.list, {
     new: true,
     upsert: true
-  }, function(err, list) {
+  }, function (err, list) {
     if (err) return next(err);
     TenThingsList.findOne({
         _id: list._id
@@ -313,9 +313,9 @@ router.put('/lists', (req, res, next) => {
       .exec((err, foundList) => {
         if (err) return next(err);
         if (!req.body.list._id) {
-          bot.notifyAdmins('<b>' + list.name + '</b> created by <i>' + req.body.user.username + '</i>');
+          bot.notifyAdmins(`<b>${list.name}</b> created by <i>${req.body.user.username}</i>`);
         } else if (previousModifyDate < yesterday) {
-          bot.notifyAdmins('<b>' + list.name + '</b> updated by <i>' + req.body.user.username + '</i>');
+          bot.notifyAdmins(`<b>${list.name}</b> updated by <i>${req.body.user.username}</i>`);
         }
         res.json(formatList(foundList));
       });
@@ -342,7 +342,7 @@ router.delete('/lists/:id', (req, res, next) => {
               res.sendStatus(200);
             });
           } else {
-            bot.notifyAdmins(`Unauthorized detletion: <b>${list.name}</b> by ${user.username} (${user._id})`);
+            bot.notifyAdmins(`Unauthorized deletion (not an admin nor the creator):\n<b>${list.name}</b> by ${user.username} (${user._id})\nIf it persists -> Block them at https://belgocanadian.com/tenthings-admin`);
             res.sendStatus(200);
           }
         }

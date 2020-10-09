@@ -44,6 +44,11 @@ var listSchema = new mongoose.Schema({
       ref: 'User',
       required: false
     },
+    date: {
+      type: String,
+      required: false,
+      default: Date.now
+    },
   }],
   date: {
     type: Date,
@@ -111,7 +116,7 @@ var listSchema = new mongoose.Schema({
 
 
 //listSchema.virtual('answers').get(() => this.values.length);
-listSchema.virtual('blurbs').get(function() {
+listSchema.virtual('blurbs').get(function () {
   return this.values ? this.values.filter(item => item.blurb).length : 0;
 });
 
