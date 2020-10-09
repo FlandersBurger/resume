@@ -1455,7 +1455,7 @@ const evaluateCommand = async (res, msg, game, player, isNew) => {
       if (typo && typo != 'TenThings_Bot' && typo != '@TenThings_Bot') {
         player.suggestions++;
         player.save();
-        let message = `<b>Typo</b>\n${typo}\nin "${game.list.name}\n"<i>${msg.from.username ? `@${msg.from.username}` : msg.from.first_name}</i>`;
+        let message = `<b>Typo</b>\n${typo}\nin "${game.list.name}"\n<i>${msg.from.username ? `@${msg.from.username}` : msg.from.first_name}</i>`;
         bot.notifyAdmins(message);
         message = `<b>Typo</b>\n<i>${typo}</i>\nThank you, ${msg.from.username ? `@${msg.from.username}` : msg.from.first_name}`;
         bot.queueMessage(msg.chat.id, message);
