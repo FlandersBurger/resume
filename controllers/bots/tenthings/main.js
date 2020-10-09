@@ -1477,11 +1477,12 @@ const evaluateCommand = async (res, msg, game, player, isNew) => {
       }
       break;
     case '/search':
-      const suggestion = msg.text.substring(msg.command.length + 1, msg.text.length);
-      if (suggestion && suggestion != 'TenThings_Bot' && suggestion != '@TenThings_Bot') {
+      const search = msg.text.substring(msg.command.length + 1, msg.text.length);
+      if (search && search != 'TenThings_Bot' && search != '@TenThings_Bot') {
         player.searches++;
         player.save();
-        const regex = suggestion.replace(new RegExp('[^a-zA-Z0-9 ]+', 'g'), '.*').split(' ').reduce((result, word) => `${result}(?=.*${word}.*)`, '');
+        console.log(`${game.chat_id} - Search for ${search}`)
+        const regex = search.replace(new RegExp('[^a-zA-Z0-9 ]+', 'g'), '.*').split(' ').reduce((result, word) => `${result}(?=.*${word}.*)`, '');
         let lists = await List.find({
             $or: [{
                 search: {
@@ -1494,21 +1495,20 @@ const evaluateCommand = async (res, msg, game, player, isNew) => {
                   $regex: `.*${regex}.*`,
                   $options: 'gi'
                 }
+              },
+              {
+                'values.value': {
+                  $regex: `.*${regex}.*`,
+                  $options: 'gi'
+                }
               }
             ]
           })
           .select('name')
-        if (lists.length === 0) lists = await List.find({
-            'values.value': {
-              $regex: `.*${regex}.*`,
-              $options: 'gi'
-            }
-          })
-          .select('name');
         if (lists.length > 0) {
           bot.sendKeyboard(game.chat_id, `<b>Which list would you like to queue?</b>`, keyboards.lists(lists));
         } else {
-          bot.queueMessage(game.chat_id, `I didn't find any corresponding lists for <b>"${suggestion}"</b>, ${msg.from.first_name}.\nSimpler queries return better results.`);
+          bot.queueMessage(game.chat_id, `I didn't find any corresponding lists for <b>"${search}"</b>, ${msg.from.first_name}.\nSimpler queries return better results.`);
         }
       } else {
         bot.queueMessage(msg.chat.id, `You didn't suggest anything ${msg.from.first_name}. Add your message after /suggest`);
