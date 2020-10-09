@@ -205,7 +205,7 @@
           <hr />
           <div class="input-group" ng-repeat="item in selectedList.values | orderBy: sortList">
             <span class="input-group-addon" uib-tooltip="{{item.creator.username}}" tooltip-placement="left"
-              ng-class="{'text-success': item.creator._id === currentUser._id, 'text-info': item.creator._id !== currentUser._id}">
+              ng-class="{'text-success': item.creator._id === currentUser._id, 'text-info': item.creator._id !== currentUser._id && item.creator._id !== selectedList.creator._id}">
               <i class="fas fa-user-tie" ng-if="item.creator._id === selectedList.creator._id"></i>
               <i class="fas fa-user" ng-if="item.creator._id !== selectedList.creator._id"></i>
             </span>
