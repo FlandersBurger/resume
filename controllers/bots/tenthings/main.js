@@ -1478,6 +1478,20 @@ const evaluateCommand = async (res, msg, game, player, isNew) => {
         bot.queueMessage(msg.chat.id, `You didn't add a bug ${msg.from.first_name}. Add your message after /bug`);
       }
       break;
+    case '/feature':
+      const feature = msg.text.substring(msg.command.length + 1, msg.text.length);
+      if (feature && feature != 'TenThings_Bot' && bug != '@TenThings_Bot') {
+        player.suggestions++;
+        player.save();
+        let message = `<b>Feature</b>\n${feature}\n<i>${msg.from.username ? `@${msg.from.username}` : msg.from.first_name}</i>`;
+        bot.notifyAdmins(message);
+        bot.notify(message);
+        message = `<b>Feature</b>\n<i>${feature}</i>\nThank you, ${msg.from.username ? `@${msg.from.username}` : msg.from.first_name}`;
+        bot.queueMessage(msg.chat.id, message);
+      } else {
+        bot.queueMessage(msg.chat.id, `You didn't add a feature ${msg.from.first_name}. Add your message after /feature`);
+      }
+      break;
     case '/search':
       const search = msg.text.substring(msg.command.length + 1, msg.text.length);
       if (search && search != 'TenThings_Bot' && search != '@TenThings_Bot') {
@@ -1522,9 +1536,10 @@ const evaluateCommand = async (res, msg, game, player, isNew) => {
         bot.notify(suggestion);
       }
       let message = 'The suggest command has been retired.\nPlease use one of the following commands instead:\n';
+      message += '/search -> Search lists to queue\n';
       message += '/typo -> Report a typo in the current list\n';
       message += '/bug -> Report a bug with the bot\n';
-      message += '/search -> Search lists to queue\n';
+      message += '/feature -> Suggest an enhancement feature\n';
       message += '<i>Note that lists can be added and enhanced by anyone at https://belgocanadian.com/tenthings</i>'
       bot.queueMessage(game.chat_id, message);
       break;

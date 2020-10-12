@@ -200,6 +200,9 @@ const updateDailyStats = async (games, totalPlayers, uniquePlayers) => {
       'suggestions': {
         $sum: '$suggestions'
       },
+      'searches': {
+        $sum: '$searches'
+      },
       'minigamePlays': {
         $sum: '$minigamePlays'
       },
@@ -215,6 +218,7 @@ const updateDailyStats = async (games, totalPlayers, uniquePlayers) => {
   message += `${(playerStats[0].hints - base.hints).makeReadable()} hints asked\n`;
   message += `${(playerStats[0].score - base.score).makeReadable()} points scored overall\n`;
   message += `${(playerStats[0].suggestions - base.suggestions).makeReadable()} suggestions given\n`;
+  message += `${(playerStats[0].searches - base.searches).makeReadable()} lists searched\n`;
   bot.notifyAdmins(message);
   bot.notifyAdmin(message);
   const dailyStats = new TenThingsStats({
@@ -229,6 +233,7 @@ const updateDailyStats = async (games, totalPlayers, uniquePlayers) => {
     snubs: playerStats[0].snubs - base.snubs,
     skips: playerStats[0].skips - base.skips,
     suggestions: playerStats[0].suggestions - base.suggestions,
+    searches: playerStats[0].searches - base.searches,
     votes: listStats[0].votes - base.votes,
     minigamePlays: playerStats[0].minigamePlays - base.minigamePlays
   });
@@ -242,6 +247,7 @@ const updateDailyStats = async (games, totalPlayers, uniquePlayers) => {
     base.snubs = playerStats[0].snubs;
     base.skips = playerStats[0].skips;
     base.suggestions = playerStats[0].suggestions;
+    base.searches = playerStats[0].searches;
     base.votes = listStats[0].votes;
     base.minigamePlays = playerStats[0].minigamePlays;
     base.save(err => {

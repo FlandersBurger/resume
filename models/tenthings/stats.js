@@ -65,6 +65,11 @@ for (const name in db) {
       required: false,
       default: 0
     },
+    searches: {
+      type: Number,
+      required: false,
+      default: 0
+    },
     listsPlayed: {
       type: Number,
       required: false,

@@ -182,6 +182,9 @@ exports.getStats = async (chat_id, data, requestor) => {
             'suggestions': {
               $sum: '$suggestions'
             },
+            'searches': {
+              $sum: '$searches'
+            },
             'minigamePlays': {
               $sum: 'minigamePlays'
             },
@@ -203,6 +206,7 @@ exports.getStats = async (chat_id, data, requestor) => {
         message += `Answer Snubs: ${stats.snubs}\n`;
         message += `Hints Asked: ${stats.hints}\n`;
         message += `Suggestions given: ${stats.suggestions}\n`;
+        message += `Lists searched: ${stats.searches}\n`;
         message += `Lists Skipped: ${stats.skips}\n`;
         //message += `${allPlayers.filter(({scoreDaily}) => scoreDaily).length} out of ${allPlayers.filter(({present}) => present).length} players played today\n`;
         //message += `Cycled through all lists ${games.reduce((count, {cycles}) => count + (cycles ? cycles : 0), 0)} times\n`;
