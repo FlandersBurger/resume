@@ -159,7 +159,9 @@ const updateDailyStats = async (games, totalPlayers, uniquePlayers) => {
       _id: 1,
       plays: 1,
       votes: {
-        $size: '$votes'
+        $size: {
+          $ifNull: ['$votes', []]
+        }
       }
     }
   }, {
