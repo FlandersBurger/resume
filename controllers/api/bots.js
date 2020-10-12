@@ -316,7 +316,7 @@ router.put('/lists', (req, res, next) => {
         if (!req.body.list._id) {
           bot.notifyAdmins(`<b>${list.name}</b>\nCreated by <i>${req.body.user.username}</i>`);
         } else if (previousModifyDate < yesterday) {
-          bot.notifyAdmins(`<b>${list.name}</b>\nUpdated by <i>${req.body.user.username}</i>` + (req.auth.userid !== list.creator._id ? `\nLCreated by <i>${foundList.creator.username}</i>` : ''));
+          bot.notifyAdmins(`<b>${list.name}</b>\nUpdated by <i>${req.body.user.username}</i>` + (req.auth.userid !== list.creator._id ? `\nCreated by <i>${foundList.creator.username}</i>` : ''));
         }
         res.json(formatList(foundList));
       });
