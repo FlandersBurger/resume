@@ -1457,10 +1457,11 @@ const evaluateCommand = async (res, msg, game, player, isNew) => {
         player.save();
         let message = `<b>Typo</b>\n${typo}\nin "${game.list.name}"\n<i>${msg.from.username ? `@${msg.from.username}` : msg.from.first_name}</i>`;
         bot.notifyAdmins(message);
+        bot.notify(message);
         message = `<b>Typo</b>\n<i>${typo}</i>\nThank you, ${msg.from.username ? `@${msg.from.username}` : msg.from.first_name}`;
         bot.queueMessage(msg.chat.id, message);
       } else {
-        bot.queueMessage(msg.chat.id, `You didn't suggest anything ${msg.from.first_name}. Add your message after /suggest`);
+        bot.queueMessage(msg.chat.id, `You didn't add a typo ${msg.from.first_name}. Add your message after /typo`);
       }
       break;
     case '/bug':
@@ -1470,10 +1471,11 @@ const evaluateCommand = async (res, msg, game, player, isNew) => {
         player.save();
         let message = `<b>Bug</b>\n${bug}\n<i>${msg.from.username ? `@${msg.from.username}` : msg.from.first_name}</i>`;
         bot.notifyAdmins(message);
+        bot.notify(message);
         message = `<b>Bug</b>\n<i>${bug}</i>\nThank you, ${msg.from.username ? `@${msg.from.username}` : msg.from.first_name}`;
         bot.queueMessage(msg.chat.id, message);
       } else {
-        bot.queueMessage(msg.chat.id, `You didn't suggest anything ${msg.from.first_name}. Add your message after /suggest`);
+        bot.queueMessage(msg.chat.id, `You didn't add a bug ${msg.from.first_name}. Add your message after /bug`);
       }
       break;
     case '/search':
@@ -1511,10 +1513,14 @@ const evaluateCommand = async (res, msg, game, player, isNew) => {
           bot.queueMessage(game.chat_id, `I didn't find any corresponding lists for <b>"${search}"</b>, ${msg.from.first_name}.\nSimpler queries return better results.`);
         }
       } else {
-        bot.queueMessage(msg.chat.id, `You didn't suggest anything ${msg.from.first_name}. Add your message after /suggest`);
+        bot.queueMessage(msg.chat.id, `You didn't search anything ${msg.from.first_name}. Add your message after /search`);
       }
       break;
     case '/suggest':
+      const suggestion = msg.text.substring(msg.command.length + 1, msg.text.length);
+      if (suggestion && suggestion != 'TenThings_Bot' && suggestion != '@TenThings_Bot') {
+        bot.notify(suggestion);
+      }
       let message = 'The suggest command has been retired.\nPlease use one of the following commands instead:\n';
       message += '/typo -> Report a typo in the current list\n';
       message += '/bug -> Report a bug with the bot\n';
@@ -1568,6 +1574,7 @@ const evaluateCommand = async (res, msg, game, player, isNew) => {
           msg += `- ${list}\n`;
           return msg;
         }, '');
+        message += '\n';
         message += hints.getHint(Math.round(moment().diff(game.minigame.date, 'minutes') / 15), game.minigame.answer);
         //message += game.minigame.answer.conceal(game.minigame.date < moment().subtract(1, 'hours') ? 'aeoui' : '');
         bot.queueMessage(msg.chat.id, message);
