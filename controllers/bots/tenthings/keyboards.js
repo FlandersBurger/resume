@@ -1,6 +1,8 @@
 const moment = require('moment');
 const _ = require('underscore');
 const categories = require('./categories');
+const THUMBS_DOWN = '\ud83d\udc4d'
+const THUMBS_UP = '\ud83d\udc4e'
 
 module.exports = {
   stats: function(chat_id) {
@@ -330,8 +332,14 @@ module.exports = {
   }) => {
     return {
       inline_keyboard: categories.sort().reduce((result, category, i) => {
+        console.log(`${category} -> ${JSON.stringify({
+          type: 'cat',
+          id: category,
+          game: chat_id
+        }).length}`);
+        
         const button = {
-          'text': `${category}: ${disabledCategories.indexOf(category) >= 0 ? 'Off' : 'On'}`,
+          'text': `${category}: ${disabledCategories.indexOf(category) < 0 ? THUMBS_UP : THUMBS_DOWN}`,
           'callback_data': JSON.stringify({
             type: 'cat',
             id: category,
@@ -354,7 +362,7 @@ module.exports = {
     return {
       inline_keyboard: [
         [{
-            'text': `Player intro: ${settings.intro ? 'On' : 'Off'}`,
+            'text': `Player intro: ${settings.intro ? THUMBS_UP : THUMBS_DOWN}`,
             'callback_data': JSON.stringify({
               type: 'setting',
               id: 'intro',
@@ -362,7 +370,7 @@ module.exports = {
             })
           },
           {
-            'text': `Sass: ${settings.sass ? 'On' : 'Off'}`,
+            'text': `Sass: ${settings.sass ? THUMBS_UP : THUMBS_DOWN}`,
             'callback_data': JSON.stringify({
               type: 'setting',
               id: 'sass',
@@ -371,7 +379,7 @@ module.exports = {
           }
         ],
         [{
-            'text': `Daily updates: ${settings.updates ? 'On' : 'Off'}`,
+            'text': `Daily updates: ${settings.updates ? THUMBS_UP : THUMBS_DOWN}`,
             'callback_data': JSON.stringify({
               type: 'setting',
               id: 'update',
@@ -380,7 +388,7 @@ module.exports = {
           },
           /*
                     {
-                      'text': `Snub Messages: ${settings.snubs ? 'On' : 'Off'}`,
+                      'text': `Snub Messages: ${settings.snubs ? THUMBS_UP : THUMBS_DOWN}`,
                       'callback_data': JSON.stringify({
                         type: 'setting',
                         id: 'snubs',
@@ -395,7 +403,7 @@ module.exports = {
     return {
       inline_keyboard: [
         [{
-            'text': '\ud83d\udc4d',
+            'text': THUMBS_UP,
             'callback_data': JSON.stringify({
               type: 'rate',
               list: game.list._id,
@@ -403,7 +411,7 @@ module.exports = {
             })
           },
           {
-            'text': '\ud83d\udc4e',
+            'text': THUMBS_DOWN,
             'callback_data': JSON.stringify({
               type: 'rate',
               list: game.list._id,
