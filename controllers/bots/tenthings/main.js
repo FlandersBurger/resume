@@ -1967,7 +1967,7 @@ const evaluateCommand = async (res, msg, game, player, isNew) => {
 				game.chat_id != config.groupChat
 			) {
 				bot.checkAdmin(game.chat_id, msg.from.id).then(admin => {
-					if (admin || game.chat_id > 0) {
+					if (admin) {
 						bot.sendKeyboard(
 							game.chat_id,
 							'<b>Categories</b>',
@@ -1990,7 +1990,7 @@ const evaluateCommand = async (res, msg, game, player, isNew) => {
 				game.chat_id != config.groupChat
 			) {
 				bot.checkAdmin(game.chat_id, msg.from.id).then(admin => {
-					if (admin || game.chat_id > 0) {
+					if (admin) {
 						bot.sendKeyboard(
 							game.chat_id,
 							'<b>Settings</b>',

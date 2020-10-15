@@ -3,6 +3,8 @@ const _ = require('underscore');
 const categories = require('./categories');
 const THUMBS_UP = '\ud83d\udc4d';
 const THUMBS_DOWN = '\ud83d\udc4e';
+const OFF = '\ud83c\udf11';
+const ON = '\ud83c\udf15';
 
 module.exports = {
 	stats: function (chat_id) {
@@ -354,7 +356,7 @@ module.exports = {
 			inline_keyboard: categories.sort().reduce((result, category, i) => {
 				const button = {
 					text: `${category}: ${
-						disabledCategories.indexOf(category) < 0 ? THUMBS_UP : THUMBS_DOWN
+						disabledCategories.indexOf(category) < 0 ? ON : OFF
 					}`,
 					callback_data: JSON.stringify({
 						type: 'cat',
@@ -376,7 +378,7 @@ module.exports = {
 			inline_keyboard: [
 				[
 					{
-						text: `Player intro: ${settings.intro ? THUMBS_UP : THUMBS_DOWN}`,
+						text: `Player intro: ${settings.intro ? ON : OFF}`,
 						callback_data: JSON.stringify({
 							type: 'setting',
 							id: 'intro',
@@ -384,7 +386,7 @@ module.exports = {
 						}),
 					},
 					{
-						text: `Sass: ${settings.sass ? THUMBS_UP : THUMBS_DOWN}`,
+						text: `Sass: ${settings.sass ? ON : OFF}`,
 						callback_data: JSON.stringify({
 							type: 'setting',
 							id: 'sass',
@@ -394,9 +396,7 @@ module.exports = {
 				],
 				[
 					{
-						text: `Daily updates: ${
-							settings.updates ? THUMBS_UP : THUMBS_DOWN
-						}`,
+						text: `Daily updates: ${settings.updates ? ON : OFF}`,
 						callback_data: JSON.stringify({
 							type: 'setting',
 							id: 'update',
@@ -405,7 +405,7 @@ module.exports = {
 					},
 					/*
                     {
-                      'text': `Snub Messages: ${settings.snubs ? THUMBS_UP : THUMBS_DOWN}`,
+                      'text': `Snub Messages: ${settings.snubs ? THUMBS_UP : OFF}`,
                       'callback_data': JSON.stringify({
                         type: 'setting',
                         id: 'snubs',
