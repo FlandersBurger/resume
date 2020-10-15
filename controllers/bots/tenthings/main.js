@@ -1962,8 +1962,7 @@ const evaluateCommand = async (res, msg, game, player, isNew) => {
 			}
 			break;
 		case '/categories':
-			console.log('In categories');
-
+			console.log(game.chat_id);
 			if (
 				game.chat_id != config.masterChat &&
 				game.chat_id != config.groupChat
