@@ -1975,7 +1975,7 @@ const evaluateCommand = async (res, msg, game, player, isNew) => {
 						);
 					} else {
 						bot.queueMessage(
-							body.callback_query.message.chat.id,
+							game.chat_id,
 							`Sorry ${msg.from.first_name}, that's an admin only function`
 						);
 					}
@@ -1998,7 +1998,7 @@ const evaluateCommand = async (res, msg, game, player, isNew) => {
 						);
 					} else {
 						bot.queueMessage(
-							body.callback_query.message.chat.id,
+							game.chat_id,
 							`Sorry ${msg.from.first_name}, that's an admin only function`
 						);
 					}
