@@ -194,10 +194,9 @@ function TelegramBot() {
 	bot.checkAdmin = (channel, user_id) =>
 		new Promise((resolve, reject) => {
 			const url = `https://api.telegram.org/bot${bot.token}/getChatMember?chat_id=${channel}&user_id=${user_id}`;
-			request(url, (error, r, body) => {
-				console.log(body);
+			console.log(url);
 
-				console.log(error);
+			request(url, (error, r, body) => {
 				if (error) return reject(error);
 				const response = JSON.parse(body).result;
 				console.log(response);
