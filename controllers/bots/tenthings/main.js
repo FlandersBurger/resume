@@ -1962,22 +1962,21 @@ const evaluateCommand = async (res, msg, game, player, isNew) => {
 			}
 			break;
 		case '/categories':
-			console.log(game.chat_id);
 			if (
 				game.chat_id != config.masterChat &&
 				game.chat_id != config.groupChat
 			) {
 				bot.checkAdmin(game.chat_id, msg.from.id).then(admin => {
-					console.log(admin);
-					console.log(game.chat_id);
-
 					if (admin || game.chat_id > 0) {
-						console.log(keyboards.categories(game));
-
 						bot.sendKeyboard(
 							game.chat_id,
 							'<b>Categories</b>',
 							keyboards.categories(game)
+						);
+					} else {
+						bot.queueMessage(
+							body.callback_query.message.chat.id,
+							`Sorry ${msg.from.first_name}, that's an admin only function`
 						);
 					}
 				}, console.error);
@@ -1996,6 +1995,11 @@ const evaluateCommand = async (res, msg, game, player, isNew) => {
 							game.chat_id,
 							'<b>Settings</b>',
 							keyboards.settings(game)
+						);
+					} else {
+						bot.queueMessage(
+							body.callback_query.message.chat.id,
+							`Sorry ${msg.from.first_name}, that's an admin only function`
 						);
 					}
 				});

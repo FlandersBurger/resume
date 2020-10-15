@@ -352,16 +352,6 @@ module.exports = {
 	categories: ({ chat_id, disabledCategories }) => {
 		return {
 			inline_keyboard: categories.sort().reduce((result, category, i) => {
-				console.log(
-					`${category} -> ${
-						JSON.stringify({
-							type: 'cat',
-							id: category,
-							game: chat_id,
-						}).length
-					}`
-				);
-
 				const button = {
 					text: `${category}: ${
 						disabledCategories.indexOf(category) < 0 ? THUMBS_UP : THUMBS_DOWN
