@@ -1599,10 +1599,15 @@ const evaluateCommand = async (res, msg, game, player, isNew) => {
       if (game.chat_id != config.masterChat && game.chat_id != config.groupChat) {
         bot.checkAdmin(game.chat_id, msg.from.id)
           .then(admin => {
+            console.log(admin);
+            console.log(game.chat_id);
+            
             if (admin || game.chat_id > 0) {
+              console.log(keyboards.categories(game));
+              
               bot.sendKeyboard(game.chat_id, '<b>Categories</b>', keyboards.categories(game));
             }
-          });
+          }, console.error);
       } else {
         bot.notifyAdmin(JSON.stringify(msg));
       }
