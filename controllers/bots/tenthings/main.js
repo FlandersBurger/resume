@@ -1962,10 +1962,7 @@ const evaluateCommand = async (res, msg, game, player, isNew) => {
 			}
 			break;
 		case '/categories':
-			if (
-				game.chat_id != config.masterChat &&
-				game.chat_id != config.groupChat
-			) {
+			if (game.chat_id != config.groupChat) {
 				bot.checkAdmin(game.chat_id, msg.from.id).then(admin => {
 					if (admin) {
 						bot.sendKeyboard(
@@ -1985,10 +1982,7 @@ const evaluateCommand = async (res, msg, game, player, isNew) => {
 			}
 			break;
 		case '/settings':
-			if (
-				game.chat_id != config.masterChat &&
-				game.chat_id != config.groupChat
-			) {
+			if (game.chat_id != config.groupChat) {
 				bot.checkAdmin(game.chat_id, msg.from.id).then(admin => {
 					if (admin) {
 						bot.sendKeyboard(

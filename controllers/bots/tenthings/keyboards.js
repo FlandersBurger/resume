@@ -399,7 +399,7 @@ module.exports = {
 						text: `Daily updates: ${settings.updates ? ON : OFF}`,
 						callback_data: JSON.stringify({
 							type: 'setting',
-							id: 'update',
+							id: 'updates',
 							game: chat_id,
 						}),
 					},
