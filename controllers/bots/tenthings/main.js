@@ -1317,7 +1317,7 @@ router.post('/', async ({ body }, res, next) => {
 					const isSelected = game.settings.languages.includes(data.id);
 					if (isSelected) {
 						game.settings.languages = game.settings.languages.filter(
-							language => language === data.id
+							language => language !== data.id
 						);
 					} else {
 						game.settings.languages.push(data.id);
