@@ -222,7 +222,6 @@ function selectList(game) {
 									categories: {
 										$in: _.difference(categories, game.disabledCategories),
 									},
-									language: { $in: game.settings.languages },
 								})
 									.select('-votes')
 									.populate('creator')
@@ -254,6 +253,7 @@ function selectList(game) {
 						categories: {
 							$nin: game.disabledCategories,
 						},
+						language: { $in: game.settings.languages },
 					})
 						.select('-votes')
 						.populate('creator')
@@ -1332,7 +1332,7 @@ router.post('/', async ({ body }, res, next) => {
 							);
 						bot.answerCallback(
 							body.callback_query.id,
-							`${data.id} -> ${isSelected ? 'On' : 'Off'}`
+							`${data.id} -> ${isSelected ? 'Off' : 'On'}`
 						);
 						bot.editKeyboard(
 							body.callback_query.message.chat.id,
