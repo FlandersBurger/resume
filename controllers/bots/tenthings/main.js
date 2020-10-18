@@ -1318,13 +1318,20 @@ router.post('/', async ({ body }, res, next) => {
 					} else {
 						game.settings.languages.push(data.id);
 					}
-					if (game.settings.languages.length === 0)
+					if (game.settings.languages.length === 0) {
 						game.settings.languages = ['EN'];
+						bot.editKeyboard(
+							body.callback_query.message.chat.id,
+							body.callback_query.message.message_id,
+							keyboards.langauges(game)
+						);
+					} else {
+						bot.answerCallback(
+							body.callback_query.id,
+							`${data.id} -> ${isSelected ? 'On' : 'Off'}`
+						);
+					}
 					game.save();
-					bot.answerCallback(
-						body.callback_query.id,
-						`${language} -> ${isSelected ? 'On' : 'Off'}`
-					);
 				});
 		} else if (data.type === 'pick') {
 			Game.findOne({
