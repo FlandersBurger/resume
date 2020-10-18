@@ -76,12 +76,13 @@
 								data-toggle="dropdown"
 							>
 								<i class="fas fa-globe"></i> {{languageFilter ?
-								languageFilter.name : 'All'}}
+								languageFilter.code.capitalize() : 'All'}}
 							</button>
 							<ul class="dropdown-menu">
-								<li ng-repeat="language in languageFilters | orderBy: 'name'">
+								<li ng-repeat="language in languageFilters | orderBy: 'code'">
 									<a href="#" ng-click="setLanguageFilter(language)"
-										>{{language.name}} ({{getLanguageCount(language)}})</a
+										>{{language.code.capitalize()}} - {{language.native}}
+										({{getLanguageCount(language)}})</a
 									>
 								</li>
 							</ul>

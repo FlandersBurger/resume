@@ -1320,18 +1320,22 @@ router.post('/', async ({ body }, res, next) => {
 					}
 					if (game.settings.languages.length === 0) {
 						game.settings.languages = ['EN'];
-						bot.editKeyboard(
-							body.callback_query.message.chat.id,
-							body.callback_query.message.message_id,
-							keyboards.langauges(game)
-						);
-					} else {
+					}
+					game.save((err, savedGame) => {
+						if (err)
+							return bot.notifyAdmin(
+								`Language Save Error: \n${JSON.stringify(err)}`
+							);
 						bot.answerCallback(
 							body.callback_query.id,
 							`${data.id} -> ${isSelected ? 'On' : 'Off'}`
 						);
-					}
-					game.save();
+						bot.editKeyboard(
+							body.callback_query.message.chat.id,
+							body.callback_query.message.message_id,
+							keyboards.languages(game)
+						);
+					});
 				});
 		} else if (data.type === 'pick') {
 			Game.findOne({
