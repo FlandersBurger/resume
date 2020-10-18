@@ -152,7 +152,7 @@ for (const name in db) {
 				{
 					type: String,
 					required: true,
-					default: true,
+					default: 'EN',
 				},
 			],
 		},

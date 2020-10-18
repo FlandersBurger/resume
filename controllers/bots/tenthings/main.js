@@ -289,6 +289,9 @@ const getPlayer = async (gameId, user) => {
 const createGame = async (chat_id, user) => {
 	const game = new Game({
 		chat_id,
+		settings: {
+			languages: ['EN'],
+		},
 	});
 	const savedGame = await game.save();
 	const savedPlayer = await createPlayer(savedGame._id, user);
@@ -1307,14 +1310,21 @@ router.post('/', async ({ body }, res, next) => {
 				.exec((err, game) => {
 					if (err)
 						return bot.notifyAdmin('Language button\n' + JSON.stringify(err));
-					if (game.settings.languages.includes(data.id)) {
+					const isSelected = game.settings.languages.includes(data.id);
+					if (isSelected) {
 						game.settings.languages = game.settings.languages.filter(
 							language => language === data.id
 						);
 					} else {
 						game.settings.languages.push(data.id);
 					}
+					if (game.settings.languages.length === 0)
+						game.settings.languages = ['EN'];
 					game.save();
+					bot.answerCallback(
+						body.callback_query.id,
+						`${language} -> ${isSelected ? 'On' : 'Off'}`
+					);
 				});
 		} else if (data.type === 'pick') {
 			Game.findOne({
@@ -1532,6 +1542,8 @@ router.post('/', async ({ body }, res, next) => {
 					return evaluateCommand(res, msg, newGame.game, newGame.player, true);
 				});
 			} else {
+				if (existingGame.settings.languages.length === 0)
+					existingGame.settings.languages = ['EN'];
 				Player.findOne({
 					game: existingGame._id,
 					id: `${msg.from.id}`,
