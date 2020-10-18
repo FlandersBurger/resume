@@ -426,6 +426,8 @@ module.exports = {
 		};
 	},
 	languages: ({ chat_id, settings }) => {
+		console.log(settings);
+
 		return {
 			inline_keyboard: languages.sort().reduce((result, language, i) => {
 				const button = {

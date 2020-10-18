@@ -201,6 +201,7 @@ function selectList(game) {
 				categories: {
 					$nin: game.disabledCategories,
 				},
+				language: { $in: game.settings.languages },
 			}).exec((err, count) => {
 				if (err) return notifyAdmin(JSON.stringify(err));
 				if (count === 0) {
@@ -214,12 +215,14 @@ function selectList(game) {
 							categories: {
 								$nin: game.disabledCategories,
 							},
+							language: { $in: game.settings.languages },
 						}).exec(function (err, count) {
 							if (count === 0) {
 								List.find({
 									categories: {
 										$in: _.difference(categories, game.disabledCategories),
 									},
+									language: { $in: game.settings.languages },
 								})
 									.select('-votes')
 									.populate('creator')
@@ -232,6 +235,7 @@ function selectList(game) {
 									categories: {
 										$nin: game.disabledCategories,
 									},
+									language: { $in: game.settings.languages },
 								})
 									.select('-votes')
 									.populate('creator')
@@ -694,7 +698,7 @@ const newRound = (currentGame, player) => {
 		_id: currentGame._id,
 	})
 		.select(
-			'_id chat_id playedLists list listsPlayed pickedLists cycles guessers hintCooldown hints disabledCategories'
+			'_id chat_id playedLists list listsPlayed pickedLists cycles guessers hintCooldown hints disabledCategories settings'
 		)
 		.populate('list.creator')
 		.exec(async (err, game) => {
