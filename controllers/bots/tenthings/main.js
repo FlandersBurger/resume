@@ -201,7 +201,7 @@ function selectList(game) {
 				categories: {
 					$nin: game.disabledCategories,
 				},
-				language: { $in: game.settings.languages },
+				//language: { $in: game.settings.languages },
 			}).exec((err, count) => {
 				if (err) return notifyAdmin(JSON.stringify(err));
 				if (count === 0) {
@@ -215,7 +215,7 @@ function selectList(game) {
 							categories: {
 								$nin: game.disabledCategories,
 							},
-							language: { $in: game.settings.languages },
+							//language: { $in: game.settings.languages },
 						}).exec(function (err, count) {
 							if (count === 0) {
 								List.find({
@@ -234,7 +234,7 @@ function selectList(game) {
 									categories: {
 										$nin: game.disabledCategories,
 									},
-									language: { $in: game.settings.languages },
+									//language: { $in: game.settings.languages },
 								})
 									.select('-votes')
 									.populate('creator')
@@ -253,7 +253,7 @@ function selectList(game) {
 						categories: {
 							$nin: game.disabledCategories,
 						},
-						language: { $in: game.settings.languages },
+						//language: { $in: game.settings.languages },
 					})
 						.select('-votes')
 						.populate('creator')

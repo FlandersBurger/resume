@@ -429,7 +429,7 @@ module.exports = {
 		return {
 			inline_keyboard: languages.sort().reduce((result, language, i) => {
 				const button = {
-					text: `${language.name}: ${
+					text: `${language.code} - ${language.native}: ${
 						settings.languages.includes(language.code) ? ON : OFF
 					}`,
 					callback_data: JSON.stringify({
