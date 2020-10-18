@@ -459,6 +459,8 @@ guessQueue.process(({ data }) => processGuess(data));
 
 const processGuess = guess => {
 	return new Promise((resolve, reject) => {
+		console.log(`Processing ${guess.game}`);
+
 		Game.findOne({
 			chat_id: guess.game,
 		})
@@ -467,7 +469,10 @@ const processGuess = guess => {
 				'_id chat_id guessers list lastPlayDate hints streak settings minigame disabledCategories'
 			)
 			.exec(async (err, game) => {
-				if (err) return reject();
+				if (err) {
+					console.error(err);
+					return reject();
+				}
 				let player = await getPlayer(game._id, {
 					id: guess.player,
 				});
@@ -480,6 +485,7 @@ const processGuess = guess => {
 							resolve();
 						},
 						err => {
+							console.error(err);
 							reject(err);
 						}
 					);
@@ -1557,8 +1563,9 @@ router.post('/', async ({ body }, res, next) => {
 					return evaluateCommand(res, msg, newGame.game, newGame.player, true);
 				});
 			} else {
+				/*
 				if (existingGame.settings.languages.length === 0)
-					existingGame.settings.languages = ['EN'];
+					existingGame.settings.languages = ['EN'];*/
 				Player.findOne({
 					game: existingGame._id,
 					id: `${msg.from.id}`,
