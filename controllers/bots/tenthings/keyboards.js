@@ -1,6 +1,7 @@
 const moment = require('moment');
 const _ = require('underscore');
 const categories = require('./categories');
+const languages = require('./languages');
 const THUMBS_UP = '\ud83d\udc4d';
 const THUMBS_DOWN = '\ud83d\udc4e';
 const OFF = '\ud83c\udf11';
@@ -403,6 +404,14 @@ module.exports = {
 							game: chat_id,
 						}),
 					},
+					{
+						text: `Languages: ${settings.languages.join(', ')}`,
+						callback_data: JSON.stringify({
+							type: 'setting',
+							id: 'lang',
+							game: chat_id,
+						}),
+					},
 					/*
                     {
                       'text': `Snub Messages: ${settings.snubs ? THUMBS_UP : OFF}`,
@@ -414,6 +423,28 @@ module.exports = {
                     },*/
 				],
 			],
+		};
+	},
+	languages: ({ chat_id, settings }) => {
+		return {
+			inline_keyboard: languages.sort().reduce((result, language, i) => {
+				const button = {
+					text: `${language.name}: ${
+						settings.languages.includes(language.code) ? ON : OFF
+					}`,
+					callback_data: JSON.stringify({
+						type: 'lang',
+						id: language.code,
+						game: chat_id,
+					}),
+				};
+				if (i % 2 === 0) {
+					result.push([button]);
+				} else {
+					result[result.length - 1].push(button);
+				}
+				return result;
+			}, []),
 		};
 	},
 	like: function (game) {

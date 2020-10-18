@@ -1266,23 +1266,31 @@ router.post('/', async ({ body }, res, next) => {
 								return bot.notifyAdmin(
 									`Settings Find Error: \n${JSON.stringify(err)}`
 								);
-							console.log(`${data.id} toggled for ${game._id}`);
-							game.settings[data.id] = !game.settings[data.id];
-							game.save((err, savedGame) => {
-								if (err)
-									return bot.notifyAdmin(
-										`Settings Save Error: \n${JSON.stringify(err)}`
-									);
-								bot.answerCallback(
-									body.callback_query.id,
-									`${data.id} -> ${game.settings[data.id] ? 'On' : 'Off'}`
-								);
+							if (data.id === 'lang') {
 								bot.editKeyboard(
 									body.callback_query.message.chat.id,
 									body.callback_query.message.message_id,
-									keyboards.settings(game)
+									keyboards.languages(game)
 								);
-							});
+							} else {
+								console.log(`${data.id} toggled for ${game._id}`);
+								game.settings[data.id] = !game.settings[data.id];
+								game.save((err, savedGame) => {
+									if (err)
+										return bot.notifyAdmin(
+											`Settings Save Error: \n${JSON.stringify(err)}`
+										);
+									bot.answerCallback(
+										body.callback_query.id,
+										`${data.id} -> ${game.settings[data.id] ? 'On' : 'Off'}`
+									);
+									bot.editKeyboard(
+										body.callback_query.message.chat.id,
+										body.callback_query.message.message_id,
+										keyboards.settings(game)
+									);
+								});
+							}
 						});
 				} else {
 					bot.queueMessage(
@@ -1291,6 +1299,23 @@ router.post('/', async ({ body }, res, next) => {
 					);
 				}
 			}
+		} else if (data.type === 'lang') {
+			Game.findOne({
+				chat_id: body.callback_query.message.chat.id,
+			})
+				.select('chat_id settings')
+				.exec((err, game) => {
+					if (err)
+						return bot.notifyAdmin('Language button\n' + JSON.stringify(err));
+					if (game.settings.languages.includes(data.id)) {
+						game.settings.languages = game.settings.languages.filter(
+							language => language === data.id
+						);
+					} else {
+						game.settings.languages.push(data.id);
+					}
+					game.save();
+				});
 		} else if (data.type === 'pick') {
 			Game.findOne({
 				chat_id: body.callback_query.message.chat.id,
