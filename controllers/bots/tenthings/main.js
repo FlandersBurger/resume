@@ -445,8 +445,6 @@ guessQueue.process(({ data }) => processGuess(data));
 
 const processGuess = guess => {
 	return new Promise((resolve, reject) => {
-		console.log(guess);
-
 		Game.findOne({
 			chat_id: guess.game,
 		})
