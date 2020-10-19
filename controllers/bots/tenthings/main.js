@@ -187,11 +187,18 @@ function selectList(game) {
 				.populate('creator')
 				.exec(async (err, list) => {
 					if (err) return reject(err);
-					if (!_.some(game.playedLists, playedList => playedList == list._id)) {
-						game.playedLists.push(list._id);
-						await game.save();
+					if (!list) {
+						game.pickedLists.shift();
+						resolve(await selectList(game));
+					} else {
+						if (
+							!_.some(game.playedLists, playedList => playedList == list._id)
+						) {
+							game.playedLists.push(list._id);
+							await game.save();
+						}
+						resolve(list);
 					}
-					resolve(list);
 				});
 		} else {
 			List.countDocuments({
@@ -459,7 +466,7 @@ guessQueue.process(({ data }) => processGuess(data));
 
 const processGuess = guess => {
 	return new Promise((resolve, reject) => {
-		console.log(`Processing ${guess.game}`);
+		console.log(guess);
 
 		Game.findOne({
 			chat_id: guess.game,
