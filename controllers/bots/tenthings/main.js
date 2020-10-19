@@ -745,7 +745,7 @@ const newRound = (currentGame, player) => {
 						);
 					});
 				},
-				err => bot.notifyAdmin(JSON.stringify(err))
+				err => bot.notifyAdmin(`Select List Error: ${JSON.stringify(err)}`)
 			);
 		});
 };
@@ -922,59 +922,57 @@ function getRandom(arr, n) {
 	return result;
 }
 
-const createMinigame = (game, msg) =>
-	new Promise(async (resolve, reject) => {
-		let lists = await List.find({
-			categories: {
-				$nin: game.disabledCategories,
-			},
-		}).lean();
-		if (lists.length === 0) lists = await List.find({}).lean();
-		let answers = lists.reduce((answers, list) => {
-			for (const value of list.values) {
-				if (!answers[value.value]) answers[value.value] = [list.name];
-				else answers[value.value].push(list.name);
-			}
-			return answers;
-		}, {});
-		let result = Object.keys(answers)
-			.reduce((result, answer) => {
-				if (answers[answer] && answers[answer].length > 2) {
-					result.push({
-						answer: answer,
-						lists: answers[answer],
-					});
-				}
-				return result;
-			}, [])
-			.filter(minigame => minigame.lists && minigame.lists.length > 0);
-		if (result.length === 0) {
-			bot.queueMessage(
-				msg.chat.id,
-				'Insufficient categories selected for the minigame to work'
-			);
-			resolve();
+const createMinigame = async (game, msg) => {
+	let lists = await List.find({
+		categories: {
+			$nin: game.disabledCategories,
+		},
+	}).lean();
+	if (lists.length === 0) lists = await List.find({}).lean();
+	let answers = lists.reduce((answers, list) => {
+		for (const value of list.values) {
+			if (!answers[value.value]) answers[value.value] = [list.name];
+			else answers[value.value].push(list.name);
 		}
-		let minigame = result[Math.floor(Math.random() * result.length)];
+		return answers;
+	}, {});
+	let result = Object.keys(answers)
+		.reduce((result, answer) => {
+			if (answers[answer] && answers[answer].length > 2) {
+				result.push({
+					answer: answer,
+					lists: answers[answer],
+				});
+			}
+			return result;
+		}, [])
+		.filter(minigame => minigame.lists && minigame.lists.length > 0);
+	if (result.length === 0) {
+		bot.queueMessage(
+			msg.chat.id,
+			'Insufficient categories selected for the minigame to work'
+		);
+		return;
+	}
+	let minigame = result[Math.floor(Math.random() * result.length)];
 
-		let message = '<b>Find the connection</b>\n';
-		message += getRandom(minigame.lists, 10).reduce((msg, list) => {
-			msg += `- ${list}\n`;
-			return msg;
-		}, '');
-		message += `<b>${minigame.answer.conceal('')}</b>`;
-		bot.queueMessage(msg.chat.id, message);
-		game.minigame.answer = minigame.answer;
-		game.minigame.date = moment();
-		game.minigame.lists = minigame.lists;
-
-		game.save(err => {
-			if (err) return reject(err);
-			resolve();
-			//bot.notifyAdmin(`"<b>${foundList.name}</b>" ${data.vote > 0 ? 'up' : 'down'}voted by <i>${body.callback_query.from.first_name}</i>!`);
-			//bot.notifyAdmin(`Can't save ${JSON.stringify(game.chat_id)}`);
-		});
-	});
+	let message = '<b>Find the connection</b>\n';
+	message += getRandom(minigame.lists, 10).reduce((msg, list) => {
+		msg += `- ${list}\n`;
+		return msg;
+	}, '');
+	message += `<b>${minigame.answer.conceal('')}</b>`;
+	bot.queueMessage(msg.chat.id, message);
+	game.minigame.answer = minigame.answer;
+	game.minigame.date = moment();
+	game.minigame.lists = minigame.lists;
+	try {
+		await game.save();
+	} catch (err) {
+		console.error(`Minigame Error\n${JSON.stringify(err)}`);
+		throw err;
+	}
+};
 
 router.post('/', async ({ body }, res, next) => {
 	if (body.object === 'page') {
@@ -1202,10 +1200,7 @@ router.post('/', async ({ body }, res, next) => {
 			bot.answerCallback(body.callback_query.id, 'Score');
 			stats.getScores(body.callback_query.message.chat.id, data.id);
 		} else if (data.type === 'cat') {
-			if (
-				body.callback_query.message.chat.id != config.masterChat &&
-				body.callback_query.message.chat.id != config.groupChat
-			) {
+			if (body.callback_query.message.chat.id != config.groupChat) {
 				const isAdmin =
 					body.callback_query.message.chat.id > 0 ||
 					(await bot.checkAdmin(
@@ -1251,8 +1246,6 @@ router.post('/', async ({ body }, res, next) => {
 						`Sorry ${data.requestor}, this is a chat admin function`
 					);
 				}
-			} else {
-				bot.notifyAdmin(JSON.stringify(body.callback_query.message));
 			}
 		} else if (data.type === 'setting') {
 			if (body.callback_query.message.chat_id != config.masterChat) {
@@ -2045,8 +2038,6 @@ const evaluateCommand = async (res, msg, game, player, isNew) => {
 						);
 					}
 				}, console.error);
-			} else {
-				bot.notifyAdmin(JSON.stringify(msg));
 			}
 			break;
 		case '/settings':
