@@ -443,8 +443,6 @@ const queueingGuess = guess => guessQueue.add(guess);
 guessQueue.process(({ data }) => processGuess(data));
 
 const processGuess = guess => {
-	console.log(guess);
-
 	return new Promise((resolve, reject) => {
 		Game.findOne({
 			chat_id: guess.game,
@@ -939,15 +937,17 @@ const createMinigame = (game, msg) =>
 			}
 			return answers;
 		}, {});
-		let result = Object.keys(answers).reduce((result, answer) => {
-			if (answers[answer] && answers[answer].length > 2) {
-				result.push({
-					answer: answer,
-					lists: answers[answer],
-				});
-			}
-			return result;
-		}, []);
+		let result = Object.keys(answers)
+			.reduce((result, answer) => {
+				if (answers[answer] && answers[answer].length > 2) {
+					result.push({
+						answer: answer,
+						lists: answers[answer],
+					});
+				}
+				return result;
+			}, [])
+			.filter(answer => answer.lists && answer.lists.length > 0);
 		let minigame = result[Math.floor(Math.random() * result.length)];
 		let message = '<b>Find the connection</b>\n';
 		message += getRandom(minigame.lists, 10).reduce((msg, list) => {
