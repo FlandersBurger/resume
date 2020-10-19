@@ -252,7 +252,6 @@ const selectList = async game => {
 	}
 };
 
-//List.findOne({name: 'Writing Instruments'}).exec((err, list) => console.log(list));
 const getGame = async (chat_id, user) => {
 	const game = await Game.findOne({
 		chat_id,
