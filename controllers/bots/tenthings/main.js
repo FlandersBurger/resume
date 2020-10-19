@@ -947,8 +947,11 @@ const createMinigame = (game, msg) =>
 				}
 				return result;
 			}, [])
-			.filter(answer => answer.lists && answer.lists.length > 0);
+			.filter(minigame => minigame.lists && minigame.lists.length > 0);
+
 		let minigame = result[Math.floor(Math.random() * result.length)];
+		if (!minigame) console.log(result);
+
 		let message = '<b>Find the connection</b>\n';
 		message += getRandom(minigame.lists, 10).reduce((msg, list) => {
 			msg += `- ${list}\n`;
