@@ -187,6 +187,7 @@ const selectList = async game => {
 			.exec();
 		if (!list) {
 			game.pickedLists.shift();
+			console.log(`Moving to next picked list`);
 			return await selectList(game);
 		} else {
 			if (!_.some(game.playedLists, playedList => playedList == list._id)) {
@@ -195,25 +196,34 @@ const selectList = async game => {
 			return list;
 		}
 	} else {
-		let count = await List.countDocuments({
-			_id: { $nin: game.playedLists },
-			categories: { $nin: game.disabledCategories },
-			language: { $in: game.settings.languages },
-		}).exec();
+		let count;
+		try {
+			count = await List.countDocuments({
+				_id: { $nin: game.playedLists },
+				categories: { $nin: game.disabledCategories },
+				language: { $in: game.settings.languages },
+			}).exec();
+		} catch (e) {
+			throw e;
+		}
 		if (count === 0) {
 			game.playedLists = [];
 			game.cycles++;
 			game.lastCycleDate = moment();
 			//bot.queueMessage(game.chat_id, 'All lists have been played, a new cycle will now start.');
-			count = await List.countDocuments({
-				categories: { $nin: game.disabledCategories },
-				language: { $in: game.settings.languages },
-			}).exec();
+			try {
+				count = await List.countDocuments({
+					categories: { $nin: game.disabledCategories },
+					language: { $in: game.settings.languages },
+				}).exec();
+			} catch (e) {
+				throw e;
+			}
 			if (count === 0) {
 				const lists = await List.find({
 					categories: {
 						$in: _.difference(categories, game.disabledCategories),
-						language: { $in: game.settings.languages },
+						//language: { $in: game.settings.languages },
 					},
 				})
 					.select('-votes')
@@ -222,9 +232,11 @@ const selectList = async game => {
 					.lean()
 					.skip(Math.floor(Math.random() * 2000))
 					.exec();
+				if (lists.length === 0)
+					throw `No exclusive list in ${game.settings.languages}`;
 				return lists[0];
 			} else {
-				let lists = await List.find({
+				const lists = await List.find({
 					categories: { $nin: game.disabledCategories },
 					language: { $in: game.settings.languages },
 				})
