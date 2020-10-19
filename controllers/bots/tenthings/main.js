@@ -1323,7 +1323,7 @@ router.post('/', async ({ body }, res, next) => {
 					if (game.settings.languages.length === 0) {
 						game.settings.languages = ['EN'];
 					}
-					game.save((err, savedGame) => {
+					game.save(async (err, savedGame) => {
 						if (err)
 							return bot.notifyAdmin(
 								`Language Save Error: \n${JSON.stringify(err)}`
@@ -1332,10 +1332,18 @@ router.post('/', async ({ body }, res, next) => {
 							body.callback_query.id,
 							`${data.id} -> ${isSelected ? 'Off' : 'On'}`
 						);
+						const availableLanguages = await List.aggregate([
+							{
+								$group: {
+									_id: '$language',
+									count: { $sum: 1 },
+								},
+							},
+						]).exec();
 						bot.editKeyboard(
 							body.callback_query.message.chat.id,
 							body.callback_query.message.message_id,
-							keyboards.languages(game)
+							keyboards.languages(game, availableLanguages)
 						);
 					});
 				});
