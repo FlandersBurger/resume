@@ -2064,7 +2064,11 @@ const evaluateCommand = async (res, msg, game, player, isNew) => {
 					msg.chat.id,
 					'Yes, master. Let me send you what you need!'
 				);
-				bot.notifyAdmin(msg.chat.id);
+				bot.notifyAdmin(
+					`Chat id: ${msg.chat.id}\nGame _id: ${
+						game._id
+					}\nSettings:\n${JSON.stringify(game.settings)}`
+				);
 			}
 			break;
 		case '/ping':
