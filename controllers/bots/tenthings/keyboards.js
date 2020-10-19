@@ -425,26 +425,37 @@ module.exports = {
 			],
 		};
 	},
-	languages: ({ chat_id, settings }) => {
+	languages: ({ chat_id, settings }, availableLanguages) => {
 		return {
-			inline_keyboard: languages.sort().reduce((result, language, i) => {
-				const button = {
-					text: `${language.code} - ${language.native}: ${
-						settings.languages.includes(language.code) ? ON : OFF
-					}`,
-					callback_data: JSON.stringify({
-						type: 'lang',
-						id: language.code,
-						game: chat_id,
-					}),
-				};
-				if (i % 2 === 0) {
-					result.push([button]);
-				} else {
-					result[result.length - 1].push(button);
-				}
-				return result;
-			}, []),
+			inline_keyboard: languages
+				.filter(language =>
+					_.some(
+						availableLanguages,
+						availableLanguage => availableLanguage._id === language.code
+					)
+				)
+				.sort()
+				.reduce((result, language, i) => {
+					const button = {
+						text: `${language.code} - ${language.native} (${
+							_.find(
+								availableLanguages,
+								availableLanguage => availableLanguage._id === language.code
+							).count
+						}): ${settings.languages.includes(language.code) ? ON : OFF}`,
+						callback_data: JSON.stringify({
+							type: 'lang',
+							id: language.code,
+							game: chat_id,
+						}),
+					};
+					if (i % 2 === 0) {
+						result.push([button]);
+					} else {
+						result[result.length - 1].push(button);
+					}
+					return result;
+				}, []),
 		};
 	},
 	like: function (game) {

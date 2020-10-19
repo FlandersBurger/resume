@@ -177,101 +177,80 @@ bot.exportChatInviteLink('-1001394022777').then(function(chat) {
 });
 */
 
-function selectList(game) {
-	return new Promise(function (resolve, reject) {
-		if (game.pickedLists.length > 0) {
-			List.findOne({
-				_id: game.pickedLists[0],
+const selectList = async game => {
+	if (game.pickedLists.length > 0) {
+		let list = await List.findOne({
+			_id: game.pickedLists[0],
+		})
+			.select('-votes')
+			.populate('creator')
+			.exec();
+		if (!list) {
+			game.pickedLists.shift();
+			return await selectList(game);
+		} else {
+			if (!_.some(game.playedLists, playedList => playedList == list._id)) {
+				game.playedLists.push(list._id);
+			}
+			return list;
+		}
+	} else {
+		let count = await List.countDocuments({
+			_id: { $nin: game.playedLists },
+			categories: { $nin: game.disabledCategories },
+			language: { $in: game.settings.languages },
+		}).exec();
+		if (count === 0) {
+			game.playedLists = [];
+			game.cycles++;
+			game.lastCycleDate = moment();
+			//bot.queueMessage(game.chat_id, 'All lists have been played, a new cycle will now start.');
+			count = await List.countDocuments({
+				categories: { $nin: game.disabledCategories },
+				language: { $in: game.settings.languages },
+			}).exec();
+			if (count === 0) {
+				const lists = await List.find({
+					categories: {
+						$in: _.difference(categories, game.disabledCategories),
+						language: { $in: game.settings.languages },
+					},
+				})
+					.select('-votes')
+					.populate('creator')
+					.limit(1)
+					.lean()
+					.skip(Math.floor(Math.random() * 2000))
+					.exec();
+				return lists[0];
+			} else {
+				let lists = await List.find({
+					categories: { $nin: game.disabledCategories },
+					language: { $in: game.settings.languages },
+				})
+					.select('-votes')
+					.populate('creator')
+					.limit(1)
+					.lean()
+					.skip(Math.floor(Math.random() * count))
+					.exec();
+				return lists[0];
+			}
+		} else {
+			let lists = await List.find({
+				_id: { $nin: game.playedLists },
+				categories: { $nin: game.disabledCategories },
+				language: { $in: game.settings.languages },
 			})
 				.select('-votes')
 				.populate('creator')
-				.exec(async (err, list) => {
-					if (err) return reject(err);
-					if (!list) {
-						game.pickedLists.shift();
-						resolve(await selectList(game));
-					} else {
-						if (
-							!_.some(game.playedLists, playedList => playedList == list._id)
-						) {
-							game.playedLists.push(list._id);
-							await game.save();
-						}
-						resolve(list);
-					}
-				});
-		} else {
-			List.countDocuments({
-				_id: {
-					$nin: game.playedLists,
-				},
-				categories: {
-					$nin: game.disabledCategories,
-				},
-				//language: { $in: game.settings.languages },
-			}).exec((err, count) => {
-				if (err) return notifyAdmin(JSON.stringify(err));
-				if (count === 0) {
-					game.playedLists = [];
-					game.cycles++;
-					game.lastCycleDate = moment();
-					game.save(err => {
-						if (err) reject(err);
-						//bot.queueMessage(game.chat_id, 'All lists have been played, a new cycle will now start.');
-						List.countDocuments({
-							categories: {
-								$nin: game.disabledCategories,
-							},
-							//language: { $in: game.settings.languages },
-						}).exec(function (err, count) {
-							if (count === 0) {
-								List.find({
-									categories: {
-										$in: _.difference(categories, game.disabledCategories),
-									},
-								})
-									.select('-votes')
-									.populate('creator')
-									.limit(1)
-									.lean()
-									.skip(Math.floor(Math.random() * 2000))
-									.exec((err, lists) => resolve(lists[0]));
-							} else {
-								List.find({
-									categories: {
-										$nin: game.disabledCategories,
-									},
-									//language: { $in: game.settings.languages },
-								})
-									.select('-votes')
-									.populate('creator')
-									.limit(1)
-									.lean()
-									.skip(Math.floor(Math.random() * count))
-									.exec((err, lists) => resolve(lists[0]));
-							}
-						});
-					});
-				} else {
-					List.find({
-						_id: {
-							$nin: game.playedLists,
-						},
-						categories: {
-							$nin: game.disabledCategories,
-						},
-						//language: { $in: game.settings.languages },
-					})
-						.select('-votes')
-						.populate('creator')
-						.limit(1)
-						.skip(Math.floor(Math.random() * count))
-						.exec((err, lists) => resolve(lists[0]));
-				}
-			});
+				.limit(1)
+				.skip(Math.floor(Math.random() * count))
+				.exec();
+			return lists[0];
 		}
-	});
-}
+	}
+};
 
 //List.findOne({name: 'Writing Instruments'}).exec((err, list) => console.log(list));
 const getGame = async (chat_id, user) => {
@@ -1281,16 +1260,24 @@ router.post('/', async ({ body }, res, next) => {
 						chat_id: body.callback_query.message.chat.id,
 					})
 						.select('chat_id settings')
-						.exec((err, game) => {
+						.exec(async (err, game) => {
 							if (err)
 								return bot.notifyAdmin(
 									`Settings Find Error: \n${JSON.stringify(err)}`
 								);
 							if (data.id === 'lang') {
+								const availableLanguages = await List.aggregate([
+									{
+										$group: {
+											_id: '$language',
+											count: { $sum: 1 },
+										},
+									},
+								]).exec();
 								bot.editKeyboard(
 									body.callback_query.message.chat.id,
 									body.callback_query.message.message_id,
-									keyboards.languages(game)
+									keyboards.languages(game, availableLanguages)
 								);
 							} else {
 								console.log(`${data.id} toggled for ${game._id}`);
