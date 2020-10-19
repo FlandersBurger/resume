@@ -2059,10 +2059,7 @@ const evaluateCommand = async (res, msg, game, player, isNew) => {
 			}
 			break;
 		case '/check':
-			console.log(msg.from.id);
-			console.log(config.masterChat);
-
-			if (msg.from.id !== config.masterChat) {
+			if (msg.from.id === config.masterChat) {
 				bot.queueMessage(
 					msg.chat.id,
 					'Yes, master. Let me send you what you need!'
