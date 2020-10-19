@@ -950,7 +950,10 @@ const createMinigame = (game, msg) =>
 			.filter(minigame => minigame.lists && minigame.lists.length > 0);
 
 		let minigame = result[Math.floor(Math.random() * result.length)];
-		if (!minigame) console.log(result);
+		if (!minigame) {
+			console.log(result);
+			console.log(game);
+		}
 
 		let message = '<b>Find the connection</b>\n';
 		message += getRandom(minigame.lists, 10).reduce((msg, list) => {
