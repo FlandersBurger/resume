@@ -948,12 +948,14 @@ const createMinigame = (game, msg) =>
 				return result;
 			}, [])
 			.filter(minigame => minigame.lists && minigame.lists.length > 0);
-
-		let minigame = result[Math.floor(Math.random() * result.length)];
-		if (!minigame) {
-			console.log(result);
-			console.log(game);
+		if (result.length === 0) {
+			bot.queueMessage(
+				msg.chat.id,
+				'Insufficient categories selected for the minigame to work'
+			);
+			resolve();
 		}
+		let minigame = result[Math.floor(Math.random() * result.length)];
 
 		let message = '<b>Find the connection</b>\n';
 		message += getRandom(minigame.lists, 10).reduce((msg, list) => {
