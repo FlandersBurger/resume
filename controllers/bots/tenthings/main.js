@@ -1997,7 +1997,7 @@ const evaluateCommand = async (res, msg, game, player, isNew) => {
 					return msg;
 				}, '');
 				message += '\n';
-				message += hints.getHint(game.hints, game.minigame.answer);
+				message += `<b>${hints.getHint(game.hints, game.minigame.answer)}</b>`;
 				//message += game.minigame.answer.conceal(game.minigame.date < moment().subtract(1, 'hours') ? 'aeoui' : '');
 				bot.queueMessage(msg.chat.id, message);
 			}
@@ -2013,7 +2013,10 @@ const evaluateCommand = async (res, msg, game, player, isNew) => {
 					return msg;
 				}, '');
 				message += '\n';
-				message += hints.getHint(game.hints + 1, game.tinygame.answer);
+				message += `<b>${hints.getHint(
+					game.hints + 1,
+					game.tinygame.answer
+				)}</b>`;
 				//message += game.tinygame.answer.conceal(game.tinygame.date < moment().subtract(1, 'hours') ? 'aeoui' : '');
 				bot.queueMessage(msg.chat.id, message);
 			}
