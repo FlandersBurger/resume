@@ -1609,6 +1609,8 @@ const evaluateCommand = async (res, msg, game, player, isNew) => {
 			bot.queueMessage(msg.chat.id, messages.logic());
 			break;
 		case '/comandos':
+			bot.queueMessage(msg.chat.id, messages.commands('PT'));
+			break;
 		case '/commands':
 			bot.queueMessage(msg.chat.id, messages.commands());
 			break;
@@ -1643,6 +1645,7 @@ const evaluateCommand = async (res, msg, game, player, isNew) => {
 				});
 			}
 			break;
+		case '/pule':
 		case '/skip':
 			if (
 				!vetoes[game.id] ||
@@ -1717,6 +1720,7 @@ const evaluateCommand = async (res, msg, game, player, isNew) => {
 				);
 			}
 			break;
+		case '/estatísticas':
 		case '/stats':
 			bot.sendKeyboard(
 				game.chat_id,
@@ -1724,6 +1728,7 @@ const evaluateCommand = async (res, msg, game, player, isNew) => {
 				keyboards.stats(game.chat_id)
 			);
 			break;
+		case '/lista':
 		case '/list':
 			try {
 				stats.getList(game, list => {
@@ -1750,9 +1755,7 @@ const evaluateCommand = async (res, msg, game, player, isNew) => {
 				console.error(e);
 			}
 			break;
-		case '/stop':
-			deactivateGame(game);
-			break;
+		case '/erro':
 		case '/typo':
 			const typo = msg.text.substring(msg.command.length + 1, msg.text.length);
 			if (typo && typo != 'TenThings_Bot' && typo != '@TenThings_Bot') {
@@ -1819,6 +1822,7 @@ const evaluateCommand = async (res, msg, game, player, isNew) => {
 				);
 			}
 			break;
+		case '/pesquisar':
 		case '/search':
 			const search = msg.text.substring(
 				msg.command.length + 1,
@@ -1895,6 +1899,7 @@ const evaluateCommand = async (res, msg, game, player, isNew) => {
 				'<i>Note that lists can be added and enhanced by anyone at https://belgocanadian.com/tenthings</i>';
 			bot.queueMessage(game.chat_id, message);
 			break;
+		case '/dica':
 		case '/hint':
 			activateGame(game, false);
 			if (
@@ -1927,6 +1932,7 @@ const evaluateCommand = async (res, msg, game, player, isNew) => {
       }
       break;
       */
+		case '/eu':
 		case '/me':
 			stats.getStats(
 				msg.chat.id,
@@ -1936,9 +1942,11 @@ const evaluateCommand = async (res, msg, game, player, isNew) => {
 				msg.from.id
 			);
 			break;
+		case '/pontuação':
 		case '/score':
 			bot.queueMessage(game.chat_id, await stats.getDailyScores(game));
 			break;
+		case '/minijogo':
 		case '/minigame':
 			if (!game.minigame.answer) {
 				minigame.create(game, msg);
@@ -1957,6 +1965,7 @@ const evaluateCommand = async (res, msg, game, player, isNew) => {
 				bot.queueMessage(msg.chat.id, message);
 			}
 			break;
+		case '/categorias':
 		case '/categories':
 			if (game.chat_id != config.groupChat) {
 				bot.checkAdmin(game.chat_id, msg.from.id).then(admin => {
@@ -1975,6 +1984,7 @@ const evaluateCommand = async (res, msg, game, player, isNew) => {
 				}, console.error);
 			}
 			break;
+		case '/confi':
 		case '/settings':
 			if (game.chat_id != config.groupChat) {
 				bot.checkAdmin(game.chat_id, msg.from.id).then(admin => {
@@ -2020,6 +2030,7 @@ const evaluateCommand = async (res, msg, game, player, isNew) => {
 				bot.sendMessage(msg.chat.id, message);
 			}, console.error);
 			break;
+		case '/listas':
 		case '/lists':
 			if (game.pickedLists.length > 0) {
 				List.find({

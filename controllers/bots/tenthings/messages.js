@@ -50,25 +50,46 @@ module.exports = {
 			': Spammers will be ignored until they are silent for at least 10 seconds\n';
 		return message;
 	},
-	commands: function () {
+	commands: (language = 'EN') => {
 		var message = '';
-		message += '/list - Guessed answers in the current round\n';
-		message += '/hint - Give a hint\n';
-		message += '/skip - Skip the current round\n';
-		message += '/minigame - Reverse trivia question\n';
-		message += '/score - Daily score standing\n';
-		message += '/stats - Statistics on the game\n';
-		message += '/me - My stats\n';
-		message += '/intro - What am I?\n';
-		message += '/logic - An explanation of the logic used\n';
-		message += '/settings - Bot behaviour settings (Admin Only)\n';
-		message +=
-			'/categories - Select which categories to include (Admin Only)\n';
-		message += '/typo - Report a typo in the current list\n';
-		message += '/bug - Report a bug with the bot\n';
-		message += '/search - Search lists to queue\n';
-		message += '/lists - See queued lists\n';
-		message += '/stop - Switch me off\n';
+		if ((language = 'PT')) {
+			message += '/lista - Respostas adivinhadas na rodada atual\n';
+			message += '/dica- Dar uma dica\n';
+			message += '/pule- Pular a rodada atual\n';
+			message += '/minijogo - Pergunta sobre trivialidades invertidas\n';
+			message += '/pontuação - Pontuação diária\n';
+			message += '/estatísticas - Estatísticas sobre o jogo\n';
+			message += '/eu - Minhas estatísticas\n';
+			message += '/intro - O que sou eu?\n';
+			message += '/lógica - Uma explicação da lógica utilizada\n';
+			message += '/confi - Configurações (Somente Admin)\n';
+			message +=
+				'/categorias - Selecione as categorias a incluir (Somente Admin)\n';
+			message += '/erro - Relatar um erro de digitação na lista atual\n';
+			message += '/bug - Relatar um bug com o bot\n';
+			message += '/pesquisar - Listas de busca para fila\n';
+			message += '/listas - Ver listas enfileiradas\n';
+			message += '/parar - Desligue-me\n';
+		} else {
+			message += '/list - Guessed answers in the current round\n';
+			message += '/hint - Give a hint\n';
+			message += '/skip - Skip the current round\n';
+			message += '/minigame - Reverse trivia question\n';
+			message += '/score - Daily score standing\n';
+			message += '/stats - Statistics on the game\n';
+			message += '/me - My stats\n';
+			message += '/intro - What am I?\n';
+			message += '/logic - An explanation of the logic used\n';
+			message += '/settings - Bot behaviour settings (Admin Only)\n';
+			message +=
+				'/categories - Select which categories to include (Admin Only)\n';
+			message += '/typo - Report a typo in the current list\n';
+			message += '/bug - Report a bug with the bot\n';
+			message += '/feature - Recommend a new feature for the bot\n';
+			message += '/search - Search lists to queue\n';
+			message += '/lists - See queued lists\n';
+			message += '/stop - Switch me off\n';
+		}
 		return message;
 	},
 	guessed: function (match, player) {
