@@ -42,6 +42,8 @@ const create = async (game, msg) => {
 		clues: lists[0].values.map(answer => answer.value).getRandom(10),
 	};
 
+	console.log(tinygame);
+
 	let message = '<b>Find the list title</b>\n';
 	message += tinygame.clues.reduce((msg, clue) => {
 		msg += `- ${clue.value}\n`;
