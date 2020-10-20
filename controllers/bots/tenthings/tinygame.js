@@ -33,8 +33,9 @@ const create = async (game, msg) => {
 			.skip(Math.floor(Math.random() * count))
 			.exec();
 	}
-	console.log(count);
-	console.log(lists);
+	console.log(lists.length);
+
+	console.log(lists[0]);
 
 	const tinygame = {
 		answer: lists[0].name,
