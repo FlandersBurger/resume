@@ -178,6 +178,10 @@ bot.exportChatInviteLink('-1001394022777').then(function(chat) {
 */
 
 const selectList = async game => {
+	const availableLanguages =
+		game.settings.languages && game.settings.languages.length > 0
+			? game.settings.languages
+			: ['EN'];
 	if (game.pickedLists.length > 0) {
 		let list = await List.findOne({
 			_id: game.pickedLists[0],
@@ -201,7 +205,7 @@ const selectList = async game => {
 			count = await List.countDocuments({
 				_id: { $nin: game.playedLists },
 				categories: { $nin: game.disabledCategories },
-				language: { $in: game.settings.languages },
+				language: { $in: availableLanguages },
 			}).exec();
 		} catch (e) {
 			throw e;
@@ -214,7 +218,7 @@ const selectList = async game => {
 			try {
 				count = await List.countDocuments({
 					categories: { $nin: game.disabledCategories },
-					language: { $in: game.settings.languages },
+					language: { $in: availableLanguages },
 				}).exec();
 			} catch (e) {
 				throw e;
@@ -233,12 +237,12 @@ const selectList = async game => {
 					.skip(Math.floor(Math.random() * 2000))
 					.exec();
 				if (lists.length === 0)
-					throw `No exclusive list in ${game.settings.languages}`;
+					throw `No exclusive list in ${availableLanguages}`;
 				return lists[0];
 			} else {
 				const lists = await List.find({
 					categories: { $nin: game.disabledCategories },
-					language: { $in: game.settings.languages },
+					language: { $in: availableLanguages },
 				})
 					.select('-votes')
 					.populate('creator')
@@ -252,7 +256,7 @@ const selectList = async game => {
 			let lists = await List.find({
 				_id: { $nin: game.playedLists },
 				categories: { $nin: game.disabledCategories },
-				language: { $in: game.settings.languages },
+				language: { $in: availableLanguages },
 			})
 				.select('-votes')
 				.populate('creator')
@@ -1334,7 +1338,10 @@ router.post('/', async ({ body }, res, next) => {
 					} else {
 						game.settings.languages.push(data.id);
 					}
-					if (game.settings.languages.length === 0) {
+					if (
+						!game.settings.languages ||
+						game.settings.languages.length === 0
+					) {
 						game.settings.languages = ['EN'];
 					}
 					game.save(async (err, savedGame) => {
@@ -1577,9 +1584,6 @@ router.post('/', async ({ body }, res, next) => {
 					return evaluateCommand(res, msg, newGame.game, newGame.player, true);
 				});
 			} else {
-				/*
-				if (existingGame.settings.languages.length === 0)
-					existingGame.settings.languages = ['EN'];*/
 				Player.findOne({
 					game: existingGame._id,
 					id: `${msg.from.id}`,
