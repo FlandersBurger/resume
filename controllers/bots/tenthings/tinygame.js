@@ -1,54 +1,57 @@
+const moment = require('moment');
+
 const bot = require('../../../bots/telegram');
+const messages = require('./messages');
+const hints = require('./hints');
+
 const List = require('../../../models/tenthings/list')();
 
 const create = async (game, msg) => {
-	let lists = await List.find({
-		categories: {
-			$nin: game.disabledCategories,
-		},
-	}).lean();
-	if (lists.length === 0) lists = await List.find({}).lean();
-	let answers = lists.reduce((answers, list) => {
-		for (const value of list.values) {
-			if (!answers[value.value]) answers[value.value] = [list.name];
-			else answers[value.value].push(list.name);
-		}
-		return answers;
-	}, {});
-	let result = Object.keys(answers)
-		.reduce((result, answer) => {
-			if (answers[answer] && answers[answer].length > 2) {
-				result.push({
-					answer: answer,
-					lists: answers[answer],
-				});
-			}
-			return result;
-		}, [])
-		.filter(minigame => minigame.lists && minigame.lists.length > 0);
-	if (result.length === 0) {
-		bot.queueMessage(
-			msg.chat.id,
-			'Insufficient categories selected for the minigame to work'
-		);
-		return;
+	let count = await List.countDocuments({
+		categories: { $nin: game.disabledCategories },
+	});
+	let lists;
+	if (count === 0) {
+		count = await List.countDocuments({});
+		lists = await List.find({})
+			.select('-votes')
+			.populate('creator')
+			.limit(1)
+			.lean()
+			.skip(Math.floor(Math.random() * count))
+			.exec();
+	} else {
+		lists = await List.findOne({
+			categories: {
+				$nin: game.disabledCategories,
+			},
+		})
+			.select('-votes')
+			.populate('creator')
+			.limit(1)
+			.lean()
+			.skip(Math.floor(Math.random() * count))
+			.exec();
 	}
-	let minigame = result[Math.floor(Math.random() * result.length)];
+	const tinygame = {
+		answer: lists[0].name,
+		clues: lists[0].values.map(answer => answer.value).getRandom(10),
+	};
 
-	let message = '<b>Find the connection</b>\n';
-	message += getRandom(minigame.lists, 10).reduce((msg, list) => {
-		msg += `- ${list}\n`;
+	let message = '<b>Find the list title</b>\n';
+	message += tinygame.clues.reduce((msg, clue) => {
+		msg += `- ${clue.value}\n`;
 		return msg;
 	}, '');
-	message += `\n<b>${minigame.answer.conceal('')}</b>`;
+	message += `\n<b>${hints.getHint(1, tinygame.answer)}</b>`;
 	bot.queueMessage(msg.chat.id, message);
-	game.minigame.answer = minigame.answer;
-	game.minigame.date = moment();
-	game.minigame.lists = minigame.lists;
+	game.tinygame.answer = tinygame.answer;
+	game.tinygame.date = moment();
+	game.tinygame.clues = tinygame.clues;
 	try {
 		await game.save();
 	} catch (err) {
-		console.error(`Minigame Error\n${JSON.stringify(err)}`);
+		console.error(`Tinygame Error\n${JSON.stringify(err)}`);
 		throw err;
 	}
 	return true;
@@ -57,18 +60,18 @@ const create = async (game, msg) => {
 exports.create = create;
 
 exports.check = async (game, player, guess, msg) => {
-	if (guess.answer !== game.minigame.answer) return;
+	if (guess.answer !== game.tinygame.answer) return;
 	const score = Math.floor(10 * guess.match.distance);
 	player.score += score;
 	player.scoreDaily += score;
-	player.minigamePlays++;
+	player.tinygamePlays++;
 	const savedPlayer = await player.save();
-	game.minigame.plays++;
+	game.tinygame.plays++;
 	const savedGame = await game.save();
-	let message = `Mini-game answer guessed! (${(
+	let message = `Tinygame answer guessed! (${(
 		guess.match.distance * 100
 	).toFixed(0)}%)\n`;
-	message += messages.guessed(game.minigame.answer, msg.from.first_name);
+	message += messages.guessed(game.tinygame.answer, msg.from.first_name);
 	message += `\n<pre>${player.scoreDaily - score} + ${score} points</pre>`;
 	bot.queueMessage(msg.chat.id, message);
 	return await create(game, msg);

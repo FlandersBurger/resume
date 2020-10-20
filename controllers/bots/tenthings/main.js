@@ -16,6 +16,7 @@ const jobs = require('./jobs');
 const hints = require('./hints');
 const categories = require('./categories');
 const minigame = require('./minigame');
+const tinygame = require('./tinygame');
 
 //-------------//
 //redis.set('pause', true);
@@ -429,8 +430,34 @@ const queueGuess = (game, player, msg) => {
 		} else {
 			sass(game, msg.text, msg.from);
 		}
-	} else {
-		sass(game, msg.text, msg.from);
+	}
+	const tinygameAnswer = game.tinygame.answer
+		? game.tinygame.answer.removeAllButLetters()
+		: '';
+	if (
+		tinygameAnswer &&
+		text.length / tinygameAnswer.length > 0.75 &&
+		text.length / tinygameAnswer.length < 1.25
+	) {
+		const fuzzyMatch = new FuzzyMatching([tinygameAnswer]);
+		const match = fuzzyMatch.get(text, {
+			min: 0.75,
+		});
+		if (match.distance >= 0.75) {
+			const guess = {
+				type: 'tinygame',
+				msg,
+				game: game.chat_id,
+				player: player.id,
+				answer: game.tinygame.answer,
+				match,
+			};
+			setTimeout(() => {
+				queueingGuess(guess);
+			}, (2000 / 0.25) * (1 - match.distance));
+		} else {
+			sass(game, msg.text, msg.from);
+		}
 	}
 };
 
@@ -466,7 +493,7 @@ const processGuess = guess => {
 		})
 			.populate('list.creator')
 			.select(
-				'_id chat_id guessers list lastPlayDate hints streak settings minigame disabledCategories'
+				'_id chat_id guessers list lastPlayDate hints streak settings minigame tinygame disabledCategories'
 			)
 			.exec(async (err, game) => {
 				if (err) {
@@ -489,11 +516,24 @@ const processGuess = guess => {
 							reject(err);
 						}
 					);
-				} else {
+				} else if (guess.type === 'minigame') {
 					minigame.check(game, player, guess, guess.msg).then(
 						() => {
 							console.log(
 								`${guess.game} - Minigame guess for ${game.minigame.answer}: "${guess.msg.text}" by ${guess.msg.from.first_name}`
+							);
+							resolve();
+						},
+						err => {
+							console.error(err);
+							reject(err);
+						}
+					);
+				} else if (guess.type === 'tinygame') {
+					tinygame.check(game, player, guess, guess.msg).then(
+						() => {
+							console.log(
+								`${guess.game} - Tinygame guess for ${game.tinygame.answer}: "${guess.msg.text}" by ${guess.msg.from.first_name}`
 							);
 							resolve();
 						},
@@ -1484,7 +1524,7 @@ router.post('/', async ({ body }, res, next) => {
 	})
 		.populate('list.creator')
 		.select('-playedLists')
-		//.select('chat_id enabled players hints cycles lastCycleDate lastPlayDate listsPlayed guessers streak disabledCategories pickedLists list date minigame settings')
+		//.select('chat_id enabled players hints cycles lastCycleDate lastPlayDate listsPlayed guessers streak disabledCategories pickedLists list date minigame tinygame settings')
 		.exec((err, existingGame) => {
 			if (err) {
 				bot.notifyAdmin(`Error finding game: ${msg.chat.id}`);
@@ -1962,6 +2002,25 @@ const evaluateCommand = async (res, msg, game, player, isNew) => {
 					game.minigame.answer
 				);
 				//message += game.minigame.answer.conceal(game.minigame.date < moment().subtract(1, 'hours') ? 'aeoui' : '');
+				bot.queueMessage(msg.chat.id, message);
+			}
+			break;
+		case '/jogominusculo':
+		case '/tinygame':
+			if (!game.tinygame.answer) {
+				tinygame.create(game, msg);
+			} else {
+				let message = '<b>Find the list name</b>\n';
+				message += game.tinygame.lists.reduce((msg, list) => {
+					msg += `- ${list}\n`;
+					return msg;
+				}, '');
+				message += '\n';
+				message += hints.getHint(
+					Math.round(moment().diff(game.tinygame.date, 'minutes') / 15) + 1,
+					game.tinygame.answer
+				);
+				//message += game.tinygame.answer.conceal(game.tinygame.date < moment().subtract(1, 'hours') ? 'aeoui' : '');
 				bot.queueMessage(msg.chat.id, message);
 			}
 			break;

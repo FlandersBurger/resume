@@ -69,7 +69,7 @@ exports.check = async (game, player, guess, msg) => {
 	const savedPlayer = await player.save();
 	game.minigame.plays++;
 	const savedGame = await game.save();
-	let message = `Mini-game answer guessed! (${(
+	let message = `Minigame answer guessed! (${(
 		guess.match.distance * 100
 	).toFixed(0)}%)\n`;
 	message += messages.guessed(game.minigame.answer, msg.from.first_name);

@@ -127,6 +127,27 @@ for (const name in db) {
 				default: 0,
 			},
 		},
+		tinygame: {
+			answer: {
+				type: String,
+				required: false,
+			},
+			date: {
+				type: Date,
+				required: true,
+				default: Date.now,
+			},
+			clues: [
+				{
+					type: String,
+					required: false,
+				},
+			],
+			plays: {
+				type: Number,
+				default: 0,
+			},
+		},
 		settings: {
 			intro: {
 				type: Boolean,

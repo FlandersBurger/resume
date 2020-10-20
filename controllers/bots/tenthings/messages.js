@@ -54,8 +54,8 @@ module.exports = {
 		var message = '';
 		if ((language = 'PT')) {
 			message += '/lista - Respostas adivinhadas na rodada atual\n';
-			message += '/dica- Dar uma dica\n';
-			message += '/pule- Pular a rodada atual\n';
+			message += '/dica - Dar uma dica\n';
+			message += '/pule - Pular a rodada atual\n';
 			message += '/minijogo - Pergunta sobre trivialidades invertidas\n';
 			message += '/pontuacao - Pontuação diária\n';
 			message += '/estatisticas - Estatísticas sobre o jogo\n';
@@ -89,6 +89,7 @@ module.exports = {
 			message += '/search - Search lists to queue\n';
 			message += '/lists - See queued lists\n';
 			message += '/stop - Switch me off\n';
+			message += '/comandos - Commands in Portuguese\n';
 		}
 		return message;
 	},
