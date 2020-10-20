@@ -713,7 +713,7 @@ const newRound = (currentGame, player) => {
 					}
 					game.list = JSON.parse(JSON.stringify(list));
 					game.list.totalValues = game.list.values.length;
-					game.list.values = getRandom(game.list.values, 10);
+					game.list.values = game.list.values.getRandom(10);
 					game.listsPlayed++;
 					game.hints = 0;
 					game.hintCooldown = 0;
@@ -904,21 +904,6 @@ function cooldownHint(gameId) {
 	} else {
 		delete cooldowns[gameId];
 	}
-}
-
-function getRandom(arr, n) {
-	if (n > arr.length) {
-		return arr;
-	}
-	const result = new Array(n);
-	let len = arr.length;
-	const taken = new Array(len);
-	while (n--) {
-		const x = Math.floor(Math.random() * len);
-		result[n] = arr[x in taken ? taken[x] : x];
-		taken[x] = --len in taken ? taken[len] : len;
-	}
-	return result;
 }
 
 router.post('/', async ({ body }, res, next) => {

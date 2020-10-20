@@ -38,7 +38,7 @@ const create = async (game, msg) => {
 	let minigame = result[Math.floor(Math.random() * result.length)];
 
 	let message = '<b>Find the connection</b>\n';
-	message += getRandom(minigame.lists, 10).reduce((msg, list) => {
+	message += minigame.lists.getRandom(10).reduce((msg, list) => {
 		msg += `- ${list}\n`;
 		return msg;
 	}, '');
