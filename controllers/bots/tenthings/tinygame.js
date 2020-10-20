@@ -33,17 +33,10 @@ const create = async (game, msg) => {
 			.skip(Math.floor(Math.random() * count))
 			.exec();
 	}
-	console.log(lists.length);
-
-	console.log(lists[0]);
-
 	const tinygame = {
 		answer: lists[0].name,
 		clues: lists[0].values.map(answer => answer.value).getRandom(10),
 	};
-
-	console.log(tinygame);
-
 	let message = '<b>Find the list title</b>\n';
 	message += tinygame.clues.reduce((msg, clue) => {
 		msg += `- ${clue}\n`;
