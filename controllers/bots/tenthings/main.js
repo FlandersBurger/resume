@@ -2011,8 +2011,8 @@ const evaluateCommand = async (res, msg, game, player, isNew) => {
 				tinygame.create(game, msg);
 			} else {
 				let message = '<b>Find the list name</b>\n';
-				message += game.tinygame.lists.reduce((msg, list) => {
-					msg += `- ${list}\n`;
+				message += game.tinygame.clues.reduce((msg, clue) => {
+					msg += `- ${clue}\n`;
 					return msg;
 				}, '');
 				message += '\n';

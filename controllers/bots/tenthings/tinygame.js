@@ -46,7 +46,7 @@ const create = async (game, msg) => {
 
 	let message = '<b>Find the list title</b>\n';
 	message += tinygame.clues.reduce((msg, clue) => {
-		msg += `- ${clue.value}\n`;
+		msg += `- ${clue}\n`;
 		return msg;
 	}, '');
 	message += `\n<b>${hints.getHint(1, tinygame.answer)}</b>`;
