@@ -1619,12 +1619,15 @@ const evaluateCommand = async (res, msg, game, player, isNew) => {
 		case '/intro':
 			bot.queueMessage(msg.chat.id, messages.introduction(msg.from.first_name));
 			break;
+		case '/lógica':
 		case '/logic':
 			bot.queueMessage(msg.chat.id, messages.logic());
 			break;
+		case '/comandos':
 		case '/commands':
 			bot.queueMessage(msg.chat.id, messages.commands());
 			break;
+		case '/parar':
 		case '/stop':
 			deactivateGame(game);
 			break;

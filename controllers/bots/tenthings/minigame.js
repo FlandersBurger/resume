@@ -1,4 +1,6 @@
 const bot = require('../../../bots/telegram');
+const messages = require('./messages');
+
 const List = require('../../../models/tenthings/list')();
 
 const create = async (game, msg) => {
