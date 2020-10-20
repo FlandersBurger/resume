@@ -23,7 +23,6 @@ const resetDailyScore = (force = false) => {
 				$gte: moment().subtract(1, 'days'),
 			},
 		})
-			.lean()
 			.select('chat_id list')
 			.populate('list.creator')
 			.then(
