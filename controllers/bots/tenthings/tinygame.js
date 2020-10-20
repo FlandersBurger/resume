@@ -9,30 +9,33 @@ const List = require('../../../models/tenthings/list')();
 const create = async (game, msg) => {
 	let count = await List.countDocuments({
 		categories: { $nin: game.disabledCategories },
-	});
+	}).exec();
 	let lists;
 	if (count === 0) {
-		count = await List.countDocuments({});
+		count = await List.countDocuments({}).exec();
 		lists = await List.find({})
-			.select('-votes')
+			.select('name values')
 			.populate('creator')
 			.limit(1)
 			.lean()
 			.skip(Math.floor(Math.random() * count))
 			.exec();
 	} else {
-		lists = await List.findOne({
+		lists = await List.find({
 			categories: {
 				$nin: game.disabledCategories,
 			},
 		})
-			.select('-votes')
+			.select('name values')
 			.populate('creator')
 			.limit(1)
 			.lean()
 			.skip(Math.floor(Math.random() * count))
 			.exec();
 	}
+	console.log(count);
+	console.log(lists);
+
 	const tinygame = {
 		answer: lists[0].name,
 		clues: lists[0].values.map(answer => answer.value).getRandom(10),

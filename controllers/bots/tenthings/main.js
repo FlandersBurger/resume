@@ -229,7 +229,7 @@ const selectList = async game => {
 				const lists = await List.find({
 					categories: {
 						$in: _.difference(categories, game.disabledCategories),
-						//language: { $in: game.settings.languages },
+						language: { $in: availableLanguages },
 					},
 				})
 					.select('-votes')
