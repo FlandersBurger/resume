@@ -373,7 +373,7 @@ Number.prototype.makeReadable = function () {
 
 Array.prototype.getRandom = function (n) {
 	if (n > this.length) {
-		return this[0];
+		return this;
 	}
 	const result = new Array(n);
 	let len = this.length;
