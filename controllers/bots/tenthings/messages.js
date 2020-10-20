@@ -57,11 +57,11 @@ module.exports = {
 			message += '/dica- Dar uma dica\n';
 			message += '/pule- Pular a rodada atual\n';
 			message += '/minijogo - Pergunta sobre trivialidades invertidas\n';
-			message += '/pontuação - Pontuação diária\n';
-			message += '/estatísticas - Estatísticas sobre o jogo\n';
+			message += '/pontuacao - Pontuação diária\n';
+			message += '/estatisticas - Estatísticas sobre o jogo\n';
 			message += '/eu - Minhas estatísticas\n';
 			message += '/intro - O que sou eu?\n';
-			message += '/lógica - Uma explicação da lógica utilizada\n';
+			message += '/logica - Uma explicação da lógica utilizada\n';
 			message += '/confi - Configurações (Somente Admin)\n';
 			message +=
 				'/categorias - Selecione as categorias a incluir (Somente Admin)\n';

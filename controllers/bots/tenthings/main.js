@@ -1604,7 +1604,7 @@ const evaluateCommand = async (res, msg, game, player, isNew) => {
 		case '/intro':
 			bot.queueMessage(msg.chat.id, messages.introduction(msg.from.first_name));
 			break;
-		case '/lógica':
+		case '/logica':
 		case '/logic':
 			bot.queueMessage(msg.chat.id, messages.logic());
 			break;
@@ -1720,7 +1720,7 @@ const evaluateCommand = async (res, msg, game, player, isNew) => {
 				);
 			}
 			break;
-		case '/estatísticas':
+		case '/estatisticas':
 		case '/stats':
 			bot.sendKeyboard(
 				game.chat_id,
@@ -1942,7 +1942,7 @@ const evaluateCommand = async (res, msg, game, player, isNew) => {
 				msg.from.id
 			);
 			break;
-		case '/pontuação':
+		case '/pontuacao':
 		case '/score':
 			bot.queueMessage(game.chat_id, await stats.getDailyScores(game));
 			break;
