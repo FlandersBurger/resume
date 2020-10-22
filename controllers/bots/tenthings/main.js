@@ -378,6 +378,7 @@ const queueGuess = (game, player, msg) => {
 			shortest: 1000,
 		}
 	);
+	let found = false;
 	if (
 		text.length / lengths.shortest > 0.75 &&
 		text.length / lengths.longest < 1.25
@@ -398,11 +399,13 @@ const queueGuess = (game, player, msg) => {
 			value => value === guess.match.value
 		);
 		if (guess.match.distance >= 0.75) {
+			found = true;
 			setTimeout(() => {
 				queueingGuess(guess);
 			}, (2000 / 0.25) * (1 - guess.match.distance));
 		}
-	} else {
+	}
+	if (!found) {
 		const minigameAnswer = game.minigame.answer
 			? game.minigame.answer.removeAllButLetters()
 			: '';
@@ -416,6 +419,7 @@ const queueGuess = (game, player, msg) => {
 				min: 0.75,
 			});
 			if (match.distance >= 0.75) {
+				found = true;
 				const guess = {
 					type: 'minigame',
 					msg,
@@ -431,6 +435,8 @@ const queueGuess = (game, player, msg) => {
 				sass(game, msg.text, msg.from);
 			}
 		}
+	}
+	if (!found) {
 		const tinygameAnswer = game.tinygame.answer
 			? game.tinygame.answer.removeAllButLetters()
 			: '';
