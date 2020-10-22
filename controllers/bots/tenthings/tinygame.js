@@ -29,10 +29,8 @@ const create = async (game, msg) => {
 			.exec();
 	} else {
 		lists = await List.find({
-			categories: {
-				$nin: game.disabledCategories,
-				language: { $in: availableLanguages },
-			},
+			categories: { $nin: game.disabledCategories },
+			language: { $in: availableLanguages },
 		})
 			.select('name values')
 			.populate('creator')
