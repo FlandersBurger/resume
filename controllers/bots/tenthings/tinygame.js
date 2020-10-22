@@ -7,13 +7,20 @@ const hints = require('./hints');
 const List = require('../../../models/tenthings/list')();
 
 const create = async (game, msg) => {
+	const availableLanguages =
+		game.settings.languages && game.settings.languages.length > 0
+			? game.settings.languages
+			: ['EN'];
 	let count = await List.countDocuments({
 		categories: { $nin: game.disabledCategories },
+		language: { $in: availableLanguages },
 	}).exec();
 	let lists;
 	if (count === 0) {
 		count = await List.countDocuments({}).exec();
-		lists = await List.find({})
+		lists = await List.find({
+			language: { $in: availableLanguages },
+		})
 			.select('name values')
 			.populate('creator')
 			.limit(1)
@@ -24,6 +31,7 @@ const create = async (game, msg) => {
 		lists = await List.find({
 			categories: {
 				$nin: game.disabledCategories,
+				language: { $in: availableLanguages },
 			},
 		})
 			.select('name values')

@@ -23,7 +23,7 @@ const resetDailyScore = (force = false) => {
 				$gte: moment().subtract(1, 'days'),
 			},
 		})
-			.select('chat_id list')
+			.select('chat_id list hints')
 			.populate('list.creator')
 			.then(
 				async games => {
@@ -289,6 +289,9 @@ const updateDailyStats = async (games, totalPlayers, uniquePlayers) => {
 		playerStats[0].minigamePlays - base.minigamePlays
 	).makeReadable()} minigame answers given\n`;
 	message += `${(
+		playerStats[0].tinygamePlays - base.tinygamePlays
+	).makeReadable()} minigame answers given\n`;
+	message += `${(
 		playerStats[0].hints - base.hints
 	).makeReadable()} hints asked\n`;
 	message += `${(
@@ -317,6 +320,7 @@ const updateDailyStats = async (games, totalPlayers, uniquePlayers) => {
 		searches: playerStats[0].searches - base.searches,
 		votes: listStats[0].votes - base.votes,
 		minigamePlays: playerStats[0].minigamePlays - base.minigamePlays,
+		tinygamePlays: playerStats[0].tinygamePlays - base.tinygamePlays,
 	});
 	dailyStats.save(err => {
 		if (err) return bot.notifyAdmin(`Daily stat save issue\n${err}`);
@@ -331,6 +335,7 @@ const updateDailyStats = async (games, totalPlayers, uniquePlayers) => {
 		base.searches = playerStats[0].searches;
 		base.votes = listStats[0].votes;
 		base.minigamePlays = playerStats[0].minigamePlays;
+		base.tinygamePlays = playerStats[0].tinygamePlays;
 		base.save(err => {
 			if (err) return bot.notifyAdmin(`Base stat update issue\n${err}`);
 			bot.notifyAdmin('Base Stats Updated!');
@@ -445,6 +450,7 @@ if (process.env.NODE_ENV === 'production') {
 					lists.forEach(({ name }) => {
 						message += `\n- ${name}`;
 					});
+					message += '\n<i>Switch off daily updates through /settings</i>';
 					TenThingsGame.find({
 						'settings.updates': true,
 						enabled: true,
@@ -462,7 +468,7 @@ if (process.env.NODE_ENV === 'production') {
 				}
 			});
 	});
-
+	/*
 	const modifiedLists = schedule.scheduleJob('0 30 12 * * *', () => {
 		List.find({
 			$or: [
@@ -502,6 +508,7 @@ if (process.env.NODE_ENV === 'production') {
 				}
 			});
 	});
+	*/
 	//bot.sendPhoto(config.masterChat, 'https://m.media-amazon.com/images/M/MV5BNmE1OWI2ZGItMDUyOS00MmU5LWE0MzUtYTQ0YzA1YTE5MGYxXkEyXkFqcGdeQXVyMDM5ODIyNw@@._V1._SX40_CR0,0,40,54_.jpg')
 
 	//var dailyScore = schedule.scheduleJob('*/10 * * * * *', function() {
