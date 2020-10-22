@@ -402,61 +402,62 @@ const queueGuess = (game, player, msg) => {
 				queueingGuess(guess);
 			}, (2000 / 0.25) * (1 - guess.match.distance));
 		}
-	}
-	const minigameAnswer = game.minigame.answer
-		? game.minigame.answer.removeAllButLetters()
-		: '';
-	if (
-		minigameAnswer &&
-		text.length / minigameAnswer.length > 0.75 &&
-		text.length / minigameAnswer.length < 1.25
-	) {
-		const fuzzyMatch = new FuzzyMatching([minigameAnswer]);
-		const match = fuzzyMatch.get(text, {
-			min: 0.75,
-		});
-		if (match.distance >= 0.75) {
-			const guess = {
-				type: 'minigame',
-				msg,
-				game: game.chat_id,
-				player: player.id,
-				answer: game.minigame.answer,
-				match,
-			};
-			setTimeout(() => {
-				queueingGuess(guess);
-			}, (2000 / 0.25) * (1 - match.distance));
-		} else {
-			sass(game, msg.text, msg.from);
+	} else {
+		const minigameAnswer = game.minigame.answer
+			? game.minigame.answer.removeAllButLetters()
+			: '';
+		if (
+			minigameAnswer &&
+			text.length / minigameAnswer.length > 0.75 &&
+			text.length / minigameAnswer.length < 1.25
+		) {
+			const fuzzyMatch = new FuzzyMatching([minigameAnswer]);
+			const match = fuzzyMatch.get(text, {
+				min: 0.75,
+			});
+			if (match.distance >= 0.75) {
+				const guess = {
+					type: 'minigame',
+					msg,
+					game: game.chat_id,
+					player: player.id,
+					answer: game.minigame.answer,
+					match,
+				};
+				setTimeout(() => {
+					queueingGuess(guess);
+				}, (2000 / 0.25) * (1 - match.distance));
+			} else {
+				sass(game, msg.text, msg.from);
+			}
 		}
-	}
-	const tinygameAnswer = game.tinygame.answer
-		? game.tinygame.answer.removeAllButLetters()
-		: '';
-	if (
-		tinygameAnswer &&
-		text.length / tinygameAnswer.length > 0.75 &&
-		text.length / tinygameAnswer.length < 1.25
-	) {
-		const fuzzyMatch = new FuzzyMatching([tinygameAnswer]);
-		const match = fuzzyMatch.get(text, {
-			min: 0.75,
-		});
-		if (match.distance >= 0.75) {
-			const guess = {
-				type: 'tinygame',
-				msg,
-				game: game.chat_id,
-				player: player.id,
-				answer: game.tinygame.answer,
-				match,
-			};
-			setTimeout(() => {
-				queueingGuess(guess);
-			}, (2000 / 0.25) * (1 - match.distance));
-		} else {
-			sass(game, msg.text, msg.from);
+		const tinygameAnswer = game.tinygame.answer
+			? game.tinygame.answer.removeAllButLetters()
+			: '';
+		if (
+			tinygameAnswer &&
+			text.length / tinygameAnswer.length > 0.75 &&
+			text.length / tinygameAnswer.length < 1.25
+		) {
+			const fuzzyMatch = new FuzzyMatching([tinygameAnswer]);
+			const match = fuzzyMatch.get(text, {
+				min: 0.75,
+			});
+			if (match.distance >= 0.75) {
+				const guess = {
+					type: 'tinygame',
+					msg,
+					game: game.chat_id,
+					player: player.id,
+					answer: game.tinygame.answer,
+					match,
+				};
+				setTimeout(() => {
+					queueingGuess(guess);
+				}, (2000 / 0.25) * (1 - match.distance));
+			} else {
+				sass(game, msg.text, msg.from);
+			}
 		}
 	}
 };
