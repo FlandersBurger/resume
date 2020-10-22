@@ -52,7 +52,7 @@ module.exports = {
 	},
 	commands: (language = 'EN') => {
 		var message = '';
-		if ((language = 'PT')) {
+		if (language === 'PT') {
 			message += '/lista - Respostas adivinhadas na rodada atual\n';
 			message += '/dica - Dar uma dica\n';
 			message += '/pule - Pular a rodada atual\n';
