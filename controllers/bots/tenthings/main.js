@@ -221,7 +221,7 @@ const selectList = async game => {
 				language: { $in: availableLanguages },
 			}).exec();
 			if (count === 0) {
-				const lists = await List.find({
+				let lists = await List.find({
 					categories: {
 						$in: _.difference(categories, game.disabledCategories),
 					},
@@ -233,8 +233,20 @@ const selectList = async game => {
 					.lean()
 					.skip(Math.floor(Math.random() * 2000))
 					.exec();
-				if (lists.length === 0)
-					throw `No exclusive list in ${availableLanguages}`;
+				if (lists.length === 0) {
+					console.log(_.difference(categories, game.disabledCategories));
+					lists = await List.find({
+						categories: {
+							$in: _.difference(categories, game.disabledCategories),
+						},
+					})
+						.select('-votes')
+						.populate('creator')
+						.limit(1)
+						.lean()
+						.skip(Math.floor(Math.random() * 2000))
+						.exec();
+				}
 				return lists[0];
 			} else {
 				const lists = await List.find({
