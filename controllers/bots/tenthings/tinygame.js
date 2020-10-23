@@ -43,16 +43,11 @@ const create = async (game, msg) => {
 		answer: lists[0].name,
 		clues: lists[0].values.map(answer => answer.value).getRandom(10),
 	};
-	let message = '<b>Find the list title</b>\n';
-	message += tinygame.clues.reduce((msg, clue) => {
-		msg += `- ${clue}\n`;
-		return msg;
-	}, '');
-	message += `\n<b>${hints.getHint(1, tinygame.answer)}</b>`;
-	bot.queueMessage(msg.chat.id, message);
 	game.tinygame.answer = tinygame.answer;
+	game.tinygame.hints = 1;
 	game.tinygame.date = moment();
 	game.tinygame.clues = tinygame.clues;
+	bot.queueMessage(msg.chat.id, message(game.tinygame));
 	try {
 		await game.save();
 	} catch (err) {
@@ -62,7 +57,18 @@ const create = async (game, msg) => {
 	return true;
 };
 
+const message = tinygame => {
+	let message = '<b>Find the list title</b>\n';
+	message += tinygame.clues.reduce((msg, clue) => {
+		msg += `- ${clue}\n`;
+		return msg;
+	}, '');
+	message += `\n<b>${hints.getHint(tinygame.hints, tinygame.answer)}</b>`;
+	return message;
+};
+
 exports.create = create;
+exports.message = message;
 
 exports.check = async (game, player, guess, msg) => {
 	if (guess.answer !== game.tinygame.answer) return;

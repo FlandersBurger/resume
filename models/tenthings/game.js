@@ -126,6 +126,10 @@ for (const name in db) {
 				type: Number,
 				default: 0,
 			},
+			hints: {
+				type: Number,
+				default: 0,
+			},
 		},
 		tinygame: {
 			answer: {
@@ -144,6 +148,10 @@ for (const name in db) {
 				},
 			],
 			plays: {
+				type: Number,
+				default: 0,
+			},
+			hints: {
 				type: Number,
 				default: 0,
 			},

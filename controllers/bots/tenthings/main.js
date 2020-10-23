@@ -896,8 +896,11 @@ function cooldownSkip(game, skipper) {
 	}
 }
 
-const hint = async (game, player, callback) => {
-	if (game.hints >= MAX_HINTS) {
+const hint = async (game, player, type = 'main') => {
+	if (
+		(type === 'main' && game.hints >= MAX_HINTS) ||
+		(type !== 'main' && game[type].hints >= MAX_HINTS)
+	) {
 		bot.queueMessage(
 			game.chat_id,
 			"What? Another hint? I'm just gonna ignore that request"
@@ -908,36 +911,49 @@ const hint = async (game, player, callback) => {
 			`Calm down with the hints, wait ${cooldowns[game.id]} more seconds`
 		);
 	} else {
-		game.hints++;
 		if (player) {
 			player.hints++;
 			player.hintStreak = 0;
 			const savedPlayer = await player.save();
 		}
-		let message = `<b>${game.list.name}</b>\n`;
-		message += game.list.values.reduce((str, { guesser, value }, index) => {
-			if (!guesser.first_name) {
-				str += index + 1;
-				str += ': ';
-				str += hints.getHint(game.hints, value);
-				str += '\n';
-			}
-			return str;
-		}, '');
+		let message;
+		switch (type) {
+			case 'minigame':
+				game.minigame.hints++;
+				bot.queueMessage(game.chat_id, minigame.message(game.minigame));
+				break;
+			case 'tinygame':
+				game.tinygame.hints++;
+				bot.queueMessage(game.chat_id, tinygame.message(game.tinygame));
+				break;
+			default:
+				game.hints++;
+				message = `<b>${game.list.name}</b>\n`;
+				message += game.list.values.reduce((str, { guesser, value }, index) => {
+					if (!guesser.first_name) {
+						str += index + 1;
+						str += ': ';
+						str += hints.getHint(game.hints, value);
+						str += '\n';
+					}
+					return str;
+				}, '');
+				let list = await List.findOne({
+					_id: game.list._id,
+				}).exec();
+				if (list) {
+					if (!list.hints) {
+						list.hints = 0;
+					}
+					list.hints++;
+					const saved = await list.save();
+				}
+				break;
+		}
 		bot.queueMessage(game.chat_id, message);
 		cooldowns[game.id] = 10;
 		cooldownHint(game.id);
 		const savedGame = await game.save();
-		let list = await List.findOne({
-			_id: game.list._id,
-		}).exec();
-		if (list) {
-			if (!list.hints) {
-				list.hints = 0;
-			}
-			list.hints++;
-			const saved = await list.save();
-		}
 	}
 	return true;
 };
@@ -1956,6 +1972,14 @@ const evaluateCommand = async (res, msg, game, player, isNew) => {
 				hint(game, player);
 			}
 			break;
+		case '/minidica':
+		case '/minihint':
+			hint(game, player, 'minigame');
+			break;
+		case '/dicaminusculo':
+		case '/tinyhint':
+			hint(game, player, 'tinygame');
+			break;
 		case '/notify':
 			if (msg.chat.id === config.masterChat) {
 				Game.find({})
@@ -2004,7 +2028,10 @@ const evaluateCommand = async (res, msg, game, player, isNew) => {
 					return msg;
 				}, '');
 				message += '\n';
-				message += `<b>${hints.getHint(game.hints, game.minigame.answer)}</b>`;
+				message += `<b>${hints.getHint(
+					game.minigame.hints,
+					game.minigame.answer
+				)}</b>`;
 				//message += game.minigame.answer.conceal(game.minigame.date < moment().subtract(1, 'hours') ? 'aeoui' : '');
 				bot.queueMessage(msg.chat.id, message);
 			}
@@ -2021,7 +2048,7 @@ const evaluateCommand = async (res, msg, game, player, isNew) => {
 				}, '');
 				message += '\n';
 				message += `<b>${hints.getHint(
-					game.hints + 1,
+					game.tinygame.hints,
 					game.tinygame.answer
 				)}</b>`;
 				//message += game.tinygame.answer.conceal(game.tinygame.date < moment().subtract(1, 'hours') ? 'aeoui' : '');

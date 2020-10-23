@@ -841,6 +841,12 @@ const tenThingsStats = (game, sorter, field, title) => {
 				playStreaks: {
 					$max: '$maxPlayStreak',
 				},
+				minigamePlays: {
+					$sum: '$minigamePlays',
+				},
+				tinygamePlays: {
+					$sum: '$tinygamePlays',
+				},
 			},
 		},
 	])

@@ -2,6 +2,7 @@ const moment = require('moment');
 
 const bot = require('../../../bots/telegram');
 const messages = require('./messages');
+const hints = require('./hints');
 
 const List = require('../../../models/tenthings/list')();
 
@@ -39,16 +40,11 @@ const create = async (game, msg) => {
 	}
 	let minigame = result[Math.floor(Math.random() * result.length)];
 
-	let message = '<b>Find the connection</b>\n';
-	message += minigame.lists.getRandom(10).reduce((msg, list) => {
-		msg += `- ${list}\n`;
-		return msg;
-	}, '');
-	message += `\n<b>${minigame.answer.conceal('')}</b>`;
-	bot.queueMessage(msg.chat.id, message);
 	game.minigame.answer = minigame.answer;
+	game.minigame.hints = 0;
 	game.minigame.date = moment();
-	game.minigame.lists = minigame.lists;
+	game.minigame.lists = minigame.lists.getRandom(10);
+	bot.queueMessage(msg.chat.id, message(game.minigame));
 	try {
 		await game.save();
 	} catch (err) {
@@ -58,7 +54,18 @@ const create = async (game, msg) => {
 	return true;
 };
 
+const message = minigame => {
+	let message = '<b>Find the connection</b>\n';
+	message += minigame.lists.reduce((msg, list) => {
+		msg += `- ${list}\n`;
+		return msg;
+	}, '');
+	message += `\n<b>${hints.getHint(minigame.hints, minigame.answer)}</b>`;
+	return message;
+};
+
 exports.create = create;
+exports.message = message;
 
 exports.check = async (game, player, guess, msg) => {
 	if (guess.answer !== game.minigame.answer) return;
