@@ -266,6 +266,9 @@ const updateDailyStats = async (games, totalPlayers, uniquePlayers) => {
 				minigamePlays: {
 					$sum: '$minigamePlays',
 				},
+				tinygamePlays: {
+					$sum: '$tinygamePlays',
+				},
 			},
 		},
 	]).exec();
