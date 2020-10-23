@@ -920,11 +920,11 @@ const hint = async (game, player, type = 'main') => {
 		switch (type) {
 			case 'minigame':
 				game.minigame.hints++;
-				bot.queueMessage(game.chat_id, minigame.message(game.minigame));
+				message = minigame.message(game.minigame);
 				break;
 			case 'tinygame':
 				game.tinygame.hints++;
-				bot.queueMessage(game.chat_id, tinygame.message(game.tinygame));
+				message = tinygame.message(game.tinygame);
 				break;
 			default:
 				game.hints++;
