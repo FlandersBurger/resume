@@ -203,34 +203,29 @@ const selectList = async game => {
 		}
 	} else {
 		let count;
-		try {
-			count = await List.countDocuments({
-				_id: { $nin: game.playedLists },
-				categories: { $nin: game.disabledCategories },
-				language: { $in: availableLanguages },
-			}).exec();
-		} catch (e) {
-			throw e;
-		}
+		count = await List.countDocuments({
+			_id: { $nin: game.playedLists },
+			categories: { $nin: game.disabledCategories },
+			language: { $in: availableLanguages },
+		}).exec();
 		if (count === 0) {
 			game.playedLists = [];
 			game.cycles++;
 			game.lastCycleDate = moment();
-			//bot.queueMessage(game.chat_id, 'All lists have been played, a new cycle will now start.');
-			try {
-				count = await List.countDocuments({
-					categories: { $nin: game.disabledCategories },
-					language: { $in: availableLanguages },
-				}).exec();
-			} catch (e) {
-				throw e;
-			}
+			bot.queueMessage(
+				game.chat_id,
+				'All lists have been played, a new cycle will now start.'
+			);
+			count = await List.countDocuments({
+				categories: { $nin: game.disabledCategories },
+				language: { $in: availableLanguages },
+			}).exec();
 			if (count === 0) {
 				const lists = await List.find({
 					categories: {
 						$in: _.difference(categories, game.disabledCategories),
-						language: { $in: availableLanguages },
 					},
+					language: { $in: availableLanguages },
 				})
 					.select('-votes')
 					.populate('creator')
@@ -2106,6 +2101,14 @@ const evaluateCommand = async (res, msg, game, player, isNew) => {
 				);
 			}
 			break;
+		case '/flush':
+			if (msg.from.id === config.masterChat) {
+				game.lists = [];
+				//game.playedLists = [];
+				game.save();
+				bot.queueMessage(msg.chat.id, 'Flushed this chat');
+			}
+			break;
 		case '/ping':
 			bot.queueMessage(msg.chat.id, 'pong');
 			break;
@@ -2137,7 +2140,7 @@ const evaluateCommand = async (res, msg, game, player, isNew) => {
 			} else {
 				bot.queueMessage(
 					msg.chat.id,
-					'There are no lists queued, use the /suggest [message] command to find some'
+					'There are no lists queued, use the /search [message] command to find some'
 				);
 			}
 			break;
