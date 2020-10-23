@@ -230,7 +230,6 @@ const selectList = async game => {
 					.select('-votes')
 					.populate('creator')
 					.limit(1)
-					.lean()
 					.skip(Math.floor(Math.random() * 2000))
 					.exec();
 				if (lists.length === 0) {
@@ -243,7 +242,6 @@ const selectList = async game => {
 						.select('-votes')
 						.populate('creator')
 						.limit(1)
-						.lean()
 						.skip(Math.floor(Math.random() * 2000))
 						.exec();
 				}
@@ -256,7 +254,6 @@ const selectList = async game => {
 					.select('-votes')
 					.populate('creator')
 					.limit(1)
-					.lean()
 					.skip(Math.floor(Math.random() * count))
 					.exec();
 				return lists[0];
