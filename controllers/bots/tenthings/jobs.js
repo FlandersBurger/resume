@@ -298,7 +298,7 @@ const updateDailyStats = async (games, totalPlayers, uniquePlayers) => {
 	).makeReadable()} minigame answers given\n`;
 	message += `${(
 		playerStats[0].tinygamePlays - base.tinygamePlays
-	).makeReadable()} minigame answers given\n`;
+	).makeReadable()} tinygame answers given\n`;
 	message += `${(
 		playerStats[0].hints - base.hints
 	).makeReadable()} hints asked\n`;
