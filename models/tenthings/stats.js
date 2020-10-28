@@ -4,7 +4,7 @@ var TenThingsStats = {};
 for (const name in db) {
 	TenThingsStats[name] = db[name].model('TenThingsStats', {
 		date: {
-			type: String,
+			type: Date,
 			required: false,
 			default: new Date(),
 		},
