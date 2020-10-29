@@ -250,7 +250,7 @@
 							placeholder="List Name"
 							ng-disabled="!selectedList || (!currentUser.admin && selectedList.creator._id !== currentUser._id && selectedList._id)"
 							autocomplete="off"
-							uib-typeahead="list.name for list in filteredLists() | filter:$viewValue | limitTo:8"
+							uib-typeahead="list.name for list in filteredLists() | filter:{'name':$viewValue} | limitTo:12"
 							typeahead-on-select="selectList($item)"
 						/>
 						<span class="input-group-addon"
