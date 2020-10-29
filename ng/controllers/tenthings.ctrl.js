@@ -113,7 +113,7 @@ angular
 
 		$scope.getLanguageCount = language => {
 			if (!$scope.lists) return 0;
-			return $scope.lists.filter(
+			const count = $scope.lists.filter(
 				list =>
 					($scope.categoryFilter === 'All' ||
 						list.categories.includes($scope.categoryFilter)) &&
@@ -122,11 +122,12 @@ angular
 					($scope.updateFilter === 'all' ||
 						list.isDynamic === ($scope.updateFilter === 'dynamic'))
 			).length;
+			return `${count} - ${Math.round((count / $scope.lists.length) * 100)}%`;
 		};
 
 		$scope.getCategoryCount = category => {
 			if (!$scope.lists) return 0;
-			return $scope.lists.filter(
+			const count = $scope.lists.filter(
 				list =>
 					(category === 'All' || list.categories.indexOf(category) >= 0) &&
 					($scope.languageFilter.code === 'all' ||
@@ -135,16 +136,18 @@ angular
 					($scope.updateFilter === 'all' ||
 						list.isDynamic === ($scope.updateFilter === 'dynamic'))
 			).length;
+			return `${count} - ${Math.round((count / $scope.lists.length) * 100)}%`;
 		};
 
 		$scope.getUpdateCount = type => {
 			if (!$scope.lists) return 0;
-			return $scope.lists.filter(
+			const count = $scope.lists.filter(
 				list =>
 					type === 'all' ||
 					(list.isDynamic && type === 'dynamic') ||
 					(!list.isDynamic && type === 'static')
 			).length;
+			return `${count} - ${Math.round((count / $scope.lists.length) * 100)}%`;
 		};
 
 		$scope.getLists = () => {
