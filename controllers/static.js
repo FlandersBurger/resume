@@ -9,8 +9,8 @@ router.use(express.static(__dirname + '/../sounds'));
 router.use(express.static(__dirname + '/../pages'));
 router.use(express.static(__dirname + '/../data'));
 
-router.get('/*', function(req, res) {
-  res.sendFile(path.resolve(__dirname + '/../index.html'));
+router.get('/*', function (req, res) {
+	res.sendFile(path.resolve(__dirname + '/../index.html'));
 });
 
 module.exports = router;

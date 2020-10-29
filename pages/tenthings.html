@@ -401,11 +401,13 @@
 						/>
 						<div class="input-group-btn">
 							<button
+								id="add-button"
 								class="btn"
+								ng-class="{'btn-danger': hasDuplicate(), 'btn-default': !hasDuplicate()}"
 								ng-click="addValue()"
-								ng-disabled="!selectedList || !selectedList.name"
+								ng-disabled="!selectedList || !selectedList.name || !newItem.value || hasDuplicate()"
 							>
-								Add
+								{{hasDuplicate() ? 'Dupe!' : 'Add'}}
 							</button>
 						</div>
 					</div>

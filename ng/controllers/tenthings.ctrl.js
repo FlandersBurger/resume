@@ -225,12 +225,24 @@ angular
 			};
 		};
 
+		$scope.hasDuplicate = () =>
+			$scope.selectedList &&
+			$scope.newItem.value &&
+			_.some(
+				$scope.selectedList.values,
+				answer =>
+					answer.value.removeAllButLetters() ==
+					$scope.newItem.value.removeAllButLetters()
+			);
+
 		$scope.addValue = () => {
 			if ($scope.newItem.value) {
 				if (
 					_.some(
 						$scope.selectedList.values,
-						value => value == $scope.newItem.value
+						answer =>
+							answer.value.removeAllButLetters() ==
+							$scope.newItem.value.removeAllButLetters()
 					)
 				) {
 					alert(`${$scope.newItem.value} is already in the list`);
