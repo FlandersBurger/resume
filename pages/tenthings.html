@@ -182,14 +182,19 @@
 					ng-model="searchAll"
 					placeholder="Search Everything"
 				/>
-				<button
-					class="btn btn-sm"
-					ng-class="listButtonClass(list)"
-					ng-repeat="list in filteredLists() | filter: searchAll | filter: search | orderBy: sorter | limitTo: 200"
-					ng-click="selectList(list)"
-				>
-					{{list.name}} ({{list.answers}})
-				</button>
+				<div style="overflow-y: scroll; overflow-x: hidden; max-height: 100vh">
+					<button
+						class="btn btn-sm"
+						ng-class="listButtonClass(list)"
+						ng-repeat="list in filteredLists() | filter: searchAll | filter: search | orderBy: sorter"
+						ng-click="selectList(list)"
+						style="white-space: normal"
+						uib-tooltip="{{list.description}}"
+						tooltip-placement="right"
+					>
+						{{list.name}} ({{list.answers}})
+					</button>
+				</div>
 			</div>
 			<div class="col-md-8">
 				<div class="col-md-12" ng-if="loggedIn">

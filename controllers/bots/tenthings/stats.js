@@ -6,6 +6,7 @@ const hints = require('./hints');
 const Game = require('../../../models/tenthings/game')();
 const Player = require('../../../models/tenthings/player')();
 const List = require('../../../models/tenthings/list')();
+const User = require('../../../models/user')();
 
 exports.getScores = (game_id, type) => {
 	/*
@@ -763,6 +764,118 @@ const voteStats = async ({ chat_id }, players, sorter, title) => {
 			bot.queueMessage(chat_id, message);
 		});
 };
+
+const creatorStats = async () => {
+	const lists = await List.aggregate([
+		{
+			$unwind: '$votes',
+		},
+		{
+			$group: {
+				_id: { creator: '$creator', list: '$_id' },
+				positive: {
+					$sum: {
+						$switch: {
+							branches: [
+								{
+									case: { $gt: ['$votes.vote', 0] },
+									then: 1,
+								},
+							],
+							default: 0,
+						},
+					},
+				},
+				negative: {
+					$sum: {
+						$switch: {
+							branches: [
+								{
+									case: { $lt: ['$votes.vote', 0] },
+									then: 1,
+								},
+							],
+							default: 0,
+						},
+					},
+				},
+				votes: {
+					$sum: 1,
+				},
+				score: {
+					$sum: '$score',
+				},
+				plays: {
+					$sum: '$plays',
+				},
+				skips: {
+					$sum: '$skips',
+				},
+			},
+		},
+		{
+			$group: {
+				_id: '$_id.creator',
+				lists: {
+					$sum: 1,
+				},
+				votes: {
+					$sum: '$votes',
+				},
+				positive: {
+					$sum: '$positive',
+				},
+				negative: {
+					$sum: '$negative',
+				},
+				score: {
+					$sum: '$score',
+				},
+				plays: {
+					$sum: '$plays',
+				},
+				skips: {
+					$sum: '$skips',
+				},
+			},
+		},
+	]);
+	//const listsWithCreators = await List.populate(lists, { path: '_id' });
+	//const listCount = await List.countDocuments();
+	for (const list of lists)
+		list.creator = await User.findOne({ _id: list._id })
+			.select('username displayName')
+			.lean();
+	console.log(
+		lists
+			.filter(list => list.lists > 20)
+			.sort(
+				(listA, listB) =>
+					listB.positive / listB.votes - listA.positive / listA.votes
+			)
+			//.slice(0, 20)
+			.map(list => ({
+				creator: list.creator.username,
+				likeability: (list.positive / list.votes) * 100,
+				//skipRatio: (list.skips / list.plays) * 100,
+			}))
+	);
+	console.log(
+		lists
+			.filter(list => list.lists > 20)
+			.sort(
+				(listA, listB) => listA.skips / listA.plays - listB.skips / listB.plays
+			)
+			//.slice(0, 20)
+			.map(list => ({
+				creator: list.creator.username,
+				//likeability: (list.positive / list.votes) * 100,
+				skipRatio: (list.skips / list.plays) * 100,
+			}))
+	);
+};
+
+creatorStats();
 
 const voteSentimentStats = async ({ chat_id }, players, sorter, title) => {
 	List.aggregate([
