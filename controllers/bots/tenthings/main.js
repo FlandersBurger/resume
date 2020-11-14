@@ -2106,9 +2106,11 @@ const evaluateCommand = async (res, msg, game, player, isNew) => {
 				bot.notifyAdmin(
 					`Chat id: ${msg.chat.id}\nGame _id: ${
 						game._id
-					}\nSettings:\n${JSON.stringify(game.settings)}\nList:${
+					}\nSettings:\n${JSON.stringify(game.settings)}\nList: ${
 						game.list.name
-					}\nMinigame:${game.minigame.answer}\nTinygame:${game.tinygame.answer}`
+					}\nMinigame: ${game.minigame.answer}\nTinygame: ${
+						game.tinygame.answer
+					}`
 				);
 			}
 			break;
