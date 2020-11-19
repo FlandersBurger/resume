@@ -52,7 +52,7 @@ const create = async (game, msg) => {
 	return true;
 };
 
-const getMinigame = async parameters => {
+const getMinigames = async parameters => {
 	let lists = await List.find(parameters).lean();
 	if (lists.length === 0) lists = await List.find({}).lean();
 	let answers = lists.reduce((answers, list) => {
@@ -62,7 +62,7 @@ const getMinigame = async parameters => {
 		}
 		return answers;
 	}, {});
-	let result = Object.keys(answers)
+	return Object.keys(answers)
 		.reduce((result, answer) => {
 			if (answers[answer] && answers[answer].length > 2) {
 				result.push({
