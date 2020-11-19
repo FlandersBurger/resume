@@ -1882,7 +1882,7 @@ const evaluateCommand = async (res, msg, game, player, isNew) => {
 					.replace(new RegExp('[^a-zA-Z0-9 ]+', 'g'), '.*')
 					.split(' ')
 					.reduce((result, word) => `${result}(?=.*${word}.*)`, '');
-				let lists = await List.find({
+				let foundLists = await List.find({
 					$or: [
 						{
 							search: {
@@ -1904,11 +1904,11 @@ const evaluateCommand = async (res, msg, game, player, isNew) => {
 						},
 					],
 				}).select('name');
-				if (lists.length > 0) {
+				if (foundLists.length > 0) {
 					bot.sendKeyboard(
 						game.chat_id,
 						`<b>Which list would you like to queue?</b>`,
-						keyboards.lists(lists)
+						keyboards.lists(foundLists)
 					);
 				} else {
 					bot.queueMessage(
@@ -2122,9 +2122,9 @@ const evaluateCommand = async (res, msg, game, player, isNew) => {
 					_id: {
 						$in: game.pickedLists,
 					},
-				}).exec((err, lists) => {
+				}).exec((err, upcomingLists) => {
 					let message = '<b>Upcoming lists</b>\n';
-					for (const list of lists.slice(0, 10)) {
+					for (const list of upcomingLists.slice(0, 10)) {
 						message += `- ${list.name}\n`;
 					}
 					bot.queueMessage(msg.chat.id, message);
