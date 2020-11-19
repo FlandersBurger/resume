@@ -11,6 +11,7 @@ const create = async (game, msg) => {
 		game.settings.languages && game.settings.languages.length > 0
 			? game.settings.languages
 			: ['EN'];
+	console.log(availableLanguages);
 	let count = await List.countDocuments({
 		categories: { $nin: game.disabledCategories },
 		language: { $in: availableLanguages },
