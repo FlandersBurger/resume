@@ -1101,6 +1101,7 @@ router.post('/', async ({ body }, res, next) => {
 						(result, vote) => {
 							result.score += vote.vote;
 							result.positive += vote.vote > 0 ? 1 : 0;
+							return result;
 						},
 						{ score: 0, positive: 0 }
 					);
