@@ -244,7 +244,6 @@ const selectList = async game => {
 				});
 			}
 		}
-		console.log(list);
 		return list;
 	}
 };
