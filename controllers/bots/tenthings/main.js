@@ -1098,7 +1098,7 @@ router.post('/', async ({ body }, res, next) => {
 						data.vote > 0 ? '\ud83d\udc4d' : '\ud83d\udc4e'
 					);
 					//bot.notifyAdmin(`"<b>${foundList.name}</b>" ${data.vote > 0 ? 'up' : 'down'}voted by <i>${body.callback_query.from.first_name}</i>!`);
-					const score = foundList.votes.reduce(
+					const result = foundList.votes.reduce(
 						(result, vote) => {
 							result.score += vote.vote;
 							result.positive += vote.vote > 0 ? 1 : 0;
