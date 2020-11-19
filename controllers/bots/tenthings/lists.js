@@ -7,7 +7,6 @@ exports.getRandomList = async parameters => {
 		.select('name values')
 		.populate('creator')
 		.limit(1)
-		.lean()
 		.skip(Math.floor(Math.random() * count))
 		.exec();
 	return lists[0];
