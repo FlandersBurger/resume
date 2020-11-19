@@ -7,11 +7,53 @@ const hints = require('./hints');
 const List = require('../../../models/tenthings/list')();
 
 const create = async (game, msg) => {
-	let lists = await List.find({
-		categories: {
-			$nin: game.disabledCategories,
-		},
-	}).lean();
+	const availableLanguages =
+		game.settings.languages && game.settings.languages.length > 0
+			? game.settings.languages
+			: ['EN'];
+	let minigames = await getMinigames({
+		categories: { $nin: game.disabledCategories },
+		language: { $in: availableLanguages },
+	});
+	if (minigames.length === 0) {
+		minigames = await getMinigames({
+			categories: { $nin: game.disabledCategories },
+			language: 'EN',
+		});
+		if (minigames.length > 0)
+			bot.queueMessage(
+				msg.chat.id,
+				'Not enough lists available in your chosen languages to make a minigame work, defaulting to English'
+			);
+	}
+	if (minigames.length === 0) {
+		minigames = await getMinigames({
+			language: 'EN',
+		});
+		if (minigames.length > 0)
+			bot.queueMessage(
+				msg.chat.id,
+				'Not enough lists available in your chosen categories to make a minigame work, defaulting to all lists'
+			);
+	}
+	let minigame = minigames[Math.floor(Math.random() * minigames.length)];
+
+	game.minigame.answer = minigame.answer;
+	game.minigame.hints = 0;
+	game.minigame.date = moment();
+	game.minigame.lists = minigame.lists.getRandom(10);
+	bot.queueMessage(msg.chat.id, message(game.minigame));
+	try {
+		await game.save();
+	} catch (err) {
+		console.error(`Minigame Error\n${JSON.stringify(err)}`);
+		throw err;
+	}
+	return true;
+};
+
+const getMinigame = async parameters => {
+	let lists = await List.find(parameters).lean();
 	if (lists.length === 0) lists = await List.find({}).lean();
 	let answers = lists.reduce((answers, list) => {
 		for (const value of list.values) {
@@ -31,27 +73,6 @@ const create = async (game, msg) => {
 			return result;
 		}, [])
 		.filter(minigame => minigame.lists && minigame.lists.length > 0);
-	if (result.length === 0) {
-		bot.queueMessage(
-			msg.chat.id,
-			'Insufficient categories selected for the minigame to work'
-		);
-		return;
-	}
-	let minigame = result[Math.floor(Math.random() * result.length)];
-
-	game.minigame.answer = minigame.answer;
-	game.minigame.hints = 0;
-	game.minigame.date = moment();
-	game.minigame.lists = minigame.lists.getRandom(10);
-	bot.queueMessage(msg.chat.id, message(game.minigame));
-	try {
-		await game.save();
-	} catch (err) {
-		console.error(`Minigame Error\n${JSON.stringify(err)}`);
-		throw err;
-	}
-	return true;
 };
 
 const message = minigame => {

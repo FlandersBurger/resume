@@ -186,7 +186,7 @@
 					<button
 						class="btn btn-sm"
 						ng-class="listButtonClass(list)"
-						ng-repeat="list in filteredLists() | filter: searchAll | filter: search | orderBy: sorter"
+						ng-repeat="list in filteredLists() | filter: searchAll | filter: search | orderBy: sorter | limitTo: 1000"
 						ng-click="selectList(list)"
 						style="white-space: normal"
 						uib-tooltip="{{list.description}}"

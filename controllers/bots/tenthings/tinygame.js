@@ -3,6 +3,7 @@ const moment = require('moment');
 const bot = require('../../../bots/telegram');
 const messages = require('./messages');
 const hints = require('./hints');
+const lists = require('./lists');
 
 const List = require('../../../models/tenthings/list')();
 
@@ -11,38 +12,24 @@ const create = async (game, msg) => {
 		game.settings.languages && game.settings.languages.length > 0
 			? game.settings.languages
 			: ['EN'];
-	console.log(availableLanguages);
-	let count = await List.countDocuments({
+	let list = await lists.getRandomList({
 		categories: { $nin: game.disabledCategories },
 		language: { $in: availableLanguages },
-	}).exec();
-	let lists;
-	if (count === 0) {
-		count = await List.countDocuments({}).exec();
-		lists = await List.find({
-			language: { $in: availableLanguages },
-		})
-			.select('name values')
-			.populate('creator')
-			.limit(1)
-			.lean()
-			.skip(Math.floor(Math.random() * count))
-			.exec();
-	} else {
-		lists = await List.find({
+	});
+	if (!list) {
+		list = await lists.getRandomList({
 			categories: { $nin: game.disabledCategories },
-			language: { $in: availableLanguages },
-		})
-			.select('name values')
-			.populate('creator')
-			.limit(1)
-			.lean()
-			.skip(Math.floor(Math.random() * count))
-			.exec();
+			language: 'EN',
+		});
+		if (!list) {
+			list = await lists.getRandomList({
+				language: 'EN',
+			});
+		}
 	}
 	const tinygame = {
-		answer: lists[0].name,
-		clues: lists[0].values.map(answer => answer.value).getRandom(10),
+		answer: list.name,
+		clues: list.values.map(answer => answer.value).getRandom(10),
 	};
 	game.tinygame.answer = tinygame.answer;
 	game.tinygame.hints = 1;

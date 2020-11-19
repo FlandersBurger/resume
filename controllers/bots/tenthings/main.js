@@ -9,6 +9,8 @@ const request = require('request');
 const config = require('../../../config');
 const redis = require('../../../redis');
 const bot = require('../../../bots/telegram');
+
+const lists = require('./lists');
 const messages = require('./messages');
 const keyboards = require('./keyboards');
 const stats = require('./stats');
@@ -202,13 +204,12 @@ const selectList = async game => {
 			return list;
 		}
 	} else {
-		let count;
-		count = await List.countDocuments({
+		let list = await lists.getRandomList({
 			_id: { $nin: game.playedLists },
 			categories: { $nin: game.disabledCategories },
 			language: { $in: availableLanguages },
-		}).exec();
-		if (count === 0) {
+		});
+		if (!list) {
 			game.playedLists = [];
 			game.cycles++;
 			game.lastCycleDate = moment();
@@ -216,61 +217,34 @@ const selectList = async game => {
 				game.chat_id,
 				'All lists have been played, a new cycle will now start.'
 			);
-			count = await List.countDocuments({
+			list = await lists.getRandomList({
 				categories: { $nin: game.disabledCategories },
 				language: { $in: availableLanguages },
-			}).exec();
-			if (count === 0) {
-				let lists = await List.find({
+			});
+			if (!list) {
+				list = await lists.getRandomList({
 					categories: {
 						$in: _.difference(categories, game.disabledCategories),
 					},
 					language: { $in: availableLanguages },
-				})
-					.select('-votes')
-					.populate('creator')
-					.limit(1)
-					.skip(Math.floor(Math.random() * 2000))
-					.exec();
-				if (lists.length === 0) {
-					console.log(_.difference(categories, game.disabledCategories));
-					lists = await List.find({
-						categories: {
-							$in: _.difference(categories, game.disabledCategories),
-						},
-					})
-						.select('-votes')
-						.populate('creator')
-						.limit(1)
-						.skip(Math.floor(Math.random() * 2000))
-						.exec();
-				}
-				return lists[0];
-			} else {
-				const lists = await List.find({
-					categories: { $nin: game.disabledCategories },
-					language: { $in: availableLanguages },
-				})
-					.select('-votes')
-					.populate('creator')
-					.limit(1)
-					.skip(Math.floor(Math.random() * count))
-					.exec();
-				return lists[0];
+				});
 			}
-		} else {
-			let lists = await List.find({
-				_id: { $nin: game.playedLists },
-				categories: { $nin: game.disabledCategories },
-				language: { $in: availableLanguages },
-			})
-				.select('-votes')
-				.populate('creator')
-				.limit(1)
-				.skip(Math.floor(Math.random() * count))
-				.exec();
-			return lists[0];
+			if (!list) {
+				list = await lists.getRandomList({
+					categories: { $nin: game.disabledCategories },
+					language: 'EN',
+				});
+			}
+			if (!list) {
+				list = await lists.getRandomList({
+					categories: {
+						$in: _.difference(categories, game.disabledCategories),
+					},
+					language: 'EN',
+				});
+			}
 		}
+		return list;
 	}
 };
 
