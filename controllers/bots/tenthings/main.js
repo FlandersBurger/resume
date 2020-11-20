@@ -1113,7 +1113,7 @@ router.post('/', async ({ body }, res, next) => {
 							} ${data.vote > 0 ? '' : 'dis'}likes <b>${foundList.name}</b> (${
 								result.score
 							} - ${
-								Math.round((result.positive / result.score) * 10000) / 100
+								Math.round((result.positive / foundList.votes.length) * 10000) / 100
 							}%)`
 						);
 					}
