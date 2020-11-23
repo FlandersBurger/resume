@@ -342,7 +342,7 @@ const queueGuess = async (game, msg) => {
 			msg,
 			game: game.chat_id,
 			list: game.list._id,
-			player: await getPlayer(game, msg.from).id,
+			player: await getPlayer(game, msg.from),
 			match: {
 				index: correctMatch,
 				distance: 1,
