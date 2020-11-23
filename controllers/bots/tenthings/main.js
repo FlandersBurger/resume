@@ -267,7 +267,7 @@ const getPlayer = async (game, user) => {
 		game: game.id,
 		id: `${user.id}`,
 	}).exec();
-	if (!player) player = await createPlayer(game.id, user);
+	if (!player) player = await createPlayer(game, user);
 	else {
 		if (!user.first_name) console.log(user);
 		player.first_name = user.first_name;
