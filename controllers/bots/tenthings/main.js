@@ -326,24 +326,36 @@ const rateList = game => {
 	);
 };
 
-const queueGuess = (game, player, msg) => {
+const queueGuess = async (game, player, msg) => {
 	const values = game.list.values
 		.filter(({ guesser }) => guesser)
 		.map(({ value }) => value.removeAllButLetters());
 	const text = msg.text.removeAllButLetters();
 	const correctMatch = _.findIndex(values, value => value === text);
 	if (correctMatch >= 0) {
-		return queueingGuess({
+		const guess = {
 			type: 'game',
 			msg,
 			game: game.chat_id,
-			player: player.id,
 			list: game.list._id,
 			match: {
 				index: correctMatch,
 				distance: 1,
 			},
-		});
+		};
+		if (player) {
+			return queueingGuess({
+				...guess,
+				player: player.id,
+			});
+		} else {
+			createPlayer(game._id, msg.from).then(newPlayer => {
+				return queueingGuess({
+					...guess,
+					player: newPlayer.id,
+				});
+			}, newPlayerError);
+		}
 	}
 	const lengths = values.reduce(
 		(lengths, value) => ({
@@ -366,7 +378,6 @@ const queueGuess = (game, player, msg) => {
 			type: 'game',
 			msg,
 			game: game.chat_id,
-			player: player.id,
 			list: game.list._id,
 			match: fuzzyMatch.get(text, {
 				min: 0.75,
@@ -379,7 +390,19 @@ const queueGuess = (game, player, msg) => {
 		if (guess.match.distance >= 0.75) {
 			found = true;
 			setTimeout(() => {
-				queueingGuess(guess);
+				if (player) {
+					return queueingGuess({
+						...guess,
+						player: player.id,
+					});
+				} else {
+					createPlayer(game._id, msg.from).then(newPlayer => {
+						return queueingGuess({
+							...guess,
+							player: newPlayer.id,
+						});
+					}, newPlayerError);
+				}
 			}, (2000 / 0.25) * (1 - guess.match.distance));
 		}
 	}
@@ -407,7 +430,19 @@ const queueGuess = (game, player, msg) => {
 					match,
 				};
 				setTimeout(() => {
-					queueingGuess(guess);
+					if (player) {
+						return queueingGuess({
+							...guess,
+							player: player.id,
+						});
+					} else {
+						createPlayer(game._id, msg.from).then(newPlayer => {
+							return queueingGuess({
+								...guess,
+								player: newPlayer.id,
+							});
+						}, newPlayerError);
+					}
 				}, (2000 / 0.25) * (1 - match.distance));
 			} else {
 				sass(game, msg.text, msg.from);
@@ -437,7 +472,19 @@ const queueGuess = (game, player, msg) => {
 					match,
 				};
 				setTimeout(() => {
-					queueingGuess(guess);
+					if (player) {
+						return queueingGuess({
+							...guess,
+							player: player.id,
+						});
+					} else {
+						createPlayer(game._id, msg.from).then(newPlayer => {
+							return queueingGuess({
+								...guess,
+								player: newPlayer.id,
+							});
+						}, newPlayerError);
+					}
 				}, (2000 / 0.25) * (1 - match.distance));
 			} else {
 				sass(game, msg.text, msg.from);
@@ -1560,24 +1607,7 @@ router.post('/', async ({ body }, res, next) => {
 						console.log(
 							`${existingGame.chat_id} - Player ${msg.from.id} not found for game ${existingGame._id}`
 						);
-						createPlayer(existingGame._id, msg.from).then(
-							newPlayer => {
-								return evaluateCommand(
-									res,
-									msg,
-									existingGame,
-									newPlayer,
-									false
-								);
-							},
-							err => {
-								bot.notifyAdmin("Can't add new player: " + JSON.stringify(err));
-								console.error(err);
-								console.log(player);
-								console.log(msg.from);
-								res.sendStatus(200);
-							}
-						);
+						return evaluateCommand(res, msg, existingGame, null, false);
 					} else {
 						player.first_name = msg.from.first_name;
 						player.last_name = msg.from.last_name;
@@ -1699,7 +1729,12 @@ const evaluateCommand = async (res, msg, game, player, isNew) => {
 			break;
 		case '/pule':
 		case '/skip':
-			if (
+			if (!player) {
+				bot.queueMessage(
+					msg.chat.id,
+					`At least 1 correct answer is expected to enable skipping for you`
+				);
+			} else if (
 				!vetoes[game.id] ||
 				vetoes[game.id] < moment().subtract(VETO_DELAY, 'seconds')
 			) {
@@ -1756,8 +1791,10 @@ const evaluateCommand = async (res, msg, game, player, isNew) => {
 			}
 			break;
 		case '/veto':
-			player.vetoes++;
-			player.save();
+			if (player) {
+				player.vetoes++;
+				player.save();
+			}
 			if (skips[game.id]) {
 				delete skips[game.id];
 				vetoes[game.id] = moment();
@@ -1811,8 +1848,10 @@ const evaluateCommand = async (res, msg, game, player, isNew) => {
 		case '/typo':
 			const typo = msg.text.substring(msg.command.length + 1, msg.text.length);
 			if (typo && typo != 'TenThings_Bot' && typo != '@TenThings_Bot') {
-				player.suggestions++;
-				player.save();
+				if (player) {
+					player.suggestions++;
+					player.save();
+				}
 				let message = `<b>Typo</b>\n${typo}\nin "${game.list.name}"\n<i>${
 					msg.from.username ? `@${msg.from.username}` : msg.from.first_name
 				}</i>`;
@@ -1832,8 +1871,10 @@ const evaluateCommand = async (res, msg, game, player, isNew) => {
 		case '/bug':
 			const bug = msg.text.substring(msg.command.length + 1, msg.text.length);
 			if (bug && bug != 'TenThings_Bot' && bug != '@TenThings_Bot') {
-				player.suggestions++;
-				player.save();
+				if (player) {
+					player.suggestions++;
+					player.save();
+				}
 				let message = `<b>Bug</b>\n${bug}\n<i>${
 					msg.from.username ? `@${msg.from.username}` : msg.from.first_name
 				}</i>`;
@@ -1856,8 +1897,10 @@ const evaluateCommand = async (res, msg, game, player, isNew) => {
 				msg.text.length
 			);
 			if (feature && feature != 'TenThings_Bot' && bug != '@TenThings_Bot') {
-				player.suggestions++;
-				player.save();
+				if (player) {
+					player.suggestions++;
+					player.save();
+				}
 				let message = `<b>Feature</b>\n${feature}\n<i>${
 					msg.from.username ? `@${msg.from.username}` : msg.from.first_name
 				}</i>`;
@@ -1881,8 +1924,10 @@ const evaluateCommand = async (res, msg, game, player, isNew) => {
 				msg.text.length
 			);
 			if (search && search != 'TenThings_Bot' && search != '@TenThings_Bot') {
-				player.searches++;
-				player.save();
+				if (player) {
+					player.searches++;
+					player.save();
+				}
 				console.log(`${game.chat_id} - Search for ${search}`);
 				const regex = search
 					.replace(new RegExp('[^a-zA-Z0-9 ]+', 'g'), '.*')
@@ -1958,16 +2003,34 @@ const evaluateCommand = async (res, msg, game, player, isNew) => {
 				game.list.values.filter(({ guesser }) => !guesser.first_name).length !==
 				0
 			) {
-				hint(game, player);
+				if (player) {
+					hint(game, player);
+				} else {
+					createPlayer(existingGame._id, msg.from).then(newPlayer => {
+						hint(game, newPlayer);
+					}, newPlayerError);
+				}
 			}
 			break;
 		case '/minidica':
 		case '/minihint':
-			hint(game, player, 'minigame');
+			if (player) {
+				hint(game, player, 'minigame');
+			} else {
+				createPlayer(existingGame._id, msg.from).then(newPlayer => {
+					hint(game, newPlayer, 'minigame');
+				}, newPlayerError);
+			}
 			break;
 		case '/dicaminusculo':
 		case '/tinyhint':
-			hint(game, player, 'tinygame');
+			if (player) {
+				hint(game, player, 'tinygame');
+			} else {
+				createPlayer(existingGame._id, msg.from).then(newPlayer => {
+					hint(game, newPlayer, 'tinygame');
+				}, newPlayerError);
+			}
 			break;
 		case '/notify':
 			if (msg.chat.id === config.masterChat) {
@@ -2196,6 +2259,11 @@ const deactivateGame = game => {
 		game.chat_id,
 		'I am now sleeping, type /list or /start to wake me up.\nInactive games will be deleted after 30 days'
 	);
+};
+
+const newPlayerError = err => {
+	bot.notifyAdmin("Can't add new player: " + JSON.stringify(err));
+	console.error(err);
 };
 
 /*
