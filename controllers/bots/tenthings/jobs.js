@@ -164,7 +164,7 @@ const resetDailyScore = (force = false) => {
 	}
 };
 //resetDailyScore(true);
-const backupDatabase = schedule.scheduleJob('0 0 4 * * *', () => {
+const backupDatabase = schedule.scheduleJob('0 0 21 * * *', () => {
 	backup().then(
 		success => {
 			bot.notifyAdmin(`Database backed up successfuly`);
