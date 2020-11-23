@@ -494,6 +494,10 @@ const processGuess = guess => {
 				if (err) {
 					console.error(err);
 					return reject();
+				} else if (!game) {				
+					console.error(`Game not found`);
+					console.error(guess);
+					reject();
 				}
 				let player;
 				try {
