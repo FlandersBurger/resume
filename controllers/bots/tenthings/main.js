@@ -289,7 +289,7 @@ const createGame = async chat_id => {
 };
 
 const createPlayer = async (game, user) => {
-	if (!user.first_name) console.log(user);
+	if (!user.first_name) console.trace();
 	const player = new Player({
 		game: game.id,
 		...user,
@@ -499,6 +499,9 @@ const processGuess = guess => {
 				let player = await getPlayer(game, {
 					id: guess.player,
 				});
+				if (!player) {
+					reject('Error with player in ProcessGuess');
+				}
 				if (guess.type === 'game') {
 					checkGuess(game, player, guess, guess.msg).then(
 						() => {
