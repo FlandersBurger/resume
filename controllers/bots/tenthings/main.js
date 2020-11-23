@@ -2007,7 +2007,7 @@ const evaluateCommand = async (res, msg, game, player, isNew) => {
 				if (player) {
 					hint(game, player);
 				} else {
-					createPlayer(existingGame._id, msg.from).then(newPlayer => {
+					createPlayer(game._id, msg.from).then(newPlayer => {
 						hint(game, newPlayer);
 					}, newPlayerError);
 				}
@@ -2018,7 +2018,7 @@ const evaluateCommand = async (res, msg, game, player, isNew) => {
 			if (player) {
 				hint(game, player, 'minigame');
 			} else {
-				createPlayer(existingGame._id, msg.from).then(newPlayer => {
+				createPlayer(game._id, msg.from).then(newPlayer => {
 					hint(game, newPlayer, 'minigame');
 				}, newPlayerError);
 			}
@@ -2028,7 +2028,7 @@ const evaluateCommand = async (res, msg, game, player, isNew) => {
 			if (player) {
 				hint(game, player, 'tinygame');
 			} else {
-				createPlayer(existingGame._id, msg.from).then(newPlayer => {
+				createPlayer(game._id, msg.from).then(newPlayer => {
 					hint(game, newPlayer, 'tinygame');
 				}, newPlayerError);
 			}
