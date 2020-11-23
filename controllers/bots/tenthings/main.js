@@ -1113,7 +1113,8 @@ router.post('/', async ({ body }, res, next) => {
 							} ${data.vote > 0 ? '' : 'dis'}likes <b>${foundList.name}</b> (${
 								result.score
 							} - ${
-								Math.round((result.positive / foundList.votes.length) * 10000) / 100
+								Math.round((result.positive / foundList.votes.length) * 10000) /
+								100
 							}%)`
 						);
 					}
@@ -1549,8 +1550,12 @@ router.post('/', async ({ body }, res, next) => {
 			} else {
 				Player.findOne({
 					game: existingGame._id,
-					id: `${msg.from.id}`,
+					id: msg.from.id,
 				}).exec((err, player) => {
+					if (err) {
+						console.error(err);
+						next(err);
+					}
 					if (!player) {
 						console.log(
 							`Player ${msg.from.id} not found for chat ${existingGame._id}`
