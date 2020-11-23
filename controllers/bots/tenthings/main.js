@@ -292,6 +292,7 @@ const createPlayer = async (gameId, user) => {
 		...user,
 	});
 	const savedPlayer = await player.save();
+	console.log(`${gameId} - Player ${player.id} created`);
 	return savedPlayer;
 };
 
