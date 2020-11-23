@@ -342,7 +342,7 @@ const queueGuess = async (game, msg) => {
 			msg,
 			game: game.chat_id,
 			list: game.list._id,
-			player: await getPlayer(game, msg.from),
+			player: await getPlayer(game, msg.from).id,
 			match: {
 				index: correctMatch,
 				distance: 1,
@@ -384,7 +384,7 @@ const queueGuess = async (game, msg) => {
 			setTimeout(async () => {
 				return queueingGuess({
 					...guess,
-					player: await getPlayer(game, msg.from),
+					player: (await getPlayer(game, msg.from)).id,
 				});
 			}, (2000 / 0.25) * (1 - guess.match.distance));
 		}
@@ -408,14 +408,13 @@ const queueGuess = async (game, msg) => {
 					type: 'minigame',
 					msg,
 					game: game.chat_id,
-					player: player.id,
 					answer: game.minigame.answer,
 					match,
 				};
 				setTimeout(async () => {
 					return queueingGuess({
 						...guess,
-						player: await getPlayer(game, msg.from),
+						player: (await getPlayer(game, msg.from)).id,
 					});
 				}, (2000 / 0.25) * (1 - match.distance));
 			} else {
@@ -447,7 +446,7 @@ const queueGuess = async (game, msg) => {
 				setTimeout(async () => {
 					return queueingGuess({
 						...guess,
-						player: await getPlayer(game, msg.from),
+						player: (await getPlayer(game, msg.from)).id,
 					});
 				}, (2000 / 0.25) * (1 - match.distance));
 			} else {
