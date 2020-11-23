@@ -254,23 +254,22 @@ const getGame = async (chat_id, user) => {
 	})
 		.populate('list.creator')
 		.exec();
-	if (!game) return await createGame(chat_id, user.id);
-	let player = await getPlayer(game._id, user);
+	if (!game) return await createGame(chat_id);
+	let player = await getPlayer(game, user);
 	return {
 		game,
 		player,
 	};
 };
 
-const getPlayer = async (gameId, user) => {
+const getPlayer = async (game, user) => {
 	let player = await Player.findOne({
-		game: gameId,
+		game: game.id,
 		id: `${user.id}`,
 	}).exec();
-	if (!player) player = await createPlayer(gameId, user);
+	if (!player) player = await createPlayer(game.id, user);
 	else {
 		if (!user.first_name) console.log(user);
-
 		player.first_name = user.first_name;
 		player.last_name = user.last_name;
 		player.username = user.username;
@@ -279,7 +278,7 @@ const getPlayer = async (gameId, user) => {
 	return player;
 };
 
-const createGame = async (chat_id, user) => {
+const createGame = async chat_id => {
 	const game = new Game({
 		chat_id,
 		settings: {
@@ -290,13 +289,14 @@ const createGame = async (chat_id, user) => {
 	return savedGame;
 };
 
-const createPlayer = async (gameId, user) => {
+const createPlayer = async (game, user) => {
+	if (!user.first_name) console.log(user);
 	const player = new Player({
-		game: gameId,
+		game: game.id,
 		...user,
 	});
 	const savedPlayer = await player.save();
-	console.log(`${gameId} - Player ${user.id} created`);
+	console.log(`${game.chat_id} - Player ${user.id} created`);
 	return savedPlayer;
 };
 
@@ -343,7 +343,7 @@ const queueGuess = async (game, msg) => {
 			msg,
 			game: game.chat_id,
 			list: game.list._id,
-			player: await getPlayer(game._id, msg.from),
+			player: await getPlayer(game, msg.from),
 			match: {
 				index: correctMatch,
 				distance: 1,
@@ -385,7 +385,7 @@ const queueGuess = async (game, msg) => {
 			setTimeout(async () => {
 				return queueingGuess({
 					...guess,
-					player: await getPlayer(game._id, msg.from),
+					player: await getPlayer(game, msg.from),
 				});
 			}, (2000 / 0.25) * (1 - guess.match.distance));
 		}
@@ -416,7 +416,7 @@ const queueGuess = async (game, msg) => {
 				setTimeout(async () => {
 					return queueingGuess({
 						...guess,
-						player: await getPlayer(game._id, msg.from),
+						player: await getPlayer(game, msg.from),
 					});
 				}, (2000 / 0.25) * (1 - match.distance));
 			} else {
@@ -448,7 +448,7 @@ const queueGuess = async (game, msg) => {
 				setTimeout(async () => {
 					return queueingGuess({
 						...guess,
-						player: await getPlayer(game._id, msg.from),
+						player: await getPlayer(game, msg.from),
 					});
 				}, (2000 / 0.25) * (1 - match.distance));
 			} else {
@@ -497,7 +497,7 @@ const processGuess = guess => {
 					console.error(err);
 					return reject();
 				}
-				let player = await getPlayer(game._id, {
+				let player = await getPlayer(game, {
 					id: guess.player,
 				});
 				if (guess.type === 'game') {
@@ -1551,7 +1551,7 @@ router.post('/', async ({ body }, res, next) => {
 				return next(err);
 			}
 			if (!existingGame) {
-				createGame(msg.chat.id, msg.from).then(newGame => {
+				createGame(msg.chat.id).then(newGame => {
 					if (err)
 						bot.notifyAdmin(
 							'POST: ' + JSON.stringify(err) + '\n' + JSON.stringify(game)
@@ -1678,7 +1678,7 @@ const evaluateCommand = async (res, msg, game, isNew) => {
 				!vetoes[game.id] ||
 				vetoes[game.id] < moment().subtract(VETO_DELAY, 'seconds')
 			) {
-				let player = await getPlayer(game._id, msg.from);
+				let player = await getPlayer(game, msg.from);
 				delete vetoes[game.id];
 				let doSkip = false;
 				if (skippers[player.id]) {
@@ -1732,7 +1732,7 @@ const evaluateCommand = async (res, msg, game, isNew) => {
 			}
 			break;
 		case '/veto':
-			let player = await getPlayer(game._id, msg.from);
+			let player = await getPlayer(game, msg.from);
 			player.vetoes++;
 			await player.save();
 			if (skips[game.id]) {
@@ -1788,7 +1788,7 @@ const evaluateCommand = async (res, msg, game, isNew) => {
 		case '/typo':
 			const typo = msg.text.substring(msg.command.length + 1, msg.text.length);
 			if (typo && typo != 'TenThings_Bot' && typo != '@TenThings_Bot') {
-				let player = await getPlayer(game._id, msg.from);
+				let player = await getPlayer(game, msg.from);
 				player.suggestions++;
 				await player.save();
 				let message = `<b>Typo</b>\n${typo}\nin "${game.list.name}"\n<i>${
@@ -1810,7 +1810,7 @@ const evaluateCommand = async (res, msg, game, isNew) => {
 		case '/bug':
 			const bug = msg.text.substring(msg.command.length + 1, msg.text.length);
 			if (bug && bug != 'TenThings_Bot' && bug != '@TenThings_Bot') {
-				let player = await getPlayer(game._id, msg.from);
+				let player = await getPlayer(game, msg.from);
 				player.suggestions++;
 				await player.save();
 				let message = `<b>Bug</b>\n${bug}\n<i>${
@@ -1835,7 +1835,7 @@ const evaluateCommand = async (res, msg, game, isNew) => {
 				msg.text.length
 			);
 			if (feature && feature != 'TenThings_Bot' && bug != '@TenThings_Bot') {
-				let player = await getPlayer(game._id, msg.from);
+				let player = await getPlayer(game, msg.from);
 				player.suggestions++;
 				await player.save();
 				let message = `<b>Feature</b>\n${feature}\n<i>${
@@ -1861,7 +1861,7 @@ const evaluateCommand = async (res, msg, game, isNew) => {
 				msg.text.length
 			);
 			if (search && search != 'TenThings_Bot' && search != '@TenThings_Bot') {
-				let player = await getPlayer(game._id, msg.from);
+				let player = await getPlayer(game, msg.from);
 				player.searches++;
 				await player.save();
 				console.log(`${game.chat_id} - Search for ${search}`);
@@ -1939,16 +1939,16 @@ const evaluateCommand = async (res, msg, game, isNew) => {
 				game.list.values.filter(({ guesser }) => !guesser.first_name).length !==
 				0
 			) {
-				hint(game, await getPlayer(game._id, msg.from));
+				hint(game, await getPlayer(game, msg.from));
 			}
 			break;
 		case '/minidica':
 		case '/minihint':
-			hint(game, await getPlayer(game._id, msg.from), 'minigame');
+			hint(game, await getPlayer(game, msg.from), 'minigame');
 			break;
 		case '/dicaminusculo':
 		case '/tinyhint':
-			hint(game, await getPlayer(game._id, msg.from), 'tinygame');
+			hint(game, await getPlayer(game, msg.from), 'tinygame');
 			break;
 		case '/notify':
 			if (msg.chat.id === config.masterChat) {
