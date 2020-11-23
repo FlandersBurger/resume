@@ -268,6 +268,12 @@ const getPlayer = async (gameId, user) => {
 		id: `${user.id}`,
 	}).exec();
 	if (!player) player = await createPlayer(gameId, user);
+	else {
+		player.first_name = user.first_name;
+		player.last_name = user.last_name;
+		player.username = user.username;
+		player.present = true;
+	}
 	return player;
 };
 
@@ -279,11 +285,7 @@ const createGame = async (chat_id, user) => {
 		},
 	});
 	const savedGame = await game.save();
-	const savedPlayer = await createPlayer(savedGame._id, user);
-	return {
-		game: savedGame,
-		player: savedPlayer,
-	};
+	return savedGame;
 };
 
 const createPlayer = async (gameId, user) => {
@@ -292,7 +294,7 @@ const createPlayer = async (gameId, user) => {
 		...user,
 	});
 	const savedPlayer = await player.save();
-	console.log(`${gameId} - Player ${player.id} created`);
+	console.log(`${gameId} - Player ${user.id} created`);
 	return savedPlayer;
 };
 
@@ -327,36 +329,24 @@ const rateList = game => {
 	);
 };
 
-const queueGuess = async (game, player, msg) => {
+const queueGuess = async (game, msg) => {
 	const values = game.list.values
 		.filter(({ guesser }) => guesser)
 		.map(({ value }) => value.removeAllButLetters());
 	const text = msg.text.removeAllButLetters();
 	const correctMatch = _.findIndex(values, value => value === text);
 	if (correctMatch >= 0) {
-		const guess = {
+		return queueingGuess({
 			type: 'game',
 			msg,
 			game: game.chat_id,
 			list: game.list._id,
+			player: await getPlayer(game._id, msg.from),
 			match: {
 				index: correctMatch,
 				distance: 1,
 			},
-		};
-		if (player) {
-			return queueingGuess({
-				...guess,
-				player: player.id,
-			});
-		} else {
-			createPlayer(game._id, msg.from).then(newPlayer => {
-				return queueingGuess({
-					...guess,
-					player: newPlayer.id,
-				});
-			}, newPlayerError);
-		}
+		});
 	}
 	const lengths = values.reduce(
 		(lengths, value) => ({
@@ -390,20 +380,11 @@ const queueGuess = async (game, player, msg) => {
 		);
 		if (guess.match.distance >= 0.75) {
 			found = true;
-			setTimeout(() => {
-				if (player) {
-					return queueingGuess({
-						...guess,
-						player: player.id,
-					});
-				} else {
-					createPlayer(game._id, msg.from).then(newPlayer => {
-						return queueingGuess({
-							...guess,
-							player: newPlayer.id,
-						});
-					}, newPlayerError);
-				}
+			setTimeout(async () => {
+				return queueingGuess({
+					...guess,
+					player: await getPlayer(game._id, msg.from),
+				});
 			}, (2000 / 0.25) * (1 - guess.match.distance));
 		}
 	}
@@ -430,20 +411,11 @@ const queueGuess = async (game, player, msg) => {
 					answer: game.minigame.answer,
 					match,
 				};
-				setTimeout(() => {
-					if (player) {
-						return queueingGuess({
-							...guess,
-							player: player.id,
-						});
-					} else {
-						createPlayer(game._id, msg.from).then(newPlayer => {
-							return queueingGuess({
-								...guess,
-								player: newPlayer.id,
-							});
-						}, newPlayerError);
-					}
+				setTimeout(async () => {
+					return queueingGuess({
+						...guess,
+						player: await getPlayer(game._id, msg.from),
+					});
 				}, (2000 / 0.25) * (1 - match.distance));
 			} else {
 				sass(game, msg.text, msg.from);
@@ -472,20 +444,11 @@ const queueGuess = async (game, player, msg) => {
 					answer: game.tinygame.answer,
 					match,
 				};
-				setTimeout(() => {
-					if (player) {
-						return queueingGuess({
-							...guess,
-							player: player.id,
-						});
-					} else {
-						createPlayer(game._id, msg.from).then(newPlayer => {
-							return queueingGuess({
-								...guess,
-								player: newPlayer.id,
-							});
-						}, newPlayerError);
-					}
+				setTimeout(async () => {
+					return queueingGuess({
+						...guess,
+						player: await getPlayer(game._id, msg.from),
+					});
 				}, (2000 / 0.25) * (1 - match.distance));
 			} else {
 				sass(game, msg.text, msg.from);
@@ -1593,30 +1556,10 @@ router.post('/', async ({ body }, res, next) => {
 							'POST: ' + JSON.stringify(err) + '\n' + JSON.stringify(game)
 						);
 					console.log(`New game created for ${msg.chat.id}`);
-					return evaluateCommand(res, msg, newGame.game, newGame.player, true);
+					return evaluateCommand(res, msg, newGame, true);
 				});
 			} else {
-				Player.findOne({
-					game: existingGame._id,
-					id: `${msg.from.id}`, //Convert to string
-				}).exec((err, player) => {
-					if (err) {
-						console.error(err);
-						next(err);
-					}
-					if (!player) {
-						console.log(
-							`${existingGame.chat_id} - Player ${msg.from.id} not found for game ${existingGame._id}`
-						);
-						return evaluateCommand(res, msg, existingGame, null, false);
-					} else {
-						player.first_name = msg.from.first_name;
-						player.last_name = msg.from.last_name;
-						player.username = msg.from.username;
-						player.present = true;
-						return evaluateCommand(res, msg, existingGame, player, false);
-					}
-				});
+				return evaluateCommand(res, msg, existingGame, false);
 			}
 		});
 });
@@ -1663,7 +1606,7 @@ function countBytes(s) {
 	console.log(encodeURI(s).split(/%..|./).length - 1);
 }
 
-const evaluateCommand = async (res, msg, game, player, isNew) => {
+const evaluateCommand = async (res, msg, game, isNew) => {
 	//bot.notifyAdmin(tenthings);
 	//bot.notifyAdmin(games[msg.chat.id].list);
 	if (!msg.from.first_name) {
@@ -1730,12 +1673,8 @@ const evaluateCommand = async (res, msg, game, player, isNew) => {
 			break;
 		case '/pule':
 		case '/skip':
-			if (!player) {
-				bot.queueMessage(
-					msg.chat.id,
-					`At least 1 correct answer is expected to enable skipping for you`
-				);
-			} else if (
+			let player = await getPlayer(game._id, msg.from);
+			if (
 				!vetoes[game.id] ||
 				vetoes[game.id] < moment().subtract(VETO_DELAY, 'seconds')
 			) {
@@ -1792,10 +1731,9 @@ const evaluateCommand = async (res, msg, game, player, isNew) => {
 			}
 			break;
 		case '/veto':
-			if (player) {
-				player.vetoes++;
-				player.save();
-			}
+			let player = await getPlayer(game._id, msg.from);
+			player.vetoes++;
+			await player.save();
 			if (skips[game.id]) {
 				delete skips[game.id];
 				vetoes[game.id] = moment();
@@ -1849,10 +1787,9 @@ const evaluateCommand = async (res, msg, game, player, isNew) => {
 		case '/typo':
 			const typo = msg.text.substring(msg.command.length + 1, msg.text.length);
 			if (typo && typo != 'TenThings_Bot' && typo != '@TenThings_Bot') {
-				if (player) {
-					player.suggestions++;
-					player.save();
-				}
+				let player = await getPlayer(game._id, msg.from);
+				player.suggestions++;
+				await player.save();
 				let message = `<b>Typo</b>\n${typo}\nin "${game.list.name}"\n<i>${
 					msg.from.username ? `@${msg.from.username}` : msg.from.first_name
 				}</i>`;
@@ -1872,10 +1809,9 @@ const evaluateCommand = async (res, msg, game, player, isNew) => {
 		case '/bug':
 			const bug = msg.text.substring(msg.command.length + 1, msg.text.length);
 			if (bug && bug != 'TenThings_Bot' && bug != '@TenThings_Bot') {
-				if (player) {
-					player.suggestions++;
-					player.save();
-				}
+				let player = await getPlayer(game._id, msg.from);
+				player.suggestions++;
+				await player.save();
 				let message = `<b>Bug</b>\n${bug}\n<i>${
 					msg.from.username ? `@${msg.from.username}` : msg.from.first_name
 				}</i>`;
@@ -1898,10 +1834,9 @@ const evaluateCommand = async (res, msg, game, player, isNew) => {
 				msg.text.length
 			);
 			if (feature && feature != 'TenThings_Bot' && bug != '@TenThings_Bot') {
-				if (player) {
-					player.suggestions++;
-					player.save();
-				}
+				let player = await getPlayer(game._id, msg.from);
+				player.suggestions++;
+				await player.save();
 				let message = `<b>Feature</b>\n${feature}\n<i>${
 					msg.from.username ? `@${msg.from.username}` : msg.from.first_name
 				}</i>`;
@@ -1925,10 +1860,9 @@ const evaluateCommand = async (res, msg, game, player, isNew) => {
 				msg.text.length
 			);
 			if (search && search != 'TenThings_Bot' && search != '@TenThings_Bot') {
-				if (player) {
-					player.searches++;
-					player.save();
-				}
+				let player = await getPlayer(game._id, msg.from);
+				player.searches++;
+				await player.save();
 				console.log(`${game.chat_id} - Search for ${search}`);
 				const regex = search
 					.replace(new RegExp('[^a-zA-Z0-9 ]+', 'g'), '.*')
@@ -2004,34 +1938,16 @@ const evaluateCommand = async (res, msg, game, player, isNew) => {
 				game.list.values.filter(({ guesser }) => !guesser.first_name).length !==
 				0
 			) {
-				if (player) {
-					hint(game, player);
-				} else {
-					createPlayer(game._id, msg.from).then(newPlayer => {
-						hint(game, newPlayer);
-					}, newPlayerError);
-				}
+				hint(game, await getPlayer(game._id, msg.from));
 			}
 			break;
 		case '/minidica':
 		case '/minihint':
-			if (player) {
-				hint(game, player, 'minigame');
-			} else {
-				createPlayer(game._id, msg.from).then(newPlayer => {
-					hint(game, newPlayer, 'minigame');
-				}, newPlayerError);
-			}
+			hint(game, await getPlayer(game._id, msg.from), 'minigame');
 			break;
 		case '/dicaminusculo':
 		case '/tinyhint':
-			if (player) {
-				hint(game, player, 'tinygame');
-			} else {
-				createPlayer(game._id, msg.from).then(newPlayer => {
-					hint(game, newPlayer, 'tinygame');
-				}, newPlayerError);
-			}
+			hint(game, await getPlayer(game._id, msg.from), 'tinygame');
 			break;
 		case '/notify':
 			if (msg.chat.id === config.masterChat) {
@@ -2208,7 +2124,7 @@ const evaluateCommand = async (res, msg, game, player, isNew) => {
 			break;
 		default:
 			if (game.enabled) {
-				queueGuess(game, player, msg);
+				queueGuess(game, msg);
 			}
 	}
 };
