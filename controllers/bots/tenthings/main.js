@@ -268,11 +268,7 @@ const getPlayer = async (game, user) => {
 		id: `${user.id}`,
 	}).exec();
 	if (!player) player = await createPlayer(game, user);
-	else {
-		if (!user) {
-			return console.trace();
-		}
-		if (!user.first_name) return console.log(user);
+	else if (user && user.first_name) {
 		player.first_name = user.first_name;
 		player.last_name = user.last_name;
 		player.username = user.username;
