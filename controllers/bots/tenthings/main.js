@@ -1673,11 +1673,11 @@ const evaluateCommand = async (res, msg, game, isNew) => {
 			break;
 		case '/pule':
 		case '/skip':
-			let player = await getPlayer(game._id, msg.from);
 			if (
 				!vetoes[game.id] ||
 				vetoes[game.id] < moment().subtract(VETO_DELAY, 'seconds')
 			) {
+				let player = await getPlayer(game._id, msg.from);
 				delete vetoes[game.id];
 				let doSkip = false;
 				if (skippers[player.id]) {
