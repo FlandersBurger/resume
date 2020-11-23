@@ -384,7 +384,7 @@ const queueGuess = async (game, msg) => {
 			setTimeout(async () => {
 				return queueingGuess({
 					...guess,
-					player: (await getPlayer(game, msg.from)).id,
+					player: await getPlayer(game, msg.from),
 				});
 			}, (2000 / 0.25) * (1 - guess.match.distance));
 		}
@@ -414,7 +414,7 @@ const queueGuess = async (game, msg) => {
 				setTimeout(async () => {
 					return queueingGuess({
 						...guess,
-						player: (await getPlayer(game, msg.from)).id,
+						player: await getPlayer(game, msg.from),
 					});
 				}, (2000 / 0.25) * (1 - match.distance));
 			} else {
@@ -446,7 +446,7 @@ const queueGuess = async (game, msg) => {
 				setTimeout(async () => {
 					return queueingGuess({
 						...guess,
-						player: (await getPlayer(game, msg.from)).id,
+						player: await getPlayer(game, msg.from),
 					});
 				}, (2000 / 0.25) * (1 - match.distance));
 			} else {
@@ -494,7 +494,7 @@ const processGuess = guess => {
 				if (err) {
 					console.error(err);
 					return reject();
-				} else if (!game) {				
+				} else if (!game) {
 					console.error(`Game not found`);
 					console.error(guess);
 					reject();
