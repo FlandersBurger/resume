@@ -1550,7 +1550,7 @@ router.post('/', async ({ body }, res, next) => {
 			} else {
 				Player.findOne({
 					game: existingGame._id,
-					id: msg.from.id,
+					id: `${msg.from.id}`,
 				}).exec((err, player) => {
 					if (err) {
 						console.error(err);
@@ -1558,7 +1558,7 @@ router.post('/', async ({ body }, res, next) => {
 					}
 					if (!player) {
 						console.log(
-							`Player ${msg.from.id} not found for chat ${existingGame._id}`
+							`Player ${msg.from.id} not found for game ${existingGame._id}`
 						);
 						createPlayer(existingGame._id, msg.from).then(
 							newPlayer => {
