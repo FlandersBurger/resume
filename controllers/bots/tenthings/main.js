@@ -497,9 +497,7 @@ const processGuess = guess => {
 					console.error(err);
 					return reject();
 				}
-				let player = await getPlayer(game, {
-					id: guess.player,
-				});
+				let player = await getPlayer(game, guess.player);
 				if (!player) {
 					reject('Error with player in ProcessGuess');
 				}
