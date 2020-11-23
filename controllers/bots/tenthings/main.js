@@ -269,6 +269,8 @@ const getPlayer = async (gameId, user) => {
 	}).exec();
 	if (!player) player = await createPlayer(gameId, user);
 	else {
+		if (!user.first_name) console.log(user);
+
 		player.first_name = user.first_name;
 		player.last_name = user.last_name;
 		player.username = user.username;
@@ -440,7 +442,6 @@ const queueGuess = async (game, msg) => {
 					type: 'tinygame',
 					msg,
 					game: game.chat_id,
-					player: player.id,
 					answer: game.tinygame.answer,
 					match,
 				};
