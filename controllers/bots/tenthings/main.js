@@ -495,10 +495,12 @@ const processGuess = guess => {
 					console.error(err);
 					return reject();
 				}
-				let player = await getPlayer(game, guess.player);
-				if (!player) {
+				let player;
+				try {
+					player = await getPlayer(game, guess.player);
+				} catch (err) {
 					console.error(`Error with player in ProcessGuess\n${guess}`);
-					reject();
+					reject(err);
 				}
 				if (guess.type === 'game') {
 					checkGuess(game, player, guess, guess.msg).then(
