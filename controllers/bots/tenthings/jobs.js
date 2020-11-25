@@ -69,7 +69,12 @@ const resetDailyScore = (force = false) => {
 						);
 						bot.queueMessage(
 							game.chat_id,
-							`<b>${message} won with ${highScore} points!</b>\n\nThanks for playing! I gotta say it warms my heart knowing the game is getting popular and I want to keep it going.\nHowever, the game costs me money to host so if you\'re feeling generous and want to support Ten Things then please consider giving me a donation.\nYour gratitude won\'t go unnoticed :)\n\n - <a href="https://paypal.me/tenthingsgame">Paypal</a>\n - Bitcoin Address: 17ZhRg1iQTqhwUgEYq4MnEYfENMftuurqs\n\nIf you want to support me in another way just shoot me a message -> FlandersBurger`
+							`<b>${message} won with ${highScore} points!</b>\n\nThanks for playing! I gotta say it warms my heart knowing the game is getting popular and I want to keep it going.\nHowever, the game costs me money to host so if you\'re feeling generous and want to support Ten Things then please consider giving me a donation.\nYour gratitude won\'t go unnoticed :)\n\n - <a href="https://paypal.me/tenthingsgame">Paypal</a>\nIf you want to support me in another way just shoot me a message -> FlandersBurger\n
+							${
+								game.chat_id != config.groupChat
+									? '\n\nCome join us in the <a href="https://t.me/tenthings">Ten Things Supergroup</a>!'
+									: ''
+							}`
 							/*
 							`<b>${message} won with ${highScore} points!</b>${
 								'\n\nThanks for playing! I gotta say it warms my heart knowing the game is so popular and I want to keep it going.\nHowever, the game costs me money to host so if you\'re feeling generous and want to support this Ten Things then please consider giving a donation.\nYour gratitude won\'t go unnoticed :) \n\n - <a href="https://paypal.me/tenthingsgame">Paypal</a>\n - Bitcoin Address: 17ZhRg1iQTqhwUgEYq4MnEYfENMftuurqs'
