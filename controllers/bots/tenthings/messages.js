@@ -256,6 +256,7 @@ module.exports = {
 		return message;
 	},
 	playerStats: function (player, requestor = null) {
+		if (!player) return 'Trouble with you stats, skipper. Sorry!';
 		var message = '';
 		message += requestor ? `<i>Requested by ${requestor}</i>\n` : '';
 		message += '<b>Personal Stats for ' + player.first_name + '</b>\n';
