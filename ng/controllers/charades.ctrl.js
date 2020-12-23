@@ -1,7 +1,8 @@
 angular.module('app').controller('CharadesCtrl', function ($scope) {
+	$scope.loading = true;
 	$.getJSON('/charades.json', function (data) {
 		$scope.charades = data;
-		$scope.categories = Object.keys($scope.charades);
+		$scope.loading = false;
 	});
 
 	$scope.selectWord = category => {
