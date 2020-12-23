@@ -1,0 +1,6 @@
+<div id="charades-page" ng-cloak></div>
+  <div class="btn-group btn-group-lg">
+    <button type="button" class="btn btn-primary" ng-repeat="category in categories" ng-click="selectWord(category)">{{category.capitalize()}}</button>
+    <h1>{{word}}</h1>
+  </div>
+</div>
