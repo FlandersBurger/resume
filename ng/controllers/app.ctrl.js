@@ -61,6 +61,10 @@ angular
 			});
 		});
 
+		$.getJSON('/charades.json', function (data) {
+			$scope.charades = data;
+		});
+
 		$scope.getTimeSpan = function (job) {
 			return (
 				job.startDate.getFullYear() +
