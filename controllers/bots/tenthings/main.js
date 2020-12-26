@@ -1877,27 +1877,37 @@ const evaluateCommand = async (res, msg, game, isNew) => {
 					.split(' ')
 					.reduce((result, word) => `${result}(?=.*${word}.*)`, '');
 				let foundLists = await List.find({
-					$or: [
-						{
-							search: {
-								$regex: `.*${regex}.*`,
-								$options: 'gi',
-							},
+					search: {
+						$regex: `.*${regex}.*`,
+						$options: 'gi',
+					},
+				})
+					.select('name')
+					.lean();
+				if (foundLists.length < 10) {
+					const valueLists = await List.find({
+						'values.value': {
+							$regex: `.*${regex}.*`,
+							$options: 'gi',
 						},
-						{
-							categories: {
-								$regex: `.*${regex}.*`,
-								$options: 'gi',
-							},
+					})
+						.select('name')
+						.limit(10 - foundLists.length)
+						.lean();
+					foundLists.push(...valueLists);
+				}
+				if (foundLists.length < 10) {
+					const categoryLists = await List.find({
+						categories: {
+							$regex: `.*${regex}.*`,
+							$options: 'gi',
 						},
-						{
-							'values.value': {
-								$regex: `.*${regex}.*`,
-								$options: 'gi',
-							},
-						},
-					],
-				}).select('name');
+					})
+						.select('name')
+						.limit(10 - foundLists.length)
+						.lean();
+					foundLists.push(...valueLists);
+				}
 				if (foundLists.length > 0) {
 					bot.sendKeyboard(
 						game.chat_id,
