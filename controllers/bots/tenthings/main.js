@@ -1906,7 +1906,7 @@ const evaluateCommand = async (res, msg, game, isNew) => {
 						.select('name')
 						.limit(10 - foundLists.length)
 						.lean();
-					foundLists.push(...valueLists);
+					foundLists.push(...categoryLists);
 				}
 				if (foundLists.length > 0) {
 					bot.sendKeyboard(
