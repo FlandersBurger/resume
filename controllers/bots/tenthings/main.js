@@ -773,7 +773,7 @@ const newRound = (currentGame, player) => {
 					setTimeout(() => {
 						let message = `<b>${game.list.name}</b> (${game.list.totalValues}) by ${game.list.creator.username}`;
 						message += game.list.description
-							? `\n<i>${angleBrackets(game.list.description)}</i>`
+							? `\n<i>${game.list.description.angleBrackets()}</i>`
 							: '';
 						bot.queueMessage(game.chat_id, message);
 					}, 3000);
@@ -791,10 +791,6 @@ const newRound = (currentGame, player) => {
 				err => bot.notifyAdmin(`Select List Error: ${JSON.stringify(err)}`)
 			);
 		});
-};
-
-const angleBrackets = str => {
-	return str.replace('<', '&lt;').replace('>', '&gt;');
 };
 
 /*
@@ -1671,7 +1667,7 @@ const evaluateCommand = async (res, msg, game, isNew) => {
 					message += game.list.description
 						? game.list.description.includes('href')
 							? game.list.description
-							: `<i>${angleBrackets(game.list.description)}</i>\n`
+							: `<i>${game.list.description.angleBrackets()}</i>\n`
 						: '';
 					message += list;
 					bot.queueMessage(msg.chat.id, message);
@@ -1781,7 +1777,7 @@ const evaluateCommand = async (res, msg, game, isNew) => {
 					message += game.list.description
 						? game.list.description.includes('href')
 							? game.list.description
-							: `<i>${angleBrackets(game.list.description)}</i>\n`
+							: `<i>${game.list.description.angleBrackets()}</i>\n`
 						: '';
 					message += list;
 					bot.queueMessage(msg.chat.id, message);
@@ -1901,7 +1897,7 @@ const evaluateCommand = async (res, msg, game, isNew) => {
 						},
 					})
 						.select('name')
-						.skip(Math.floor(Math.random() * (count - 10)))
+						.skip(count > 10 ? Math.floor(Math.random() * (count - 10)) : 0)
 						.limit(10 - foundLists.length)
 						.lean();
 					foundLists.push(...valueLists);
@@ -1920,7 +1916,7 @@ const evaluateCommand = async (res, msg, game, isNew) => {
 						},
 					})
 						.select('name')
-						.skip(Math.floor(Math.random() * (count - 10)))
+						.skip(count > 10 ? Math.floor(Math.random() * (count - 10)) : 0)
 						.limit(10 - foundLists.length)
 						.lean();
 					foundLists.push(...categoryLists);

@@ -367,6 +367,10 @@ String.prototype.removeHTML = function () {
 	return this.replace('>', '\u227B').replace('<', '\u227A');
 };
 
+String.prototype.angleBrackets = function () {
+	return this.replace('<', '&lt;').replace('>', '&gt;');
+};
+
 Number.prototype.makeReadable = function () {
 	return this.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
 };

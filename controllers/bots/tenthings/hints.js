@@ -66,7 +66,7 @@ exports.getHint = (hints, value) => {
 				break;
 		}
 	}
-	return str;
+	return str.angleBrackets();
 };
 
 exports.getMaxHints = () => MAX_HINTS;
