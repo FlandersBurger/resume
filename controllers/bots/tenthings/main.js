@@ -1911,6 +1911,8 @@ const evaluateCommand = async (res, msg, game, isNew) => {
 					foundLists.push(...categoryLists);
 				}
 				if (foundLists.length > 0) {
+					console.log(foundLists);
+
 					bot.sendKeyboard(
 						game.chat_id,
 						`<b>Which list would you like to queue?</b>`,
