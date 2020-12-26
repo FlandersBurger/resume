@@ -1,5 +1,5 @@
 const MAX_HINTS = 6;
-const SPECIAL_CHARACTERS = '\\\\/ !?@#$%^&*()_+:.{},;\\-\'``’‘"';
+const SPECIAL_CHARACTERS = '\\\\/ !?@#$%^&*()_+:.{},;\\-\'``’‘"<>';
 const VOWELS =
 	'aeiouAEIOUàèìòùÀÈÌÒÙáéíóúýÁÉÍÓÚÝâêîôûÂÊÎÔÛãñõÃÑÕäëïöüÿÄËÏÖÜŸçÇßØøÅåÆæœ';
 

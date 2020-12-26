@@ -124,7 +124,7 @@ exports.getList = (game, callback) => {
 			str += '\n';
 		} else {
 			str += `${index + 1}: `;
-			str += `${value} - <i>${guesser.first_name.removeHTML()}</i>`;
+			str += `${value.angleBrackets()} - <i>${guesser.first_name.removeHTML()}</i>`;
 			str += '\n';
 		}
 	});
