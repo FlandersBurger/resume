@@ -875,7 +875,7 @@ const creatorStats = async () => {
 	);
 };
 
-creatorStats();
+//creatorStats();
 
 const voteSentimentStats = async ({ chat_id }, players, sorter, title) => {
 	List.aggregate([

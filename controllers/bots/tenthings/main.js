@@ -1877,16 +1877,23 @@ const evaluateCommand = async (res, msg, game, isNew) => {
 					.split(' ')
 					.reduce((result, word) => `${result}(?=.*${word}.*)`, '');
 				console.log(regex);
-
 				let foundLists = await List.find({
-					search: {
+					name: {
 						$regex: `.*${regex}.*`,
 						$options: 'i',
 					},
 				})
 					.select('name')
 					.lean();
+				console.log(foundLists);
+
 				if (foundLists.length < 10) {
+					const count = await List.countDocuments({
+						'values.value': {
+							$regex: `.*${regex}.*`,
+							$options: 'i',
+						},
+					});
 					const valueLists = await List.find({
 						'values.value': {
 							$regex: `.*${regex}.*`,
@@ -1894,11 +1901,18 @@ const evaluateCommand = async (res, msg, game, isNew) => {
 						},
 					})
 						.select('name')
+						.skip(Math.floor(Math.random() * (count - 10)))
 						.limit(10 - foundLists.length)
 						.lean();
 					foundLists.push(...valueLists);
 				}
 				if (foundLists.length < 10) {
+					const count = await List.countDocuments({
+						categories: {
+							$regex: `.*${regex}.*`,
+							$options: 'i',
+						},
+					});
 					const categoryLists = await List.find({
 						categories: {
 							$regex: `.*${regex}.*`,
@@ -1906,6 +1920,7 @@ const evaluateCommand = async (res, msg, game, isNew) => {
 						},
 					})
 						.select('name')
+						.skip(Math.floor(Math.random() * (count - 10)))
 						.limit(10 - foundLists.length)
 						.lean();
 					foundLists.push(...categoryLists);
