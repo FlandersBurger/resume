@@ -1881,7 +1881,7 @@ const evaluateCommand = async (res, msg, game, isNew) => {
 				let foundLists = await List.find({
 					search: {
 						$regex: `.*${regex}.*`,
-						$options: 'gi',
+						$options: 'i',
 					},
 				})
 					.select('name')
@@ -1890,7 +1890,7 @@ const evaluateCommand = async (res, msg, game, isNew) => {
 					const valueLists = await List.find({
 						'values.value': {
 							$regex: `.*${regex}.*`,
-							$options: 'gi',
+							$options: 'i',
 						},
 					})
 						.select('name')
@@ -1902,7 +1902,7 @@ const evaluateCommand = async (res, msg, game, isNew) => {
 					const categoryLists = await List.find({
 						categories: {
 							$regex: `.*${regex}.*`,
-							$options: 'gi',
+							$options: 'i',
 						},
 					})
 						.select('name')
