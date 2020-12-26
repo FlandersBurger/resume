@@ -1876,6 +1876,8 @@ const evaluateCommand = async (res, msg, game, isNew) => {
 					.replace(new RegExp('[^a-zA-Z0-9 ]+', 'g'), '.*')
 					.split(' ')
 					.reduce((result, word) => `${result}(?=.*${word}.*)`, '');
+				console.log(regex);
+
 				let foundLists = await List.find({
 					search: {
 						$regex: `.*${regex}.*`,
