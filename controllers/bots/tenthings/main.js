@@ -613,7 +613,7 @@ const checkGuess = async (game, player, guess, msg) => {
 				match.value,
 				match.blurb.substring(0, 4) === 'http'
 					? `<a href="${match.blurb}">&#8204;</a>`
-					: `\n<i>${match.blurb}</i>`,
+					: `\n<i>${match.blurb.angleBrackets()}</i>`,
 				score,
 				accuracy
 			);
@@ -675,7 +675,7 @@ const guessed = async (
 	score,
 	accuracy
 ) => {
-	let message = messages.guessed(value, from.first_name);
+	let message = messages.guessed(value.angleBrackets(), from.first_name);
 	message += messages.streak(streak.count);
 	message += blurb;
 	message += `\n<pre>${
