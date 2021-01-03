@@ -694,7 +694,7 @@ const guessed = async (
 				str += '\n';
 			}
 			return str;
-		});
+		}, '');
 	} else {
 		message += '\nRound over.';
 	}
