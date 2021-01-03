@@ -688,10 +688,10 @@ const guessed = async (
 		//message += `\n${answersLeft} answer${answersLeft > 1 ? 's' : ''} left.`;
 		message += game.list.values.reduce((str, { guesser, value }, index) => {
 			if (!guesser.first_name) {
+				str += '\n';
 				str += index + 1;
 				str += ': ';
 				str += hints.getHint(game.hints, value);
-				str += '\n';
 			}
 			return str;
 		}, '');
