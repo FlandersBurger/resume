@@ -667,7 +667,7 @@ const checkGuess = async (game, player, guess, msg) => {
 };
 
 const guessed = async (
-	{ streak, list },
+	game,
 	{ scoreDaily },
 	{ from, chat },
 	value,
@@ -676,15 +676,24 @@ const guessed = async (
 	accuracy
 ) => {
 	let message = messages.guessed(value.angleBrackets(), from.first_name);
-	message += messages.streak(streak.count);
+	message += messages.streak(game.streak.count);
 	message += blurb;
 	message += `\n<pre>${
 		scoreDaily - score
 	} + ${score} points (${accuracy})</pre>`;
-	const answersLeft = list.values.filter(({ guesser }) => !guesser.first_name)
-		.length;
-	if (answersLeft > 0) {
-		message += `\n${answersLeft} answer${answersLeft > 1 ? 's' : ''} left.`;
+	const answersLeft = game.list.values.filter(
+		({ guesser }) => !guesser.first_name
+	);
+	if (answersLeft.length > 0) {
+		//message += `\n${answersLeft} answer${answersLeft > 1 ? 's' : ''} left.`;
+		message += game.list.values.reduce((str, { guesser, value }, index) => {
+			if (!guesser.first_name) {
+				str += index + 1;
+				str += ': ';
+				str += hints.getHint(game.hints, value);
+				str += '\n';
+			}
+		});
 	} else {
 		message += '\nRound over.';
 	}
