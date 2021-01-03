@@ -693,6 +693,7 @@ const guessed = async (
 				str += hints.getHint(game.hints, value);
 				str += '\n';
 			}
+			return str;
 		});
 	} else {
 		message += '\nRound over.';
