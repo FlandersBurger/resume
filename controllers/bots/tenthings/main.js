@@ -1882,7 +1882,6 @@ const evaluateCommand = async (res, msg, game, isNew) => {
 					.replace(new RegExp('[^a-zA-Z0-9 ]+', 'g'), '.*')
 					.split(' ')
 					.reduce((result, word) => `${result}(?=.*${word}.*)`, '');
-				console.log(regex);
 				let foundLists = await List.find({
 					name: {
 						$regex: `.*${regex}.*`,
@@ -1891,7 +1890,6 @@ const evaluateCommand = async (res, msg, game, isNew) => {
 				})
 					.select('name')
 					.lean();
-				console.log(foundLists);
 
 				if (foundLists.length < 10) {
 					const count = await List.countDocuments({
