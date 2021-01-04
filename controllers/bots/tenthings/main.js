@@ -458,8 +458,12 @@ const queueGuess = async (game, msg) => {
 
 const sass = (game, text, from) => {
 	if (game.settings.sass && game.lastPlayDate > moment().subtract(7, 'days')) {
+		console.log('sassing');
+
 		messages.sass(text).then(
 			sass => {
+				console.log(sass);
+
 				if (sass) {
 					if (sass.indexOf('http') === 0) {
 						if (sass.indexOf('.gif') > 0) {
