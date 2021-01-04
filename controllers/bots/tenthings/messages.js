@@ -481,13 +481,8 @@ module.exports = {
 	sass: text =>
 		new Promise((resolve, reject) => {
 			var messages = [];
-
 			if (checkString(text, 'bot')) {
-				console.log(text);
-				console.log(checkString(text, 'bot'));
 				if (checkString(text, 'love') || checkString(text, 'like')) {
-					console.log('Someone loves the bot');
-
 					messages = [
 						'I love you too!',
 						'Hihihihi',
@@ -823,8 +818,6 @@ module.exports = {
 			) {
 				messages = ['Ghostbusters'];
 			}
-			console.log(messages);
-
 			if (messages.length > 0) {
 				resolve(messages[Math.floor(Math.random() * messages.length)]);
 			}

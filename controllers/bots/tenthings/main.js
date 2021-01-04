@@ -463,8 +463,6 @@ const sass = (game, text, from) => {
 				if (sass) {
 					if (sass.indexOf('http') === 0) {
 						if (sass.indexOf('.gif') > 0) {
-							console.log(sass);
-
 							bot.sendAnimation(game.chat_id, sass);
 						} else {
 							bot.sendPhoto(game.chat_id, sass);
