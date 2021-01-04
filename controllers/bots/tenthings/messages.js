@@ -818,6 +818,8 @@ module.exports = {
 			) {
 				messages = ['Ghostbusters'];
 			}
+			console.log(messages);
+
 			if (messages.length > 0) {
 				resolve(messages[Math.floor(Math.random() * messages.length)]);
 			}
