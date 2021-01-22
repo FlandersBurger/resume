@@ -487,16 +487,9 @@ module.exports = {
 			.slice(0, 10)
 			.sort()
 			.reduce((result, list, i) => {
-				const cbd = JSON.stringify({
-					type: 'pick',
-					list: list._id,
-				});
 				result.push([
 					{
-						text:
-							list.name.length > 64
-								? `${list.name.substring(0, 60)}...`
-								: list.name,
+						text: list.name.replace('&', 'and'),
 						callback_data: JSON.stringify({
 							type: 'pick',
 							list: list._id,
