@@ -491,19 +491,18 @@ module.exports = {
 					type: 'pick',
 					list: list._id,
 				});
-				if (cbd.length <= 64) {
-					result.push([
-						{
-							text: list.name,
-							callback_data: JSON.stringify({
-								type: 'pick',
-								list: list._id,
-							}),
-						},
-					]);
-				} else {
-					console.log(cbd);
-				}
+				result.push([
+					{
+						text:
+							list.name.length > 64
+								? `${list.name.substring(0, 61)}...`
+								: list.name,
+						callback_data: JSON.stringify({
+							type: 'pick',
+							list: list._id,
+						}),
+					},
+				]);
 				return result;
 			}, []),
 	}),
