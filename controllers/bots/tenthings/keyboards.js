@@ -496,7 +496,7 @@ module.exports = {
 						text:
 							list.name.length > 64
 								? `${list.name.substring(0, 60)}...`
-								: encodeURI(list.name),
+								: list.name,
 						callback_data: JSON.stringify({
 							type: 'pick',
 							list: list._id,
