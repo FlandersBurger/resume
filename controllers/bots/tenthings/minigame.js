@@ -1,6 +1,6 @@
 const moment = require('moment');
 
-const bot = require('../../../bots/telegram');
+const bot = require('../../../connections/telegram');
 const messages = require('./messages');
 const hints = require('./hints');
 

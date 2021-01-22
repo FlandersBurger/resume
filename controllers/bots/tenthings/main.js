@@ -8,7 +8,7 @@ const moment = require('moment');
 const request = require('request');
 const config = require('../../../config');
 const redis = require('../../../redis');
-const bot = require('../../../bots/telegram');
+const bot = require('../../../connections/telegram');
 
 const lists = require('./lists');
 const messages = require('./messages');
@@ -1930,8 +1930,6 @@ const evaluateCommand = async (res, msg, game, isNew) => {
 					foundLists.push(...categoryLists);
 				}
 				if (foundLists.length > 0) {
-					console.log(foundLists);
-
 					bot.sendKeyboard(
 						game.chat_id,
 						`<b>Which list would you like to queue?</b>`,

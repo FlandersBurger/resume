@@ -1,20 +1,23 @@
-var router = require('express').Router();
-var mongoose = require('mongoose');
-var request = require('request-promise');
-var moment = require('moment');
-var _ = require('underscore');
-var parseString = require('xml2js').parseStringPromise;
+const router = require('express').Router();
+const mongoose = require('mongoose');
+const request = require('request-promise');
+const moment = require('moment');
+const _ = require('underscore');
+const parseString = require('xml2js').parseStringPromise;
 const FuzzyMatching = require('fuzzy-matching');
 
-var config = require('../../config');
+const config = require('../../config');
 const redis = require('../../redis');
-var bot = require('../../bots/telegram');
-var categories = require('../bots/tenthings/categories');
-var languages = require('../bots/tenthings/languages');
+const bot = require('../../connections/telegram');
+const categories = require('../bots/tenthings/categories');
+const languages = require('../bots/tenthings/languages');
+const Spotify = require('../../connections/spotify');
+const spotify = new Spotify();
+spotify.init();
 
-var TenThingsList = require('../../models/tenthings/list')();
-var User = require('../../models/user')();
-var TenThingsGame = require('../../models/tenthings/game')();
+const TenThingsList = require('../../models/tenthings/list')();
+const User = require('../../models/user')();
+const TenThingsGame = require('../../models/tenthings/game')();
 
 router.get('/names', (req, res, next) => {
 	TenThingsList.find({})

@@ -487,15 +487,23 @@ module.exports = {
 			.slice(0, 10)
 			.sort()
 			.reduce((result, list, i) => {
-				result.push([
-					{
-						text: `${list.name}`,
-						callback_data: JSON.stringify({
-							type: 'pick',
-							list: list._id,
-						}),
-					},
-				]);
+				const cbd = JSON.stringify({
+					type: 'pick',
+					list: list._id,
+				});
+				if (cbd.length <= 64) {
+					result.push([
+						{
+							text: list.name,
+							callback_data: JSON.stringify({
+								type: 'pick',
+								list: list._id,
+							}),
+						},
+					]);
+				} else {
+					console.log(cbd);
+				}
 				return result;
 			}, []),
 	}),

@@ -18,7 +18,7 @@
   <table class="table table-striped">
     <thead>
       <tr>
-        <!--th></th-->
+        <th>ID</th>
         <th>Username</th>
         <th>Name</th>
         <th>Access</th>
@@ -26,6 +26,7 @@
     </thead>
     <tbody>
       <tr>
+        <td></td>
         <td><input class="form-control"
                  type="text"
                  placeholder="Search"
@@ -38,6 +39,7 @@
       </tr>
       <tr ng-repeat="user in users | orderBy: 'username' | filter: search">
         <!--td><img class="img-circle img-profile" ng-src="{{user.photoURL}}" alt="Profile Picture" ng-if="user.photoURL"></td-->
+        <td>{{user._id}}</td>
         <td>{{user.username}}</td>
         <td>{{user.displayName}}</td>
         <td>
