@@ -1931,7 +1931,7 @@ const evaluateCommand = async (res, msg, game, isNew) => {
 				}
 				if (foundLists.length > 0) {
 					const keyboard = keyboards.lists(foundLists);
-					console.log(keyboard);
+					console.log(keyboard.inline_keyboard);
 
 					bot.sendKeyboard(
 						game.chat_id,
