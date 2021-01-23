@@ -1,5 +1,5 @@
 module.exports = [
-  /*{
+	/*{
       code: 'AA',
       name: 'Afar',
       native: 'Qafaraf; ’Afar Af; Afaraf; Qafar af'
@@ -139,12 +139,12 @@ module.exports = [
       name: 'Greek, Modern (1453–)',
       native: 'Νέα Ελληνικά'
     },*/
-  {
-    code: 'EN',
-    name: 'English',
-    native: 'English'
-  },
-  /*
+	{
+		code: 'EN',
+		name: 'English',
+		native: 'English',
+	},
+	/*
     {
       code: 'EU',
       name: 'Basque',
@@ -170,12 +170,12 @@ module.exports = [
       name: 'Finnish',
       native: 'suomen kieli'
     },*/
-  {
-    code: 'FR',
-    name: 'French',
-    native: 'français'
-  },
-  /*
+	{
+		code: 'FR',
+		name: 'French',
+		native: 'français',
+	},
+	/*
     {
       code: 'FY',
       name: 'Western Frisian',
@@ -226,12 +226,12 @@ module.exports = [
       name: 'Herero',
       native: 'Otjiherero'
     },*/
-  {
-    code: 'HI',
-    name: 'Hindi',
-    native: 'हिन्दी'
-  },
-  /*
+	{
+		code: 'HI',
+		name: 'Hindi',
+		native: 'हिन्दी',
+	},
+	/*
     {
       code: 'HR',
       name: 'Croatian',
@@ -257,34 +257,34 @@ module.exports = [
       name: 'Sichuan Yi; Nuosu',
       native: 'ꆈꌠꉙ'
     },*/
-  {
-    code: 'ID',
-    name: 'Indonesian',
-    native: 'bahasa Indonesia'
-  },
-  /*
+	{
+		code: 'ID',
+		name: 'Indonesian',
+		native: 'bahasa Indonesia',
+	},
+	/*
     {
       code: 'IS',
       name: 'Icelandic',
       native: 'íslenska'
     },*/
-  {
-    code: 'IT',
-    name: 'Italian',
-    native: 'italiano; lingua italiana'
-  },
-  /*
+	{
+		code: 'IT',
+		name: 'Italian',
+		native: 'italiano; lingua italiana',
+	},
+	/*
     {
       code: 'JV',
       name: 'Javanese',
       native: 'ꦧꦱꦗꦮ'
     },*/
-  {
-    code: 'JA',
-    name: 'Japanese',
-    native: '日本語'
-  },
-  /*
+	{
+		code: 'JA',
+		name: 'Japanese',
+		native: '日本語',
+	},
+	/*
     {
       code: 'KN',
       name: 'Kannada',
@@ -320,17 +320,17 @@ module.exports = [
       name: 'Kirghiz; Kyrgyz',
       native: 'кыргызча; кыргыз тили'
     },*/
-  {
-    code: 'KO',
-    name: 'Korean',
-    native: '한국어'
-  },
-  {
-    code: 'LA',
-    name: 'Latin',
-    native: 'Lingua Latina'
-  },
-  /*
+	{
+		code: 'KO',
+		name: 'Korean',
+		native: '한국어',
+	},
+	{
+		code: 'LA',
+		name: 'Latin',
+		native: 'Lingua Latina',
+	},
+	/*
     {
       code: 'LO',
       name: 'Lao',
@@ -446,23 +446,23 @@ module.exports = [
       name: 'Ossetian; Ossetic',
       native: 'Ирон æвзаг'
     },*/
-  {
-    code: 'PA',
-    name: 'Panjabi; Punjabi',
-    native: 'ਪੰਜਾਬੀ / پنجابی'
-  },
-  /*
+	{
+		code: 'PA',
+		name: 'Panjabi; Punjabi',
+		native: 'ਪੰਜਾਬੀ / پنجابی',
+	},
+	/*
     {
       code: 'PL',
       name: 'Polish',
       native: 'Język polski'
     },*/
-  {
-    code: 'PT',
-    name: 'Portuguese',
-    native: 'português'
-  },
-  /*
+	{
+		code: 'PT',
+		name: 'Portuguese',
+		native: 'português',
+	},
+	/*
     {
       code: 'RM',
       name: 'Romansh',
@@ -478,12 +478,12 @@ module.exports = [
       name: 'Rundi',
       native: 'Ikirundi'
     },*/
-  {
-    code: 'RU',
-    name: 'Russian',
-    native: 'русский язык'
-  },
-  /*
+	{
+		code: 'RU',
+		name: 'Russian',
+		native: 'русский язык',
+	},
+	/*
     {
       code: 'SG',
       name: 'Sango',
@@ -534,12 +534,12 @@ module.exports = [
       name: 'Sotho, Southern',
       native: 'Sesotho [southern]'
     },*/
-  {
-    code: 'ES',
-    name: 'Spanish; Castilian',
-    native: 'español; castellano'
-  },
-  /*
+	{
+		code: 'ES',
+		name: 'Spanish; Castilian',
+		native: 'español; castellano',
+	},
+	/*
     {
       code: 'SR',
       name: 'Serbian',
@@ -565,12 +565,12 @@ module.exports = [
       name: 'Tahitian',
       native: 'Reo Tahiti; Reo Mā\'ohi'
     },*/
-  {
-    code: 'TA',
-    name: 'Tamil',
-    native: 'தமிழ்'
-  },
-  /*
+	{
+		code: 'TA',
+		name: 'Tamil',
+		native: 'தமிழ்',
+	},
+	/*
       {
         code: 'TT',
         name: 'Tatar',
@@ -586,17 +586,17 @@ module.exports = [
         name: 'Tajik',
         native: 'тоҷикӣ / tojikī'
       },*/
-  {
-    code: 'TL',
-    name: 'Tagalog',
-    native: 'Wikang Tagalog'
-  },
-  {
-    code: 'TH',
-    name: 'Thai',
-    native: 'ภาษาไทย'
-  },
-  /*
+	{
+		code: 'TL',
+		name: 'Tagalog',
+		native: 'Wikang Tagalog',
+	},
+	{
+		code: 'TH',
+		name: 'Thai',
+		native: 'ภาษาไทย',
+	},
+	/*
     {
       code: 'TI',
       name: 'Tigrinya',
@@ -621,12 +621,12 @@ module.exports = [
       code: 'TK',
       name: 'Turkmen',
       native: 'Türkmençe / Түркменче / تورکمن تیلی تورکمنچ; türkmen dili / түркмен дили'
-    },
-    {
-      code: 'TR',
-      name: 'Turkish',
-      native: 'Türkçe'
-    },
+    },*/
+	{
+		code: 'TR',
+		name: 'Turkish',
+		native: 'Türkçe',
+	} /*
     {
       code: 'UG',
       name: 'Uighur; Uyghur',
@@ -672,13 +672,12 @@ module.exports = [
       code: 'ZU',
       name: 'Zulu',
       native: 'isiZulu'
-    },*/
+    },*/,
 
-  {
-    code: 'ZH',
-    name: 'Chinese',
-    native: '中文; 汉语; 漢語'
-  },
-
-
+	,
+	{
+		code: 'ZH',
+		name: 'Chinese',
+		native: '中文; 汉语; 漢語',
+	},
 ];
