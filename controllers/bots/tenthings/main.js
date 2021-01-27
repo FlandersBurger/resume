@@ -45,14 +45,14 @@ const antispam = {};
 
 const curateList = async () => {
 	const list = await lists.getRandomList();
-	let msg = `<b>${list.name}</b>\n`;
+	let msg = `<b>${list.name}</b> (${list.language})\n`;
 	msg += `<i>by ${list.creator.username}</i>\n`;
+	msg += `${list.decription}\n\n`;
 	msg += ` - Values: ${list.values.length}\n`;
 	msg += ` - Plays: ${list.plays}\n`;
 	msg += ` - Skips: ${list.skips}\n`;
-	msg += ` - Hints: ${list.hints}\n`;
-	msg += `\n`;
-	msg += `\nRate Difficulty and Update Frequency`;
+	msg += ` - Hints: ${list.hints}\n\n`;
+	msg += `Rate Difficulty and Update Frequency`;
 	b.notifyAdmins(msg, keyboards.curate(list));
 };
 curateList();

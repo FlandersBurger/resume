@@ -28,6 +28,7 @@ module.exports = [
 	'Business',
 	'Internet',
 	'K-pop',
+	'K-drama',
 	'Entertainment',
 	'Animation',
 	'Anime/Manga',

@@ -554,6 +554,15 @@ module.exports = {
 					}),
 				},
 			],
+			[
+				{
+					text: 'Values',
+					callback_data: JSON.stringify({
+						type: 'c_v',
+						list: list._id,
+					}),
+				},
+			],
 		],
 	}),
 };
