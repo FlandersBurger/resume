@@ -19,6 +19,7 @@ const hints = require('./hints');
 const categories = require('./categories');
 const minigame = require('./minigame');
 const tinygame = require('./tinygame');
+const b = require('../../../connections/telegram');
 
 //-------------//
 //redis.set('pause', true);
@@ -41,6 +42,18 @@ const vetoes = {};
 const skippers = {};
 const voters = {};
 const antispam = {};
+
+const curateList = async () => {
+	const list = await lists.getRandomList();
+	let msg = `<b>${list.name}</b>\n`;
+	msg += `<i>by ${list.creator.username}</i>\n`;
+	msg += ` - Values: ${list.values.length}\n`;
+	msg += ` - Plays: ${list.plays}\n`;
+	msg += ` - Skips: ${list.skips}\n`;
+	msg += ` - Hints: ${list.hints}\n`;
+	b.notifyAdmins(msg, keyboards.curate(list));
+};
+curateList();
 /*
   Game.update(
     {},

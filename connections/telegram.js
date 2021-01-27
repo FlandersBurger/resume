@@ -130,8 +130,9 @@ function TelegramBot() {
 		bot.queueMessage(config.noticeChannel, msg);
 	};
 
-	bot.notifyAdmins = msg => {
-		bot.queueMessage(config.adminChat, msg);
+	bot.notifyAdmins = (msg, keyboard) => {
+		if (keyboard) bot.sendKeyboard(config.adminChat, msg, keyboard);
+		else bot.queueMessage(config.adminChat, msg);
 	};
 
 	bot.broadcast = (channels, message) => {

@@ -499,4 +499,61 @@ module.exports = {
 				return result;
 			}, []),
 	}),
+	curate: list => ({
+		inline_keyboard: [
+			[
+				{
+					text: '\u1F642',
+					callback_data: JSON.stringify({
+						type: 'c_d0',
+						list: list._id,
+					}),
+				}, //Easy
+				{
+					text: '\u1F914',
+					callback_data: JSON.stringify({
+						type: 'c_d1',
+						list: list._id,
+					}),
+				}, //Medium
+				{
+					text: '\u1F635',
+					callback_data: JSON.stringify({
+						type: 'c_d2',
+						list: list._id,
+					}),
+				}, //Hard
+			],
+			[
+				{
+					text: 'Monthly',
+					callback_data: JSON.stringify({
+						type: 'c_f0',
+						list: list._id,
+					}),
+				},
+				{
+					text: 'Yearly',
+					callback_data: JSON.stringify({
+						type: 'c_f1',
+						list: list._id,
+					}),
+				},
+				{
+					text: 'Rarely',
+					callback_data: JSON.stringify({
+						type: 'c_f2',
+						list: list._id,
+					}),
+				},
+				{
+					text: 'Never',
+					callback_data: JSON.stringify({
+						type: 'c_f3',
+						list: list._id,
+					}),
+				},
+			],
+		],
+	}),
 };
