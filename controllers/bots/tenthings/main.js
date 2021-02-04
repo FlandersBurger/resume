@@ -55,7 +55,7 @@ const curateList = async () => {
 	msg += ` - Skips: ${list.skips}\n`;
 	msg += ` - Hints: ${list.hints}\n\n`;
 	msg += `Rate Difficulty and Update Frequency`;
-	b.notifyAdmins(msg, keyboards.curate(list));
+	b.notifyAdmin(msg, keyboards.curate(list));
 };
 curateList();
 /*
