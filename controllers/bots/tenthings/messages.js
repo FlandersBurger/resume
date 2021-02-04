@@ -246,6 +246,12 @@ module.exports = {
 		msg += `${list.decription ? `${list.decription}\n` : ''}`;
 		msg += ` - Categories: ${list.categories.join(', ')}\n`;
 		msg += ` - Language: ${list.language}\n`;
+		msg += list.difficulty
+			? ` - Difficulty: ${this.difficulty(list.difficulty)}\n`
+			: '';
+		msg += list.frequency
+			? ` - Frequency: ${this.frequency(list.frequency).capitalize()} changes\n`
+			: '';
 		return msg;
 	},
 	frequency: frequency => {
