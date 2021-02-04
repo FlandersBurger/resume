@@ -505,21 +505,24 @@ module.exports = {
 				{
 					text: '\uD83D\uDE42',
 					callback_data: JSON.stringify({
-						type: 'c_d0',
+						type: 'diff',
+						vote: 0,
 						list: list._id,
 					}),
 				}, //Easy
 				{
 					text: '\uD83E\uDD14',
 					callback_data: JSON.stringify({
-						type: 'c_d1',
+						type: 'diff',
+						vote: 1,
 						list: list._id,
 					}),
 				}, //Medium
 				{
 					text: '\uD83D\uDE35',
 					callback_data: JSON.stringify({
-						type: 'c_d2',
+						type: 'diff',
+						vote: 2,
 						list: list._id,
 					}),
 				}, //Hard
@@ -528,28 +531,32 @@ module.exports = {
 				{
 					text: 'Monthly',
 					callback_data: JSON.stringify({
-						type: 'c_f0',
+						type: 'freq',
+						vote: 0,
 						list: list._id,
 					}),
 				},
 				{
 					text: 'Yearly',
 					callback_data: JSON.stringify({
-						type: 'c_f1',
+						type: 'freq',
+						vote: 1,
 						list: list._id,
 					}),
 				},
 				{
 					text: 'Rarely',
 					callback_data: JSON.stringify({
-						type: 'c_f2',
+						type: 'freq',
+						vote: 2,
 						list: list._id,
 					}),
 				},
 				{
 					text: 'Never',
 					callback_data: JSON.stringify({
-						type: 'c_f3',
+						type: 'freq',
+						vote: 3,
 						list: list._id,
 					}),
 				},
@@ -558,7 +565,7 @@ module.exports = {
 				{
 					text: 'Values',
 					callback_data: JSON.stringify({
-						type: 'c_v',
+						type: 'values',
 						list: list._id,
 					}),
 				},

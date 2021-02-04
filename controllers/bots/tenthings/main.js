@@ -55,7 +55,7 @@ const curateList = async () => {
 	msg += ` - Skips: ${list.skips}\n`;
 	msg += ` - Hints: ${list.hints}\n\n`;
 	msg += `Rate Difficulty and Update Frequency`;
-	b.notifyAdmin(msg, keyboards.curate(list));
+	b.notifyAdmins(msg, keyboards.curate(list));
 };
 curateList();
 /*
@@ -1443,6 +1443,18 @@ router.post('/', async ({ body }, res, next) => {
 					);
 					bot.queueMessage(body.callback_query.message.chat.id, message);
 				});
+		} else if (data.type === 'values') {
+			List.findOne({
+				_id: data.list,
+			}).exec((err, list) => {
+				bot.queueMessage(
+					body.callback_query.message.chat.id,
+					list.values.reduce(
+						(message, item) => `${message}- ${item.value}\n`,
+						''
+					)
+				);
+			});
 		}
 		return res.sendStatus(200);
 		/*
