@@ -1428,15 +1428,17 @@ router.post('/', async ({ body }, res, next) => {
 			if (body.callback_query.message.chat.id === config.adminChat) {
 				List.findOne({
 					_id: data.list,
-				}).exec((err, list) => {
-					let msg = messages.listInfo(list);
-					msg += ` - Values: ${list.values.length}\n`;
-					msg += ` - Plays: ${list.plays}\n`;
-					msg += ` - Skips: ${list.skips}\n`;
-					msg += ` - Hints: ${list.hints}\n\n`;
-					msg += `Rate Difficulty and Update Frequency`;
-					b.notifyAdmins(msg, keyboards.curate(list));
-				});
+				})
+					.populate('creator')
+					.exec((err, list) => {
+						let msg = messages.listInfo(list);
+						msg += ` - Values: ${list.values.length}\n`;
+						msg += ` - Plays: ${list.plays}\n`;
+						msg += ` - Skips: ${list.skips}\n`;
+						msg += ` - Hints: ${list.hints}\n\n`;
+						msg += `Rate Difficulty and Update Frequency`;
+						b.notifyAdmins(msg, keyboards.curate(list));
+					});
 			} else {
 				Game.findOne({
 					chat_id: body.callback_query.message.chat.id,
@@ -1515,10 +1517,9 @@ router.post('/', async ({ body }, res, next) => {
 			}).exec((err, list) => {
 				bot.queueMessage(
 					body.callback_query.message.chat.id,
-					list.values.reduce(
-						(message, item) => `${message}- ${item.value}\n`,
-						''
-					)
+					list.values
+						.sort((a, b) => (a.value < b.value ? -1 : 1))
+						.reduce((message, item) => `${message}- ${item.value}\n`, '')
 				);
 			});
 		} else if (data.type === 'diff') {
