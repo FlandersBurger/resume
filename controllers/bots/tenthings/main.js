@@ -43,7 +43,7 @@ const vetoes = {};
 const skippers = {};
 const voters = {};
 const antispam = {};
-
+/*
 const curateList = async () => {
 	const list = await lists.getRandomList();
 	let msg = messages.listInfo(list);
@@ -55,6 +55,7 @@ const curateList = async () => {
 	b.notifyAdmins(msg, keyboards.curate(list));
 };
 curateList();
+*/
 /*
   Game.update(
     {},
