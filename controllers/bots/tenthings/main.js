@@ -1424,46 +1424,62 @@ router.post('/', async ({ body }, res, next) => {
 					});
 				});
 		} else if (data.type === 'pick') {
-			Game.findOne({
-				chat_id: body.callback_query.message.chat.id,
-			})
-				.select('chat_id pickedLists')
-				.exec((err, game) => {
-					if (err)
-						return bot.notifyAdmin('Pick list button\n' + JSON.stringify(err));
-					List.findOne({
-						_id: data.list,
-					}).exec((err, list) => {
-						const foundList = _.find(
-							game.pickedLists,
-							pickedList => pickedList == list._id
-						);
-						if (foundList) {
-							bot.queueMessage(
-								body.callback_query.message.chat.id,
-								`<b>${list.name}</b> is already in the queue, ${data.requestor}`
+			if (body.callback_query.message.chat.id === config.adminChat) {
+				List.findOne({
+					_id: data.list,
+				}).exec((err, list) => {
+					let msg = messages.listInfo(list);
+					msg += ` - Values: ${list.values.length}\n`;
+					msg += ` - Plays: ${list.plays}\n`;
+					msg += ` - Skips: ${list.skips}\n`;
+					msg += ` - Hints: ${list.hints}\n\n`;
+					msg += `Rate Difficulty and Update Frequency`;
+					b.notifyAdmins(msg, keyboards.curate(list));
+				});
+			} else {
+				Game.findOne({
+					chat_id: body.callback_query.message.chat.id,
+				})
+					.select('chat_id pickedLists')
+					.exec((err, game) => {
+						if (err)
+							return bot.notifyAdmin(
+								'Pick list button\n' + JSON.stringify(err)
 							);
-						} else {
-							if (list) {
-								game.pickedLists.push(list._id);
-								game.save();
-								bot.answerCallback(
-									body.callback_query.id,
-									`${list.name} added`
-								);
+						List.findOne({
+							_id: data.list,
+						}).exec((err, list) => {
+							const foundList = _.find(
+								game.pickedLists,
+								pickedList => pickedList == list._id
+							);
+							if (foundList) {
 								bot.queueMessage(
 									body.callback_query.message.chat.id,
-									`<b>${list.name}</b> added to the queue, ${data.requestor}.\nType /lists to see the queue`
+									`<b>${list.name}</b> is already in the queue, ${data.requestor}`
 								);
 							} else {
-								bot.queueMessage(
-									body.callback_query.message.chat.id,
-									`This list no longer exists`
-								);
+								if (list) {
+									game.pickedLists.push(list._id);
+									game.save();
+									bot.answerCallback(
+										body.callback_query.id,
+										`${list.name} added`
+									);
+									bot.queueMessage(
+										body.callback_query.message.chat.id,
+										`<b>${list.name}</b> added to the queue, ${data.requestor}.\nType /lists to see the queue`
+									);
+								} else {
+									bot.queueMessage(
+										body.callback_query.message.chat.id,
+										`This list no longer exists`
+									);
+								}
 							}
-						}
+						});
 					});
-				});
+			}
 		} else if (data.type === 'suggest') {
 			Game.findOne({
 				chat_id: body.callback_query.message.chat.id,
@@ -1531,9 +1547,6 @@ router.post('/', async ({ body }, res, next) => {
             id: config.masterChat
           }
         };*/
-	} else if (body.message.chat.id === config.adminChat) {
-		//Ignore game commands in the admin chat
-		return res.sendStatus(200);
 	} else if (!body.message.text) {
 		if (body.message.new_chat_participant) {
 			Game.findOne({
@@ -1731,6 +1744,14 @@ const evaluateCommand = async (res, msg, game, isNew) => {
 		console.error('msg without a first_name?');
 		console.error(msg);
 		return res.sendStatus(200);
+	} else if (msg.chat.id === config.adminChat) {
+		if (
+			!['/search', '/stats', '/typo', '/bug', '/feature', '/suggest'].includes(
+				msg.command.toLowerCase()
+			)
+		) {
+			res.sendStatus(200);
+		}
 	} else {
 		res.sendStatus(200);
 	}
@@ -2039,7 +2060,9 @@ const evaluateCommand = async (res, msg, game, isNew) => {
 
 					bot.sendKeyboard(
 						game.chat_id,
-						`<b>Which list would you like to queue?</b>`,
+						`<b>Which list would you like to ${
+							msg.chat.id === config.adminChat ? 'curate' : 'queue'
+						}?</b>`,
 						keyboard
 					);
 				} else {
@@ -2269,7 +2292,7 @@ const evaluateCommand = async (res, msg, game, isNew) => {
 			}
 			break;
 		default:
-			if (game.enabled) {
+			if (game.enabled && msg.chat.id != config.adminChat) {
 				queueGuess(game, msg);
 			}
 	}
