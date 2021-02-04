@@ -1751,6 +1751,8 @@ const evaluateCommand = async (res, msg, game, isNew) => {
 				msg.command.toLowerCase()
 			)
 		) {
+			return res.sendStatus(200);
+		} else {
 			res.sendStatus(200);
 		}
 	} else {
