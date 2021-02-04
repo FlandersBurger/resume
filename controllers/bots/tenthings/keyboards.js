@@ -1,6 +1,7 @@
 const moment = require('moment');
 const _ = require('underscore');
 const categories = require('./categories');
+const messages = require('./messages');
 const languages = require('./languages');
 const THUMBS_UP = '\ud83d\udc4d';
 const THUMBS_DOWN = '\ud83d\udc4e';
@@ -503,7 +504,7 @@ module.exports = {
 		inline_keyboard: [
 			[
 				{
-					text: '\uD83D\uDE42',
+					text: messages.difficulty(0),
 					callback_data: JSON.stringify({
 						type: 'diff',
 						vote: 0,
@@ -511,7 +512,7 @@ module.exports = {
 					}),
 				}, //Easy
 				{
-					text: '\uD83E\uDD14',
+					text: messages.difficulty(1),
 					callback_data: JSON.stringify({
 						type: 'diff',
 						vote: 1,
@@ -519,7 +520,7 @@ module.exports = {
 					}),
 				}, //Medium
 				{
-					text: '\uD83D\uDE35',
+					text: messages.difficulty(2),
 					callback_data: JSON.stringify({
 						type: 'diff',
 						vote: 2,
@@ -529,7 +530,7 @@ module.exports = {
 			],
 			[
 				{
-					text: 'Monthly',
+					text: messages.frequency(0).capitalize(),
 					callback_data: JSON.stringify({
 						type: 'freq',
 						vote: 0,
@@ -537,7 +538,7 @@ module.exports = {
 					}),
 				},
 				{
-					text: 'Yearly',
+					text: messages.frequency(1).capitalize(),
 					callback_data: JSON.stringify({
 						type: 'freq',
 						vote: 1,
@@ -545,7 +546,7 @@ module.exports = {
 					}),
 				},
 				{
-					text: 'Rarely',
+					text: messages.frequency(2).capitalize(),
 					callback_data: JSON.stringify({
 						type: 'freq',
 						vote: 2,
@@ -553,7 +554,7 @@ module.exports = {
 					}),
 				},
 				{
-					text: 'Never',
+					text: messages.frequency(3).capitalize(),
 					callback_data: JSON.stringify({
 						type: 'freq',
 						vote: 3,

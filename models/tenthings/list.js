@@ -19,7 +19,7 @@ var listSchema = new mongoose.Schema(
 			ref: 'User',
 			required: false,
 		},
-		refreshRate: {
+		frequency: {
 			type: Number,
 			required: false,
 		},

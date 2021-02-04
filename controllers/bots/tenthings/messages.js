@@ -240,6 +240,36 @@ module.exports = {
 			}
 		}
 	},
+	listInfo: function (list) {
+		let msg = `<b>${list.name}</b>\n`;
+		msg += `<i>by ${list.creator.username}</i>\n`;
+		msg += `${list.decription ? `${list.decription}\n` : ''}`;
+		msg += ` - Categories: ${list.categories.join(', ')}\n`;
+		msg += ` - Language: ${list.language}\n`;
+		return msg;
+	},
+	frequency: frequency => {
+		switch (frequency) {
+			case 0:
+				return 'quarterly';
+			case 1:
+				return 'annually';
+			case 2:
+				return 'rarely';
+			case 3:
+				return 'never';
+		}
+	},
+	difficulty: difficulty => {
+		switch (difficulty) {
+			case 0:
+				return '\uD83D\uDE42'; //Easy
+			case 1:
+				return '\uD83E\uDD14'; //Medium
+			case 2:
+				return '\uD83D\uDE35'; //Hard
+		}
+	},
 	listStats: function (list, requestor = null) {
 		var message = '';
 		message += requestor ? `<i>Requested by ${requestor}</i>\n` : '';

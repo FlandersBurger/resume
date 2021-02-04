@@ -9,6 +9,8 @@ const FuzzyMatching = require('fuzzy-matching');
 const config = require('../../config');
 const redis = require('../../redis');
 const bot = require('../../connections/telegram');
+const messages = require('../bots/tenthings/messages');
+const keyboards = require('../bots/tenthings/keyboards');
 const categories = require('../bots/tenthings/categories');
 const languages = require('../bots/tenthings/languages');
 const Spotify = require('../../connections/spotify');
@@ -373,14 +375,15 @@ router.put('/lists', (req, res, next) => {
 					if (err) return next(err);
 					if (!req.body.list._id) {
 						bot.notifyAdmins(
-							`<b>${list.name}</b>\nCreated by <i>${req.body.user.username}</i>`
+							`<pre>List Created</pre>\n${messages.listInfo(foundList)}`,
+							keyboards.curate(foundList)
 						);
 					} else if (previousModifyDate < yesterday) {
 						bot.notifyAdmins(
-							`<b>${list.name}</b>\nUpdated by <i>${req.body.user.username}</i>` +
-								(req.auth.userid !== list.creator._id
-									? `\nCreated by <i>${foundList.creator.username}</i>`
-									: '')
+							`<pre>List Updated</pre>\nUpdated by <i>${
+								req.body.user.username
+							}</i>\n${messages.listInfo(foundList)}`,
+							keyboards.curate(foundList)
 						);
 					}
 					res.json(formatList(foundList));

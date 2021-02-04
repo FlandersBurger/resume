@@ -45,11 +45,7 @@ const antispam = {};
 
 const curateList = async () => {
 	const list = await lists.getRandomList();
-	let msg = `<b>${list.name}</b>\n`;
-	msg += `<i>by ${list.creator.username}</i>\n`;
-	msg += `${list.decription ? `${list.decription}\n` : ''}`;
-	msg += ` - Categories: ${list.categories.join(', ')}\n`;
-	msg += ` - Language: ${list.language}\n`;
+	let msg = messages.listInfo(list);
 	msg += ` - Values: ${list.values.length}\n`;
 	msg += ` - Plays: ${list.plays}\n`;
 	msg += ` - Skips: ${list.skips}\n`;
@@ -197,7 +193,13 @@ bot.exportChatInviteLink('-1001394022777').then(function(chat) {
   console.log(chat);
 });
 */
-
+/*
+ ███████ ███████ ██      ███████  ██████ ████████     ██      ██ ███████ ████████ 
+ ██      ██      ██      ██      ██         ██        ██      ██ ██         ██    
+ ███████ █████   ██      █████   ██         ██        ██      ██ ███████    ██    
+      ██ ██      ██      ██      ██         ██        ██      ██      ██    ██    
+ ███████ ███████ ███████ ███████  ██████    ██        ███████ ██ ███████    ██    
+*/
 const selectList = async game => {
 	const availableLanguages =
 		game.settings.languages && game.settings.languages.length > 0
@@ -347,6 +349,13 @@ const rateList = game => {
 	);
 };
 
+/*
+  ██████  ██    ██ ███████ ███████ ███████ 
+ ██       ██    ██ ██      ██      ██      
+ ██   ███ ██    ██ █████   ███████ ███████ 
+ ██    ██ ██    ██ ██           ██      ██ 
+  ██████   ██████  ███████ ███████ ███████ 
+*/
 const queueGuess = async (game, msg) => {
 	const values = game.list.values
 		.filter(({ guesser }) => guesser)
@@ -717,7 +726,13 @@ const guessed = async (
 	}
 	return await bot.queueMessage(chat.id, message);
 };
-
+/*
+  ██████ ██   ██ ███████  ██████ ██   ██     ██████   ██████  ██    ██ ███    ██ ██████  
+ ██      ██   ██ ██      ██      ██  ██      ██   ██ ██    ██ ██    ██ ████   ██ ██   ██ 
+ ██      ███████ █████   ██      █████       ██████  ██    ██ ██    ██ ██ ██  ██ ██   ██ 
+ ██      ██   ██ ██      ██      ██  ██      ██   ██ ██    ██ ██    ██ ██  ██ ██ ██   ██ 
+  ██████ ██   ██ ███████  ██████ ██   ██     ██   ██  ██████   ██████  ██   ████ ██████  
+*/
 const checkRound = game => {
 	if (
 		game.list.values.filter(({ guesser }) => !guesser.first_name).length === 0
@@ -751,7 +766,13 @@ const checkRound = game => {
 		}, 1000);
 	}
 };
-
+/*
+ ███    ██ ███████ ██     ██     ██████   ██████  ██    ██ ███    ██ ██████  
+ ████   ██ ██      ██     ██     ██   ██ ██    ██ ██    ██ ████   ██ ██   ██ 
+ ██ ██  ██ █████   ██  █  ██     ██████  ██    ██ ██    ██ ██ ██  ██ ██   ██ 
+ ██  ██ ██ ██      ██ ███ ██     ██   ██ ██    ██ ██    ██ ██  ██ ██ ██   ██ 
+ ██   ████ ███████  ███ ███      ██   ██  ██████   ██████  ██   ████ ██████  
+*/
 const newRound = (currentGame, player) => {
 	Game.findOne({
 		_id: currentGame._id,
@@ -831,7 +852,13 @@ console.log(hints.getHint(4, string));
 console.log(hints.getHint(5, string));
 console.log(hints.getHint(6, string));
 */
-
+/*
+ ███████ ██   ██ ██ ██████  
+ ██      ██  ██  ██ ██   ██ 
+ ███████ █████   ██ ██████  
+      ██ ██  ██  ██ ██      
+ ███████ ██   ██ ██ ██      
+*/
 function skip(game, skipper) {
 	if (game.chat_id < 0) {
 		if (skips[game._id] && skips[game._id].player !== skipper._id) {
@@ -916,6 +943,13 @@ function cooldownSkip(game, skipper) {
 	}
 }
 
+/*
+ ██   ██ ██ ███    ██ ████████ 
+ ██   ██ ██ ████   ██    ██    
+ ███████ ██ ██ ██  ██    ██    
+ ██   ██ ██ ██  ██ ██    ██    
+ ██   ██ ██ ██   ████    ██    
+*/
 const hint = async (game, player, type = 'main') => {
 	if (
 		(type === 'main' && game.hints >= MAX_HINTS) ||
@@ -989,6 +1023,13 @@ function cooldownHint(gameId) {
 	}
 }
 
+/*
+ ██████   ██████  ███████ ████████ 
+ ██   ██ ██    ██ ██         ██    
+ ██████  ██    ██ ███████    ██    
+ ██      ██    ██      ██    ██    
+ ██       ██████  ███████    ██    
+*/
 router.post('/', async ({ body }, res, next) => {
 	if (body.object === 'page') {
 		res.status(200).send('EVENT_RECEIVED');
@@ -1078,6 +1119,13 @@ router.post('/', async ({ body }, res, next) => {
 		return res.sendStatus(200);
 	}
 	let msg, i, item;
+	/*
+  ██████  █████  ██      ██      ██████   █████   ██████ ██   ██ ███████ 
+ ██      ██   ██ ██      ██      ██   ██ ██   ██ ██      ██  ██  ██      
+ ██      ███████ ██      ██      ██████  ███████ ██      █████   ███████ 
+ ██      ██   ██ ██      ██      ██   ██ ██   ██ ██      ██  ██       ██ 
+  ██████ ██   ██ ███████ ███████ ██████  ██   ██  ██████ ██   ██ ███████ 
+*/
 	if (body.callback_query) {
 		const data = JSON.parse(body.callback_query.data);
 		data.requestor = body.callback_query.from.username
@@ -1455,6 +1503,18 @@ router.post('/', async ({ body }, res, next) => {
 					)
 				);
 			});
+		} else if (data.type === 'diff') {
+			List.updateOne({ _id: data.list }, { $set: { difficulty: data.vote } });
+			bot.answerCallback(
+				body.callback_query.id,
+				`${messages.difficulty(data.vote)}`
+			);
+		} else if (data.type === 'freq') {
+			List.updateOne({ _id: data.list }, { $set: { frequency: data.vote } });
+			bot.answerCallback(
+				body.callback_query.id,
+				`${messages.frequency(data.vote).capitalize()} changes`
+			);
 		}
 		return res.sendStatus(200);
 		/*
@@ -1616,6 +1676,13 @@ router.get('/', ({ query }, res, next) => {
 	}
 });
 
+/*
+ ██     ██ ███████ ██████  ██   ██  ██████   ██████  ██   ██ 
+ ██     ██ ██      ██   ██ ██   ██ ██    ██ ██    ██ ██  ██  
+ ██  █  ██ █████   ██████  ███████ ██    ██ ██    ██ █████   
+ ██ ███ ██ ██      ██   ██ ██   ██ ██    ██ ██    ██ ██  ██  
+  ███ ███  ███████ ██████  ██   ██  ██████   ██████  ██   ██ 
+*/
 // Creates the endpoint for our webhook
 router.post('/webhook', (req, res) => {
 	const body = req.body;
@@ -1649,6 +1716,13 @@ function countBytes(s) {
 	console.log(encodeURI(s).split(/%..|./).length - 1);
 }
 
+/*
+ ███████ ██    ██  █████  ██      ██    ██  █████  ████████ ███████      ██████  ██████  ███    ███ ███    ███  █████  ███    ██ ██████  
+ ██      ██    ██ ██   ██ ██      ██    ██ ██   ██    ██    ██          ██      ██    ██ ████  ████ ████  ████ ██   ██ ████   ██ ██   ██ 
+ █████   ██    ██ ███████ ██      ██    ██ ███████    ██    █████       ██      ██    ██ ██ ████ ██ ██ ████ ██ ███████ ██ ██  ██ ██   ██ 
+ ██       ██  ██  ██   ██ ██      ██    ██ ██   ██    ██    ██          ██      ██    ██ ██  ██  ██ ██  ██  ██ ██   ██ ██  ██ ██ ██   ██ 
+ ███████   ████   ██   ██ ███████  ██████  ██   ██    ██    ███████      ██████  ██████  ██      ██ ██      ██ ██   ██ ██   ████ ██████  
+*/
 const evaluateCommand = async (res, msg, game, isNew) => {
 	//bot.notifyAdmin(tenthings);
 	//bot.notifyAdmin(games[msg.chat.id].list);
