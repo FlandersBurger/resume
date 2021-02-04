@@ -32,6 +32,7 @@ const List = require('../../../models/tenthings/list')();
 
 const MAX_HINTS = hints.getMaxHints();
 const VETO_DELAY = 15;
+const SKIP_DELAY = 10;
 const ANSWER_DELAY = 2;
 const BANNED_USERS = [];
 //const BANNED_USERS = [513934222, 1051982986, 1049452899,1286805649, 1156746047, 1221878428, 928265957, 811672759, 1291668503, 1136025506, 1162690484, 1158491266, 1053547542, 1182973691, 1010339222, 906650538, 1153021237, 623100045, 1269984320];
@@ -871,10 +872,10 @@ function skip(game, skipper) {
 		} else {
 			bot.queueMessage(
 				game.chat_id,
-				`Skipping <b>${game.list.name}</b> in 15 seconds.\nType /veto to cancel or have someone else type /skip to confirm.`
+				`Skipping <b>${game.list.name}</b> in ${SKIP_DELAY} seconds.\nType /veto to cancel or have someone else type /skip to confirm.`
 			);
 			skips[game._id] = {
-				timer: 15,
+				timer: SKIP_DELAY,
 				player: skipper._id,
 			};
 			cooldownSkip(game, skipper);
