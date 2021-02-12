@@ -2259,7 +2259,7 @@ const evaluateCommand = async (res, msg, game, isNew) => {
 						game.list.name
 					}\nMinigame: ${game.minigame.answer}\nTinygame: ${
 						game.tinygame.answer
-					}`
+					}\nhttps://belgocanadian.com/tenthings/${game.chat_id}`
 				);
 			}
 			break;
