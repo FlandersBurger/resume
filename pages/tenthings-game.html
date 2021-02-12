@@ -16,7 +16,7 @@
 	<table class="table table-striped">
 		<thead>
 			<tr>
-				<th>Username</th>
+				<th>Name</th>
 				<th>Wins</th>
 				<th>Answers</th>
 				<th>High Score</th>
@@ -35,7 +35,7 @@
 		</thead>
 		<tbody>
 			<tr ng-repeat="player in game.players | orderBy: '+username'">
-				<td>{{player.username}}</td>
+				<td>{{player.username ? player.username : player.first_name}}</td>
 				<td>{{player.wins}}</td>
 				<td>{{player.answers}}</td>
 				<td>{{player.highScore}}</td>
@@ -67,7 +67,10 @@
 		<tbody>
 			<tr ng-repeat="item in game.list.values | orderBy: '+value'">
 				<td>{{item.value}}</td>
-				<td>{{item.guesser.username}}</td>
+				<td>
+					{{item.guesser.username ? item.guesser.username :
+					item.guesser.first_name}}
+				</td>
 			</tr>
 		</tbody>
 	</table>
