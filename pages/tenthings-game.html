@@ -5,9 +5,58 @@
 	<p><b>Snubs:</b> {{game.settings.snubs ? 'On' : 'Off'}}</p>
 	<p><b>Updates:</b> {{game.settings.updates ? 'On' : 'Off'}}</p>
 	<p><b>Languages:</b> {{game.settings.languages.join(', ')}}</p>
+	<p><b>Hints:</b> {{game.hints}}</p>
+	<p><b>Cycles:</b> {{game.cycles}}</p>
+	<p><b>Last Cycled:</b> {{formatDate(game.lastCycleDate)}}</p>
+	<p><b>Last Played:</b> {{formatDate(game.lastPlayDate)}}</p>
+	<p><b>Lists Played:</b> {{game.listsPlayed}}</p>
+	<p><b>Disabled Categories:</b> {{game.disabledCategories.join(', ')}}</p>
 	<hr />
-	<h3>{{game.list.name}}</h3>
-	<h4>{{game.list.categories.join(', ')}}</h4>
+	<h3>Players</h3>
+	<table class="table table-striped">
+		<thead>
+			<tr>
+				<th>Username</th>
+				<th>Wins</th>
+				<th>Answers</th>
+				<th>High Score</th>
+				<th>Score</th>
+				<th>Hints</th>
+				<th>Snubs</th>
+				<th>Skips</th>
+				<th>Vetoes</th>
+				<th>Suggestions</th>
+				<th>Searches</th>
+				<th>Streak</th>
+				<th>Play Streak (max)</th>
+				<th>Hint Streak (max)</th>
+				<th>Last Played</th>
+			</tr>
+		</thead>
+		<tbody>
+			<tr ng-repeat="player in game.players | orderBy: '+username'">
+				<td>{{player.username}}</td>
+				<td>{{player.wins}}</td>
+				<td>{{player.answers}}</td>
+				<td>{{player.highScore}}</td>
+				<td>{{player.score}}</td>
+				<td>{{player.hints}}</td>
+				<td>{{player.snubs}}</td>
+				<td>{{player.skips}}</td>
+				<td>{{player.vetoes}}</td>
+				<td>{{player.suggestions}}</td>
+				<td>{{player.searches}}</td>
+				<td>{{player.streak}}</td>
+				<td>{{player.playStreak}} ({{player.maxPlayStreak}})</td>
+				<td>{{player.hintStreak}} ({{player.maxHintStreak}})</td>
+				<td>{{formatDate(player.lastPlayDate)}}</td>
+			</tr>
+		</tbody>
+	</table>
+	<hr />
+	<h3>Game</h3>
+	<h4>{{game.list.name}}</h4>
+	<p>{{game.list.categories.join(', ')}}</p>
 	<table class="table table-striped">
 		<thead>
 			<tr>
@@ -34,5 +83,4 @@
 	<ul>
 		<li ng-repeat="clue in game.tinygame.clues">{{clue}}</li>
 	</ul>
-	{{game}}
 </div>

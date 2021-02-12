@@ -17,9 +17,10 @@ const Spotify = require('../../connections/spotify');
 const spotify = new Spotify();
 spotify.init();
 
-const TenThingsList = require('../../models/tenthings/list')();
 const User = require('../../models/user')();
+const TenThingsList = require('../../models/tenthings/list')();
 const TenThingsGame = require('../../models/tenthings/game')();
+const TenThingsPlayer = require('../../models/tenthings/player')();
 
 router.get('/names', (req, res, next) => {
 	TenThingsList.find({})
@@ -352,7 +353,11 @@ router.get('/lists/:id/pics', async (req, res, next) => {
 
 router.get('/game/:id', async (req, res, next) => {
 	const game = await TenThingsGame.findOne({ chat_id: req.params.id }).lean();
-	res.json(game);
+	const players = await TenThingsPlayer.find({ game: game._id }).lean();
+	res.json({
+		...game,
+		players,
+	});
 });
 
 router.put('/lists', (req, res, next) => {
