@@ -350,6 +350,11 @@ router.get('/lists/:id/pics', async (req, res, next) => {
 	}
 });
 
+router.get('/game/:id', async (req, res, next) => {
+	const game = await TenThingsGame.findOne({ chat_id: req.params.id }).lean();
+	res.json(game);
+});
+
 router.put('/lists', (req, res, next) => {
 	if (req.auth.userid == '5ece428af848aa2fc392d099') {
 		return res.sendStatus(401);

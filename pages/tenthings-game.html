@@ -1,0 +1,38 @@
+<div id="tenthingsgame-page" class="col-md-12" ng-if="currentUser.admin">
+	<h1>{{game.chat_id}}</h1>
+	<p><b>Intro:</b> {{game.settings.intro ? 'On' : 'Off'}}</p>
+	<p><b>Sass:</b> {{game.settings.sass ? 'On' : 'Off'}}</p>
+	<p><b>Snubs:</b> {{game.settings.snubs ? 'On' : 'Off'}}</p>
+	<p><b>Updates:</b> {{game.settings.updates ? 'On' : 'Off'}}</p>
+	<p><b>Languages:</b> {{game.settings.languages.join(', ')}}</p>
+	<hr />
+	<h3>{{game.list.name}}</h3>
+	<h4>{{game.list.categories.join(', ')}}</h4>
+	<table class="table table-striped">
+		<thead>
+			<tr>
+				<th>Value</th>
+				<th>Guesser</th>
+			</tr>
+		</thead>
+		<tbody>
+			<tr ng-repeat="item in game.list.values | orderBy: '+value'">
+				<td>{{item.value}}</td>
+				<td>{{item.guesser.username}}</td>
+			</tr>
+		</tbody>
+	</table>
+	<hr />
+	<h3>Minigame</h3>
+	<h4>{{game.minigame.answer}}</h4>
+	<ul>
+		<li ng-repeat="list in game.minigame.lists">{{list}}</li>
+	</ul>
+	<hr />
+	<h3>Tinygame</h3>
+	<h4>{{game.tinygame.answer}}</h4>
+	<ul>
+		<li ng-repeat="clue in game.tinygame.clues">{{clue}}</li>
+	</ul>
+	{{game}}
+</div>

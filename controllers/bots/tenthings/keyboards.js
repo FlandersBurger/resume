@@ -7,6 +7,7 @@ const THUMBS_UP = '\ud83d\udc4d';
 const THUMBS_DOWN = '\ud83d\udc4e';
 const OFF = '\ud83c\udf11';
 const ON = '\ud83c\udf15';
+const GREEN = '🟢';
 
 module.exports = {
 	stats: function (chat_id) {
@@ -504,7 +505,7 @@ module.exports = {
 		inline_keyboard: [
 			[
 				{
-					text: messages.difficulty(0),
+					text: messages.difficulty(0) + (list.difficulty === 0 ? GREEN : ''),
 					callback_data: JSON.stringify({
 						type: 'diff',
 						vote: 0,
@@ -512,7 +513,7 @@ module.exports = {
 					}),
 				}, //Easy
 				{
-					text: messages.difficulty(1),
+					text: messages.difficulty(1) + (list.difficulty === 1 ? GREEN : ''),
 					callback_data: JSON.stringify({
 						type: 'diff',
 						vote: 1,
@@ -520,7 +521,7 @@ module.exports = {
 					}),
 				}, //Medium
 				{
-					text: messages.difficulty(2),
+					text: messages.difficulty(2) + (list.difficulty === 2 ? GREEN : ''),
 					callback_data: JSON.stringify({
 						type: 'diff',
 						vote: 2,
@@ -530,7 +531,9 @@ module.exports = {
 			],
 			[
 				{
-					text: messages.frequency(0).capitalize(),
+					text:
+						messages.frequency(0).capitalize() +
+						(list.frequency === 0 ? GREEN : ''),
 					callback_data: JSON.stringify({
 						type: 'freq',
 						vote: 0,
@@ -538,7 +541,9 @@ module.exports = {
 					}),
 				},
 				{
-					text: messages.frequency(1).capitalize(),
+					text:
+						messages.frequency(1).capitalize() +
+						(list.frequency === 1 ? GREEN : ''),
 					callback_data: JSON.stringify({
 						type: 'freq',
 						vote: 1,
@@ -546,7 +551,9 @@ module.exports = {
 					}),
 				},
 				{
-					text: messages.frequency(2).capitalize(),
+					text:
+						messages.frequency(2).capitalize() +
+						(list.frequency === 2 ? GREEN : ''),
 					callback_data: JSON.stringify({
 						type: 'freq',
 						vote: 2,
@@ -554,7 +561,9 @@ module.exports = {
 					}),
 				},
 				{
-					text: messages.frequency(3).capitalize(),
+					text:
+						messages.frequency(3).capitalize() +
+						(list.frequency === 3 ? GREEN : ''),
 					callback_data: JSON.stringify({
 						type: 'freq',
 						vote: 3,

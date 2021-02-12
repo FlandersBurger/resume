@@ -1,12 +1,12 @@
 angular
 	.module('app')
 	//AngularJs can't have an arrow function here
-	.controller('TenThingsCtrl', function ($scope, BotSvc) {
+	.controller('TenThingsCtrl', function ($scope, TenThingsSvc) {
 		$scope.search = {
 			name: '',
 			values: '',
 		};
-		BotSvc.getCategories().then(response => {
+		TenThingsSvc.getCategories().then(response => {
 			$scope.categories = response.data;
 			$scope.categoryFilters = $scope.categories.map(category => category);
 			$scope.categoryFilters.push('All');
@@ -14,7 +14,7 @@ angular
 			$scope.categoryFilter = 'All';
 			$scope.updateFilter = 'all';
 		});
-		BotSvc.getLanguages().then(response => {
+		TenThingsSvc.getLanguages().then(response => {
 			$scope.languages = response.data;
 			$scope.languageFilters = $scope.languages.map(language => language);
 			$scope.languageFilters.push({ name: 'All', code: 'all' });
@@ -153,7 +153,7 @@ angular
 		$scope.getLists = () => {
 			if (!$scope.loading) {
 				$scope.loading = true;
-				BotSvc.getLists($scope.currentUser).then(({ data }) => {
+				TenThingsSvc.getLists($scope.currentUser).then(({ data }) => {
 					$scope.lists = data;
 					$scope.userFilters = {};
 					$scope.userFilters.All = $scope.lists.length;
@@ -173,7 +173,7 @@ angular
 		};
 
 		$scope.selectList = list => {
-			BotSvc.getList(list).then(({ data }) => {
+			TenThingsSvc.getList(list).then(({ data }) => {
 				$scope.selectedList = data;
 			});
 		};
@@ -271,7 +271,7 @@ angular
 
 		$scope.reportList = list => {
 			list.reported = true;
-			BotSvc.reportList($scope.currentUser, list);
+			TenThingsSvc.reportList($scope.currentUser, list);
 		};
 
 		$scope.saveList = list => {
@@ -283,7 +283,7 @@ angular
 					list.categories.length > 0
 				) {
 					$scope.saving = true;
-					BotSvc.saveList($scope.currentUser, list).then(
+					TenThingsSvc.saveList($scope.currentUser, list).then(
 						({ data }) => {
 							if (!$scope.selectedList._id) {
 								$scope.lists.unshift(data);
@@ -338,7 +338,7 @@ angular
 				$scope.selectedList = null;
 			} else {
 				if (confirm('Are you sure you want to delete this list?')) {
-					BotSvc.deleteList(list).then(response => {
+					TenThingsSvc.deleteList(list).then(response => {
 						$scope.getLists();
 						$scope.selectedList = null;
 					});
@@ -362,7 +362,7 @@ angular
 
 		$scope.getMoviePics = () => {
 			$scope.gettingBlurbs = true;
-			BotSvc.getMoviePics($scope.selectedList).then(response => {
+			TenThingsSvc.getMoviePics($scope.selectedList).then(response => {
 				$scope.selectList($scope.selectedList);
 				$scope.gettingBlurbs = false;
 			});
@@ -370,7 +370,7 @@ angular
 
 		$scope.getTVPics = () => {
 			$scope.gettingBlurbs = true;
-			BotSvc.getTVPics($scope.selectedList).then(response => {
+			TenThingsSvc.getTVPics($scope.selectedList).then(response => {
 				$scope.selectList($scope.selectedList);
 				$scope.gettingBlurbs = false;
 			});
@@ -378,7 +378,7 @@ angular
 
 		$scope.getActorPics = () => {
 			$scope.gettingBlurbs = true;
-			BotSvc.getActorPics($scope.selectedList).then(response => {
+			TenThingsSvc.getActorPics($scope.selectedList).then(response => {
 				$scope.selectList($scope.selectedList);
 				$scope.gettingBlurbs = false;
 			});
@@ -386,7 +386,7 @@ angular
 
 		$scope.getBookPics = () => {
 			$scope.gettingBlurbs = true;
-			BotSvc.getBookPics($scope.selectedList).then(response => {
+			TenThingsSvc.getBookPics($scope.selectedList).then(response => {
 				$scope.selectList($scope.selectedList);
 				$scope.gettingBlurbs = false;
 			});
@@ -394,7 +394,7 @@ angular
 
 		$scope.getMusicVideos = () => {
 			$scope.gettingBlurbs = true;
-			BotSvc.getMusicVideos($scope.selectedList).then(response => {
+			TenThingsSvc.getMusicVideos($scope.selectedList).then(response => {
 				$scope.selectList($scope.selectedList);
 				$scope.gettingBlurbs = false;
 			});
@@ -402,7 +402,7 @@ angular
 
 		$scope.getPics = () => {
 			$scope.gettingBlurbs = true;
-			BotSvc.getPics($scope.selectedList).then(response => {
+			TenThingsSvc.getPics($scope.selectedList).then(response => {
 				$scope.selectList($scope.selectedList);
 				$scope.gettingBlurbs = false;
 			});

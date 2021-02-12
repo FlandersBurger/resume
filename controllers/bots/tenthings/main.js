@@ -713,6 +713,7 @@ const guessed = async (
 		({ guesser }) => !guesser.first_name
 	);
 	if (answersLeft.length > 0) {
+		message += `<b>${list.name}</b>\n`;
 		//message += `\n${answersLeft} answer${answersLeft > 1 ? 's' : ''} left.`;
 		message += game.list.values.reduce((str, { guesser, value }, index) => {
 			if (!guesser.first_name) {
@@ -1528,11 +1529,21 @@ router.post('/', async ({ body }, res, next) => {
 				body.callback_query.id,
 				`${messages.difficulty(data.vote)}`
 			);
+			bot.editKeyboard(
+				body.callback_query.message.chat.id,
+				body.callback_query.message.message_id,
+				keyboards.curate(await List.findOne({ _id: data.list }))
+			);
 		} else if (data.type === 'freq') {
 			List.updateOne({ _id: data.list }, { $set: { frequency: data.vote } });
 			bot.answerCallback(
 				body.callback_query.id,
 				`${messages.frequency(data.vote).capitalize()} changes`
+			);
+			bot.editKeyboard(
+				body.callback_query.message.chat.id,
+				body.callback_query.message.message_id,
+				keyboards.curate(await List.findOne({ _id: data.list }))
 			);
 		}
 		return res.sendStatus(200);

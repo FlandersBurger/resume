@@ -11,8 +11,8 @@ require('dotenv').config();
 const serviceAccount = require('./keys/resume-172205-firebase-adminsdk-r34t7-0028c702be.json');
 
 admin.initializeApp({
-  credential: admin.credential.cert(serviceAccount),
-  databaseURL: 'https://resume-172205.firebaseio.com'
+	credential: admin.credential.cert(serviceAccount),
+	databaseURL: 'https://resume-172205.firebaseio.com',
 });
 
 const app = express();
@@ -24,7 +24,7 @@ app.use('/api/posts', require('./controllers/api/posts'));
 app.use('/api/categories', require('./controllers/api/categories'));
 app.use('/api/email', require('./controllers/api/email'));
 app.use('/api/games', require('./controllers/api/games'));
-app.use('/api/bots', require('./controllers/api/bots'));
+app.use('/api/tenthings', require('./controllers/api/tenthings'));
 app.use('/api/files', require('./controllers/api/files'));
 /*
 app.use(logger('dev', {
@@ -52,8 +52,8 @@ app.use((req, res) => {
 const port = process.env.PORT || 3000;
 const server = http.createServer(app);
 
-server.listen(port, function() {
-  console.log('Server ', process.pid, ' listening on', port);
+server.listen(port, function () {
+	console.log('Server ', process.pid, ' listening on', port);
 });
 
 /*
