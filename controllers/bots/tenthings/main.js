@@ -713,7 +713,7 @@ const guessed = async (
 		({ guesser }) => !guesser.first_name
 	);
 	if (answersLeft.length > 0) {
-		message += `<b>${game.list.name}</b>`;
+		message += `\n<b>${game.list.name}</b>`;
 		//message += `\n${answersLeft} answer${answersLeft > 1 ? 's' : ''} left.`;
 		message += game.list.values.reduce((str, { guesser, value }, index) => {
 			if (!guesser.first_name) {
@@ -1520,7 +1520,10 @@ router.post('/', async ({ body }, res, next) => {
 					body.callback_query.message.chat.id,
 					list.values
 						.sort((a, b) => (a.value < b.value ? -1 : 1))
-						.reduce((message, item) => `${message}- ${item.value}\n`, '')
+						.reduce(
+							(message, item) => `${message}- ${item.value}\n`,
+							`<b>${list.name}</b>\n`
+						)
 				);
 			});
 		} else if (data.type === 'diff') {
