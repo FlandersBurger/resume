@@ -118,12 +118,12 @@ module.exports = [
       code: 'DA',
       name: 'Danish',
       native: 'dansk'
-    },
+    },*/
     {
       code: 'DE',
       name: 'German',
       native: 'Deutsch'
-    },
+    },/*
     {
       code: 'DV',
       name: 'Divehi; Dhivehi; Maldivian',
