@@ -63,6 +63,7 @@ exports.check = async (game, player, guess, msg) => {
 	const score = Math.floor(10 * guess.match.distance);
 	player.score += score;
 	player.scoreDaily += score;
+	if (game.tinygame.hints === 0) player.hintStreak++;
 	player.tinygamePlays++;
 	const savedPlayer = await player.save();
 	game.tinygame.plays++;
