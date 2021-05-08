@@ -2,6 +2,8 @@ const moment = require('moment');
 const request = require('request');
 const MAXHINTS = 6;
 
+const lists = require('./lists');
+
 module.exports = {
 	introduction: function (player) {
 		var message = 'Hi ' + player + ',\n';
@@ -280,7 +282,7 @@ module.exports = {
 		var message = '';
 		message += requestor ? `<i>Requested by ${requestor}</i>\n` : '';
 		message += '<b>Stats for ' + list.name + '</b>\n';
-		message += 'Score: ' + list.score + '\n';
+		message += 'Score: ' + lists.getScore(list.votes) + '\n';
 		message += 'Votes: ' + list.votes.length + '\n';
 		message += 'Values: ' + list.values.length + '\n';
 		message += 'Plays: ' + list.plays + '\n';

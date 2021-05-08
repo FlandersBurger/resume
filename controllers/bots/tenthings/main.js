@@ -676,11 +676,13 @@ const checkGuess = async (game, player, guess, msg) => {
 		}, 200);
 	} else {
 		player.snubs++;
-		/*
-    if (game.settings.snubs) {
-      bot.queueMessage(msg.chat.id, messages.alreadyGuessed(match.value, msg.from, match.guesser));
-    }
-    */
+
+		if (game.settings.snubs) {
+			bot.queueMessage(
+				msg.chat.id,
+				messages.alreadyGuessed(match.value, msg.from, match.guesser)
+			);
+		}
 	}
 	try {
 		const savedPlayer = await player.save();
@@ -1433,6 +1435,7 @@ router.post('/', async ({ body }, res, next) => {
 					.populate('creator')
 					.exec((err, list) => {
 						let msg = messages.listInfo(list);
+						msg += ` - Score: ${lists.getScore(list.votes)}`;
 						msg += ` - Values: ${list.values.length}\n`;
 						msg += ` - Plays: ${list.plays}\n`;
 						msg += ` - Skips: ${list.skips}\n`;
