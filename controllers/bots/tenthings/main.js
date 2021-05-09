@@ -1435,7 +1435,7 @@ router.post('/', async ({ body }, res, next) => {
 					.populate('creator')
 					.exec((err, list) => {
 						let msg = messages.listInfo(list);
-						msg += ` - Score: ${lists.getScore(list.votes)}`;
+						msg += ` - Score: ${lists.getScore(list)}`;
 						msg += ` - Values: ${list.values.length}\n`;
 						msg += ` - Plays: ${list.plays}\n`;
 						msg += ` - Skips: ${list.skips}\n`;

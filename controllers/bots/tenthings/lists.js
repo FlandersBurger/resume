@@ -12,10 +12,10 @@ exports.getRandomList = async parameters => {
 	return lists[0];
 };
 
-exports.getScore = votes => {
+exports.getScore = list => {
 	//((upvotes / (upvotes + downvotes)) + (skips / plays)) / 2
 	//(upvote ratio in regards to total votes + skip ratio in regards to plays) / 2
-	const upvotes = votes.filter(vote => vote.vote > 0);
+	const upvotes = list.votes.filter(vote => vote.vote > 0);
 	const voteRatio = upvotes.length / list.votes.length;
 	return (voteRatio + list.skips / list.plays) / 2;
 };
