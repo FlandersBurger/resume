@@ -1164,7 +1164,7 @@ router.post('/', async ({ body }, res, next) => {
 				let foundList = await List.findOne({
 					_id: data.list,
 				})
-					.select('name votes modifyDate score')
+					.select('name votes modifyDate score skips plays')
 					.exec();
 				let voter = _.find(
 					foundList.votes,
@@ -1192,25 +1192,14 @@ router.post('/', async ({ body }, res, next) => {
 						data.vote > 0 ? '\ud83d\udc4d' : '\ud83d\udc4e'
 					);
 					//bot.notifyAdmin(`"<b>${foundList.name}</b>" ${data.vote > 0 ? 'up' : 'down'}voted by <i>${body.callback_query.from.first_name}</i>!`);
-					const result = foundList.votes.reduce(
-						(result, vote) => {
-							result.score += vote.vote;
-							result.positive += vote.vote > 0 ? 1 : 0;
-							return result;
-						},
-						{ score: 0, positive: 0 }
-					);
 					if (moment(data.date) > moment().subtract(1, 'days')) {
 						bot.queueMessage(
 							body.callback_query.message.chat.id,
 							` ${data.vote > 0 ? '\ud83d\udc4d' : '\ud83d\udc4e'} ${
 								body.callback_query.from.first_name
-							} ${data.vote > 0 ? '' : 'dis'}likes <b>${foundList.name}</b> (${
-								result.score
-							} - ${
-								Math.round((result.positive / foundList.votes.length) * 10000) /
-								100
-							}%)`
+							} ${data.vote > 0 ? '' : 'dis'}likes <b>${
+								foundList.name
+							}</b> (${lists.getScore(foundList)})`
 						);
 					}
 				});
