@@ -1822,20 +1822,20 @@ const evaluateCommand = async (res, msg, game, isNew) => {
 			break;
 		case '/pule':
 		case '/skip':
-			if (checkSkipper(game, msg)) {
+			if (await checkSkipper(game, msg)) {
 				activateGame(game, true);
 				skip(game, player);
 			}
 			break;
 		case '/minipule':
 		case '/miniskip':
-			if (checkSkipper(game, msg, 'mini')) {
+			if (await checkSkipper(game, msg, 'mini')) {
 				minigame.create(game, msg);
 			}
 			break;
 		case '/puleminusculo':
 		case '/tinyskip':
-			if (checkSkipper(game, msg, 'tiny')) {
+			if (await checkSkipper(game, msg, 'tiny')) {
 				tinygame.create(game, msg);
 			}
 			break;
@@ -2283,7 +2283,7 @@ router.get('/queue', async (req, res, next) => {
 
 module.exports = router;
 
-const checkSkipper = (game, msg, type = '') => {
+const checkSkipper = async (game, msg, type = '') => {
 	if (
 		!vetoes[game.id] ||
 		vetoes[game.id] < moment().subtract(VETO_DELAY, 'seconds')
