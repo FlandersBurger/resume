@@ -1822,20 +1822,23 @@ const evaluateCommand = async (res, msg, game, isNew) => {
 			break;
 		case '/pule':
 		case '/skip':
-			if (await checkSkipper(game, msg)) {
+			let player = await getPlayer(game, msg.from);
+			if (await checkSkipper(game, msg, player)) {
 				activateGame(game, true);
 				skip(game, player);
 			}
 			break;
 		case '/minipule':
 		case '/miniskip':
-			if (await checkSkipper(game, msg, 'mini')) {
+			let player = await getPlayer(game, msg.from);
+			if (await checkSkipper(game, msg, player)) {
 				minigame.create(game, msg);
 			}
 			break;
 		case '/puleminusculo':
 		case '/tinyskip':
-			if (await checkSkipper(game, msg, 'tiny')) {
+			let player = await getPlayer(game, msg.from);
+			if (await checkSkipper(game, msg, player)) {
 				tinygame.create(game, msg);
 			}
 			break;
@@ -2283,12 +2286,11 @@ router.get('/queue', async (req, res, next) => {
 
 module.exports = router;
 
-const checkSkipper = async (game, msg, type = '') => {
+const checkSkipper = async (game, msg, player) => {
 	if (
 		!vetoes[game.id] ||
 		vetoes[game.id] < moment().subtract(VETO_DELAY, 'seconds')
 	) {
-		let player = await getPlayer(game, msg.from);
 		delete vetoes[game.id];
 		if (skippers[player.id]) {
 			//Check for spamming if it's the same player
