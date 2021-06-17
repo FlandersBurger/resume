@@ -2297,11 +2297,11 @@ const checkSkipper = async (game, msg, type = '') => {
 				moment().subtract(skippers[player.id].delay, 'seconds')
 			) {
 				delete skippers[player.id];
-				return true;
 			} else {
 				if (skippers[player.id].delay < 10) {
 					skippers[player.id].lastSkipped = moment();
 					skippers[player.id].delay += 10;
+					return false;
 				} else if (skippers[player.id].delay < 50) {
 					skippers[player.id].lastSkipped = moment();
 					skippers[player.id].delay += 10;
@@ -2311,6 +2311,7 @@ const checkSkipper = async (game, msg, type = '') => {
 							skippers[player.id].delay
 						} seconds`
 					);
+					return false;
 				} else if (skippers[player.id].delay < 60) {
 					skippers[player.id].lastSkipped = moment();
 					skippers[player.id].delay += 10;
@@ -2320,12 +2321,14 @@ const checkSkipper = async (game, msg, type = '') => {
 							player.first_name
 						}, you will be banned from skipping for 1 hour`
 					);
+					return false;
 				} else if (skippers[player.id].delay != 3600) {
 					skippers[player.id].delay = 3600;
 					bot.queueMessage(
 						msg.chat.id,
 						`Banned ${player.first_name} from skipping for 1 hour`
 					);
+					return false;
 				}
 			}
 		} else {
@@ -2334,10 +2337,9 @@ const checkSkipper = async (game, msg, type = '') => {
 				lastSkipped: moment(),
 				delay: 15,
 			};
-			return true;
 		}
 	}
-	return false;
+	return true;
 };
 
 const getQueue = async () => {
