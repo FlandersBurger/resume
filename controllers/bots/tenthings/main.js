@@ -1822,61 +1822,21 @@ const evaluateCommand = async (res, msg, game, isNew) => {
 			break;
 		case '/pule':
 		case '/skip':
-			if (
-				!vetoes[game.id] ||
-				vetoes[game.id] < moment().subtract(VETO_DELAY, 'seconds')
-			) {
-				let player = await getPlayer(game, msg.from);
-				delete vetoes[game.id];
-				let doSkip = false;
-				if (skippers[player.id]) {
-					if (
-						skippers[player.id].lastSkipped <
-						moment().subtract(skippers[player.id].delay, 'seconds')
-					) {
-						doSkip = true;
-						delete skippers[player.id];
-					} else {
-						if (skippers[player.id].delay < 10) {
-							skippers[player.id].lastSkipped = moment();
-							skippers[player.id].delay += 10;
-						} else if (skippers[player.id].delay < 50) {
-							skippers[player.id].lastSkipped = moment();
-							skippers[player.id].delay += 10;
-							bot.queueMessage(
-								msg.chat.id,
-								`Banned ${player.first_name} from skipping again for ${
-									skippers[player.id].delay
-								} seconds`
-							);
-						} else if (skippers[player.id].delay < 60) {
-							skippers[player.id].lastSkipped = moment();
-							skippers[player.id].delay += 10;
-							bot.queueMessage(
-								msg.chat.id,
-								`If you skip again within ${
-									skippers[player.id].delay
-								} seconds, ${player.first_name}, you will be banned for 1 hour`
-							);
-						} else if (skippers[player.id].delay != 3600) {
-							skippers[player.id].delay = 3600;
-							bot.queueMessage(
-								msg.chat.id,
-								`Banned ${player.first_name} from skipping for 1 hour`
-							);
-						}
-					}
-				} else {
-					skippers[player.id] = {
-						lastSkipped: moment(),
-						delay: 15,
-					};
-					doSkip = true;
-				}
-				if (doSkip) {
-					activateGame(game, true);
-					skip(game, player);
-				}
+			if (checkSkipper(game, msg)) {
+				activateGame(game, true);
+				skip(game, player);
+			}
+			break;
+		case '/minipule':
+		case '/miniskip':
+			if (checkSkipper(game, msg, 'mini')) {
+				minigame.create(game, msg);
+			}
+			break;
+		case '/puleminusculo':
+		case '/tinyskip':
+			if (checkSkipper(game, msg, 'tiny')) {
+				tinygame.create(game, msg);
 			}
 			break;
 		case '/veto':
@@ -2322,6 +2282,63 @@ router.get('/queue', async (req, res, next) => {
 });
 
 module.exports = router;
+
+const checkSkipper = (game, msg, type = '') => {
+	if (
+		!vetoes[game.id] ||
+		vetoes[game.id] < moment().subtract(VETO_DELAY, 'seconds')
+	) {
+		let player = await getPlayer(game, msg.from);
+		delete vetoes[game.id];
+		if (skippers[player.id]) {
+			//Check for spamming if it's the same player
+			if (
+				skippers[player.id].lastSkipped <
+				moment().subtract(skippers[player.id].delay, 'seconds')
+			) {
+				delete skippers[player.id];
+				return true;
+			} else {
+				if (skippers[player.id].delay < 10) {
+					skippers[player.id].lastSkipped = moment();
+					skippers[player.id].delay += 10;
+				} else if (skippers[player.id].delay < 50) {
+					skippers[player.id].lastSkipped = moment();
+					skippers[player.id].delay += 10;
+					bot.queueMessage(
+						msg.chat.id,
+						`Banned ${player.first_name} from skipping again for ${
+							skippers[player.id].delay
+						} seconds`
+					);
+				} else if (skippers[player.id].delay < 60) {
+					skippers[player.id].lastSkipped = moment();
+					skippers[player.id].delay += 10;
+					bot.queueMessage(
+						msg.chat.id,
+						`If you skip again within ${skippers[player.id].delay} seconds, ${
+							player.first_name
+						}, you will be banned from skipping for 1 hour`
+					);
+				} else if (skippers[player.id].delay != 3600) {
+					skippers[player.id].delay = 3600;
+					bot.queueMessage(
+						msg.chat.id,
+						`Banned ${player.first_name} from skipping for 1 hour`
+					);
+				}
+			}
+		} else {
+			//Start skip spam timer
+			skippers[player.id] = {
+				lastSkipped: moment(),
+				delay: 15,
+			};
+			return true;
+		}
+	}
+	return false;
+};
 
 const getQueue = async () => {
 	const count = await guessQueue.count();
