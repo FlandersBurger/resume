@@ -1748,6 +1748,7 @@ function countBytes(s) {
 const evaluateCommand = async (res, msg, game, isNew) => {
 	//bot.notifyAdmin(tenthings);
 	//bot.notifyAdmin(games[msg.chat.id].list);
+	let player = await getPlayer(game, msg.from);
 	if (!msg.from.first_name) {
 		console.error('msg without a first_name?');
 		console.error(msg);
@@ -1822,7 +1823,6 @@ const evaluateCommand = async (res, msg, game, isNew) => {
 			break;
 		case '/pule':
 		case '/skip':
-			let player = await getPlayer(game, msg.from);
 			if (await checkSkipper(game, msg, player)) {
 				activateGame(game, true);
 				skip(game, player);
@@ -1830,20 +1830,17 @@ const evaluateCommand = async (res, msg, game, isNew) => {
 			break;
 		case '/minipule':
 		case '/miniskip':
-			let player = await getPlayer(game, msg.from);
 			if (await checkSkipper(game, msg, player)) {
 				minigame.create(game, msg);
 			}
 			break;
 		case '/puleminusculo':
 		case '/tinyskip':
-			let player = await getPlayer(game, msg.from);
 			if (await checkSkipper(game, msg, player)) {
 				tinygame.create(game, msg);
 			}
 			break;
 		case '/veto':
-			let player = await getPlayer(game, msg.from);
 			player.vetoes++;
 			await player.save();
 			if (skips[game.id]) {
@@ -1899,7 +1896,6 @@ const evaluateCommand = async (res, msg, game, isNew) => {
 		case '/typo':
 			const typo = msg.text.substring(msg.command.length + 1, msg.text.length);
 			if (typo && typo != 'TenThings_Bot' && typo != '@TenThings_Bot') {
-				let player = await getPlayer(game, msg.from);
 				player.suggestions++;
 				await player.save();
 				let message = `<b>Typo</b>\n${typo}\nin "${game.list.name}"\n<i>${
@@ -1921,7 +1917,6 @@ const evaluateCommand = async (res, msg, game, isNew) => {
 		case '/bug':
 			const bug = msg.text.substring(msg.command.length + 1, msg.text.length);
 			if (bug && bug != 'TenThings_Bot' && bug != '@TenThings_Bot') {
-				let player = await getPlayer(game, msg.from);
 				player.suggestions++;
 				await player.save();
 				let message = `<b>Bug</b>\n${bug}\n<i>${
@@ -1946,7 +1941,6 @@ const evaluateCommand = async (res, msg, game, isNew) => {
 				msg.text.length
 			);
 			if (feature && feature != 'TenThings_Bot' && bug != '@TenThings_Bot') {
-				let player = await getPlayer(game, msg.from);
 				player.suggestions++;
 				await player.save();
 				let message = `<b>Feature</b>\n${feature}\n<i>${
@@ -1972,7 +1966,6 @@ const evaluateCommand = async (res, msg, game, isNew) => {
 				msg.text.length
 			);
 			if (search && search != 'TenThings_Bot' && search != '@TenThings_Bot') {
-				let player = await getPlayer(game, msg.from);
 				player.searches++;
 				await player.save();
 				console.log(`${game.chat_id} - Search for ${search}`);
@@ -2080,16 +2073,16 @@ const evaluateCommand = async (res, msg, game, isNew) => {
 				game.list.values.filter(({ guesser }) => !guesser.first_name).length !==
 				0
 			) {
-				hint(game, await getPlayer(game, msg.from));
+				hint(game, player);
 			}
 			break;
 		case '/minidica':
 		case '/minihint':
-			hint(game, await getPlayer(game, msg.from), 'minigame');
+			hint(game, player, 'minigame');
 			break;
 		case '/dicaminusculo':
 		case '/tinyhint':
-			hint(game, await getPlayer(game, msg.from), 'tinygame');
+			hint(game, player, 'tinygame');
 			break;
 		case '/notify':
 			if (msg.chat.id === config.masterChat) {
