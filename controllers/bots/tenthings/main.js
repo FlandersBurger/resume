@@ -1104,7 +1104,7 @@ router.post('/', async ({ body }, res, next) => {
 				let foundList = await List.findOne({
 					_id: data.list,
 				})
-					.select('name votes modifyDate score skips plays')
+					.select('name votes modifyDate score skips plays votes')
 					.exec();
 				let voter = _.find(foundList.votes, vote => vote.voter == body.callback_query.from.id);
 				if (!voter) {
