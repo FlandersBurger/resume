@@ -404,8 +404,9 @@ Number.prototype.makeReadable = function () {
 	return this.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
 };
 
-Number.prototype.makePercentage = function () {
-	return (this * 100).toFixed(2);
+Number.prototype.makePercentage = function (decimals) {
+	if (!decimals) decimals = 2;
+	return `${(this * 100).toFixed(decimals)}%`;
 };
 
 Array.prototype.getRandom = function (n) {
