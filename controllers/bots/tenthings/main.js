@@ -211,7 +211,6 @@ const selectList = async game => {
 		let list = await List.findOne({
 			_id: game.pickedLists[0],
 		})
-			.select('-votes')
 			.populate('creator')
 			.exec();
 		if (!list) {
