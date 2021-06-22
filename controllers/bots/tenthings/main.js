@@ -760,6 +760,7 @@ const newRound = (currentGame, player) => {
 						game.pickedLists = game.pickedLists.filter(pickedList => pickedList != list._id);
 					}
 					list.plays++;
+					list.score = lists.getScore(list);
 					await list.save();
 					for (let player of players) {
 						player.lists++;
@@ -880,6 +881,7 @@ const skipList = (game, skipper) => {
 				foundList.skips = 0;
 			}
 			foundList.skips++;
+			foundList.score = lists.getScore(foundList);
 			const savedList = await foundList.save();
 			bot.queueMessage(game.chat_id, await stats.getDailyScores(game, 5));
 			newRound(game);
@@ -1115,7 +1117,7 @@ router.post('/', async ({ body }, res, next) => {
 					voter.vote = data.vote;
 					voter.modifyDate = new Date();
 				}
-				foundList.score = foundList.votes.reduce((score, vote) => (score += vote.vote), 0);
+				foundList.score = lists.getScore(foundList);
 				delete foundList.voters;
 				foundList.save(err => {
 					if (err) return console.error(err);
@@ -1129,9 +1131,9 @@ router.post('/', async ({ body }, res, next) => {
 							body.callback_query.message.chat.id,
 							` ${data.vote > 0 ? '\ud83d\udc4d' : '\ud83d\udc4e'} ${
 								body.callback_query.from.first_name
-							} ${data.vote > 0 ? '' : 'dis'}likes <b>${foundList.name}</b> (${lists.getScore(
-								foundList
-							)})`
+							} ${data.vote > 0 ? '' : 'dis'}likes <b>${
+								foundList.name
+							}</b> (${foundList.score.makePercentage()})`
 						);
 					}
 				});
@@ -1315,7 +1317,7 @@ router.post('/', async ({ body }, res, next) => {
 					.populate('creator')
 					.exec((err, list) => {
 						let msg = messages.listInfo(list);
-						msg += ` - Score: ${lists.getScore(list)}`;
+						msg += ` - Score: ${list.score.makePercentage()}`;
 						msg += ` - Values: ${list.values.length}\n`;
 						msg += ` - Plays: ${list.plays}\n`;
 						msg += ` - Skips: ${list.skips}\n`;

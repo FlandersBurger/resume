@@ -78,7 +78,6 @@ router.get('/lists/:id', (req, res, next) => {
 		.populate('creator')
 		.populate('values.creator')
 		.exec((err, list) => {
-			list.score = lists.getScore(list);
 			res.json(list);
 		});
 });
