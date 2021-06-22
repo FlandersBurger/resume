@@ -13,6 +13,7 @@ const messages = require('../bots/tenthings/messages');
 const keyboards = require('../bots/tenthings/keyboards');
 const categories = require('../bots/tenthings/categories');
 const languages = require('../bots/tenthings/languages');
+const lists = require('../bots/tenthings/lists');
 const Spotify = require('../../connections/spotify');
 const spotify = new Spotify();
 spotify.init();
@@ -77,6 +78,7 @@ router.get('/lists/:id', (req, res, next) => {
 		.populate('creator')
 		.populate('values.creator')
 		.exec((err, list) => {
+			list.score = lists.getScore(list);
 			res.json(list);
 		});
 });
@@ -188,8 +190,7 @@ router.get('/lists/:id/books', async (req, res, next) => {
 		let changed = false;
 		for (let value of list.values) {
 			if (!value.blurb) {
-				const author =
-					list.name.indexOf('Written by ') === 0 ? list.name.substring(11) : '';
+				const author = list.name.indexOf('Written by ') === 0 ? list.name.substring(11) : '';
 				const goodreadsDB = await request(
 					`https://www.goodreads.com/search/index.xml?key=${
 						config.tokens.goodreadsapi
@@ -197,8 +198,8 @@ router.get('/lists/:id/books', async (req, res, next) => {
 				);
 				try {
 					const parsedXML = await parseString(goodreadsDB);
-					const posterPath = await parsedXML.GoodreadsResponse.search[0]
-						.results[0].work[0].best_book[0].image_url[0];
+					const posterPath = await parsedXML.GoodreadsResponse.search[0].results[0].work[0]
+						.best_book[0].image_url[0];
 					if (posterPath && posterPath.indexOf('nophoto') < 0) {
 						value.blurb = posterPath;
 					}
@@ -225,9 +226,7 @@ router.get('/lists/:id/musicvideos', async (req, res, next) => {
 	});
 	if (list) {
 		let changed = false;
-		const artist = list.name
-			.substring(0, list.name.indexOf(' - '))
-			.replace(/\s/, '+');
+		const artist = list.name.substring(0, list.name.indexOf(' - ')).replace(/\s/, '+');
 		for (let value of list.values) {
 			const youtubeDB = await request(
 				`https://www.googleapis.com/youtube/v3/search?key=${
@@ -277,9 +276,7 @@ const getWikiImage = async query => {
 					page.images.filter(
 						image =>
 							['jpg', 'jpeg', 'png'].indexOf(
-								image.title
-									.substring(image.title.lastIndexOf('.') + 1)
-									.toLowerCase()
+								image.title.substring(image.title.lastIndexOf('.') + 1).toLowerCase()
 							) >= 0
 					).length > 0
 			);
@@ -290,21 +287,15 @@ const getWikiImage = async query => {
 		const images = page.images
 			.map(image => ({
 				...image,
-				lean: image.title
-					.substring(4, image.title.lastIndexOf('.'))
-					.removeAllButLetters(),
-				ext: image.title
-					.substring(image.title.lastIndexOf('.') + 1)
-					.toLowerCase(),
+				lean: image.title.substring(4, image.title.lastIndexOf('.')).removeAllButLetters(),
+				ext: image.title.substring(image.title.lastIndexOf('.') + 1).toLowerCase(),
 			}))
 			.filter(image => ['jpg', 'jpeg', 'png'].indexOf(image.ext) >= 0);
 		const fuzzyMatchImages = new FuzzyMatching(images.map(image => image.lean));
 		const matchImage = fuzzyMatchImages.get(query.removeAllButLetters(), {});
 		const image = _.find(images, image => image.lean === matchImage.value);
 		if (!image) console.log(pages.map(page => page.images));
-		url = `https://commons.wikimedia.org/wiki/Special:FilePath/${image.title.substring(
-			5
-		)}`;
+		url = `https://commons.wikimedia.org/wiki/Special:FilePath/${image.title.substring(5)}`;
 	} catch (e) {
 		console.error(e);
 	}
@@ -414,19 +405,14 @@ router.delete('/lists/:id', (req, res, next) => {
 			(err, list) => {
 				if (err) return next(err);
 				if (list) {
-					if (
-						config.admins.indexOf(req.auth.userid) >= 0 ||
-						req.auth.userid === list.creator
-					) {
+					if (config.admins.indexOf(req.auth.userid) >= 0 || req.auth.userid === list.creator) {
 						TenThingsList.findByIdAndRemove(
 							{
 								_id: req.params.id,
 							},
 							(err, list) => {
 								if (err) return next(err);
-								bot.notifyAdmins(
-									'<b>' + list.name + '</b> deleted by ' + user.username
-								);
+								bot.notifyAdmins('<b>' + list.name + '</b> deleted by ' + user.username);
 								res.sendStatus(200);
 							}
 						);

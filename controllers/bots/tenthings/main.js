@@ -234,10 +234,7 @@ const selectList = async game => {
 			game.playedLists = [];
 			game.cycles++;
 			game.lastCycleDate = moment();
-			bot.queueMessage(
-				game.chat_id,
-				'All lists have been played, a new cycle will now start.'
-			);
+			bot.queueMessage(game.chat_id, 'All lists have been played, a new cycle will now start.');
 			list = await lists.getRandomList({
 				categories: { $nin: game.disabledCategories },
 				language: { $in: availableLanguages },
@@ -344,11 +341,7 @@ List.find({
   });
   */
 const rateList = game => {
-	bot.sendKeyboard(
-		game.chat_id,
-		`Did you like <b>${game.list.name}</b>?`,
-		keyboards.like(game)
-	);
+	bot.sendKeyboard(game.chat_id, `Did you like <b>${game.list.name}</b>?`, keyboards.like(game));
 };
 
 /*
@@ -380,8 +373,7 @@ const queueGuess = async (game, msg) => {
 	const lengths = values.reduce(
 		(lengths, value) => ({
 			longest: lengths.longest < value.length ? value.length : lengths.longest,
-			shortest:
-				lengths.shortest > value.length ? value.length : lengths.shortest,
+			shortest: lengths.shortest > value.length ? value.length : lengths.shortest,
 		}),
 		{
 			longest: 1,
@@ -389,10 +381,7 @@ const queueGuess = async (game, msg) => {
 		}
 	);
 	let found = false;
-	if (
-		text.length / lengths.shortest > 0.75 &&
-		text.length / lengths.longest < 1.25
-	) {
+	if (text.length / lengths.shortest > 0.75 && text.length / lengths.longest < 1.25) {
 		const fuzzyMatch = new FuzzyMatching(values);
 		const guess = {
 			type: 'game',
@@ -403,10 +392,7 @@ const queueGuess = async (game, msg) => {
 				min: 0.75,
 			}),
 		};
-		guess.match.index = _.findIndex(
-			values,
-			value => value === guess.match.value
-		);
+		guess.match.index = _.findIndex(values, value => value === guess.match.value);
 		if (guess.match.distance >= 0.75) {
 			found = true;
 			setTimeout(async () => {
@@ -418,9 +404,7 @@ const queueGuess = async (game, msg) => {
 		}
 	}
 	if (!found) {
-		const minigameAnswer = game.minigame.answer
-			? game.minigame.answer.removeAllButLetters()
-			: '';
+		const minigameAnswer = game.minigame.answer ? game.minigame.answer.removeAllButLetters() : '';
 		if (
 			minigameAnswer &&
 			text.length / minigameAnswer.length > 0.75 &&
@@ -451,9 +435,7 @@ const queueGuess = async (game, msg) => {
 		}
 	}
 	if (!found) {
-		const tinygameAnswer = game.tinygame.answer
-			? game.tinygame.answer.removeAllButLetters()
-			: '';
+		const tinygameAnswer = game.tinygame.answer ? game.tinygame.answer.removeAllButLetters() : '';
 		if (
 			tinygameAnswer &&
 			text.length / tinygameAnswer.length > 0.75 &&
@@ -596,9 +578,7 @@ const checkGuess = async (game, player, guess, msg) => {
 	}
 	const match = game.list.values[guess.match.index];
 	if (!player) {
-		bot.notifyAdmin(
-			`Something wrong with this guess:\n${JSON.stringify(guess)}`
-		);
+		bot.notifyAdmin(`Something wrong with this guess:\n${JSON.stringify(guess)}`);
 		console.error(`Something wrong with this guess:\n${JSON.stringify(guess)}`);
 		return resolve();
 	}
@@ -606,9 +586,7 @@ const checkGuess = async (game, player, guess, msg) => {
 		match.guesser = msg.from;
 		player.answers++;
 		const score = Math.round(
-			(MAX_HINTS - game.hints + game.guessers.length) *
-				(guess.match.distance - 0.6) *
-				2.5
+			(MAX_HINTS - game.hints + game.guessers.length) * (guess.match.distance - 0.6) * 2.5
 		);
 		const accuracy = `${(guess.match.distance * 100).toFixed(0)}%`;
 		player.score += score;
@@ -678,10 +656,7 @@ const checkGuess = async (game, player, guess, msg) => {
 		player.snubs++;
 
 		if (game.settings.snubs) {
-			bot.queueMessage(
-				msg.chat.id,
-				messages.alreadyGuessed(match.value, msg.from, match.guesser)
-			);
+			bot.queueMessage(msg.chat.id, messages.alreadyGuessed(match.value, msg.from, match.guesser));
 		}
 	}
 	try {
@@ -696,24 +671,12 @@ const checkGuess = async (game, player, guess, msg) => {
 	}
 };
 
-const guessed = async (
-	game,
-	{ scoreDaily },
-	{ from, chat },
-	value,
-	blurb,
-	score,
-	accuracy
-) => {
+const guessed = async (game, { scoreDaily }, { from, chat }, value, blurb, score, accuracy) => {
 	let message = messages.guessed(value.angleBrackets(), from.first_name);
 	message += messages.streak(game.streak.count);
 	message += blurb;
-	message += `\n<pre>${
-		scoreDaily - score
-	} + ${score} points (${accuracy})</pre>`;
-	const answersLeft = game.list.values.filter(
-		({ guesser }) => !guesser.first_name
-	);
+	message += `\n<pre>${scoreDaily - score} + ${score} points (${accuracy})</pre>`;
+	const answersLeft = game.list.values.filter(({ guesser }) => !guesser.first_name);
 	if (answersLeft.length > 0) {
 		message += `\n<b>${game.list.name}</b>`;
 		//message += `\n${answersLeft} answer${answersLeft > 1 ? 's' : ''} left.`;
@@ -739,18 +702,14 @@ const guessed = async (
   ██████ ██   ██ ███████  ██████ ██   ██     ██   ██  ██████   ██████  ██   ████ ██████  
 */
 const checkRound = game => {
-	if (
-		game.list.values.filter(({ guesser }) => !guesser.first_name).length === 0
-	) {
+	if (game.list.values.filter(({ guesser }) => !guesser.first_name).length === 0) {
 		setTimeout(() => {
 			stats.getList(game, async list => {
 				const foundList = await List.findOne({
 					_id: game.list._id,
 				}).exec();
 				let message = `<b>${game.list.name}</b>`;
-				message += game.list.creator
-					? ` by ${game.list.creator.username}\n`
-					: '\n';
+				message += game.list.creator ? ` by ${game.list.creator.username}\n` : '\n';
 				message +=
 					game.list.categories.length > 0
 						? `Categor${
@@ -798,9 +757,7 @@ const newRound = (currentGame, player) => {
 			selectList(game).then(
 				async list => {
 					if (game.pickedLists.length > 0) {
-						game.pickedLists = game.pickedLists.filter(
-							pickedList => pickedList != list._id
-						);
+						game.pickedLists = game.pickedLists.filter(pickedList => pickedList != list._id);
 					}
 					list.plays++;
 					await list.save();
@@ -818,9 +775,9 @@ const newRound = (currentGame, player) => {
 					let message = 'A new round will start in 3 seconds';
 					message +=
 						game.list.categories.length > 0
-							? `\nCategor${
-									game.list.categories.length > 1 ? 'ies' : 'y'
-							  }: <b>${game.list.categories}</b>`
+							? `\nCategor${game.list.categories.length > 1 ? 'ies' : 'y'}: <b>${
+									game.list.categories
+							  }</b>`
 							: '';
 					bot.queueMessage(game.chat_id, message);
 					setTimeout(() => {
@@ -836,9 +793,7 @@ const newRound = (currentGame, player) => {
 							return bot.notifyAdmin(
 								'newRound: ' + JSON.stringify(err) + '\n' + JSON.stringify(game)
 							);
-						console.log(
-							`${game.chat_id} - New round started -> "${list.name}"`
-						);
+						console.log(`${game.chat_id} - New round started -> "${list.name}"`);
 					});
 				},
 				err => bot.notifyAdmin(`Select List Error: ${JSON.stringify(err)}`)
@@ -869,10 +824,7 @@ function skip(game, skipper) {
 		if (skips[game._id] && skips[game._id].player !== skipper._id) {
 			skips[game._id].timer = 2;
 		} else if (skips[game._id] && skips[game._id].player === skipper._id) {
-			bot.queueMessage(
-				game.chat_id,
-				'Get someone else to confirm your skip request!'
-			);
+			bot.queueMessage(game.chat_id, 'Get someone else to confirm your skip request!');
 		} else {
 			bot.queueMessage(
 				game.chat_id,
@@ -960,10 +912,7 @@ const hint = async (game, player, type = 'main') => {
 		(type === 'main' && game.hints >= MAX_HINTS) ||
 		(type !== 'main' && game[type].hints >= MAX_HINTS)
 	) {
-		bot.queueMessage(
-			game.chat_id,
-			"What? Another hint? I'm just gonna ignore that request"
-		);
+		bot.queueMessage(game.chat_id, "What? Another hint? I'm just gonna ignore that request");
 	} else if (cooldowns[game.id] && cooldowns[game.id] > 0) {
 		bot.queueMessage(
 			game.chat_id,
@@ -1045,15 +994,9 @@ router.post('/', async ({ body }, res, next) => {
   return res.status(200).send(body);
   */
 	if (body.message || body.callback_query) {
-		const from = body.message
-			? body.message.from.id
-			: body.callback_query.from.id;
-		const name = body.message
-			? body.message.from.first_name
-			: body.callback_query.from.first_name;
-		const chat = body.message
-			? body.message.chat.id
-			: body.callback_query.message.chat.id;
+		const from = body.message ? body.message.from.id : body.callback_query.from.id;
+		const name = body.message ? body.message.from.first_name : body.callback_query.from.first_name;
+		const chat = body.message ? body.message.chat.id : body.callback_query.message.chat.id;
 		const date = body.message ? moment.unix(body.message.date) : moment();
 		const message = body.message
 			? body.message.text
@@ -1136,19 +1079,14 @@ router.post('/', async ({ body }, res, next) => {
 		data.requestor = body.callback_query.from.username
 			? `@${body.callback_query.from.username}`
 			: `${body.callback_query.from.first_name} ${
-					body.callback_query.from.last_name
-						? body.callback_query.from.last_name
-						: ''
+					body.callback_query.from.last_name ? body.callback_query.from.last_name : ''
 			  }`;
 		if (data.type === 'rate') {
 			let doVote = false;
 			if (voters[body.callback_query.from.id]) {
 				if (
 					voters[body.callback_query.from.id].lastVoted <
-					moment().subtract(
-						voters[body.callback_query.from.id].delay,
-						'seconds'
-					)
+					moment().subtract(voters[body.callback_query.from.id].delay, 'seconds')
 				) {
 					doVote = true;
 					delete voters[body.callback_query.from.id];
@@ -1166,10 +1104,7 @@ router.post('/', async ({ body }, res, next) => {
 				})
 					.select('name votes modifyDate score skips plays')
 					.exec();
-				let voter = _.find(
-					foundList.votes,
-					vote => vote.voter == body.callback_query.from.id
-				);
+				let voter = _.find(foundList.votes, vote => vote.voter == body.callback_query.from.id);
 				if (!voter) {
 					foundList.votes.push({
 						voter: body.callback_query.from.id,
@@ -1180,10 +1115,7 @@ router.post('/', async ({ body }, res, next) => {
 					voter.vote = data.vote;
 					voter.modifyDate = new Date();
 				}
-				foundList.score = foundList.votes.reduce(
-					(score, vote) => (score += vote.vote),
-					0
-				);
+				foundList.score = foundList.votes.reduce((score, vote) => (score += vote.vote), 0);
 				delete foundList.voters;
 				foundList.save(err => {
 					if (err) return console.error(err);
@@ -1197,9 +1129,9 @@ router.post('/', async ({ body }, res, next) => {
 							body.callback_query.message.chat.id,
 							` ${data.vote > 0 ? '\ud83d\udc4d' : '\ud83d\udc4e'} ${
 								body.callback_query.from.first_name
-							} ${data.vote > 0 ? '' : 'dis'}likes <b>${
-								foundList.name
-							}</b> (${lists.getScore(foundList)})`
+							} ${data.vote > 0 ? '' : 'dis'}likes <b>${foundList.name}</b> (${lists.getScore(
+								foundList
+							)})`
 						);
 					}
 				});
@@ -1207,10 +1139,7 @@ router.post('/', async ({ body }, res, next) => {
 		} else if (data.type === 'stats') {
 			const isAdmin =
 				body.callback_query.message.chat.id > 0 ||
-				(await bot.checkAdmin(
-					body.callback_query.message.chat.id,
-					body.callback_query.from.id
-				));
+				(await bot.checkAdmin(body.callback_query.message.chat.id, body.callback_query.from.id));
 			if (isAdmin) {
 				Game.findOne({
 					chat_id: body.callback_query.message.chat.id,
@@ -1220,20 +1149,12 @@ router.post('/', async ({ body }, res, next) => {
 						switch (data.data) {
 							case 'list':
 								bot.answerCallback(body.callback_query.id, 'List Stats');
-								bot.sendKeyboard(
-									game.chat_id,
-									'<b>List Stats</b>',
-									keyboards.stats_list(game)
-								);
+								bot.sendKeyboard(game.chat_id, '<b>List Stats</b>', keyboards.stats_list(game));
 								break;
 							case 'player':
 								bot.answerCallback(body.callback_query.id, 'Player Stats');
 								console.log(keyboards.stats_player(game));
-								bot.sendKeyboard(
-									game.chat_id,
-									'<b>Player Stats</b>',
-									keyboards.stats_player(game)
-								);
+								bot.sendKeyboard(game.chat_id, '<b>Player Stats</b>', keyboards.stats_player(game));
 								break;
 							case 'global':
 								bot.answerCallback(body.callback_query.id, 'Global Stats');
@@ -1241,11 +1162,7 @@ router.post('/', async ({ body }, res, next) => {
 								break;
 							case 'game':
 								bot.answerCallback(body.callback_query.id, 'Game Stats');
-								bot.sendKeyboard(
-									game.chat_id,
-									'<b>Game Stats</b>',
-									keyboards.stats_game(game)
-								);
+								bot.sendKeyboard(game.chat_id, '<b>Game Stats</b>', keyboards.stats_game(game));
 								break;
 						}
 					});
@@ -1253,11 +1170,7 @@ router.post('/', async ({ body }, res, next) => {
 		} else if (data.type === 'stat') {
 			//bot.notifyAdmin(`${body.callback_query.from.id} (${body.callback_query.from.first_name}) requested stats`);
 			bot.answerCallback(body.callback_query.id, '');
-			stats.getStats(
-				body.callback_query.message.chat.id,
-				data,
-				body.callback_query.from.id
-			);
+			stats.getStats(body.callback_query.message.chat.id, data, body.callback_query.from.id);
 		} else if (data.type === 'score') {
 			if (body.callback_query.from.first_name === '^') return '';
 			//bot.notifyAdmin(`${body.callback_query.from.id} (${body.callback_query.from.first_name}) requested stats`);
@@ -1267,10 +1180,7 @@ router.post('/', async ({ body }, res, next) => {
 			if (body.callback_query.message.chat.id != config.groupChat) {
 				const isAdmin =
 					body.callback_query.message.chat.id > 0 ||
-					(await bot.checkAdmin(
-						body.callback_query.message.chat.id,
-						body.callback_query.from.id
-					));
+					(await bot.checkAdmin(body.callback_query.message.chat.id, body.callback_query.from.id));
 				if (isAdmin) {
 					let game = await Game.findOne({
 						chat_id: body.callback_query.message.chat.id,
@@ -1290,10 +1200,7 @@ router.post('/', async ({ body }, res, next) => {
 						game.disabledCategories.push(data.id);
 					}
 					game.save((err, savedGame) => {
-						if (err)
-							return bot.notifyAdmin(
-								`Category Save Error: \n${JSON.stringify(err)}`
-							);
+						if (err) return bot.notifyAdmin(`Category Save Error: \n${JSON.stringify(err)}`);
 						bot.answerCallback(
 							body.callback_query.id,
 							`${data.id} -> ${categoryIndex >= 0 ? 'On' : 'Off'}`
@@ -1315,20 +1222,14 @@ router.post('/', async ({ body }, res, next) => {
 			if (body.callback_query.message.chat_id != config.masterChat) {
 				const isAdmin =
 					body.callback_query.message.chat.id > 0 ||
-					(await bot.checkAdmin(
-						body.callback_query.message.chat.id,
-						body.callback_query.from.id
-					));
+					(await bot.checkAdmin(body.callback_query.message.chat.id, body.callback_query.from.id));
 				if (isAdmin) {
 					Game.findOne({
 						chat_id: body.callback_query.message.chat.id,
 					})
 						.select('chat_id settings')
 						.exec(async (err, game) => {
-							if (err)
-								return bot.notifyAdmin(
-									`Settings Find Error: \n${JSON.stringify(err)}`
-								);
+							if (err) return bot.notifyAdmin(`Settings Find Error: \n${JSON.stringify(err)}`);
 							if (data.id === 'lang') {
 								const availableLanguages = await List.aggregate([
 									{
@@ -1347,10 +1248,7 @@ router.post('/', async ({ body }, res, next) => {
 								console.log(`${data.id} toggled for ${game._id}`);
 								game.settings[data.id] = !game.settings[data.id];
 								game.save((err, savedGame) => {
-									if (err)
-										return bot.notifyAdmin(
-											`Settings Save Error: \n${JSON.stringify(err)}`
-										);
+									if (err) return bot.notifyAdmin(`Settings Save Error: \n${JSON.stringify(err)}`);
 									bot.answerCallback(
 										body.callback_query.id,
 										`${data.id} -> ${game.settings[data.id] ? 'On' : 'Off'}`
@@ -1376,8 +1274,7 @@ router.post('/', async ({ body }, res, next) => {
 			})
 				.select('chat_id settings')
 				.exec((err, game) => {
-					if (err)
-						return bot.notifyAdmin('Language button\n' + JSON.stringify(err));
+					if (err) return bot.notifyAdmin('Language button\n' + JSON.stringify(err));
 					const isSelected = game.settings.languages.includes(data.id);
 					if (isSelected) {
 						game.settings.languages = game.settings.languages.filter(
@@ -1386,17 +1283,11 @@ router.post('/', async ({ body }, res, next) => {
 					} else {
 						game.settings.languages.push(data.id);
 					}
-					if (
-						!game.settings.languages ||
-						game.settings.languages.length === 0
-					) {
+					if (!game.settings.languages || game.settings.languages.length === 0) {
 						game.settings.languages = ['EN'];
 					}
 					game.save(async (err, savedGame) => {
-						if (err)
-							return bot.notifyAdmin(
-								`Language Save Error: \n${JSON.stringify(err)}`
-							);
+						if (err) return bot.notifyAdmin(`Language Save Error: \n${JSON.stringify(err)}`);
 						bot.answerCallback(
 							body.callback_query.id,
 							`${data.id} -> ${isSelected ? 'Off' : 'On'}`
@@ -1438,17 +1329,11 @@ router.post('/', async ({ body }, res, next) => {
 				})
 					.select('chat_id pickedLists')
 					.exec((err, game) => {
-						if (err)
-							return bot.notifyAdmin(
-								'Pick list button\n' + JSON.stringify(err)
-							);
+						if (err) return bot.notifyAdmin('Pick list button\n' + JSON.stringify(err));
 						List.findOne({
 							_id: data.list,
 						}).exec((err, list) => {
-							const foundList = _.find(
-								game.pickedLists,
-								pickedList => pickedList == list._id
-							);
+							const foundList = _.find(game.pickedLists, pickedList => pickedList == list._id);
 							if (foundList) {
 								bot.queueMessage(
 									body.callback_query.message.chat.id,
@@ -1458,10 +1343,7 @@ router.post('/', async ({ body }, res, next) => {
 								if (list) {
 									game.pickedLists.push(list._id);
 									game.save();
-									bot.answerCallback(
-										body.callback_query.id,
-										`${list.name} added`
-									);
+									bot.answerCallback(body.callback_query.id, `${list.name} added`);
 									bot.queueMessage(
 										body.callback_query.message.chat.id,
 										`<b>${list.name}</b> added to the queue, ${data.requestor}.\nType /lists to see the queue`
@@ -1512,18 +1394,12 @@ router.post('/', async ({ body }, res, next) => {
 					body.callback_query.message.chat.id,
 					list.values
 						.sort((a, b) => (a.value < b.value ? -1 : 1))
-						.reduce(
-							(message, item) => `${message}- ${item.value}\n`,
-							`<b>${list.name}</b>\n`
-						)
+						.reduce((message, item) => `${message}- ${item.value}\n`, `<b>${list.name}</b>\n`)
 				);
 			});
 		} else if (data.type === 'diff') {
 			List.updateOne({ _id: data.list }, { $set: { difficulty: data.vote } });
-			bot.answerCallback(
-				body.callback_query.id,
-				`${messages.difficulty(data.vote)}`
-			);
+			bot.answerCallback(body.callback_query.id, `${messages.difficulty(data.vote)}`);
 			bot.editKeyboard(
 				body.callback_query.message.chat.id,
 				body.callback_query.message.message_id,
@@ -1566,9 +1442,7 @@ router.post('/', async ({ body }, res, next) => {
 					if (game && game.settings.intro) {
 						bot.queueMessage(
 							body.message.chat.id,
-							messages.introduction(
-								body.message.new_chat_participant.first_name
-							)
+							messages.introduction(body.message.new_chat_participant.first_name)
 						);
 					}
 				});
@@ -1641,9 +1515,7 @@ router.post('/', async ({ body }, res, next) => {
 			from: body.message.from,
 			command: body.message.text.substring(
 				0,
-				!body.message.text.includes(' ')
-					? body.message.text.length
-					: body.message.text.indexOf(' ')
+				!body.message.text.includes(' ') ? body.message.text.length : body.message.text.indexOf(' ')
 			),
 			text: body.message.text,
 			chat: body.message.chat,
@@ -1676,10 +1548,7 @@ router.post('/', async ({ body }, res, next) => {
 			}
 			if (!existingGame) {
 				createGame(msg.chat.id).then(newGame => {
-					if (err)
-						bot.notifyAdmin(
-							'POST: ' + JSON.stringify(err) + '\n' + JSON.stringify(game)
-						);
+					if (err) bot.notifyAdmin('POST: ' + JSON.stringify(err) + '\n' + JSON.stringify(game));
 					console.log(`New game created for ${msg.chat.id}`);
 					return evaluateCommand(res, msg, newGame, true);
 				});
@@ -1801,9 +1670,7 @@ const evaluateCommand = async (res, msg, game, isNew) => {
 			} else {
 				stats.getList(game, list => {
 					let message = `<b>${game.list.name}</b> (${game.list.totalValues})`;
-					message += game.list.creator
-						? ` by ${game.list.creator.username}\n`
-						: '\n';
+					message += game.list.creator ? ` by ${game.list.creator.username}\n` : '\n';
 					message +=
 						game.list.categories.length > 0
 							? `Categor${
@@ -1851,28 +1718,19 @@ const evaluateCommand = async (res, msg, game, isNew) => {
 					`Skip vetoed by ${msg.from.first_name}\nNo skipping allowed for ${VETO_DELAY} seconds`
 				);
 			} else {
-				bot.queueMessage(
-					msg.chat.id,
-					`I can't find a skip request, ${msg.from.first_name}`
-				);
+				bot.queueMessage(msg.chat.id, `I can't find a skip request, ${msg.from.first_name}`);
 			}
 			break;
 		case '/estatisticas':
 		case '/stats':
-			bot.sendKeyboard(
-				game.chat_id,
-				'<b>Stats</b>',
-				keyboards.stats(game.chat_id)
-			);
+			bot.sendKeyboard(game.chat_id, '<b>Stats</b>', keyboards.stats(game.chat_id));
 			break;
 		case '/lista':
 		case '/list':
 			try {
 				stats.getList(game, list => {
 					let message = `<b>${game.list.name}</b> (${game.list.totalValues})`;
-					message += game.list.creator
-						? ` by ${game.list.creator.username}\n`
-						: '\n';
+					message += game.list.creator ? ` by ${game.list.creator.username}\n` : '\n';
 					message +=
 						game.list.categories.length > 0
 							? `Categor${
@@ -1936,10 +1794,7 @@ const evaluateCommand = async (res, msg, game, isNew) => {
 			}
 			break;
 		case '/feature':
-			const feature = msg.text.substring(
-				msg.command.length + 1,
-				msg.text.length
-			);
+			const feature = msg.text.substring(msg.command.length + 1, msg.text.length);
 			if (feature && feature != 'TenThings_Bot' && bug != '@TenThings_Bot') {
 				player.suggestions++;
 				await player.save();
@@ -1961,10 +1816,7 @@ const evaluateCommand = async (res, msg, game, isNew) => {
 			break;
 		case '/pesquisar':
 		case '/search':
-			const search = msg.text.substring(
-				msg.command.length + 1,
-				msg.text.length
-			);
+			const search = msg.text.substring(msg.command.length + 1, msg.text.length);
 			if (search && search != 'TenThings_Bot' && search != '@TenThings_Bot') {
 				player.searches++;
 				await player.save();
@@ -2045,15 +1897,8 @@ const evaluateCommand = async (res, msg, game, isNew) => {
 			}
 			break;
 		case '/suggest':
-			const suggestion = msg.text.substring(
-				msg.command.length + 1,
-				msg.text.length
-			);
-			if (
-				suggestion &&
-				suggestion != 'TenThings_Bot' &&
-				suggestion != '@TenThings_Bot'
-			) {
+			const suggestion = msg.text.substring(msg.command.length + 1, msg.text.length);
+			if (suggestion && suggestion != 'TenThings_Bot' && suggestion != '@TenThings_Bot') {
 				bot.notify(suggestion);
 			}
 			let message =
@@ -2069,10 +1914,7 @@ const evaluateCommand = async (res, msg, game, isNew) => {
 		case '/dica':
 		case '/hint':
 			activateGame(game, false);
-			if (
-				game.list.values.filter(({ guesser }) => !guesser.first_name).length !==
-				0
-			) {
+			if (game.list.values.filter(({ guesser }) => !guesser.first_name).length !== 0) {
 				hint(game, player);
 			}
 			break;
@@ -2132,10 +1974,7 @@ const evaluateCommand = async (res, msg, game, isNew) => {
 					return msg;
 				}, '');
 				message += '\n';
-				message += `<b>${hints.getHint(
-					game.minigame.hints,
-					game.minigame.answer
-				)}</b>`;
+				message += `<b>${hints.getHint(game.minigame.hints, game.minigame.answer)}</b>`;
 				//message += game.minigame.answer.conceal(game.minigame.date < moment().subtract(1, 'hours') ? 'aeoui' : '');
 				bot.queueMessage(msg.chat.id, message);
 			}
@@ -2151,10 +1990,7 @@ const evaluateCommand = async (res, msg, game, isNew) => {
 					return msg;
 				}, '');
 				message += '\n';
-				message += `<b>${hints.getHint(
-					game.tinygame.hints,
-					game.tinygame.answer
-				)}</b>`;
+				message += `<b>${hints.getHint(game.tinygame.hints, game.tinygame.answer)}</b>`;
 				//message += game.tinygame.answer.conceal(game.tinygame.date < moment().subtract(1, 'hours') ? 'aeoui' : '');
 				bot.queueMessage(msg.chat.id, message);
 			}
@@ -2164,11 +2000,7 @@ const evaluateCommand = async (res, msg, game, isNew) => {
 			if (game.chat_id != config.groupChat) {
 				bot.checkAdmin(game.chat_id, msg.from.id).then(admin => {
 					if (admin) {
-						bot.sendKeyboard(
-							game.chat_id,
-							'<b>Categories</b>',
-							keyboards.categories(game)
-						);
+						bot.sendKeyboard(game.chat_id, '<b>Categories</b>', keyboards.categories(game));
 					} else {
 						bot.queueMessage(
 							game.chat_id,
@@ -2183,11 +2015,7 @@ const evaluateCommand = async (res, msg, game, isNew) => {
 			if (game.chat_id != config.groupChat) {
 				bot.checkAdmin(game.chat_id, msg.from.id).then(admin => {
 					if (admin) {
-						bot.sendKeyboard(
-							game.chat_id,
-							'<b>Settings</b>',
-							keyboards.settings(game)
-						);
+						bot.sendKeyboard(game.chat_id, '<b>Settings</b>', keyboards.settings(game));
 					} else {
 						bot.queueMessage(
 							game.chat_id,
@@ -2199,16 +2027,11 @@ const evaluateCommand = async (res, msg, game, isNew) => {
 			break;
 		case '/check':
 			if (msg.from.id === config.masterChat) {
-				bot.queueMessage(
-					msg.chat.id,
-					'Yes, master. Let me send you what you need!'
-				);
+				bot.queueMessage(msg.chat.id, 'Yes, master. Let me send you what you need!');
 				bot.notifyAdmin(
-					`Chat id: ${msg.chat.id}\nGame _id: ${
-						game._id
-					}\nSettings:\n${JSON.stringify(game.settings)}\nList: ${
-						game.list.name
-					}\nMinigame: ${game.minigame.answer}\nTinygame: ${
+					`Chat id: ${msg.chat.id}\nGame _id: ${game._id}\nSettings:\n${JSON.stringify(
+						game.settings
+					)}\nList: ${game.list.name}\nMinigame: ${game.minigame.answer}\nTinygame: ${
 						game.tinygame.answer
 					}\nhttps://belgocanadian.com/tenthings/${game.chat_id}`
 				);
@@ -2226,10 +2049,7 @@ const evaluateCommand = async (res, msg, game, isNew) => {
 			bot.queueMessage(msg.chat.id, 'pong');
 			break;
 		case '/hello':
-			bot.queueMessage(
-				msg.chat.id,
-				'You already had me but you got greedy, now you ruined it'
-			);
+			bot.queueMessage(msg.chat.id, 'You already had me but you got greedy, now you ruined it');
 			break;
 		case '/queue':
 			getQueue().then(message => {
@@ -2280,16 +2100,12 @@ router.get('/queue', async (req, res, next) => {
 module.exports = router;
 
 const checkSkipper = async (game, msg, player) => {
-	if (
-		!vetoes[game.id] ||
-		vetoes[game.id] < moment().subtract(VETO_DELAY, 'seconds')
-	) {
+	if (!vetoes[game.id] || vetoes[game.id] < moment().subtract(VETO_DELAY, 'seconds')) {
 		delete vetoes[game.id];
 		if (skippers[player.id]) {
 			//Check for spamming if it's the same player
 			if (
-				skippers[player.id].lastSkipped <
-				moment().subtract(skippers[player.id].delay, 'seconds')
+				skippers[player.id].lastSkipped < moment().subtract(skippers[player.id].delay, 'seconds')
 			) {
 				delete skippers[player.id];
 			} else {
@@ -2319,10 +2135,7 @@ const checkSkipper = async (game, msg, player) => {
 					return false;
 				} else if (skippers[player.id].delay != 3600) {
 					skippers[player.id].delay = 3600;
-					bot.queueMessage(
-						msg.chat.id,
-						`Banned ${player.first_name} from skipping for 1 hour`
-					);
+					bot.queueMessage(msg.chat.id, `Banned ${player.first_name} from skipping for 1 hour`);
 					return false;
 				}
 			}

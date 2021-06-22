@@ -1,8 +1,6 @@
 <div id="tenthings-page" class="col-md-12" ng-keydown="keyDown($event)">
 	<div>
-		<h1 class="text-danger" ng-show="!loggedIn">
-			You have to be logged in to edit lists
-		</h1>
+		<h1 class="text-danger" ng-show="!loggedIn">You have to be logged in to edit lists</h1>
 		<div class="well well-sm">
 			This page works in conjunction with the
 			<a href="https://t.me/joinchat/I1Di-1MXGXkjhgNPXi6Vfg" target="_blank"
@@ -13,19 +11,11 @@
 			<div class="col-md-4">
 				<div class="btn-group">
 					<button class="btn btn-default" ng-click="getLists()">
-						<i
-							class="fas fa-sync"
-							ng-class="{ 'fa-spin': loading }"
-							aria-hidden="true"
-						></i>
+						<i class="fas fa-sync" ng-class="{ 'fa-spin': loading }" aria-hidden="true"></i>
 					</button>
 					<div class="btn-group" ng-if="userCount > 1">
 						<div class="dropdown">
-							<button
-								class="btn btn-default dropdown-toggle"
-								type="button"
-								data-toggle="dropdown"
-							>
+							<button class="btn btn-default dropdown-toggle" type="button" data-toggle="dropdown">
 								<i class="fas fa-user"></i> {{userFilter ? userFilter : 'User'}}
 							</button>
 							<ul class="dropdown-menu">
@@ -33,27 +23,19 @@
 									ng-repeat="(key, value) in userFilters"
 									ng-show="value > 10 && (currentUser.admin || key === currentUser.username || key === 'All')"
 								>
-									<a href="#" ng-click="setUserFilter(key)"
-										>{{key}} ({{value}})</a
-									>
+									<a href="#" ng-click="setUserFilter(key)">{{key}} ({{value}})</a>
 								</li>
 							</ul>
 						</div>
 					</div>
 					<div class="btn-group">
 						<div class="dropdown">
-							<button
-								class="btn btn-default dropdown-toggle"
-								type="button"
-								data-toggle="dropdown"
-							>
+							<button class="btn btn-default dropdown-toggle" type="button" data-toggle="dropdown">
 								<i class="fas fa-wrench"></i> {{updateFilter.capitalize()}}
 							</button>
 							<ul class="dropdown-menu">
 								<li>
-									<a href="#" ng-click="setUpdateFilter('all')"
-										>All ({{getUpdateCount('all')}})</a
-									>
+									<a href="#" ng-click="setUpdateFilter('all')">All ({{getUpdateCount('all')}})</a>
 								</li>
 								<li>
 									<a href="#" ng-click="setUpdateFilter('static')"
@@ -70,13 +52,9 @@
 					</div>
 					<div class="btn-group">
 						<div class="dropdown">
-							<button
-								class="btn btn-default dropdown-toggle"
-								type="button"
-								data-toggle="dropdown"
-							>
-								<i class="fas fa-globe"></i> {{languageFilter ?
-								languageFilter.code.capitalize() : 'All'}}
+							<button class="btn btn-default dropdown-toggle" type="button" data-toggle="dropdown">
+								<i class="fas fa-globe"></i> {{languageFilter ? languageFilter.code.capitalize() :
+								'All'}}
 							</button>
 							<ul class="dropdown-menu">
 								<li ng-repeat="language in languageFilters | orderBy: 'code'">
@@ -90,13 +68,8 @@
 					</div>
 					<div class="btn-group">
 						<div class="dropdown">
-							<button
-								class="btn btn-default dropdown-toggle"
-								type="button"
-								data-toggle="dropdown"
-							>
-								<i class="fas fa-tags"></i> {{categoryFilter ? categoryFilter :
-								'Category'}}
+							<button class="btn btn-default dropdown-toggle" type="button" data-toggle="dropdown">
+								<i class="fas fa-tags"></i> {{categoryFilter ? categoryFilter : 'Category'}}
 							</button>
 							<ul class="dropdown-menu">
 								<li ng-repeat="category in categoryFilters | orderBy">
@@ -107,81 +80,62 @@
 							</ul>
 						</div>
 					</div>
-					<button class="btn btn-default disabled">
-						{{filteredLists().length}}
-					</button>
+					<button class="btn btn-default disabled">{{filteredLists().length}}</button>
 					<div class="btn-group">
 						<div class="dropdown">
-							<button
-								class="btn btn-default dropdown-toggle"
-								type="button"
-								data-toggle="dropdown"
-							>
+							<button class="btn btn-default dropdown-toggle" type="button" data-toggle="dropdown">
 								{{sortLabel}} {{(sortDirection ? 'A-Z' : 'Z-A')}}
 							</button>
 							<ul class="dropdown-menu">
 								<li>
 									<a href="#" ng-click="sort('name', 'Name')"
-										>Name {{sortValue === 'name' ? (sortDirection ? 'Z-A' :
-										'A-Z') : 'A-Z'}}</a
+										>Name {{sortValue === 'name' ? (sortDirection ? 'Z-A' : 'A-Z') : 'A-Z'}}</a
 									>
 								</li>
 								<li>
 									<a href="#" ng-click="sort('date', 'Creation Date')"
-										>Creation Date {{sortValue === 'date' ? (sortDirection ?
-										'Z-A' : 'A-Z') : 'A-Z'}}</a
+										>Creation Date {{sortValue === 'date' ? (sortDirection ? 'Z-A' : 'A-Z') :
+										'A-Z'}}</a
 									>
 								</li>
 								<li>
 									<a href="#" ng-click="sort('modifyDate', 'Modify Date')"
-										>Modify Date {{sortValue === 'modifyDate' ? (sortDirection ?
-										'Z-A' : 'A-Z') : 'A-Z'}}</a
+										>Modify Date {{sortValue === 'modifyDate' ? (sortDirection ? 'Z-A' : 'A-Z') :
+										'A-Z'}}</a
 									>
 								</li>
 								<li>
 									<a href="#" ng-click="sort('skips', '# of Skips')"
-										>Skips {{sortValue === 'skips' ? (sortDirection ? 'Z-A' :
-										'A-Z') : 'A-Z'}}</a
+										>Skips {{sortValue === 'skips' ? (sortDirection ? 'Z-A' : 'A-Z') : 'A-Z'}}</a
 									>
 								</li>
 								<li>
 									<a href="#" ng-click="sort('plays', '# of Plays')"
-										>Plays {{sortValue === 'plays' ? (sortDirection ? 'Z-A' :
-										'A-Z') : 'A-Z'}}</a
+										>Plays {{sortValue === 'plays' ? (sortDirection ? 'Z-A' : 'A-Z') : 'A-Z'}}</a
 									>
 								</li>
 								<li>
 									<a href="#" ng-click="sort('hints', '# of Hints')"
-										>Hints {{sortValue === 'hints' ? (sortDirection ? 'Z-A' :
-										'A-Z') : 'A-Z'}}</a
+										>Hints {{sortValue === 'hints' ? (sortDirection ? 'Z-A' : 'A-Z') : 'A-Z'}}</a
 									>
 								</li>
 								<li>
 									<a href="#" ng-click="sort('score', 'Score')"
-										>Score {{sortValue === 'score' ? (sortDirection ? 'Z-A' :
-										'A-Z') : 'A-Z'}}</a
+										>Score {{sortValue === 'score' ? (sortDirection ? 'Z-A' : 'A-Z') : 'A-Z'}}</a
 									>
 								</li>
 								<li>
 									<a href="#" ng-click="sort('answers', '# of Answer')"
-										>Answers {{sortValue === 'answers' ? (sortDirection ? 'Z-A'
-										: 'A-Z') : 'A-Z'}}</a
+										>Answers {{sortValue === 'answers' ? (sortDirection ? 'Z-A' : 'A-Z') :
+										'A-Z'}}</a
 									>
 								</li>
 							</ul>
 						</div>
 					</div>
 				</div>
-				<input
-					class="form-control"
-					ng-model="search.name"
-					placeholder="Search List Names"
-				/>
-				<input
-					class="form-control"
-					ng-model="searchAll"
-					placeholder="Search Everything"
-				/>
+				<input class="form-control" ng-model="search.name" placeholder="Search List Names" />
+				<input class="form-control" ng-model="searchAll" placeholder="Search Everything" />
 				<div style="overflow-y: scroll; overflow-x: hidden; max-height: 100vh">
 					<button
 						class="btn btn-sm"
@@ -237,13 +191,13 @@
 						ng-click="sortList = sortList === 'value' ? 'blurb' : 'value'"
 						ng-hide="!selectedList"
 					>
-						<i class="fas fa-sort-numeric-down" aria-hidden="true"></i> Sort by
-						{{sortList === 'value' ? 'blurb' : 'value'}}
+						<i class="fas fa-sort-numeric-down" aria-hidden="true"></i> Sort by {{sortList ===
+						'value' ? 'blurb' : 'value'}}
 					</div>
 					<br />
 					<kbd
-						>Please search existing lists first and add answers to them.
-						Subjective, niche and duplicate lists will be deleted.</kbd
+						>Please search existing lists first and add answers to them. Subjective, niche and
+						duplicate lists will be deleted.</kbd
 					>
 					<br />
 					<div class="input-group">
@@ -259,9 +213,7 @@
 							typeahead-on-select="selectList($item)"
 						/>
 						<span class="input-group-addon"
-							><img
-								ng-src="{{item.description}}"
-								ng-if="item.blurb.substring(0, 4) === 'http'"
+							><img ng-src="{{item.description}}" ng-if="item.blurb.substring(0, 4) === 'http'"
 						/></span>
 						<input
 							class="form-control"
@@ -290,8 +242,7 @@
 							ng-click="selectedList.isDynamic = !selectedList.isDynamic"
 							ng-disabled="!selectedList || (!currentUser.admin && selectedList.creator._id !== currentUser._id && selectedList._id)"
 						>
-							{{selectedList.isDynamic ? 'List changes overtime' : 'List never
-							changes'}}
+							{{selectedList.isDynamic ? 'List changes overtime' : 'List never changes'}}
 						</button>
 						<div class="btn-group">
 							<button
@@ -384,9 +335,8 @@
 						<b>{{selectedList.name}}</b> by {{selectedList.creator.username}} on
 						{{formatDate(selectedList.date)}} ---
 						<span ng-show="selectedList.plays"
-							>Plays: {{selectedList.plays}} / Skips: {{selectedList.skips}} /
-							Score: {{selectedList.score}} / Hints:
-							{{selectedList.hints}}</span
+							>Plays: {{selectedList.plays}} / Skips: {{selectedList.skips}} / Score:
+							{{selectedList.score}} / Hints: {{selectedList.hints}}</span
 						>
 					</h5>
 					<div class="input-group" ng-if="loggedIn">
@@ -417,24 +367,15 @@
 						</div>
 					</div>
 					<hr />
-					<div
-						class="input-group"
-						ng-repeat="item in selectedList.values | orderBy: sortList"
-					>
+					<div class="input-group" ng-repeat="item in selectedList.values | orderBy: sortList">
 						<span
 							class="input-group-addon"
 							uib-tooltip="{{item.creator.username}}"
 							tooltip-placement="left"
 							ng-class="{'text-success': item.creator._id === currentUser._id, 'text-info': item.creator._id !== currentUser._id && item.creator._id !== selectedList.creator._id}"
 						>
-							<i
-								class="fas fa-user-tie"
-								ng-if="item.creator._id === selectedList.creator._id"
-							></i>
-							<i
-								class="fas fa-user"
-								ng-if="item.creator._id !== selectedList.creator._id"
-							></i>
+							<i class="fas fa-user-tie" ng-if="item.creator._id === selectedList.creator._id"></i>
+							<i class="fas fa-user" ng-if="item.creator._id !== selectedList.creator._id"></i>
 						</span>
 						<input
 							id="value{{$index}}"
