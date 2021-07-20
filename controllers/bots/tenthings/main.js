@@ -394,12 +394,14 @@ const queueGuess = async (game, msg) => {
 		guess.match.index = _.findIndex(values, value => value === guess.match.value);
 		if (guess.match.distance >= 0.75) {
 			found = true;
-			setTimeout(async () => {
-				return queueingGuess({
-					...guess,
-					player: await getPlayer(game, msg.from),
-				});
-			}, (2000 / 0.25) * (1 - guess.match.distance));
+			setTimeout(
+				async () =>
+					queueingGuess({
+						...guess,
+						player: await getPlayer(game, msg.from),
+					}),
+				(2000 / 0.25) * (1 - guess.match.distance)
+			);
 		}
 	}
 	if (!found) {
@@ -422,14 +424,14 @@ const queueGuess = async (game, msg) => {
 					answer: game.minigame.answer,
 					match,
 				};
-				setTimeout(async () => {
-					return queueingGuess({
-						...guess,
-						player: await getPlayer(game, msg.from),
-					});
-				}, (2000 / 0.25) * (1 - match.distance));
-			} else {
-				sass(game, msg.text, msg.from);
+				setTimeout(
+					async () =>
+						queueingGuess({
+							...guess,
+							player: await getPlayer(game, msg.from),
+						}),
+					(2000 / 0.25) * (1 - match.distance)
+				);
 			}
 		}
 	}
@@ -445,6 +447,7 @@ const queueGuess = async (game, msg) => {
 				min: 0.75,
 			});
 			if (match.distance >= 0.75) {
+				found = true;
 				const guess = {
 					type: 'tinygame',
 					msg,
@@ -458,11 +461,10 @@ const queueGuess = async (game, msg) => {
 						player: await getPlayer(game, msg.from),
 					});
 				}, (2000 / 0.25) * (1 - match.distance));
-			} else {
-				sass(game, msg.text, msg.from);
 			}
 		}
 	}
+	if (!found) sass(game, msg.text, msg.from);
 };
 
 const sass = (game, text, from) => {
