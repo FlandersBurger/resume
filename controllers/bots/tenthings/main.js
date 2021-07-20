@@ -470,8 +470,9 @@ const sass = (game, text, from) => {
 		messages.sass(text).then(
 			sass => {
 				if (sass) {
-					if (sass.indexOf('http') === 0) {
-						if (sass.indexOf('.gif') > 0) {
+					console.log(sass);
+					if (sass.includes('http')) {
+						if (sass.includes('.gif')) {
 							bot.sendAnimation(game.chat_id, sass);
 						} else {
 							bot.sendPhoto(game.chat_id, sass);
