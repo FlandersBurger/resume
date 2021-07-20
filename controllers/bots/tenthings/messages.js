@@ -32,24 +32,18 @@ module.exports = {
 		message +=
 			rule++ +
 			': Hints are revealed in this order: first letters, last letters, vowels, and the rest. The rest will be revealed from least frequent to most frequent letter\n';
-		message +=
-			rule++ + ': There is a 10 second cooldown between asking hints\n';
+		message += rule++ + ': There is a 10 second cooldown between asking hints\n';
 		message += rule++ + ': A list can be skipped if 2 players /skip it\n';
 		message +=
 			rule++ +
 			': If only 1 player skips a list there will be a 15 second cooldown until the list is skipped\n';
-		message +=
-			rule++ +
-			': A skip can be cancelled by anyone by typing /veto or a correct answer\n';
-		message +=
-			rule++ +
-			': If a skip is vetoed, new skips will be ignored for 15 seconds\n';
+		message += rule++ + ': A skip can be cancelled by anyone by typing /veto or a correct answer\n';
+		message += rule++ + ': If a skip is vetoed, new skips will be ignored for 15 seconds\n';
 		message +=
 			rule++ +
 			': Every day at midnight (universal time) the daily scores will be reset and a winner recorded\n';
 		message +=
-			rule++ +
-			': Spammers will be ignored until they are silent for at least 10 seconds\n';
+			rule++ + ': Spammers will be ignored until they are silent for at least 10 seconds\n';
 		return message;
 	},
 	commands: (language = 'EN') => {
@@ -65,8 +59,7 @@ module.exports = {
 			message += '/intro - O que sou eu?\n';
 			message += '/logica - Uma explicação da lógica utilizada\n';
 			message += '/confi - Configurações (Somente Admin)\n';
-			message +=
-				'/categorias - Selecione as categorias a incluir (Somente Admin)\n';
+			message += '/categorias - Selecione as categorias a incluir (Somente Admin)\n';
 			message += '/erro - Relatar um erro de digitação na lista atual\n';
 			message += '/bug - Relatar um bug com o bot\n';
 			message += '/pesquisar - Listas de busca para fila\n';
@@ -83,8 +76,7 @@ module.exports = {
 			message += '/intro - What am I?\n';
 			message += '/logic - An explanation of the logic used\n';
 			message += '/settings - Bot behaviour settings (Admin Only)\n';
-			message +=
-				'/categories - Select which categories to include (Admin Only)\n';
+			message += '/categories - Select which categories to include (Admin Only)\n';
 			message += '/typo - Report a typo in the current list\n';
 			message += '/bug - Report a bug with the bot\n';
 			message += '/feature - Recommend a new feature for the bot\n';
@@ -115,33 +107,14 @@ module.exports = {
 						' ages ago.'
 					);
 				case 1:
-					return (
-						winner.first_name +
-						' beat you to ' +
-						match +
-						', ' +
-						loser.first_name
-					);
+					return winner.first_name + ' beat you to ' + match + ', ' + loser.first_name;
 				case 2:
-					return (
-						match + ' denied by ' + winner.first_name + ', ' + loser.first_name
-					);
+					return match + ' denied by ' + winner.first_name + ', ' + loser.first_name;
 				case 3:
-					return (
-						loser.first_name +
-						' was pwned, ' +
-						winner.first_name +
-						' guessed ' +
-						match
-					);
+					return loser.first_name + ' was pwned, ' + winner.first_name + ' guessed ' + match;
 				case 4:
 					return (
-						loser.first_name +
-						' got schooled by ' +
-						winner.first_name +
-						"'s " +
-						match +
-						' answer'
+						loser.first_name + ' got schooled by ' + winner.first_name + "'s " + match + ' answer'
 					);
 				case 5:
 					return (
@@ -154,11 +127,7 @@ module.exports = {
 					);
 				case 6:
 					return (
-						winner.first_name +
-						' showed ' +
-						loser.first_name +
-						" who's the boss with " +
-						match
+						winner.first_name + ' showed ' + loser.first_name + " who's the boss with " + match
 					);
 				case 7:
 					return (
@@ -180,64 +149,31 @@ module.exports = {
 						loser.first_name
 					);
 				default:
-					return (
-						winner.first_name +
-						' already got ' +
-						match +
-						', too bad ' +
-						loser.first_name
-					);
+					return winner.first_name + ' already got ' + match + ', too bad ' + loser.first_name;
 			}
 		} else {
 			switch (random) {
 				case 0:
-					return (
-						loser.first_name + ' losing it, they already answered ' + match
-					);
+					return loser.first_name + ' losing it, they already answered ' + match;
 				case 1:
-					return (
-						match + ', ' + loser.first_name + "? I think I'm having a deja-vu"
-					);
+					return match + ', ' + loser.first_name + "? I think I'm having a deja-vu";
 				case 2:
-					return (
-						'Are you doing ok ' +
-						loser.first_name +
-						'? You already said ' +
-						match
-					);
+					return 'Are you doing ok ' + loser.first_name + '? You already said ' + match;
 				case 3:
 					return loser.first_name + ' was pwned by themself with ' + match;
 				case 4:
-					return (
-						loser.first_name +
-						' suffers from short term memory loss, cough, ' +
-						match +
-						''
-					);
+					return loser.first_name + ' suffers from short term memory loss, cough, ' + match + '';
 				case 5:
 					return 'Own goal delivered by ' + loser.first_name + ' for ' + match;
 				case 6:
-					return (
-						'Great job ' +
-						loser.first_name +
-						', you just schooled yourself with ' +
-						match
-					);
+					return 'Great job ' + loser.first_name + ', you just schooled yourself with ' + match;
 				case 7:
-					return (
-						'Um, I already said you got ' + match + ', ' + loser.first_name
-					);
+					return 'Um, I already said you got ' + match + ', ' + loser.first_name;
 				case 8:
-					return (
-						loser.first_name + ' tried to cheat with ' + match + ' and failed'
-					);
+					return loser.first_name + ' tried to cheat with ' + match + ' and failed';
 				default:
 					return (
-						loser.first_name +
-						' already got ' +
-						match +
-						', too bad, um..., ' +
-						loser.first_name
+						loser.first_name + ' already got ' + match + ', too bad, um..., ' + loser.first_name
 					);
 			}
 		}
@@ -248,9 +184,7 @@ module.exports = {
 		msg += `${list.decription ? `${list.decription}\n` : ''}`;
 		msg += ` - Categories: ${list.categories.join(', ')}\n`;
 		msg += ` - Language: ${list.language}\n`;
-		msg += list.difficulty
-			? ` - Difficulty: ${this.difficulty(list.difficulty)}\n`
-			: '';
+		msg += list.difficulty ? ` - Difficulty: ${this.difficulty(list.difficulty)}\n` : '';
 		msg += list.frequency
 			? ` - Frequency: ${this.frequency(list.frequency).capitalize()} changes\n`
 			: '';
@@ -289,8 +223,7 @@ module.exports = {
 		message += 'Skips: ' + list.skips + '\n';
 		message += 'Hints: ' + list.hints + '\n';
 		message += 'Created on: ' + moment(list.date).format('DD-MMM-YYYY') + '\n';
-		message +=
-			'Modified on: ' + moment(list.modifyDate).format('DD-MMM-YYYY') + '\n';
+		message += 'Modified on: ' + moment(list.modifyDate).format('DD-MMM-YYYY') + '\n';
 		return message;
 	},
 	playerStats: function (player, requestor = null) {
@@ -300,8 +233,7 @@ module.exports = {
 		message += '<b>Personal Stats for ' + player.first_name + '</b>\n';
 		message += 'Total Score: ' + player.score + '\n';
 		message += 'High Score: ' + player.highScore + '\n';
-		message +=
-			'Average Score: ' + Math.round(player.score / player.plays) + '\n';
+		message += 'Average Score: ' + Math.round(player.score / player.plays) + '\n';
 		message += player.wins + ' wins out of ' + player.plays + ' days played\n';
 		message += 'Correct answers given: ' + player.answers + '\n';
 		message += `Minigame Answers Given: ${player.minigamePlays}\n`;
@@ -498,9 +430,7 @@ module.exports = {
 				messages = ["Hello Dave, You're looking well today"];
 				break;
 			case 10000:
-				messages = [
-					'Ten thousand years will give you such a crick in the neck',
-				];
+				messages = ['Ten thousand years will give you such a crick in the neck'];
 				break;
 			case 1000000:
 				messages = ['One in a Million', 'Holy Shite, A Million Answers'];
@@ -846,15 +776,15 @@ module.exports = {
 			} else if (text.toLowerCase().indexOf('your quest') >= 0) {
 				messages = ['To seek the holy grail'];
 			} else if (checkString(text, 'inconceivable')) {
-				messages = [
-					'My name is Inigo Montoya. You killed my father. Prepare to die.',
-				];
+				messages = ['My name is Inigo Montoya. You killed my father. Prepare to die.'];
 			} else if (
 				checkString(text, 'who') &&
 				checkString(text, 'gonna') &&
 				checkString(text, 'call')
 			) {
 				messages = ['Ghostbusters'];
+			} else if (/[a-zA-Z]+ \bis\b/.test(text)) {
+				messages = adjectives.map(adjective => `${text} ${adjective}!`);
 			}
 			if (messages.length > 0) {
 				resolve(messages[Math.floor(Math.random() * messages.length)]);
@@ -868,3 +798,544 @@ const checkString = (text, str) =>
 		.replace(/[^\w\s]/gi, '')
 		.split(' ')
 		.includes(str);
+
+const adjectives = [
+	'able',
+	'abnormal',
+	'above average',
+	'abrasive',
+	'absent-minded',
+	'adaptable',
+	'adventurous',
+	'affable',
+	'affectionate',
+	'aggressive',
+	'agile',
+	'agreeable',
+	'alert',
+	'aloof',
+	'amazing',
+	'ambitious',
+	'amiable',
+	'amicable',
+	'amusing',
+	'analytical',
+	'angelic',
+	'antisocial',
+	'apathetic',
+	'apprehensive',
+	'ardent',
+	'argumentative',
+	'arrogant',
+	'artificial',
+	'artistic',
+	'assertive',
+	'attentive',
+	'average',
+	'awesome',
+	'awful',
+	'bad-tempered',
+	'balanced',
+	'beautiful',
+	'belligerent',
+	'below average',
+	'beneficent',
+	'big-headed',
+	'bigoted',
+	'blue',
+	'blunt',
+	'boastful',
+	'boisterous',
+	'boring',
+	'bossy',
+	'brave',
+	'bright',
+	'brilliant',
+	'buff',
+	'callous',
+	'calm',
+	'candid',
+	'cantankerous',
+	'capable',
+	'careful',
+	'careless',
+	'catty',
+	'caustic',
+	'cautious',
+	'chaotic',
+	'charming',
+	'cheerful',
+	'chic',
+	'childish',
+	'childlike',
+	'churlish',
+	'circumspect',
+	'civil',
+	'clean',
+	'clever',
+	'clingy',
+	'clumsy',
+	'cocky',
+	'coherent',
+	'cold',
+	'communicative',
+	'compassionate',
+	'competent',
+	'composed',
+	'conceited',
+	'condescending',
+	'confident',
+	'confrontational',
+	'confused',
+	'conniving',
+	'conscientious',
+	'considerate',
+	'contemptuous',
+	'content',
+	'controlling',
+	'cool',
+	'cool-headed',
+	'cooperative',
+	'cordial',
+	'courageous',
+	'courteous',
+	'cowardly',
+	'crabby',
+	'crafty',
+	'cranky',
+	'crass',
+	'creative',
+	'critical',
+	'cruel',
+	'curious',
+	'cynical',
+	'dainty',
+	'deceitful',
+	'decisive',
+	'deep',
+	'defensive',
+	'deferential',
+	'deft',
+	'delicate',
+	'delightful',
+	'demonic',
+	'demure',
+	'dense',
+	'dependent',
+	'depressed',
+	'detached',
+	'determined',
+	'devious',
+	'devoted',
+	'dextrous',
+	'diligent',
+	'dim',
+	'diplomatic',
+	'direct',
+	'dirty',
+	'disagreeable',
+	'discerning',
+	'discreet',
+	'dishonest',
+	'disloyal',
+	'dismissive',
+	'disorganized',
+	'disrespectful',
+	'disruptive',
+	'distant',
+	'distraught',
+	'distrustful',
+	'dogmatic',
+	'domineering',
+	'dowdy',
+	'dramatic',
+	'dreary',
+	'drowsy',
+	'drugged',
+	'drunk',
+	'dull',
+	'dutiful',
+	'dynamic',
+	'eager',
+	'earnest',
+	'easy-going',
+	'efficient',
+	'egocentric',
+	'egotistical',
+	'elfin',
+	'emotional',
+	'empathetic',
+	'energetic',
+	'enterprising',
+	'enthusiastic',
+	'envious',
+	'evasive',
+	'even-tempered',
+	'evil',
+	'exacting',
+	'excellent',
+	'excitable',
+	'experienced',
+	'fabulous',
+	'facetious',
+	'faithful',
+	'fanatical',
+	'fastidious',
+	'fawning',
+	'fearless',
+	'ferocious',
+	'fervent',
+	'fickle',
+	'fiery',
+	'finicky',
+	'flabby',
+	'flaky',
+	'flashy',
+	'foolish',
+	'forgetful',
+	'frank',
+	'friendly',
+	'frivolous',
+	'funny',
+	'fussy',
+	'generous',
+	'gentle',
+	'gloomy',
+	'gluttonous',
+	'good',
+	'gossipy',
+	'grave',
+	'great',
+	'greedy',
+	'gregarious',
+	'groggy',
+	'grouchy',
+	'grumpy',
+	'guarded',
+	'gullible',
+	'hateful',
+	'hearty',
+	'hedonistic',
+	'helpful',
+	'hesitant',
+	'honest',
+	'hopeful',
+	'hostile',
+	'hot-headed',
+	'humorless',
+	'humorous',
+	'hypercritical',
+	'hypocritical',
+	'hysterical',
+	'idiotic',
+	'idle',
+	'ignorant',
+	'illogical',
+	'imaginative',
+	'immature',
+	'immodest',
+	'impatient',
+	'imperturbable',
+	'impetuous',
+	'impractical',
+	'impressionable',
+	'impressive',
+	'impulsive',
+	'inactive',
+	'incisive',
+	'incompetent',
+	'inconsiderate',
+	'inconsistent',
+	'indecisive',
+	'indefatigable',
+	'independent',
+	'indiscreet',
+	'indolent',
+	'industrious',
+	'inexperienced',
+	'inflexible',
+	'insensitive',
+	'inspiring',
+	'intelligent',
+	'interesting',
+	'intolerant',
+	'intuitive',
+	'inventive',
+	'irascible',
+	'irrational',
+	'irresponsible',
+	'irritable',
+	'irritating',
+	'jealous',
+	'jocular',
+	'jovial',
+	'joyful',
+	'joyous',
+	'judgemental',
+	'judgmental',
+	'keen',
+	'kind',
+	'lackadaisical',
+	'lame',
+	'lazy',
+	'lean',
+	'leery',
+	'lethargic',
+	'level-headed',
+	'listless',
+	'lithe',
+	'lively',
+	'local',
+	'logical',
+	'long-winded',
+	'lovable',
+	'love-lorn',
+	'lovely',
+	'loving',
+	'loyal',
+	'lucky',
+	'machiavellian',
+	'malevolent',
+	'malicious',
+	'manipulative',
+	'maternal',
+	'mature',
+	'mean',
+	'meddlesome',
+	'melodramatic',
+	'mercurial',
+	'methodical',
+	'meticulous',
+	'mild',
+	'miserable',
+	'modest',
+	'moody',
+	'morbid',
+	'moronic',
+	'morose',
+	'motivated',
+	'musical',
+	'naive',
+	'naïve',
+	'narcissistic',
+	'narrow-minded',
+	'nasty',
+	'natural',
+	'naughty',
+	'neat',
+	'negative',
+	'nervous',
+	'neurotic',
+	'nice',
+	'nihilistic',
+	'noisy',
+	'normal',
+	'nosy',
+	'numb',
+	'obliging',
+	'obnoxious',
+	'obsessive',
+	'old-fashioned',
+	'one-sided',
+	'optimistic',
+	'orderly',
+	'ostentatious',
+	'outgoing',
+	'outspoken',
+	'paranoid',
+	'passionate',
+	'passive',
+	'paternal',
+	'paternalistic',
+	'patient',
+	'patronizing',
+	'peaceful',
+	'peevish',
+	'pensive',
+	'persevering',
+	'persnickety',
+	'pessimistic',
+	'petty',
+	'petulant',
+	'pharisaical',
+	'philandering',
+	'picky',
+	'pig-headed',
+	'plain',
+	'plain-speaking',
+	'playful',
+	'pleasant',
+	'plucky',
+	'polite',
+	'pompous',
+	'popular',
+	'posessive',
+	'positive',
+	'possessive',
+	'powerful',
+	'practical',
+	'predatory',
+	'prejudiced',
+	'pretentious',
+	'pretty',
+	'proficient',
+	'proud',
+	'provocative',
+	'prudent',
+	'punctual',
+	'quarrelsome',
+	'querulous',
+	'quick',
+	'quick-tempered',
+	'quiet',
+	'rational',
+	'realistic',
+	'reassuring',
+	'reckless',
+	'reclusive',
+	'reliable',
+	'reluctant',
+	'resentful',
+	'reserved',
+	'resigned',
+	'resourceful',
+	'respected',
+	'respectful',
+	'responsible',
+	'restless',
+	'revered',
+	'ridiculous',
+	'romantic',
+	'rotten',
+	'rude',
+	'sad',
+	'sadistic',
+	'sassy',
+	'saucy',
+	'scheming',
+	'secretive',
+	'sedate',
+	'self-assured',
+	'selfish',
+	'sensible',
+	'sensitive',
+	'sentimental',
+	'serene',
+	'serious',
+	'sharp',
+	'shifty',
+	'short-tempered',
+	'shrewd',
+	'shy',
+	'silly',
+	'sincere',
+	'sleazy',
+	'sleepy',
+	'slight',
+	'sloppy',
+	'slothful',
+	'slovenly',
+	'slow',
+	'smart',
+	'snazzy',
+	'sneaky',
+	'sneering',
+	'snobby',
+	'sober',
+	'sociable',
+	'somber',
+	'sophisticated',
+	'soulful',
+	'soulless',
+	'sour',
+	'spirited',
+	'spiteful',
+	'spoiled',
+	'stable',
+	'staid',
+	'steady',
+	'stern',
+	'stingy',
+	'stoic',
+	'striking',
+	'strong',
+	'stupid',
+	'sturdy',
+	'subtle',
+	'sulky',
+	'sullen',
+	'supercilious',
+	'superficial',
+	'surly',
+	'suspicious',
+	'sweet',
+	'sympathetic',
+	'tactful',
+	'tactless',
+	'talented',
+	'testy',
+	'thinking',
+	'thoughtful',
+	'thoughtless',
+	'tidy',
+	'timid',
+	'tired',
+	'tolerant',
+	'touchy',
+	'tranquil',
+	'ugly',
+	'unaffected',
+	'unbalanced',
+	'uncertain',
+	'uncooperative',
+	'undependable',
+	'underhanded',
+	'understanding',
+	'unemotional',
+	'unforgiving',
+	'unfriendly',
+	'unguarded',
+	'unhelpful',
+	'unimaginative',
+	'unlucky',
+	'unmotivated',
+	'unpleasant',
+	'unpopular',
+	'unpredictable',
+	'unreliable',
+	'unsophisticated',
+	'unstable',
+	'unsure',
+	'unthinking',
+	'untidy',
+	'untrustworthy',
+	'unwilling',
+	'vacillating',
+	'vacuous',
+	'vague',
+	'vain',
+	'venal',
+	'versatile',
+	'vigilant',
+	'vindictive',
+	'violent',
+	'volcanic',
+	'vulgar',
+	'vulnerable',
+	'warm',
+	'warmhearted',
+	'wary',
+	'watchful',
+	'weak',
+	'weak-willed',
+	'well-behaved',
+	'well-developed',
+	'well-intentioned',
+	'well-respected',
+	'well-rounded',
+	'willing',
+	'wise',
+	'witty',
+	'wonderful',
+	'zealous',
+];
