@@ -783,7 +783,7 @@ module.exports = {
 				checkString(text, 'call')
 			) {
 				messages = ['Ghostbusters'];
-			} else if (/[a-zA-Z]+ \bis\b/.test(text)) {
+			} else if (/[^\s]+ \bis\b/.test(text)) {
 				messages = adjectives.map(adjective => `${text} ${adjective}!`);
 			}
 			if (messages.length > 0) {
