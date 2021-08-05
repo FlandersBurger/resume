@@ -197,7 +197,10 @@
 					<br />
 					<kbd
 						>Please search existing lists first and add answers to them. Subjective, niche and
-						duplicate lists will be deleted.</kbd
+						duplicate lists will be deleted.
+						<span ng-if="selectedList.categories.indexOf('Music') >= 0"
+							>Music lists will be scrutinized by admins for global recognition.</span
+						></kbd
 					>
 					<br />
 					<div class="input-group">
