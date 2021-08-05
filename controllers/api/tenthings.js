@@ -358,6 +358,7 @@ router.put('/lists', (req, res, next) => {
 	var previousModifyDate = moment(req.body.list.modifyDate);
 	req.body.list.modifyDate = new Date();
 	req.body.list.search = req.body.list.name.removeAllButLetters();
+	req.body.list.score = lists.getScore(req.body.list);
 	TenThingsList.findByIdAndUpdate(
 		req.body.list._id ? req.body.list._id : new mongoose.Types.ObjectId(),
 		req.body.list,

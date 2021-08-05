@@ -17,6 +17,12 @@ exports.getScore = list => {
 	const upvotes = list.votes.filter(vote => vote.vote > 0);
 	const voteRatio = upvotes.length / list.votes.length;
 	const score = (voteRatio + (list.plays - list.skips) / list.plays) / 2;
+	console.log(
+		`List score for ${list.name} -> Vote ratio: ${voteRatio} / Skip ratio: ${
+			(list.plays - list.skips) / list.plays
+		}`
+	);
+
 	if (!score) {
 		console.log("Can't calculate score for this list:");
 		console.log(list);
