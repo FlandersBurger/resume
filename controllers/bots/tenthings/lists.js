@@ -14,18 +14,11 @@ exports.getRandomList = async parameters => {
 exports.getScore = list => {
 	//((upvotes / (upvotes + downvotes)) + (skips / plays)) / 2
 	//(upvote ratio in regards to total votes + skip ratio in regards to plays) / 2
-	const upvotes = list.votes.filter(vote => vote.vote > 0);
-	const voteRatio = upvotes.length / list.votes.length;
-	const score = (voteRatio + (list.plays - list.skips) / list.plays) / 2;
-	console.log(
-		`List score for ${list.name} -> Vote ratio: ${voteRatio} / Skip ratio: ${
-			(list.plays - list.skips) / list.plays
-		}`
-	);
-
-	if (!score) {
-		console.log("Can't calculate score for this list:");
-		console.log(list);
+	if (list.votes && list.plays) {
+		const upvotes = list.votes.filter(vote => vote.vote > 0);
+		const voteRatio = upvotes.length / list.votes.length;
+		const score = (voteRatio + (list.plays - list.skips) / list.plays) / 2;
+		return score ? score : 0;
 	}
-	return score ? score : 0;
+	return 0;
 };
