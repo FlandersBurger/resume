@@ -179,7 +179,7 @@ module.exports = {
 		}
 	},
 	listInfo: function (list) {
-		let msg = `<b>${list.name}</b> (${list.language})\n`;
+		let msg = `<b>${list.name}</b> [${list.language}]\n`;
 		msg += `<i>by ${list.creator.username}</i>\n`;
 		msg += `${list.decription ? `${list.decription}\n` : ''}`;
 		msg += ` - Categories: ${list.categories.join(', ')}\n`;
