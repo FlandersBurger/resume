@@ -749,14 +749,14 @@ const creatorStats = async () => {
 		list.creator = await User.findOne({ _id: list._id }).select('username displayName').lean();
 	console.log(
 		lists
-			.filter(list => list.lists > 20)
+			.filter(list => list.lists >= 25)
 			.sort((listA, listB) => listB.score - listA.score)
 			//.slice(0, 20)
 			.map(list => ({
 				creator: list.creator.username,
 				likeability: list.score.makePercentage(),
-				voteRatio: (list.positive / list.votes) * 100,
-				skipRatio: (list.skips / list.plays) * 100,
+				//voteRatio: (list.positive / list.votes) * 100,
+				//skipRatio: (list.skips / list.plays) * 100,
 			}))
 	);
 	console.log(
