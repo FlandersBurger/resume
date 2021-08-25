@@ -94,14 +94,14 @@ module.exports = {
 				],
 				[
 					{
-						text: 'Least Popular Lists by Votes',
+						text: 'Least Popular Lists',
 						callback_data: JSON.stringify({
 							type: 'stat',
 							id: 'leastpopular',
 						}),
 					},
 					{
-						text: 'Most Popular Lists by Votes',
+						text: 'Most Popular Lists',
 						callback_data: JSON.stringify({
 							type: 'stat',
 							id: 'mostpopular',

@@ -370,10 +370,19 @@ exports.getStats = async (chat_id, data, requestor) => {
 			listStats(game, 'plays', '', 1, 'Most Played Lists', 'Sum of plays', 1, data.requestor);
 			break;
 		case 'mostpopular':
-			listStats(game, 'score', '', 1, 'Most Popular Lists', 'Sum of votes', 1, data.requestor);
+			listStats(game, 'score', '', 1, 'Most Popular Lists', 'Vote & skip ratio', 1, data.requestor);
 			break;
 		case 'leastpopular':
-			listStats(game, 'score', '', 1, 'Least Popular Lists', 'Sum of votes', -1, data.requestor);
+			listStats(
+				game,
+				'score',
+				'',
+				1,
+				'Least Popular Lists',
+				'Vote & skip ratio',
+				-1,
+				data.requestor
+			);
 			break;
 		case 'skippers':
 			playerStats(
@@ -700,7 +709,7 @@ const creatorStats = async () => {
 					$sum: 1,
 				},
 				score: {
-					$sum: '$score',
+					$avg: '$score',
 				},
 				plays: {
 					$sum: '$plays',
@@ -726,7 +735,7 @@ const creatorStats = async () => {
 					$sum: '$negative',
 				},
 				score: {
-					$sum: '$score',
+					$avg: '$score',
 				},
 				plays: {
 					$sum: '$plays',
@@ -765,7 +774,7 @@ const creatorStats = async () => {
 	);
 };
 
-//creatorStats();
+creatorStats();
 
 const voteSentimentStats = async ({ chat_id }, players, sorter, title) => {
 	List.aggregate([
