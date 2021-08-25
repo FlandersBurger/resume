@@ -179,11 +179,10 @@ module.exports = {
 		}
 	},
 	listInfo: function (list) {
-		let msg = `<b>${list.name}</b>\n`;
+		let msg = `<b>${list.name}</b> (${list.language}}\n`;
 		msg += `<i>by ${list.creator.username}</i>\n`;
 		msg += `${list.decription ? `${list.decription}\n` : ''}`;
 		msg += ` - Categories: ${list.categories.join(', ')}\n`;
-		msg += ` - Language: ${list.language}\n`;
 		msg += list.difficulty ? ` - Difficulty: ${this.difficulty(list.difficulty)}\n` : '';
 		msg += list.frequency
 			? ` - Frequency: ${this.frequency(list.frequency).capitalize()} changes\n`
@@ -216,7 +215,7 @@ module.exports = {
 		var message = '';
 		message += requestor ? `<i>Requested by ${requestor}</i>\n` : '';
 		message += '<b>Stats for ' + list.name + '</b>\n';
-		message += 'Score: ' + lists.getScore(list) + '\n';
+		message += 'Score: ' + list.score.makePercentage() + '\n';
 		message += 'Votes: ' + list.votes.length + '\n';
 		message += 'Values: ' + list.values.length + '\n';
 		message += 'Plays: ' + list.plays + '\n';

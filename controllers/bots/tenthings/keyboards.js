@@ -358,9 +358,7 @@ module.exports = {
 		return {
 			inline_keyboard: categories.sort().reduce((result, category, i) => {
 				const button = {
-					text: `${category}: ${
-						disabledCategories.indexOf(category) < 0 ? ON : OFF
-					}`,
+					text: `${category}: ${disabledCategories.indexOf(category) < 0 ? ON : OFF}`,
 					callback_data: JSON.stringify({
 						type: 'cat',
 						id: category,
@@ -431,10 +429,7 @@ module.exports = {
 		return {
 			inline_keyboard: languages
 				.filter(language =>
-					_.some(
-						availableLanguages,
-						availableLanguage => availableLanguage._id === language.code
-					)
+					_.some(availableLanguages, availableLanguage => availableLanguage._id === language.code)
 				)
 				.sort()
 				.reduce((result, language, i) => {
@@ -531,9 +526,7 @@ module.exports = {
 			],
 			[
 				{
-					text:
-						messages.frequency(0).capitalize() +
-						(list.frequency === 0 ? GREEN : ''),
+					text: messages.frequency(0).capitalize() + (list.frequency === 0 ? GREEN : ''),
 					callback_data: JSON.stringify({
 						type: 'freq',
 						vote: 0,
@@ -541,9 +534,7 @@ module.exports = {
 					}),
 				},
 				{
-					text:
-						messages.frequency(1).capitalize() +
-						(list.frequency === 1 ? GREEN : ''),
+					text: messages.frequency(1).capitalize() + (list.frequency === 1 ? GREEN : ''),
 					callback_data: JSON.stringify({
 						type: 'freq',
 						vote: 1,
@@ -551,9 +542,7 @@ module.exports = {
 					}),
 				},
 				{
-					text:
-						messages.frequency(2).capitalize() +
-						(list.frequency === 2 ? GREEN : ''),
+					text: messages.frequency(2).capitalize() + (list.frequency === 2 ? GREEN : ''),
 					callback_data: JSON.stringify({
 						type: 'freq',
 						vote: 2,
@@ -561,9 +550,7 @@ module.exports = {
 					}),
 				},
 				{
-					text:
-						messages.frequency(3).capitalize() +
-						(list.frequency === 3 ? GREEN : ''),
+					text: messages.frequency(3).capitalize() + (list.frequency === 3 ? GREEN : ''),
 					callback_data: JSON.stringify({
 						type: 'freq',
 						vote: 3,
@@ -577,6 +564,13 @@ module.exports = {
 					callback_data: JSON.stringify({
 						type: 'values',
 						list: list._id,
+					}),
+				},
+				{
+					text: 'Stats',
+					callback_data: JSON.stringify({
+						type: 'stat',
+						id: 'l_' + list._id,
 					}),
 				},
 			],
