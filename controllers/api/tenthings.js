@@ -412,7 +412,14 @@ router.delete('/lists/:id', (req, res, next) => {
 							},
 							(err, list) => {
 								if (err) return next(err);
-								bot.notifyAdmins('<b>' + list.name + '</b> deleted by ' + user.username);
+								bot.notifyAdmins(
+									list.values
+										.sort((a, b) => (a.value < b.value ? -1 : 1))
+										.reduce(
+											(message, item) => `${message}- ${item.value}\n`,
+											`<b>${list.name}</b>\ndeleted by ${user.username}\n`
+										)
+								);
 								res.sendStatus(200);
 							}
 						);
