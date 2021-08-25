@@ -678,7 +678,7 @@ const creatorStats = async () => {
 		},
 		{
 			$group: {
-				_id: { creator: '$creator', list: '$_id' },
+				_id: { creator: '$creator', list: '$_id', score: '$score' },
 				positive: {
 					$sum: {
 						$switch: {
@@ -708,9 +708,6 @@ const creatorStats = async () => {
 				votes: {
 					$sum: 1,
 				},
-				score: {
-					$avg: '$score',
-				},
 				plays: {
 					$sum: '$plays',
 				},
@@ -735,7 +732,7 @@ const creatorStats = async () => {
 					$sum: '$negative',
 				},
 				score: {
-					$avg: '$score',
+					$avg: '$_id.score',
 				},
 				plays: {
 					$sum: '$plays',
@@ -753,12 +750,13 @@ const creatorStats = async () => {
 	console.log(
 		lists
 			.filter(list => list.lists > 20)
-			.sort((listA, listB) => listB.positive / listB.votes - listA.positive / listA.votes)
+			.sort((listA, listB) => listB.score - listA.score)
 			//.slice(0, 20)
 			.map(list => ({
 				creator: list.creator.username,
-				likeability: (list.positive / list.votes) * 100,
-				//skipRatio: (list.skips / list.plays) * 100,
+				likeability: list.score.makePercentage(),
+				voteRatio: (list.positive / list.votes) * 100,
+				skipRatio: (list.skips / list.plays) * 100,
 			}))
 	);
 	console.log(
