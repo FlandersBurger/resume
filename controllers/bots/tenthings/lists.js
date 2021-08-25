@@ -16,7 +16,7 @@ exports.getScore = list => {
 	//(upvote ratio in regards to total votes + skip ratio in regards to plays) / 2
 	if (list.votes && list.plays) {
 		const upvotes = list.votes.filter(vote => vote.vote > 0);
-		const voteRatio = upvotes.length / list.votes.length;
+		const voteRatio = list.votes.length > 0 ? upvotes.length / list.votes.length : 0;
 		const score = (voteRatio + (list.plays - list.skips) / list.plays) / 2;
 		return score ? score : 0;
 	}
