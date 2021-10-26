@@ -195,6 +195,10 @@ bot.exportChatInviteLink('-1001394022777').then(function(chat) {
   console.log(chat);
 });
 */
+
+const getAvailableLanguages = ({ settings }) =>
+  settings.languages && settings.languages.length > 0 ? settings.languages : ['EN'];
+
 /*
  ███████ ███████ ██      ███████  ██████ ████████     ██      ██ ███████ ████████ 
  ██      ██      ██      ██      ██         ██        ██      ██ ██         ██    
@@ -203,10 +207,7 @@ bot.exportChatInviteLink('-1001394022777').then(function(chat) {
  ███████ ███████ ███████ ███████  ██████    ██        ███████ ██ ███████    ██    
 */
 const selectList = async (game) => {
-  const availableLanguages =
-    game.settings.languages && game.settings.languages.length > 0
-      ? game.settings.languages
-      : ['EN'];
+  const availableLanguages = getAvailableLanguages(game);
   if (game.pickedLists.length > 0) {
     let list = await List.findOne({
       _id: game.pickedLists[0],
@@ -1831,11 +1832,14 @@ const evaluateCommand = async (res, msg, game, isNew) => {
         player.searches++;
         await player.save();
         console.log(`${game.chat_id} - Search for ${search}`);
+        const availableLanguages = getAvailableLanguages(game);
         const regex = search
           .replace(new RegExp('[^a-zA-Z0-9 ]+', 'g'), '.*')
           .split(' ')
           .reduce((result, word) => `${result}(?=.*${word}.*)`, '');
         let foundLists = await List.find({
+          categories: { $nin: game.disabledCategories },
+          language: { $in: availableLanguages },
           name: {
             $regex: `.*${regex}.*`,
             $options: 'i',
@@ -1846,12 +1850,16 @@ const evaluateCommand = async (res, msg, game, isNew) => {
 
         if (foundLists.length < 10) {
           const count = await List.countDocuments({
+            categories: { $nin: game.disabledCategories },
+            language: { $in: availableLanguages },
             'values.value': {
               $regex: `.*${regex}.*`,
               $options: 'i',
             },
           });
           const valueLists = await List.find({
+            categories: { $nin: game.disabledCategories },
+            language: { $in: availableLanguages },
             'values.value': {
               $regex: `.*${regex}.*`,
               $options: 'i',
@@ -1865,12 +1873,14 @@ const evaluateCommand = async (res, msg, game, isNew) => {
         }
         if (foundLists.length < 10) {
           const count = await List.countDocuments({
+            language: { $in: availableLanguages },
             categories: {
               $regex: `.*${regex}.*`,
               $options: 'i',
             },
           });
           const categoryLists = await List.find({
+            language: { $in: availableLanguages },
             categories: {
               $regex: `.*${regex}.*`,
               $options: 'i',
