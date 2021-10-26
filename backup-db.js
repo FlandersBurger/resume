@@ -1,6 +1,6 @@
-var fs = require('fs');
+const fs = require('fs');
 const moment = require('moment');
-var exec = require('child_process').exec;
+const exec = require('child_process').exec;
 const config = require('./config');
 
 const masterDB = config.mongoDBs.find((db) => db.name === 'master');
@@ -22,7 +22,6 @@ const backup = async () => {
 
 module.exports = backup;
 /*
-
 const _ = require('underscore');
 const moment = require('moment');
 const srcCategory = require('./models/category')('master');
@@ -88,13 +87,13 @@ const backup = async () => {
   await dstCategory.insertMany(categories);
   console.log(`${categories.length} categories synced`);
 
-  // const jokes = await srcJoke.find({}).exec();
-  // await dstJoke.insertMany(jokes);
-  // console.log(`${jokes.length} jokes synced`);
+  const jokes = await srcJoke.find({}).exec();
+  await dstJoke.insertMany(jokes);
+  console.log(`${jokes.length} jokes synced`);
 
-  // const posts = await srcPost.find({}).exec();
-  // await dstPost.insertMany(posts);
-  // console.log(`${posts.length} posts synced`);
+  const posts = await srcPost.find({}).exec();
+  await dstPost.insertMany(posts);
+  console.log(`${posts.length} posts synced`);
 
   const users = await srcUser.find({}).exec();
   await dstUser.insertMany(_.uniq(users, (user) => user._id));
@@ -114,12 +113,10 @@ const backup = async () => {
   });
   console.log(`loop all ${N} lists success`);
 
-  
-    const posts = await srcPost.find({}).exec();
-    await dstPost.collection.drop({});
-    await dstPost.insertMany(posts);
-    console.log(`${posts.length} posts synced`);
-  	
+  // const posts = await srcPost.find({}).exec();
+  // await dstPost.collection.drop({});
+  // await dstPost.insertMany(posts);
+  // console.log(`${posts.length} posts synced`);
 
   const stats = await srcTenthingsStats.find({}).exec();
   await dstTenthingsStats.insertMany(stats);
@@ -149,5 +146,6 @@ const backup = async () => {
 };
 
 //backup();
-*/
+
 module.exports = backup;
+*/
