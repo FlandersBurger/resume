@@ -1,6 +1,30 @@
+var fs = require('fs');
+const moment = require('moment');
+var exec = require('child_process').exec;
+const config = require('./config');
+
+const masterDB = config.mongoDBs.find((db) => db.name === 'master');
+
+// Auto backup script
+const backup = async () => {
+  const newBackupPath = `/var/database-backup/mongodump-${moment().format('DD-MMM-YYYY')}`;
+  const oldBackupPath = `/var/database-backup/mongodump-${moment()
+    .subtract(7, 'days')
+    .format('DD-MMM-YYYY')}`;
+  const cmd = `mongodump --uri ${masterDB.url} --out ${newBackupPath}`;
+  console.log(cmd);
+
+  await exec(cmd);
+  if (fs.existsSync(oldBackupPath)) {
+    await exec('rm -rf ' + oldBackupPath);
+  }
+};
+
+module.exports = backup;
+/*
+
 const _ = require('underscore');
 const moment = require('moment');
-
 const srcCategory = require('./models/category')('master');
 const dstCategory = require('./models/category')('backup');
 const srcJoke = require('./models/joke')('master');
@@ -19,7 +43,6 @@ const srcTenthingsStats = require('./models/tenthings/stats')('master');
 const dstTenthingsStats = require('./models/tenthings/stats')('backup');
 
 const backup = async () => {
-
   let N = 0;
   try {
     await dstCategory.collection.drop({});
@@ -65,21 +88,21 @@ const backup = async () => {
   await dstCategory.insertMany(categories);
   console.log(`${categories.length} categories synced`);
 
-  const jokes = await srcJoke.find({}).exec();
-  await dstJoke.insertMany(jokes);
-  console.log(`${jokes.length} jokes synced`);
+  // const jokes = await srcJoke.find({}).exec();
+  // await dstJoke.insertMany(jokes);
+  // console.log(`${jokes.length} jokes synced`);
 
-  const posts = await srcPost.find({}).exec();
-  await dstPost.insertMany(posts);
-  console.log(`${posts.length} posts synced`);
+  // const posts = await srcPost.find({}).exec();
+  // await dstPost.insertMany(posts);
+  // console.log(`${posts.length} posts synced`);
 
   const users = await srcUser.find({}).exec();
-  await dstUser.insertMany(_.uniq(users, user => user._id));
+  await dstUser.insertMany(_.uniq(users, (user) => user._id));
   console.log(`${users.length} users synced`);
 
   N = 0;
   const listCursor = await srcList.find().cursor();
-  await listCursor.eachAsync(async list => {
+  await listCursor.eachAsync(async (list) => {
     N++;
     if (N % 50 === 0) console.log(`${N} lists synced`);
     try {
@@ -91,21 +114,20 @@ const backup = async () => {
   });
   console.log(`loop all ${N} lists success`);
 
-  /*
+  
     const posts = await srcPost.find({}).exec();
     await dstPost.collection.drop({});
     await dstPost.insertMany(posts);
     console.log(`${posts.length} posts synced`);
-  	*/
+  	
 
   const stats = await srcTenthingsStats.find({}).exec();
   await dstTenthingsStats.insertMany(stats);
   console.log(`${stats.length} stats synced`);
 
-
   N = 0;
   const tenthingsGameCursor = await srcTenthingsGame.find().cursor();
-  await tenthingsGameCursor.eachAsync(game => {
+  await tenthingsGameCursor.eachAsync((game) => {
     N++;
     if (N % 50 === 0) console.log(`${N} games synced`);
     //console.log(`id of the ${N}th game: ${game.chat_id}`);
@@ -115,7 +137,7 @@ const backup = async () => {
 
   N = 0;
   const tenthingsPlayerCursor = await srcTenthingsPlayer.find().cursor();
-  await tenthingsPlayerCursor.eachAsync(game => {
+  await tenthingsPlayerCursor.eachAsync((game) => {
     N++;
     if (N % 50 === 0) console.log(`${N} players synced`);
     //console.log(`id of the ${N}th game: ${game.chat_id}`);
@@ -127,5 +149,5 @@ const backup = async () => {
 };
 
 //backup();
-
+*/
 module.exports = backup;
