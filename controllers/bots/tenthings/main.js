@@ -1081,12 +1081,13 @@ router.post('/', async ({ body }, res, next) => {
 */
   if (body.callback_query) {
     const data = JSON.parse(body.callback_query.data);
-    data.requestor = body.callback_query.from.username
-      ? `@${body.callback_query.from.username}`
-      : `${body.callback_query.from.first_name} ${
-          body.callback_query.from.last_name ? body.callback_query.from.last_name : ''
-        }`;
-    if (data.requestor.includes('qporn')) notifyAdmins(body);
+    data.requestor = (
+      body.callback_query.from.username
+        ? `@${body.callback_query.from.username}`
+        : `${body.callback_query.from.first_name} ${
+            body.callback_query.from.last_name ? body.callback_query.from.last_name : ''
+          }`
+    ).replace('http', 'nope');
     if (data.type === 'rate') {
       let doVote = false;
       if (voters[body.callback_query.from.id]) {
