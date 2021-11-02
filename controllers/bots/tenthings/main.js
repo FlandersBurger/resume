@@ -291,7 +291,6 @@ const getPlayer = async (game, user) => {
     player.last_name = user.last_name ? user.last_name.maskURLs() : '';
     player.username = user.username ? user.username.maskURLs() : '';
     player.present = true;
-    console.log(player.first_name);
   }
   return player;
 };
@@ -525,7 +524,7 @@ const processGuess = (guess) => {
           checkGuess(game, player, guess, guess.msg).then(
             () => {
               console.log(
-                `${guess.game} - Guess for ${game.list.name}: "${guess.msg.text}" by ${guess.msg.from.first_name}`
+                `${guess.game} - Guess for ${game.list.name}: "${guess.msg.text}" by ${player.first_name}`
               );
               resolve();
             },
@@ -538,7 +537,7 @@ const processGuess = (guess) => {
           minigame.check(game, player, guess, guess.msg).then(
             () => {
               console.log(
-                `${guess.game} - Minigame guess for ${game.minigame.answer}: "${guess.msg.text}" by ${guess.msg.from.first_name}`
+                `${guess.game} - Minigame guess for ${game.minigame.answer}: "${guess.msg.text}" by ${player.first_name}`
               );
               resolve();
             },
@@ -551,7 +550,7 @@ const processGuess = (guess) => {
           tinygame.check(game, player, guess, guess.msg).then(
             () => {
               console.log(
-                `${guess.game} - Tinygame guess for ${game.tinygame.answer}: "${guess.msg.text}" by ${guess.msg.from.first_name}`
+                `${guess.game} - Tinygame guess for ${game.tinygame.answer}: "${guess.msg.text}" by ${player.first_name}`
               );
               resolve();
             },
@@ -675,8 +674,16 @@ const checkGuess = async (game, player, guess, msg) => {
   }
 };
 
-const guessed = async (game, { scoreDaily }, { from, chat }, value, blurb, score, accuracy) => {
-  let message = messages.guessed(value.angleBrackets(), from.first_name);
+const guessed = async (
+  game,
+  { scoreDaily, first_name },
+  { chat },
+  value,
+  blurb,
+  score,
+  accuracy
+) => {
+  let message = messages.guessed(value.angleBrackets(), first_name);
   message += messages.streak(game.streak.count);
   message += blurb;
   message += `\n<pre>${scoreDaily - score} + ${score} points (${accuracy})</pre>`;
@@ -1089,8 +1096,6 @@ router.post('/', async ({ body }, res, next) => {
             body.callback_query.from.last_name ? body.callback_query.from.last_name : ''
           }`
     ).maskURLs();
-    console.log(data.requestor);
-
     data.from_id = body.callback_query.from.id;
     data.chat_id = body.callback_query.message.chat.id;
     data.message_id = body.callback_query.message.message_id;
@@ -1208,7 +1213,7 @@ router.post('/', async ({ body }, res, next) => {
               body.callback_query.id,
               `${data.id} -> ${categoryIndex >= 0 ? 'On' : 'Off'}`
             );
-            bot.editKeyboard(data.chat_id, message_id, keyboards.categories(game));
+            bot.editKeyboard(data.chat_id, data.message_id, keyboards.categories(game));
           });
         } else {
           bot.queueMessage(data.chat_id, `Sorry ${data.requestor}, this is a chat admin function`);
