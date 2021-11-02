@@ -586,7 +586,7 @@ const checkGuess = async (game, player, guess, msg) => {
     return resolve();
   }
   if (!match.guesser.first_name) {
-    match.guesser = player;
+    match.guesser = msg.from;
     player.answers++;
     const score = Math.round(
       (MAX_HINTS - game.hints + game.guessers.length) * (guess.match.distance - 0.6) * 2.5
