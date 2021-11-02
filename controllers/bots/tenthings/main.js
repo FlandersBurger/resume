@@ -573,7 +573,7 @@ const checkGuess = async (game, player, guess, msg) => {
     vetoes[game.id] = moment();
     bot.queueMessage(
       msg.chat.id,
-      `Skip vetoed by ${msg.from.first_name} giving a correct answer\nNo skipping allowed for ${VETO_DELAY} seconds`
+      `Skip vetoed by ${msg.from.first_name.maskURLs()} giving a correct answer\nNo skipping allowed for ${VETO_DELAY} seconds`
     );
   }
   if (!_.some(game.guessers, (guesser) => guesser == msg.from.id)) {
@@ -1025,13 +1025,13 @@ router.post('/', async ({ body }, res, next) => {
         if (antispam[from].count === 20) {
           bot.queueMessage(
             chat,
-            `You sure seem to be sending a lot of messages, ${name}. I'm keeping an eye on you`
+            `You sure seem to be sending a lot of messages, ${name.maskURLs()}. I'm keeping an eye on you`
           );
         } else if (antispam[from].count === 30) {
           antispam[from].lastMessage = moment();
           bot.queueMessage(
             chat,
-            `Ok, ${name}, calm down, I can't keep up.  Please stay silent for 10 seconds so I can process your stuff`
+            `Ok, ${name.maskURLs()}, calm down, I can't keep up.  Please stay silent for 10 seconds so I can process your stuff`
           );
         }
       } else if (antispam[from].count > 35) {
@@ -1040,14 +1040,14 @@ router.post('/', async ({ body }, res, next) => {
           bot.exportChatInviteLink(chat).then(
             (url) => {
               bot.notifyAdmin(
-                `Possible spammer: ${name} (${from}) in chat ${chat} ${
+                `Possible spammer: ${name.maskURLs()} (${from}) in chat ${chat} ${
                   chat == config.groupChat ? ' - The main chat!' : ''
                 }\n\n${message}\n\nURL: ${url}`
               );
             },
             (err) => {
               bot.notifyAdmin(
-                `Possible spammer: ${name} (${from}) in chat ${chat} ${
+                `Possible spammer: ${name.maskURLs()} (${from}) in chat ${chat} ${
                   chat == config.groupChat ? ' - The main chat!' : ''
                 }\n\n${message}\n\nURL: Not available`
               );
@@ -1087,19 +1087,21 @@ router.post('/', async ({ body }, res, next) => {
         : `${body.callback_query.from.first_name} ${
             body.callback_query.from.last_name ? body.callback_query.from.last_name : ''
           }`
-    ).replace('http', 'nope');
+    ).maskURLs();
+    data.from_id = body.callback_query.from.id;
+    data.chat_id = body.callback_query.message.chat.id;
+    data.message_id = body.callback_query.message.message_id;
     if (data.type === 'rate') {
       let doVote = false;
-      if (voters[body.callback_query.from.id]) {
+      if (voters[data.from_id]) {
         if (
-          voters[body.callback_query.from.id].lastVoted <
-          moment().subtract(voters[body.callback_query.from.id].delay, 'seconds')
+          voters[data.from_id].lastVoted < moment().subtract(voters[data.from_id].delay, 'seconds')
         ) {
           doVote = true;
-          delete voters[body.callback_query.from.id];
+          delete voters[data.from_id];
         }
       } else {
-        voters[body.callback_query.from.id] = {
+        voters[data.from_id] = {
           lastVoted: moment(),
           delay: 10,
         };
@@ -1111,10 +1113,10 @@ router.post('/', async ({ body }, res, next) => {
         })
           .select('name votes modifyDate score skips plays votes')
           .exec();
-        let voter = _.find(foundList.votes, (vote) => vote.voter == body.callback_query.from.id);
+        let voter = _.find(foundList.votes, (vote) => vote.voter == data.from_id);
         if (!voter) {
           foundList.votes.push({
-            voter: body.callback_query.from.id,
+            voter: data.from_id,
             vote: data.vote,
           });
           voter = foundList.votes[foundList.votes.length - 1];
@@ -1133,23 +1135,19 @@ router.post('/', async ({ body }, res, next) => {
           //bot.notifyAdmin(`"<b>${foundList.name}</b>" ${data.vote > 0 ? 'up' : 'down'}voted by <i>${body.callback_query.from.first_name}</i>!`);
           if (moment(data.date) > moment().subtract(1, 'days')) {
             bot.queueMessage(
-              body.callback_query.message.chat.id,
-              ` ${data.vote > 0 ? '\ud83d\udc4d' : '\ud83d\udc4e'} ${
-                body.callback_query.from.first_name
-              } ${data.vote > 0 ? '' : 'dis'}likes <b>${
-                foundList.name
-              }</b> (${foundList.score.makePercentage()})`
+              data.chat_id,
+              ` ${data.vote > 0 ? '\ud83d\udc4d' : '\ud83d\udc4e'} ${data.requestor} ${
+                data.vote > 0 ? '' : 'dis'
+              }likes <b>${foundList.name}</b> (${foundList.score.makePercentage()})`
             );
           }
         });
       }
     } else if (data.type === 'stats') {
-      const isAdmin =
-        body.callback_query.message.chat.id > 0 ||
-        (await bot.checkAdmin(body.callback_query.message.chat.id, body.callback_query.from.id));
+      const isAdmin = data.chat_id > 0 || (await bot.checkAdmin(data.chat_id, data.from_id));
       if (isAdmin) {
         Game.findOne({
-          chat_id: body.callback_query.message.chat.id,
+          chat_id: data.chat_id,
         })
           .select('chat_id list')
           .exec((err, game) => {
@@ -1177,20 +1175,18 @@ router.post('/', async ({ body }, res, next) => {
     } else if (data.type === 'stat') {
       //bot.notifyAdmin(`${body.callback_query.from.id} (${body.callback_query.from.first_name}) requested stats`);
       bot.answerCallback(body.callback_query.id, '');
-      stats.getStats(body.callback_query.message.chat.id, data, body.callback_query.from.id);
+      stats.getStats(data.chat_id, data, data.from_id);
     } else if (data.type === 'score') {
       if (body.callback_query.from.first_name === '^') return '';
       //bot.notifyAdmin(`${body.callback_query.from.id} (${body.callback_query.from.first_name}) requested stats`);
       bot.answerCallback(body.callback_query.id, 'Score');
-      stats.getScores(body.callback_query.message.chat.id, data.id);
+      stats.getScores(data.chat_id, data.id);
     } else if (data.type === 'cat') {
-      if (body.callback_query.message.chat.id != config.groupChat) {
-        const isAdmin =
-          body.callback_query.message.chat.id > 0 ||
-          (await bot.checkAdmin(body.callback_query.message.chat.id, body.callback_query.from.id));
+      if (data.chat_id != config.groupChat) {
+        const isAdmin = data.chat_id > 0 || (await bot.checkAdmin(data.chat_id, data.from_id));
         if (isAdmin) {
           let game = await Game.findOne({
-            chat_id: body.callback_query.message.chat.id,
+            chat_id: data.chat_id,
           })
             .select('chat_id disabledCategories')
             .exec();
@@ -1199,10 +1195,7 @@ router.post('/', async ({ body }, res, next) => {
             game.disabledCategories.splice(categoryIndex, 1);
           } else {
             if (game.disabledCategories.length === categories.length - 1) {
-              return bot.queueMessage(
-                body.callback_query.message.chat.id,
-                'A minimum of 1 category is required'
-              );
+              return bot.queueMessage(data.chat_id, 'A minimum of 1 category is required');
             }
             game.disabledCategories.push(data.id);
           }
@@ -1212,27 +1205,18 @@ router.post('/', async ({ body }, res, next) => {
               body.callback_query.id,
               `${data.id} -> ${categoryIndex >= 0 ? 'On' : 'Off'}`
             );
-            bot.editKeyboard(
-              body.callback_query.message.chat.id,
-              body.callback_query.message.message_id,
-              keyboards.categories(game)
-            );
+            bot.editKeyboard(data.chat_id, message_id, keyboards.categories(game));
           });
         } else {
-          bot.queueMessage(
-            body.callback_query.message.chat.id,
-            `Sorry ${data.requestor}, this is a chat admin function`
-          );
+          bot.queueMessage(data.chat_id, `Sorry ${data.requestor}, this is a chat admin function`);
         }
       }
     } else if (data.type === 'setting') {
       if (body.callback_query.message.chat_id != config.masterChat) {
-        const isAdmin =
-          body.callback_query.message.chat.id > 0 ||
-          (await bot.checkAdmin(body.callback_query.message.chat.id, body.callback_query.from.id));
+        const isAdmin = data.chat_id > 0 || (await bot.checkAdmin(data.chat_id, data.from_id));
         if (isAdmin) {
           Game.findOne({
-            chat_id: body.callback_query.message.chat.id,
+            chat_id: data.chat_id,
           })
             .select('chat_id settings')
             .exec(async (err, game) => {
@@ -1247,8 +1231,8 @@ router.post('/', async ({ body }, res, next) => {
                   },
                 ]).exec();
                 bot.editKeyboard(
-                  body.callback_query.message.chat.id,
-                  body.callback_query.message.message_id,
+                  data.chat_id,
+                  data.message_id,
                   keyboards.languages(game, availableLanguages)
                 );
               } else {
@@ -1260,24 +1244,17 @@ router.post('/', async ({ body }, res, next) => {
                     body.callback_query.id,
                     `${data.id} -> ${game.settings[data.id] ? 'On' : 'Off'}`
                   );
-                  bot.editKeyboard(
-                    body.callback_query.message.chat.id,
-                    body.callback_query.message.message_id,
-                    keyboards.settings(game)
-                  );
+                  bot.editKeyboard(data.chat_id, data.message_id, keyboards.settings(game));
                 });
               }
             });
         } else {
-          bot.queueMessage(
-            body.callback_query.message.chat.id,
-            `Nice try ${data.requestor} but that's an admin function`
-          );
+          bot.queueMessage(data.chat_id, `Nice try ${data.requestor} but that's an admin function`);
         }
       }
     } else if (data.type === 'lang') {
       Game.findOne({
-        chat_id: body.callback_query.message.chat.id,
+        chat_id: data.chat_id,
       })
         .select('chat_id settings')
         .exec((err, game) => {
@@ -1308,14 +1285,14 @@ router.post('/', async ({ body }, res, next) => {
               },
             ]).exec();
             bot.editKeyboard(
-              body.callback_query.message.chat.id,
-              body.callback_query.message.message_id,
+              data.chat_id,
+              data.message_id,
               keyboards.languages(game, availableLanguages)
             );
           });
         });
     } else if (data.type === 'pick') {
-      if (body.callback_query.message.chat.id === config.adminChat) {
+      if (data.chat_id === config.adminChat) {
         List.findOne({
           _id: data.list,
         })
@@ -1331,14 +1308,13 @@ router.post('/', async ({ body }, res, next) => {
             b.notifyAdmins(msg, keyboards.curate(list));
           });
       } else {
-        const chat_id = body.callback_query.message.chat.id;
-        Game.findOne({ chat_id })
+        Game.findOne({ chat_id: data.chat_id })
           .select('chat_id pickedLists')
           .exec((err, game) => {
             if (err) return bot.notifyAdmin('Pick list button\n' + JSON.stringify(err));
             if (game.pickedLists >= 10)
               return bot.queueMessage(
-                chat_id,
+                data.chat_id,
                 `The queue already has the maximum of 10 lists, ${data.requestor}`
               );
             List.findOne({
@@ -1347,7 +1323,7 @@ router.post('/', async ({ body }, res, next) => {
               const foundList = _.find(game.pickedLists, (pickedList) => pickedList == list._id);
               if (foundList) {
                 bot.queueMessage(
-                  chat_id,
+                  data.chat_id,
                   `<b>${list.name}</b> is already in the queue, ${data.requestor}`
                 );
               } else {
@@ -1356,11 +1332,11 @@ router.post('/', async ({ body }, res, next) => {
                   game.save();
                   bot.answerCallback(body.callback_query.id, `${list.name} added`);
                   bot.queueMessage(
-                    chat_id,
+                    data.chat_id,
                     `<b>${list.name}</b> added to the queue, ${data.requestor}.\nType /lists to see the queue`
                   );
                 } else {
-                  bot.queueMessage(chat_id, `This list no longer exists`);
+                  bot.queueMessage(data.chat_id, `This list no longer exists`);
                 }
               }
             });
@@ -1368,7 +1344,7 @@ router.post('/', async ({ body }, res, next) => {
       }
     } else if (data.type === 'suggest') {
       Game.findOne({
-        chat_id: body.callback_query.message.chat.id,
+        chat_id: data.chat_id,
       })
         .select('chat_id list')
         .exec((err, game) => {
@@ -1388,18 +1364,15 @@ router.post('/', async ({ body }, res, next) => {
               ? '\nNote that you can add your own lists at https://belgocanadian.com/tenthings'
               : '';
           bot.answerCallback(body.callback_query.id, `Suggestion noted`);
-          bot.deleteMessage(
-            body.callback_query.message.chat.id,
-            body.callback_query.message.message_id
-          );
-          bot.queueMessage(body.callback_query.message.chat.id, message);
+          bot.deleteMessage(data.chat_id, data.message_id);
+          bot.queueMessage(data.chat_id, message);
         });
     } else if (data.type === 'values') {
       List.findOne({
         _id: data.list,
       }).exec((err, list) => {
         bot.queueMessage(
-          body.callback_query.message.chat.id,
+          data.chat_id,
           list.values
             .sort((a, b) => (a.value < b.value ? -1 : 1))
             .reduce((message, item) => `${message}- ${item.value}\n`, `<b>${list.name}</b>\n`)
@@ -1409,8 +1382,8 @@ router.post('/', async ({ body }, res, next) => {
       List.updateOne({ _id: data.list }, { $set: { difficulty: data.vote } });
       bot.answerCallback(body.callback_query.id, `${messages.difficulty(data.vote)}`);
       bot.editKeyboard(
-        body.callback_query.message.chat.id,
-        body.callback_query.message.message_id,
+        data.chat_id,
+        data.message_id,
         keyboards.curate(await List.findOne({ _id: data.list }))
       );
     } else if (data.type === 'freq') {
@@ -1420,8 +1393,8 @@ router.post('/', async ({ body }, res, next) => {
         `${messages.frequency(data.vote).capitalize()} changes`
       );
       bot.editKeyboard(
-        body.callback_query.message.chat.id,
-        body.callback_query.message.message_id,
+        data.chat_id,
+        data.message_id,
         keyboards.curate(await List.findOne({ _id: data.list }))
       );
     }
@@ -2024,10 +1997,7 @@ const evaluateCommand = async (res, msg, game, isNew) => {
           if (admin) {
             bot.sendKeyboard(game.chat_id, '<b>Categories</b>', keyboards.categories(game));
           } else {
-            bot.queueMessage(
-              game.chat_id,
-              `Sorry ${msg.from.first_name}, that's an admin only function`
-            );
+            bot.queueMessage(game.chat_id, messages.categories(game));
           }
         }, console.error);
       }
