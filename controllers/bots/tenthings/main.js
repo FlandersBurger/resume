@@ -291,7 +291,7 @@ const getPlayer = async (game, user) => {
     player.last_name = user.last_name ? user.last_name.maskURLs() : '';
     player.username = user.username ? user.username.maskURLs() : '';
     player.present = true;
-    console.log(player);
+    console.log(player.first_name);
   }
   return player;
 };
@@ -982,8 +982,6 @@ function cooldownHint(gameId) {
     delete cooldowns[gameId];
   }
 }
-
-
 
 /*
  ██████   ██████  ███████ ████████ 
