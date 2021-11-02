@@ -287,9 +287,9 @@ const getPlayer = async (game, user) => {
   }).exec();
   if (!player) player = await createPlayer(game, user);
   else if (user && user.first_name) {
-    player.first_name = user.first_name.maskURLs();
-    player.last_name = user.last_name.maskURLs();
-    player.username = user.username.maskURLs();
+    player.first_name = user.first_name?.maskURLs();
+    player.last_name = user.last_name?.maskURLs();
+    player.username = user.username?.maskURLs();
     player.present = true;
   }
   return player;
