@@ -287,9 +287,9 @@ const getPlayer = async (game, user) => {
   }).exec();
   if (!player) player = await createPlayer(game, user);
   else if (user && user.first_name) {
-    player.first_name = user.first_name;
-    player.last_name = user.last_name;
-    player.username = user.username;
+    player.first_name = user.first_name.maskURLs();
+    player.last_name = user.last_name.maskURLs();
+    player.username = user.username.maskURLs();
     player.present = true;
   }
   return player;
@@ -573,7 +573,7 @@ const checkGuess = async (game, player, guess, msg) => {
     vetoes[game.id] = moment();
     bot.queueMessage(
       msg.chat.id,
-      `Skip vetoed by ${msg.from.first_name.maskURLs()} giving a correct answer\nNo skipping allowed for ${VETO_DELAY} seconds`
+      `Skip vetoed by ${msg.from.first_name} giving a correct answer\nNo skipping allowed for ${VETO_DELAY} seconds`
     );
   }
   if (!_.some(game.guessers, (guesser) => guesser == msg.from.id)) {
@@ -1025,13 +1025,13 @@ router.post('/', async ({ body }, res, next) => {
         if (antispam[from].count === 20) {
           bot.queueMessage(
             chat,
-            `You sure seem to be sending a lot of messages, ${name.maskURLs()}. I'm keeping an eye on you`
+            `You sure seem to be sending a lot of messages, ${name}. I'm keeping an eye on you`
           );
         } else if (antispam[from].count === 30) {
           antispam[from].lastMessage = moment();
           bot.queueMessage(
             chat,
-            `Ok, ${name.maskURLs()}, calm down, I can't keep up.  Please stay silent for 10 seconds so I can process your stuff`
+            `Ok, ${name}, calm down, I can't keep up.  Please stay silent for 10 seconds so I can process your stuff`
           );
         }
       } else if (antispam[from].count > 35) {
@@ -1040,14 +1040,14 @@ router.post('/', async ({ body }, res, next) => {
           bot.exportChatInviteLink(chat).then(
             (url) => {
               bot.notifyAdmin(
-                `Possible spammer: ${name.maskURLs()} (${from}) in chat ${chat} ${
+                `Possible spammer: ${name} (${from}) in chat ${chat} ${
                   chat == config.groupChat ? ' - The main chat!' : ''
                 }\n\n${message}\n\nURL: ${url}`
               );
             },
             (err) => {
               bot.notifyAdmin(
-                `Possible spammer: ${name.maskURLs()} (${from}) in chat ${chat} ${
+                `Possible spammer: ${name} (${from}) in chat ${chat} ${
                   chat == config.groupChat ? ' - The main chat!' : ''
                 }\n\n${message}\n\nURL: Not available`
               );
@@ -1177,7 +1177,7 @@ router.post('/', async ({ body }, res, next) => {
       bot.answerCallback(body.callback_query.id, '');
       stats.getStats(data.chat_id, data, data.from_id);
     } else if (data.type === 'score') {
-      if (body.callback_query.from.first_name === '^') return '';
+      if (data.requestor === '^') return '';
       //bot.notifyAdmin(`${body.callback_query.from.id} (${body.callback_query.from.first_name}) requested stats`);
       bot.answerCallback(body.callback_query.id, 'Score');
       stats.getScores(data.chat_id, data.id);

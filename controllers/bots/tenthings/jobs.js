@@ -54,9 +54,9 @@ const resetDailyScore = (force = false) => {
             let winners = players.filter((player) => player.scoreDaily === highScore);
             let message = winners.reduce((msg, { first_name }, index, length) => {
               if (index < length - 1) {
-                msg += `${first_name.maskURLs()} & `;
+                msg += `${first_name} & `;
               } else {
-                msg += first_name.maskURLs();
+                msg += first_name;
               }
               return msg;
             }, '');
