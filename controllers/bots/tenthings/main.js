@@ -573,7 +573,7 @@ const checkGuess = async (game, player, guess, msg) => {
     vetoes[game.id] = moment();
     bot.queueMessage(
       msg.chat.id,
-      `Skip vetoed by ${msg.from.first_name} giving a correct answer\nNo skipping allowed for ${VETO_DELAY} seconds`
+      `Skip vetoed by ${player.first_name} giving a correct answer\nNo skipping allowed for ${VETO_DELAY} seconds`
     );
   }
   if (!_.some(game.guessers, (guesser) => guesser == msg.from.id)) {
@@ -586,7 +586,7 @@ const checkGuess = async (game, player, guess, msg) => {
     return resolve();
   }
   if (!match.guesser.first_name) {
-    match.guesser = msg.from;
+    match.guesser = player;
     player.answers++;
     const score = Math.round(
       (MAX_HINTS - game.hints + game.guessers.length) * (guess.match.distance - 0.6) * 2.5
@@ -659,7 +659,7 @@ const checkGuess = async (game, player, guess, msg) => {
     player.snubs++;
 
     if (game.settings.snubs) {
-      bot.queueMessage(msg.chat.id, messages.alreadyGuessed(match.value, msg.from, match.guesser));
+      bot.queueMessage(msg.chat.id, messages.alreadyGuessed(match.value, player, match.guesser));
     }
   }
   try {
@@ -1607,7 +1607,7 @@ const evaluateCommand = async (res, msg, game, isNew) => {
   //bot.notifyAdmin(tenthings);
   //bot.notifyAdmin(games[msg.chat.id].list);
   let player = await getPlayer(game, msg.from);
-  if (!msg.from.first_name) {
+  if (!player.first_name) {
     console.error('msg without a first_name?');
     console.error(msg);
     return res.sendStatus(200);
@@ -1704,10 +1704,10 @@ const evaluateCommand = async (res, msg, game, isNew) => {
         vetoes[game.id] = moment();
         bot.queueMessage(
           msg.chat.id,
-          `Skip vetoed by ${msg.from.first_name}\nNo skipping allowed for ${VETO_DELAY} seconds`
+          `Skip vetoed by ${player.first_name}\nNo skipping allowed for ${VETO_DELAY} seconds`
         );
       } else {
-        bot.queueMessage(msg.chat.id, `I can't find a skip request, ${msg.from.first_name}`);
+        bot.queueMessage(msg.chat.id, `I can't find a skip request, ${player.first_name}`);
       }
       break;
     case '/estatisticas':
@@ -1746,18 +1746,18 @@ const evaluateCommand = async (res, msg, game, isNew) => {
         player.suggestions++;
         await player.save();
         let message = `<b>Typo</b>\n${typo}\nin "${game.list.name}"\n<i>${
-          msg.from.username ? `@${msg.from.username}` : msg.from.first_name
+          player.username ? `@${player.username}` : player.first_name
         }</i>`;
         bot.notifyAdmins(message);
         bot.notify(message);
         message = `<b>Typo</b>\n<i>${typo}</i>\nThank you, ${
-          msg.from.username ? `@${msg.from.username}` : msg.from.first_name
+          player.username ? `@${player.username}` : player.first_name
         }`;
         bot.queueMessage(msg.chat.id, message);
       } else {
         bot.queueMessage(
           msg.chat.id,
-          `You didn't add a typo ${msg.from.first_name}. Add your message after /typo`
+          `You didn't add a typo ${player.first_name}. Add your message after /typo`
         );
       }
       break;
@@ -1767,18 +1767,18 @@ const evaluateCommand = async (res, msg, game, isNew) => {
         player.suggestions++;
         await player.save();
         let message = `<b>Bug</b>\n${bug}\n<i>${
-          msg.from.username ? `@${msg.from.username}` : msg.from.first_name
+          player.username ? `@${player.username}` : player.first_name
         }</i>`;
         bot.notifyAdmins(message);
         bot.notify(message);
         message = `<b>Bug</b>\n<i>${bug}</i>\nThank you, ${
-          msg.from.username ? `@${msg.from.username}` : msg.from.first_name
+          player.username ? `@${player.username}` : player.first_name
         }`;
         bot.queueMessage(msg.chat.id, message);
       } else {
         bot.queueMessage(
           msg.chat.id,
-          `You didn't add a bug ${msg.from.first_name}. Add your message after /bug`
+          `You didn't add a bug ${player.first_name}. Add your message after /bug`
         );
       }
       break;
@@ -1788,18 +1788,18 @@ const evaluateCommand = async (res, msg, game, isNew) => {
         player.suggestions++;
         await player.save();
         let message = `<b>Feature</b>\n${feature}\n<i>${
-          msg.from.username ? `@${msg.from.username}` : msg.from.first_name
+          player.username ? `@${player.username}` : player.first_name
         }</i>`;
         bot.notifyAdmins(message);
         bot.notify(message);
         message = `<b>Feature</b>\n<i>${feature}</i>\nThank you, ${
-          msg.from.username ? `@${msg.from.username}` : msg.from.first_name
+          player.username ? `@${player.username}` : player.first_name
         }`;
         bot.queueMessage(msg.chat.id, message);
       } else {
         bot.queueMessage(
           msg.chat.id,
-          `You didn't add a feature ${msg.from.first_name}. Add your message after /feature`
+          `You didn't add a feature ${player.first_name}. Add your message after /feature`
         );
       }
       break;
@@ -1877,8 +1877,6 @@ const evaluateCommand = async (res, msg, game, isNew) => {
         }
         if (foundLists.length > 0) {
           const keyboard = keyboards.lists(foundLists);
-          console.log(keyboard.inline_keyboard);
-
           bot.sendKeyboard(
             game.chat_id,
             `<b>Which list would you like to ${
@@ -1889,13 +1887,13 @@ const evaluateCommand = async (res, msg, game, isNew) => {
         } else {
           bot.queueMessage(
             game.chat_id,
-            `I didn't find any corresponding lists for <b>"${search}"</b>, ${msg.from.first_name}.\nSimpler queries return better results.`
+            `I didn't find any corresponding lists for <b>"${search}"</b>, ${player.first_name}.\nSimpler queries return better results.`
           );
         }
       } else {
         bot.queueMessage(
           msg.chat.id,
-          `You didn't search anything ${msg.from.first_name}. Add your message after /search`
+          `You didn't search anything ${player.first_name}. Add your message after /search`
         );
       }
       break;
@@ -2019,7 +2017,7 @@ const evaluateCommand = async (res, msg, game, isNew) => {
           } else {
             bot.queueMessage(
               game.chat_id,
-              `Sorry ${msg.from.first_name}, that's an admin only function`
+              `Sorry ${player.first_name}, that's an admin only function`
             );
           }
         });
@@ -2040,6 +2038,7 @@ const evaluateCommand = async (res, msg, game, isNew) => {
     case '/flush':
       if (msg.from.id === config.masterChat) {
         game.lists = [];
+        game.pickedLists = [];
         //game.playedLists = [];
         game.save();
         bot.queueMessage(msg.chat.id, 'Flushed this chat');
