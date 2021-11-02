@@ -283,7 +283,7 @@ const getGame = async (chat_id, user) => {
 const getPlayer = async (game, user) => {
   let player = await Player.findOne({
     game: game.id,
-    id: `${user.id}`,
+    id: `${user.id}`, //Stringified
   }).exec();
   if (!player) player = await createPlayer(game, user);
   else if (user && user.first_name) {
@@ -291,6 +291,7 @@ const getPlayer = async (game, user) => {
     player.last_name = user.last_name ? user.last_name.maskURLs() : '';
     player.username = user.username ? user.username.maskURLs() : '';
     player.present = true;
+    console.log(player);
   }
   return player;
 };
@@ -982,6 +983,8 @@ function cooldownHint(gameId) {
   }
 }
 
+
+
 /*
  ██████   ██████  ███████ ████████ 
  ██   ██ ██    ██ ██         ██    
@@ -1088,6 +1091,8 @@ router.post('/', async ({ body }, res, next) => {
             body.callback_query.from.last_name ? body.callback_query.from.last_name : ''
           }`
     ).maskURLs();
+    console.log(data.requestor);
+
     data.from_id = body.callback_query.from.id;
     data.chat_id = body.callback_query.message.chat.id;
     data.message_id = body.callback_query.message.message_id;
