@@ -1300,6 +1300,7 @@ router.post('/', async ({ body }, res, next) => {
           });
         });
     } else if (data.type === 'pick') {
+      if (data.chat_id === config.groupChat) b.notifyAdmin(body);
       if (data.chat_id === config.adminChat) {
         List.findOne({
           _id: data.list,
