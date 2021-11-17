@@ -1019,7 +1019,10 @@ router.post('/', async ({ body, get }, res, next) => {
     if (from != config.masterChat && (await redis.get('pause')) === 'true')
       return res.sendStatus(200);
     //if (date.diff(moment(), 'hours') > 1) return res.sendStatus(200);
-    if (BANNED_USERS.indexOf(from) >= 0) return res.sendStatus(200);
+    if (BANNED_USERS.indexOf(from) >= 0) {
+      b.notifyAdmin(JSON.stringify(get('host')))
+      return res.sendStatus(200);
+    }
 
     if (antispam[from]) {
       if (antispam[from].lastMessage < moment().subtract(10, 'seconds')) {
