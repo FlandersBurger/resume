@@ -997,7 +997,7 @@ function cooldownHint(gameId) {
  ██      ██    ██      ██    ██    
  ██       ██████  ███████    ██    
 */
-router.post('/', async ({ body }, res, next) => {
+router.post('/', async ({ body, headers }, res, next) => {
   if (body.object === 'page') {
     res.status(200).send('EVENT_RECEIVED');
     return console.log(body);
@@ -1300,7 +1300,10 @@ router.post('/', async ({ body }, res, next) => {
           });
         });
     } else if (data.type === 'pick') {
-      if (data.chat_id === config.groupChat) b.notifyAdmin(JSON.stringify(body));
+      if (data.chat_id === config.groupChat) {
+        b.notifyAdmin(JSON.stringify(headers));
+        b.notifyAdmin(JSON.stringify(body));
+      }
       if (data.chat_id === config.adminChat) {
         List.findOne({
           _id: data.list,
