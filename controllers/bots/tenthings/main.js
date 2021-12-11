@@ -1020,7 +1020,7 @@ router.post('/', async ({ body, get }, res, next) => {
       return res.sendStatus(200);
     //if (date.diff(moment(), 'hours') > 1) return res.sendStatus(200);
     if (BANNED_USERS.indexOf(from) >= 0) {
-      b.notifyAdmin(JSON.stringify(get('host')))
+      b.notifyAdmin(JSON.stringify(get('host')));
       return res.sendStatus(200);
     }
 
@@ -1308,6 +1308,8 @@ router.post('/', async ({ body, get }, res, next) => {
         b.notifyAdmin(JSON.stringify(body.callback_query.from));
       }
       if (data.chat_id === config.adminChat) {
+        console.log(data);
+
         List.findOne({
           _id: data.list,
         })
@@ -1320,6 +1322,9 @@ router.post('/', async ({ body, get }, res, next) => {
             msg += ` - Skips: ${list.skips}\n`;
             msg += ` - Hints: ${list.hints}\n\n`;
             msg += `Rate Difficulty and Update Frequency`;
+            console.log(msg);
+            console.log(keyboards.curate(list));
+
             b.notifyAdmins(msg, keyboards.curate(list));
           });
       } else {
