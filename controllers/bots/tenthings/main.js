@@ -1304,8 +1304,6 @@ router.post('/', async ({ body, get }, res, next) => {
         });
     } else if (data.type === 'pick') {
       if (data.chat_id === config.adminChat) {
-        console.log(data);
-
         List.findOne({
           _id: data.list,
         })
@@ -1318,9 +1316,6 @@ router.post('/', async ({ body, get }, res, next) => {
             msg += ` - Skips: ${list.skips}\n`;
             msg += ` - Hints: ${list.hints}\n\n`;
             msg += `Rate Difficulty and Update Frequency`;
-            console.log(msg);
-            console.log(keyboards.curate(list));
-
             b.notifyAdmins(msg, keyboards.curate(list));
           });
       } else {
