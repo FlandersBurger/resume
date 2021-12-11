@@ -1303,10 +1303,6 @@ router.post('/', async ({ body, get }, res, next) => {
           });
         });
     } else if (data.type === 'pick') {
-      if (data.chat_id === config.groupChat || data.chat_id === config.adminChat) {
-        b.notifyAdmin(JSON.stringify(get('host')));
-        b.notifyAdmin(JSON.stringify(body.callback_query.from));
-      }
       if (data.chat_id === config.adminChat) {
         console.log(data);
 
