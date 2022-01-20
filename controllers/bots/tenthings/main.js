@@ -1395,6 +1395,9 @@ router.post('/', async ({ body, get }, res, next) => {
       List.findOne({
         _id: data.list,
       }).exec((err, list) => {
+        if (err) return console.error(err);
+        console.log(list);
+
         bot.queueMessage(data.chat_id, list.description);
       });
     } else if (data.type === 'diff') {
