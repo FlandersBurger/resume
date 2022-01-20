@@ -1395,10 +1395,9 @@ router.post('/', async ({ body, get }, res, next) => {
       List.findOne({
         _id: data.list,
       }).exec((err, list) => {
-        if (err) return console.error(err);
-        console.log(list);
+        console.log(data);
 
-        bot.queueMessage(data.chat_id, list.description);
+        if (list) bot.queueMessage(data.chat_id, list.description);
       });
     } else if (data.type === 'diff') {
       List.updateOne({ _id: data.list }, { $set: { difficulty: data.vote } });
