@@ -1310,6 +1310,8 @@ router.post('/', async ({ body, get }, res, next) => {
           .populate('creator')
           .exec((err, list) => {
             let msg = messages.listInfo(list);
+            msg += ` - Created: ${moment(list.date).format('DD-MMM-YYYY')}\n`;
+            msg += ` - Modified: ${moment(list.modifyDate).format('DD-MMM-YYYY')}\n`;
             msg += ` - Score: ${list.score.makePercentage()}\n`;
             msg += ` - Values: ${list.values.length}\n`;
             msg += ` - Plays: ${list.plays}\n`;
@@ -1388,6 +1390,12 @@ router.post('/', async ({ body, get }, res, next) => {
             .sort((a, b) => (a.value < b.value ? -1 : 1))
             .reduce((message, item) => `${message}- ${item.value}\n`, `<b>${list.name}</b>\n`)
         );
+      });
+    } else if (data.type === 'desc') {
+      List.findOne({
+        _id: data.list,
+      }).exec((err, list) => {
+        bot.queueMessage(data.chat_id, list.description);
       });
     } else if (data.type === 'diff') {
       List.updateOne({ _id: data.list }, { $set: { difficulty: data.vote } });
