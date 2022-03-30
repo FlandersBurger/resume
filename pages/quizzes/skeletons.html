@@ -1,15 +1,11 @@
-<div class="quiz-page">
-  <h1>Animal Sounds</h1>
+<div class="quiz-page quiz-photos-page">
+  <h1>Animal Skeletons</h1>
   <div class="panel panel-default"
        ng-class="{'panel-default': !animal.guess, 'panel-success': animal.guess === animal.name, 'panel-danger': animal.guess && animal.guess !== animal.name}"
        ng-repeat="animal in animals track by $index">
     <div class="panel-heading">{{$index + 1}}</div>
     <div class="panel-body">
-      <audio controls>
-        <source src="animals/{{animal.sound}}"
-                type="audio/wav">
-        Your browser does not support the audio element.
-      </audio>
+      <img class="img-responsive img-rounded" ng-src="skeletons/{{animal.image}}" />
       <div class="input-group">
         <button class="btn btn-default"
                 ng-repeat="answer in animal.answers"
