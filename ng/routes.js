@@ -122,6 +122,11 @@ angular
 				controller: 'QuizSkeletonsCtrl',
 				templateUrl: 'quizzes/skeletons.html',
 			})
+			.state('quiz-movies', {
+				url: '/movies',
+				controller: 'QuizMoviesCtrl',
+				templateUrl: 'quizzes/movies.html',
+			})
 			.state('charades', {
 				url: '/charades',
 				controller: 'CharadesCtrl',

@@ -1,0 +1,7 @@
+<div class="quiz-page quiz-photos-page">
+  <h1>Untitled Movies</h1>
+  <div  class="panel panel-default" ng-repeat="image in images track by $index">
+    <div class="panel-heading">{{$index + 1}}</div>
+    <div class="panel-body"><img class="img-responsive img-rounded" ng-src="movies/{{image}}" /></div>
+  </div>
+</div>
