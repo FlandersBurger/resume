@@ -183,7 +183,6 @@ function TelegramBot() {
 			request(encodeURI(url), (error, r, body) => {
 				if (error) resolve();
 				const response = JSON.parse(body);
-				console.log(response);
 				if (!response || !response.ok || !response.result) resolve();
 				if (response.result.invite_link) return resolve(response.result.invite_link);
 				else if (response.result.username) return resolve(`@${response.result.username}`);

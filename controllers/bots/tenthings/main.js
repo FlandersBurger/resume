@@ -1753,7 +1753,7 @@ const evaluateCommand = async (res, msg, game, isNew) => {
           player.username ? `@${player.username}` : player.first_name
         }</i>`;
         bot.notify(message);
-        const chatLink = await b.exportChatInviteLink(msg.chat.id)
+        const chatLink = await b.getChat(msg.chat.id);
         message += chatLink ? `\nChat: ${chatLink}` : '';
         bot.notifyAdmins(message);
         message = `<b>Typo</b>\n<i>${typo}</i>\nThank you, ${
@@ -1776,7 +1776,7 @@ const evaluateCommand = async (res, msg, game, isNew) => {
           player.username ? `@${player.username}` : player.first_name
         }</i>`;
         bot.notify(message);
-        const chatLink = await b.getChat(msg.chat.id)
+        const chatLink = await b.getChat(msg.chat.id);
         message += chatLink ? `\nChat: ${chatLink}` : '';
         bot.notifyAdmins(message);
         message = `<b>Bug</b>\n<i>${bug}</i>\nThank you, ${
@@ -1799,7 +1799,7 @@ const evaluateCommand = async (res, msg, game, isNew) => {
           player.username ? `@${player.username}` : player.first_name
         }</i>`;
         bot.notify(message);
-        const chatLink = await b.exportChatInviteLink(msg.chat.id)
+        const chatLink = await b.getChat(msg.chat.id);
         message += chatLink ? `\nChat: ${chatLink}` : '';
         bot.notifyAdmins(message);
         message = `<b>Feature</b>\n<i>${feature}</i>\nThank you, ${
