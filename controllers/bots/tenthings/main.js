@@ -1749,11 +1749,11 @@ const evaluateCommand = async (res, msg, game, isNew) => {
       if (typo && typo != 'TenThings_Bot' && typo != '@TenThings_Bot') {
         player.suggestions++;
         await player.save();
-        const chatLink = await b.exportChatInviteLink(msg.chat.id)
         let message = `<b>Typo</b>\n${typo}\nin "${game.list.name}"\n<i>${
           player.username ? `@${player.username}` : player.first_name
         }</i>`;
         bot.notify(message);
+        const chatLink = await b.exportChatInviteLink(msg.chat.id)
         message += chatLink ? `\nChat: ${chatLink}` : '';
         bot.notifyAdmins(message);
         message = `<b>Typo</b>\n<i>${typo}</i>\nThank you, ${
@@ -1772,11 +1772,11 @@ const evaluateCommand = async (res, msg, game, isNew) => {
       if (bug && bug != 'TenThings_Bot' && bug != '@TenThings_Bot') {
         player.suggestions++;
         await player.save();
-        const chatLink = await b.exportChatInviteLink(msg.chat.id);
         let message = `<b>Bug</b>\n${bug}\n<i>${
           player.username ? `@${player.username}` : player.first_name
         }</i>`;
         bot.notify(message);
+        const chatLink = await b.exportChatInviteLink(msg.chat.id)
         message += chatLink ? `\nChat: ${chatLink}` : '';
         bot.notifyAdmins(message);
         message = `<b>Bug</b>\n<i>${bug}</i>\nThank you, ${
@@ -1795,11 +1795,11 @@ const evaluateCommand = async (res, msg, game, isNew) => {
       if (feature && feature != 'TenThings_Bot' && feature != '@TenThings_Bot') {
         player.suggestions++;
         await player.save();
-        const chatLink = await b.exportChatInviteLink(msg.chat.id)
         let message = `<b>Feature</b>\n${feature}\n<i>${
           player.username ? `@${player.username}` : player.first_name
         }</i>`;
         bot.notify(message);
+        const chatLink = await b.exportChatInviteLink(msg.chat.id)
         message += chatLink ? `\nChat: ${chatLink}` : '';
         bot.notifyAdmins(message);
         message = `<b>Feature</b>\n<i>${feature}</i>\nThank you, ${
