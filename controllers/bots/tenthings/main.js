@@ -1053,14 +1053,7 @@ router.post('/', async ({ body, get }, res, next) => {
               bot.notifyAdmin(
                 `Possible spammer: ${name} (${from}) in chat ${chat} ${
                   chat == config.groupChat ? ' - The main chat!' : ''
-                }\n\n${message}\n\nURL: ${url}`
-              );
-            },
-            (err) => {
-              bot.notifyAdmin(
-                `Possible spammer: ${name} (${from}) in chat ${chat} ${
-                  chat == config.groupChat ? ' - The main chat!' : ''
-                }\n\n${message}\n\nURL: Not available`
+                }\n\n${message}\n\nURL: ${url ?? 'N/A'}`
               );
             }
           );
@@ -1618,7 +1611,6 @@ const evaluateCommand = async (res, msg, game, isNew) => {
   //bot.notifyAdmin(tenthings);
   //bot.notifyAdmin(games[msg.chat.id].list);
   let player = await getPlayer(game, msg.from);
-  console.log(msg.from)
   if (!player.first_name) {
     console.error('msg without a first_name?');
     console.error(msg);
@@ -1757,11 +1749,13 @@ const evaluateCommand = async (res, msg, game, isNew) => {
       if (typo && typo != 'TenThings_Bot' && typo != '@TenThings_Bot') {
         player.suggestions++;
         await player.save();
+        const chatLink = await b.exportChatInviteLink(msg.chat.id)
         let message = `<b>Typo</b>\n${typo}\nin "${game.list.name}"\n<i>${
           player.username ? `@${player.username}` : player.first_name
         }</i>`;
-        bot.notifyAdmins(message);
         bot.notify(message);
+        message += chatLink ? `\nChat: ${chatLink}` : '';
+        bot.notifyAdmins(message);
         message = `<b>Typo</b>\n<i>${typo}</i>\nThank you, ${
           player.username ? `@${player.username}` : player.first_name
         }`;
@@ -1778,11 +1772,13 @@ const evaluateCommand = async (res, msg, game, isNew) => {
       if (bug && bug != 'TenThings_Bot' && bug != '@TenThings_Bot') {
         player.suggestions++;
         await player.save();
+        const chatLink = await b.exportChatInviteLink(msg.chat.id);
         let message = `<b>Bug</b>\n${bug}\n<i>${
           player.username ? `@${player.username}` : player.first_name
         }</i>`;
-        bot.notifyAdmins(message);
         bot.notify(message);
+        message += chatLink ? `\nChat: ${chatLink}` : '';
+        bot.notifyAdmins(message);
         message = `<b>Bug</b>\n<i>${bug}</i>\nThank you, ${
           player.username ? `@${player.username}` : player.first_name
         }`;
@@ -1799,11 +1795,13 @@ const evaluateCommand = async (res, msg, game, isNew) => {
       if (feature && feature != 'TenThings_Bot' && feature != '@TenThings_Bot') {
         player.suggestions++;
         await player.save();
+        const chatLink = await b.exportChatInviteLink(msg.chat.id)
         let message = `<b>Feature</b>\n${feature}\n<i>${
           player.username ? `@${player.username}` : player.first_name
         }</i>`;
-        bot.notifyAdmins(message);
         bot.notify(message);
+        message += chatLink ? `\nChat: ${chatLink}` : '';
+        bot.notifyAdmins(message);
         message = `<b>Feature</b>\n<i>${feature}</i>\nThank you, ${
           player.username ? `@${player.username}` : player.first_name
         }`;

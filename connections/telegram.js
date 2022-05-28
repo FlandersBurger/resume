@@ -170,9 +170,9 @@ function TelegramBot() {
 		new Promise((resolve, reject) => {
 			const url = `https://api.telegram.org/bot${bot.token}/exportChatInviteLink?chat_id=${channel}`;
 			request(encodeURI(url), (error, r, body) => {
-				if (error) reject(error);
+				if (error) resolve();
 				const response = JSON.parse(body);
-				if (!response || !response.ok || !response.result) reject(response);
+				if (!response || !response.ok || !response.result) resolve();
 				resolve(response.result);
 			});
 		});
