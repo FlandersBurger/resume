@@ -185,7 +185,7 @@ function TelegramBot() {
 				const response = JSON.parse(body);
 				console.log(response);
 				if (!response || !response.ok || !response.result) resolve();
-				resolve(response.result?.invite_link);
+				resolve(response.result.invite_link);
 			});
 		});
 
