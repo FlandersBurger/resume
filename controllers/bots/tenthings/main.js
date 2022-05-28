@@ -1618,6 +1618,7 @@ const evaluateCommand = async (res, msg, game, isNew) => {
   //bot.notifyAdmin(tenthings);
   //bot.notifyAdmin(games[msg.chat.id].list);
   let player = await getPlayer(game, msg.from);
+  console.log(msg.from)
   if (!player.first_name) {
     console.error('msg without a first_name?');
     console.error(msg);
