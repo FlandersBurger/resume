@@ -1776,8 +1776,8 @@ const evaluateCommand = async (res, msg, game, isNew) => {
           player.username ? `@${player.username}` : player.first_name
         }</i>`;
         bot.notify(message);
-        const chatLink = await b.exportChatInviteLink(msg.chat.id)
-        message += chatLink ? `\nChat: ${chatLink}` : '';
+        const chatLink = await b.getChat(msg.chat.id)
+        message += chatLink ? `\nChat: @${chatLink}` : '';
         bot.notifyAdmins(message);
         message = `<b>Bug</b>\n<i>${bug}</i>\nThank you, ${
           player.username ? `@${player.username}` : player.first_name

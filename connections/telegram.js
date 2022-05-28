@@ -172,7 +172,6 @@ function TelegramBot() {
 			request(encodeURI(url), (error, r, body) => {
 				if (error) resolve();
 				const response = JSON.parse(body);
-				console.log(response)
 				if (!response || !response.ok || !response.result) resolve();
 				resolve(response.result);
 			});
@@ -184,8 +183,9 @@ function TelegramBot() {
 			request(encodeURI(url), (error, r, body) => {
 				if (error) resolve();
 				const response = JSON.parse(body);
+				console.log(response);
 				if (!response || !response.ok || !response.result) resolve();
-				resolve(response.result);
+				resolve(response.result?.invite_link);
 			});
 		});
 
