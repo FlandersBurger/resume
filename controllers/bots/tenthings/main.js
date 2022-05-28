@@ -1053,7 +1053,7 @@ router.post('/', async ({ body, get }, res, next) => {
               bot.notifyAdmin(
                 `Possible spammer: ${name} (${from}) in chat ${chat} ${
                   chat == config.groupChat ? ' - The main chat!' : ''
-                }\n\n${message}\n\nURL: ${url ?? 'N/A'}`
+                }\n\n${message}\n\nURL: ${url ? url : 'N/A'}`
               );
             }
           );
