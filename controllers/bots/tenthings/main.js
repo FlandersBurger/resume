@@ -1795,7 +1795,7 @@ const evaluateCommand = async (res, msg, game, isNew) => {
       break;
     case '/feature':
       const feature = msg.text.substring(msg.command.length + 1, msg.text.length);
-      if (feature && feature != 'TenThings_Bot' && bug != '@TenThings_Bot') {
+      if (feature && feature != 'TenThings_Bot' && feature != '@TenThings_Bot') {
         player.suggestions++;
         await player.save();
         let message = `<b>Feature</b>\n${feature}\n<i>${
