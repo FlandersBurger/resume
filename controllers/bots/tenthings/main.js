@@ -2052,14 +2052,14 @@ const sendSuggestion = async (type, msg, player, extraText = '') => {
   if (suggestion && suggestion != 'TenThings_Bot' && suggestion != '@TenThings_Bot') {
     player.suggestions++;
     await player.save();
-    let message = `<b>${type.capitalize()}</b>\n${feature}${extraText}\n<i>${
+    let message = `<b>${type.capitalize()}</b>\n${suggestion}${extraText}\n<i>${
       player.username ? `@${player.username}` : player.first_name
     }</i>`;
     bot.notify(message);
     const chatLink = await bot.getChat(msg.chat.id);
     message += chatLink ? `\nChat: ${chatLink}` : '';
     bot.notifyAdmins(message);
-    message = `<b>Feature</b>\n<i>${feature}</i>\nThank you, ${
+    message = `<b>${type.capitalize()}</b>\n<i>${suggestion}</i>\nThank you, ${
       player.username ? `@${player.username}` : player.first_name
     }`;
     bot.queueMessage(msg.chat.id, message);
