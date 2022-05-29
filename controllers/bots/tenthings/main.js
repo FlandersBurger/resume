@@ -19,7 +19,6 @@ const hints = require('./hints');
 const categories = require('./categories');
 const minigame = require('./minigame');
 const tinygame = require('./tinygame');
-const b = require('../../../connections/telegram');
 
 //-------------//
 //redis.set('pause', true);
@@ -52,7 +51,7 @@ const curateList = async () => {
 	msg += ` - Skips: ${list.skips}\n`;
 	msg += ` - Hints: ${list.hints}\n\n`;
 	msg += `Rate Difficulty and Update Frequency`;
-	b.notifyAdmins(msg, keyboards.curate(list));
+	bot.notifyAdmins(msg, keyboards.curate(list));
 };
 curateList();
 */
@@ -1020,7 +1019,7 @@ router.post('/', async ({ body, get }, res, next) => {
       return res.sendStatus(200);
     //if (date.diff(moment(), 'hours') > 1) return res.sendStatus(200);
     if (BANNED_USERS.indexOf(from) >= 0) {
-      b.notifyAdmin(JSON.stringify(get('host')));
+      bot.notifyAdmin(JSON.stringify(get('host')));
       return res.sendStatus(200);
     }
 
@@ -1311,7 +1310,7 @@ router.post('/', async ({ body, get }, res, next) => {
             msg += ` - Skips: ${list.skips}\n`;
             msg += ` - Hints: ${list.hints}\n\n`;
             msg += `Rate Difficulty and Update Frequency`;
-            b.notifyAdmins(msg, keyboards.curate(list));
+            bot.notifyAdmins(msg, keyboards.curate(list));
           });
       } else {
         Game.findOne({ chat_id: data.chat_id })
@@ -1745,73 +1744,13 @@ const evaluateCommand = async (res, msg, game, isNew) => {
       break;
     case '/erro':
     case '/typo':
-      const typo = msg.text.substring(msg.command.length + 1, msg.text.length);
-      if (typo && typo != 'TenThings_Bot' && typo != '@TenThings_Bot') {
-        player.suggestions++;
-        await player.save();
-        let message = `<b>Typo</b>\n${typo}\nin "${game.list.name}"\n<i>${
-          player.username ? `@${player.username}` : player.first_name
-        }</i>`;
-        bot.notify(message);
-        const chatLink = await b.getChat(msg.chat.id);
-        message += chatLink ? `\nChat: ${chatLink}` : '';
-        bot.notifyAdmins(message);
-        message = `<b>Typo</b>\n<i>${typo}</i>\nThank you, ${
-          player.username ? `@${player.username}` : player.first_name
-        }`;
-        bot.queueMessage(msg.chat.id, message);
-      } else {
-        bot.queueMessage(
-          msg.chat.id,
-          `You didn't add a typo ${player.first_name}. Add your message after /typo`
-        );
-      }
+      sendSuggestion('typo', msg, player, `\nin "${game.list.name}"`)
       break;
     case '/bug':
-      const bug = msg.text.substring(msg.command.length + 1, msg.text.length);
-      if (bug && bug != 'TenThings_Bot' && bug != '@TenThings_Bot') {
-        player.suggestions++;
-        await player.save();
-        let message = `<b>Bug</b>\n${bug}\n<i>${
-          player.username ? `@${player.username}` : player.first_name
-        }</i>`;
-        bot.notify(message);
-        const chatLink = await b.getChat(msg.chat.id);
-        message += chatLink ? `\nChat: ${chatLink}` : '';
-        bot.notifyAdmins(message);
-        message = `<b>Bug</b>\n<i>${bug}</i>\nThank you, ${
-          player.username ? `@${player.username}` : player.first_name
-        }`;
-        bot.queueMessage(msg.chat.id, message);
-      } else {
-        bot.queueMessage(
-          msg.chat.id,
-          `You didn't add a bug ${player.first_name}. Add your message after /bug`
-        );
-      }
+      sendSuggestion('bug', msg, player)
       break;
     case '/feature':
-      const feature = msg.text.substring(msg.command.length + 1, msg.text.length);
-      if (feature && feature != 'TenThings_Bot' && feature != '@TenThings_Bot') {
-        player.suggestions++;
-        await player.save();
-        let message = `<b>Feature</b>\n${feature}\n<i>${
-          player.username ? `@${player.username}` : player.first_name
-        }</i>`;
-        bot.notify(message);
-        const chatLink = await b.getChat(msg.chat.id);
-        message += chatLink ? `\nChat: ${chatLink}` : '';
-        bot.notifyAdmins(message);
-        message = `<b>Feature</b>\n<i>${feature}</i>\nThank you, ${
-          player.username ? `@${player.username}` : player.first_name
-        }`;
-        bot.queueMessage(msg.chat.id, message);
-      } else {
-        bot.queueMessage(
-          msg.chat.id,
-          `You didn't add a feature ${player.first_name}. Add your message after /feature`
-        );
-      }
+      sendSuggestion('feature', msg, player)
       break;
     case '/pesquisar':
     case '/search':
@@ -2107,6 +2046,30 @@ router.get('/queue', async (req, res, next) => {
 });
 
 module.exports = router;
+
+const sendSuggestion = async (type, msg, player, extraText = '') => {
+  const suggestion = msg.text.substring(msg.command.length + 1, msg.text.length);
+  if (suggestion && suggestion != 'TenThings_Bot' && suggestion != '@TenThings_Bot') {
+    player.suggestions++;
+    await player.save();
+    let message = `<b>${type.capitalize()}</b>\n${feature}${extraText}\n<i>${
+      player.username ? `@${player.username}` : player.first_name
+    }</i>`;
+    bot.notify(message);
+    const chatLink = await bot.getChat(msg.chat.id);
+    message += chatLink ? `\nChat: ${chatLink}` : '';
+    bot.notifyAdmins(message);
+    message = `<b>Feature</b>\n<i>${feature}</i>\nThank you, ${
+      player.username ? `@${player.username}` : player.first_name
+    }`;
+    bot.queueMessage(msg.chat.id, message);
+  } else {
+    bot.queueMessage(
+      msg.chat.id,
+      `You didn't add a feature ${player.first_name}. Add your message after /feature`
+    );
+  }
+}
 
 const checkSkipper = async (game, msg, player) => {
   if (!vetoes[game.id] || vetoes[game.id] < moment().subtract(VETO_DELAY, 'seconds')) {

@@ -46,7 +46,7 @@ router.get('/lists', (req, res, next) => {
   }
   TenThingsList.find({})
     .select(
-      '_id plays skips score values date modifyDate creator name description categories language isDynamic refreshRate'
+      '_id plays skips score values date modifyDate creator name description categories language isDynamic frequency difficulty'
     )
     .populate('creator', 'username')
     .lean({

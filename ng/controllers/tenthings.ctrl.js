@@ -153,7 +153,7 @@ angular
 		$scope.getLists = () => {
 			if (!$scope.loading) {
 				$scope.loading = true;
-				TenThingsSvc.getLists($scope.currentUser).then(({ data }) => {
+				TenThingsSvc.getLists().then(({ data }) => {
 					$scope.lists = data;
 					$scope.userFilters = {};
 					$scope.userFilters.All = $scope.lists.length;

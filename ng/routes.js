@@ -97,6 +97,11 @@ angular
 				controller: 'TenThingsAdminCtrl',
 				templateUrl: 'tenthings-admin.html',
 			})
+			.state('tenthings-curate', {
+				url: '/tenthings-curate',
+				controller: 'TenThingsCurateCtrl',
+				templateUrl: 'tenthings-curate.html',
+			})
 			.state('tenthings-game', {
 				url: '/tenthings/:game',
 				controller: 'TenThingsGameCtrl',
