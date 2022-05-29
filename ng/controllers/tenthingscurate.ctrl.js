@@ -6,13 +6,15 @@ angular
 		function ($scope, TenThingsSvc) {
 
 			$scope.$on('login', _ => {
-				getLists();
+				$scope.getLists();
 			});
 
-			const getLists = () => {
+			$scope.getLists = () => {
+				$scope.loading = true;
 				TenThingsSvc.getLists().then(({ data }) => {				
 					$scope.lists = data;
 					console.log(data);
+					$scope.loading = false;
 					
 				});
 			};

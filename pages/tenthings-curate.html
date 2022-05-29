@@ -1,5 +1,8 @@
 <div id="tenthingscurate-page" class="col-md-12">
   <h1>Ten Things List Curation</h1>
+	<button class="btn btn-default" ng-click="getLists()">
+		<i class="fas fa-sync" ng-class="{ 'fa-spin': loading }" aria-hidden="true"></i>
+	</button>
 	<table class="table table-striped">
 		<thead>
 			<tr>
@@ -13,7 +16,7 @@
 			<tr ng-repeat="list in lists | orderBy: '+name'">
 				<td>{{list.name}}</td>
 				<td>{{list.language}}</td>
-				<td>{{list.score}}</td>
+				<td>{{(list.score * 100).toFixed(2)}}%</td>
 				<td>{{formatDate(list.date)}}</td>
 			</tr>
 		</tbody>
