@@ -8,6 +8,7 @@
 			<tr>
 				<th>Name</th>
 				<th>Language</th>
+				<th>Difficulty</th>
 				<th>Score</th>
 				<th>Created</th>
 			</tr>
@@ -16,6 +17,13 @@
 			<tr ng-repeat="list in lists | orderBy: '+name'">
 				<td>{{list.name}}</td>
 				<td>{{list.language}}</td>
+				<td>
+					<div class="btn-group" role="group">
+						<button type="button" class="btn btn-sm btn-secondary" ng-class="{ 'btn-primary': list.difficulty === 0 }" ng-click="setDifficulty(list, 0)">&#128524;</button>
+						<button type="button" class="btn btn-sm btn-secondary" ng-class="{ 'btn-primary': list.difficulty === 1 }" ng-click="setDifficulty(list, 1)">&#129300;</button>
+						<button type="button" class="btn btn-sm btn-secondary" ng-class="{ 'btn-primary': list.difficulty === 2 }" ng-click="setDifficulty(list, 2)">&#128565;</button>
+					</div>
+				</td>
 				<td>{{(list.score * 100).toFixed(2)}}%</td>
 				<td>{{formatDate(list.date)}}</td>
 			</tr>

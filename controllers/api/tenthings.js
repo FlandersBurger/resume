@@ -359,6 +359,27 @@ router.get('/game/:id', async (req, res, next) => {
   });
 });
 
+router.post('/lists/:id', (req, res, next) => {
+  if (!req.auth || req.auth.userid == '5ece428af848aa2fc392d099') {
+    return res.sendStatus(401);
+  }
+  TenThingsList.findOne({
+      _id: req.params.id
+    })
+    .exec(function(err, list) {
+      if (err) next(err);
+      Object.keys(req.body).forEach(update => {
+        list[update] = req.body[update]
+      });
+      list.save(function(err, list) {
+        if (err) {
+          throw next(err);
+        }
+        res.sendStatus(200);
+      });
+    });
+});
+
 router.put('/lists', (req, res, next) => {
   if (req.auth.userid == '5ece428af848aa2fc392d099') {
     return res.sendStatus(401);
@@ -483,6 +504,8 @@ const formatList = (list) => ({
   categories: list.categories,
   isDynamic: list.isDynamic,
   language: list.language,
+  difficulty: list.difficulty,
+  frequency: list.frequency,
 });
 /*
 User.findOne({

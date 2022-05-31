@@ -15,8 +15,15 @@ angular
 					$scope.lists = data;
 					console.log(data);
 					$scope.loading = false;
-					
 				});
 			};
+
+			$scope.setDifficulty = (list, difficulty) => {
+				list.difficulty = difficulty;
+				TenThingsSvc.updateList({
+					_id: list._id,
+					difficulty: difficulty,
+				});
+			}
 		}
 	);

@@ -21,6 +21,10 @@ angular.module('app').service('TenThingsSvc', function ($http) {
 		return $http.get('/api/tenthings/lists/' + list._id);
 	};
 
+	svc.updateList = function (list) {
+		return $http.post('/api/tenthings/lists/' + list._id, list);
+	};
+
 	svc.saveList = function (user, list) {
 		return $http.put('/api/tenthings/lists', {
 			user: user,
