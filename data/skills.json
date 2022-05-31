@@ -6,9 +6,31 @@
     "enabled":"true",
     "percentage":"80",
     "since":2015,
-    "description": "AngularJS has quickly become my favourite front-end web app framework, so much so that I can't imagine ever creating another website without it (I haven't tried ReactJs yet however). In fact, this website is built with AngularJS. The crown-jewel of my AngularJS experience is found at <a href='https://npgcloud.com' target='_blank'>https://npgcloud.com</a>, a web app where high profile customers such as Hudson Bay Company, 7-Eleven and Sprint go to design and print their name badges.",
+    "description": "AngularJS has quickly become my favourite front-end web app framework, so much so that I can't imagine ever creating another website without it (I haven't tried React yet however). In fact, this website is built with AngularJS. The crown-jewel of my AngularJS experience is found at <a href='https://npgcloud.com' target='_blank'>https://npgcloud.com</a>, a web app where high profile customers such as Hudson Bay Company, 7-Eleven and Sprint go to design and print their name badges.",
     "tldr": "",
     "image": "angular.png"
+  },
+  {
+    "name": "React",
+    "code": "react",
+    "type": "skill",
+    "enabled":"true",
+    "percentage":"80",
+    "since":2021,
+    "description": "It's funny reading back what I wrote with AngularJs as I have now tried React and am kind of in love with it too. Having previous knowledge with a framework definitely helped in developing skills with React. I've been especially fond of Redux and Material UI to use in conjunction with the framework.",
+    "tldr": "",
+    "image": "react.png"
+  },
+  {
+    "name": "Ruby on Rails",
+    "code": "rails",
+    "type": "skill",
+    "enabled":"true",
+    "percentage":"60",
+    "since":2021,
+    "description": "I've been quickly becoming more adept at Ruby on Rails have been thrown into developing an existing website at <a href='vinnauto.com' target='_blank'>VINN</a>. I have been quit blown away by it's simplicity and will probably be using it moving forward to develop in the future",
+    "tldr": "",
+    "image": "rails.png"
   },
   {
     "name": "Firebase",

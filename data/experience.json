@@ -1,10 +1,25 @@
 [
     {
+      "company": "VINN Automotive",
+      "code":"vinn",
+      "title": "Senior Developer",
+      "startDate": "2021-09-01",
+      "image": "vinn.png",
+      "responsibilities": [
+        {
+          "name": "Web Development",
+          "description": "Continuously improve the existing codebase."
+        }
+      ],
+      "story": "I started freelancing for VINN in May 2021 and it became quickly clear that it would be a good fit to move over. VINN is building the future of automotive sales with a Ruby on Rails backend and a React front end. Both were new technologies from my perspective but I picked up on them rather quickly. My gained SQL knowledge has been much appreciated in my roll."
+    },
+    {
       "company": "Imprint Plus",
       "description": "Imprint Plus is the number one name badge supplier in North America servicing major hotel chains (Best Western, Marriott, Hilton,...), office product stores (Staples, Office Depot,...) and retail stores (Macy's, Ulta, Stage Stores,...).",
       "code":"ip",
       "title": "Software & Data Analyst",
       "startDate": "2011-07-22",
+      "endDate": "2021-08-31",
       "image": "ip.png",
       "responsibilities": [
         {
