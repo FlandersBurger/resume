@@ -237,6 +237,16 @@
     "image": "atom.png"
   },
   {
+    "name": "VS Code",
+    "code": "vscode",
+    "type": "tool",
+    "enabled":"true",
+    "percentage":"100",
+    "since":2020,
+    "description": "My new go-to text editor to code web apps in. The code-pilot feature is particularly mind-blowing to me.",
+    "image": "vscode.png"
+  },
+  {
     "name": "Bootstrap",
     "code": "bootstrap",
     "type": "skill",

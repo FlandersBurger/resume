@@ -5,10 +5,15 @@
       "title": "Senior Developer",
       "startDate": "2021-09-01",
       "image": "vinn.png",
-      "responsibilities": [
+      "projects": [
         {
-          "name": "Web Development",
-          "description": "Continuously improve the existing codebase."
+          "name": "Private Sale on vinnauto.com",
+          "skills": [
+            "rails", "react", "git", "js", "html5", "redis", "vscode", "node","fa", "ws"
+          ],
+          "url":"https://vinnauto.com",
+          "description": "Adding private sale functionality to the existing Ruby on Rail website. Developing front and back end. Adding social media authentication.",
+          "tldr": "Enabled customers to sell their cars"
         }
       ],
       "story": "I started freelancing for VINN in May 2021 and it became quickly clear that it would be a good fit to move over. VINN is building the future of automotive sales with a Ruby on Rails backend and a React front end. Both were new technologies from my perspective but I picked up on them rather quickly. My gained SQL knowledge has been much appreciated in my roll."
