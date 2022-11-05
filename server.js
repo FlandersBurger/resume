@@ -16,7 +16,7 @@ admin.initializeApp({
 });
 
 const app = express();
-app.use(bodyParser.json({ limit: '10mb' }));
+app.use(bodyParser.json());
 
 app.use(require('./auth'));
 app.use('/api/users', require('./controllers/api/users'));
