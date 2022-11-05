@@ -19,6 +19,8 @@ angular
 			$scope.languageFilters = $scope.languages.map(language => language);
 			$scope.languageFilters.push({ name: 'All', code: 'all' });
 			$scope.languageFilter = { name: 'All', code: 'all' };
+			console.log($scope.languageFilters);
+			
 		});
 
 		$scope.keyDown = e => {
@@ -113,7 +115,6 @@ angular
 
 		$scope.getLanguageCount = language => {
 			if (!$scope.lists) return 0;
-			if (!language) return console.log(language);
 			const count = $scope.lists.filter(
 				list =>
 					($scope.categoryFilter === 'All' ||

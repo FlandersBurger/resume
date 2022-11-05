@@ -421,11 +421,13 @@ module.exports = [
       name: 'Ndonga',
       native: 'ndonga'
     },
+    */
     {
       code: 'NL',
       name: 'Dutch; Flemish',
       native: 'Nederlands; Vlaams'
     },
+    /*
     {
       code: 'NN',
       name: 'Norwegian Nynorsk; Nynorsk, Norwegian',
@@ -626,7 +628,7 @@ module.exports = [
 		code: 'TR',
 		name: 'Turkish',
 		native: 'Türkçe',
-	} /*
+	}, /*
     {
       code: 'UG',
       name: 'Uighur; Uyghur',
@@ -672,9 +674,8 @@ module.exports = [
       code: 'ZU',
       name: 'Zulu',
       native: 'isiZulu'
-    },*/,
+    },*/
 
-	,
 	{
 		code: 'ZH',
 		name: 'Chinese',
