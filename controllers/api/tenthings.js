@@ -77,7 +77,6 @@ router.get('/lists/:id', (req, res, next) => {
   })
     .populate('creator')
     .populate('values.creator')
-    .select('-votes')
     .exec((err, list) => {
       res.json(formatList(list));
     });
