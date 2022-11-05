@@ -113,6 +113,7 @@ angular
 
 		$scope.getLanguageCount = language => {
 			if (!$scope.lists) return 0;
+			if (!language) return console.log(language);
 			const count = $scope.lists.filter(
 				list =>
 					($scope.categoryFilter === 'All' ||
