@@ -18,9 +18,7 @@ angular
 			$scope.languages = response.data;
 			$scope.languageFilters = $scope.languages.map(language => language);
 			$scope.languageFilters.push({ name: 'All', code: 'all' });
-			$scope.languageFilter = { name: 'All', code: 'all' };
-			console.log($scope.languageFilters);
-			
+			$scope.languageFilter = { name: 'All', code: 'all' };			
 		});
 
 		$scope.keyDown = e => {
