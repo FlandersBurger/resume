@@ -4,10 +4,30 @@ angular
 	.controller(
 		'TenThingsCurateCtrl',
 		function ($scope, TenThingsSvc) {
+			
+			TenThingsSvc.getLanguages().then(response => {
+				$scope.languages = response.data;
+			});
 
 			$scope.$on('login', _ => {
 				$scope.getLists();
 			});
+			
+			$scope.order = {
+        field: 'name',
+        reverse: false
+   		};
+
+			$scope.orderBy = (field) => {
+				if ($scope.order.field === field) {
+					$scope.order.reverse = !$scope.order.reverse;
+				} else {					
+					$scope.order = {
+						field: field,
+						reverse: false
+					};
+				}
+			};
 
 			$scope.getLists = () => {
 				$scope.loading = true;
