@@ -1653,7 +1653,16 @@ const evaluateCommand = async (res, msg, game, isNew) => {
       break;
     case '/parar':
     case '/stop':
-      deactivateGame(game);
+      bot.checkAdmin(game.chat_id, msg.from.id).then((admin) => {
+        if (admin) {
+          deactivateGame(game);
+        } else {
+          bot.queueMessage(
+            game.chat_id,
+            `Sorry ${player.first_name}, that's an admin only function`
+          );
+        }
+      });
       break;
     case '/new':
     case '/start':

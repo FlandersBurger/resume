@@ -71,6 +71,7 @@ module.exports = {
       message += '/hint - Give a hint\n';
       message += '/skip - Skip the current round\n';
       message += '/minigame - Reverse trivia question\n';
+      message += '/tinygame - Guess the list\n';
       message += '/score - Daily score standing\n';
       message += '/stats - Statistics on the game\n';
       message += '/me - My stats\n';
