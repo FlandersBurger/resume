@@ -1387,7 +1387,8 @@ router.post('/', async ({ body, get }, res, next) => {
       List.findOne({
         _id: data.list,
       }).exec((err, list) => {
-        bot.queueMessage(data.chat_id, list.description || 'N/A');
+        var message = `<b>${list.name}</b>\nDescription:\n<i>${list.description || 'N/A'}</i>`
+        bot.queueMessage(data.chat_id, message);
       });
     } else if (data.type === 'diff') {
       List.updateOne({ _id: data.list }, { $set: { difficulty: data.vote } });
