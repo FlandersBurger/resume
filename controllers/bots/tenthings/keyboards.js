@@ -577,7 +577,7 @@ module.exports = {
           text: 'Desc',
           callback_data: JSON.stringify({
             type: 'desc',
-            id: list._id,
+            list: list._id,
           }),
         },
       ],
