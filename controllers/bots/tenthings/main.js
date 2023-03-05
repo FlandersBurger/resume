@@ -782,10 +782,10 @@ const newRound = (currentGame, player) => {
           game.listsPlayed++;
           game.hints = 0;
           game.hintCooldown = 0;
-          cooldowns[game.id] = 4;
+          cooldowns[game.id] = 3;
           cooldownHint(game.id);
           game.guessers = [];
-          let message = 'A new round will start in 3 seconds';
+          let message = 'A new round will start in 2 seconds';
           message +=
             game.list.categories.length > 0
               ? `\nCategor${game.list.categories.length > 1 ? 'ies' : 'y'}: <b>${
@@ -799,7 +799,7 @@ const newRound = (currentGame, player) => {
               ? `\n<i>${game.list.description.angleBrackets()}</i>`
               : '';
             bot.queueMessage(game.chat_id, message);
-          }, 3000);
+          }, 2000);
           game.playedLists.push(game.list._id);
           game.save((err) => {
             if (err)
