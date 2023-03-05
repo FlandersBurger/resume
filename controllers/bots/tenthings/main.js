@@ -782,6 +782,8 @@ const newRound = (currentGame, player) => {
           game.listsPlayed++;
           game.hints = 0;
           game.hintCooldown = 0;
+          cooldowns[game.id] = 4;
+          cooldownHint(game.id);
           game.guessers = [];
           let message = 'A new round will start in 3 seconds';
           message +=
