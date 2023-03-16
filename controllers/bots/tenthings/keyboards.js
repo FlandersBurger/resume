@@ -580,6 +580,10 @@ module.exports = {
             list: list._id,
           }),
         },
+        {
+          text: 'Curate',
+          url: `https://belgocanadian.com/tenthings?list=${list._id}`
+        },
       ],
     ],
   }),
