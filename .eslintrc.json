@@ -1,0 +1,34 @@
+{
+  "parser": "@babel/eslint-parser",
+  "plugins": ["@babel", "jest", "react", "cypress"],
+  "env": {
+    "browser": true,
+    "node": true
+  },
+  "rules": {
+    "indent": [
+      2,
+      2,
+      {
+        "SwitchCase": 1
+      }
+    ],
+    // This rule is for if you have one function in a file, you should import as default,
+    // but I think that it makes importing more inconsistent for styled-components.
+    "import/prefer-default-export": "off",
+    "no-unused-expressions": [
+      "error",
+      {
+        "allowTernary": true
+      }
+    ],
+    "radix": ["error", "as-needed"],
+    "no-param-reassign": [
+      "error",
+      {
+        "props": true,
+        "ignorePropertyModificationsFor": ["state", "e", "ctx"]
+      }
+    ]
+  }
+}

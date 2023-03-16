@@ -1702,13 +1702,19 @@ const evaluateCommand = async (res, msg, game, isNew) => {
     case '/minipule':
     case '/miniskip':
       if (await checkSkipper(game, msg, player)) {
-        minigame.create(game, msg);
+        bot.queueMessage(msg.chat.id, `The asnwer was:\n\n<i>${game.minigame.answer}</i>`);
+        setTimeout(() => {
+          minigame.create(game, msg);
+        }, 200);
       }
       break;
     case '/puleminusculo':
     case '/tinyskip':
       if (await checkSkipper(game, msg, player)) {
-        tinygame.create(game, msg);
+        bot.queueMessage(msg.chat.id, `The asnwer was:\n\n<i>${game.tinygame.answer}</i>`);
+        setTimeout(() => {
+          tinygame.create(game, msg);
+        }, 200);
       }
       break;
     case '/veto':

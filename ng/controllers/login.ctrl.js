@@ -1,48 +1,52 @@
-angular.module('app')
-.controller('LoginCtrl', function ($scope, $location, UserSvc) {
-
+angular.module('app').controller('LoginCtrl', function ($scope, $location, UserSvc) {
   // Initialize the FirebaseUI Widget using Firebase.
   var ui = new firebaseui.auth.AuthUI(firebase.auth());
 
-  $scope.$on('logout', function(event) {
+  $scope.$on('logout', function (event) {
     ui.reset();
     startUI();
   });
 
   function startUI() {
     ui.start('#firebaseui-auth-container', {
-
       callbacks: {
-        signInSuccess: function(currentUser, credential, redirectUrl) {
+        signInSuccess: function (currentUser, credential, redirectUrl) {
           // No redirect.
-          firebase.auth().currentUser.getIdToken(true).then(function(idToken) {
-            UserSvc.authenticate({
-              displayName: currentUser.displayName,
-              email: currentUser.email,
-              photoURL: currentUser.photoURL,
-              emailVerified: currentUser.emailVerified,
-              idToken: idToken
+          firebase
+            .auth()
+            .currentUser.getIdToken(true)
+            .then(function (idToken) {
+              UserSvc.authenticate({
+                displayName: currentUser.displayName,
+                email: currentUser.email,
+                photoURL: currentUser.photoURL,
+                emailVerified: currentUser.emailVerified,
+                idToken: idToken,
+              }).then(
+                function (response) {
+                  $scope.$emit('login', response.data);
+                  $('#modal-login').modal('hide');
+                  //$location.path('/');
+                },
+                function () {
+                  $scope.$emit('popup', {
+                    message: 'Login Failed',
+                    type: 'alert-danger',
+                  });
+                }
+              );
+              // ...
             })
-            .then(function (response) {
-              $scope.$emit('login', response.data);
-              $('#modal-login').modal('hide');
-              //$location.path('/');
-            }, function () {
-              $scope.$emit('popup', {
-                message: 'Login Failed',
-                type: 'alert-danger'
-              });
+            .catch(function (error) {
+              // Handle error
+              console.error(error);
             });
-            // ...
-          }).catch(function(error) {
-            // Handle error
-          });
           return false;
         },
 
         // signInFailure callback must be provided to handle merge conflicts which
         // occur when an existing credential is linked to an anonymous user.
-        signInFailure: function(error) {
+        signInFailure: function (error) {
           // For merge conflicts, the error.code will be
           // 'firebaseui/anonymous-upgrade-merge-conflict'.
           if (error.code != 'firebaseui/anonymous-upgrade-merge-conflict') {
@@ -56,11 +60,11 @@ angular.module('app')
           // Finish sign-in after data is copied.
           return firebase.auth().signInWithCredential(cred);
         },
-        uiShown: function() {
+        uiShown: function () {
           // The widget is rendered.
           // Hide the loader.
           document.getElementById('loader').style.display = 'none';
-        }
+        },
       },
       signInSuccessUrl: '/home',
       signInOptions: [
@@ -76,5 +80,4 @@ angular.module('app')
   }
 
   startUI();
-
 });
