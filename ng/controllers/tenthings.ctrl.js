@@ -1,11 +1,12 @@
 angular
 	.module('app')
 	//AngularJs can't have an arrow function here
-	.controller('TenThingsCtrl', function ($scope, TenThingsSvc) {
+	.controller('TenThingsCtrl', function ($scope, $location, TenThingsSvc) {
 		$scope.search = {
 			name: '',
 			values: '',
 		};
+
 		TenThingsSvc.getCategories().then(response => {
 			$scope.categories = response.data;
 			$scope.categoryFilters = $scope.categories.map(category => category);
@@ -175,8 +176,13 @@ angular
 		$scope.selectList = list => {
 			TenThingsSvc.getList(list).then(({ data }) => {
 				$scope.selectedList = data;
+				$location.search('list', data._id);
 			});
 		};
+
+		if (($location.search()).list) {
+			$scope.selectList({ _id: $location.search().list })
+		}
 
 		$scope.selectCategory = category => {
 			$scope.selectedList.category = category;
@@ -215,6 +221,7 @@ angular
 			const currentLanguage = $scope.selectedList
 				? $scope.selectedList.language
 				: 'EN';
+			$location.search('list', '')
 			$scope.selectedList = {
 				name: '',
 				creator: $scope.currentUser._id,

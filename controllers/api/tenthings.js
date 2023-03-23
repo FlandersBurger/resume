@@ -14,9 +14,9 @@ const keyboards = require('../bots/tenthings/keyboards');
 const categories = require('../bots/tenthings/categories');
 const languages = require('../bots/tenthings/languages');
 const lists = require('../bots/tenthings/lists');
-const Spotify = require('../../connections/spotify');
-const spotify = new Spotify();
-spotify.init();
+// const Spotify = require('../../connections/spotify');
+// const spotify = new Spotify();
+// spotify.init();
 
 const User = require('../../models/user')();
 const TenThingsList = require('../../models/tenthings/list')();
@@ -365,20 +365,19 @@ router.post('/lists/:id', (req, res, next) => {
     return res.sendStatus(401);
   }
   TenThingsList.findOne({
-      _id: req.params.id
-    })
-    .exec(function(err, list) {
-      if (err) next(err);
-      Object.keys(req.body).forEach(update => {
-        list[update] = req.body[update]
-      });
-      list.save(function(err, list) {
-        if (err) {
-          throw next(err);
-        }
-        res.sendStatus(200);
-      });
+    _id: req.params.id,
+  }).exec(function (err, list) {
+    if (err) next(err);
+    Object.keys(req.body).forEach((update) => {
+      list[update] = req.body[update];
     });
+    list.save(function (err, list) {
+      if (err) {
+        throw next(err);
+      }
+      res.sendStatus(200);
+    });
+  });
 });
 
 router.put('/lists', (req, res, next) => {
