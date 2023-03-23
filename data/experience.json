@@ -4,25 +4,42 @@
       "code":"vinn",
       "title": "Senior Developer",
       "startDate": "2021-09-01",
+      "endDate": "2023-03-22",
       "image": "vinn.png",
       "projects": [
         {
           "name": "Private Sale on vinnauto.com",
           "skills": [
-            "rails", "react", "git", "js", "html5", "redis", "vscode", "node","fa", "ws"
+            "rails", "react", "git", "js", "html5", "redis", "vscode", "ws"
           ],
           "url":"https://vinnauto.com",
           "description": "Adding private sale functionality to the existing Ruby on Rail website. Developing front and back end. Adding social media authentication.",
           "tldr": "Enabled customers to sell their cars"
+        },
+        {
+          "name": "VOIP Calling",
+          "skills": [
+            "rails", "react", "git", "js", "html5", "redis", "vscode"
+          ],
+          "description": "Rebuilding the phone system using Sip.js to enable calls to be received and for calls to be made wherever a phone number appeared on the internal CRM",
+          "tldr": "Enabled employees to send and recieve calls"
+        },
+        {
+          "name": "Communication Media",
+          "skills": [
+            "rails", "react", "git", "js", "html5", "redis", "vscode", "aws"
+          ],
+          "description": "Adding the ability for users to add images to texts and emails sent out to the customers in the internal CRM using AWS S3 to save the images and ensuring the images remained private",
+          "tldr": "Enabled employees to add images to texts and emails"
         }
       ],
-      "story": "I started freelancing for VINN in May 2021 and it became quickly clear that it would be a good fit to move over. VINN is building the future of automotive sales with a Ruby on Rails backend and a React front end. Both were new technologies from my perspective but I picked up on them rather quickly. My gained SQL knowledge has been much appreciated in my roll."
+      "story": "I started freelancing for VINN in May 2021 and it became quickly clear that it would be a good fit to move over. VINN was building the future of automotive sales with a Ruby on Rails backend and a React front end. Both were new technologies to me but I picked up on them rather quickly, I've been so engaged with them that I've started using them in my personal projects. My SQL knowledge has been much appreciated in my roll and resulted in some great speed improvements on the site. My postion also required playing a consulting and mentoring role as the senior developer to the other devs, bringing previous experience and knowledge to the table. Some of the tools used in my position were: Heroku, AWS, Vercel, NextJs, Redux, Jira, Linear, SipJs, Webpack, Postgres, Github and a multitude of others."
     },
     {
       "company": "Imprint Plus",
       "description": "Imprint Plus is the number one name badge supplier in North America servicing major hotel chains (Best Western, Marriott, Hilton,...), office product stores (Staples, Office Depot,...) and retail stores (Macy's, Ulta, Stage Stores,...).",
       "code":"ip",
-      "title": "Software & Data Analyst",
+      "title": "Full Stack Developer",
       "startDate": "2011-07-22",
       "endDate": "2021-08-31",
       "image": "ip.png",

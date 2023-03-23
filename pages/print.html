@@ -1,5 +1,5 @@
 <h1>Laurent Debacker</h1>
-<h2>Full Stack [Mean/Sean] Developer - SQL SSRS Developer</h2>
+<h2>Full Stack Web Developer - DB Admin</h2>
 <hr />
 <div style="margin-top:-20px">
   <div class="col-xs-6">
@@ -7,9 +7,9 @@
     <ul>
       <li>Mail: debackerlaurent@gmail.com</li>
       <li>Phone: 1-250-597-0595</li>
+      <li>Mobile: 1-604-505-9305</li>
       <li>Location: Duncan, BC</li>
-      <li>DOB: September 19th 1982</li>
-      <li>Preferred Pronouns: He, Him, His</li>
+      <li>Pronouns: He/Him</li>
     </ul>
   </div>
   <div class="col-xs-6">
@@ -26,7 +26,7 @@
 <hr />
 <div>
   <h3>Skills</h3>
-  <div ng-repeat="skill in skills | filter: {type: 'skill'} | orderBy: '-percentage'">
+  <div ng-repeat="skill in skills | filter: {type: 'skill', enabled: true} | orderBy: '-percentage'">
     <div class="col-xs-6" style="float:left;">
       <div class="col-xs-4">
         {{skill.name}}

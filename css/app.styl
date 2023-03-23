@@ -2,13 +2,26 @@
   display: none !important;
 }
 
-@media (max-width:768px) {
-  #footer{
-    display:none;
+@media (max-width: 768px) {
+  #footer {
+    display: none;
   }
 }
 
 @media print {
+  @page {
+    margin: 16mm;
+  }
+
+  @print {
+    @page :footer {
+      color: #fff;
+    }
+
+    @page :header {
+      color: #fff;
+    }
+  }
 
   .print {
     display: block !important;
@@ -25,21 +38,20 @@
 }
 
 body {
-  min-width:300px;
+  min-width: 300px;
 }
 
 .navbar {
-  z-index:100000;
+  z-index: 100000;
 }
 
 .container {
-  width:100%
+  width: 100%;
 }
 
 .container .page {
-  padding-top:50px;
+  padding-top: 50px;
 }
-
 
 .loading {
   position: fixed;
@@ -48,66 +60,61 @@ body {
 }
 
 .page {
+  /* start 'enter' transition */
+  &.ng-enter {
+    /* transition on enter for .5s */
+    transition: 2s; /* start with opacity 0 (invisible) */
+    opacity: 0;
 
-    /* start 'enter' transition */
-    &.ng-enter {
-        /* transition on enter for .5s */
-        transition: 2s;
-
-        /* start with opacity 0 (invisible) */
-        opacity: 0;
-
-        #home-page {
-          -webkit-animation:2s fadeInDown ease;
-          animation:2s fadeInDown ease;
-        }
-
-        #experience-page {
-          -webkit-animation:2s slideInDown ease;
-          animation:2s slideInDown ease;
-        }
-
-        #skills-page {
-          -webkit-animation:1s slideInLeft ease;
-          animation:1s slideInLeft ease;
-        }
-
-        #contact-page {
-          -webkit-animation:1s bounceInUp ease;
-          animation:1s bounceInUp ease;
-        }
-
-        #doodle-page {
-          -webkit-animation:1s slideInRight ease;
-          animation:1s slideInRight ease;
-        }
+    #home-page {
+      -webkit-animation: 2s fadeInDown ease;
+      animation: 2s fadeInDown ease;
     }
 
-    /* end 'enter' transition */
-    &.ng-enter-active {
-        /* end with opacity 1 (fade in) */
-        opacity: 1;
+    #experience-page {
+      -webkit-animation: 2s slideInDown ease;
+      animation: 2s slideInDown ease;
     }
+
+    #skills-page {
+      -webkit-animation: 1s slideInLeft ease;
+      animation: 1s slideInLeft ease;
+    }
+
+    #contact-page {
+      -webkit-animation: 1s bounceInUp ease;
+      animation: 1s bounceInUp ease;
+    }
+
+    #doodle-page {
+      -webkit-animation: 1s slideInRight ease;
+      animation: 1s slideInRight ease;
+    }
+  }
+
+  /* end 'enter' transition */
+  &.ng-enter-active {
+    /* end with opacity 1 (fade in) */
+    opacity: 1;
+  }
 }
-
 
 .social-media span {
-  display:inline-block;
-  width:0px;
+  display: inline-block;
+  width: 0px;
   opacity: 0;
-  padding-left:10px;
+  padding-left: 10px;
 }
-
 
 .social-media:hover span {
   opacity: 1;
-  width:90px;
+  width: 90px;
   transition: width 0.4s, opacity 0.5s ease-out;
 }
 
 .tab-image {
-  max-width:50px !important;
-  margin-right:5px;
+  max-width: 50px !important;
+  margin-right: 5px;
 }
 
 .hover-div {
@@ -120,15 +127,15 @@ body {
 }
 
 hr {
-  clear:both;
+  clear: both;
 }
 
 .modal {
-  top:50px;
+  top: 50px;
 }
 
 .img-profile-a {
-  padding:5px !important;
+  padding: 5px !important;
 }
 
 .img-profile {
