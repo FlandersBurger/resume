@@ -1,57 +1,65 @@
-<h1>Laurent Debacker</h1>
-<h2>Full Stack Web Developer - DB Admin</h2>
-<hr />
-<div style="margin-top:-20px">
-  <div class="col-xs-6">
-    <h4>Details</h4>
-    <ul>
-      <li>Mail: debackerlaurent@gmail.com</li>
-      <li>Phone: 1-250-597-0595</li>
-      <li>Mobile: 1-604-505-9305</li>
-      <li>Location: Duncan, BC</li>
-      <li>Pronouns: He/Him</li>
-    </ul>
+<div class="print-page">
+  <h1>Laurent Debacker</h1>
+  <h2>Full Stack Web Developer - DB Admin</h2>
+  <hr />
+  <div style="margin-top:-20px">
+    <div class="col-xs-12">
+      <h5>This resume was automatically generated with code I created on my website: belgocanadian.com<br />I would recommend going there to experience this resume differently :)</h5>
+    </div>
+    <hr />
+    <div class="col-xs-6">
+      <h4>Details</h4>
+      <ul>
+        <li>Mail: debackerlaurent@gmail.com</li>
+        <li>Phone: 1-250-597-0595</li>
+        <li>Mobile: 1-604-505-9305</li>
+        <li>Location: Duncan, BC</li>
+        <li>Pronouns: He/Him</li>
+      </ul>
+    </div>
+    <div class="col-xs-6">
+      <h4>Languages</h4>
+      <ul>
+        <li>West-Flemish - Mother Tongue</li>
+        <li>Dutch - Fluent</li>
+        <li>English - Fluent</li>
+        <li>French - Professional</li>
+        <li>German - Conversational</li>
+      </ul>
+    </div>
   </div>
-  <div class="col-xs-6">
-    <h4>Languages</h4>
-    <ul>
-      <li>West-Flemish - Mother Tongue</li>
-      <li>Dutch - Fluent</li>
-      <li>English - Fluent</li>
-      <li>French - Professional</li>
-      <li>German - Conversational</li>
-    </ul>
-  </div>
-</div>
-<hr />
-<div>
-  <h3>Skills</h3>
-  <div ng-repeat="skill in skills | filter: {type: 'skill', enabled: true} | orderBy: '-percentage'">
-    <div class="col-xs-6" style="float:left;">
-      <div class="col-xs-4">
-        {{skill.name}}
-      </div>
-      <div class="col-xs-8" style="background-color:#CCCCCC  !important;padding:0;border-radius:10px;">
-        <div ng-style="{width: skill.percentage + '%'}" style="background-color:#777777  !important;border-radius:10px;">
-          <p style="margin:0"><br /></p>
+  <hr />
+  <div>
+    <h3>Skills</h3>
+    <div ng-repeat="skill in skills | filter: {type: 'skill', enabled: true} | orderBy: '-percentage'">
+      <div class="col-xs-6" style="float:left;">
+        <div class="col-xs-5">
+          {{skill.name}}
+        </div>
+        <div class="col-xs-7" style="background-color:#CCCCCC  !important;padding:0;border-radius:10px;">
+          <div ng-style="{width: skill.percentage + '%'}" style="background-color:#777777  !important;border-radius:10px;">
+            <p style="margin:0 0 0 2mm">{{skill.percentage}}%</p>
+          </div>
         </div>
       </div>
     </div>
   </div>
-</div>
-<div class="col-xs-12">
-  <br />
-</div>
-<hr />
-<h3>Experience</h3>
-<div ng-repeat="job in jobs">
-  <h4>{{job.company}} - {{job.title}} ~ {{getTimeSpan(job)}}</h4>
-  <p>{{job.story}}</p>
-  <div ng-repeat="project in job.projects">
-    <h5>Project: {{project.name}}</h5>
-    <p>{{project.url}} {{project.url ? '-' : ''}} {{project.tldr}}</p>
+  <div class="col-xs-12">
+    <br />
   </div>
-  <ul class="list-group">
-    <li  class="list-group-item" ng-repeat="responsibility in job.responsibilities | orderBy: 'name'"><strong>{{responsibility.name}}:</strong> {{responsibility.description}}</li>
-  </ul>
+  <hr />
+  <h3>Experience</h3>
+  <div ng-repeat="job in jobs">
+    <h4>{{job.company}} - {{job.title}} ~ {{getTimeSpan(job)}}</h4>
+    <p>{{job.story}}</p>
+    <div ng-repeat="project in job.projects">
+      <h5>Project: {{project.name}}</h5>
+      <p>{{project.url}} {{project.url ? '-' : ''}} {{project.tldr}}</p>
+    </div>
+    <ul class="list-group">
+      <li  class="list-group-item" ng-repeat="responsibility in job.responsibilities | orderBy: 'name'">
+        <strong>{{responsibility.name}}:</strong> {{responsibility.description}}
+      </li>
+    </ul>
+  </div>
 </div>

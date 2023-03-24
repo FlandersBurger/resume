@@ -22,7 +22,7 @@
     "image": "react.png"
   },
   {
-    "name": "Rails",
+    "name": "Ruby on Rails",
     "code": "rails",
     "type": "skill",
     "enabled":"true",
@@ -131,13 +131,13 @@
     "image": "java.png"
   },
   {
-    "name": "MySQL",
-    "code": "mysql",
+    "name": "PostgreSQL",
+    "code": "postgresql",
     "type": "skill",
     "enabled":"true",
-    "percentage":"70",
-    "description": "I haven't used MySQL a lot, only to link existing databases to SQL server databases and to check on data, but I haven't found it to be that different from SQL server which I can navigate very easily.",
-    "image": "mysql.png"
+    "percentage":"85",
+    "description": "Postgres was the only database I used while working at VINN. I was able to tap into my existing knowledge of MSSQL to quickly get up to speed. I mentored some of the younger devs in SQL and encouraged them to explore the data through PGAdmin.",
+    "image": "postgresql.png"
   },
   {
     "name": "Certifications",

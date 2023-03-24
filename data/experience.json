@@ -19,7 +19,7 @@
         {
           "name": "VOIP Calling",
           "skills": [
-            "rails", "react", "git", "js", "html5", "redis", "vscode"
+            "rails", "react", "git", "js", "html5", "vscode"
           ],
           "description": "Rebuilding the phone system using Sip.js to enable calls to be received and for calls to be made wherever a phone number appeared on the internal CRM",
           "tldr": "Enabled employees to send and recieve calls"
