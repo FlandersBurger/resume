@@ -26,9 +26,13 @@
           <p class="story">{{job.story}}</p>
         </div>
         <div id="{{job.code}}-projects" class="tab-pane fade">
-          <div ng-repeat="project in job.projects">
+          <div ng-repeat="project in job.projects track by $index">
             <h4>{{project.name}}</h4>
             <a ng-href="{{project.url}}" target="_blank">{{project.url}}</a>
+            <p ng-bind-html="project.description"></p>
+            <p ng-show="project.tldr">
+              <strong title="Too Long; Didn't Read">TL;DR</strong> <span ng-bind-html="project.tldr"></span>
+            </p>
             <div class="col-xs-12">
               <div class="project-skill" ng-repeat="skill in project.skills | orderBy: 'name'">
                 <img class="project-skill-image" ng-mouseleave="hoverdiv($event, getSkill(skill).code + '-info')" ng-mouseenter="hoverdiv($event, getSkill(skill).code + '-info')" ng-src="/skills/{{getSkill(skill).image}}"/>
@@ -44,10 +48,7 @@
                 </div>
               </div>
             </div>
-            <p ng-bind-html="project.description"></p>
-            <p ng-show="project.tldr">
-              <strong title="Too Long; Didn't Read">TL;DR</strong> <span ng-bind-html="project.tldr"></span>
-            </p>
+            <div ng-if="$index < job.projects.length - 1"><br /><hr /></div>
           </div>
         </div>
         <div id="{{job.code}}-responsibilities" class="tab-pane fade">

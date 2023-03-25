@@ -33,7 +33,29 @@
           "tldr": "Enabled employees to add images to texts and emails"
         }
       ],
-      "story": "I started freelancing for VINN in May 2021 and it became quickly clear that it would be a good fit to move over. VINN was building the future of automotive sales with a Ruby on Rails backend and a React front end. Both were new technologies to me but I picked up on them rather quickly, I've been so engaged with them that I've started using them in my personal projects. My SQL knowledge has been much appreciated in my roll and resulted in some great speed improvements on the site. My postion also required playing a consulting and mentoring role as the senior developer to the other devs, bringing previous experience and knowledge to the table. Some of the tools used in my position were: Heroku, AWS, Vercel, NextJs, Redux, Jira, Linear, SipJs, Webpack, Postgres, Github and a multitude of others."
+      "story": "I started freelancing for VINN in May 2021 and it became quickly clear that it would be a good fit to move over. VINN was building the future of automotive sales with a Ruby on Rails backend and a React front end. Both were new technologies to me but I picked up on them rather quickly, I've been so engaged with them that I've started using them in my personal projects. My SQL knowledge has been much appreciated in my roll and resulted in some great speed improvements on the site. My position also required playing a consulting and mentoring role as the senior developer to the other devs, bringing previous experience and knowledge to the table. Unfortunately the market wasn't kind to VINN and the company succumbed. Some of the tools used in here were: Heroku, AWS, Vercel, NextJs, Redux, Jira, Linear, SipJs, Webpack, Postgres, Github and a multitude of others.",
+      "responsibilities": [
+        {
+          "name": "Programming",
+          "description": "Develop highly scalable and efficient code on the front and backend."
+        },
+        {
+          "name": "Project Management",
+          "description": "Create projects from concept to execution to maintenance."
+        },
+        {
+          "name": "Code Review",
+          "description": "Reviewed code in all aspects of the stack for most developers, providing feedback and alternate solutions"
+        },
+        {
+          "name": "Firefighting",
+          "description": "Troubleshooting and addressing major outages and business impacting tickets"
+        },
+        {
+          "name": "Mentoring",
+          "description": "Provide help to other devs when needed and offer experience based advice"
+        }
+      ]
     },
     {
       "company": "Imprint Plus",
@@ -84,8 +106,17 @@
             "git", "js", "html5", "mongo", "redis", "atom", "angular", "node", "bootstrap", "fa", "wkhtmltopdf", "ws", "ssl"
           ],
           "url":"https://npgcloud.com",
-          "description": "A HTML5 web application written from scratch in Atom to accomodate 2 aging name badge creation web apps: a java web application (<a href='http://nameprintgraphics.com' target='_blank'>http://nameprintgraphics.com</a>) and a discontinued Silverlight app. The app is used by big corporate clients (including Hudson Bay Company, Canadian Tire, Sprint, Lego, Philips, Bell, Virgin, Chartwell and many more. I urge anyone reading this to go login @ <a href='https://npgcloud.com' target='_blank'>NPG Cloud</a> with these credentials username: <i>Username</i>, password: <i>Password</i>. The server side uses Node for the API and general processing, Mongo as its [No-SQL] database, Redis for scalability, Gulp for building and distribution, Git as the repository and wkhtmltopdf for accurate PDF creation. The client side relies on Angular for the flow and feel of the app while Bootstrap and Font Awesome provide the look. I executed all steps of the project from concept to plan, development, QC, deployment and pitch to corporate customers.",
+          "description": "An HTML5 web application written from scratch in Atom to accomodate 2 aging name badge creation web apps: a discontinued java applet and Silverlight app. The app is used by big corporate clients (including Hudson Bay Company, Canadian Tire, Sprint, Lego, Philips, Bell, Virgin, Chartwell and many more. The server side uses Node for the API and general processing, Mongo as its [No-SQL] database, Redis for scalability, Gulp for building and distribution, Git as the repository and wkhtmltopdf for accurate PDF creation. The client side relies on Angular for the flow and feel of the app while Bootstrap and Font Awesome provide the look. I executed all steps of the project from concept to plan, development, QC, deployment and pitch to corporate customers.",
           "tldr": "Replaced Java Applet with Full-stack MEAN application"
+        },
+        {
+          "name": "Design Studio",
+          "skills": [
+            "git", "js", "html5", "mongo", "redis", "atom", "angular", "node", "bootstrap", "fa", "wkhtmltopdf", "ws", "ssl"
+          ],
+          "url":"https://design.imprintplus.com/",
+          "description": "An HTML5 web application based on NPG Cloud but embedded within the e-store. All aspects of the app were made by me. The technologies used are identical to NPG Cloud but the front end was completely revamped with the input of a UX designer and the backend communicates with the Magento e-store using Magento's API.",
+          "tldr": "An e-store embedded name badge designs"
         },
         {
           "name": "Reporting",

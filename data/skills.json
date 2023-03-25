@@ -6,7 +6,7 @@
     "enabled":"true",
     "percentage":"80",
     "since":2015,
-    "description": "AngularJS has quickly become my favourite front-end web app framework, so much so that I can't imagine ever creating another website without it (I haven't tried React yet however). In fact, this website is built with AngularJS. The crown-jewel of my AngularJS experience is found at <a href='https://npgcloud.com' target='_blank'>https://npgcloud.com</a>, a web app where high profile customers such as Hudson Bay Company, 7-Eleven and Sprint go to design and print their name badges.",
+    "description": "AngularJS was my goto front-end framework for a long time, I've used it on numerous occasions int he past. This website is built with AngularJS. The crown-jewel of my AngularJS experience is found at <a href='https://npgcloud.com' target='_blank'>https://npgcloud.com</a>, a web app where high profile customers such as Hudson Bay Company, 7-Eleven and Best Buy go to design and print their name badges.",
     "tldr": "",
     "image": "angular.png"
   },
@@ -17,7 +17,7 @@
     "enabled":"true",
     "percentage":"90",
     "since":2021,
-    "description": "It's funny reading back what I wrote with AngularJs as I have now tried React and am kind of in love with it too. Having previous knowledge with a framework definitely helped in developing skills with React. I've been especially fond of Redux and Material UI to use in conjunction with the framework.",
+    "description": "I learned React during my tenure at VINN. Having previous knowledge with of the AngularJs framework definitely helped in developing my skills with React. I've been especially fond of Redux and Material UI to use in conjunction with the framework.",
     "tldr": "",
     "image": "react.png"
   },
@@ -28,7 +28,7 @@
     "enabled":"true",
     "percentage":"90",
     "since":2021,
-    "description": "I've been quickly becoming more adept at Ruby on Rails have been thrown into developing an existing website at <a href='vinnauto.com' target='_blank'>VINN</a>. I have been quite blown away by it's simplicity and will probably be using it moving forward to develop in the future",
+    "description": "I've been quickly becoming more adept at Ruby on Rails have been thrown into developing an existing website at <a href='vinnauto.com' target='_blank'>VINN</a>. I have been quite blown away by it's simplicity and will probably be using it moving forward to develop in the future. I am currently planning on moving my popular trivia chatbot to Rails",
     "tldr": "",
     "image": "rails.png"
   },
@@ -39,7 +39,7 @@
     "enabled":"false",
     "percentage":"60",
     "since":2018,
-    "description": "My knowledge with firebase currently extends to the login functionality on this site. That being said, don't hesitate to give it a whirl. The chat under the 'Contact' heading will become usable once you login",
+    "description": "My knowledge with firebase currently extends to the login functionality on this site. That being said, don't hesitate to give the login a whirl. The chat under the 'Contact' heading will become usable once you login.",
     "tldr": "",
     "image": "firebase.png"
   },
@@ -50,8 +50,7 @@
     "enabled":"true",
     "percentage":"80",
     "since":2015,
-    "description": "I discovered Node and started learning its possibilities in June 2015. The simplicity to set up a running server with Node is quite frankly astonishing and the ease of adding community written plugins still amazes me on a daily basis. Currently I have 4 node apps running, 2 externally facing that have helped me automate various processes, including an app that made it possible to download software prevously only available via CD.<br>I've used a lot of plugins so far, the most notable ones would be: <ul><li><strong>Tedious</strong> To make SQL connections easy</li><li><strong>Sequelize</strong> To make SQL queries using JS syntax</li><li><strong>Mongoose</strong> To make
-        query MongoDB</li><li><strong>IIS Node</strong> To run node apps in IIS</li><li><strong>Nodemailer</strong> Simple SMTP package to make mailing easy</li><li><strong>Gulp</strong> To make development a breeze</li></ul>A full mastery of Node is impossible; I learn new things every time I use it and I am eager to keep learning it.",
+    "description": "I discovered Node and started learning its possibilities in June 2015. The simplicity to set up a running server with Node is quite frankly astonishing and the ease of adding community written plugins still amazes me on a daily basis. Currently I have 4 node apps running, 2 externally facing that have helped me automate various processes, including an app that made it possible to download software previously only available via CD.<br>I've used a lot of plugins so far, the most notable ones would be: <ul><li><strong>Tedious</strong> To make SQL connections easy</li><li><strong>Sequelize</strong> To make SQL queries using JS syntax</li><li><strong>Mongoose</strong> To make query MongoDB</li><li><strong>IIS Node</strong> To run node apps in IIS</li><li><strong>Nodemailer</strong> Simple SMTP package to make mailing easy</li><li><strong>Gulp</strong> To make development a breeze</li></ul>A full mastery of Node is impossible; I learn new things every time I use it and I am eager to keep learning it.",
     "tldr": "",
     "image": "node.png"
   },
@@ -62,7 +61,7 @@
     "enabled":"true",
     "percentage":"80",
     "since":1992,
-    "description": "Growing up in a small bilingual country with a non-common mother tongue, getting a second language is mandatory. By 12th grade we were required to read novels and do book reports on them, debate with classmates on various subjects and do an oral exam. Even though at the time it didn't seem like a great thing, I later landed a job for Nestle tech support (HP) in Dublin which only served French-speaking users while all my colleagues were also French. Crazily enough, I learned a vast amount of technical and colloquial French in an English speaking country. This skill comes in very handy in Canada as I can write manuals and user interfaces in both official languages (and which I am not a stranger too). Although I am getting rustier again at French due to not having used it in a while, it still comes in handy when a French-speaking customer is having trouble.",
+    "description": "Growing up in a small bilingual country with a non-common mother tongue, getting a second language is mandatory. By 12th grade we were required to read novels and do book reports, debate with classmates on various subjects and do an oral exam. Even though at the time it didn't seem like a great thing, I later landed a job for Nestle tech support (HP) in Dublin which only served French-speaking users while all my colleagues were also French. Crazily enough, I learned a vast amount of technical and colloquial French in an English speaking country. This skill comes in very handy in Canada as I can write manuals and user interfaces in both official languages (and which I am not a stranger too). Although I am getting rustier again at French due to not having used it in a while, it still comes in handy when a French-speaking customer is having trouble.",
     "tldr": "",
     "image": "france.png"
   },
@@ -125,7 +124,7 @@
     "type": "skill",
     "enabled":"true",
     "percentage":"65",
-    "description": "My most extensive experiences with Java are my thesis in college <a href='http://simplegamenet.sourceforge.net' target='_blank'>SimpleGameNet</a> and doing bug fixes on <a href='http://nameprintgraphics.com' target='_blank'>NPG Web</a> (user: demo, password: imprint+). It was a no brainer for my thesis as the purpose was to make a gaming network to could run on different operating systems. I've worked with Netbeans and practically all java versions since 1.4. Java is undeniably due to it's cross-OS compatibility although I've left it a bit by the wayside due to my focus on web technologies and [web] Java support disappearing.",
+    "description": "My most extensive experiences with Java are my thesis in college <a href='http://simplegamenet.sourceforge.net' target='_blank'>SimpleGameNet</a> and doing bug fixes on name badge design applet that I eventually replaced with a MEAN stack app. It was a no brainer for my thesis as the purpose was to make a gaming network to could run on different operating systems. I've worked with Netbeans and practically all java versions since 1.4. Java is undebiably useful due to it's cross-OS compatibility although I've left it a bit by the wayside due to my focus on web technologies and [web] Java support disappearing.",
     "tldr": "A bit rusty but worked with it closely",
     "since":2002,
     "image": "java.png"
@@ -207,10 +206,12 @@
     "image": "c++.png"
   },
   {
-    "name": "MS Dynamics CRM",
+    "name": "MS Dynamics 365",
     "code": "crm",
     "type": "skill",
-    "description": "",
+    "enabled":"false",
+    "percentage":"70",
+    "description": "I've worked with Dynamics extensively but mostly from a backend perspective. I've set up syncs between CRM and NAV, creating datacubes from them for reporting, set up elaborate workflows with the UI and administered permissions. I also spun up test environments for both numerous times.",
     "image": "msdynamics.png"
   },
   {
@@ -227,14 +228,14 @@
     "enabled":"true",
     "percentage":"85",
     "since":2015,
-    "description": "I've worked with SVN before, but in my eyes, it is no match with Git. There simply is no project I will start without Git nowadays. I've used it to create repositories for all code at Imprint Plus (with Atlassian BitBucket) as previously the code was all over the place without a central location. I shall refer you to the link at the bottom of the page to my github account to get an idea!",
+    "description": "I've worked with SVN before, but in my eyes, it is no match with Git. There simply is no project I will start without Git. I've used it to create repositories for all code at Imprint Plus (with Atlassian BitBucket) as previously the code was all over the place without a central location.",
     "image": "git.png"
   },
   {
     "name": "Atom",
     "code": "atom",
     "type": "tool",
-    "enabled":"true",
+    "enabled":"false",
     "percentage":"100",
     "since":2015,
     "description": "My go-to text editor to code web apps in. The community-driven list of plugins is endless and it works like magic in conjunction with Git. Some plugins I particularly enjoyed are: <ul><li>minimap</li><li>linter</li><li>jshint</li><li>autoclose-html</li><li>pigments</li><li>highlight-selected</li></ul>",
@@ -277,7 +278,7 @@
     "enabled":"true",
     "percentage":"95",
     "since":2015,
-    "description": "My go to for building RESTful APIs, I haven't tried any others as Express always does what I ned it to do in a simple and comprehensible way.",
+    "description": "My go to for building RESTful APIs before i discoveren Rails. I have thoroughly enjoyed building APIs with express however. I like that it's easily customizable and that I can use it in a matter of minutes.",
     "image": "express.png"
   },
   {
