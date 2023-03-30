@@ -8,28 +8,37 @@
       "image": "vinn.png",
       "projects": [
         {
-          "name": "Private Sale on vinnauto.com",
+          "name": "Private Car Sale",
           "skills": [
-            "rails", "react", "git", "js", "html5", "redis", "vscode", "ws"
+            "rails", "react", "git", "js", "html5", "vscode", "postgresql", "cypress", "rspec"
           ],
           "url":"https://vinnauto.com",
-          "description": "Adding private sale functionality to the existing Ruby on Rail website. Developing front and back end. Adding social media authentication.",
-          "tldr": "Enabled customers to sell their cars"
+          "description": "Adding private sale functionality to the existing Ruby on Rail website. Developing front and back end functionality including making the necessary database changes. Added social media authentication through the Devise gem and set up the necessary permissions on Facebook and Google.",
+          "tldr": "Enabled customers to login and sell their cars"
+        },
+        {
+          "name": "Private Car Sale Communication",
+          "skills": [
+            "rails", "react", "git", "js", "html5", "redis", "vscode", "ws", "postgresql", "cypress"
+          ],
+          "url":"https://vinnauto.com",
+          "description": "Added the ability for customers to put offers on user-listed cars and for them to communicate amongst each other via a websocket enabled chat. Added the functionality for users to report other users and for admin users to review reported chatters. And finally added notification functionality to the app so any parties involved would get properly notified.",
+          "tldr": "Enabled customers to chat about listed cars"
         },
         {
           "name": "VOIP Calling",
           "skills": [
-            "rails", "react", "git", "js", "html5", "vscode"
+            "rails", "react", "git", "js", "html5", "vscode", "rspec"
           ],
-          "description": "Rebuilding the phone system using Sip.js to enable calls to be received and for calls to be made wherever a phone number appeared on the internal CRM",
+          "description": "Rebuilding the phone system using RingCentral's Sip.js to enable calls to be received and for calls to be made wherever a phone number appeared on the internal CRM. There was little to no help available on Stackoverflow and from RingCentral's support, I had to dig into the package code to figure out how to make it useable for us. I crafted a frontend component in React that could be used anywhere on the site to call out where there was a phone number.",
           "tldr": "Enabled employees to send and recieve calls"
         },
         {
           "name": "Communication Media",
           "skills": [
-            "rails", "react", "git", "js", "html5", "redis", "vscode", "aws"
+            "rails", "react", "git", "js", "html5", "redis", "vscode", "aws", "postman", "rspec"
           ],
-          "description": "Adding the ability for users to add images to texts and emails sent out to the customers in the internal CRM using AWS S3 to save the images and ensuring the images remained private",
+          "description": "Adding the ability for users to add images to texts and emails sent out to the customers in the internal CRM using AWS S3 to save the images and ensuring the images remained private. The images were sent via either SendGrid for emails or Twilio for texting. Both services had to have their APIs setup for the project to be successful. I finished the coding side of this project in 2 weeks.",
           "tldr": "Enabled employees to add images to texts and emails"
         }
       ],

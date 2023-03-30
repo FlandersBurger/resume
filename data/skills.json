@@ -310,15 +310,37 @@
     "image": "express.png"
   },
   {
-    "name": "RESTful API",
-    "code": "api",
+    "name": "Cypress",
+    "code": "cypress",
+    "type": "skill",
+    "enabled":"true",
+    "percentage":"80",
+    "category": "testing",
+    "since":2021,
+    "description": "Although I don't necessarily love Cypress, I am quite amazed sometimes at seeing it click through the application you made while keeping your fingers crossed it won't flake out. I've used it on all frontend development in my position at VINN.",
+    "image": "cypress.jpg"
+  },
+  {
+    "name": "Jest",
+    "code": "jest",
     "type": "skill",
     "enabled":"true",
     "percentage":"90",
-    "category": "frameworks",
-    "since":2015,
-    "description": "I already knew the usefulness of Restful APIs but when I started exploring the possiblities myself a proverbial whole new world opened up. I've built APIs for executables to be able to download templates, to send orders to remote warehouses, to process shopify orders, to analyze worpress data, build pdfs, monitor/log software activity... ",
-    "image": "rest.png"
+    "category": "testing",
+    "since":2021,
+    "description": "Of all the testing frameworks, I most liked working with Jest. It actually allowed me to easily be creative with all possible scenarios of functional Javascript testing.",
+    "image": "jest.png"
+  },
+  {
+    "name": "RSpec",
+    "code": "rspec",
+    "type": "skill",
+    "enabled":"true",
+    "percentage":"80",
+    "category": "testing",
+    "since":2021,
+    "description": "I've used Rspec on all levels of my development in Ruby On Rails, practically every file had an equivalent test file asociated with; a standard we kept high among all backend developers. I've used it in conjunction with Rswag which can build API documentation as well as fully test your rails developed API.",
+    "image": "rspec.png"
   },
   {
     "name": "Javascript",
