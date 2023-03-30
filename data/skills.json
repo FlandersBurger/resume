@@ -136,7 +136,7 @@
     "enabled":"true",
     "percentage":"65",
     "category": "coding",
-    "description": "My most extensive experiences with Java are my thesis in college <a href='http://simplegamenet.sourceforge.net' target='_blank'>SimpleGameNet</a> and doing bug fixes on name badge design applet that I eventually replaced with a MEAN stack app. It was a no brainer for my thesis as the purpose was to make a gaming network to could run on different operating systems. I've worked with Netbeans and practically all java versions since 1.4. Java is undebiably useful due to it's cross-OS compatibility although I've left it a bit by the wayside due to my focus on web technologies and [web] Java support disappearing.",
+    "description": "My most extensive experiences with Java are my thesis in college <a href='http://simplegamenet.sourceforge.net' target='_blank'>SimpleGameNet</a> and doing bug fixes on name badge design applet that I eventually replaced with a MEAN stack app. It was a no brainer for my thesis as the purpose was to make a gaming network to could run on different operating systems. I've worked with Netbeans and practically all java versions since 1.4. Java is undebiably useful due to it's cross-OS compatibility although I've left it a bit by the wayside due to my focus on web technologies and [web] Java support disappearing. Lastly, I had to certify Java applets with EV certifications to make sure they weren't flagged as malicious.",
     "tldr": "A bit rusty but worked with it closely",
     "since":2002,
     "image": "java.png"
@@ -158,7 +158,7 @@
     "enabled":"false",
     "percentage":"85",
     "category": "misc",
-    "description": "I've certified a plethora of different software applications using various certificates: websites (Node and IIS), EXEs, MSIs, DLLs, JARs with PFX and EV certifications, self-signed or provided by Symantec.",
+    "description": "I've certified a plethora of different software applications using various certificates: websites (Node and IIS), EXEs, MSIs, DLLs, JARs with PFX and EV certifications, self-signed or provided by Symantec. I've certified MSI packages with Advanced Installer and have set up USB device sharing on a server so all development machines could use the Symantec provided EV USB key to certify packages.",
     "image": "certified.png"
   },
   {
