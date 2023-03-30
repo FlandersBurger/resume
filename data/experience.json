@@ -131,7 +131,7 @@
           "skills": [
             "sql", "angular", "node", "sequelize", "atom", "html5", "git", "js", "bootstrap"
           ],
-          "url":"http://dnd.imprintplus.com",
+          "url":"https://dnd.imprintplus.com",
           "description": "Due to CDs pretty much being obsolete nowadays, the aging C++ application flagship software needed to be adjusted so it could be delivered completely online. The problem was that most CDs had the customer's customized templates on it. I needed to devise a way for the production department to deliver the templates with a download. An outsourced vendor adjusted the C++ application itself to be able to communicate with an API (express + node) I developed. The API would take the serial number entered by the customer in the software and then translate that into which templates should be downloaded. This portion was fairly easy. However, our production department needed a way to tie the serial numbers to templates files for the customer. I built a custom interface (html5, angular, bootstrap) to facilitate the production process and so with a few clicks they could upload templates that were instantly available for the software to download. I further created and certified all MSI installers and created a download site for the user to get the software (link above).",
           "tldr": "Made customized CD software available online"
         },

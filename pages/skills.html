@@ -46,6 +46,10 @@
         <strong title="Too Long; Didn't Read">TL;DR</strong>
         <span ng-bind-html="project.tldr"></span>
       </p>
+      <h3 ng-show="filteredProjects().length > 0">Used in projects:</h3>
+      <ul>
+        <li ng-repeat="project in filteredProjects()">{{project.name}}</li>
+      </ul>
     </div>
   </div>
 </div>

@@ -315,12 +315,12 @@
       {
         "name": "IMDB",
         "file": "imdb.png",
-        "url": "http://www.imdb.com/user/ur11743026/"
+        "url": "https://www.imdb.com/user/ur11743026/"
       },
       {
         "name": "Metacritic",
         "file": "metacritic.jpg",
-        "url": "http://www.metacritic.com/user/BelgoCanadian"
+        "url": "https://www.metacritic.com/user/BelgoCanadian"
       },
       {
         "name": "The Guardian",
@@ -330,7 +330,7 @@
       {
         "name": "Box Office Mojo",
         "file": "mojo.jpg",
-        "url": "http://www.boxofficemojo.com/"
+        "url": "https://www.boxofficemojo.com/"
       },
       {
         "name": "The Intercept",
@@ -340,7 +340,7 @@
       {
         "name": "Newsy",
         "file": "newsy.jpg",
-        "url": "http://www.newsy.com/"
+        "url": "https://www.newsy.com/"
       },
       {
         "name": "Kickstarter",

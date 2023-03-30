@@ -3,16 +3,27 @@ angular.module('app')
 
   $scope.selectedSkill = 0;
   $scope.skillsVisible = false;
+  $scope.projects = [];
 
   $scope.labels = ["Download Sales", "In-Store Sales", "Mail-Order Sales"];
   $scope.data = [300, 500, 100];
 
+  $.getJSON('/experience.json', function( data ) {
+    $scope.projects = data.reduce((projects, employer) => {
+      if (employer.projects) return employer.projects.concat(projects);
+      else return projects;
+    }, {});
+  });
+
+  $scope.filteredProjects = () => $scope.projects
+    .filter((project) => project.skills && project.skills.includes($scope.selectedSkill.code))
+
   $.getJSON('/skills.json', function( data ) {
 
-    $scope.categories = data
-    .filter(function(skill) {
-      return skill.enabled;
-    })
+    const skills = data
+    .filter((skill) => skill.enabled)
+
+    $scope.categories = skills
     .reduce(function(categories, skill) {
       if (!categories[skill.category]) {
         categories[skill.category] = [skill]
@@ -41,18 +52,6 @@ angular.module('app')
     };
 
     $scope.setSelectedSkill($scope.skills[0]);
-
-    /*
-    half circle skill wheel that didn't turn out great
-    return {
-      display: $scope.skillsVisible ? 'block' : 'none',
-      position: 'absolute',
-      left: $scope.wheelWidth / 2 * Math.cos(i * (Math.PI / ($scope.skills.length - 1))) + $scope.wheelWidth / 2 - $scope.wheelWidth * 0.025,
-      top: Math.sin(i * (Math.PI / ($scope.skills.length - 1))) * $('.selected-skill').height() * 2.5,
-      width: $scope.wheelWidth * 0.05,
-      height: $scope.wheelWidth * 0.05
-    };
-    */
 
     $scope.$apply();
   });

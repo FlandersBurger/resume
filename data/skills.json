@@ -7,7 +7,7 @@
     "percentage":"80",
     "category": "frameworks",
     "since":2015,
-    "description": "AngularJS was my goto front-end framework for a long time, I've used it on numerous occasions int he past. This website is built with AngularJS. The crown-jewel of my AngularJS experience is found at <a href='https://npgcloud.com' target='_blank'>https://npgcloud.com</a>, a web app where high profile customers such as Hudson Bay Company, 7-Eleven and Best Buy go to design and print their name badges.",
+    "description": "AngularJS was my goto front-end framework for a long time. This website is built with AngularJS. The crown-jewel of my AngularJS experience is found at <a href='https://design.imprintplus.com' target='_blank'>https://design.imprintplus.com</a>, a web app where high profile customers such as Hudson Bay Company, 7-Eleven and Best Buy go to design and print their name badges and <a href='https://design.imprintplus.com' target='_blank'>https://design.imprintplus.com</a>, a web app based on NPG cloud but embedded into an e-store.",
     "tldr": "",
     "image": "angular.png"
   },
@@ -368,6 +368,17 @@
     "since":2015,
     "description": "I've used websockets to update chats, display user notifications, make sure forms are up-to-date and even programming little multi=player web games",
     "image": "ws.png"
+  },
+  {
+    "name": "Postman",
+    "code": "postman",
+    "type": "tool",
+    "enabled":"true",
+    "percentage":"85",
+    "category": "tools",
+    "since":2015,
+    "description": "Postman has been instrumental in testing APIs. I can't actually imagine not using Postman to develop API's and integrations with other API's.",
+    "image": "postman.webp"
   },
   {
     "name": "VBA",
