@@ -3,19 +3,48 @@
 </ul-->
 <div id="skills-page" ng-cloak>
   <div class="skill-selector col-xs-3" ng-cloak>
-    <div class="selectable-skill" ng-repeat="skill in skills track by $index" ng-click="setSelectedSkill(skill)" uib-tooltip="{{skill.name}}" tooltip-placement="right">
-      <img ng-src="/skills/{{skill.image}}"/>
+    <div ng-repeat="(categoryName, categorySkills) in categories">
+      <h3 class="hidden-xs">{{categoryName}}</h3>
+      <div
+        class="selectable-skill"
+        ng-class="{ 'highlighted-skill': skill.code === selectedSkill.code}"
+        ng-repeat="skill in categorySkills | orderBy: '-percentage' track by $index "
+        ng-click="setSelectedSkill(skill)"
+      >
+        <div class="col-xs-10 unhovered-skill">
+          <div class="selectable-skill-percentage" ng-style="{width: skill.percentage + '%'}">
+            <p style="margin: 0"><br /></p>
+          </div>
+          <div>
+            <img ng-src="/skills/{{skill.image}}" />
+          </div>
+        </div>
+        <div class="col-xs-10 hovered-skill">
+          <div>
+            <img ng-src="/skills/{{skill.image}}" />
+          </div>
+          <p class="hidden-xs">{{skill.name}}</p>
+        </div>
+      </div>
     </div>
   </div>
   <div class="skill-display col-xs-9">
     <div class="selected-skill" id="{{selectedSkill.code}}">
-      <canvas id="doughnut" class="chart chart-doughnut" ng-style="selectedSkill.chartStyle" chart-options="selectedSkill.chartOptions" chart-data="[selectedSkill.percentage, 100 - selectedSkill.percentage]" chart-labels="['Mastery', 'Learning Opportunity']"></canvas>
+      <canvas
+        id="doughnut"
+        class="chart chart-doughnut"
+        ng-style="selectedSkill.chartStyle"
+        chart-options="selectedSkill.chartOptions"
+        chart-data="[selectedSkill.percentage, 100 - selectedSkill.percentage]"
+        chart-labels="['Mastery', 'Learning Opportunity']"
+      ></canvas>
     </div>
     <div class="selected-skill-text">
       <h1>{{selectedSkill.name}}</h1>
       <p ng-bind-html="selectedSkill.description"></p>
       <p ng-show="selectedSkill.tldr">
-        <strong title="Too Long; Didn't Read">TL;DR</strong> <span ng-bind-html="project.tldr"></span>
+        <strong title="Too Long; Didn't Read">TL;DR</strong>
+        <span ng-bind-html="project.tldr"></span>
       </p>
     </div>
   </div>

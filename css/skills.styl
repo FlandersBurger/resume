@@ -1,7 +1,6 @@
 #skills-page {
-  text-align: center;
   width: 100%;
-  margin-top: 15px;
+  padding-top: 15px;
 }
 
 #skills-page .skill-selector {
@@ -10,7 +9,23 @@
   column-gap: 0px;
   margin-left: -20px;
   line-height: 0;
-  margin-bottom: 100px;
+  -moz-column-count: 1;
+  -webkit-column-count: 1;
+  column-count: 1;
+  -ms-overflow-style: none; /* IE and Edge */
+  scrollbar-width: none; /* Firefox */
+  display: flex;
+  flex-direction: column;
+  height: calc(100vh - 126px);
+  overflow-y: scroll;
+}
+
+#skills-page .skill-display {
+  height: calc(100vh - 65px);
+}
+
+#skills-page .skill-selector::-webkit-scrollbar {
+  display: none;
 }
 
 #skills-page .selected-skill {
@@ -20,23 +35,81 @@
   max-height: 150px;
 }
 
+#skills-page .highlighted-skill > div {
+  background-color: #777 !important;
+}
+
+#skills-page .highlighted-skill .selectable-skill-percentage {
+  background-color: #CCC !important;
+}
+
 #skills-page .selected-skill img {
   max-width: 150px;
 }
 
+#skills-page .selectable-skill p {
+  display: flex;
+  z-index: 1;
+  align-items: center;
+  margin: 0;
+}
+
+#skills-page .selectable-skill .hovered-skill {
+  display: none;
+}
+
+#skills-page .selectable-skill .unhovered-skill {
+  display: flex;
+}
+
+#skills-page .selectable-skill:hover .hovered-skill {
+  display: flex;
+}
+
+#skills-page .selectable-skill:hover .unhovered-skill {
+  display: none;
+}
+
+#skills-page .selectable-skill:hover .hovered-skill {
+  display: flex;
+}
+
 #skills-page .selectable-skill img {
-  max-height: 90px;
+  max-height: 70px;
   max-width: 70px;
-  padding: 4px;
+  padding: 10px;
   width: 100%;
+  position: relative;
 }
 
 #skills-page .selectable-skill {
   width: 100%;
+  padding: 0;
+  border-radius: 10px;
 }
 
-#skills-page .selectable-skill:hover {
+#skills-page .selectable-skill > div {
+  display: flex;
+  background-color: #CCCCCC;
+  padding: 0;
+  border-radius: 10px;
+  margin: 4px;
+}
+
+#skills-page .selectable-skill-percentage {
+  background-color: #777777;
+  border-radius: 10px;
+  height: 100%;
+  position: absolute;
+  top: 0;
+}
+
+#skills-page .selectable-skill:hover > div {
   background-color: #ddd;
+}
+
+#skills-page .selectable-skill:hover .selectable-skill-percentage {
+  background-color: #888;
 }
 
 #skills-page .selectable-skill:hover, .selected-skill img:hover {
@@ -61,28 +134,4 @@
 #skills-page .skill-display.ng-hide-remove {
   -webkit-animation: 1.5s fadeInUp ease;
   animation: 1.5s fadeInUp ease;
-}
-
-@media (min-width: 1001px) {
-  #skills-page .skill-selector {
-    -moz-column-count: 3;
-    -webkit-column-count: 3;
-    column-count: 3;
-  }
-}
-
-@media (max-width: 1000px) {
-  #skills-page .skill-selector {
-    -moz-column-count: 2;
-    -webkit-column-count: 2;
-    column-count: 2;
-  }
-}
-
-@media (max-width: 600px) {
-  #skills-page .skill-selector {
-    -moz-column-count: 1;
-    -webkit-column-count: 1;
-    column-count: 1;
-  }
 }

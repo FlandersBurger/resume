@@ -8,9 +8,19 @@ angular.module('app')
   $scope.data = [300, 500, 100];
 
   $.getJSON('/skills.json', function( data ) {
-    $scope.skills = data.filter(function(skill) {
+
+    $scope.categories = data
+    .filter(function(skill) {
       return skill.enabled;
-    });
+    })
+    .reduce(function(categories, skill) {
+      if (!categories[skill.category]) {
+        categories[skill.category] = [skill]
+      } else {
+        categories[skill.category].push(skill)
+      }
+      return categories;
+    }, {});
 
     $scope.setSelectedSkill = function (skill) {
       $scope.selectedSkill = skill;
