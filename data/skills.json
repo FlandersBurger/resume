@@ -7,7 +7,7 @@
     "percentage": "80",
     "category": "frameworks",
     "since": 2015,
-    "description": "AngularJS was my goto front-end framework for a long time. This website is built with AngularJS. The crown-jewel of my AngularJS experience is found at <a href='https://npgcloud.com/company/ip_demo' target='_blank'>https://npgcloud.com</a>, a web app where high profile customers such as Hudson Bay Company, 7-Eleven and Best Buy go to design and print their name badges and <a href='https://design.imprintplus.com' target='_blank'>https://design.imprintplus.com</a>, a web app based on NPG cloud but embedded into an e-store.",
+    "description": "AngularJS was my goto front-end framework for a long time. This website is built with AngularJS. The crown-jewel of my AngularJS experience is found at <a href='https://npgcloud.com/company/ip_demo' target='_blank'>https://npgcloud.com</a>, a web app where high profile customers such as Hudson Bay Company, 7-Eleven and Best Buy go to design and print their name badges and <a href='https://design.imprintplus.com' target='_blank'>https://design.imprintplus.com</a>, a web app based on NPG cloud but embedded into an e-store. Both these apps were entirely written by me from concept to execution.",
     "tldr": "",
     "image": "angular.png"
   },
