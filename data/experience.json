@@ -66,11 +66,11 @@
         "tldr": "Enabled employees to add images to texts and emails"
       }
     ],
-    "story": "I started freelancing for VINN in May 2021 and it became quickly clear that it would be a good fit to move over. VINN was building the future of automotive sales with a Ruby on Rails backend and a React front end. Both were new technologies to me but I picked up on them rather quickly, I've been so engaged with them that I've started using them in my personal projects. My SQL knowledge has been much appreciated in my roll and resulted in some great speed improvements on the site. My position also required playing a consulting and mentoring role as the senior developer to the other devs, bringing previous experience and knowledge to the table. Unfortunately the market wasn't kind to VINN and the company succumbed. Some of the tools used in here were: Heroku, AWS, Vercel, NextJs, Redux, Jira, Linear, SipJs, Webpack, Postgres, Github and a multitude of others.",
+    "story": "I started freelancing for VINN in May 2021 and it became quickly clear that it would be a good fit to move over. VINN was building the future of automotive sales with a Ruby on Rails backend and a React front end. Both were new technologies to me but I picked up on them rather quickly, I've been so engaged with them that I've started using them in my personal projects. My SQL knowledge has been much appreciated in my role and resulted in some great speed improvements on the site. My position also required playing a consulting and mentoring role as the senior developer to the other devs, bringing previous experience and knowledge to the table. Unfortunately the market wasn't kind to VINN and the company succumbed. Some of the tools I used intimately: Heroku, AWS, NextJs, Redux, Jira, Linear, SipJs, Webpack, Postgres, Github",
     "responsibilities": [
       {
         "name": "Programming",
-        "description": "Develop highly scalable and efficient code on the front and backend."
+        "description": "Develop highly scalable and efficient code on the front and backend"
       },
       {
         "name": "Project Management",
@@ -138,7 +138,6 @@
         "skills": [
           "git",
           "js",
-          "html5",
           "mongo",
           "redis",
           "atom",
@@ -146,7 +145,7 @@
           "node",
           "bootstrap",
           "ws",
-          "ssl"
+          "certification"
         ],
         "url": "https://npgcloud.com",
         "description": "An HTML5 web application written from scratch in Atom to accomodate 2 aging name badge creation web apps: a discontinued java applet and Silverlight app. The app is used by big corporate clients (including Hudson Bay Company, Canadian Tire, Sprint, Lego, Philips, Bell, Virgin, Chartwell and many more. The server side uses Node for the API and general processing, Mongo as its [No-SQL] database, Redis for scalability, Gulp for building and distribution, Git as the repository and wkhtmltopdf for accurate PDF creation. The client side relies on Angular for the flow and feel of the app while Bootstrap and Font Awesome provide the look. I executed all steps of the project from concept to plan, development, QC, deployment and pitch to corporate customers.",
@@ -157,17 +156,14 @@
         "skills": [
           "git",
           "js",
-          "html5",
           "mongo",
           "redis",
           "atom",
           "angular",
           "node",
           "bootstrap",
-          "fa",
-          "wkhtmltopdf",
           "ws",
-          "ssl"
+          "certification"
         ],
         "url": "https://design.imprintplus.com/",
         "description": "An HTML5 web application based on NPG Cloud but embedded within the e-store. All aspects of the app were made by me. The technologies used are identical to NPG Cloud but the front end was completely revamped with the input of a UX designer and the backend communicates with the Magento e-store using Magento's API.",
@@ -187,10 +183,10 @@
           "node",
           "sequelize",
           "atom",
-          "html5",
           "git",
           "js",
-          "bootstrap"
+          "bootstrap",
+          "certification"
         ],
         "url": "https://dnd.imprintplus.com",
         "description": "Due to CDs pretty much being obsolete nowadays, the aging C++ application flagship software needed to be adjusted so it could be delivered completely online. The problem was that most CDs had the customer's customized templates on it. I needed to devise a way for the production department to deliver the templates with a download. An outsourced vendor adjusted the C++ application itself to be able to communicate with an API (express + node) I developed. The API would take the serial number entered by the customer in the software and then translate that into which templates should be downloaded. This portion was fairly easy. However, our production department needed a way to tie the serial numbers to templates files for the customer. I built a custom interface (html5, angular, bootstrap) to facilitate the production process and so with a few clicks they could upload templates that were instantly available for the software to download. I further created and certified all MSI installers and created a download site for the user to get the software (link above).",

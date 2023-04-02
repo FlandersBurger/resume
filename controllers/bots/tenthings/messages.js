@@ -527,7 +527,8 @@ module.exports = {
           checkString(text, 'slow') ||
           checkString(text, 'bagal') ||
           checkString(text, 'lag') ||
-          checkString(text, 'laggy')
+          checkString(text, 'laggy') ||
+          checkString(text, 'lento')
         ) {
           messages = [
             "I'm giving 'er all she got, captain",
