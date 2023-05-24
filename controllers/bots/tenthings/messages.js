@@ -33,7 +33,7 @@ module.exports = {
       'Every day at midnight (universal time) the daily scores will be reset and a winner recorded',
       'Spammers will be ignored until they are silent for at least 10 seconds',
     ];
-    return rules.reduce((message, rule, i) => `${message}${i}: ${rule}\n`, '');
+    return rules.reduce((message, rule, i) => `${message}${i + 1}: ${rule}\n`, '');
   },
   commands: (language = 'EN') => {
     var message = '';

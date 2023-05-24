@@ -78,7 +78,7 @@ router.get('/lists/:id', (req, res, next) => {
     .populate('creator')
     .populate('values.creator')
     .lean({ virtuals: true })
-    .exec((err, list) => res.json({ ...list, votes: list.votes.length }));
+    .exec((err, list) => res.json({ ...list, votes: list.votes ? list.votes.length : 0 }));
 });
 
 router.get('/lists/:id/movies', async (req, res, next) => {
