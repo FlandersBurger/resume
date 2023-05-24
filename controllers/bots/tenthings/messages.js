@@ -17,35 +17,23 @@ module.exports = {
     return message;
   },
   logic: function () {
-    var message = '';
-    var rule = 1;
-    message +=
-      rule++ +
-      ': If an answer is over 100% correct it will immediately be awarded to the guesser\n';
-    message +=
-      rule++ +
-      ': If an answer is over 75% correct it will be awarded after 2 * correctness percentage seconds if no better answer is provided\n';
-    message +=
-      rule++ +
-      ': Points scored = (Max hints [' +
-      MAXHINTS +
-      '] - hints asked + # of current players) * (answer accuracy % - 0.6) * 2.5\n';
-    message +=
-      rule++ +
-      ': Hints are revealed in this order: first letters, last letters, vowels, and the rest. The rest will be revealed from least frequent to most frequent letter\n';
-    message += rule++ + ': There is a 10 second cooldown between asking hints\n';
-    message += rule++ + ': A list can be skipped if 2 players /skip it\n';
-    message +=
-      rule++ +
-      ': If only 1 player skips a list there will be a 15 second cooldown until the list is skipped\n';
-    message += rule++ + ': A skip can be cancelled by anyone by typing /veto or a correct answer\n';
-    message += rule++ + ': If a skip is vetoed, new skips will be ignored for 15 seconds\n';
-    message +=
-      rule++ +
-      ': Every day at midnight (universal time) the daily scores will be reset and a winner recorded\n';
-    message +=
-      rule++ + ': Spammers will be ignored until they are silent for at least 10 seconds\n';
-    return message;
+    var rules = [
+      'If an answer is 100% correct it will immediately be awarded to the guesser',
+      'If an answer is over 75% correct it will be awarded after (2 * correctness percentage) seconds if no better answer is provided',
+      'Non-alphanumerical signs and letter cases are ignored when determining correctness',
+      'Points scored = (Max hints [' +
+        MAXHINTS +
+        '] - hints asked + # of current players) * (answer accuracy % - 0.6) * 2.5',
+      'Hints are revealed in this order: first letters, last letters, vowels, and the rest. The rest will be revealed from least frequent to most frequent letter',
+      'There is a 10 second cooldown between asking hints',
+      'A list can be skipped if 2 players /skip it',
+      'If only 1 player skips a list there will be a 15 second cooldown until the list is skipped',
+      'A skip can be cancelled by anyone by typing /veto or a correct answer',
+      'If a skip is vetoed, new skips will be ignored for 15 seconds',
+      'Every day at midnight (universal time) the daily scores will be reset and a winner recorded',
+      'Spammers will be ignored until they are silent for at least 10 seconds',
+    ];
+    return rules.reduce((message, rule, i) => `${message}${i}: ${rule}\n`, '');
   },
   commands: (language = 'EN') => {
     var message = '';
