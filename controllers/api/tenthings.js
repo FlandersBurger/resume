@@ -48,6 +48,8 @@ router.get('/lists', (req, res, next) => {
     .select(
       '_id plays skips score values date modifyDate creator name description categories language isDynamic frequency difficulty'
     )
+    .limit(req.query.limit || 0)
+    .skip(req.query.limit * (req.query.page - 1) || 0)
     .populate('creator', 'username')
     .lean({
       virtuals: true,
