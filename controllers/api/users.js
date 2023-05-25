@@ -31,12 +31,16 @@ router.get('/all', (req, res, next) => {
     function (err, user) {
       if (err) return next(err);
       if (user.admin) {
-        User.find({}, (err, users) => {
-          if (err) {
-            return next(err);
-          }
-          res.json(users);
-        });
+        User.find({})
+          .select('_id email username uid')
+          .limit(parseInt(req.query.limit || 0))
+          .skip(parseInt(req.query.limit * (req.query.page - 1) || 0))
+          .exec((err, users) => {
+            if (err) {
+              return next(err);
+            }
+            res.json(users);
+          });
       }
     }
   );
