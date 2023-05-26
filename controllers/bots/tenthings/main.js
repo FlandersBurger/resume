@@ -766,6 +766,8 @@ const newRound = (currentGame, player) => {
       }).exec();
       selectList(game).then(
         async (list) => {
+          console.log(game.chat_id);
+          console.log(list);
           if (game.pickedLists.length > 0) {
             game.pickedLists = game.pickedLists.filter((pickedList) => pickedList != list._id);
           }
@@ -1049,15 +1051,13 @@ router.post('/', async ({ body, get }, res, next) => {
       } else if (antispam[from].count > 35) {
         antispam[from].count++;
         if (antispam[from].count === 35) {
-          bot.exportChatInviteLink(chat).then(
-            (url) => {
-              bot.notifyAdmin(
-                `Possible spammer: ${name} (${from}) in chat ${chat} ${
-                  chat == config.groupChat ? ' - The main chat!' : ''
-                }\n\n${message}\n\nURL: ${url ? url : 'N/A'}`
-              );
-            }
-          );
+          bot.exportChatInviteLink(chat).then((url) => {
+            bot.notifyAdmin(
+              `Possible spammer: ${name} (${from}) in chat ${chat} ${
+                chat == config.groupChat ? ' - The main chat!' : ''
+              }\n\n${message}\n\nURL: ${url ? url : 'N/A'}`
+            );
+          });
           /*
                   } else if (antispam[from].count % 10 === 0) {
                     bot.notifyAdmin(`Possible spammer: ${name} (${from}) -> ${antispam[from].count} messages`);*/
@@ -1116,7 +1116,7 @@ router.post('/', async ({ body, get }, res, next) => {
         let foundList = await List.findOne({
           _id: data.list,
         })
-          .select('name votes modifyDate score skips plays votes')
+          .select('name votes modifyDate score skips plays')
           .exec();
         let voter = _.find(foundList.votes, (vote) => vote.voter == data.from_id);
         if (!voter) {
@@ -1389,7 +1389,7 @@ router.post('/', async ({ body, get }, res, next) => {
       List.findOne({
         _id: data.list,
       }).exec((err, list) => {
-        var message = `<b>${list.name}</b>\nDescription:\n<i>${list.description || 'N/A'}</i>`
+        var message = `<b>${list.name}</b>\nDescription:\n<i>${list.description || 'N/A'}</i>`;
         bot.queueMessage(data.chat_id, message);
       });
     } else if (data.type === 'diff') {
@@ -1762,13 +1762,13 @@ const evaluateCommand = async (res, msg, game, isNew) => {
       break;
     case '/erro':
     case '/typo':
-      sendSuggestion('typo', msg, player, `\nin "${game.list.name}"`)
+      sendSuggestion('typo', msg, player, `\nin "${game.list.name}"`);
       break;
     case '/bug':
-      sendSuggestion('bug', msg, player)
+      sendSuggestion('bug', msg, player);
       break;
     case '/feature':
-      sendSuggestion('feature', msg, player)
+      sendSuggestion('feature', msg, player);
       break;
     case '/pesquisar':
     case '/search':
@@ -2087,7 +2087,7 @@ const sendSuggestion = async (type, msg, player, extraText = '') => {
       `You didn't add a feature ${player.first_name}. Add your message after /feature`
     );
   }
-}
+};
 
 const checkSkipper = async (game, msg, player) => {
   if (!vetoes[game.id] || vetoes[game.id] < moment().subtract(VETO_DELAY, 'seconds')) {
