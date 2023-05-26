@@ -12,8 +12,6 @@ exports.getRandomList = async (parameters) => {
 };
 
 exports.getScore = (list) => {
-  console.log('getScore', list);
-
   //((upvotes / (upvotes + downvotes)) + (skips / plays)) / 2
   //(upvote ratio in regards to total votes + skip ratio in regards to plays) / 2
   if (list.votes && list.plays) {

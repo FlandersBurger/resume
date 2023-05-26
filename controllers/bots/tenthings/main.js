@@ -730,9 +730,13 @@ const checkRound = (game) => {
         message += messages.listStats(foundList);
         message += await stats.getDailyScores(game, 5);
         bot.queueMessage(game.chat_id, message);
+        console.log('here');
+        
         setTimeout(() => {
+          console.log(game);
           rateList(game);
           setTimeout(() => {
+            console.log('starting new round');
             newRound(game);
           }, 1000);
         }, 1000);
@@ -766,8 +770,6 @@ const newRound = (currentGame, player) => {
       }).exec();
       selectList(game).then(
         async (list) => {
-          console.log(game.chat_id);
-          console.log(list);
           if (game.pickedLists.length > 0) {
             game.pickedLists = game.pickedLists.filter((pickedList) => pickedList != list._id);
           }
