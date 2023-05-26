@@ -766,21 +766,17 @@ const newRound = (currentGame, player) => {
           $in: game.guessers,
         },
       }).exec();
-      if (game.chat_id === '-1001182285167') console.log('got players');
-
       selectList(game).then(
         async (list) => {
           if (game.pickedLists.length > 0) {
             game.pickedLists = game.pickedLists.filter((pickedList) => pickedList != list._id);
           }
           list.plays++;
-          if (game.chat_id === '-1001182285167') console.log('got list');
           list.score = lists.getScore(list);
-          if (game.chat_id === '-1001182285167') console.log('got score');
+          if (game.chat_id === '-1001182285167') console.log(list);
+          if (game.chat_id === '-1001182285167') console.log(game);
 
           await list.save();
-          if (game.chat_id === '-1001182285167') console.log('saved list');
-
           for (let player of players) {
             player.lists++;
             const savedPlayer = await player.save();
