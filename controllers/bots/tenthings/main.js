@@ -730,8 +730,6 @@ const checkRound = (game) => {
         message += messages.listStats(foundList);
         message += await stats.getDailyScores(game, 5);
         bot.queueMessage(game.chat_id, message);
-        console.log('here');
-
         setTimeout(() => {
           rateList(game);
           setTimeout(() => {
@@ -773,9 +771,6 @@ const newRound = (currentGame, player) => {
           }
           list.plays++;
           list.score = lists.getScore(list);
-          if (game.chat_id === '-1001182285167') console.log(list);
-          if (game.chat_id === '-1001182285167') console.log(game);
-
           await list.save();
           for (let player of players) {
             player.lists++;
