@@ -731,12 +731,10 @@ const checkRound = (game) => {
         message += await stats.getDailyScores(game, 5);
         bot.queueMessage(game.chat_id, message);
         console.log('here');
-        
+
         setTimeout(() => {
-          console.log(game);
           rateList(game);
           setTimeout(() => {
-            console.log('starting new round');
             newRound(game);
           }, 1000);
         }, 1000);
@@ -768,18 +766,26 @@ const newRound = (currentGame, player) => {
           $in: game.guessers,
         },
       }).exec();
+      if (game.chat_id === '-1001182285167') console.log('got players');
+
       selectList(game).then(
         async (list) => {
           if (game.pickedLists.length > 0) {
             game.pickedLists = game.pickedLists.filter((pickedList) => pickedList != list._id);
           }
           list.plays++;
+          if (game.chat_id === '-1001182285167') console.log('got list');
           list.score = lists.getScore(list);
+          if (game.chat_id === '-1001182285167') console.log('got score');
+
           await list.save();
+          if (game.chat_id === '-1001182285167') console.log('saved list');
+
           for (let player of players) {
             player.lists++;
             const savedPlayer = await player.save();
           }
+          if (game.chat_id === '-1001182285167') console.log('saved players');
           game.list = JSON.parse(JSON.stringify(list));
           game.list.totalValues = game.list.values.length;
           game.list.values = game.list.values.getRandom(10);
