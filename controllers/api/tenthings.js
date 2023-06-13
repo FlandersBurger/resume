@@ -23,6 +23,18 @@ const TenThingsList = require('../../models/tenthings/list')();
 const TenThingsGame = require('../../models/tenthings/game')();
 const TenThingsPlayer = require('../../models/tenthings/player')();
 
+router.get('/games', (req, res, next) => {
+  if (!req.auth || req.auth.userid == '5ece428af848aa2fc392d099') {
+    return res.sendStatus(401);
+  }
+  TenThingsGame.find({})
+    .select('_id chat_id enabled date lastPlayDate')
+    .exec((err, result) => {
+      if (err) return next(err);
+      res.json(result);
+    });
+});
+
 router.get('/names', (req, res, next) => {
   TenThingsList.find({})
     .select('_id name')
