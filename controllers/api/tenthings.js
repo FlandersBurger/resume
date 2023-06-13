@@ -27,7 +27,7 @@ router.get('/games', (req, res, next) => {
   if (!req.auth || req.auth.userid == '5ece428af848aa2fc392d099') {
     return res.sendStatus(401);
   }
-  TenThingsGame.find({ $gt: '2019-06-15T00:00:00.000Z' })
+  TenThingsGame.find({ lastPlayDate: { $gt: '2019-06-15T00:00:00.000Z' } })
     .select('_id chat_id enabled date lastPlayDate')
     .exec((err, result) => {
       if (err) return next(err);
