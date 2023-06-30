@@ -1547,7 +1547,9 @@ router.post('/', async ({ body, get }, res, next) => {
           return evaluateCommand(res, msg, newGame, true);
         });
       } else {
-        return evaluateCommand(res, msg, existingGame, false);
+        if (existingGame.lastPlayDate >= moment().subtract(7, 'days'))
+          return evaluateCommand(res, msg, existingGame, false);
+        else res.sendStatus(200);
       }
     });
 });
