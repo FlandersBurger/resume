@@ -2167,12 +2167,14 @@ const activateGame = (game, save = false) => {
 };
 
 const deactivateGame = (game) => {
-  game.enabled = false;
-  game.save();
-  bot.sendMessage(
-    game.chat_id,
-    'I am now sleeping, type /list or /start to wake me up.\nInactive games will be deleted after 30 days'
-  );
+  if (game.enabled) {
+    game.enabled = false;
+    game.save();
+    bot.sendMessage(
+      game.chat_id,
+      'I am now sleeping, type /list or /start to wake me up.\nInactive games will be deleted after 30 days'
+    );
+  }
 };
 
 const newPlayerError = (err) => {
