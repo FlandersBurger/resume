@@ -1547,9 +1547,7 @@ router.post('/', async ({ body, get }, res, next) => {
           return evaluateCommand(res, msg, newGame, true);
         });
       } else {
-        if (existingGame.lastPlayDate >= moment().subtract(7, 'days'))
-          return evaluateCommand(res, msg, existingGame, false);
-        else res.sendStatus(200);
+        return evaluateCommand(res, msg, existingGame, false);
       }
     });
 });
@@ -2045,7 +2043,9 @@ const evaluateCommand = async (res, msg, game, isNew) => {
       }
       break;
     default:
-      if (game.enabled && msg.chat.id != config.adminChat) {
+      if (game.lastPlayDate >= moment().subtract(7, 'days')) {
+        deactivateGame(game);
+      } else if (game.enabled && msg.chat.id != config.adminChat) {
         queueGuess(game, msg);
       }
   }
