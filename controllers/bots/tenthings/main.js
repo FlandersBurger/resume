@@ -2043,7 +2043,7 @@ const evaluateCommand = async (res, msg, game, isNew) => {
       }
       break;
     default:
-      if (game.lastPlayDate <= moment().subtract(7, 'days')) {
+      if (game.lastPlayDate <= moment().subtract(30, 'days')) {
         deactivateGame(game);
       } else if (game.enabled && msg.chat.id != config.adminChat) {
         queueGuess(game, msg);
@@ -2172,7 +2172,7 @@ const deactivateGame = (game) => {
     game.save();
     bot.sendMessage(
       game.chat_id,
-      'I am now sleeping, type /list or /start to wake me up.\nInactive games will be deleted after 30 days'
+      'I am now sleeping, type /list or /start to wake me up.\nThis triggers after 30 days of inactivity.'
     );
   }
 };
