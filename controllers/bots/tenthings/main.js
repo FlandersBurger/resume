@@ -2043,7 +2043,7 @@ const evaluateCommand = async (res, msg, game, isNew) => {
       }
       break;
     default:
-      if (game.lastPlayDate >= moment().subtract(7, 'days')) {
+      if (game.lastPlayDate <= moment().subtract(7, 'days')) {
         deactivateGame(game);
       } else if (game.enabled && msg.chat.id != config.adminChat) {
         queueGuess(game, msg);
