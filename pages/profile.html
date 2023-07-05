@@ -7,18 +7,23 @@
             <i class="fa fa-pencil"></i>
           </button>
         </span>
-        <input ng-disabled="usernameToggle" class="form-control" type="text" placeholder={{currentUser.username}}>
+        <input
+          ng-disabled="usernameToggle"
+          class="form-control"
+          type="text"
+          placeholder="{{currentUser.username}}"
+        />
       </div>
       <div class="input-group" ng-show="!usernameToggle">
         <span class="input-group-btn">
-          <button ng-click="changeUsername(newUsername); toggleUsername();"  class="btn btn-default">
+          <button ng-click="changeUsername(newUsername); toggleUsername();" class="btn btn-default">
             <i class="fa fa-save"></i>
           </button>
-          <button ng-click="toggleUsername();"  class="btn btn-default">
+          <button ng-click="toggleUsername();" class="btn btn-default">
             <i class="fa fa-times"></i>
           </button>
         </span>
-        <input class="form-control" type="text" ng-model="newUsername">
+        <input class="form-control" type="text" ng-model="newUsername" />
       </div>
     </div>
   </form>
@@ -26,73 +31,46 @@
   <div class="form-group">
     <p class="input-group">
       <span class="input-group-btn">
-        <button type="button" class="btn btn-default" ng-click="birthdateOpen = true"><i class="fa fa-calendar"></i></button>
+        <button type="button" class="btn btn-default" ng-click="birthdateOpen = true">
+          <i class="fa fa-calendar"></i>
+        </button>
       </span>
-      <input type="text" class="form-control" uib-datepicker-popup="dd-MMM-yyyy" ng-model="currentUser.birthDate" ng-change="updateUser()" is-open="birthdateOpen" datepicker-options="dateOptions" ng-required="true" close-text="Close"/>
+      <input
+        type="text"
+        class="form-control"
+        uib-datepicker-popup="dd-MMM-yyyy"
+        ng-model="currentUser.birthDate"
+        ng-change="updateUser()"
+        is-open="birthdateOpen"
+        datepicker-options="dateOptions"
+        ng-required="true"
+        close-text="Close"
+      />
     </p>
   </div>
   <form ng-submit="updateUser()">
-    <div class="col-xs-12" style="margin:5px">
-      <h4>Gender Identity</h4>
-      <div class="col-xs-1">
-        <i class="fa fa-male fa-lg"></i>
-      </div>
-      <div class="col-xs-10">
-        <div class="gender-slider" id="identity">
-          {{gender(identities, currentUser.gender.identity)}}
-          <div class="gender-slider-indicator" id="identity-indicator"
-            data-drag="true"
-            jqyoui-draggable="{ onDrag: 'dragSlider(\'identity\')', onStop: 'updateUser()' }"
-            data-jqyoui-options="{ containment: '#identity' }"
-          >
-          </div>
-        </div>
-      </div>
-      <div class="col-xs-1">
-        <i class="fa fa-female fa-lg"></i>
-      </div>
-    </div>
-    <div class="col-xs-12" style="margin:5px">
-      <h4>Biological Sex</h4>
-      <div class="col-xs-1">
-        <i class="fa fa-mars fa-lg"></i>
-      </div>
-      <div class="col-xs-10">
-        <div class="gender-slider" id="sex">
-          {{gender(sexes, currentUser.gender.sex)}}
-          <div class="gender-slider-indicator" id="sex-indicator"
-            data-drag="true"
-            jqyoui-draggable="{ onDrag: 'dragSlider(\'sex\')', onStop: 'updateUser()' }"
-            data-jqyoui-options="{ containment: '#sex' }"
-          >
-          </div>
-        </div>
-      </div>
-      <div class="col-xs-1">
-        <i class="fa fa-venus fa-lg"></i>
-      </div>
-    </div>
-
     <div class="form-group">
-      <tags-input ng-model="currentUser.flags"
-                  ng-change="updateUser()"
-                  display-property="name"
-                  placeholder="Add a country"
-                  replace-spaces-with-dashes="false"
-                  template="tag-flag">
-        <auto-complete source="loadCountries($query)"
-                       min-length="0"
-                       load-on-focus="true"
-                       load-on-empty="true"
-                       max-results-to-show="32"
-                       template="autocomplete-flag">
+      <tags-input
+        ng-model="currentUser.flags"
+        ng-change="updateUser()"
+        display-property="name"
+        placeholder="Add a country"
+        replace-spaces-with-dashes="false"
+        template="tag-flag"
+      >
+        <auto-complete
+          source="loadCountries($query)"
+          min-length="0"
+          load-on-focus="true"
+          load-on-empty="true"
+          max-results-to-show="32"
+          template="autocomplete-flag"
+        >
         </auto-complete>
       </tags-input>
     </div>
   </form>
 </div>
-
-
 
 <script type="text/ng-template" id="tag-flag">
   <div class="tag-flag">
