@@ -468,11 +468,11 @@ const queueGuess = async (game, msg) => {
 };
 
 const sass = (game, text, from) => {
-  if (game.settings.sass && game.lastPlayDate > moment().subtract(7, 'days')) {
+  if (game.settings.sass && game.enabled) {
     messages.sass(text).then(
       (sass) => {
         if (sass) {
-          console.log(sass);
+          console.log(`SASS: ${text} => ${sass}`);
           if (sass.includes('http')) {
             if (sass.includes('.gif')) {
               bot.sendAnimation(game.chat_id, sass);

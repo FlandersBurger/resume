@@ -32,7 +32,7 @@ router.get('/all', (req, res, next) => {
       if (err) return next(err);
       if (user.admin) {
         User.find({})
-          .select('_id email username uid')
+          .select('-gender -flags -highscore')
           .limit(parseInt(req.query.limit || 0))
           .skip(parseInt(req.query.limit * (req.query.page - 1) || 0))
           .exec((err, users) => {
