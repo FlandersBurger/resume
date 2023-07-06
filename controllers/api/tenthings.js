@@ -32,6 +32,8 @@ router.get('/games', (req, res, next) => {
     ...req.body.query,
   })
     .select('_id chat_id enabled date lastPlayDate')
+    .limit(parseInt(req.query.limit || 0))
+    .skip(parseInt(req.query.limit * (req.query.page - 1) || 0))
     .exec((err, result) => {
       if (err) return next(err);
       res.json({
