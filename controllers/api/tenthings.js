@@ -43,12 +43,24 @@ router.get('/games', (req, res, next) => {
     });
 });
 
+router.get('/games/:id', (req, res, next) => {
+  if (!req.auth || req.auth.userid == '5ece428af848aa2fc392d099') {
+    return res.sendStatus(401);
+  }
+  TenThingsGame.find({
+    _id: req.params.id,
+  }).exec((err, result) => {
+    if (err) return next(err);
+    res.json(result);
+  });
+});
+
 router.get('/players/:id', (req, res, next) => {
   if (!req.auth || req.auth.userid == '5ece428af848aa2fc392d099') {
     return res.sendStatus(401);
   }
   TenThingsPlayer.find({
-    id: req.params.id,
+    _id: req.params.id,
   }).exec((err, result) => {
     if (err) return next(err);
     res.json(result);
