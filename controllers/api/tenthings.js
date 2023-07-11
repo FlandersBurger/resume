@@ -384,9 +384,7 @@ router.get('/lists/:id/pics', async (req, res, next) => {
 });
 
 router.get('/game/:id', async (req, res, next) => {
-  const game = await TenThingsGame.findOne({ chat_id: req.params.id })
-    .populate('streak.player')
-    .lean();
+  const game = await TenThingsGame.findOne({ chat_id: req.params.id }).lean();
   const players = await TenThingsPlayer.find({ game: game._id }).lean();
   res.json({
     ...game,
