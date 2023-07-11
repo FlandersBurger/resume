@@ -60,7 +60,7 @@ router.get('/players/:id', (req, res, next) => {
     return res.sendStatus(401);
   }
   TenThingsPlayer.find({
-    _id: req.params.id,
+    id: req.params.id,
   }).exec((err, result) => {
     if (err) return next(err);
     res.json(result);
