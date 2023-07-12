@@ -1,18 +1,35 @@
-
 <div id="images">
   <a ng-repeat="image in selectedHobby.images" ng-href="{{image.url}}" target="_blank">
-    <img ng-src="/hobbies/{{selectedHobby.name.toLowerCase()}}/{{image.file}}"/>
+    <img ng-src="/hobbies/{{selectedHobby.name.toLowerCase()}}/{{image.file}}" />
   </a>
 </div>
 
 <div id="hobbies-page" ng-cloak>
   <div id="hobby-selector-container" class="col-xs-12">
-    <div id="hobby-toggler" class="col-xs-12" ng-click="hobbySelectorVisible = true" ng-hide="hobbySelectorVisible">
-      <i class="fa fa-4x" aria-hidden="true" ng-class="{'fa-arrow-down' : hover, 'fa-bars' : !hover}" ng-mouseenter="hover = true" ng-mouseleave="hover = false"></i>
+    <div
+      id="hobby-toggler"
+      class="col-xs-12"
+      ng-click="hobbySelectorVisible = true"
+      ng-hide="hobbySelectorVisible"
+    >
+      <i
+        class="fa fa-4x"
+        aria-hidden="true"
+        ng-class="{'fa-arrow-down' : hover, 'fa-bars' : !hover}"
+        ng-mouseenter="hover = true"
+        ng-mouseleave="hover = false"
+      ></i>
     </div>
     <div id="hobby-selector" class="col-xs-12" ng-show="hobbySelectorVisible">
-      <div ng-repeat="hobby in hobbies | filter: showHobby" class="col-lg-2 col-md-3 col-sm-3 col-xs-6 hobby-panel" >
-        <div class="hobby" ng-click="selectHobby(hobby)" ng-class="{'hobby-current': selectedHobby === hobby}">
+      <div
+        ng-repeat="hobby in hobbies | filter: showHobby"
+        class="col-lg-2 col-md-3 col-sm-3 col-xs-6 hobby-panel"
+      >
+        <div
+          class="hobby"
+          ng-click="selectHobby(hobby)"
+          ng-class="{'hobby-current': selectedHobby === hobby}"
+        >
           <h3>{{hobby.name}}</h3>
         </div>
       </div>

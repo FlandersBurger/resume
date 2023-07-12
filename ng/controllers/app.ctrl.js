@@ -128,7 +128,7 @@ angular.module('app').controller('AppCtrl', function ($scope, $location, Languag
     {
       name: 'goodreads',
       url: 'https://www.goodreads.com/user/show/17070010-laurent',
-      icon: 'fa-book',
+      icon: 'fa-goodreads',
     },
   ];
 
