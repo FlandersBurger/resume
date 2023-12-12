@@ -442,7 +442,6 @@ const queueingGuess = (guess) => guessQueue.add(guess);
 guessQueue.process(({ data }) => processGuess(data));
 
 const processGuess = (guess) => {
-  console.log(guess);
   return new Promise((resolve, reject) => {
     Game.findOne({
       chat_id: guess.game,
@@ -507,6 +506,8 @@ const processGuess = (guess) => {
               reject(err);
             }
           );
+        } else {
+          resolve();
         }
       });
   });
