@@ -392,7 +392,7 @@ const queueGuess = async (game, msg) => {
       list: game.list._id,
       match: matchedValue,
     };
-    console.log(`Fuzzy match: ${text} => ${guess.match}`);
+    console.log(`Fuzzy match: ${text} => ${guess.match.value}, ${guess.match.distance}`);
     if (guess.match.distance >= 0.75) {
       const match = {
         ...guess.match,
