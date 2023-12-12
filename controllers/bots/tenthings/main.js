@@ -1,33 +1,33 @@
 /*jslint esversion: 10*/
-const router = require('express').Router();
-const _ = require('underscore');
-const FuzzyMatching = require('fuzzy-matching');
+const router = require("express").Router();
+const _ = require("underscore");
+const FuzzyMatching = require("fuzzy-matching");
 //const kue = require('kue');
-const Queue = require('bull');
-const moment = require('moment');
-const request = require('request');
-const config = require('../../../config');
-const redis = require('../../../redis');
-const bot = require('../../../connections/telegram');
+const Queue = require("bull");
+const moment = require("moment");
+const request = require("request");
+const config = require("../../../config");
+const redis = require("../../../redis");
+const bot = require("../../../connections/telegram");
 
-const lists = require('./lists');
-const messages = require('./messages');
-const keyboards = require('./keyboards');
-const stats = require('./stats');
-const jobs = require('./jobs');
-const hints = require('./hints');
-const categories = require('./categories');
-const minigame = require('./minigame');
-const tinygame = require('./tinygame');
+const lists = require("./lists");
+const messages = require("./messages");
+const keyboards = require("./keyboards");
+const stats = require("./stats");
+const jobs = require("./jobs");
+const hints = require("./hints");
+const categories = require("./categories");
+const minigame = require("./minigame");
+const tinygame = require("./tinygame");
 
 //-------------//
 //redis.set('pause', true);
 //-------------//
 
-const User = require('../../../models/user')();
-const Game = require('../../../models/tenthings/game')();
-const Player = require('../../../models/tenthings/player')();
-const List = require('../../../models/tenthings/list')();
+const User = require("../../../models/user")();
+const Game = require("../../../models/tenthings/game")();
+const Player = require("../../../models/tenthings/player")();
+const List = require("../../../models/tenthings/list")();
 
 const MAX_HINTS = hints.getMaxHints();
 const VETO_DELAY = 15;
@@ -118,14 +118,14 @@ const queue = kue.createQueue({
   }
 });
 */
-const guessQueue = new Queue('processGuess', {
+const guessQueue = new Queue("processGuess", {
   redis: {
     port: config.redis.port,
-    host: 'localhost',
+    host: "localhost",
     password: config.redis.password,
   },
 });
-guessQueue.on('completed', function (job) {
+guessQueue.on("completed", function (job) {
   //Job finished we remove it
   job.remove();
 });
@@ -156,7 +156,7 @@ Game.find()
 });
 */
 function getLanguage(language) {
-  return 'en';
+  return "en";
   /*
   if (language) {
     language = language.toLowerCase();
@@ -172,8 +172,8 @@ function getLanguage(language) {
   */
 }
 
-if (process.env.NODE_ENV === 'production') {
-  bot.notifyAdmin('<b>Started Ten Things</b>');
+if (process.env.NODE_ENV === "production") {
+  bot.notifyAdmin("<b>Started Ten Things</b>");
 }
 
 //bot.queueMessage('-1001394022777', "test<a href=\'https://upload.wikimedia.org/wikipedia/commons/thumb/8/89/Regular_Hexagon_Inscribed_in_a_Circle.gif/360px-Regular_Hexagon_Inscribed_in_a_Circle.gif\'>&#8204;</a>\nsome other stuff")
@@ -196,7 +196,7 @@ bot.exportChatInviteLink('-1001394022777').then(function(chat) {
 */
 
 const getAvailableLanguages = ({ settings }) =>
-  settings.languages && settings.languages.length > 0 ? settings.languages : ['EN'];
+  settings.languages && settings.languages.length > 0 ? settings.languages : ["EN"];
 
 /*
  ███████ ███████ ██      ███████  ██████ ████████     ██      ██ ███████ ████████ 
@@ -211,7 +211,7 @@ const selectList = async (game) => {
     let list = await List.findOne({
       _id: game.pickedLists[0],
     })
-      .populate('creator')
+      .populate("creator")
       .exec();
     if (!list) {
       game.pickedLists.shift();
@@ -233,7 +233,7 @@ const selectList = async (game) => {
       game.playedLists = [];
       game.cycles++;
       game.lastCycleDate = moment();
-      bot.queueMessage(game.chat_id, 'All lists have been played, a new cycle will now start.');
+      bot.queueMessage(game.chat_id, "All lists have been played, a new cycle will now start.");
       list = await lists.getRandomList({
         categories: { $nin: game.disabledCategories },
         language: { $in: availableLanguages },
@@ -249,7 +249,7 @@ const selectList = async (game) => {
       if (!list) {
         list = await lists.getRandomList({
           categories: { $nin: game.disabledCategories },
-          language: 'EN',
+          language: "EN",
         });
       }
       if (!list) {
@@ -257,7 +257,7 @@ const selectList = async (game) => {
           categories: {
             $in: _.difference(categories, game.disabledCategories),
           },
-          language: 'EN',
+          language: "EN",
         });
       }
     }
@@ -269,7 +269,7 @@ const getGame = async (chat_id, user) => {
   const game = await Game.findOne({
     chat_id,
   })
-    .populate('list.creator')
+    .populate("list.creator")
     .exec();
   if (!game) return await createGame(chat_id);
   let player = await getPlayer(game, user);
@@ -286,9 +286,9 @@ const getPlayer = async (game, user) => {
   }).exec();
   if (!player) player = await createPlayer(game, user);
   else if (user && user.first_name) {
-    player.first_name = user.first_name ? user.first_name.maskURLs() : '';
-    player.last_name = user.last_name ? user.last_name.maskURLs() : '';
-    player.username = user.username ? user.username.maskURLs() : '';
+    player.first_name = user.first_name ? user.first_name.maskURLs() : "";
+    player.last_name = user.last_name ? user.last_name.maskURLs() : "";
+    player.username = user.username ? user.username.maskURLs() : "";
     player.present = true;
   }
   return player;
@@ -298,7 +298,7 @@ const createGame = async (chat_id) => {
   const game = new Game({
     chat_id,
     settings: {
-      languages: ['EN'],
+      languages: ["EN"],
     },
   });
   const savedGame = await game.save();
@@ -353,12 +353,14 @@ const rateList = (game) => {
 const queueGuess = async (game, msg) => {
   const values = game.list.values
     .filter(({ guesser }) => guesser)
-    .map(({ value }) => value.removeAllButLetters());
+    .map(({ value }) => ({ type: "game", value }));
+  if (game.minigame.answer) values.push({ type: "minigame", value: game.minigame.answer });
+  if (game.tinygame.answer) values.push({ type: "tinygame", value: game.tinygame.answer });
   const text = msg.text.removeAllButLetters();
-  const correctMatch = _.findIndex(values, (value) => value === text);
-  if (correctMatch >= 0) {
+  const correctMatch = _.find(values, ({ value }) => value.removeAllButLetters() === text);
+  if (correctMatch) {
     return queueingGuess({
-      type: 'game',
+      type: correctMatch.type,
       msg,
       game: game.chat_id,
       list: game.list._id,
@@ -381,19 +383,16 @@ const queueGuess = async (game, msg) => {
   );
   let found = false;
   if (text.length / lengths.shortest > 0.75 && text.length / lengths.longest < 1.25) {
-    const fuzzyMatch = new FuzzyMatching(values);
+    const fuzzyMatch = new FuzzyMatching(values.map(({ value }) => value.removeAllButLetters()));
+    const matchedValue = fuzzyMatch.get(text, { min: 0.75 });
+    const match = _.find(values, ({ value }) => value.removeAllButLetters() === matchedValue.value);
     const guess = {
-      type: 'game',
       msg,
       game: game.chat_id,
       list: game.list._id,
-      match: fuzzyMatch.get(text, {
-        min: 0.75,
-      }),
+      match: { ...matchValue, ...match },
     };
-    guess.match.index = _.findIndex(values, (value) => value === guess.match.value);
     if (guess.match.distance >= 0.75) {
-      found = true;
       setTimeout(
         async () =>
           queueingGuess({
@@ -402,66 +401,6 @@ const queueGuess = async (game, msg) => {
           }),
         (2000 / 0.25) * (1 - guess.match.distance)
       );
-    }
-  }
-  if (!found) {
-    const minigameAnswer = game.minigame.answer ? game.minigame.answer.removeAllButLetters() : '';
-    if (
-      minigameAnswer &&
-      text.length / minigameAnswer.length > 0.75 &&
-      text.length / minigameAnswer.length < 1.25
-    ) {
-      const fuzzyMatch = new FuzzyMatching([minigameAnswer]);
-      const match = fuzzyMatch.get(text, {
-        min: 0.75,
-      });
-      if (match.distance >= 0.75) {
-        found = true;
-        const guess = {
-          type: 'minigame',
-          msg,
-          game: game.chat_id,
-          answer: game.minigame.answer,
-          match,
-        };
-        setTimeout(
-          async () =>
-            queueingGuess({
-              ...guess,
-              player: await getPlayer(game, msg.from),
-            }),
-          (2000 / 0.25) * (1 - match.distance)
-        );
-      }
-    }
-  }
-  if (!found) {
-    const tinygameAnswer = game.tinygame.answer ? game.tinygame.answer.removeAllButLetters() : '';
-    if (
-      tinygameAnswer &&
-      text.length / tinygameAnswer.length > 0.75 &&
-      text.length / tinygameAnswer.length < 1.25
-    ) {
-      const fuzzyMatch = new FuzzyMatching([tinygameAnswer]);
-      const match = fuzzyMatch.get(text, {
-        min: 0.75,
-      });
-      if (match.distance >= 0.75) {
-        found = true;
-        const guess = {
-          type: 'tinygame',
-          msg,
-          game: game.chat_id,
-          answer: game.tinygame.answer,
-          match,
-        };
-        setTimeout(async () => {
-          return queueingGuess({
-            ...guess,
-            player: await getPlayer(game, msg.from),
-          });
-        }, (2000 / 0.25) * (1 - match.distance));
-      }
     }
   }
   if (!found) sass(game, msg.text, msg.from);
@@ -473,8 +412,8 @@ const sass = (game, text, from) => {
       (sass) => {
         if (sass) {
           console.log(`SASS: ${text} => ${sass}`);
-          if (sass.includes('http')) {
-            if (sass.includes('.gif')) {
+          if (sass.includes("http")) {
+            if (sass.includes(".gif")) {
               bot.sendAnimation(game.chat_id, sass);
             } else {
               bot.sendPhoto(game.chat_id, sass);
@@ -498,9 +437,9 @@ const processGuess = (guess) => {
     Game.findOne({
       chat_id: guess.game,
     })
-      .populate('list.creator')
+      .populate("list.creator")
       .select(
-        '_id chat_id guessers list lastPlayDate hints streak settings minigame tinygame disabledCategories'
+        "_id chat_id guessers list lastPlayDate hints streak settings minigame tinygame disabledCategories"
       )
       .exec(async (err, game) => {
         if (err) {
@@ -519,7 +458,7 @@ const processGuess = (guess) => {
           console.error(guess);
           reject(err);
         }
-        if (guess.type === 'game') {
+        if (guess.match.type === "game") {
           checkGuess(game, player, guess, guess.msg).then(
             () => {
               console.log(
@@ -532,7 +471,7 @@ const processGuess = (guess) => {
               reject(err);
             }
           );
-        } else if (guess.type === 'minigame') {
+        } else if (guess.match.type === "minigame") {
           minigame.check(game, player, guess, guess.msg).then(
             () => {
               console.log(
@@ -545,7 +484,7 @@ const processGuess = (guess) => {
               reject(err);
             }
           );
-        } else if (guess.type === 'tinygame') {
+        } else if (guess.match.type === "tinygame") {
           tinygame.check(game, player, guess, guess.msg).then(
             () => {
               console.log(
@@ -578,7 +517,7 @@ const checkGuess = async (game, player, guess, msg) => {
   if (!_.some(game.guessers, (guesser) => guesser == msg.from.id)) {
     game.guessers.push(`${msg.from.id}`);
   }
-  const match = game.list.values[guess.match.index];
+  const match = game.list.values.find(({ value }) => value === guess.match.value);
   if (!player) {
     bot.notifyAdmin(`Something wrong with this guess:\n${JSON.stringify(guess)}`);
     console.error(`Something wrong with this guess:\n${JSON.stringify(guess)}`);
@@ -619,14 +558,14 @@ const checkGuess = async (game, player, guess, msg) => {
         player,
         msg,
         match.value,
-        match.blurb.substring(0, 4) === 'http'
+        match.blurb.substring(0, 4) === "http"
           ? `<a href="${match.blurb}">&#8204;</a>`
           : `\n<i>${match.blurb.angleBrackets()}</i>`,
         score,
         accuracy
       );
     } else {
-      guessed(game, player, msg, match.value, '', score, accuracy);
+      guessed(game, player, msg, match.value, "", score, accuracy);
       /*
       request(`https://en.wikipedia.org/w/api.php?action=query&format=json&prop=extracts&titles=Earth&generator=prefixsearch&exintro=1&explaintext=1&gpssearch=${encodeURIComponent(match.value)}`, (err, response, body) => {
         if (err) {
@@ -692,15 +631,15 @@ const guessed = async (
     //message += `\n${answersLeft} answer${answersLeft > 1 ? 's' : ''} left.`;
     message += game.list.values.reduce((str, { guesser, value }, index) => {
       if (!guesser.first_name) {
-        str += '\n';
+        str += "\n";
         str += index + 1;
-        str += ': ';
+        str += ": ";
         str += hints.getHint(game.hints, value);
       }
       return str;
-    }, '');
+    }, "");
   } else {
-    message += '\nRound over.';
+    message += "\nRound over.";
   }
   return await bot.queueMessage(chat.id, message);
 };
@@ -719,13 +658,13 @@ const checkRound = (game) => {
           _id: game.list._id,
         }).exec();
         let message = `<b>${game.list.name}</b>`;
-        message += game.list.creator ? ` by ${game.list.creator.username}\n` : '\n';
+        message += game.list.creator ? ` by ${game.list.creator.username}\n` : "\n";
         message +=
           game.list.categories.length > 0
             ? `Categor${
-                game.list.categories.length > 1 ? 'ies' : 'y'
-              }: <b>${game.list.categories.join(', ')}</b>\n`
-            : '';
+                game.list.categories.length > 1 ? "ies" : "y"
+              }: <b>${game.list.categories.join(", ")}</b>\n`
+            : "";
         message += list;
         message += messages.listStats(foundList);
         message += await stats.getDailyScores(game, 5);
@@ -752,12 +691,12 @@ const newRound = (currentGame, player) => {
     _id: currentGame._id,
   })
     .select(
-      '_id chat_id playedLists list listsPlayed pickedLists cycles guessers hintCooldown hints disabledCategories settings'
+      "_id chat_id playedLists list listsPlayed pickedLists cycles guessers hintCooldown hints disabledCategories settings"
     )
-    .populate('list.creator')
+    .populate("list.creator")
     .exec(async (err, game) => {
       if (err) return console.error(err);
-      if (!game) return console.log('Game not found');
+      if (!game) return console.log("Game not found");
       let players = await Player.find({
         game: currentGame._id,
         id: {
@@ -776,7 +715,7 @@ const newRound = (currentGame, player) => {
             player.lists++;
             const savedPlayer = await player.save();
           }
-          if (game.chat_id === '-1001182285167') console.log('saved players');
+          if (game.chat_id === "-1001182285167") console.log("saved players");
           game.list = JSON.parse(JSON.stringify(list));
           game.list.totalValues = game.list.values.length;
           game.list.values = game.list.values.getRandom(10);
@@ -786,26 +725,26 @@ const newRound = (currentGame, player) => {
           cooldowns[game.id] = 3;
           cooldownHint(game.id);
           game.guessers = [];
-          let message = 'A new round will start in 2 seconds';
+          let message = "A new round will start in 2 seconds";
           message +=
             game.list.categories.length > 0
-              ? `\nCategor${game.list.categories.length > 1 ? 'ies' : 'y'}: <b>${
+              ? `\nCategor${game.list.categories.length > 1 ? "ies" : "y"}: <b>${
                   game.list.categories
                 }</b>`
-              : '';
+              : "";
           bot.queueMessage(game.chat_id, message);
           setTimeout(() => {
             let message = `<b>${game.list.name}</b> (${game.list.totalValues}) by ${game.list.creator.username}`;
             message += game.list.description
               ? `\n<i>${game.list.description.angleBrackets()}</i>`
-              : '';
+              : "";
             bot.queueMessage(game.chat_id, message);
           }, 2000);
           game.playedLists.push(game.list._id);
           game.save((err) => {
             if (err)
               return bot.notifyAdmin(
-                'newRound: ' + JSON.stringify(err) + '\n' + JSON.stringify(game)
+                "newRound: " + JSON.stringify(err) + "\n" + JSON.stringify(game)
               );
             console.log(`${game.chat_id} - New round started -> "${list.name}"`);
           });
@@ -838,7 +777,7 @@ function skip(game, skipper) {
     if (skips[game._id] && skips[game._id].player !== skipper._id) {
       skips[game._id].timer = 2;
     } else if (skips[game._id] && skips[game._id].player === skipper._id) {
-      bot.queueMessage(game.chat_id, 'Get someone else to confirm your skip request!');
+      bot.queueMessage(game.chat_id, "Get someone else to confirm your skip request!");
     } else {
       bot.queueMessage(
         game.chat_id,
@@ -859,7 +798,7 @@ function skip(game, skipper) {
 const skipList = (game, skipper) => {
   game.list.values.forEach(function ({ guesser }, index) {
     if (!guesser.first_name) {
-      this[index].guesser.first_name = 'Not guessed';
+      this[index].guesser.first_name = "Not guessed";
     }
   }, game.list.values);
   Player.updateMany(
@@ -922,10 +861,10 @@ function cooldownSkip(game, skipper) {
  ██   ██ ██ ██  ██ ██    ██    
  ██   ██ ██ ██   ████    ██    
 */
-const hint = async (game, player, type = 'main') => {
+const hint = async (game, player, type = "main") => {
   if (
-    (type === 'main' && game.hints >= MAX_HINTS) ||
-    (type !== 'main' && game[type].hints >= MAX_HINTS)
+    (type === "main" && game.hints >= MAX_HINTS) ||
+    (type !== "main" && game[type].hints >= MAX_HINTS)
   ) {
     bot.queueMessage(game.chat_id, "What? Another hint? I'm just gonna ignore that request");
   } else if (cooldowns[game.id] && cooldowns[game.id] > 0) {
@@ -941,11 +880,11 @@ const hint = async (game, player, type = 'main') => {
     }
     let message;
     switch (type) {
-      case 'minigame':
+      case "minigame":
         game.minigame.hints++;
         message = minigame.message(game.minigame);
         break;
-      case 'tinygame':
+      case "tinygame":
         game.tinygame.hints++;
         message = tinygame.message(game.tinygame);
         break;
@@ -955,12 +894,12 @@ const hint = async (game, player, type = 'main') => {
         message += game.list.values.reduce((str, { guesser, value }, index) => {
           if (!guesser.first_name) {
             str += index + 1;
-            str += ': ';
+            str += ": ";
             str += hints.getHint(game.hints, value);
-            str += '\n';
+            str += "\n";
           }
           return str;
-        }, '');
+        }, "");
         let list = await List.findOne({
           _id: game.list._id,
         }).exec();
@@ -999,9 +938,9 @@ function cooldownHint(gameId) {
  ██      ██    ██      ██    ██    
  ██       ██████  ███████    ██    
 */
-router.post('/', async ({ body, get }, res, next) => {
-  if (body.object === 'page') {
-    res.status(200).send('EVENT_RECEIVED');
+router.post("/", async ({ body, get }, res, next) => {
+  if (body.object === "page") {
+    res.status(200).send("EVENT_RECEIVED");
     return console.log(body);
   }
   /*
@@ -1016,22 +955,22 @@ router.post('/', async ({ body, get }, res, next) => {
     const message = body.message
       ? body.message.text
         ? body.message.text
-        : 'Not a callback or typed message'
+        : "Not a callback or typed message"
       : body.callback_query.data;
-    if (from != config.masterChat && (await redis.get('pause')) === 'true')
+    if (from != config.masterChat && (await redis.get("pause")) === "true")
       return res.sendStatus(200);
     //if (date.diff(moment(), 'hours') > 1) return res.sendStatus(200);
     if (BANNED_USERS.indexOf(from) >= 0) {
-      bot.notifyAdmin(JSON.stringify(get('host')));
+      bot.notifyAdmin(JSON.stringify(get("host")));
       return res.sendStatus(200);
     }
 
     if (antispam[from]) {
-      if (antispam[from].lastMessage < moment().subtract(10, 'seconds')) {
+      if (antispam[from].lastMessage < moment().subtract(10, "seconds")) {
         delete antispam[from];
       } else if (antispam[from].lastMessage > moment()) {
         antispam[from].count++;
-        antispam[from].lastMessage = moment().add(10, 'seconds');
+        antispam[from].lastMessage = moment().add(10, "seconds");
         return res.sendStatus(200);
       } else if (antispam[from].count <= 30) {
         antispam[from].count++;
@@ -1053,8 +992,8 @@ router.post('/', async ({ body, get }, res, next) => {
           bot.exportChatInviteLink(chat).then((url) => {
             bot.notifyAdmin(
               `Possible spammer: ${name} (${from}) in chat ${chat} ${
-                chat == config.groupChat ? ' - The main chat!' : ''
-              }\n\n${message}\n\nURL: ${url ? url : 'N/A'}`
+                chat == config.groupChat ? " - The main chat!" : ""
+              }\n\n${message}\n\nURL: ${url ? url : "N/A"}`
             );
           });
           /*
@@ -1089,17 +1028,17 @@ router.post('/', async ({ body, get }, res, next) => {
       body.callback_query.from.username
         ? `@${body.callback_query.from.username}`
         : `${body.callback_query.from.first_name} ${
-            body.callback_query.from.last_name ? body.callback_query.from.last_name : ''
+            body.callback_query.from.last_name ? body.callback_query.from.last_name : ""
           }`
     ).maskURLs();
     data.from_id = body.callback_query.from.id;
     data.chat_id = body.callback_query.message.chat.id;
     data.message_id = body.callback_query.message.message_id;
-    if (data.type === 'rate') {
+    if (data.type === "rate") {
       let doVote = false;
       if (voters[data.from_id]) {
         if (
-          voters[data.from_id].lastVoted < moment().subtract(voters[data.from_id].delay, 'seconds')
+          voters[data.from_id].lastVoted < moment().subtract(voters[data.from_id].delay, "seconds")
         ) {
           doVote = true;
           delete voters[data.from_id];
@@ -1115,7 +1054,7 @@ router.post('/', async ({ body, get }, res, next) => {
         let foundList = await List.findOne({
           _id: data.list,
         })
-          .select('name votes modifyDate score skips plays')
+          .select("name votes modifyDate score skips plays")
           .exec();
         let voter = _.find(foundList.votes, (vote) => vote.voter == data.from_id);
         if (!voter) {
@@ -1134,72 +1073,72 @@ router.post('/', async ({ body, get }, res, next) => {
           if (err) return console.error(err);
           bot.answerCallback(
             body.callback_query.id,
-            data.vote > 0 ? '\ud83d\udc4d' : '\ud83d\udc4e'
+            data.vote > 0 ? "\ud83d\udc4d" : "\ud83d\udc4e"
           );
           //bot.notifyAdmin(`"<b>${foundList.name}</b>" ${data.vote > 0 ? 'up' : 'down'}voted by <i>${body.callback_query.from.first_name}</i>!`);
-          if (moment(data.date) > moment().subtract(1, 'days')) {
+          if (moment(data.date) > moment().subtract(1, "days")) {
             bot.queueMessage(
               data.chat_id,
-              ` ${data.vote > 0 ? '\ud83d\udc4d' : '\ud83d\udc4e'} ${data.requestor} ${
-                data.vote > 0 ? '' : 'dis'
+              ` ${data.vote > 0 ? "\ud83d\udc4d" : "\ud83d\udc4e"} ${data.requestor} ${
+                data.vote > 0 ? "" : "dis"
               }likes <b>${foundList.name}</b> (${foundList.score.makePercentage()})`
             );
           }
         });
       }
-    } else if (data.type === 'stats') {
+    } else if (data.type === "stats") {
       const isAdmin = data.chat_id > 0 || (await bot.checkAdmin(data.chat_id, data.from_id));
       if (isAdmin) {
         Game.findOne({
           chat_id: data.chat_id,
         })
-          .select('chat_id list')
+          .select("chat_id list")
           .exec((err, game) => {
             switch (data.data) {
-              case 'list':
-                bot.answerCallback(body.callback_query.id, 'List Stats');
-                bot.sendKeyboard(game.chat_id, '<b>List Stats</b>', keyboards.stats_list(game));
+              case "list":
+                bot.answerCallback(body.callback_query.id, "List Stats");
+                bot.sendKeyboard(game.chat_id, "<b>List Stats</b>", keyboards.stats_list(game));
                 break;
-              case 'player':
-                bot.answerCallback(body.callback_query.id, 'Player Stats');
+              case "player":
+                bot.answerCallback(body.callback_query.id, "Player Stats");
                 console.log(keyboards.stats_player(game));
-                bot.sendKeyboard(game.chat_id, '<b>Player Stats</b>', keyboards.stats_player(game));
+                bot.sendKeyboard(game.chat_id, "<b>Player Stats</b>", keyboards.stats_player(game));
                 break;
-              case 'global':
-                bot.answerCallback(body.callback_query.id, 'Global Stats');
-                bot.queueMessage(game.chat_id, 'Coming Soon');
+              case "global":
+                bot.answerCallback(body.callback_query.id, "Global Stats");
+                bot.queueMessage(game.chat_id, "Coming Soon");
                 break;
-              case 'game':
-                bot.answerCallback(body.callback_query.id, 'Game Stats');
-                bot.sendKeyboard(game.chat_id, '<b>Game Stats</b>', keyboards.stats_game(game));
+              case "game":
+                bot.answerCallback(body.callback_query.id, "Game Stats");
+                bot.sendKeyboard(game.chat_id, "<b>Game Stats</b>", keyboards.stats_game(game));
                 break;
             }
           });
       }
-    } else if (data.type === 'stat') {
+    } else if (data.type === "stat") {
       //bot.notifyAdmin(`${body.callback_query.from.id} (${body.callback_query.from.first_name}) requested stats`);
-      bot.answerCallback(body.callback_query.id, '');
+      bot.answerCallback(body.callback_query.id, "");
       stats.getStats(data.chat_id, data, data.from_id);
-    } else if (data.type === 'score') {
-      if (data.requestor === '^') return '';
+    } else if (data.type === "score") {
+      if (data.requestor === "^") return "";
       //bot.notifyAdmin(`${body.callback_query.from.id} (${body.callback_query.from.first_name}) requested stats`);
-      bot.answerCallback(body.callback_query.id, 'Score');
+      bot.answerCallback(body.callback_query.id, "Score");
       stats.getScores(data.chat_id, data.id);
-    } else if (data.type === 'cat') {
+    } else if (data.type === "cat") {
       if (data.chat_id != config.groupChat) {
         const isAdmin = data.chat_id > 0 || (await bot.checkAdmin(data.chat_id, data.from_id));
         if (isAdmin) {
           let game = await Game.findOne({
             chat_id: data.chat_id,
           })
-            .select('chat_id disabledCategories')
+            .select("chat_id disabledCategories")
             .exec();
           const categoryIndex = game.disabledCategories.indexOf(data.id);
           if (categoryIndex >= 0) {
             game.disabledCategories.splice(categoryIndex, 1);
           } else {
             if (game.disabledCategories.length === categories.length - 1) {
-              return bot.queueMessage(data.chat_id, 'A minimum of 1 category is required');
+              return bot.queueMessage(data.chat_id, "A minimum of 1 category is required");
             }
             game.disabledCategories.push(data.id);
           }
@@ -1207,7 +1146,7 @@ router.post('/', async ({ body, get }, res, next) => {
             if (err) return bot.notifyAdmin(`Category Save Error: \n${JSON.stringify(err)}`);
             bot.answerCallback(
               body.callback_query.id,
-              `${data.id} -> ${categoryIndex >= 0 ? 'On' : 'Off'}`
+              `${data.id} -> ${categoryIndex >= 0 ? "On" : "Off"}`
             );
             bot.editKeyboard(data.chat_id, data.message_id, keyboards.categories(game));
           });
@@ -1215,21 +1154,21 @@ router.post('/', async ({ body, get }, res, next) => {
           bot.queueMessage(data.chat_id, `Sorry ${data.requestor}, this is a chat admin function`);
         }
       }
-    } else if (data.type === 'setting') {
+    } else if (data.type === "setting") {
       if (body.callback_query.message.chat_id != config.masterChat) {
         const isAdmin = data.chat_id > 0 || (await bot.checkAdmin(data.chat_id, data.from_id));
         if (isAdmin) {
           Game.findOne({
             chat_id: data.chat_id,
           })
-            .select('chat_id settings')
+            .select("chat_id settings")
             .exec(async (err, game) => {
               if (err) return bot.notifyAdmin(`Settings Find Error: \n${JSON.stringify(err)}`);
-              if (data.id === 'lang') {
+              if (data.id === "lang") {
                 const availableLanguages = await List.aggregate([
                   {
                     $group: {
-                      _id: '$language',
+                      _id: "$language",
                       count: { $sum: 1 },
                     },
                   },
@@ -1246,7 +1185,7 @@ router.post('/', async ({ body, get }, res, next) => {
                   if (err) return bot.notifyAdmin(`Settings Save Error: \n${JSON.stringify(err)}`);
                   bot.answerCallback(
                     body.callback_query.id,
-                    `${data.id} -> ${game.settings[data.id] ? 'On' : 'Off'}`
+                    `${data.id} -> ${game.settings[data.id] ? "On" : "Off"}`
                   );
                   bot.editKeyboard(data.chat_id, data.message_id, keyboards.settings(game));
                 });
@@ -1256,13 +1195,13 @@ router.post('/', async ({ body, get }, res, next) => {
           bot.queueMessage(data.chat_id, `Nice try ${data.requestor} but that's an admin function`);
         }
       }
-    } else if (data.type === 'lang') {
+    } else if (data.type === "lang") {
       Game.findOne({
         chat_id: data.chat_id,
       })
-        .select('chat_id settings')
+        .select("chat_id settings")
         .exec((err, game) => {
-          if (err) return bot.notifyAdmin('Language button\n' + JSON.stringify(err));
+          if (err) return bot.notifyAdmin("Language button\n" + JSON.stringify(err));
           const isSelected = game.settings.languages.includes(data.id);
           if (isSelected) {
             game.settings.languages = game.settings.languages.filter(
@@ -1272,18 +1211,18 @@ router.post('/', async ({ body, get }, res, next) => {
             game.settings.languages.push(data.id);
           }
           if (!game.settings.languages || game.settings.languages.length === 0) {
-            game.settings.languages = ['EN'];
+            game.settings.languages = ["EN"];
           }
           game.save(async (err, savedGame) => {
             if (err) return bot.notifyAdmin(`Language Save Error: \n${JSON.stringify(err)}`);
             bot.answerCallback(
               body.callback_query.id,
-              `${data.id} -> ${isSelected ? 'Off' : 'On'}`
+              `${data.id} -> ${isSelected ? "Off" : "On"}`
             );
             const availableLanguages = await List.aggregate([
               {
                 $group: {
-                  _id: '$language',
+                  _id: "$language",
                   count: { $sum: 1 },
                 },
               },
@@ -1295,16 +1234,16 @@ router.post('/', async ({ body, get }, res, next) => {
             );
           });
         });
-    } else if (data.type === 'pick') {
+    } else if (data.type === "pick") {
       if (data.chat_id === config.adminChat) {
         List.findOne({
           _id: data.list,
         })
-          .populate('creator')
+          .populate("creator")
           .exec((err, list) => {
             let msg = messages.listInfo(list);
-            msg += ` - Created: ${moment(list.date).format('DD-MMM-YYYY')}\n`;
-            msg += ` - Modified: ${moment(list.modifyDate).format('DD-MMM-YYYY')}\n`;
+            msg += ` - Created: ${moment(list.date).format("DD-MMM-YYYY")}\n`;
+            msg += ` - Modified: ${moment(list.modifyDate).format("DD-MMM-YYYY")}\n`;
             msg += ` - Score: ${list.score.makePercentage()}\n`;
             msg += ` - Values: ${list.values.length}\n`;
             msg += ` - Plays: ${list.plays}\n`;
@@ -1315,9 +1254,9 @@ router.post('/', async ({ body, get }, res, next) => {
           });
       } else {
         Game.findOne({ chat_id: data.chat_id })
-          .select('chat_id pickedLists')
+          .select("chat_id pickedLists")
           .exec((err, game) => {
-            if (err) return bot.notifyAdmin('Pick list button\n' + JSON.stringify(err));
+            if (err) return bot.notifyAdmin("Pick list button\n" + JSON.stringify(err));
             if (game.pickedLists >= 10)
               return bot.queueMessage(
                 data.chat_id,
@@ -1348,11 +1287,11 @@ router.post('/', async ({ body, get }, res, next) => {
             });
           });
       }
-    } else if (data.type === 'suggest') {
+    } else if (data.type === "suggest") {
       Game.findOne({
         chat_id: data.chat_id,
       })
-        .select('chat_id list')
+        .select("chat_id list")
         .exec((err, game) => {
           const suggestion = body.callback_query.message.text.substring(
             body.callback_query.message.text.indexOf(' "') + 2,
@@ -1362,18 +1301,18 @@ router.post('/', async ({ body, get }, res, next) => {
           let message = `<b>${data.id.capitalize()}</b>\n${suggestion}\n<i>By ${
             data.requestor
           }</i>`;
-          message += data.id === 'typo' ? `\nList: ${game.list.name}` : '';
+          message += data.id === "typo" ? `\nList: ${game.list.name}` : "";
           bot.notify(message);
           bot.notifyAdmins(message);
           message +=
-            data.id === 'list'
-              ? '\nNote that you can add your own lists at https://belgocanadian.com/tenthings'
-              : '';
+            data.id === "list"
+              ? "\nNote that you can add your own lists at https://belgocanadian.com/tenthings"
+              : "";
           bot.answerCallback(body.callback_query.id, `Suggestion noted`);
           bot.deleteMessage(data.chat_id, data.message_id);
           bot.queueMessage(data.chat_id, message);
         });
-    } else if (data.type === 'values') {
+    } else if (data.type === "values") {
       List.findOne({
         _id: data.list,
       }).exec((err, list) => {
@@ -1384,14 +1323,14 @@ router.post('/', async ({ body, get }, res, next) => {
             .reduce((message, item) => `${message}- ${item.value}\n`, `<b>${list.name}</b>\n`)
         );
       });
-    } else if (data.type === 'desc') {
+    } else if (data.type === "desc") {
       List.findOne({
         _id: data.list,
       }).exec((err, list) => {
-        var message = `<b>${list.name}</b>\nDescription:\n<i>${list.description || 'N/A'}</i>`;
+        var message = `<b>${list.name}</b>\nDescription:\n<i>${list.description || "N/A"}</i>`;
         bot.queueMessage(data.chat_id, message);
       });
-    } else if (data.type === 'diff') {
+    } else if (data.type === "diff") {
       List.updateOne({ _id: data.list }, { $set: { difficulty: data.vote } });
       bot.answerCallback(body.callback_query.id, `${messages.difficulty(data.vote)}`);
       bot.editKeyboard(
@@ -1399,7 +1338,7 @@ router.post('/', async ({ body, get }, res, next) => {
         data.message_id,
         keyboards.curate(await List.findOne({ _id: data.list }))
       );
-    } else if (data.type === 'freq') {
+    } else if (data.type === "freq") {
       List.updateOne({ _id: data.list }, { $set: { frequency: data.vote } });
       bot.answerCallback(
         body.callback_query.id,
@@ -1430,7 +1369,7 @@ router.post('/', async ({ body, get }, res, next) => {
       Game.findOne({
         chat_id: body.message.chat.id,
       })
-        .select('settings')
+        .select("settings")
         .exec((err, game) => {
           if (err) return notifyAdmin(`New Participant Error:\n${err}`);
           if (game && game.settings.intro) {
@@ -1445,7 +1384,7 @@ router.post('/', async ({ body, get }, res, next) => {
       msg = {
         id: body.message.chat.id,
         from: body.from,
-        command: '/info',
+        command: "/info",
         chat: body.message.chat,
       };
     } else if (body.message.left_chat_participant) {
@@ -1494,9 +1433,9 @@ router.post('/', async ({ body, get }, res, next) => {
       msg = {
         id: config.masterChat,
         from: {
-          first_name: 'Bot Error',
+          first_name: "Bot Error",
         },
-        command: '/error',
+        command: "/error",
         text: JSON.stringify(body),
         chat: {
           id: config.masterChat,
@@ -1509,16 +1448,16 @@ router.post('/', async ({ body, get }, res, next) => {
       from: body.message.from,
       command: body.message.text.substring(
         0,
-        !body.message.text.includes(' ') ? body.message.text.length : body.message.text.indexOf(' ')
+        !body.message.text.includes(" ") ? body.message.text.length : body.message.text.indexOf(" ")
       ),
       text: body.message.text,
       chat: body.message.chat,
     };
   }
-  if (msg.command.includes('@')) {
-    if (msg.command.substring(msg.command.indexOf('@') + 1) !== 'TenThings_Bot')
+  if (msg.command.includes("@")) {
+    if (msg.command.substring(msg.command.indexOf("@") + 1) !== "TenThings_Bot")
       return res.sendStatus(200);
-    msg.command = msg.command.substring(0, msg.command.indexOf('@'));
+    msg.command = msg.command.substring(0, msg.command.indexOf("@"));
   }
   try {
     if (!msg.from || !msg.from.id) {
@@ -1532,8 +1471,8 @@ router.post('/', async ({ body, get }, res, next) => {
   Game.findOne({
     chat_id: msg.chat.id,
   })
-    .populate('list.creator')
-    .select('-playedLists')
+    .populate("list.creator")
+    .select("-playedLists")
     //.select('chat_id enabled players hints cycles lastCycleDate lastPlayDate listsPlayed guessers streak disabledCategories pickedLists list date minigame tinygame settings')
     .exec((err, existingGame) => {
       if (err) {
@@ -1542,7 +1481,7 @@ router.post('/', async ({ body, get }, res, next) => {
       }
       if (!existingGame) {
         createGame(msg.chat.id).then((newGame) => {
-          if (err) bot.notifyAdmin('POST: ' + JSON.stringify(err) + '\n' + JSON.stringify(game));
+          if (err) bot.notifyAdmin("POST: " + JSON.stringify(err) + "\n" + JSON.stringify(game));
           console.log(`New game created for ${msg.chat.id}`);
           return evaluateCommand(res, msg, newGame, true);
         });
@@ -1552,10 +1491,10 @@ router.post('/', async ({ body, get }, res, next) => {
     });
 });
 
-router.get('/', ({ query }, res, next) => {
-  const token = query['hub.verify_token'];
-  if (query['hub.verify_token'] === config.tokens.facebook.tenthings) {
-    res.status(200).send(query['hub.challenge']);
+router.get("/", ({ query }, res, next) => {
+  const token = query["hub.verify_token"];
+  if (query["hub.verify_token"] === config.tokens.facebook.tenthings) {
+    res.status(200).send(query["hub.challenge"]);
   } else {
     res.sendStatus(200);
   }
@@ -1569,9 +1508,9 @@ router.get('/', ({ query }, res, next) => {
   ███ ███  ███████ ██████  ██   ██  ██████   ██████  ██   ██ 
 */
 // Creates the endpoint for our webhook
-router.post('/webhook', (req, res) => {
+router.post("/webhook", (req, res) => {
   const body = req.body;
-  if (body.object === 'page') {
+  if (body.object === "page") {
     // Iterates over each entry - there may be multiple if batched
     body.entry.forEach(({ messaging }) => {
       // Gets the message. entry.messaging is an array, but
@@ -1590,7 +1529,7 @@ router.post('/webhook', (req, res) => {
       }
     });
     // Returns a '200 OK' response to all requests
-    res.status(200).send('EVENT_RECEIVED');
+    res.status(200).send("EVENT_RECEIVED");
   } else {
     // Returns a '404 Not Found' if event is not = require(a page subscription
     res.sendStatus(404);
@@ -1613,12 +1552,12 @@ const evaluateCommand = async (res, msg, game, isNew) => {
   //bot.notifyAdmin(games[msg.chat.id].list);
   let player = await getPlayer(game, msg.from);
   if (!player.first_name) {
-    console.error('msg without a first_name?');
+    console.error("msg without a first_name?");
     console.error(msg);
     return res.sendStatus(200);
   } else if (msg.chat.id === config.adminChat) {
     if (
-      !['/search', '/stats', '/typo', '/bug', '/feature', '/suggest'].includes(
+      !["/search", "/stats", "/typo", "/bug", "/feature", "/suggest"].includes(
         msg.command.toLowerCase()
       )
     ) {
@@ -1637,24 +1576,24 @@ const evaluateCommand = async (res, msg, game, isNew) => {
     newRound(game);
   }
   switch (msg.command.toLowerCase()) {
-    case '/error':
+    case "/error":
       bot.queueMessage(msg.chat.id, msg.text);
       break;
-    case '/intro':
+    case "/intro":
       bot.queueMessage(msg.chat.id, messages.introduction(msg.from.first_name));
       break;
-    case '/logica':
-    case '/logic':
+    case "/logica":
+    case "/logic":
       bot.queueMessage(msg.chat.id, messages.logic());
       break;
-    case '/comandos':
-      bot.queueMessage(msg.chat.id, messages.commands('PT'));
+    case "/comandos":
+      bot.queueMessage(msg.chat.id, messages.commands("PT"));
       break;
-    case '/commands':
+    case "/commands":
       bot.queueMessage(msg.chat.id, messages.commands());
       break;
-    case '/parar':
-    case '/stop':
+    case "/parar":
+    case "/stop":
       bot.checkAdmin(game.chat_id, msg.from.id).then((admin) => {
         if (admin) {
           deactivateGame(game);
@@ -1666,40 +1605,40 @@ const evaluateCommand = async (res, msg, game, isNew) => {
         }
       });
       break;
-    case '/new':
-    case '/start':
+    case "/new":
+    case "/start":
       if (isNew) {
         newRound(game);
       } else {
         stats.getList(game, (list) => {
           let message = `<b>${game.list.name}</b> (${game.list.totalValues})`;
-          message += game.list.creator ? ` by ${game.list.creator.username}\n` : '\n';
+          message += game.list.creator ? ` by ${game.list.creator.username}\n` : "\n";
           message +=
             game.list.categories.length > 0
               ? `Categor${
-                  game.list.categories.length > 1 ? 'ies' : 'y'
-                }: <b>${game.list.categories.join(', ')}</b>\n`
-              : '';
+                  game.list.categories.length > 1 ? "ies" : "y"
+                }: <b>${game.list.categories.join(", ")}</b>\n`
+              : "";
           message += game.list.description
-            ? game.list.description.includes('href')
+            ? game.list.description.includes("href")
               ? game.list.description
               : `<i>${game.list.description.angleBrackets()}</i>\n`
-            : '';
+            : "";
           message += list;
           bot.queueMessage(msg.chat.id, message);
           activateGame(game, true);
         });
       }
       break;
-    case '/pule':
-    case '/skip':
+    case "/pule":
+    case "/skip":
       if (await checkSkipper(game, msg, player)) {
         activateGame(game, true);
         skip(game, player);
       }
       break;
-    case '/minipule':
-    case '/miniskip':
+    case "/minipule":
+    case "/miniskip":
       if (await checkSkipper(game, msg, player)) {
         bot.queueMessage(msg.chat.id, `The minigame answer was:\n<i>${game.minigame.answer}</i>`);
         setTimeout(() => {
@@ -1707,8 +1646,8 @@ const evaluateCommand = async (res, msg, game, isNew) => {
         }, 200);
       }
       break;
-    case '/puleminusculo':
-    case '/tinyskip':
+    case "/puleminusculo":
+    case "/tinyskip":
       if (await checkSkipper(game, msg, player)) {
         bot.queueMessage(msg.chat.id, `The tinygame answer was:\n<i>${game.tinygame.answer}</i>`);
         setTimeout(() => {
@@ -1716,7 +1655,7 @@ const evaluateCommand = async (res, msg, game, isNew) => {
         }, 200);
       }
       break;
-    case '/veto':
+    case "/veto":
       player.vetoes++;
       await player.save();
       if (skips[game.id]) {
@@ -1730,27 +1669,27 @@ const evaluateCommand = async (res, msg, game, isNew) => {
         bot.queueMessage(msg.chat.id, `I can't find a skip request, ${player.first_name}`);
       }
       break;
-    case '/estatisticas':
-    case '/stats':
-      bot.sendKeyboard(game.chat_id, '<b>Stats</b>', keyboards.stats(game.chat_id));
+    case "/estatisticas":
+    case "/stats":
+      bot.sendKeyboard(game.chat_id, "<b>Stats</b>", keyboards.stats(game.chat_id));
       break;
-    case '/lista':
-    case '/list':
+    case "/lista":
+    case "/list":
       try {
         stats.getList(game, (list) => {
           let message = `<b>${game.list.name}</b> (${game.list.totalValues})`;
-          message += game.list.creator ? ` by ${game.list.creator.username}\n` : '\n';
+          message += game.list.creator ? ` by ${game.list.creator.username}\n` : "\n";
           message +=
             game.list.categories.length > 0
               ? `Categor${
-                  game.list.categories.length > 1 ? 'ies' : 'y'
-                }: <b>${game.list.categories.join(', ')}</b>\n`
-              : '';
+                  game.list.categories.length > 1 ? "ies" : "y"
+                }: <b>${game.list.categories.join(", ")}</b>\n`
+              : "";
           message += game.list.description
-            ? game.list.description.includes('href')
+            ? game.list.description.includes("href")
               ? game.list.description
               : `<i>${game.list.description.angleBrackets()}</i>\n`
-            : '';
+            : "";
           message += list;
           bot.queueMessage(msg.chat.id, message);
           activateGame(game, true);
@@ -1759,62 +1698,62 @@ const evaluateCommand = async (res, msg, game, isNew) => {
         console.error(e);
       }
       break;
-    case '/erro':
-    case '/typo':
-      sendSuggestion('typo', msg, player, `\nin "${game.list.name}"`);
+    case "/erro":
+    case "/typo":
+      sendSuggestion("typo", msg, player, `\nin "${game.list.name}"`);
       break;
-    case '/bug':
-      sendSuggestion('bug', msg, player);
+    case "/bug":
+      sendSuggestion("bug", msg, player);
       break;
-    case '/feature':
-      sendSuggestion('feature', msg, player);
+    case "/feature":
+      sendSuggestion("feature", msg, player);
       break;
-    case '/pesquisar':
-    case '/search':
+    case "/pesquisar":
+    case "/search":
       const search = msg.text.substring(msg.command.length + 1, msg.text.length);
       if (game.pickedLists.length >= 10)
         return bot.queueMessage(
           game.chat_id,
           `The queue already has the maximum of 10 lists, ${data.requestor}.\n -> /lists`
         );
-      if (search && search != 'TenThings_Bot' && search != '@TenThings_Bot') {
+      if (search && search != "TenThings_Bot" && search != "@TenThings_Bot") {
         player.searches++;
         await player.save();
         console.log(`${game.chat_id} - Search for ${search}`);
         const availableLanguages = getAvailableLanguages(game);
         const regex = search
-          .replace(new RegExp('[^a-zA-Z0-9 ]+', 'g'), '.*')
-          .split(' ')
-          .reduce((result, word) => `${result}(?=.*${word}.*)`, '');
+          .replace(new RegExp("[^a-zA-Z0-9 ]+", "g"), ".*")
+          .split(" ")
+          .reduce((result, word) => `${result}(?=.*${word}.*)`, "");
         let foundLists = await List.find({
           categories: { $nin: game.disabledCategories },
           language: { $in: availableLanguages },
           name: {
             $regex: `.*${regex}.*`,
-            $options: 'i',
+            $options: "i",
           },
         })
-          .select('name')
+          .select("name")
           .lean();
 
         if (foundLists.length < 10) {
           const count = await List.countDocuments({
             categories: { $nin: game.disabledCategories },
             language: { $in: availableLanguages },
-            'values.value': {
+            "values.value": {
               $regex: `.*${regex}.*`,
-              $options: 'i',
+              $options: "i",
             },
           });
           const valueLists = await List.find({
             categories: { $nin: game.disabledCategories },
             language: { $in: availableLanguages },
-            'values.value': {
+            "values.value": {
               $regex: `.*${regex}.*`,
-              $options: 'i',
+              $options: "i",
             },
           })
-            .select('name')
+            .select("name")
             .skip(count > 10 ? Math.floor(Math.random() * (count - 10)) : 0)
             .limit(10 - foundLists.length)
             .lean();
@@ -1825,17 +1764,17 @@ const evaluateCommand = async (res, msg, game, isNew) => {
             language: { $in: availableLanguages },
             categories: {
               $regex: `.*${regex}.*`,
-              $options: 'i',
+              $options: "i",
             },
           });
           const categoryLists = await List.find({
             language: { $in: availableLanguages },
             categories: {
               $regex: `.*${regex}.*`,
-              $options: 'i',
+              $options: "i",
             },
           })
-            .select('name')
+            .select("name")
             .skip(count > 10 ? Math.floor(Math.random() * (count - 10)) : 0)
             .limit(10 - foundLists.length)
             .lean();
@@ -1846,7 +1785,7 @@ const evaluateCommand = async (res, msg, game, isNew) => {
           bot.sendKeyboard(
             game.chat_id,
             `<b>Which list would you like to ${
-              msg.chat.id === config.adminChat ? 'curate' : 'queue'
+              msg.chat.id === config.adminChat ? "curate" : "queue"
             }?</b>`,
             keyboard
           );
@@ -1863,44 +1802,44 @@ const evaluateCommand = async (res, msg, game, isNew) => {
         );
       }
       break;
-    case '/suggest':
+    case "/suggest":
       const suggestion = msg.text.substring(msg.command.length + 1, msg.text.length);
-      if (suggestion && suggestion != 'TenThings_Bot' && suggestion != '@TenThings_Bot') {
+      if (suggestion && suggestion != "TenThings_Bot" && suggestion != "@TenThings_Bot") {
         bot.notify(suggestion);
       }
       let message =
-        'The suggest command has been retired.\nPlease use one of the following commands instead:\n';
-      message += '/search -> Search lists to queue\n';
-      message += '/typo -> Report a typo in the current list\n';
-      message += '/bug -> Report a bug with the bot\n';
-      message += '/feature -> Suggest an enhancement feature\n';
+        "The suggest command has been retired.\nPlease use one of the following commands instead:\n";
+      message += "/search -> Search lists to queue\n";
+      message += "/typo -> Report a typo in the current list\n";
+      message += "/bug -> Report a bug with the bot\n";
+      message += "/feature -> Suggest an enhancement feature\n";
       message +=
-        '<i>Note that lists can be added and enhanced by anyone at https://belgocanadian.com/tenthings</i>';
+        "<i>Note that lists can be added and enhanced by anyone at https://belgocanadian.com/tenthings</i>";
       bot.queueMessage(game.chat_id, message);
       break;
-    case '/dica':
-    case '/hint':
+    case "/dica":
+    case "/hint":
       activateGame(game, false);
       if (game.list.values.filter(({ guesser }) => !guesser.first_name).length !== 0) {
         hint(game, player);
       }
       break;
-    case '/minidica':
-    case '/minihint':
-      hint(game, player, 'minigame');
+    case "/minidica":
+    case "/minihint":
+      hint(game, player, "minigame");
       break;
-    case '/dicaminusculo':
-    case '/tinyhint':
-      hint(game, player, 'tinygame');
+    case "/dicaminusculo":
+    case "/tinyhint":
+      hint(game, player, "tinygame");
       break;
-    case '/notify':
+    case "/notify":
       if (msg.chat.id === config.masterChat) {
         Game.find({})
-          .select('chat_id')
+          .select("chat_id")
           .then((games) => {
             bot.broadcast(
               games.map(({ chat_id }) => chat_id),
-              msg.text.replace('/notify ', '')
+              msg.text.replace("/notify ", "")
             );
           });
       }
@@ -1916,70 +1855,70 @@ const evaluateCommand = async (res, msg, game, isNew) => {
       }
       break;
       */
-    case '/eu':
-    case '/me':
+    case "/eu":
+    case "/me":
       stats.getStats(
         msg.chat.id,
         {
-          id: 'p_',
+          id: "p_",
         },
         msg.from.id
       );
       break;
-    case '/pontuacao':
-    case '/score':
+    case "/pontuacao":
+    case "/score":
       bot.queueMessage(game.chat_id, await stats.getDailyScores(game));
       break;
-    case '/minijogo':
-    case '/minigame':
+    case "/minijogo":
+    case "/minigame":
       if (!game.minigame.answer) {
         minigame.create(game, msg);
       } else {
-        let message = '<b>Find the connection</b>\n';
+        let message = "<b>Find the connection</b>\n";
         message += game.minigame.lists.reduce((msg, list) => {
           msg += `- ${list}\n`;
           return msg;
-        }, '');
-        message += '\n';
+        }, "");
+        message += "\n";
         message += `<b>${hints.getHint(game.minigame.hints, game.minigame.answer)}</b>`;
         //message += game.minigame.answer.conceal(game.minigame.date < moment().subtract(1, 'hours') ? 'aeoui' : '');
         bot.queueMessage(msg.chat.id, message);
       }
       break;
-    case '/jogominusculo':
-    case '/tinygame':
+    case "/jogominusculo":
+    case "/tinygame":
       if (!game.tinygame.answer) {
         tinygame.create(game, msg);
       } else {
-        let message = '<b>Find the list name</b>\n';
+        let message = "<b>Find the list name</b>\n";
         message += game.tinygame.clues.reduce((msg, clue) => {
           msg += `- ${clue}\n`;
           return msg;
-        }, '');
-        message += '\n';
+        }, "");
+        message += "\n";
         message += `<b>${hints.getHint(game.tinygame.hints, game.tinygame.answer)}</b>`;
         //message += game.tinygame.answer.conceal(game.tinygame.date < moment().subtract(1, 'hours') ? 'aeoui' : '');
         bot.queueMessage(msg.chat.id, message);
       }
       break;
-    case '/categorias':
-    case '/categories':
+    case "/categorias":
+    case "/categories":
       if (game.chat_id != config.groupChat) {
         bot.checkAdmin(game.chat_id, msg.from.id).then((admin) => {
           if (admin) {
-            bot.sendKeyboard(game.chat_id, '<b>Categories</b>', keyboards.categories(game));
+            bot.sendKeyboard(game.chat_id, "<b>Categories</b>", keyboards.categories(game));
           } else {
             bot.queueMessage(game.chat_id, messages.categories(game));
           }
         }, console.error);
       }
       break;
-    case '/confi':
-    case '/settings':
+    case "/confi":
+    case "/settings":
       if (game.chat_id != config.groupChat) {
         bot.checkAdmin(game.chat_id, msg.from.id).then((admin) => {
           if (admin) {
-            bot.sendKeyboard(game.chat_id, '<b>Settings</b>', keyboards.settings(game));
+            bot.sendKeyboard(game.chat_id, "<b>Settings</b>", keyboards.settings(game));
           } else {
             bot.queueMessage(
               game.chat_id,
@@ -1989,9 +1928,9 @@ const evaluateCommand = async (res, msg, game, isNew) => {
         });
       }
       break;
-    case '/check':
+    case "/check":
       if (msg.from.id === config.masterChat) {
-        bot.queueMessage(msg.chat.id, 'Yes, master. Let me send you what you need!');
+        bot.queueMessage(msg.chat.id, "Yes, master. Let me send you what you need!");
         bot.notifyAdmin(
           `Chat id: ${msg.chat.id}\nGame _id: ${game._id}\nSettings:\n${JSON.stringify(
             game.settings
@@ -2001,35 +1940,35 @@ const evaluateCommand = async (res, msg, game, isNew) => {
         );
       }
       break;
-    case '/flush':
+    case "/flush":
       if (msg.from.id === config.masterChat) {
         game.lists = [];
         game.pickedLists = [];
         //game.playedLists = [];
         game.save();
-        bot.queueMessage(msg.chat.id, 'Flushed this chat');
+        bot.queueMessage(msg.chat.id, "Flushed this chat");
       }
       break;
-    case '/ping':
-      bot.queueMessage(msg.chat.id, 'pong');
+    case "/ping":
+      bot.queueMessage(msg.chat.id, "pong");
       break;
-    case '/hello':
-      bot.queueMessage(msg.chat.id, 'You already had me but you got greedy, now you ruined it');
+    case "/hello":
+      bot.queueMessage(msg.chat.id, "You already had me but you got greedy, now you ruined it");
       break;
-    case '/queue':
+    case "/queue":
       getQueue().then((message) => {
         bot.sendMessage(msg.chat.id, message);
       }, console.error);
       break;
-    case '/listas':
-    case '/lists':
+    case "/listas":
+    case "/lists":
       if (game.pickedLists.length > 0) {
         List.find({
           _id: {
             $in: game.pickedLists,
           },
         }).exec((err, upcomingLists) => {
-          let message = '<b>Upcoming lists</b>\n';
+          let message = "<b>Upcoming lists</b>\n";
           for (const list of upcomingLists.slice(0, 10)) {
             message += `- ${list.name}\n`;
           }
@@ -2038,12 +1977,12 @@ const evaluateCommand = async (res, msg, game, isNew) => {
       } else {
         bot.queueMessage(
           msg.chat.id,
-          'There are no lists queued, use the /search [message] command to find some'
+          "There are no lists queued, use the /search [message] command to find some"
         );
       }
       break;
     default:
-      if (game.lastPlayDate <= moment().subtract(30, 'days')) {
+      if (game.lastPlayDate <= moment().subtract(30, "days")) {
         deactivateGame(game);
       } else if (game.enabled && msg.chat.id != config.adminChat) {
         queueGuess(game, msg);
@@ -2060,15 +1999,15 @@ List.updateMany({}, {
   console.log(done);
 });
 */
-router.get('/queue', async (req, res, next) => {
+router.get("/queue", async (req, res, next) => {
   res.json(await getQueue());
 });
 
 module.exports = router;
 
-const sendSuggestion = async (type, msg, player, extraText = '') => {
+const sendSuggestion = async (type, msg, player, extraText = "") => {
   const suggestion = msg.text.substring(msg.command.length + 1, msg.text.length);
-  if (suggestion && suggestion != 'TenThings_Bot' && suggestion != '@TenThings_Bot') {
+  if (suggestion && suggestion != "TenThings_Bot" && suggestion != "@TenThings_Bot") {
     player.suggestions++;
     await player.save();
     let message = `<b>${type.capitalize()}</b>\n${suggestion}${extraText}\n<i>${
@@ -2076,7 +2015,7 @@ const sendSuggestion = async (type, msg, player, extraText = '') => {
     }</i>`;
     bot.notify(message);
     const chatLink = await bot.getChat(msg.chat.id);
-    message += chatLink ? `\nChat: ${chatLink}` : '';
+    message += chatLink ? `\nChat: ${chatLink}` : "";
     bot.notifyAdmins(message);
     message = `<b>${type.capitalize()}</b>\n<i>${suggestion}</i>\nThank you, ${
       player.username ? `@${player.username}` : player.first_name
@@ -2091,12 +2030,12 @@ const sendSuggestion = async (type, msg, player, extraText = '') => {
 };
 
 const checkSkipper = async (game, msg, player) => {
-  if (!vetoes[game.id] || vetoes[game.id] < moment().subtract(VETO_DELAY, 'seconds')) {
+  if (!vetoes[game.id] || vetoes[game.id] < moment().subtract(VETO_DELAY, "seconds")) {
     delete vetoes[game.id];
     if (skippers[player.id]) {
       //Check for spamming if it's the same player
       if (
-        skippers[player.id].lastSkipped < moment().subtract(skippers[player.id].delay, 'seconds')
+        skippers[player.id].lastSkipped < moment().subtract(skippers[player.id].delay, "seconds")
       ) {
         delete skippers[player.id];
       } else {
@@ -2161,7 +2100,7 @@ const activateGame = (game, save = false) => {
   if (!game.enabled) {
     game.lastPlayDate = moment();
     game.enabled = true;
-    bot.sendMessage(game.chat_id, 'Ten Things started');
+    bot.sendMessage(game.chat_id, "Ten Things started");
     if (save) game.save();
   }
 };
@@ -2172,7 +2111,7 @@ const deactivateGame = (game) => {
     game.save();
     bot.sendMessage(
       game.chat_id,
-      'I am now sleeping, type /list or /start to wake me up.\nThis triggers after 30 days of inactivity.'
+      "I am now sleeping, type /list or /start to wake me up.\nThis triggers after 30 days of inactivity."
     );
   }
 };

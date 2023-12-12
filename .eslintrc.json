@@ -22,6 +22,13 @@
         "allowTernary": true
       }
     ],
+    "object-curly-newline": [
+      "error",
+      {
+        "ObjectExpression": { "multiline": true, "minProperties": 3 }
+      }
+    ],
+    "object-property-newline": ["error", { "allowAllPropertiesOnSameLine": true }],
     "radix": ["error", "as-needed"],
     "no-param-reassign": [
       "error",
