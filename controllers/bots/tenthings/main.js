@@ -358,6 +358,7 @@ const queueGuess = async (game, msg) => {
   if (game.tinygame.answer) values.push({ type: "tinygame", value: game.tinygame.answer });
   const text = msg.text.removeAllButLetters();
   const correctMatch = _.find(values, ({ value }) => value.removeAllButLetters() === text);
+  console.log(correctMatch);
   if (correctMatch) {
     return queueingGuess({
       msg,
