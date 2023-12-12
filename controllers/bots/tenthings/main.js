@@ -387,20 +387,24 @@ const queueGuess = async (game, msg) => {
     const fuzzyMatch = new FuzzyMatching(values.map(({ value }) => value.removeAllButLetters()));
     const matchedValue = fuzzyMatch.get(text, { min: 0.75 });
     console.log(matchedValue);
-    const match = _.find(values, ({ value }) => value.removeAllButLetters() === matchedValue.value);
     const guess = {
       msg,
       game: game.chat_id,
       list: game.list._id,
-      match: { ...matchValue, ...match },
+      match: fuzzyMatch.get(text, { min: 0.75 }),
     };
     console.log(`Fuzzy match: ${text} => ${matchedValue.value}`);
     if (guess.match.distance >= 0.75) {
+      const match = {
+        ...guess.match,
+        ..._.find(values, ({ value }) => value.removeAllButLetters() === matchedValue.value),
+      };
       found = true;
       setTimeout(
         async () =>
           queueingGuess({
             ...guess,
+            match,
             player: await getPlayer(game, msg.from),
           }),
         (2000 / 0.25) * (1 - guess.match.distance)
