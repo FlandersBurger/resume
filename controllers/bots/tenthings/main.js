@@ -358,7 +358,6 @@ const queueGuess = async (game, msg) => {
   if (game.tinygame.answer) values.push({ type: "tinygame", value: game.tinygame.answer });
   const text = msg.text.removeAllButLetters();
   const correctMatch = _.find(values, ({ value }) => value.removeAllButLetters() === text);
-  console.log(correctMatch);
   if (correctMatch) {
     return queueingGuess({
       msg,
@@ -395,6 +394,7 @@ const queueGuess = async (game, msg) => {
     };
     console.log(`Fuzzy match: ${text} => ${matchedValue.value}`);
     if (guess.match.distance >= 0.75) {
+      found = true;
       setTimeout(
         async () =>
           queueingGuess({
@@ -435,7 +435,7 @@ const queueingGuess = (guess) => guessQueue.add(guess);
 guessQueue.process(({ data }) => processGuess(data));
 
 const processGuess = (guess) => {
-  console.log(guess.match);
+  console.log(guess);
   return new Promise((resolve, reject) => {
     Game.findOne({
       chat_id: guess.game,
