@@ -400,15 +400,14 @@ const queueGuess = async (game, msg) => {
         ..._.find(values, ({ value }) => value.removeAllButLetters() === matchedValue.value),
       };
       found = true;
-      setTimeout(
-        async () =>
-          queueingGuess({
-            ...guess,
-            match,
-            player: await getPlayer(game, msg.from),
-          }),
-        (2000 / 0.25) * (1 - guess.match.distance)
-      );
+      setTimeout(async () => {
+        console.log("queuing guess", text);
+        queueingGuess({
+          ...guess,
+          match,
+          player: await getPlayer(game, msg.from),
+        });
+      }, (2000 / 0.25) * (1 - guess.match.distance));
     }
   }
   if (!found) sass(game, msg.text, msg.from);
