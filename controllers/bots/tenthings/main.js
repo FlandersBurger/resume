@@ -370,16 +370,18 @@ const queueGuess = async (game, msg) => {
       },
     });
   }
-  const lengths = values.reduce(
-    (lengths, value) => ({
-      longest: lengths.longest < value.length ? value.length : lengths.longest,
-      shortest: lengths.shortest > value.length ? value.length : lengths.shortest,
-    }),
-    {
-      longest: 1,
-      shortest: 1000,
-    }
-  );
+  const lengths = values
+    .map(({ value }) => value.removeAllButLetters())
+    .reduce(
+      (lengths, value) => ({
+        longest: lengths.longest < value.length ? value.length : lengths.longest,
+        shortest: lengths.shortest > value.length ? value.length : lengths.shortest,
+      }),
+      {
+        longest: 1,
+        shortest: 1000,
+      }
+    );
   let found = false;
   if (text.length / lengths.shortest > 0.75 && text.length / lengths.longest < 1.25) {
     const fuzzyMatch = new FuzzyMatching(values.map(({ value }) => value.removeAllButLetters()));
