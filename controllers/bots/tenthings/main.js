@@ -359,6 +359,7 @@ const queueGuess = async (game, msg) => {
   const text = msg.text.removeAllButLetters();
   const correctMatch = _.find(values, ({ value }) => value.removeAllButLetters() === text);
   if (correctMatch) {
+    console.log(`Correct match: ${correctMatch.value}`);
     return queueingGuess({
       msg,
       game: game.chat_id,
@@ -399,6 +400,7 @@ const queueGuess = async (game, msg) => {
         ..._.find(values, ({ value }) => value.removeAllButLetters() === guess.match.value),
       };
       console.log(match);
+      console.log(`Queue in ${(2000 / 0.25) * (1 - match.distance)} ms`);
       found = true;
       setTimeout(async () => {
         console.log("queuing guess", text);
