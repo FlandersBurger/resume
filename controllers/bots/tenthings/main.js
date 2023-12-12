@@ -360,13 +360,12 @@ const queueGuess = async (game, msg) => {
   const correctMatch = _.find(values, ({ value }) => value.removeAllButLetters() === text);
   if (correctMatch) {
     return queueingGuess({
-      type: correctMatch.type,
       msg,
       game: game.chat_id,
       list: game.list._id,
       player: await getPlayer(game, msg.from),
       match: {
-        index: correctMatch,
+        ...correctMatch,
         distance: 1,
       },
     });
@@ -392,6 +391,7 @@ const queueGuess = async (game, msg) => {
       list: game.list._id,
       match: { ...matchValue, ...match },
     };
+    console.log(`Fuzzy match: ${text} => ${matchedValue.value}`);
     if (guess.match.distance >= 0.75) {
       setTimeout(
         async () =>
