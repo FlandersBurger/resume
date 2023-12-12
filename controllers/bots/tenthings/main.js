@@ -384,6 +384,7 @@ const queueGuess = async (game, msg) => {
   if (text.length / lengths.shortest > 0.75 && text.length / lengths.longest < 1.25) {
     const fuzzyMatch = new FuzzyMatching(values.map(({ value }) => value.removeAllButLetters()));
     const matchedValue = fuzzyMatch.get(text, { min: 0.75 });
+    console.log(matchedValue);
     const match = _.find(values, ({ value }) => value.removeAllButLetters() === matchedValue.value);
     const guess = {
       msg,
@@ -433,7 +434,7 @@ const queueingGuess = (guess) => guessQueue.add(guess);
 guessQueue.process(({ data }) => processGuess(data));
 
 const processGuess = (guess) => {
-  console.log(guess);
+  console.log(guess.match);
   return new Promise((resolve, reject) => {
     Game.findOne({
       chat_id: guess.game,
