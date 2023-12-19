@@ -2016,8 +2016,6 @@ router.get("/queue", async (req, res, next) => {
   res.json(await getQueue());
 });
 
-minigame.createMinigames();
-
 module.exports = router;
 
 const sendSuggestion = async (type, msg, player, extraText = "") => {
