@@ -87,6 +87,7 @@ const getAllMinigames = async () => {
 const getMinigames = async (parameters) => {
   let minigames = await Minigame.find(parameters).lean();
   if (minigames.length === 0) minigames = await Minigame.find({}).lean();
+  return minigames;
 };
 
 exports.createMinigames = async () => {
