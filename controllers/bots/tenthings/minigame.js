@@ -1,10 +1,12 @@
 const moment = require("moment");
+const _ = require("underscore");
 
 const bot = require("../../../connections/telegram");
 const messages = require("./messages");
 const hints = require("./hints");
 
 const List = require("../../../models/tenthings/list")();
+const Minigame = require("../../../models/tenthings/minigame")();
 
 const create = async (game, msg) => {
   const availableLanguages =
@@ -52,27 +54,55 @@ const create = async (game, msg) => {
   return true;
 };
 
-const getMinigames = async (parameters) => {
-  let lists = await List.find(parameters).lean();
-  if (lists.length === 0) lists = await List.find({}).lean();
+const getAllMinigames = async () => {
+  const lists = await List.find({}).select("name language values categories").lean();
+  bot.notifyAdmin(`Vetting ${lists.length} lists for minigames`);
   let answers = lists.reduce((answers, list) => {
     for (const value of list.values) {
-      if (!answers[value.value]) answers[value.value] = [list.name];
-      else answers[value.value].push(list.name);
+      const key = `${list.language}-${value.value}`;
+      if (!answers[key]) {
+        answers[key] = {
+          answer: value.value,
+          language: list.language,
+          lists: [list.name],
+          categories: list.categories,
+        };
+      } else {
+        answers[key].lists.push(list.name);
+        answers[key].categories = _.uniq([...answers[key].categories, ...list.categories]);
+      }
     }
     return answers;
   }, {});
   return Object.keys(answers)
-    .reduce((result, answer) => {
-      if (answers[answer] && answers[answer].length > 2) {
-        result.push({
-          answer: answer,
-          lists: answers[answer],
-        });
+    .reduce((result, key) => {
+      if (answers[key] && answers[key].lists.length > 2) {
+        result.push(answers[key]);
       }
       return result;
     }, [])
     .filter((minigame) => minigame.lists && minigame.lists.length > 0);
+};
+
+const getMinigames = async (parameters) => {
+  let minigames = await Minigame.find(parameters).lean();
+  if (minigames.length === 0) minigames = await Minigame.find({}).lean();
+};
+
+exports.createMinigames = async () => {
+  const minigames = await getAllMinigames();
+  minigames.forEach((game) => {
+    Minigame.findOneAndUpdate(
+      { language: game.language, answer: game.answer },
+      game,
+      { new: true, upsert: true },
+      (err, saved) => {
+        if (err) console.error(err);
+        console.log(game.answer);
+      }
+    );
+  });
+  bot.notifyAdmin(`${minigames.length} minigames created`);
 };
 
 // Count the possible minigames

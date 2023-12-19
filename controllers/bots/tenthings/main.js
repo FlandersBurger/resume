@@ -399,11 +399,8 @@ const queueGuess = async (game, msg) => {
         ...guess.match,
         ..._.find(values, ({ value }) => value.removeAllButLetters() === guess.match.value),
       };
-      console.log(match);
-      console.log(`Queue in ${(2000 / 0.25) * (1 - match.distance)} ms`);
       found = true;
       setTimeout(async () => {
-        console.log("queuing guess", text);
         queueingGuess({
           ...guess,
           match,
@@ -1960,6 +1957,11 @@ const evaluateCommand = async (res, msg, game, isNew) => {
         bot.queueMessage(msg.chat.id, "Flushed this chat");
       }
       break;
+    case "/minigames":
+      if (msg.from.id === config.masterChat) {
+        minigame.createMinigames();
+      }
+      break;
     case "/ping":
       bot.queueMessage(msg.chat.id, "pong");
       break;
@@ -2013,6 +2015,8 @@ List.updateMany({}, {
 router.get("/queue", async (req, res, next) => {
   res.json(await getQueue());
 });
+
+minigame.createMinigames();
 
 module.exports = router;
 

@@ -1,28 +1,29 @@
 /*jslint esversion: 10*/
-const schedule = require('node-schedule');
-const _ = require('underscore');
-const moment = require('moment');
-const request = require('request');
-const config = require('../../../config');
-const bot = require('../../../connections/telegram');
-const stats = require('./stats');
-const backup = require('../../../backup-db');
-const List = require('../../../models/tenthings/list')();
-const Joke = require('../../../models/joke')();
-const TenThingsGame = require('../../../models/tenthings/game')();
-const TenThingsPlayer = require('../../../models/tenthings/player')();
-const TenThingsStats = require('../../../models/tenthings/stats')();
+const schedule = require("node-schedule");
+const _ = require("underscore");
+const moment = require("moment");
+const request = require("request");
+const config = require("../../../config");
+const bot = require("../../../connections/telegram");
+const stats = require("./stats");
+const minigame = require("./minigame");
+const backup = require("../../../backup-db");
+const List = require("../../../models/tenthings/list")();
+const Joke = require("../../../models/joke")();
+const TenThingsGame = require("../../../models/tenthings/game")();
+const TenThingsPlayer = require("../../../models/tenthings/player")();
+const TenThingsStats = require("../../../models/tenthings/stats")();
 
 const resetDailyScore = (force = false) => {
   if (moment().utc().hour() === 1 || force) {
-    bot.notifyAdmin(`Score Reset Triggered; ${moment().format('DD-MMM-YYYY hh:mm')}`);
+    bot.notifyAdmin(`Score Reset Triggered; ${moment().format("DD-MMM-YYYY hh:mm")}`);
     TenThingsGame.find({
       lastPlayDate: {
-        $gte: moment().subtract(1, 'days'),
+        $gte: moment().subtract(1, "days"),
       },
     })
-      .select('chat_id list hints')
-      .populate('list.creator')
+      .select("chat_id list hints")
+      .populate("list.creator")
       .then(
         async (games) => {
           const uniquePlayers = [];
@@ -31,11 +32,11 @@ const resetDailyScore = (force = false) => {
               $gt: 0,
             },
             lastPlayDate: {
-              $gte: moment().subtract(1, 'days'),
+              $gte: moment().subtract(1, "days"),
             },
           })
             .lean()
-            .select('_id id')
+            .select("_id id")
             .exec();
           for (let game of games) {
             bot.queueMessage(game.chat_id, await stats.getDailyScores(game));
@@ -45,10 +46,10 @@ const resetDailyScore = (force = false) => {
                 $gt: 0,
               },
               lastPlayDate: {
-                $gte: moment().subtract(1, 'days'),
+                $gte: moment().subtract(1, "days"),
               },
             })
-              .select('_id id scoreDaily first_name')
+              .select("_id id scoreDaily first_name")
               .exec();
             const highScore = await getHighScore(players);
             let winners = players.filter((player) => player.scoreDaily === highScore);
@@ -59,14 +60,14 @@ const resetDailyScore = (force = false) => {
                 msg += first_name;
               }
               return msg;
-            }, '');
+            }, "");
             bot.queueMessage(
               game.chat_id,
               `<b>${message} won with ${highScore} points!</b>\n\nThanks for playing! I gotta say it warms my heart knowing the game is getting popular and I want to keep it going.\nHowever, the game costs me money to host so if you\'re feeling generous and want to support Ten Things then please consider giving me a donation.\nYour gratitude won\'t go unnoticed :)\n\n - <a href="https://paypal.me/tenthingsgame">Paypal</a>\nIf you want to support me in another way just shoot me a message -> FlandersBurger\n
 							${
                 game.chat_id != config.groupChat
                   ? '\n\nCome join us in the <a href="https://t.me/tenthings">Ten Things Supergroup</a>!'
-                  : ''
+                  : ""
               }`
               /*
 							`<b>${message} won with ${highScore} points!</b>${
@@ -123,20 +124,20 @@ const resetDailyScore = (force = false) => {
               game.hints = 4;
             }
             message = `<b>${game.list.name}</b> (${game.list.totalValues})`;
-            message += game.list.creator ? ` by ${game.list.creator.username}\n` : '\n';
+            message += game.list.creator ? ` by ${game.list.creator.username}\n` : "\n";
             if (game.list.categories) {
               message +=
                 game.list.categories.length > 0
-                  ? `Categor${game.list.categories.length > 1 ? 'ies' : 'y'}: <b>${
+                  ? `Categor${game.list.categories.length > 1 ? "ies" : "y"}: <b>${
                       game.list.categories
                     }</b>\n`
-                  : '';
+                  : "";
             }
             message += game.list.description
-              ? game.list.description.includes('href')
+              ? game.list.description.includes("href")
                 ? game.list.description
                 : `<i>${angleBrackets(game.list.description)}</i>\n`
-              : '';
+              : "";
             stats.getList(game, (list) => bot.queueMessage(game.chat_id, message + list));
             game.save();
           }
@@ -152,11 +153,11 @@ const resetDailyScore = (force = false) => {
         }
       );
   } else {
-    bot.notifyAdmin(`Schedule incorrectly triggered: ${moment().format('DD-MMM-YYYY hh:mm')}`);
+    bot.notifyAdmin(`Schedule incorrectly triggered: ${moment().format("DD-MMM-YYYY hh:mm")}`);
   }
 };
 //resetDailyScore(true);
-const backupDatabase = schedule.scheduleJob('0 0 21 * * *', () => {
+const backupDatabase = schedule.scheduleJob("0 0 21 * * *", () => {
   backup().then(
     () => {
       bot.notifyAdmin(`Database backed up successfuly`);
@@ -181,7 +182,7 @@ const getHighScore = (players) =>
   });
 
 function angleBrackets(str) {
-  return str.replace('<', '&lt;').replace('>', '&gt;');
+  return str.replace("<", "&lt;").replace(">", "&gt;");
 }
 
 function getChat(chat, delay) {
@@ -212,19 +213,19 @@ const updateDailyStats = async (games, totalPlayers, uniquePlayers) => {
         plays: 1,
         votes: {
           $size: {
-            $ifNull: ['$votes', []],
+            $ifNull: ["$votes", []],
           },
         },
       },
     },
     {
       $group: {
-        _id: 'total',
+        _id: "total",
         plays: {
-          $sum: '$plays',
+          $sum: "$plays",
         },
         votes: {
-          $sum: '$votes',
+          $sum: "$votes",
         },
       },
     },
@@ -232,39 +233,39 @@ const updateDailyStats = async (games, totalPlayers, uniquePlayers) => {
   const playerStats = await TenThingsPlayer.aggregate([
     {
       $group: {
-        _id: 'total',
+        _id: "total",
         hints: {
-          $sum: '$hints',
+          $sum: "$hints",
         },
         score: {
-          $sum: '$score',
+          $sum: "$score",
         },
         highScore: {
-          $max: '$scoreDaily',
+          $max: "$scoreDaily",
         },
         scoreDaily: {
-          $sum: '$scoreDaily',
+          $sum: "$scoreDaily",
         },
         answers: {
-          $sum: '$answers',
+          $sum: "$answers",
         },
         snubs: {
-          $sum: '$snubs',
+          $sum: "$snubs",
         },
         skips: {
-          $sum: '$skips',
+          $sum: "$skips",
         },
         suggestions: {
-          $sum: '$suggestions',
+          $sum: "$suggestions",
         },
         searches: {
-          $sum: '$searches',
+          $sum: "$searches",
         },
         minigamePlays: {
-          $sum: '$minigamePlays',
+          $sum: "$minigamePlays",
         },
         tinygamePlays: {
-          $sum: '$tinygamePlays',
+          $sum: "$tinygamePlays",
         },
       },
     },
@@ -308,7 +309,7 @@ const updateDailyStats = async (games, totalPlayers, uniquePlayers) => {
   });
   dailyStats.save((err) => {
     if (err) return bot.notifyAdmin(`Daily stat save issue\n${err}`);
-    bot.notifyAdmin('Daily Stats Updated!');
+    bot.notifyAdmin("Daily Stats Updated!");
     base.listsPlayed = listStats[0].plays;
     base.hints = playerStats[0].hints;
     base.score = playerStats[0].score;
@@ -322,7 +323,7 @@ const updateDailyStats = async (games, totalPlayers, uniquePlayers) => {
     base.tinygamePlays = playerStats[0].tinygamePlays;
     base.save((err) => {
       if (err) return bot.notifyAdmin(`Base stat update issue\n${err}`);
-      bot.notifyAdmin('Base Stats Updated!');
+      bot.notifyAdmin("Base Stats Updated!");
     });
   });
 };
@@ -345,18 +346,7 @@ const updateDailyStats = async (games, totalPlayers, uniquePlayers) => {
   });
 */
 
-if (process.env.NODE_ENV === 'production') {
-  //const pingBoozeCruise = schedule.scheduleJob('0 */25 * * * *', () => {
-  /*
-    request({
-      method: 'GET',
-      url: 'https://booze-cruise.herokuapp.com/api/ping'
-    }, (err, response, body) => {
-      console.log(body);
-      //bot.queueMessage('-1001399879250', 'Ping-Pong');
-    });
-  });
-  */
+if (process.env.NODE_ENV === "production") {
   /*
   const getJoke = schedule.scheduleJob('0 0 0 * * *', () => {
     request({
@@ -420,26 +410,26 @@ if (process.env.NODE_ENV === 'production') {
     });
   }*/
 
-  const newLists = schedule.scheduleJob('0 0 12 * * *', () => {
+  const newLists = schedule.scheduleJob("0 0 12 * * *", () => {
     List.find({
       date: {
-        $gte: moment().subtract(1, 'days'),
+        $gte: moment().subtract(1, "days"),
       },
     })
-      .select('name')
+      .select("name")
       .lean()
       .then((lists) => {
         if (lists.length > 0) {
-          let message = '<b>New lists created today</b>';
+          let message = "<b>New lists created today</b>";
           lists.forEach(({ name }) => {
             message += `\n- ${name}`;
           });
-          message += '\n<i>Switch off daily updates through /settings</i>';
+          message += "\n<i>Switch off daily updates through /settings</i>";
           TenThingsGame.find({
-            'settings.updates': true,
+            "settings.updates": true,
             enabled: true,
           })
-            .select('chat_id')
+            .select("chat_id")
             .then((games) => {
               bot.broadcast(
                 games.map((game) => game.chat_id),
@@ -448,7 +438,7 @@ if (process.env.NODE_ENV === 'production') {
               bot.notifyAdmins(message);
             });
         } else {
-          bot.notifyAdmin('No lists created');
+          bot.notifyAdmin("No lists created");
         }
       });
   });
@@ -496,7 +486,7 @@ if (process.env.NODE_ENV === 'production') {
   //bot.sendPhoto(config.masterChat, 'https://m.media-amazon.com/images/M/MV5BNmE1OWI2ZGItMDUyOS00MmU5LWE0MzUtYTQ0YzA1YTE5MGYxXkEyXkFqcGdeQXVyMDM5ODIyNw@@._V1._SX40_CR0,0,40,54_.jpg')
 
   //var dailyScore = schedule.scheduleJob('*/10 * * * * *', function() {
-  const dailyScore = schedule.scheduleJob('0 2 1 * * *', resetDailyScore);
+  const dailyScore = schedule.scheduleJob("0 2 1 * * *", resetDailyScore);
   //resetDailyScore()
   /*
   const deleteStaleGames = schedule.scheduleJob('0 0 4 * * *', () => {
@@ -577,14 +567,14 @@ if (process.env.NODE_ENV === 'production') {
   });
   */
 
-  const updatePlayStreak = schedule.scheduleJob('0 0 2 * * *', () => {
+  const updatePlayStreak = schedule.scheduleJob("0 0 2 * * *", () => {
     //Update play streaks
     TenThingsPlayer.find({
       playStreak: {
         $gt: 0,
       },
     })
-      .select('game playStreak maxPlayStreak lastPlayDate')
+      .select("game playStreak maxPlayStreak lastPlayDate")
       .then((players) => {
         const uniqueGames = _.uniq(players.map((player) => player.game));
         if (players.length > 0)
@@ -594,7 +584,7 @@ if (process.env.NODE_ENV === 'production') {
             if (player.playStreak > player.maxPlayStreak) {
               player.maxPlayStreak = player.playStreak;
             }
-            if (player.lastPlayDate <= moment().subtract(1, 'days')) {
+            if (player.lastPlayDate <= moment().subtract(1, "days")) {
               player.playStreak = 0;
             }
           }
@@ -606,5 +596,9 @@ if (process.env.NODE_ENV === 'production') {
       });
   });
 } else {
-  console.log('Schedules only run on production');
+  console.log("Schedules only run on production");
 }
+
+const createMinigames = schedule.scheduleJob("0 0 3 * * *", () => {
+  minigame.createMinigames();
+});
