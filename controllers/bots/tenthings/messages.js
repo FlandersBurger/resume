@@ -783,7 +783,7 @@ module.exports = {
       ) {
         messages = ["Ghostbusters"];
       } else if (
-        checkString(text, "who") &&
+        checkString(text, "who's") &&
         checkString(text, "your") &&
         checkString(text, "daddy")
       ) {

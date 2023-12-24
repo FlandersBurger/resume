@@ -1497,7 +1497,7 @@ router.post("/", async ({ body, get }, res, next) => {
           msg.command = msg.command.substring(0, msg.command.indexOf("@"));
           if (!existingGame.enabled && !["/list", "/start"].includes(msg.command.toLowerCase())) {
             bot.sendMessage(
-              game.chat_id,
+              msg.chat.id,
               "I'm sleeping, type /list or /start to wake me up.\nI go to sleep after 30 days of inactivity."
             );
             return res.sendStatus(200);
