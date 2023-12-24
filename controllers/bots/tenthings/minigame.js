@@ -99,7 +99,6 @@ exports.createMinigames = async () => {
       { new: true, upsert: true },
       (err, saved) => {
         if (err) console.error(err);
-        console.log(game.answer);
       }
     );
   });

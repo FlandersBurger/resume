@@ -359,7 +359,6 @@ const queueGuess = async (game, msg) => {
   const text = msg.text.removeAllButLetters();
   const correctMatch = _.find(values, ({ value }) => value.removeAllButLetters() === text);
   if (correctMatch) {
-    console.log(`Correct match: ${correctMatch.value}`);
     return queueingGuess({
       msg,
       game: game.chat_id,
@@ -394,7 +393,6 @@ const queueGuess = async (game, msg) => {
       match: matchedValue,
     };
     if (guess.match.distance >= 0.75) {
-      console.log(`Fuzzy match: ${text} => ${guess.match.value}, ${guess.match.distance}`);
       const match = {
         ...guess.match,
         ..._.find(values, ({ value }) => value.removeAllButLetters() === guess.match.value),
@@ -1462,10 +1460,11 @@ router.post("/", async ({ body, get }, res, next) => {
       chat: body.message.chat,
     };
   }
-  if (msg.command.includes("@")) {
-    if (msg.command.substring(msg.command.indexOf("@") + 1) !== "TenThings_Bot")
-      return res.sendStatus(200);
-    msg.command = msg.command.substring(0, msg.command.indexOf("@"));
+  if (
+    msg.command.includes("@") &&
+    msg.command.substring(msg.command.indexOf("@") + 1) !== "TenThings_Bot"
+  ) {
+    return res.sendStatus(200);
   }
   try {
     if (!msg.from || !msg.from.id) {
@@ -1486,6 +1485,16 @@ router.post("/", async ({ body, get }, res, next) => {
       if (err) {
         bot.notifyAdmin(`Error finding game: ${msg.chat.id}`);
         return next(err);
+      }
+      if (msg.command.includes("@")) {
+        msg.command = msg.command.substring(0, msg.command.indexOf("@"));
+        if (!game.enabled && !["/list", "/start"].includes(msg.command.toLowerCase())) {
+          bot.sendMessage(
+            game.chat_id,
+            "I'm sleeping, type /list or /start to wake me up.\nI go to sleep after 30 days of inactivity."
+          );
+          return res.sendStatus(200);
+        }
       }
       if (!existingGame) {
         createGame(msg.chat.id).then((newGame) => {
