@@ -1486,16 +1486,6 @@ router.post("/", async ({ body, get }, res, next) => {
         bot.notifyAdmin(`Error finding game: ${msg.chat.id}`);
         return next(err);
       }
-      if (msg.command.includes("@")) {
-        msg.command = msg.command.substring(0, msg.command.indexOf("@"));
-        if (!game.enabled && !["/list", "/start"].includes(msg.command.toLowerCase())) {
-          bot.sendMessage(
-            game.chat_id,
-            "I'm sleeping, type /list or /start to wake me up.\nI go to sleep after 30 days of inactivity."
-          );
-          return res.sendStatus(200);
-        }
-      }
       if (!existingGame) {
         createGame(msg.chat.id).then((newGame) => {
           if (err) bot.notifyAdmin("POST: " + JSON.stringify(err) + "\n" + JSON.stringify(game));
@@ -1503,6 +1493,16 @@ router.post("/", async ({ body, get }, res, next) => {
           return evaluateCommand(res, msg, newGame, true);
         });
       } else {
+        if (msg.command.includes("@")) {
+          msg.command = msg.command.substring(0, msg.command.indexOf("@"));
+          if (!existingGame.enabled && !["/list", "/start"].includes(msg.command.toLowerCase())) {
+            bot.sendMessage(
+              game.chat_id,
+              "I'm sleeping, type /list or /start to wake me up.\nI go to sleep after 30 days of inactivity."
+            );
+            return res.sendStatus(200);
+          }
+        }
         return evaluateCommand(res, msg, existingGame, false);
       }
     });
