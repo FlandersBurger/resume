@@ -70,7 +70,7 @@ exports.check = async (game, player, guess, msg) => {
   await game.save();
   let message = `Tinygame answer guessed! (${(guess.match.distance * 100).toFixed(0)}%)\n`;
   message += messages.guessed(game.tinygame.answer, msg.from.first_name);
-  message += `\n<pre>${player.scoreDaily - score} + ${score} points</pre>`;
+  message += `\n<u>${player.scoreDaily - score} + ${score} points</u>`;
   bot.queueMessage(msg.chat.id, message);
   return await create(game, msg);
 };

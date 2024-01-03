@@ -216,8 +216,12 @@ module.exports = {
     message += "<b>Stats for " + list.name + "</b>\n";
     message += "Score: " + list.score.makePercentage() + "\n";
     message += "Votes: " + list.votes.length + "\n";
+    message += "Upvotes: " + list.votes.filter(({ vote }) => vote > 0).length + "\n";
+    message += "Downvotes: " + list.votes.filter(({ vote }) => vote < 0).length + "\n";
     message += "Values: " + list.values.length + "\n";
     message += "Plays: " + list.plays + "\n";
+    if (list.plays)
+      message += "Play Ratio: " + ((list.plays - list.skips) / list.plays).makePercentage() + "\n";
     message += "Skips: " + list.skips + "\n";
     message += "Hints: " + list.hints + "\n";
     message += "Created on: " + moment(list.date).format("DD-MMM-YYYY") + "\n";

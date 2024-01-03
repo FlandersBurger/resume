@@ -438,12 +438,12 @@ router.put('/lists', (req, res, next) => {
           if (err) return next(err);
           if (!req.body.list._id) {
             bot.notifyAdmins(
-              `<pre>List Created</pre>\n${messages.listInfo(foundList)}`,
+              `<u>List Created</u>\n${messages.listInfo(foundList)}`,
               keyboards.curate(foundList)
             );
           } else if (previousModifyDate < yesterday) {
             bot.notifyAdmins(
-              `<pre>List Updated</pre>\nUpdated by <i>${
+              `<u>List Updated</u>\nUpdated by <i>${
                 req.body.user.username
               }</i>\n${messages.listInfo(foundList)}`,
               keyboards.curate(foundList)

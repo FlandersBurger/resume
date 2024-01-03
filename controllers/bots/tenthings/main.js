@@ -630,7 +630,7 @@ const guessed = async (
   let message = messages.guessed(value.angleBrackets(), first_name);
   message += messages.streak(game.streak.count);
   message += blurb;
-  message += `\n<pre>${scoreDaily - score} + ${score} points (${accuracy})</pre>`;
+  message += `\n<u>${scoreDaily - score} + ${score} points (${accuracy})</u>`;
   const answersLeft = game.list.values.filter(({ guesser }) => !guesser.first_name);
   if (answersLeft.length > 0) {
     message += `\n<b>${game.list.name}</b>`;
