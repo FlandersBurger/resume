@@ -1,37 +1,37 @@
-const router = require('express').Router();
-const mongoose = require('mongoose');
-const request = require('request-promise');
-const moment = require('moment');
-const _ = require('underscore');
-const parseString = require('xml2js').parseStringPromise;
-const FuzzyMatching = require('fuzzy-matching');
+const router = require("express").Router();
+const mongoose = require("mongoose");
+const request = require("request-promise");
+const moment = require("moment");
+const _ = require("underscore");
+const parseString = require("xml2js").parseStringPromise;
+const FuzzyMatching = require("fuzzy-matching");
 
-const config = require('../../config');
-const redis = require('../../redis');
-const bot = require('../../connections/telegram');
-const messages = require('../bots/tenthings/messages');
-const keyboards = require('../bots/tenthings/keyboards');
-const categories = require('../bots/tenthings/categories');
-const languages = require('../bots/tenthings/languages');
-const lists = require('../bots/tenthings/lists');
+const config = require("../../config");
+const redis = require("../../redis");
+const bot = require("../../connections/telegram");
+const messages = require("../bots/tenthings/messages");
+const keyboards = require("../bots/tenthings/keyboards");
+const categories = require("../bots/tenthings/categories");
+const languages = require("../bots/tenthings/languages");
+const lists = require("../bots/tenthings/lists");
 // const Spotify = require('../../connections/spotify');
 // const spotify = new Spotify();
 // spotify.init();
 
-const User = require('../../models/user')();
-const TenThingsList = require('../../models/tenthings/list')();
-const TenThingsGame = require('../../models/tenthings/game')();
-const TenThingsPlayer = require('../../models/tenthings/player')();
+const User = require("../../models/user")();
+const TenThingsList = require("../../models/tenthings/list")();
+const TenThingsGame = require("../../models/tenthings/game")();
+const TenThingsPlayer = require("../../models/tenthings/player")();
 
-router.get('/games', (req, res, next) => {
-  if (!req.auth || req.auth.userid == '5ece428af848aa2fc392d099') {
+router.get("/games", (req, res, next) => {
+  if (!req.auth || req.auth.userid == "5ece428af848aa2fc392d099") {
     return res.sendStatus(401);
   }
   TenThingsGame.find({
-    lastPlayDate: { $gt: '2019-06-15T00:00:00.000Z' },
+    lastPlayDate: { $gt: "2019-06-15T00:00:00.000Z" },
     ...req.body.query,
   })
-    .select('_id chat_id enabled date lastPlayDate')
+    .select("_id chat_id enabled date lastPlayDate")
     .limit(parseInt(req.query.limit || 0))
     .skip(parseInt(req.query.limit * (req.query.page - 1) || 0))
     .exec((err, result) => {
@@ -43,8 +43,8 @@ router.get('/games', (req, res, next) => {
     });
 });
 
-router.get('/players/:id', (req, res, next) => {
-  if (!req.auth || req.auth.userid == '5ece428af848aa2fc392d099') {
+router.get("/players/:id", (req, res, next) => {
+  if (!req.auth || req.auth.userid == "5ece428af848aa2fc392d099") {
     return res.sendStatus(401);
   }
   TenThingsPlayer.find({
@@ -55,34 +55,34 @@ router.get('/players/:id', (req, res, next) => {
   });
 });
 
-router.get('/names', (req, res, next) => {
+router.get("/names", (req, res, next) => {
   TenThingsList.find({})
-    .select('_id name')
+    .select("_id name")
     .exec((err, result) => {
       if (err) return next(err);
       res.json(result);
     });
 });
 
-router.get('/categories', (req, res, next) => {
+router.get("/categories", (req, res, next) => {
   res.json(categories);
 });
 
-router.get('/languages', (req, res, next) => {
+router.get("/languages", (req, res, next) => {
   res.json(languages);
 });
 
-router.get('/lists', (req, res, next) => {
-  if (!req.auth || req.auth.userid == '5ece428af848aa2fc392d099') {
+router.get("/lists", (req, res, next) => {
+  if (!req.auth || req.auth.userid == "5ece428af848aa2fc392d099") {
     return res.sendStatus(401);
   }
   TenThingsList.find({})
     .select(
-      '_id plays skips score values date modifyDate creator name description categories language isDynamic frequency difficulty'
+      "_id plays skips score values date modifyDate creator name description categories language isDynamic frequency difficulty"
     )
     .limit(parseInt(req.query.limit || 0))
     .skip(parseInt(req.query.limit * (req.query.page - 1) || 0))
-    .populate('creator', 'username')
+    .populate("creator", "username")
     .lean({
       virtuals: true,
     })
@@ -93,29 +93,29 @@ router.get('/lists', (req, res, next) => {
     });
 });
 
-router.get('/lists/:id/report/:user', (req, res, next) => {
+router.get("/lists/:id/report/:user", (req, res, next) => {
   TenThingsList.findOne({
     _id: req.params.id,
   }).exec((err, list) => {
     User.findOne({
       _id: req.params.user,
     }).exec((err, user) => {
-      bot.notifyAdmins('Check: ' + list.name + ' reported by ' + user.username);
+      bot.notifyAdmins("Check: " + list.name + " reported by " + user.username);
     });
   });
 });
 
-router.get('/lists/:id', (req, res, next) => {
+router.get("/lists/:id", (req, res, next) => {
   TenThingsList.findOne({
     _id: req.params.id,
   })
-    .populate('creator', '_id username displayName')
-    .populate('values.creator', '_id username displayName')
+    .populate("creator", "_id username displayName")
+    .populate("values.creator", "_id username displayName")
     .lean({ virtuals: true })
-    .exec((err, list) => res.json({ ...list, totalVotes: list.votes ? list.votes.length : 0 }));
+    .exec((err, list) => res.json({ ...list, votes: list.votes || [] }));
 });
 
-router.get('/lists/:id/movies', async (req, res, next) => {
+router.get("/lists/:id/movies", async (req, res, next) => {
   let list = await TenThingsList.findOne({
     _id: req.params.id,
   });
@@ -150,7 +150,7 @@ router.get('/lists/:id/movies', async (req, res, next) => {
   }
 });
 
-router.get('/lists/:id/tv', async (req, res, next) => {
+router.get("/lists/:id/tv", async (req, res, next) => {
   let list = await TenThingsList.findOne({
     _id: req.params.id,
   });
@@ -185,7 +185,7 @@ router.get('/lists/:id/tv', async (req, res, next) => {
   }
 });
 
-router.get('/lists/:id/actors', async (req, res, next) => {
+router.get("/lists/:id/actors", async (req, res, next) => {
   let list = await TenThingsList.findOne({
     _id: req.params.id,
   });
@@ -220,7 +220,7 @@ router.get('/lists/:id/actors', async (req, res, next) => {
   }
 });
 
-router.get('/lists/:id/books', async (req, res, next) => {
+router.get("/lists/:id/books", async (req, res, next) => {
   let list = await TenThingsList.findOne({
     _id: req.params.id,
   });
@@ -228,7 +228,7 @@ router.get('/lists/:id/books', async (req, res, next) => {
     let changed = false;
     for (let value of list.values) {
       if (!value.blurb) {
-        const author = list.name.indexOf('Written by ') === 0 ? list.name.substring(11) : '';
+        const author = list.name.indexOf("Written by ") === 0 ? list.name.substring(11) : "";
         const goodreadsDB = await request(
           `https://www.goodreads.com/search/index.xml?key=${
             config.tokens.goodreadsapi
@@ -238,7 +238,7 @@ router.get('/lists/:id/books', async (req, res, next) => {
           const parsedXML = await parseString(goodreadsDB);
           const posterPath = await parsedXML.GoodreadsResponse.search[0].results[0].work[0]
             .best_book[0].image_url[0];
-          if (posterPath && posterPath.indexOf('nophoto') < 0) {
+          if (posterPath && posterPath.indexOf("nophoto") < 0) {
             value.blurb = posterPath;
           }
           changed = true;
@@ -258,20 +258,20 @@ router.get('/lists/:id/books', async (req, res, next) => {
   }
 });
 
-router.get('/lists/:id/musicvideos', async (req, res, next) => {
+router.get("/lists/:id/musicvideos", async (req, res, next) => {
   let list = await TenThingsList.findOne({
     _id: req.params.id,
   });
   if (list) {
     let changed = false;
-    const artist = list.name.substring(0, list.name.indexOf(' - ')).replace(/\s/, '+');
+    const artist = list.name.substring(0, list.name.indexOf(" - ")).replace(/\s/, "+");
     for (let value of list.values) {
       if (!value.blurb) {
         const youtubeDB = await request(
           `https://www.googleapis.com/youtube/v3/search?key=${
             config.tokens.youtubeapi
           }&order=relevance&videoDefinition=high&type=video&maxResults=1&part=snippet&q=${artist}+VEVO+${encodeURIComponent(
-            value.value.replace(' ', '+')
+            value.value.replace(" ", "+")
           )}`
         );
         try {
@@ -297,7 +297,7 @@ router.get('/lists/:id/musicvideos', async (req, res, next) => {
 });
 
 const getWikiImage = async (query) => {
-  let url = '';
+  let url = "";
   try {
     const wikiDB = await request(
       `https://en.wikipedia.org/w/api.php?action=query&format=json&prop=images&titles=Earth&generator=prefixsearch&gpssearch=${encodeURIComponent(
@@ -314,22 +314,22 @@ const getWikiImage = async (query) => {
           page.images &&
           page.images.filter(
             (image) =>
-              ['jpg', 'jpeg', 'png'].indexOf(
-                image.title.substring(image.title.lastIndexOf('.') + 1).toLowerCase()
+              ["jpg", "jpeg", "png"].indexOf(
+                image.title.substring(image.title.lastIndexOf(".") + 1).toLowerCase()
               ) >= 0
           ).length > 0
       );
-    let filename = '';
+    let filename = "";
     const fuzzyMatchPages = new FuzzyMatching(pages.map((page) => page.lean));
     const matchPage = fuzzyMatchPages.get(query.removeAllButLetters(), {});
     const page = _.find(pages, (page) => page.lean === matchPage.value);
     const images = page.images
       .map((image) => ({
         ...image,
-        lean: image.title.substring(4, image.title.lastIndexOf('.')).removeAllButLetters(),
-        ext: image.title.substring(image.title.lastIndexOf('.') + 1).toLowerCase(),
+        lean: image.title.substring(4, image.title.lastIndexOf(".")).removeAllButLetters(),
+        ext: image.title.substring(image.title.lastIndexOf(".") + 1).toLowerCase(),
       }))
-      .filter((image) => ['jpg', 'jpeg', 'png'].indexOf(image.ext) >= 0);
+      .filter((image) => ["jpg", "jpeg", "png"].indexOf(image.ext) >= 0);
     const fuzzyMatchImages = new FuzzyMatching(images.map((image) => image.lean));
     const matchImage = fuzzyMatchImages.get(query.removeAllButLetters(), {});
     const image = _.find(images, (image) => image.lean === matchImage.value);
@@ -341,7 +341,7 @@ const getWikiImage = async (query) => {
   return url;
 };
 
-router.get('/lists/:id/pics', async (req, res, next) => {
+router.get("/lists/:id/pics", async (req, res, next) => {
   let list = await TenThingsList.findOne({
     _id: req.params.id,
   });
@@ -349,7 +349,7 @@ router.get('/lists/:id/pics', async (req, res, next) => {
     let changed = false;
     for (let value of list.values) {
       if (!value.blurb) {
-        let picPath = '';
+        let picPath = "";
         try {
           picPath = await getWikiImage(value.value);
           console.log(picPath);
@@ -359,7 +359,7 @@ router.get('/lists/:id/pics', async (req, res, next) => {
             const unsplashDB = await request(
               `https://api.unsplash.com/search/photos?client_id=${
                 config.tokens.unsplashapi.key
-              }&query=${encodeURIComponent(value.value.replace(' ', '+'))}`
+              }&query=${encodeURIComponent(value.value.replace(" ", "+"))}`
             );
             picPath = JSON.parse(unsplashDB).results[0].urls.regular;
           } catch (e) {
@@ -383,7 +383,7 @@ router.get('/lists/:id/pics', async (req, res, next) => {
   }
 });
 
-router.get('/game/:id', async (req, res, next) => {
+router.get("/game/:id", async (req, res, next) => {
   const game = await TenThingsGame.findOne({ chat_id: req.params.id }).lean();
   const players = await TenThingsPlayer.find({ game: game._id }).lean();
   res.json({
@@ -392,8 +392,8 @@ router.get('/game/:id', async (req, res, next) => {
   });
 });
 
-router.post('/lists/:id', (req, res, next) => {
-  if (!req.auth || req.auth.userid == '5ece428af848aa2fc392d099') {
+router.post("/lists/:id", (req, res, next) => {
+  if (!req.auth || req.auth.userid == "5ece428af848aa2fc392d099") {
     return res.sendStatus(401);
   }
   TenThingsList.findOne({
@@ -412,11 +412,11 @@ router.post('/lists/:id', (req, res, next) => {
   });
 });
 
-router.put('/lists', (req, res, next) => {
-  if (req.auth.userid == '5ece428af848aa2fc392d099') {
+router.put("/lists", (req, res, next) => {
+  if (req.auth.userid == "5ece428af848aa2fc392d099") {
     return res.sendStatus(401);
   }
-  var yesterday = moment().subtract(1, 'days');
+  var yesterday = moment().subtract(1, "days");
   var previousModifyDate = moment(req.body.list.modifyDate);
   req.body.list.modifyDate = new Date();
   req.body.list.search = req.body.list.name.removeAllButLetters();
@@ -433,7 +433,7 @@ router.put('/lists', (req, res, next) => {
       TenThingsList.findOne({
         _id: list._id,
       })
-        .populate('creator')
+        .populate("creator")
         .exec((err, foundList) => {
           if (err) return next(err);
           if (!req.body.list._id) {
@@ -455,7 +455,7 @@ router.put('/lists', (req, res, next) => {
   );
 });
 
-router.delete('/lists/:id', (req, res, next) => {
+router.delete("/lists/:id", (req, res, next) => {
   User.findOne({
     _id: req.auth.userid,
   }).exec((err, user) => {
@@ -497,23 +497,23 @@ router.delete('/lists/:id', (req, res, next) => {
   });
 });
 
-router.post('/', (req, res, next) => {
+router.post("/", (req, res, next) => {
   console.log(req.body);
   res.sendStatus(200);
 });
 
-router.post('/pause', (req, res, next) => {
-  redis.get('pause').then((value) => {
-    const pause = value === 'true';
+router.post("/pause", (req, res, next) => {
+  redis.get("pause").then((value) => {
+    const pause = value === "true";
     bot.notifyAdmin(`Pause = ${!pause}`);
-    redis.set('pause', !pause);
+    redis.set("pause", !pause);
     res.json(!pause);
   });
 });
 
-router.get('/pause', (req, res, next) => {
-  redis.get('pause').then((value) => {
-    res.json(value === 'true');
+router.get("/pause", (req, res, next) => {
+  redis.get("pause").then((value) => {
+    res.json(value === "true");
   });
 });
 

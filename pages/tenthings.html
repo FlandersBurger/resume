@@ -339,8 +339,9 @@
             {{formatDate(selectedList.date)}} ---
             <span ng-show="selectedList.plays"
               >Plays: {{selectedList.plays}} / Skips: {{selectedList.skips}} / Score:
-              {{selectedList.score.makePercentage()}} / Hints: {{selectedList.hints}} / Votes:
-              {{selectedList.totalVotes}}</span
+              {{selectedList.score.makePercentage()}} / Hints: {{selectedList.hints}} / Upvotes:
+              {{selectedList.votes.filter(({vote}) => vote > 0)}} / Downvotes:
+              {{selectedList.votes.filter(({vote}) => vote < 0)}}</span
             >
           </h5>
           <div class="input-group" ng-if="loggedIn">
