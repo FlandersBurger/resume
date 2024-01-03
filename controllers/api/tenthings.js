@@ -112,7 +112,15 @@ router.get("/lists/:id", (req, res, next) => {
     .populate("creator", "_id username displayName")
     .populate("values.creator", "_id username displayName")
     .lean({ virtuals: true })
-    .exec((err, list) => res.json({ ...list, votes: list.votes || [] }));
+    .exec((err, list) =>
+      res.json({
+        ...list,
+        upvotes: list.votes?.filter(({ vote }) => vote > 0).length || 0,
+        downvotes: list.votes?.filter(({ vote }) => vote < 0).length || 0,
+        playRatio: list.plays ? (list.plays - list.skips) / list.plays : 0,
+        difficulty: list.plays ? list.hints / 6 / (list.plays - list.skips) : 0,
+      })
+    );
 });
 
 router.get("/lists/:id/movies", async (req, res, next) => {
