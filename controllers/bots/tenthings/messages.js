@@ -224,7 +224,9 @@ module.exports = {
       message += "Play Ratio: " + ((list.plays - list.skips) / list.plays).makePercentage() + "\n";
     message += "Skips: " + list.skips + "\n";
     message += "Hints: " + list.hints + "\n";
-    if (list.plays) message += "Difficulty: " + list.hints / 6 / (list.plays - list.skips);
+    if (list.plays)
+      message +=
+        "Difficulty: " + (list.hints / 6 / (list.plays - list.skips)).makePercentage() + "\n";
     message += "Created on: " + moment(list.date).format("DD-MMM-YYYY") + "\n";
     message += "Modified on: " + moment(list.modifyDate).format("DD-MMM-YYYY") + "\n";
     return message;
