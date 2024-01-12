@@ -1,60 +1,37 @@
 /*jslint esversion: 10*/
 const router = require("express").Router();
 const _ = require("underscore");
-const FuzzyMatching = require("fuzzy-matching");
-//const kue = require('kue');
-const Queue = require("bull");
 const moment = require("moment");
-const request = require("request");
 const config = require("../../../config");
 const redis = require("../../../redis");
 const bot = require("../../../connections/telegram");
 
 const lists = require("./lists");
+const guesses = require("./guesses");
+const skips = require("./skips");
 const messages = require("./messages");
 const keyboards = require("./keyboards");
 const stats = require("./stats");
-const jobs = require("./jobs");
+const cache = require("./cache");
+const spam = require("./spam");
 const hints = require("./hints");
 const categories = require("./categories");
+const maingame = require("./maingame");
 const minigame = require("./minigame");
 const tinygame = require("./tinygame");
+const players = require("./players");
 
 //-------------//
 //redis.set('pause', true);
 //-------------//
 
-const User = require("../../../models/user")();
 const Game = require("../../../models/tenthings/game")();
 const Player = require("../../../models/tenthings/player")();
 const List = require("../../../models/tenthings/list")();
 
-const MAX_HINTS = hints.getMaxHints();
-const VETO_DELAY = 15;
-const SKIP_DELAY = 10;
-const ANSWER_DELAY = 2;
 const BANNED_USERS = [1726294650];
 //const BANNED_USERS = [513934222, 1051982986, 1049452899,1286805649, 1156746047, 1221878428, 928265957, 811672759, 1291668503, 1136025506, 1162690484, 1158491266, 1053547542, 1182973691, 1010339222, 906650538, 1153021237, 623100045, 1269984320];
 
-const cooldowns = {};
-const skips = {};
-const vetoes = {};
-const skippers = {};
-const voters = {};
-const antispam = {};
-/*
-const curateList = async () => {
-	const list = await lists.getRandomList();
-	let msg = messages.listInfo(list);
-	msg += ` - Values: ${list.values.length}\n`;
-	msg += ` - Plays: ${list.plays}\n`;
-	msg += ` - Skips: ${list.skips}\n`;
-	msg += ` - Hints: ${list.hints}\n\n`;
-	msg += `Rate Difficulty and Update Frequency`;
-	bot.notifyAdmins(msg, keyboards.curate(list));
-};
-curateList();
-*/
 /*
   Game.update(
     {},
@@ -108,27 +85,6 @@ games.forEach(function(game, gameIndex) {
 
 });
 */
-/*
-const queue = kue.createQueue({
-  redis: {
-    port: config.redis.port,
-    host: 'localhost',
-    auth: config.redis.password,
-    //db: 3, // if provided select a non-default redis db
-  }
-});
-*/
-const guessQueue = new Queue("processGuess", {
-  redis: {
-    port: config.redis.port,
-    host: "localhost",
-    password: config.redis.password,
-  },
-});
-guessQueue.on("completed", function (job) {
-  //Job finished we remove it
-  job.remove();
-});
 
 //addJob();
 /*
@@ -198,73 +154,6 @@ bot.exportChatInviteLink('-1001394022777').then(function(chat) {
 const getAvailableLanguages = ({ settings }) =>
   settings.languages && settings.languages.length > 0 ? settings.languages : ["EN"];
 
-/*
- ███████ ███████ ██      ███████  ██████ ████████     ██      ██ ███████ ████████ 
- ██      ██      ██      ██      ██         ██        ██      ██ ██         ██    
- ███████ █████   ██      █████   ██         ██        ██      ██ ███████    ██    
-      ██ ██      ██      ██      ██         ██        ██      ██      ██    ██    
- ███████ ███████ ███████ ███████  ██████    ██        ███████ ██ ███████    ██    
-*/
-const selectList = async (game) => {
-  const availableLanguages = getAvailableLanguages(game);
-  if (game.pickedLists.length > 0) {
-    let list = await List.findOne({
-      _id: game.pickedLists[0],
-    })
-      .populate("creator")
-      .exec();
-    if (!list) {
-      game.pickedLists.shift();
-      console.log(`Moving to next picked list`);
-      return await selectList(game);
-    } else {
-      if (!_.some(game.playedLists, (playedList) => playedList == list._id)) {
-        game.playedLists.push(list._id);
-      }
-      return list;
-    }
-  } else {
-    let list = await lists.getRandomList({
-      _id: { $nin: game.playedLists },
-      categories: { $nin: game.disabledCategories },
-      language: { $in: availableLanguages },
-    });
-    if (!list) {
-      game.playedLists = [];
-      game.cycles++;
-      game.lastCycleDate = moment();
-      bot.queueMessage(game.chat_id, "All lists have been played, a new cycle will now start.");
-      list = await lists.getRandomList({
-        categories: { $nin: game.disabledCategories },
-        language: { $in: availableLanguages },
-      });
-      if (!list) {
-        list = await lists.getRandomList({
-          categories: {
-            $in: _.difference(categories, game.disabledCategories),
-          },
-          language: { $in: availableLanguages },
-        });
-      }
-      if (!list) {
-        list = await lists.getRandomList({
-          categories: { $nin: game.disabledCategories },
-          language: "EN",
-        });
-      }
-      if (!list) {
-        list = await lists.getRandomList({
-          categories: {
-            $in: _.difference(categories, game.disabledCategories),
-          },
-          language: "EN",
-        });
-      }
-    }
-    return list;
-  }
-};
-
 const getGame = async (chat_id, user) => {
   const game = await Game.findOne({
     chat_id,
@@ -272,26 +161,11 @@ const getGame = async (chat_id, user) => {
     .populate("list.creator")
     .exec();
   if (!game) return await createGame(chat_id);
-  let player = await getPlayer(game, user);
+  let player = await players.getPlayer(game, user);
   return {
     game,
     player,
   };
-};
-
-const getPlayer = async (game, user) => {
-  let player = await Player.findOne({
-    game: game.id,
-    id: `${user.id}`, //Stringified
-  }).exec();
-  if (!player) player = await createPlayer(game, user);
-  else if (user && user.first_name) {
-    player.first_name = user.first_name ? user.first_name.maskURLs() : "";
-    player.last_name = user.last_name ? user.last_name.maskURLs() : "";
-    player.username = user.username ? user.username.maskURLs() : "";
-    player.present = true;
-  }
-  return player;
 };
 
 const createGame = async (chat_id) => {
@@ -303,17 +177,6 @@ const createGame = async (chat_id) => {
   });
   const savedGame = await game.save();
   return savedGame;
-};
-
-const createPlayer = async (game, user) => {
-  if (!user.first_name) console.trace();
-  const player = new Player({
-    game: game.id,
-    ...user,
-  });
-  const savedPlayer = await player.save();
-  console.log(`${game.chat_id} - Player ${user.id} created`);
-  return savedPlayer;
 };
 
 /*
@@ -339,603 +202,6 @@ List.find({
     console.log(_.uniq(lists.map(list => list.category)));
   });
   */
-const rateList = (game) => {
-  bot.sendKeyboard(game.chat_id, `Did you like <b>${game.list.name}</b>?`, keyboards.like(game));
-};
-
-/*
-  ██████  ██    ██ ███████ ███████ ███████ 
- ██       ██    ██ ██      ██      ██      
- ██   ███ ██    ██ █████   ███████ ███████ 
- ██    ██ ██    ██ ██           ██      ██ 
-  ██████   ██████  ███████ ███████ ███████ 
-*/
-const queueGuess = async (game, msg) => {
-  const values = game.list.values
-    .filter(({ guesser }) => guesser)
-    .map(({ value }) => ({ type: "game", value }));
-  if (game.minigame.answer) values.push({ type: "minigame", value: game.minigame.answer });
-  if (game.tinygame.answer) values.push({ type: "tinygame", value: game.tinygame.answer });
-  const text = msg.text.removeAllButLetters();
-  const correctMatch = _.find(values, ({ value }) => value.removeAllButLetters() === text);
-  if (correctMatch) {
-    return queueingGuess({
-      msg,
-      game: game.chat_id,
-      list: game.list._id,
-      player: await getPlayer(game, msg.from),
-      match: {
-        ...correctMatch,
-        distance: 1,
-      },
-    });
-  }
-  const lengths = values
-    .map(({ value }) => value.removeAllButLetters())
-    .reduce(
-      (lengths, value) => ({
-        longest: lengths.longest < value.length ? value.length : lengths.longest,
-        shortest: lengths.shortest > value.length ? value.length : lengths.shortest,
-      }),
-      {
-        longest: 1,
-        shortest: 1000,
-      }
-    );
-  let found = false;
-  if (text.length / lengths.shortest > 0.75 && text.length / lengths.longest < 1.25) {
-    const fuzzyMatch = new FuzzyMatching(values.map(({ value }) => value.removeAllButLetters()));
-    const matchedValue = fuzzyMatch.get(text, { min: 0.75 });
-    const guess = {
-      msg,
-      game: game.chat_id,
-      list: game.list._id,
-      match: matchedValue,
-    };
-    if (guess.match.distance >= 0.75) {
-      const match = {
-        ...guess.match,
-        ..._.find(values, ({ value }) => value.removeAllButLetters() === guess.match.value),
-      };
-      found = true;
-      setTimeout(async () => {
-        queueingGuess({
-          ...guess,
-          match,
-          player: await getPlayer(game, msg.from),
-        });
-      }, (2000 / 0.25) * (1 - guess.match.distance));
-    }
-  }
-  if (!found) sass(game, msg.text, msg.from);
-};
-
-const sass = (game, text, from) => {
-  if (game.settings.sass && game.enabled) {
-    messages.sass(text).then(
-      (sass) => {
-        if (sass) {
-          console.log(`SASS: ${text} => ${sass}`);
-          if (sass.includes("http")) {
-            if (sass.includes(".gif")) {
-              bot.sendAnimation(game.chat_id, sass);
-            } else {
-              bot.sendPhoto(game.chat_id, sass);
-            }
-          } else {
-            bot.queueMessage(game.chat_id, sass);
-          }
-        }
-      },
-      (err) => null
-    );
-  }
-};
-
-const queueingGuess = (guess) => guessQueue.add(guess);
-
-guessQueue.process(({ data }) => processGuess(data));
-
-const processGuess = (guess) => {
-  return new Promise((resolve, reject) => {
-    Game.findOne({
-      chat_id: guess.game,
-    })
-      .populate("list.creator")
-      .select(
-        "_id chat_id guessers list lastPlayDate hints streak settings minigame tinygame disabledCategories"
-      )
-      .exec(async (err, game) => {
-        if (err) {
-          console.error(err);
-          return reject();
-        } else if (!game) {
-          console.error(`Game not found`);
-          console.error(guess);
-          reject();
-        }
-        let player;
-        try {
-          player = await getPlayer(game, guess.player);
-        } catch (err) {
-          console.error(`Error with player in ProcessGuess`);
-          console.error(guess);
-          reject(err);
-        }
-        if (guess.match.type === "game") {
-          checkGuess(game, player, guess, guess.msg).then(
-            () => {
-              console.log(
-                `${guess.game} - Guess for ${game.list.name}: "${guess.msg.text}" by ${player.first_name}`
-              );
-              resolve();
-            },
-            (err) => {
-              console.error(err);
-              reject(err);
-            }
-          );
-        } else if (guess.match.type === "minigame") {
-          minigame.check(game, player, guess, guess.msg).then(
-            () => {
-              console.log(
-                `${guess.game} - Minigame guess for ${game.minigame.answer}: "${guess.msg.text}" by ${player.first_name}`
-              );
-              resolve();
-            },
-            (err) => {
-              console.error(err);
-              reject(err);
-            }
-          );
-        } else if (guess.match.type === "tinygame") {
-          tinygame.check(game, player, guess, guess.msg).then(
-            () => {
-              console.log(
-                `${guess.game} - Tinygame guess for ${game.tinygame.answer}: "${guess.msg.text}" by ${player.first_name}`
-              );
-              resolve();
-            },
-            (err) => {
-              console.error(err);
-              reject(err);
-            }
-          );
-        } else {
-          resolve();
-        }
-      });
-  });
-};
-
-const checkGuess = async (game, player, guess, msg) => {
-  if (guess.list !== game.list._id) return;
-  game.lastPlayDate = moment();
-  player.lastPlayDate = moment();
-  if (skips[game.id]) {
-    delete skips[game.id];
-    vetoes[game.id] = moment();
-    bot.queueMessage(
-      msg.chat.id,
-      `Skip vetoed by ${player.first_name} giving a correct answer\nNo skipping allowed for ${VETO_DELAY} seconds`
-    );
-  }
-  if (!_.some(game.guessers, (guesser) => guesser == msg.from.id)) {
-    game.guessers.push(`${msg.from.id}`);
-  }
-  const match = game.list.values.find(({ value }) => value === guess.match.value);
-  if (!player) {
-    bot.notifyAdmin(`Something wrong with this guess:\n${JSON.stringify(guess)}`);
-    console.error(`Something wrong with this guess:\n${JSON.stringify(guess)}`);
-    return resolve();
-  }
-  if (!match.guesser.first_name) {
-    match.guesser = msg.from;
-    player.answers++;
-    const score = Math.round(
-      (MAX_HINTS - game.hints + game.guessers.length) * (guess.match.distance - 0.6) * 2.5
-    );
-    const accuracy = `${(guess.match.distance * 100).toFixed(0)}%`;
-    player.score += score;
-    player.scoreDaily += score;
-    if (game.hints === 0) {
-      player.hintStreak++;
-    }
-    if (!game.streak || game.streak.player != player.id) {
-      game.streak = {
-        player: player.id,
-        count: 1,
-      };
-    } else {
-      game.streak.count++;
-    }
-    if (player.streak < game.streak.count) {
-      player.streak = game.streak.count;
-    }
-    if (player.scoreDaily > player.highScore) {
-      player.highScore = player.scoreDaily;
-    }
-    if (player.maxHintStreak < player.hintStreak) {
-      player.maxHintStreak = player.hintStreak;
-    }
-    if (match.blurb) {
-      guessed(
-        game,
-        player,
-        msg,
-        match.value,
-        match.blurb.substring(0, 4) === "http"
-          ? `<a href="${match.blurb}">&#8204;</a>`
-          : `\n<i>${match.blurb.angleBrackets()}</i>`,
-        score,
-        accuracy
-      );
-    } else {
-      guessed(game, player, msg, match.value, "", score, accuracy);
-      /*
-      request(`https://en.wikipedia.org/w/api.php?action=query&format=json&prop=extracts&titles=Earth&generator=prefixsearch&exintro=1&explaintext=1&gpssearch=${encodeURIComponent(match.value)}`, (err, response, body) => {
-        if (err) {
-          guessed(game, player, msg, match.value, '', score, accuracy);
-        } else {
-          try {
-            const pages = JSON.parse(body).query.pages;
-            let result = pages[Object.keys(pages)[0]].extract;
-            if (result.length > 200) {
-              result = result.substring(0, 200) + '...';
-            }
-            if (result && !result.includes('refer to:') && !result.includes('refers to:')) {
-              guessed(game, player, msg, match.value, `\nRandom Wiki:\n<i>${result}</i>`, score, accuracy);
-            } else {
-              guessed(game, player, msg, match.value, '', score, accuracy);
-            }
-          } catch (e) {
-            console.error(e);
-            guessed(game, player, msg, match.value, '', score, accuracy);
-          }
-        }
-      });
-      */
-    }
-    setTimeout(() => {
-      checkRound(game);
-    }, 200);
-  } else {
-    player.snubs++;
-
-    if (game.settings.snubs) {
-      bot.queueMessage(msg.chat.id, messages.alreadyGuessed(match.value, player, match.guesser));
-    }
-  }
-  try {
-    const savedPlayer = await player.save();
-    const savedGame = await game.save();
-    return true;
-  } catch (e) {
-    console.log(player);
-    console.error(e);
-    console.trace();
-    throw e;
-  }
-};
-
-const guessed = async (
-  game,
-  { scoreDaily, first_name },
-  { chat },
-  value,
-  blurb,
-  score,
-  accuracy
-) => {
-  let message = messages.guessed(value.angleBrackets(), first_name);
-  message += messages.streak(game.streak.count);
-  message += blurb;
-  message += `\n<u>${scoreDaily - score} + ${score} points (${accuracy})</u>`;
-  const answersLeft = game.list.values.filter(({ guesser }) => !guesser.first_name);
-  if (answersLeft.length > 0) {
-    message += `\n<b>${game.list.name}</b>`;
-    //message += `\n${answersLeft} answer${answersLeft > 1 ? 's' : ''} left.`;
-    message += game.list.values.reduce((str, { guesser, value }, index) => {
-      if (!guesser.first_name) {
-        str += "\n";
-        str += index + 1;
-        str += ": ";
-        str += hints.getHint(game.hints, value);
-      }
-      return str;
-    }, "");
-  } else {
-    message += "\nRound over.";
-  }
-  return await bot.queueMessage(chat.id, message);
-};
-/*
-  ██████ ██   ██ ███████  ██████ ██   ██     ██████   ██████  ██    ██ ███    ██ ██████  
- ██      ██   ██ ██      ██      ██  ██      ██   ██ ██    ██ ██    ██ ████   ██ ██   ██ 
- ██      ███████ █████   ██      █████       ██████  ██    ██ ██    ██ ██ ██  ██ ██   ██ 
- ██      ██   ██ ██      ██      ██  ██      ██   ██ ██    ██ ██    ██ ██  ██ ██ ██   ██ 
-  ██████ ██   ██ ███████  ██████ ██   ██     ██   ██  ██████   ██████  ██   ████ ██████  
-*/
-const checkRound = (game) => {
-  if (game.list.values.filter(({ guesser }) => !guesser.first_name).length === 0) {
-    setTimeout(() => {
-      stats.getList(game, async (list) => {
-        const foundList = await List.findOne({
-          _id: game.list._id,
-        }).exec();
-        let message = `<b>${game.list.name}</b>`;
-        message += game.list.creator ? ` by ${game.list.creator.username}\n` : "\n";
-        message +=
-          game.list.categories.length > 0
-            ? `Categor${
-                game.list.categories.length > 1 ? "ies" : "y"
-              }: <b>${game.list.categories.join(", ")}</b>\n`
-            : "";
-        message += list;
-        message += messages.listStats(foundList);
-        message += await stats.getDailyScores(game, 5);
-        bot.queueMessage(game.chat_id, message);
-        setTimeout(() => {
-          rateList(game);
-          setTimeout(() => {
-            newRound(game);
-          }, 1000);
-        }, 1000);
-      });
-    }, 1000);
-  }
-};
-/*
- ███    ██ ███████ ██     ██     ██████   ██████  ██    ██ ███    ██ ██████  
- ████   ██ ██      ██     ██     ██   ██ ██    ██ ██    ██ ████   ██ ██   ██ 
- ██ ██  ██ █████   ██  █  ██     ██████  ██    ██ ██    ██ ██ ██  ██ ██   ██ 
- ██  ██ ██ ██      ██ ███ ██     ██   ██ ██    ██ ██    ██ ██  ██ ██ ██   ██ 
- ██   ████ ███████  ███ ███      ██   ██  ██████   ██████  ██   ████ ██████  
-*/
-const newRound = (currentGame, player) => {
-  Game.findOne({
-    _id: currentGame._id,
-  })
-    .select(
-      "_id chat_id playedLists list listsPlayed pickedLists cycles guessers hintCooldown hints disabledCategories settings"
-    )
-    .populate("list.creator")
-    .exec(async (err, game) => {
-      if (err) return console.error(err);
-      if (!game) return console.log("Game not found");
-      let players = await Player.find({
-        game: currentGame._id,
-        id: {
-          $in: game.guessers,
-        },
-      }).exec();
-      selectList(game).then(
-        async (list) => {
-          if (game.pickedLists.length > 0) {
-            game.pickedLists = game.pickedLists.filter((pickedList) => pickedList != list._id);
-          }
-          list.plays++;
-          list.score = lists.getScore(list);
-          await list.save();
-          for (let player of players) {
-            player.lists++;
-            const savedPlayer = await player.save();
-          }
-          if (game.chat_id === "-1001182285167") console.log("saved players");
-          game.list = JSON.parse(JSON.stringify(list));
-          game.list.totalValues = game.list.values.length;
-          game.list.values = game.list.values.getRandom(10);
-          game.listsPlayed++;
-          game.hints = 0;
-          game.hintCooldown = 0;
-          cooldowns[game.id] = 3;
-          cooldownHint(game.id);
-          game.guessers = [];
-          let message = "A new round will start in 2 seconds";
-          message +=
-            game.list.categories.length > 0
-              ? `\nCategor${game.list.categories.length > 1 ? "ies" : "y"}: <b>${
-                  game.list.categories
-                }</b>`
-              : "";
-          bot.queueMessage(game.chat_id, message);
-          setTimeout(() => {
-            let message = `<b>${game.list.name}</b> (${game.list.totalValues}) by ${game.list.creator.username}`;
-            message += game.list.description
-              ? `\n<i>${game.list.description.angleBrackets()}</i>`
-              : "";
-            bot.queueMessage(game.chat_id, message);
-          }, 2000);
-          game.playedLists.push(game.list._id);
-          game.save((err) => {
-            if (err)
-              return bot.notifyAdmin(
-                "newRound: " + JSON.stringify(err) + "\n" + JSON.stringify(game)
-              );
-            console.log(`${game.chat_id} - New round started -> "${list.name}"`);
-          });
-        },
-        (err) => bot.notifyAdmin(`Select List Error: ${JSON.stringify(err)}`)
-      );
-    });
-};
-
-/*
-var string = 'Coinage metals';
-//string = 'TERA';
-console.log(hints.getHint(0, string));
-console.log(hints.getHint(1, string));
-console.log(hints.getHint(2, string));
-console.log(hints.getHint(3, string));
-console.log(hints.getHint(4, string));
-console.log(hints.getHint(5, string));
-console.log(hints.getHint(6, string));
-*/
-/*
- ███████ ██   ██ ██ ██████  
- ██      ██  ██  ██ ██   ██ 
- ███████ █████   ██ ██████  
-      ██ ██  ██  ██ ██      
- ███████ ██   ██ ██ ██      
-*/
-function skip(game, skipper) {
-  if (game.chat_id < 0) {
-    if (skips[game._id] && skips[game._id].player !== skipper._id) {
-      skips[game._id].timer = 2;
-    } else if (skips[game._id] && skips[game._id].player === skipper._id) {
-      bot.queueMessage(game.chat_id, "Get someone else to confirm your skip request!");
-    } else {
-      bot.queueMessage(
-        game.chat_id,
-        `Skipping <b>${game.list.name}</b> in ${SKIP_DELAY} seconds.\nType /veto to cancel or have someone else type /skip to confirm.`
-      );
-      skips[game._id] = {
-        timer: SKIP_DELAY,
-        player: skipper._id,
-      };
-      cooldownSkip(game, skipper);
-    }
-  } else {
-    //No need to have a delay in a personal chat
-    skipList(game, skipper);
-  }
-}
-
-const skipList = (game, skipper) => {
-  game.list.values.forEach(function ({ guesser }, index) {
-    if (!guesser.first_name) {
-      this[index].guesser.first_name = "Not guessed";
-    }
-  }, game.list.values);
-  Player.updateMany(
-    {
-      game: game._id,
-      _id: skips[game._id]
-        ? {
-            $in: [skips[game._id].player, skipper._id],
-          }
-        : skipper._id,
-    },
-    {
-      $set: {
-        hintStreak: 0,
-      },
-      $inc: {
-        skips: 1,
-      },
-    }
-  ).exec((err, updatedPlayers) => {
-    if (err) return bot.notifyAdmin(`Skip List Error:\n${err}`);
-    stats.getList(game, async (list) => {
-      let message = `<b>${game.list.name}</b> skipped!\n`;
-      message += list;
-      bot.queueMessage(game.chat_id, message);
-      delete skips[game._id];
-      let foundList = await List.findOne({
-        _id: game.list._id,
-      }).exec();
-      if (!foundList) return newRound(game);
-      if (!foundList.skips) {
-        foundList.skips = 0;
-      }
-      foundList.skips++;
-      foundList.score = lists.getScore(foundList);
-      const savedList = await foundList.save();
-      bot.queueMessage(game.chat_id, await stats.getDailyScores(game, 5));
-      newRound(game);
-    });
-  });
-};
-
-function cooldownSkip(game, skipper) {
-  if (skips[game.id]) {
-    if (skips[game.id].timer > 0) {
-      skips[game.id].timer--;
-      setTimeout(() => {
-        cooldownSkip(game, skipper);
-      }, 1000);
-    } else {
-      skipList(game, skipper);
-    }
-  }
-}
-
-/*
- ██   ██ ██ ███    ██ ████████ 
- ██   ██ ██ ████   ██    ██    
- ███████ ██ ██ ██  ██    ██    
- ██   ██ ██ ██  ██ ██    ██    
- ██   ██ ██ ██   ████    ██    
-*/
-const hint = async (game, player, type = "main") => {
-  if (
-    (type === "main" && game.hints >= MAX_HINTS) ||
-    (type !== "main" && game[type].hints >= MAX_HINTS)
-  ) {
-    bot.queueMessage(game.chat_id, "What? Another hint? I'm just gonna ignore that request");
-  } else if (cooldowns[game.id] && cooldowns[game.id] > 0) {
-    bot.queueMessage(
-      game.chat_id,
-      `Calm down with the hints, wait ${cooldowns[game.id]} more seconds`
-    );
-  } else {
-    if (player) {
-      player.hints++;
-      player.hintStreak = 0;
-      const savedPlayer = await player.save();
-    }
-    let message;
-    switch (type) {
-      case "minigame":
-        game.minigame.hints++;
-        message = minigame.message(game.minigame);
-        break;
-      case "tinygame":
-        game.tinygame.hints++;
-        message = tinygame.message(game.tinygame);
-        break;
-      default:
-        game.hints++;
-        message = `<b>${game.list.name}</b>\n`;
-        message += game.list.values.reduce((str, { guesser, value }, index) => {
-          if (!guesser.first_name) {
-            str += index + 1;
-            str += ": ";
-            str += hints.getHint(game.hints, value);
-            str += "\n";
-          }
-          return str;
-        }, "");
-        let list = await List.findOne({
-          _id: game.list._id,
-        }).exec();
-        if (list) {
-          if (!list.hints) {
-            list.hints = 0;
-          }
-          list.hints++;
-          const saved = await list.save();
-        }
-        break;
-    }
-    bot.queueMessage(game.chat_id, message);
-    cooldowns[game.id] = 10;
-    cooldownHint(game.id);
-    const savedGame = await game.save();
-  }
-  return true;
-};
-
-function cooldownHint(gameId) {
-  if (cooldowns[gameId] > 0) {
-    cooldowns[gameId]--;
-    setTimeout(() => {
-      cooldownHint(gameId);
-    }, 1000);
-  } else {
-    delete cooldowns[gameId];
-  }
-}
 
 /*
  ██████   ██████  ███████ ████████ 
@@ -955,14 +221,6 @@ router.post("/", async ({ body, get }, res, next) => {
   */
   if (body.message || body.callback_query) {
     const from = body.message ? body.message.from.id : body.callback_query.from.id;
-    const name = body.message ? body.message.from.first_name : body.callback_query.from.first_name;
-    const chat = body.message ? body.message.chat.id : body.callback_query.message.chat.id;
-    const date = body.message ? moment.unix(body.message.date) : moment();
-    const message = body.message
-      ? body.message.text
-        ? body.message.text
-        : "Not a callback or typed message"
-      : body.callback_query.data;
     if (from != config.masterChat && (await redis.get("pause")) === "true")
       return res.sendStatus(200);
     //if (date.diff(moment(), 'hours') > 1) return res.sendStatus(200);
@@ -970,52 +228,8 @@ router.post("/", async ({ body, get }, res, next) => {
       bot.notifyAdmin(JSON.stringify(get("host")));
       return res.sendStatus(200);
     }
-
-    if (antispam[from]) {
-      if (antispam[from].lastMessage < moment().subtract(10, "seconds")) {
-        delete antispam[from];
-      } else if (antispam[from].lastMessage > moment()) {
-        antispam[from].count++;
-        antispam[from].lastMessage = moment().add(10, "seconds");
-        return res.sendStatus(200);
-      } else if (antispam[from].count <= 30) {
-        antispam[from].count++;
-        if (antispam[from].count === 20) {
-          bot.queueMessage(
-            chat,
-            `You sure seem to be sending a lot of messages, ${name}. I'm keeping an eye on you`
-          );
-        } else if (antispam[from].count === 30) {
-          antispam[from].lastMessage = moment();
-          bot.queueMessage(
-            chat,
-            `Ok, ${name}, calm down, I can't keep up.  Please stay silent for 10 seconds so I can process your stuff`
-          );
-        }
-      } else if (antispam[from].count > 35) {
-        antispam[from].count++;
-        if (antispam[from].count === 35) {
-          bot.exportChatInviteLink(chat).then((url) => {
-            bot.notifyAdmin(
-              `Possible spammer: ${name} (${from}) in chat ${chat} ${
-                chat == config.groupChat ? " - The main chat!" : ""
-              }\n\n${message}\n\nURL: ${url ? url : "N/A"}`
-            );
-          });
-          /*
-                  } else if (antispam[from].count % 10 === 0) {
-                    bot.notifyAdmin(`Possible spammer: ${name} (${from}) -> ${antispam[from].count} messages`);*/
-        }
-        antispam[from].lastMessage = moment();
-        return res.sendStatus(200);
-      } else {
-        return res.sendStatus(200);
-      }
-    } else {
-      antispam[from] = {
-        lastMessage: moment(),
-        count: 1,
-      };
+    if (spam.check(body)) {
+      return res.sendStatus(200);
     }
   } else {
     return res.sendStatus(200);
@@ -1042,15 +256,16 @@ router.post("/", async ({ body, get }, res, next) => {
     data.message_id = body.callback_query.message.message_id;
     if (data.type === "rate") {
       let doVote = false;
-      if (voters[data.from_id]) {
+      if (cache.voters[data.from_id]) {
         if (
-          voters[data.from_id].lastVoted < moment().subtract(voters[data.from_id].delay, "seconds")
+          cache.voters[data.from_id].lastVoted <
+          moment().subtract(cache.voters[data.from_id].delay, "seconds")
         ) {
           doVote = true;
-          delete voters[data.from_id];
+          delete cache.voters[data.from_id];
         }
       } else {
-        voters[data.from_id] = {
+        cache.voters[data.from_id] = {
           lastVoted: moment(),
           delay: 10,
         };
@@ -1377,7 +592,7 @@ router.post("/", async ({ body, get }, res, next) => {
       })
         .select("settings")
         .exec((err, game) => {
-          if (err) return notifyAdmin(`New Participant Error:\n${err}`);
+          if (err) return bot.notifyAdmin(`New Participant Error:\n${err}`);
           if (game && game.settings.intro) {
             bot.queueMessage(
               body.message.chat.id,
@@ -1488,7 +703,7 @@ router.post("/", async ({ body, get }, res, next) => {
       }
       if (!existingGame) {
         createGame(msg.chat.id).then((newGame) => {
-          if (err) bot.notifyAdmin("POST: " + JSON.stringify(err) + "\n" + JSON.stringify(game));
+          if (err) bot.notifyAdmin("POST: " + JSON.stringify(err) + "\n" + JSON.stringify(newGame));
           console.log(`New game created for ${msg.chat.id}`);
           return evaluateCommand(res, msg, newGame, true);
         });
@@ -1567,7 +782,7 @@ function countBytes(s) {
 const evaluateCommand = async (res, msg, game, isNew) => {
   //bot.notifyAdmin(tenthings);
   //bot.notifyAdmin(games[msg.chat.id].list);
-  let player = await getPlayer(game, msg.from);
+  let player = await players.getPlayer(game, msg.from);
   if (!player.first_name) {
     console.error("msg without a first_name?");
     console.error(msg);
@@ -1590,7 +805,7 @@ const evaluateCommand = async (res, msg, game, isNew) => {
   if (flood) res.sendStatus(200);
   */
   if (game.list.values.length === 0) {
-    newRound(game);
+    maingame.newRound(game);
   }
   switch (msg.command.toLowerCase()) {
     case "/error":
@@ -1625,7 +840,7 @@ const evaluateCommand = async (res, msg, game, isNew) => {
     case "/new":
     case "/start":
       if (isNew) {
-        newRound(game);
+        maingame.newRound(game);
       } else {
         stats.getList(game, (list) => {
           let message = `<b>${game.list.name}</b> (${game.list.totalValues})`;
@@ -1649,14 +864,14 @@ const evaluateCommand = async (res, msg, game, isNew) => {
       break;
     case "/pule":
     case "/skip":
-      if (await checkSkipper(game, msg, player)) {
+      if (await skips.checkSkipper(game, msg, player)) {
         activateGame(game, true);
-        skip(game, player);
+        skips.process(game, player);
       }
       break;
     case "/minipule":
     case "/miniskip":
-      if (await checkSkipper(game, msg, player)) {
+      if (await skips.checkSkipper(game, msg, player)) {
         bot.queueMessage(msg.chat.id, `The minigame answer was:\n<i>${game.minigame.answer}</i>`);
         setTimeout(() => {
           minigame.create(game, msg);
@@ -1665,7 +880,7 @@ const evaluateCommand = async (res, msg, game, isNew) => {
       break;
     case "/puleminusculo":
     case "/tinyskip":
-      if (await checkSkipper(game, msg, player)) {
+      if (await skips.checkSkipper(game, msg, player)) {
         bot.queueMessage(msg.chat.id, `The tinygame answer was:\n<i>${game.tinygame.answer}</i>`);
         setTimeout(() => {
           tinygame.create(game, msg);
@@ -1673,18 +888,7 @@ const evaluateCommand = async (res, msg, game, isNew) => {
       }
       break;
     case "/veto":
-      player.vetoes++;
-      await player.save();
-      if (skips[game.id]) {
-        delete skips[game.id];
-        vetoes[game.id] = moment();
-        bot.queueMessage(
-          msg.chat.id,
-          `Skip vetoed by ${player.first_name}\nNo skipping allowed for ${VETO_DELAY} seconds`
-        );
-      } else {
-        bot.queueMessage(msg.chat.id, `I can't find a skip request, ${player.first_name}`);
-      }
+      skips.veto(game, player);
       break;
     case "/estatisticas":
     case "/stats":
@@ -1731,72 +935,13 @@ const evaluateCommand = async (res, msg, game, isNew) => {
       if (game.pickedLists.length >= 10)
         return bot.queueMessage(
           game.chat_id,
-          `The queue already has the maximum of 10 lists, ${data.requestor}.\n -> /lists`
+          `The queue already has the maximum of 10 lists, ${player.first_name}.\n -> /lists`
         );
       if (search && search != "TenThings_Bot" && search != "@TenThings_Bot") {
         player.searches++;
         await player.save();
         console.log(`${game.chat_id} - Search for ${search}`);
-        const availableLanguages = getAvailableLanguages(game);
-        const regex = search
-          .replace(new RegExp("[^a-zA-Z0-9 ]+", "g"), ".*")
-          .split(" ")
-          .reduce((result, word) => `${result}(?=.*${word}.*)`, "");
-        let foundLists = await List.find({
-          categories: { $nin: game.disabledCategories },
-          language: { $in: availableLanguages },
-          name: {
-            $regex: `.*${regex}.*`,
-            $options: "i",
-          },
-        })
-          .select("name")
-          .lean();
-
-        if (foundLists.length < 10) {
-          const count = await List.countDocuments({
-            categories: { $nin: game.disabledCategories },
-            language: { $in: availableLanguages },
-            "values.value": {
-              $regex: `.*${regex}.*`,
-              $options: "i",
-            },
-          });
-          const valueLists = await List.find({
-            categories: { $nin: game.disabledCategories },
-            language: { $in: availableLanguages },
-            "values.value": {
-              $regex: `.*${regex}.*`,
-              $options: "i",
-            },
-          })
-            .select("name")
-            .skip(count > 10 ? Math.floor(Math.random() * (count - 10)) : 0)
-            .limit(10 - foundLists.length)
-            .lean();
-          foundLists.push(...valueLists);
-        }
-        if (foundLists.length < 10) {
-          const count = await List.countDocuments({
-            language: { $in: availableLanguages },
-            categories: {
-              $regex: `.*${regex}.*`,
-              $options: "i",
-            },
-          });
-          const categoryLists = await List.find({
-            language: { $in: availableLanguages },
-            categories: {
-              $regex: `.*${regex}.*`,
-              $options: "i",
-            },
-          })
-            .select("name")
-            .skip(count > 10 ? Math.floor(Math.random() * (count - 10)) : 0)
-            .limit(10 - foundLists.length)
-            .lean();
-          foundLists.push(...categoryLists);
-        }
+        const foundLists = await lists.search(game, search);
         if (foundLists.length > 0) {
           const keyboard = keyboards.lists(foundLists);
           bot.sendKeyboard(
@@ -1838,16 +983,16 @@ const evaluateCommand = async (res, msg, game, isNew) => {
     case "/hint":
       activateGame(game, false);
       if (game.list.values.filter(({ guesser }) => !guesser.first_name).length !== 0) {
-        hint(game, player);
+        hints.process(game, player);
       }
       break;
     case "/minidica":
     case "/minihint":
-      hint(game, player, "minigame");
+      hints.process(game, player, "minigame");
       break;
     case "/dicaminusculo":
     case "/tinyhint":
-      hint(game, player, "tinygame");
+      hints.process(game, player, "tinygame");
       break;
     case "/notify":
       if (msg.chat.id === config.masterChat) {
@@ -1898,7 +1043,6 @@ const evaluateCommand = async (res, msg, game, isNew) => {
         }, "");
         message += "\n";
         message += `<b>${hints.getHint(game.minigame.hints, game.minigame.answer)}</b>`;
-        //message += game.minigame.answer.conceal(game.minigame.date < moment().subtract(1, 'hours') ? 'aeoui' : '');
         bot.queueMessage(msg.chat.id, message);
       }
       break;
@@ -1914,7 +1058,6 @@ const evaluateCommand = async (res, msg, game, isNew) => {
         }, "");
         message += "\n";
         message += `<b>${hints.getHint(game.tinygame.hints, game.tinygame.answer)}</b>`;
-        //message += game.tinygame.answer.conceal(game.tinygame.date < moment().subtract(1, 'hours') ? 'aeoui' : '');
         bot.queueMessage(msg.chat.id, message);
       }
       break;
@@ -2007,7 +1150,7 @@ const evaluateCommand = async (res, msg, game, isNew) => {
       if (game.lastPlayDate <= moment().subtract(30, "days")) {
         deactivateGame(game);
       } else if (game.enabled && msg.chat.id != config.adminChat) {
-        queueGuess(game, msg);
+        guesses.queue(game, msg);
       }
   }
 };
@@ -2051,59 +1194,8 @@ const sendSuggestion = async (type, msg, player, extraText = "") => {
   }
 };
 
-const checkSkipper = async (game, msg, player) => {
-  if (!vetoes[game.id] || vetoes[game.id] < moment().subtract(VETO_DELAY, "seconds")) {
-    delete vetoes[game.id];
-    if (skippers[player.id]) {
-      //Check for spamming if it's the same player
-      if (
-        skippers[player.id].lastSkipped < moment().subtract(skippers[player.id].delay, "seconds")
-      ) {
-        delete skippers[player.id];
-      } else {
-        if (skippers[player.id].delay < 10) {
-          skippers[player.id].lastSkipped = moment();
-          skippers[player.id].delay += 10;
-          return false;
-        } else if (skippers[player.id].delay < 50) {
-          skippers[player.id].lastSkipped = moment();
-          skippers[player.id].delay += 10;
-          bot.queueMessage(
-            msg.chat.id,
-            `Banned ${player.first_name} from skipping again for ${
-              skippers[player.id].delay
-            } seconds`
-          );
-          return false;
-        } else if (skippers[player.id].delay < 60) {
-          skippers[player.id].lastSkipped = moment();
-          skippers[player.id].delay += 10;
-          bot.queueMessage(
-            msg.chat.id,
-            `If you skip again within ${skippers[player.id].delay} seconds, ${
-              player.first_name
-            }, you will be banned from skipping for 1 hour`
-          );
-          return false;
-        } else if (skippers[player.id].delay != 3600) {
-          skippers[player.id].delay = 3600;
-          bot.queueMessage(msg.chat.id, `Banned ${player.first_name} from skipping for 1 hour`);
-          return false;
-        }
-      }
-    } else {
-      //Start skip spam timer
-      skippers[player.id] = {
-        lastSkipped: moment(),
-        delay: 15,
-      };
-    }
-  }
-  return true;
-};
-
 const getQueue = async () => {
-  const count = await guessQueue.count();
+  const count = await guesses.getCount();
   const outgoing = await bot.getQueue();
   const webhook = await bot.getWebhook();
   let message = `<b>Queue</b>\n`;

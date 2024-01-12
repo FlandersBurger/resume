@@ -1,11 +1,10 @@
 const moment = require("moment");
 
 const bot = require("../../../connections/telegram");
+
 const messages = require("./messages");
 const hints = require("./hints");
 const lists = require("./lists");
-
-const List = require("../../../models/tenthings/list")();
 
 const create = async (game, msg) => {
   const availableLanguages =
