@@ -135,5 +135,7 @@ exports.check = async (game, player, guess, msg) => {
   message += messages.guessed(game.minigame.answer, msg.from.first_name);
   message += `\n<u>${player.scoreDaily - score} + ${score} points</u>`;
   bot.queueMessage(msg.chat.id, message);
-  return await create(game, msg);
+  setTimeout(() => {
+    create(game, msg);
+  }, 300);
 };
