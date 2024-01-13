@@ -21,9 +21,7 @@ exports.checkRound = (game) => {
   if (game.list.values.filter(({ guesser }) => !guesser.first_name).length === 0) {
     setTimeout(() => {
       stats.getList(game, async (list) => {
-        const foundList = await List.findOne({
-          _id: game.list._id,
-        }).exec();
+        const foundList = await List.findOne({ _id: game.list._id }).exec();
         let message = `<b>${game.list.name}</b>`;
         message += game.list.creator ? ` by ${game.list.creator.username}\n` : "\n";
         message +=

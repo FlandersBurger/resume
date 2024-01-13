@@ -56,61 +56,7 @@ const BANNED_USERS = [1726294650];
   .then(function(present) {
     console.log(present);
   });*/
-/*
-Game.find({}).select('chat_id players').exec(function(err, games) {
 
-games.forEach(function(game, gameIndex) {
-    game.players.forEach(function(player, index, array) {
-      setTimeout(function() {
-        bot.getChatMember(game.chat_id, player.id)
-        .then(function(present) {
-          if (present) {
-            console.log(player.first_name + ' present');
-            player.present = true;
-          } else {
-            console.log(player.first_name + ' absent');
-            player.present = false;
-          }
-          if (index === array.length - 1) {
-            game.save(function(err, saved) {
-              if (err) return console.error(err);
-            });
-          }
-        }, function(error) {
-          console.error(error);
-        });
-      }, index * 50 * gameIndex);
-    });
-});
-
-});
-*/
-
-//addJob();
-/*
-queue.on('job complete', function(id, result){
-  console.log('Job done:' + id);
-  console.log('------------');
-  kue.Job.get(id, function(err, job){
-    if (err) return;
-    job.remove(function(err){
-      if (err) throw err;
-      console.log('removed completed job #%d', job.id);
-    });
-  });
-});
-*/
-
-/*
-Game.find()
-.then(function(games) {
-  games.forEach(function(game) {
-    if (game.chat_id !== config.groupChat) {
-      bot.queueMessage(game.chat_id, 'Come join us in the <a href="https://t.me/tenthings">Ten Things config.groupChat</a>!');
-    }
-  });
-});
-*/
 function getLanguage(language) {
   return "en";
   /*
@@ -137,14 +83,7 @@ if (process.env.NODE_ENV === "production") {
 //bot.queueMessage(config.masterChat, "test<a href=\'" + url + "\'>&#8204;</a>\nsome other stuff");
 //bot.queueMessage(config.masterChat, JSON.stringify(msg));
 //The Group: '5b6361dcbd0ff6645df5f225'  '-1001394022777'
-/*
-Game.findOne({ chat_id: '-1001394022777'})
-.then(function(game) {
-  var winner = game.players.reduce(function(player1, player2) {
-    return (player1.scoreDaily > player2.scoreDaily) ? player1 : player2;
-  });
-  bot.notifyAdmin(winner);
-});*/
+
 /*
 bot.exportChatInviteLink('-1001394022777').then(function(chat) {
   console.log(chat);
@@ -155,25 +94,16 @@ const getAvailableLanguages = ({ settings }) =>
   settings.languages && settings.languages.length > 0 ? settings.languages : ["EN"];
 
 const getGame = async (chat_id, user) => {
-  const game = await Game.findOne({
-    chat_id,
-  })
-    .populate("list.creator")
-    .exec();
+  const game = await Game.findOne({ chat_id }).populate("list.creator").exec();
   if (!game) return await createGame(chat_id);
   let player = await players.getPlayer(game, user);
-  return {
-    game,
-    player,
-  };
+  return { game, player };
 };
 
 const createGame = async (chat_id) => {
   const game = new Game({
     chat_id,
-    settings: {
-      languages: ["EN"],
-    },
+    settings: { languages: ["EN"] },
   });
   const savedGame = await game.save();
   return savedGame;
@@ -192,18 +122,6 @@ bot.sendKeyboard(config.masterChat, 'test', {
 */
 
 /*
-List.find({
-    categories: {
-      $nin: ['Music', 'Movies']
-    }
-  })
-  .select('category')
-  .exec((err, lists) => {
-    console.log(_.uniq(lists.map(list => list.category)));
-  });
-  */
-
-/*
  ██████   ██████  ███████ ████████ 
  ██   ██ ██    ██ ██         ██    
  ██████  ██    ██ ███████    ██    
@@ -215,10 +133,6 @@ router.post("/", async ({ body, get }, res, next) => {
     res.status(200).send("EVENT_RECEIVED");
     return console.log(body);
   }
-  /*
-  console.log(body);
-  return res.status(200).send(body);
-  */
   if (body.message || body.callback_query) {
     const from = body.message ? body.message.from.id : body.callback_query.from.id;
     if (from != config.masterChat && (await redis.get("pause")) === "true")
@@ -265,24 +179,16 @@ router.post("/", async ({ body, get }, res, next) => {
           delete cache.voters[data.from_id];
         }
       } else {
-        cache.voters[data.from_id] = {
-          lastVoted: moment(),
-          delay: 10,
-        };
+        cache.voters[data.from_id] = { lastVoted: moment(), delay: 10 };
         doVote = true;
       }
       if (doVote) {
-        let foundList = await List.findOne({
-          _id: data.list,
-        })
+        let foundList = await List.findOne({ _id: data.list })
           .select("name votes modifyDate score skips plays")
           .exec();
         let voter = _.find(foundList.votes, (vote) => vote.voter == data.from_id);
         if (!voter) {
-          foundList.votes.push({
-            voter: data.from_id,
-            vote: data.vote,
-          });
+          foundList.votes.push({ voter: data.from_id, vote: data.vote });
           voter = foundList.votes[foundList.votes.length - 1];
         } else {
           voter.vote = data.vote;
@@ -310,9 +216,7 @@ router.post("/", async ({ body, get }, res, next) => {
     } else if (data.type === "stats") {
       const isAdmin = data.chat_id > 0 || (await bot.checkAdmin(data.chat_id, data.from_id));
       if (isAdmin) {
-        Game.findOne({
-          chat_id: data.chat_id,
-        })
+        Game.findOne({ chat_id: data.chat_id })
           .select("chat_id list")
           .exec((err, game) => {
             switch (data.data) {
@@ -322,7 +226,6 @@ router.post("/", async ({ body, get }, res, next) => {
                 break;
               case "player":
                 bot.answerCallback(body.callback_query.id, "Player Stats");
-                console.log(keyboards.stats_player(game));
                 bot.sendKeyboard(game.chat_id, "<b>Player Stats</b>", keyboards.stats_player(game));
                 break;
               case "global":
@@ -349,9 +252,7 @@ router.post("/", async ({ body, get }, res, next) => {
       if (data.chat_id != config.groupChat) {
         const isAdmin = data.chat_id > 0 || (await bot.checkAdmin(data.chat_id, data.from_id));
         if (isAdmin) {
-          let game = await Game.findOne({
-            chat_id: data.chat_id,
-          })
+          let game = await Game.findOne({ chat_id: data.chat_id })
             .select("chat_id disabledCategories")
             .exec();
           const categoryIndex = game.disabledCategories.indexOf(data.id);
@@ -379,20 +280,13 @@ router.post("/", async ({ body, get }, res, next) => {
       if (body.callback_query.message.chat_id != config.masterChat) {
         const isAdmin = data.chat_id > 0 || (await bot.checkAdmin(data.chat_id, data.from_id));
         if (isAdmin) {
-          Game.findOne({
-            chat_id: data.chat_id,
-          })
+          Game.findOne({ chat_id: data.chat_id })
             .select("chat_id settings")
             .exec(async (err, game) => {
               if (err) return bot.notifyAdmin(`Settings Find Error: \n${JSON.stringify(err)}`);
               if (data.id === "lang") {
                 const availableLanguages = await List.aggregate([
-                  {
-                    $group: {
-                      _id: "$language",
-                      count: { $sum: 1 },
-                    },
-                  },
+                  { $group: { _id: "$language", count: { $sum: 1 } } },
                 ]).exec();
                 bot.editKeyboard(
                   data.chat_id,
@@ -417,9 +311,7 @@ router.post("/", async ({ body, get }, res, next) => {
         }
       }
     } else if (data.type === "lang") {
-      Game.findOne({
-        chat_id: data.chat_id,
-      })
+      Game.findOne({ chat_id: data.chat_id })
         .select("chat_id settings")
         .exec((err, game) => {
           if (err) return bot.notifyAdmin("Language button\n" + JSON.stringify(err));
@@ -441,12 +333,7 @@ router.post("/", async ({ body, get }, res, next) => {
               `${data.id} -> ${isSelected ? "Off" : "On"}`
             );
             const availableLanguages = await List.aggregate([
-              {
-                $group: {
-                  _id: "$language",
-                  count: { $sum: 1 },
-                },
-              },
+              { $group: { _id: "$language", count: { $sum: 1 } } },
             ]).exec();
             bot.editKeyboard(
               data.chat_id,
@@ -457,9 +344,7 @@ router.post("/", async ({ body, get }, res, next) => {
         });
     } else if (data.type === "pick") {
       if (data.chat_id === config.adminChat) {
-        List.findOne({
-          _id: data.list,
-        })
+        List.findOne({ _id: data.list })
           .populate("creator")
           .exec((err, list) => {
             let msg = messages.listInfo(list);
@@ -483,9 +368,7 @@ router.post("/", async ({ body, get }, res, next) => {
                 data.chat_id,
                 `The queue already has the maximum of 10 lists, ${data.requestor}`
               );
-            List.findOne({
-              _id: data.list,
-            }).exec((err, list) => {
+            List.findOne({ _id: data.list }).exec((err, list) => {
               const foundList = _.find(game.pickedLists, (pickedList) => pickedList == list._id);
               if (foundList) {
                 bot.queueMessage(
@@ -509,9 +392,7 @@ router.post("/", async ({ body, get }, res, next) => {
           });
       }
     } else if (data.type === "suggest") {
-      Game.findOne({
-        chat_id: data.chat_id,
-      })
+      Game.findOne({ chat_id: data.chat_id })
         .select("chat_id list")
         .exec((err, game) => {
           const suggestion = body.callback_query.message.text.substring(
@@ -534,9 +415,7 @@ router.post("/", async ({ body, get }, res, next) => {
           bot.queueMessage(data.chat_id, message);
         });
     } else if (data.type === "values") {
-      List.findOne({
-        _id: data.list,
-      }).exec((err, list) => {
+      List.findOne({ _id: data.list }).exec((err, list) => {
         bot.queueMessage(
           data.chat_id,
           list.values
@@ -545,9 +424,7 @@ router.post("/", async ({ body, get }, res, next) => {
         );
       });
     } else if (data.type === "desc") {
-      List.findOne({
-        _id: data.list,
-      }).exec((err, list) => {
+      List.findOne({ _id: data.list }).exec((err, list) => {
         var message = `<b>${list.name}</b>\nDescription:\n<i>${list.description || "N/A"}</i>`;
         bot.queueMessage(data.chat_id, message);
       });
@@ -572,24 +449,9 @@ router.post("/", async ({ body, get }, res, next) => {
       );
     }
     return res.sendStatus(200);
-    /*
-      } else if (!body.message) {
-        msg = {
-          id: config.masterChat,
-          from: {
-            first_name: 'Bot Error'
-          },
-          command: '/error',
-          text: JSON.stringify(body),
-          chat: {
-            id: config.masterChat
-          }
-        };*/
   } else if (!body.message.text) {
     if (body.message.new_chat_participant) {
-      Game.findOne({
-        chat_id: body.message.chat.id,
-      })
+      Game.findOne({ chat_id: body.message.chat.id })
         .select("settings")
         .exec((err, game) => {
           if (err) return bot.notifyAdmin(`New Participant Error:\n${err}`);
@@ -609,21 +471,18 @@ router.post("/", async ({ body, get }, res, next) => {
         chat: body.message.chat,
       };
     } else if (body.message.left_chat_participant) {
-      Game.findOne({
-        chat_id: body.message.chat.id,
-      }).exec((err, game) => {
+      Game.findOne({ chat_id: body.message.chat.id }).exec((err, game) => {
         if (err) return console.error(err);
         if (!game) return;
-        Player.findOne({
-          game: game._id,
-          id: `${body.message.left_chat_participant.id}`,
-        }).exec((err, player) => {
-          if (err || !player) return;
-          if (player) {
-            player.present = false;
-            player.save();
+        Player.findOne({ game: game._id, id: `${body.message.left_chat_participant.id}` }).exec(
+          (err, player) => {
+            if (err || !player) return;
+            if (player) {
+              player.present = false;
+              player.save();
+            }
           }
-        });
+        );
       });
       return res.sendStatus(200);
     } else if (
@@ -653,14 +512,10 @@ router.post("/", async ({ body, get }, res, next) => {
     } else {
       msg = {
         id: config.masterChat,
-        from: {
-          first_name: "Bot Error",
-        },
+        from: { first_name: "Bot Error" },
         command: "/error",
         text: JSON.stringify(body),
-        chat: {
-          id: config.masterChat,
-        },
+        chat: { id: config.masterChat },
       };
     }
   } else {
@@ -690,9 +545,7 @@ router.post("/", async ({ body, get }, res, next) => {
     bot.notifyAdmin(`Can't send message:\n${JSON.stringify(msg)}`);
     return res.sendStatus(200);
   }
-  Game.findOne({
-    chat_id: msg.chat.id,
-  })
+  Game.findOne({ chat_id: msg.chat.id })
     .populate("list.creator")
     .select("-playedLists")
     //.select('chat_id enabled players hints cycles lastCycleDate lastPlayDate listsPlayed guessers streak disabledCategories pickedLists list date minigame tinygame settings')
@@ -1019,13 +872,7 @@ const evaluateCommand = async (res, msg, game, isNew) => {
       */
     case "/eu":
     case "/me":
-      stats.getStats(
-        msg.chat.id,
-        {
-          id: "p_",
-        },
-        msg.from.id
-      );
+      stats.getStats(msg.chat.id, { id: "p_" }, msg.from.id);
       break;
     case "/pontuacao":
     case "/score":
@@ -1154,16 +1001,7 @@ const evaluateCommand = async (res, msg, game, isNew) => {
       }
   }
 };
-/*
-List.updateMany({}, {
-  $unset: {
-    category: ''
-  }
-}).exec((err, done) => {
-  if (err) return console.error(err);
-  console.log(done);
-});
-*/
+
 router.get("/queue", async (req, res, next) => {
   res.json(await getQueue());
 });
@@ -1236,11 +1074,6 @@ const newPlayerError = (err) => {
 };
 
 /*
-getQueue().then(message => {
-  bot.notifyAdmin(message);
-}, console.error);
-*/
-/*
 const fs = require('fs');
 
 List
@@ -1281,148 +1114,7 @@ List
   //console.log(result);
 });
 */
-/*
-List.find({})
-  .select('_id name category categories')
-  .exec((err, lists) => {
-    Promise.all(
-      lists.map(list => {
-        if (!list.categories) {
-          list.categories = [];
-        }
-        if (list.categories.length === 0) {
-          list.categories.push(list.category);
-        }
-        return list.save();
-      })).then(console.log, console.error);
-  });
-  */
-/*
-List
-  .aggregate([{
-    $unwind: '$values'
-  }, {
-    $group: {
-      _id: '$name',
-      creators: {
-        $push: '$values.creator'
-      }
-    }
-  }])
-  .exec((err, lists) => {
-    console.log(lists.filter(list => _.uniq(list.creators).length > 1));
-  });
-  */
-/*
-List
-.find()
-.lean()
-.exec((err, lists) => {
-  let answers = lists.reduce((answers, list) => {
-    for (const value of list.values) {
-      if (!answers[value.value]) answers[value.value] = [list.name.replace(',', ' ')];
-      else answers[value.value].push(list.name.replace(',', ' '));
-    }
-    return answers;
-  }, {});
-  let result = Object.keys(answers).reduce((result, answer) => {
-    if (answers[answer] && answers[answer].length > 2) {
-      result.push({
-        answer: answer,
-        lists: answers[answer]
-      });
-    }
-    return result;
-  }, []);
-  console.log(result.length);
-  console.log(result.reduce((count, answer) => {
-    if (!count[answer.lists.length]) count[answer.lists.length] = 1;
-    else count[answer.lists.length]++;
-    if (answer.lists.length >= 30) console.log(answer.answer + ' ' +  answer.lists.length);
-    return count;
-  }, {}));
 
-});
-*/
-/*
-Game.find({
-    //_id: '5e6863596b0cae091d896170',
-    'list.name': 'Marvel Comics - Women That Fly'
-  })
-  .exec((err, games) => {
-    console.log(games.map(game => game._id));
-    //game.chat_id = '-1001195181419'; //'-1001380477486'
-    //game.save();
-  });
-  */
-/*
-getGame(config.groupChat, {
-  id: '592503547',
-  first_name: 'Somebody',
-  last_name: 'That I Used to Know',
-  username: 'Gotye'
-}).then(console.log);
-*/
-/*
-Game.findOne({
-    //_id: '5ea571afe7076e790d20182d',
-    chat_id: config.groupChat
-  }, {
-    players: {
-      $elemMatch: {
-        id: '592503547'
-      }
-    }
-  })
-  .select('_id list guessers')
-  .exec((err, game) => {
-    console.log(game);
-
-        Game.updateOne({
-            //_id: '5ea571afe7076e790d20182d',
-            chat_id: config.groupChat,
-            'players.id': '592503547'
-          }, {
-            $set: {
-              "players.$.first_name": 'LauLaue'
-            }
-          })
-          .exec((err, game) => {
-            if (err) return console.error(err);
-            console.log(game);
-          });
-
-    //game.chat_id = '-1001195181419'; //'-1001380477486'
-    //game.disabledCategories = ['Non-English'];
-    //game.save();
-  });
-*/
-/*
-Game.findOne({
-  'list.name': 'Things designed to hold liquids'
-}).populate('list.creator', 'username').exec((err, game) => {
-  if (err) console.error(err);
-  console.log(game);
-});
-*/
-/*
-User.findOne({
-  _id: '5ae15f14b5f7883ff0497339'
-}).exec((err, user) => {
-  if (err) console.error(err);
-  console.log(user);
-});
-*/
-/*
-List.findOne({
-    _id: '5eb69f1b5bcb682e62770f1a'
-  })
-  .lean()
-  .exec((err, list) => {
-    //console.log(list);
-    let score = list.votes.reduce((score, vote) => score + vote.vote, 0);
-    console.log(score);
-  });*/
 /*
 request(`https://api.themoviedb.org/3/search/movie?api_key=${moviedbAPIKey}&query=${encodeURIComponent('good will hunting')}`, (err, response, body) => {
   if (err) {

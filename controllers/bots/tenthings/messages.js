@@ -481,7 +481,7 @@ module.exports = {
             "I was only looking for a fling",
             "You had me at /hello",
             "( ˘ ³˘)♥",
-            "How does your spouse feel about that?",
+            "How does your SO feel about that?",
             "You make me want to be a better bot",
             "https://i.imgur.com/Ha8srew.gif",
             "https://i.imgur.com/kfowH2E.gif",
@@ -502,6 +502,25 @@ module.exports = {
             "https://i.imgur.com/ZKIuwbE.gif",
             "https://i.imgur.com/jmN5rxm.gif",
             "https://i.imgur.com/JlKoiSn.gif",
+            "https://i.imgur.com/B6dLkJx.gif",
+            "https://i.imgur.com/ASO0zsl.gif",
+            "https://i.imgur.com/iLkiTYQ.gif",
+            "https://i.imgur.com/NypzRMM.gif",
+            "https://i.imgur.com/XDWafFs.gif",
+            "https://i.imgur.com/F5TQj03.gif",
+            "https://i.imgur.com/zta3wgB.gif",
+            "https://i.imgur.com/HnIqyiH.gif",
+            "https://i.imgur.com/LdXxbmw.gif",
+          ];
+        } else if (checkString(text, "sex")) {
+          messages = [
+            "https://i.imgur.com/LbCMNSP.gif",
+            "https://i.imgur.com/8T00TIm.gif",
+            "https://i.imgur.com/m0pjAZR.gif",
+            "https://i.imgur.com/aqPMU6I.gif",
+            "https://i.imgur.com/8DopY.gif",
+            "https://i.imgur.com/5UCaUUm.gif",
+            "https://i.imgur.com/rDHitbB.gif",
           ];
         } else if (
           checkString(text, "kill") ||
@@ -518,10 +537,14 @@ module.exports = {
             "https://i.imgur.com/0DO3SlR.gif",
             "https://i.imgur.com/CYj0901.gif",
             "https://i.imgur.com/dWcjuBa.gif",
-            "https://i.imgur.com/VeI4zsk.gif",
             "https://i.imgur.com/7xKQFGX.gif",
             "https://i.imgur.com/6Y67zdt.gif",
             "https://i.imgur.com/fxliNfE.gif",
+            "https://i.imgur.com/pew22Cl.gif",
+            "https://i.imgur.com/xHZg9kW.gif",
+            "https://i.imgur.com/m2UxHTg.gif",
+            "https://i.imgur.com/idm7R7e.gif",
+            "https://i.imgur.com/0rmrBBK.gif",
           ];
         } else if (checkString(text, "ten") && checkString(text, "things")) {
           messages = ["That's Mister Ten Things to you!"];
@@ -547,16 +570,6 @@ module.exports = {
             "Some Bitcoin could help me afford a better server\nBitcoin Address: 17ZhRg1iQTqhwUgEYq4MnEYfENMftuurqs",
             "https://i.imgur.com/t6Fhx6k.gif",
           ];
-        } else if (checkString(text, "sorry")) {
-          messages = [
-            "https://i.imgur.com/JUqg0O4.gif",
-            "https://i.imgur.com/phU8ptn.gif",
-            "https://i.imgur.com/8S3Fmjd.gif",
-            "https://i.imgur.com/fX0YODD.gif",
-            "https://i.imgur.com/sUvZrnO.gif",
-            "https://i.imgur.com/DjUH3w8.gif",
-            "https://i.imgur.com/Ywxo0Tf.gif",
-          ];
         } else if (
           checkString(text, "suck") ||
           checkString(text, "lame") ||
@@ -579,6 +592,12 @@ module.exports = {
             "https://i.imgur.com/TTorePG.gif",
             "https://i.imgur.com/VjQKRBc.gif",
             "https://i.imgur.com/qiEJpPI.gif",
+            "https://i.imgur.com/9BE0yex.gif",
+            "https://i.imgur.com/xmoMiN5.gif",
+            "https://i.imgur.com/9CzDy3M.gif",
+            "https://i.imgur.com/qO0Y9uJ.gif",
+            "https://i.imgur.com/So903cz.gif",
+            "https://i.imgur.com/nBhImyG.gif",
           ];
         } else if (
           (checkString(text, "favourite") || checkString(text, "favorite")) &&
@@ -620,7 +639,6 @@ module.exports = {
             "https://i.imgur.com/DNTehBp.gif",
             "https://i.imgur.com/jdwhkzx.gif",
             "https://i.imgur.com/UPisrU0.gif",
-            "https://i.imgur.com/NypzRMM.gif",
             "https://i.imgur.com/kUjfZDU.gif",
             "https://i.imgur.com/1Yy94Uz.gif",
             "https://i.imgur.com/qQZoEuR.gif",
@@ -629,6 +647,8 @@ module.exports = {
             "https://i.imgur.com/A0WUbiU.gif",
             "https://i.imgur.com/jD0wwzd.gif",
             "https://i.imgur.com/3JAEEv5.gif",
+            "https://i.imgur.com/zGnQG7S.gif",
+            "https://i.imgur.com/LKibTOf.gif",
             "I call potty mouth!",
             'I believe the correct term is "procreate"',
             "Do you kiss your mother with that mouth?",
@@ -757,9 +777,19 @@ module.exports = {
             "https://i.imgur.com/kIlxFWM.gif",
             "https://i.imgur.com/9K9RBj3.gif",
             "https://i.imgur.com/jvmIf9p.gif",
-            "https://i.imgur.com/gMscglN.gif",
             "https://i.imgur.com/M3GnCle.gif",
             "https://i.imgur.com/p695xUz.gif",
+            "https://i.imgur.com/sR8cRCS.gif",
+            "https://i.imgur.com/waQT9v4.gif",
+            "https://i.imgur.com/QYFYVVf.gif",
+            "https://i.imgur.com/vs4FOim.gif",
+            "https://i.imgur.com/yxMr71u.gif",
+            "https://i.imgur.com/jGHsoBW.gif",
+            "https://i.imgur.com/GMDRgPr.gif",
+            "https://i.imgur.com/RwvrrYa.gif",
+            "https://i.imgur.com/rjQqoes.gif",
+            "https://i.imgur.com/3QATIwh.gif",
+            "https://i.imgur.com/uUdMsGE.gif",
           ];
         }
       } else if (checkString(text, "cake")) {
