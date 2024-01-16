@@ -20,4 +20,4 @@ i18next.use(Backend).init({
   },
 });
 
-module.exports = (lng, key) => i18next.getFixedT(lng.toLowerCase() || systemLocale)(key);
+module.exports = (lng, key) => i18next.getFixedT(lng ? lng.toLowerCase() : systemLocale)(key);
