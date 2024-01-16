@@ -183,7 +183,7 @@ exports.evaluate = async (res, msg, game, isNew) => {
         player.searches++;
         await player.save();
         console.log(`${game.chat_id} - Search for ${search}`);
-        const foundLists = await lists.search(game, search);
+        const foundLists = await lists.search(search, game);
         if (foundLists.length > 0) {
           const keyboard = keyboards.lists(foundLists);
           bot.sendKeyboard(

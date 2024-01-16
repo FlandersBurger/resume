@@ -37,7 +37,7 @@ exports.rate = (game) => {
 };
 
 const getAvailableLanguages = ({ settings }) =>
-  settings && settings.languages && settings.languages.length > 0 ? settings.languages : ["EN"];
+  settings.languages && settings.languages.length > 0 ? settings.languages : ["EN"];
 
 const select = async (game) => {
   const availableLanguages = getAvailableLanguages(game);
