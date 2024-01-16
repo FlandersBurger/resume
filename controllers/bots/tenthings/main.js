@@ -14,7 +14,7 @@ const cache = require("./cache");
 const queue = require("./queue");
 const spam = require("./spam");
 const categories = require("./categories");
-const players = require("./players");
+const jobs = require("./jobs");
 const commands = require("./commands");
 
 //-------------//
