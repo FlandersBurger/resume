@@ -321,6 +321,7 @@ function TelegramBot() {
       type: "chat",
       chat_id: channel,
     };
+    console.log(commands);
     const url = `https://api.telegram.org/beta/bot${
       bot.token
     }/setMyCommands?commands=${JSON.stringify(commands)}&scope=${JSON.stringify(scope)}`;

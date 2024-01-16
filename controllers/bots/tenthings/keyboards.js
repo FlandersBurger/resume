@@ -475,8 +475,9 @@ module.exports = {
         .sort()
         .reduce((result, language, i) => {
           const button = {
-            text: `${language.code} - ${language.native} 
-            }): ${settings.language === language.code ? GREEN : ""}`,
+            text: `${language.code} - ${language.native} ${
+              settings.language === language.code ? GREEN : ""
+            }`,
             callback_data: JSON.stringify({
               type: "lang",
               id: language.code,
