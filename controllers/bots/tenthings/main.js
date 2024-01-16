@@ -270,7 +270,7 @@ router.post("/", async ({ body, get }, res, next) => {
             .select("chat_id settings")
             .exec(async (err, game) => {
               if (err) return bot.notifyAdmin(`Settings Find Error: \n${JSON.stringify(err)}`);
-              if (data.id === "lang") {
+              if (data.id === "langs") {
                 const availableLanguages = await List.aggregate([
                   { $group: { _id: "$language", count: { $sum: 1 } } },
                 ]).exec();
@@ -278,6 +278,15 @@ router.post("/", async ({ body, get }, res, next) => {
                   data.chat_id,
                   data.message_id,
                   keyboards.languages(game, availableLanguages)
+                );
+              } else if (data.id === "lang") {
+                const availableLanguages = await List.aggregate([
+                  { $group: { _id: "$language", count: { $sum: 1 } } },
+                ]).exec();
+                bot.editKeyboard(
+                  data.chat_id,
+                  data.message_id,
+                  keyboards.language(game, availableLanguages)
                 );
               } else {
                 console.log(`${data.id} toggled for ${game._id}`);
@@ -296,11 +305,11 @@ router.post("/", async ({ body, get }, res, next) => {
           bot.queueMessage(data.chat_id, `Nice try ${data.requestor} but that's an admin function`);
         }
       }
-    } else if (data.type === "lang") {
+    } else if (data.type === "langs") {
       Game.findOne({ chat_id: data.chat_id })
         .select("chat_id settings")
         .exec((err, game) => {
-          if (err) return bot.notifyAdmin("Language button\n" + JSON.stringify(err));
+          if (err) return bot.notifyAdmin("Languages button\n" + JSON.stringify(err));
           const isSelected = game.settings.languages.includes(data.id);
           if (isSelected) {
             game.settings.languages = game.settings.languages.filter(
@@ -313,7 +322,7 @@ router.post("/", async ({ body, get }, res, next) => {
             game.settings.languages = ["EN"];
           }
           game.save(async (err, savedGame) => {
-            if (err) return bot.notifyAdmin(`Language Save Error: \n${JSON.stringify(err)}`);
+            if (err) return bot.notifyAdmin(`Languages Save Error: \n${JSON.stringify(err)}`);
             bot.answerCallback(
               body.callback_query.id,
               `${data.id} -> ${isSelected ? "Off" : "On"}`
@@ -325,6 +334,25 @@ router.post("/", async ({ body, get }, res, next) => {
               data.chat_id,
               data.message_id,
               keyboards.languages(game, availableLanguages)
+            );
+          });
+        });
+    } else if (data.type === "lang") {
+      Game.findOne({ chat_id: data.chat_id })
+        .select("chat_id settings")
+        .exec((err, game) => {
+          if (err) return bot.notifyAdmin("Language button\n" + JSON.stringify(err));
+          game.settings.language = data.id;
+          game.save(async (err, savedGame) => {
+            if (err) return bot.notifyAdmin(`Language Save Error: \n${JSON.stringify(err)}`);
+            bot.answerCallback(body.callback_query.id, `${data.id} -> New bot language`);
+            const availableLanguages = await List.aggregate([
+              { $group: { _id: "$language", count: { $sum: 1 } } },
+            ]).exec();
+            bot.editKeyboard(
+              data.chat_id,
+              data.message_id,
+              keyboards.language(game, availableLanguages)
             );
           });
         });

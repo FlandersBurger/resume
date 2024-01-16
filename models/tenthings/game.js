@@ -60,6 +60,7 @@ var tenthingsSchema = new mongoose.Schema({
     snubs: { type: Boolean, required: true, default: true },
     updates: { type: Boolean, required: true, default: true },
     languages: [{ type: String, required: true, default: "EN" }],
+    language: { type: String, required: true, default: "EN" },
   },
 });
 

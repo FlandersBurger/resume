@@ -16,9 +16,11 @@
   <table class="table table-striped">
     <thead>
       <tr>
-        <th>ID</th>
-        <th>Username</th>
-        <th>Name</th>
+        <th ng-click="orderBy('_id')">ID</th>
+        <th ng-click="orderBy('username')">Username</th>
+        <th ng-click="orderBy('displayName')">Name</th>
+        <th ng-click="orderBy('email')">Email</th>
+        <th ng-click="orderBy('admin')">Admin?</th>
         <th>Access</th>
       </tr>
     </thead>
@@ -36,13 +38,23 @@
             ng-model="search.displayName"
           />
         </td>
-        <td></td>
+        <td>
+          <input class="form-control" type="text" placeholder="Search" ng-model="search.email" />
+        </td>
       </tr>
-      <tr ng-repeat="user in users | orderBy: 'username' | filter: search">
+      <tr ng-repeat="user in users | orderBy: order.field:order.reverse | filter: search">
         <!--td><img class="img-circle img-profile" ng-src="{{user.photoURL}}" alt="Profile Picture" ng-if="user.photoURL"></td-->
         <td>{{user._id}}</td>
         <td>{{user.username}}</td>
         <td>{{user.displayName}}</td>
+        <td>{{user.email}}</td>
+        <td>
+          <i
+            class="fas"
+            ng-class="{'fa-unlock': user.admin, 'fa-lock': !user.admin}"
+            aria-hidden="true"
+          ></i>
+        </td>
         <td>
           <button
             class="btn btn-sm"
