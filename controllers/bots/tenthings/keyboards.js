@@ -355,11 +355,13 @@ module.exports = {
       ],
     ],
   },
-  categories: ({ chat_id, disabledCategories }) => {
+  categories: ({ chat_id, settings, disabledCategories }) => {
     return {
       inline_keyboard: categories.sort().reduce((result, category, i) => {
         const button = {
-          text: `${category}: ${disabledCategories.indexOf(category) < 0 ? ON : OFF}`,
+          text: `${i18n(settings.language, `categories.${category}`)}: ${
+            disabledCategories.indexOf(category) < 0 ? ON : OFF
+          }`,
           callback_data: JSON.stringify({
             type: "cat",
             id: category,
@@ -380,7 +382,7 @@ module.exports = {
       inline_keyboard: [
         [
           {
-            text: `Player intro: ${settings.intro ? ON : OFF}`,
+            text: `${i18n(settings.language, "playerIntro")}: ${settings.intro ? ON : OFF}`,
             callback_data: JSON.stringify({
               type: "setting",
               id: "intro",
@@ -388,7 +390,7 @@ module.exports = {
             }),
           },
           {
-            text: `Sass: ${settings.sass ? ON : OFF}`,
+            text: `${i18n(settings.language, "sass")}: ${settings.sass ? ON : OFF}`,
             callback_data: JSON.stringify({
               type: "setting",
               id: "sass",
@@ -398,7 +400,7 @@ module.exports = {
         ],
         [
           {
-            text: `Daily updates: ${settings.updates ? ON : OFF}`,
+            text: `${i18n(settings.language, "dailyUpdates")}: ${settings.updates ? ON : OFF}`,
             callback_data: JSON.stringify({
               type: "setting",
               id: "updates",
@@ -473,11 +475,7 @@ module.exports = {
         .sort()
         .reduce((result, language, i) => {
           const button = {
-            text: `${language.code} - ${language.native} (${
-              _.find(
-                availableLanguages,
-                (availableLanguage) => availableLanguage._id === language.code
-              ).count
+            text: `${language.code} - ${language.native} 
             }): ${settings.language === language.code ? GREEN : ""}`,
             callback_data: JSON.stringify({
               type: "lang",
