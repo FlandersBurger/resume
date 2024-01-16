@@ -313,6 +313,8 @@ function TelegramBot() {
       "miniskip",
       "tinyskip",
       "commands",
+      "me",
+      "stats",
     ].map((command) => ({
       command: i18n(language, `commands.${command}`),
       description: i18n(language, `commands.${command}Description`),
