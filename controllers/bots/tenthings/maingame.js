@@ -1,3 +1,5 @@
+const moment = require("moment");
+
 const bot = require("../../../connections/telegram");
 
 const stats = require("./stats");
@@ -122,3 +124,23 @@ const newRound = (currentGame, player) => {
 };
 
 exports.newRound = newRound;
+
+exports.activate = (game, save = false) => {
+  if (!game.enabled) {
+    game.lastPlayDate = moment();
+    game.enabled = true;
+    bot.sendMessage(game.chat_id, "Ten Things started");
+    if (save) game.save();
+  }
+};
+
+exports.deactivate = (game) => {
+  if (game.enabled) {
+    game.enabled = false;
+    game.save();
+    bot.sendMessage(
+      game.chat_id,
+      "I am now sleeping, type /list or /start to wake me up.\nThis triggers after 30 days of inactivity."
+    );
+  }
+};

@@ -2,7 +2,6 @@ const moment = require("moment");
 const request = require("request");
 const MAXHINTS = 6;
 
-const lists = require("./lists");
 const categories = require("./categories");
 
 module.exports = {

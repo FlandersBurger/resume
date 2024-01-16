@@ -7,19 +7,15 @@ const redis = require("../../../redis");
 const bot = require("../../../connections/telegram");
 
 const lists = require("./lists");
-const guesses = require("./guesses");
-const skips = require("./skips");
 const messages = require("./messages");
 const keyboards = require("./keyboards");
 const stats = require("./stats");
 const cache = require("./cache");
+const queue = require("./queue");
 const spam = require("./spam");
-const hints = require("./hints");
 const categories = require("./categories");
-const maingame = require("./maingame");
-const minigame = require("./minigame");
-const tinygame = require("./tinygame");
 const players = require("./players");
+const commands = require("./commands");
 
 //-------------//
 //redis.set('pause', true);
@@ -89,16 +85,6 @@ bot.exportChatInviteLink('-1001394022777').then(function(chat) {
   console.log(chat);
 });
 */
-
-const getAvailableLanguages = ({ settings }) =>
-  settings.languages && settings.languages.length > 0 ? settings.languages : ["EN"];
-
-const getGame = async (chat_id, user) => {
-  const game = await Game.findOne({ chat_id }).populate("list.creator").exec();
-  if (!game) return await createGame(chat_id);
-  let player = await players.getPlayer(game, user);
-  return { game, player };
-};
 
 const createGame = async (chat_id) => {
   const game = new Game({
@@ -558,7 +544,7 @@ router.post("/", async ({ body, get }, res, next) => {
         createGame(msg.chat.id).then((newGame) => {
           if (err) bot.notifyAdmin("POST: " + JSON.stringify(err) + "\n" + JSON.stringify(newGame));
           console.log(`New game created for ${msg.chat.id}`);
-          return evaluateCommand(res, msg, newGame, true);
+          return commands.evaluate(res, msg, newGame, true);
         });
       } else {
         if (msg.command.includes("@")) {
@@ -571,7 +557,7 @@ router.post("/", async ({ body, get }, res, next) => {
             return res.sendStatus(200);
           }
         }
-        return evaluateCommand(res, msg, existingGame, false);
+        return commands.evaluate(res, msg, existingGame, false);
       }
     });
 });
@@ -625,447 +611,15 @@ function countBytes(s) {
   console.log(encodeURI(s).split(/%..|./).length - 1);
 }
 
-/*
- ███████ ██    ██  █████  ██      ██    ██  █████  ████████ ███████      ██████  ██████  ███    ███ ███    ███  █████  ███    ██ ██████  
- ██      ██    ██ ██   ██ ██      ██    ██ ██   ██    ██    ██          ██      ██    ██ ████  ████ ████  ████ ██   ██ ████   ██ ██   ██ 
- █████   ██    ██ ███████ ██      ██    ██ ███████    ██    █████       ██      ██    ██ ██ ████ ██ ██ ████ ██ ███████ ██ ██  ██ ██   ██ 
- ██       ██  ██  ██   ██ ██      ██    ██ ██   ██    ██    ██          ██      ██    ██ ██  ██  ██ ██  ██  ██ ██   ██ ██  ██ ██ ██   ██ 
- ███████   ████   ██   ██ ███████  ██████  ██   ██    ██    ███████      ██████  ██████  ██      ██ ██      ██ ██   ██ ██   ████ ██████  
-*/
-const evaluateCommand = async (res, msg, game, isNew) => {
-  //bot.notifyAdmin(tenthings);
-  //bot.notifyAdmin(games[msg.chat.id].list);
-  let player = await players.getPlayer(game, msg.from);
-  if (!player.first_name) {
-    console.error("msg without a first_name?");
-    console.error(msg);
-    return res.sendStatus(200);
-  } else if (msg.chat.id === config.adminChat) {
-    if (
-      !["/search", "/stats", "/typo", "/bug", "/feature", "/suggest"].includes(
-        msg.command.toLowerCase()
-      )
-    ) {
-      return res.sendStatus(200);
-    } else {
-      res.sendStatus(200);
-    }
-  } else {
-    res.sendStatus(200);
-  }
-  /*
-  const flood = await floodChecker();
-  if (flood) res.sendStatus(200);
-  */
-  if (game.list.values.length === 0) {
-    maingame.newRound(game);
-  }
-  switch (msg.command.toLowerCase()) {
-    case "/error":
-      bot.queueMessage(msg.chat.id, msg.text);
-      break;
-    case "/intro":
-      bot.queueMessage(msg.chat.id, messages.introduction(msg.from.first_name));
-      break;
-    case "/logica":
-    case "/logic":
-      bot.queueMessage(msg.chat.id, messages.logic());
-      break;
-    case "/comandos":
-      bot.queueMessage(msg.chat.id, messages.commands("PT"));
-      break;
-    case "/commands":
-      bot.queueMessage(msg.chat.id, messages.commands());
-      break;
-    case "/parar":
-    case "/stop":
-      bot.checkAdmin(game.chat_id, msg.from.id).then((admin) => {
-        if (admin) {
-          deactivateGame(game);
-        } else {
-          bot.queueMessage(
-            game.chat_id,
-            `Sorry ${player.first_name}, that's an admin only function`
-          );
-        }
-      });
-      break;
-    case "/new":
-    case "/start":
-      if (isNew) {
-        maingame.newRound(game);
-      } else {
-        stats.getList(game, (list) => {
-          let message = `<b>${game.list.name}</b> (${game.list.totalValues})`;
-          message += game.list.creator ? ` by ${game.list.creator.username}\n` : "\n";
-          message +=
-            game.list.categories.length > 0
-              ? `Categor${
-                  game.list.categories.length > 1 ? "ies" : "y"
-                }: <b>${game.list.categories.join(", ")}</b>\n`
-              : "";
-          message += game.list.description
-            ? game.list.description.includes("href")
-              ? game.list.description
-              : `<i>${game.list.description.angleBrackets()}</i>\n`
-            : "";
-          message += list;
-          bot.queueMessage(msg.chat.id, message);
-          activateGame(game, true);
-        });
-      }
-      break;
-    case "/pule":
-    case "/skip":
-      if (await skips.checkSkipper(game, msg, player)) {
-        activateGame(game, true);
-        skips.process(game, player);
-      }
-      break;
-    case "/minipule":
-    case "/miniskip":
-      if (await skips.checkSkipper(game, msg, player)) {
-        bot.queueMessage(msg.chat.id, `The minigame answer was:\n<i>${game.minigame.answer}</i>`);
-        setTimeout(() => {
-          minigame.create(game, msg);
-        }, 200);
-      }
-      break;
-    case "/puleminusculo":
-    case "/tinyskip":
-      if (await skips.checkSkipper(game, msg, player)) {
-        bot.queueMessage(msg.chat.id, `The tinygame answer was:\n<i>${game.tinygame.answer}</i>`);
-        setTimeout(() => {
-          tinygame.create(game, msg);
-        }, 200);
-      }
-      break;
-    case "/veto":
-      skips.veto(game, player);
-      break;
-    case "/estatisticas":
-    case "/stats":
-      bot.sendKeyboard(game.chat_id, "<b>Stats</b>", keyboards.stats(game.chat_id));
-      break;
-    case "/lista":
-    case "/list":
-      try {
-        stats.getList(game, (list) => {
-          let message = `<b>${game.list.name}</b> (${game.list.totalValues})`;
-          message += game.list.creator ? ` by ${game.list.creator.username}\n` : "\n";
-          message +=
-            game.list.categories.length > 0
-              ? `Categor${
-                  game.list.categories.length > 1 ? "ies" : "y"
-                }: <b>${game.list.categories.join(", ")}</b>\n`
-              : "";
-          message += game.list.description
-            ? game.list.description.includes("href")
-              ? game.list.description
-              : `<i>${game.list.description.angleBrackets()}</i>\n`
-            : "";
-          message += list;
-          bot.queueMessage(msg.chat.id, message);
-          activateGame(game, true);
-        });
-      } catch (e) {
-        console.error(e);
-      }
-      break;
-    case "/erro":
-    case "/typo":
-      sendSuggestion("typo", msg, player, `\nin "${game.list.name}"`);
-      break;
-    case "/bug":
-      sendSuggestion("bug", msg, player);
-      break;
-    case "/feature":
-      sendSuggestion("feature", msg, player);
-      break;
-    case "/pesquisar":
-    case "/search":
-      const search = msg.text.substring(msg.command.length + 1, msg.text.length);
-      if (game.pickedLists.length >= 10)
-        return bot.queueMessage(
-          game.chat_id,
-          `The queue already has the maximum of 10 lists, ${player.first_name}.\n -> /lists`
-        );
-      if (search && search != "TenThings_Bot" && search != "@TenThings_Bot") {
-        player.searches++;
-        await player.save();
-        console.log(`${game.chat_id} - Search for ${search}`);
-        const foundLists = await lists.search(game, search);
-        if (foundLists.length > 0) {
-          const keyboard = keyboards.lists(foundLists);
-          bot.sendKeyboard(
-            game.chat_id,
-            `<b>Which list would you like to ${
-              msg.chat.id === config.adminChat ? "curate" : "queue"
-            }?</b>`,
-            keyboard
-          );
-        } else {
-          bot.queueMessage(
-            game.chat_id,
-            `I didn't find any corresponding lists for <b>"${search}"</b>, ${player.first_name}.\nSimpler queries return better results.`
-          );
-        }
-      } else {
-        bot.queueMessage(
-          msg.chat.id,
-          `You didn't search anything ${player.first_name}. Add your message after /search`
-        );
-      }
-      break;
-    case "/suggest":
-      const suggestion = msg.text.substring(msg.command.length + 1, msg.text.length);
-      if (suggestion && suggestion != "TenThings_Bot" && suggestion != "@TenThings_Bot") {
-        bot.notify(suggestion);
-      }
-      let message =
-        "The suggest command has been retired.\nPlease use one of the following commands instead:\n";
-      message += "/search -> Search lists to queue\n";
-      message += "/typo -> Report a typo in the current list\n";
-      message += "/bug -> Report a bug with the bot\n";
-      message += "/feature -> Suggest an enhancement feature\n";
-      message +=
-        "<i>Note that lists can be added and enhanced by anyone at https://belgocanadian.com/tenthings</i>";
-      bot.queueMessage(game.chat_id, message);
-      break;
-    case "/dica":
-    case "/hint":
-      activateGame(game, false);
-      if (game.list.values.filter(({ guesser }) => !guesser.first_name).length !== 0) {
-        hints.process(game, player);
-      }
-      break;
-    case "/minidica":
-    case "/minihint":
-      hints.process(game, player, "minigame");
-      break;
-    case "/dicaminusculo":
-    case "/tinyhint":
-      hints.process(game, player, "tinygame");
-      break;
-    case "/notify":
-      if (msg.chat.id === config.masterChat) {
-        Game.find({})
-          .select("chat_id")
-          .then((games) => {
-            bot.broadcast(
-              games.map(({ chat_id }) => chat_id),
-              msg.text.replace("/notify ", "")
-            );
-          });
-      }
-      break;
-    /*
-    case '/pause':
-      if (msg.chat.id === config.masterChat) {
-        redis.get('pause').then(value => {
-          const pause = value === 'true';
-          bot.notifyAdmin(`Pause = ${!pause}`);
-          redis.set('pause', !pause);
-        });
-      }
-      break;
-      */
-    case "/eu":
-    case "/me":
-      stats.getStats(msg.chat.id, { id: "p_" }, msg.from.id);
-      break;
-    case "/pontuacao":
-    case "/score":
-      bot.queueMessage(game.chat_id, await stats.getDailyScores(game));
-      break;
-    case "/minijogo":
-    case "/minigame":
-      if (!game.minigame.answer) {
-        minigame.create(game, msg);
-      } else {
-        let message = "<b>Find the connection</b>\n";
-        message += game.minigame.lists.reduce((msg, list) => {
-          msg += `- ${list}\n`;
-          return msg;
-        }, "");
-        message += "\n";
-        message += `<b>${hints.getHint(game.minigame.hints, game.minigame.answer)}</b>`;
-        bot.queueMessage(msg.chat.id, message);
-      }
-      break;
-    case "/jogominusculo":
-    case "/tinygame":
-      if (!game.tinygame.answer) {
-        tinygame.create(game, msg);
-      } else {
-        let message = "<b>Find the list name</b>\n";
-        message += game.tinygame.clues.reduce((msg, clue) => {
-          msg += `- ${clue}\n`;
-          return msg;
-        }, "");
-        message += "\n";
-        message += `<b>${hints.getHint(game.tinygame.hints, game.tinygame.answer)}</b>`;
-        bot.queueMessage(msg.chat.id, message);
-      }
-      break;
-    case "/categorias":
-    case "/categories":
-      if (game.chat_id != config.groupChat) {
-        bot.checkAdmin(game.chat_id, msg.from.id).then((admin) => {
-          if (admin) {
-            bot.sendKeyboard(game.chat_id, "<b>Categories</b>", keyboards.categories(game));
-          } else {
-            bot.queueMessage(game.chat_id, messages.categories(game));
-          }
-        }, console.error);
-      }
-      break;
-    case "/confi":
-    case "/settings":
-      if (game.chat_id != config.groupChat) {
-        bot.checkAdmin(game.chat_id, msg.from.id).then((admin) => {
-          if (admin) {
-            bot.sendKeyboard(game.chat_id, "<b>Settings</b>", keyboards.settings(game));
-          } else {
-            bot.queueMessage(
-              game.chat_id,
-              `Sorry ${player.first_name}, that's an admin only function`
-            );
-          }
-        });
-      }
-      break;
-    case "/check":
-      if (msg.from.id === config.masterChat) {
-        bot.queueMessage(msg.chat.id, "Yes, master. Let me send you what you need!");
-        bot.notifyAdmin(
-          `Chat id: ${msg.chat.id}\nGame _id: ${game._id}\nSettings:\n${JSON.stringify(
-            game.settings
-          )}\nList: ${game.list.name}\nMinigame: ${game.minigame.answer}\nTinygame: ${
-            game.tinygame.answer
-          }\nhttps://belgocanadian.com/tenthings/${game.chat_id}`
-        );
-      }
-      break;
-    case "/flush":
-      if (msg.from.id === config.masterChat) {
-        game.lists = [];
-        game.pickedLists = [];
-        //game.playedLists = [];
-        game.save();
-        bot.queueMessage(msg.chat.id, "Flushed this chat");
-      }
-      break;
-    case "/minigames":
-      if (msg.from.id === config.masterChat) {
-        minigame.createMinigames();
-      }
-      break;
-    case "/ping":
-      bot.queueMessage(msg.chat.id, "pong");
-      break;
-    case "/hello":
-      bot.queueMessage(msg.chat.id, "You already had me but you got greedy, now you ruined it");
-      break;
-    case "/queue":
-      getQueue().then((message) => {
-        bot.sendMessage(msg.chat.id, message);
-      }, console.error);
-      break;
-    case "/listas":
-    case "/lists":
-      if (game.pickedLists.length > 0) {
-        List.find({
-          _id: {
-            $in: game.pickedLists,
-          },
-        }).exec((err, upcomingLists) => {
-          let message = "<b>Upcoming lists</b>\n";
-          for (const list of upcomingLists.slice(0, 10)) {
-            message += `- ${list.name}\n`;
-          }
-          bot.queueMessage(msg.chat.id, message);
-        });
-      } else {
-        bot.queueMessage(
-          msg.chat.id,
-          "There are no lists queued, use the /search [message] command to find some"
-        );
-      }
-      break;
-    default:
-      if (game.lastPlayDate <= moment().subtract(30, "days")) {
-        deactivateGame(game);
-      } else if (game.enabled && msg.chat.id != config.adminChat) {
-        guesses.queue(game, msg);
-      }
-  }
-};
-
 router.get("/queue", async (req, res, next) => {
-  res.json(await getQueue());
+  res.json(await queue.get());
 });
 
 module.exports = router;
 
-const sendSuggestion = async (type, msg, player, extraText = "") => {
-  const suggestion = msg.text.substring(msg.command.length + 1, msg.text.length);
-  if (suggestion && suggestion != "TenThings_Bot" && suggestion != "@TenThings_Bot") {
-    player.suggestions++;
-    await player.save();
-    let message = `<b>${type.capitalize()}</b>\n${suggestion}${extraText}\n<i>${
-      player.username ? `@${player.username}` : player.first_name
-    }</i>`;
-    bot.notify(message);
-    const chatLink = await bot.getChat(msg.chat.id);
-    message += chatLink ? `\nChat: ${chatLink}` : "";
-    bot.notifyAdmins(message);
-    message = `<b>${type.capitalize()}</b>\n<i>${suggestion}</i>\nThank you, ${
-      player.username ? `@${player.username}` : player.first_name
-    }`;
-    bot.queueMessage(msg.chat.id, message);
-  } else {
-    bot.queueMessage(
-      msg.chat.id,
-      `You didn't add a feature ${player.first_name}. Add your message after /feature`
-    );
-  }
-};
-
-const getQueue = async () => {
-  const count = await guesses.getCount();
-  const outgoing = await bot.getQueue();
-  const webhook = await bot.getWebhook();
-  let message = `<b>Queue</b>\n`;
-  message += `${count} correct answers queued\n`;
-  message += `${outgoing} outgoing messages queued (max 30/sec)\n`;
-  message += `${webhook.pending_update_count} incoming messages pending in Telegram (max 100/sec)`;
-  return message;
-};
-
 const floodChecker = async () => {
   const webhook = await bot.getWebhook();
   return webhook.pending_update_count > 500;
-};
-
-const activateGame = (game, save = false) => {
-  if (!game.enabled) {
-    game.lastPlayDate = moment();
-    game.enabled = true;
-    bot.sendMessage(game.chat_id, "Ten Things started");
-    if (save) game.save();
-  }
-};
-
-const deactivateGame = (game) => {
-  if (game.enabled) {
-    game.enabled = false;
-    game.save();
-    bot.sendMessage(
-      game.chat_id,
-      "I am now sleeping, type /list or /start to wake me up.\nThis triggers after 30 days of inactivity."
-    );
-  }
 };
 
 const newPlayerError = (err) => {
