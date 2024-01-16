@@ -1,17 +1,15 @@
-<div id="tenthingsadmin-page"
-     class="col-md-12"
-     ng-if="currentUser.admin">
+<div id="tenthingsadmin-page" class="col-md-12" ng-if="currentUser.admin">
   <h1>Welcome to Ten Things Admin</h1>
   <p ng-bind-html="queue" />
   <div class="btn-group">
-    <button class="btn btn-default"
-            ng-click="getQueue()">
-      <i class="fa fa-sync"
-         ng-class="{ 'fa-spin': loading }"></i>
+    <button class="btn btn-default" ng-click="getQueue()">
+      <i class="fa fa-sync" ng-class="{ 'fa-spin': loading }"></i>
     </button>
-    <button class="btn"
-            ng-class="{'btn-warning': paused, 'btn-default': !paused}"
-            ng-click="togglePause()">
+    <button
+      class="btn"
+      ng-class="{'btn-warning': paused, 'btn-default': !paused}"
+      ng-click="togglePause()"
+    >
       {{paused ? 'Unpause': 'Pause'}}
     </button>
   </div>
@@ -26,15 +24,18 @@
     </thead>
     <tbody>
       <tr>
-        <td></td>
-        <td><input class="form-control"
-                 type="text"
-                 placeholder="Search"
-                 ng-model="search.username"></td>
-        <td><input class="form-control"
-                 type="text"
-                 placeholder="Search"
-                 ng-model="search.displayName"></td>
+        <td><h4>{{users.length}} users</h4></td>
+        <td>
+          <input class="form-control" type="text" placeholder="Search" ng-model="search.username" />
+        </td>
+        <td>
+          <input
+            class="form-control"
+            type="text"
+            placeholder="Search"
+            ng-model="search.displayName"
+          />
+        </td>
         <td></td>
       </tr>
       <tr ng-repeat="user in users | orderBy: 'username' | filter: search">
@@ -43,13 +44,17 @@
         <td>{{user.username}}</td>
         <td>{{user.displayName}}</td>
         <td>
-          <button class="btn btn-sm"
-                  ng-disabled="loading"
-                  ng-class="{'btn-success': !user.banned, 'btn-danger': user.banned}"
-                  ng-click="toggleBan(user)">
-            <i class="fas"
-               ng-class="{'fa-thumbs-up': !user.banned, 'fa-thumbs-down': user.banned}"
-               aria-hidden="true"></i>
+          <button
+            class="btn btn-sm"
+            ng-disabled="loading"
+            ng-class="{'btn-success': !user.banned, 'btn-danger': user.banned}"
+            ng-click="toggleBan(user)"
+          >
+            <i
+              class="fas"
+              ng-class="{'fa-thumbs-up': !user.banned, 'fa-thumbs-down': user.banned}"
+              aria-hidden="true"
+            ></i>
           </button>
         </td>
       </tr>

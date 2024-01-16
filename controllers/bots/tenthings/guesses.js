@@ -29,7 +29,7 @@ guessQueue.on("completed", function (job) {
   job.remove();
 });
 
-exports.getCount = guessQueue.count;
+exports.getCount = () => guessQueue.count();
 
 exports.queue = async (game, msg) => {
   const values = game.list.values
