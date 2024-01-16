@@ -301,38 +301,39 @@ function TelegramBot() {
     });
   };
 
-  bot.setCommands = (channel, language) => {
-    const commands = [
-      "list",
-      "hint",
-      "minigame",
-      "tinygame",
-      "minihint",
-      "tinyhint",
-      "skip",
-      "miniskip",
-      "tinyskip",
-      "commands",
-      "me",
-      "stats",
-    ].map((command) => ({
-      command: i18n(language, `commands.${command}`),
-      description: i18n(language, `commands.${command}Description`),
-    }));
-    const scope = {
-      type: "chat",
-      chat_id: channel,
-    };
-    console.log(commands);
-    const url = `https://api.telegram.org/beta/bot${
-      bot.token
-    }/setMyCommands?commands=${JSON.stringify(commands)}&scope=${JSON.stringify(scope)}`;
-    request(url, (error, r, body) => {
-      if (error) return;
+  bot.setCommands = (channel, language) =>
+    new Promise((resolve, reject) => {
+      const commands = [
+        "list",
+        "hint",
+        "minigame",
+        "tinygame",
+        "minihint",
+        "tinyhint",
+        "skip",
+        "miniskip",
+        "tinyskip",
+        "commands",
+        "me",
+        "stats",
+      ].map((command) => ({
+        command: i18n(language, `commands.${command}`),
+        description: i18n(language, `commands.${command}Description`),
+      }));
+      const scope = {
+        type: "chat",
+        chat_id: channel,
+      };
+      const url = `https://api.telegram.org/beta/bot${
+        bot.token
+      }/setMyCommands?commands=${JSON.stringify(commands)}&scope=${JSON.stringify(scope)}`;
+      request(encodeURI(url), (error, r, body) => {
+        if (error) return console.error(error);
+        console.log(body);
+        resolve();
+      });
     });
-  };
 }
-
 const b = new TelegramBot();
 
 b.init(TOKEN).then(() => {
