@@ -467,7 +467,6 @@ module.exports = {
   language: ({ chat_id, settings }, availableLanguages) => {
     return {
       inline_keyboard: languages
-        .filter((language) => ["EN", "NL"].includes(language.code))
         .filter((language) =>
           _.some(availableLanguages, (availableLanguage) => availableLanguage._id === language.code)
         )
