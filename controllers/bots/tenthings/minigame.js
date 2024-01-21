@@ -137,5 +137,5 @@ exports.check = async (game, player, guess, msg) => {
   bot.queueMessage(msg.chat.id, message);
   setTimeout(() => {
     create(game, msg);
-  }, 300);
+  }, 1000);
 };
