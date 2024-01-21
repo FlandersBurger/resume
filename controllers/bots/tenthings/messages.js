@@ -1,4 +1,5 @@
 const moment = require("moment");
+const _ = require("underscore");
 const request = require("request");
 const MAXHINTS = 6;
 
