@@ -103,7 +103,8 @@
     "roundOver": "Fim da rodada",
     "newRound": "Uma nova rodada começará em 2 segundos",
     "createdBy": "por {{creator}}",
-    "guessedBy": "{{guesser}} acertou {{answer}}"
+    "guessedBy": "{{guesser}} acertou {{answer}}",
+    "notGuessed": "Não adivinhado"
   },
   "warnings": {
     "minimum1Category": "É necessário pelo menos 1 categoria",

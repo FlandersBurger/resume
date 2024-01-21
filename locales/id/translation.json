@@ -109,7 +109,8 @@
     "roundOver": "Putaran berakhir",
     "newRound": "Ronde baru akan dimulai dalam 2 detik",
     "createdBy": "oleh {{creator}}",
-    "guessedBy": "{{guesser}} menebak {{answer}}"
+    "guessedBy": "{{guesser}} menebak {{answer}}",
+    "notGuessed": "Belum ditebak"
   },
   "warnings": {
     "minimum1Category": "Setidaknya 1 kategori diperlukan",

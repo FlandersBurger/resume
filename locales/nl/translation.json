@@ -103,7 +103,8 @@
     "roundOver": "Ronde voorbij",
     "newRound": "Een nieuwe ronde begint over 2 seconden",
     "createdBy": "door {{creator}}",
-    "guessedBy": "{{guesser}} heeft {{answer}} geraden"
+    "guessedBy": "{{guesser}} heeft {{answer}} geraden",
+    "notGuessed": "Niet geraden"
   },
   "warnings": {
     "minimum1Category": "Minimaal 1 categorie is vereist",

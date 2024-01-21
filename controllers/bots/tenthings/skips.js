@@ -61,7 +61,7 @@ exports.process = (game, skipper) => {
 const skipList = (game, skipper) => {
   game.list.values.forEach(function ({ guesser }, index) {
     if (!guesser.first_name) {
-      this[index].guesser.first_name = "Not guessed";
+      this[index].guesser.first_name = i18n(game.settings.language, "sentences.notGuessed");
     }
   }, game.list.values);
   Player.updateMany(

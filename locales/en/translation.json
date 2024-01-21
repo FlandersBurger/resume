@@ -100,7 +100,8 @@
     "roundOver": "Round over",
     "newRound": "A new round will start in 2 seconds",
     "createdBy": "by {{creator}}",
-    "guessedBy": "{{guesser}} got {{answer}}"
+    "guessedBy": "{{guesser}} got {{answer}}",
+    "notGuessed": "Not guessed"
   },
   "warnings": {
     "minimum1Category": "A minimum of 1 category is required",
