@@ -87,6 +87,9 @@
   "sentences": {
     "likesList": " \ud83d\udc4d {{name}} vindt <b>{{list}}</b> leuk ({{score}})",
     "dislikesList": " \ud83d\udc4e {{name}} vindt <b>{{list}}</b> niet leuk ({{score}})",
+    "skippedList": "<b>{{list}}</b> overgeslagen!",
+    "veto": "List <b>{{list}}</b> wordt overgeslagen in {{skipDelay}} seconden.\nTyp /veto om te annuleren of laat iemand anders /skip typen om te bevestigen.",
+    "skipDenial": "Laat iemand anders je skipverzoek bevestigen!",
     "addedList": "{{list}} toegevoegd",
     "addedListToQueue": "<b>{{list}}</b> toegevoegd aan de wachtrij, {{name}}.\nTyp /lists om de wachtrij te bekijken",
     "addOwnList": "Let op dat je je eigen lijsten kunt toevoegen op https://belgocanadian.com/tenthings",

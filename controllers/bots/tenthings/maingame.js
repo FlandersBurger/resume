@@ -106,7 +106,11 @@ const newRound = (currentGame, player) => {
               : "";
           bot.queueMessage(game.chat_id, message);
           setTimeout(() => {
-            let message = `<b>${game.list.name}</b> (${game.list.totalValues}) by ${game.list.creator.username}`;
+            let message = `<b>${game.list.name}</b> (${game.list.totalValues}) ${i18n(
+              game.settings.language,
+              "sentences.createdBy",
+              { creator: game.list.creator.username }
+            )}`;
             message += game.list.description
               ? `\n<i>${game.list.description.angleBrackets()}</i>`
               : "";

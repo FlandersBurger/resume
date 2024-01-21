@@ -87,6 +87,9 @@
   "sentences": {
     "likesList": " \ud83d\udc4d {{name}} gosta de <b>{{list}}</b> ({{score}})",
     "dislikesList": " \ud83d\udc4e {{name}} não gosta de <b>{{list}}</b> ({{score}})",
+    "skippedList": "<b>{{list}}</b> pulada!",
+    "veto": "Pulando a lista <b>{{list}}</b> em {{skipDelay}} segundos.\nDigite /veto para cancelar ou peça a alguém para digitar /skip para confirmar.",
+    "skipDenial": "Peça a outra pessoa para confirmar o seu pedido de pulo!",
     "addedList": "{{list}} adicionada",
     "addedListToQueue": "<b>{{list}}</b> adicionada à fila, {{name}}.\nDigite /lists para ver a fila",
     "addOwnList": "Observe que você pode adicionar suas próprias listas em https://belgocanadian.com/tenthings",

@@ -1,6 +1,7 @@
 const moment = require("moment");
 
 const bot = require("../../../connections/telegram");
+const i18n = require("../../../i18n");
 
 const List = require("../../../models/tenthings/list")();
 const Player = require("../../../models/tenthings/player")();
@@ -36,11 +37,14 @@ exports.process = (game, skipper) => {
     if (cache[game._id] && cache[game._id].player !== skipper._id) {
       cache[game._id].timer = 2;
     } else if (cache[game._id] && cache[game._id].player === skipper._id) {
-      bot.queueMessage(game.chat_id, "Get someone else to confirm your skip request!");
+      bot.queueMessage(game.chat_id, i18n(game.settings.language, "sentences.skipDenial"));
     } else {
       bot.queueMessage(
         game.chat_id,
-        `Skipping <b>${game.list.name}</b> in ${SKIP_DELAY} seconds.\nType /veto to cancel or have someone else type /skip to confirm.`
+        i18n(game.settings.language, "sentences.veto", {
+          list: game.list.name,
+          skipDelay: SKIP_DELAY,
+        })
       );
       cache[game._id] = {
         timer: SKIP_DELAY,
@@ -80,7 +84,9 @@ const skipList = (game, skipper) => {
   ).exec((err) => {
     if (err) return bot.notifyAdmin(`Skip List Error:\n${err}`);
     stats.getList(game, async (list) => {
-      let message = `<b>${game.list.name}</b> skipped!\n`;
+      let message = `${i18n(game.settings.language, "sentences.skippedList", {
+        list: list.name,
+      })}\n`;
       message += list;
       bot.queueMessage(game.chat_id, message);
       delete cache[game._id];

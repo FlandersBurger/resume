@@ -93,6 +93,9 @@
   "sentences": {
     "likesList": " \ud83d\udc4d {{name}} suka <b>{{list}}</b> ({{score}})",
     "dislikesList": " \ud83d\udc4e {{name}} tidak suka <b>{{list}}</b> ({{score}})",
+    "skippedList": "<b>{{list}}</b> dilewati!",
+    "veto": "Melewati daftar <b>{{list}}</b> dalam {{skipDelay}} detik.\nKetik /veto untuk membatalkan atau minta seseorang ketik /skip untuk mengonfirmasi.",
+    "skipDenial": "Minta orang lain untuk mengonfirmasi permintaan lewatan Anda!",
     "addedList": "{{list}} ditambahkan",
     "addedListToQueue": "<b>{{list}}</b> ditambahkan ke antrian, {{name}}.\nKetik /lists untuk melihat antrian",
     "addOwnList": "Perhatikan bahwa Anda dapat menambahkan daftar Anda sendiri di https://belgocanadian.com/tenthings",
