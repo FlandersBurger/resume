@@ -105,7 +105,10 @@ exports.evaluate = async (res, msg, game, isNew) => {
       bot.queueMessage(
         msg.chat.id,
         commands
-          .map((command) => `/${command} - ${i18n("EN", `commands.${command}.description`)}`)
+          .map(
+            (command) =>
+              `/${command} - ${i18n(game.settings.language, `commands.${command}.description`)}`
+          )
           .join("\n")
       );
       break;
