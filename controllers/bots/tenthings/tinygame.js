@@ -35,7 +35,7 @@ const create = async (game, msg) => {
   game.tinygame.hints = 1;
   game.tinygame.date = moment();
   game.tinygame.clues = tinygame.clues;
-  bot.queueMessage(msg.chat.id, message(game.tinygame));
+  bot.queueMessage(msg.chat.id, message(game));
   try {
     await game.save();
   } catch (err) {
