@@ -71,7 +71,7 @@ exports.check = async (game, player, guess, msg) => {
   let message = `${i18n(game.settings.language, "sentences.tinygameAnswered")} (${(
     guess.match.distance * 100
   ).toFixed(0)}%)\n`;
-  message += messages.guessed(game.tinygame.answer, msg.from.first_name);
+  message += messages.guessed(game.settings.language, game.tinygame.answer, msg.from.first_name);
   message += `\n<u>${player.scoreDaily - score} + ${i18n(game.settings.language, "point", {
     count: score,
   })}</u>`;
