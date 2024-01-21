@@ -85,7 +85,7 @@ const skipList = (game, skipper) => {
     if (err) return bot.notifyAdmin(`Skip List Error:\n${err}`);
     stats.getList(game, async (list) => {
       let message = `${i18n(game.settings.language, "sentences.skippedList", {
-        list: list.name,
+        list: game.list.name,
       })}\n`;
       message += list;
       bot.queueMessage(game.chat_id, message);
