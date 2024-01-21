@@ -20,6 +20,33 @@ const suggestions = require("./suggestions");
 const maingame = require("./maingame");
 const minigame = require("./minigame");
 const tinygame = require("./tinygame");
+const i18n = require("../../../i18n");
+
+const commands = [
+  "list",
+  "hint",
+  "skip",
+  "minigame",
+  "minihint",
+  "miniskip",
+  "tinygame",
+  "tinyhint",
+  "tinyskip",
+  "score",
+  "stats",
+  "me",
+  "intro",
+  "logic",
+  "settings",
+  "categories",
+  "typo",
+  "bug",
+  "feature",
+  "search",
+  "lists",
+  "stop",
+  "commands",
+];
 
 exports.evaluate = async (res, msg, game, isNew) => {
   //bot.notifyAdmin(tenthings);
@@ -30,6 +57,7 @@ exports.evaluate = async (res, msg, game, isNew) => {
     console.error(msg);
     return res.sendStatus(200);
   } else if (msg.chat.id === config.adminChat) {
+    //Admin group chat
     if (
       !["/search", "/stats", "/typo", "/bug", "/feature", "/suggest"].includes(
         msg.command.toLowerCase()
@@ -54,17 +82,32 @@ exports.evaluate = async (res, msg, game, isNew) => {
       bot.queueMessage(msg.chat.id, msg.text);
       break;
     case "/intro":
-      bot.queueMessage(msg.chat.id, messages.introduction(msg.from.first_name));
+      bot.queueMessage(
+        msg.chat.id,
+        i18n(game.settings.language, "sentences.introduction", {
+          name: player.first_name,
+        })
+      );
       break;
     case "/logica":
     case "/logic":
       bot.queueMessage(msg.chat.id, messages.logic());
       break;
     case "/comandos":
-      bot.queueMessage(msg.chat.id, messages.commands("PT"));
+      bot.queueMessage(
+        msg.chat.id,
+        commands
+          .map((command) => `/${command} - ${i18n("PT", `commands.${command}.description`)}`)
+          .join("\n")
+      );
       break;
     case "/commands":
-      bot.queueMessage(msg.chat.id, messages.commands());
+      bot.queueMessage(
+        msg.chat.id,
+        commands
+          .map((command) => `/${command} - ${i18n("EN", `commands.${command}.description`)}`)
+          .join("\n")
+      );
       break;
     case "/parar":
     case "/stop":
@@ -74,7 +117,7 @@ exports.evaluate = async (res, msg, game, isNew) => {
         } else {
           bot.queueMessage(
             game.chat_id,
-            `Sorry ${player.first_name}, that's an admin only function`
+            i18n(game.settings.language, "warnings.adminFunction", { name: player.first_name })
           );
         }
       });
@@ -89,9 +132,11 @@ exports.evaluate = async (res, msg, game, isNew) => {
           message += game.list.creator ? ` by ${game.list.creator.username}\n` : "\n";
           message +=
             game.list.categories.length > 0
-              ? `Categor${
-                  game.list.categories.length > 1 ? "ies" : "y"
-                }: <b>${game.list.categories.join(", ")}</b>\n`
+              ? `${i18n(game.settings.language, "category", {
+                  count: game.list.categories.length,
+                })}: <b>${game.list.categories
+                  .map((category) => i18n(game.settings.language, `categories.${category}`))
+                  .join(", ")}</b>\n`
               : "";
           message += game.list.description
             ? game.list.description.includes("href")
@@ -211,8 +256,7 @@ exports.evaluate = async (res, msg, game, isNew) => {
       if (suggestion && suggestion != "TenThings_Bot" && suggestion != "@TenThings_Bot") {
         bot.notify(suggestion);
       }
-      let message =
-        "The suggest command has been retired.\nPlease use one of the following commands instead:\n";
+      let message = "Please use one of the following commands:\n";
       message += "/search -> Search lists to queue\n";
       message += "/typo -> Report a typo in the current list\n";
       message += "/bug -> Report a bug with the bot\n";

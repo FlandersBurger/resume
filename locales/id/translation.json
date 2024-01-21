@@ -1,0 +1,111 @@
+{
+  "playerIntro": "Pengantar Pemain",
+  "sass": "Kenakalan",
+  "dailyUpdates": "Pembaruan Harian",
+  "languages": "Bahasa",
+  "botLanguage": "Bahasa Bot",
+  "on": "NYALA",
+  "off": "MATI",
+  "description": "Deskripsi",
+  "category_one": "Kategori",
+  "category_other": "Kategori",
+  "categories": {
+    "Adult": "Dewasa",
+    "Animation": "Animasi",
+    "Anime/Manga": "Anime/Manga",
+    "Art": "Seni",
+    "Biology": "Biologi",
+    "Business": "Bisnis",
+    "Celebrities": "Selebriti",
+    "Challenging": "Menantang",
+    "Chemistry": "Kimia",
+    "Culture": "Budaya",
+    "Entertainment": "Hiburan",
+    "Food and Drink": "Makanan dan Minuman",
+    "Funny": "Lucu",
+    "Gaming": "Gaming",
+    "Geography": "Geografi",
+    "History": "Sejarah",
+    "Internet": "Internet",
+    "K-Drama": "K-drama",
+    "K-Pop": "K-pop",
+    "Language": "Bahasa",
+    "Literature": "Sastra",
+    "Mathematics": "Matematika",
+    "Medicine": "Kedokteran",
+    "Misc": "Berbagai",
+    "Movies": "Film",
+    "Music": "Musik",
+    "Nature": "Alam",
+    "Non-English": "Non-Inggris",
+    "Objects": "Objek",
+    "Politics": "Politik",
+    "Religion": "Agama",
+    "Science": "Sains",
+    "Society": "Masyarakat",
+    "Sports": "Olahraga",
+    "Technology": "Teknologi",
+    "Telenovelas": "Telenovela",
+    "Television": "Televisi",
+    "Transportation": "Transportasi"
+  },
+  "commands": {
+    "commands": { "name": "perintah", "description": "Daftar perintah" },
+    "list": {
+      "name": "daftar",
+      "description": "Daftar jawaban yang ditebak pada putaran saat ini"
+    },
+    "hint": { "name": "petunjuk", "description": "Berikan petunjuk" },
+    "skip": { "name": "lewati", "description": "Lewati putaran saat ini" },
+    "minigame": { "name": "minipermainan", "description": "Pertanyaan trivia terbalik" },
+    "minihint": { "name": "minipetunjuk", "description": "Berikan petunjuk untuk minipermainan" },
+    "miniskip": { "name": "minilewati", "description": "Lewati minipermainan saat ini" },
+    "tinygame": { "name": "permainankecil", "description": "Tebak daftar" },
+    "tinyhint": { "name": "petunjukkecil", "description": "Berikan petunjuk untuk permainankecil" },
+    "tinyskip": { "name": "lewatikecil", "description": "Lewati permainankecil saat ini" },
+    "score": { "name": "skor", "description": "Peringkat skor harian" },
+    "stats": { "name": "statistik", "description": "Statistik permainan" },
+    "me": { "name": "saya", "description": "Statistik saya" },
+    "intro": { "name": "intro", "description": "Apa saya ini?" },
+    "logic": { "name": "logika", "description": "Penjelasan logika yang digunakan" },
+    "settings": {
+      "name": "pengaturan",
+      "description": "Pengaturan perilaku bot (Hanya untuk admin)"
+    },
+    "categories": {
+      "name": "kategori",
+      "description": "Pilih kategori yang akan disertakan (Hanya untuk admin)"
+    },
+    "typo": {
+      "name": "kesalahanpenulisan",
+      "description": "Laporkan kesalahan penulisan pada daftar saat ini"
+    },
+    "bug": { "name": "bug", "description": "Laporkan bug pada bot" },
+    "feature": { "name": "fitur", "description": "Rekomendasikan fitur baru untuk bot" },
+    "search": { "name": "cari", "description": "Cari daftar untuk dimasukkan dalam antrian" },
+    "lists": { "name": "daftar", "description": "Lihat daftar yang dijadwalkan" },
+    "stop": { "name": "berhenti", "description": "Matikan saya" }
+  },
+  "sentences": {
+    "likesList": " \ud83d\udc4d {{name}} suka <b>{{list}}</b> ({{score}})",
+    "dislikesList": " \ud83d\udc4e {{name}} tidak suka <b>{{list}}</b> ({{score}})",
+    "addedList": "{{list}} ditambahkan",
+    "addedListToQueue": "<b>{{list}}</b> ditambahkan ke antrian, {{name}}.\nKetik /lists untuk melihat antrian",
+    "addOwnList": "Perhatikan bahwa Anda dapat menambahkan daftar Anda sendiri di https://belgocanadian.com/tenthings",
+    "inactivity": "Saya sedang tidur, ketik /list atau /start untuk membangunkan saya.\nSaya tidur setelah 30 hari tidak aktif.",
+    "introduction": "Hai {{name}},\nTen Things, ciptaanmu sendiri, adalah permainan yang akan memberimu subjek dan kemudian kamu menjawab apa saja yang terlintas dalam pikiranmu dalam kategori tersebut.\nKetik /perintah untuk melihat semua yang bisa kamu tanyakan kepada saya\nJika kamu ingin menambahkan daftar sendiri, silakan kunjungi https://belgocanadian.com/tenthings\nSelamat bersenang-senang!"
+  },
+  "warnings": {
+    "minimum1Category": "Setidaknya 1 kategori diperlukan",
+    "adminFunction": "Maaf {{name}}, ini adalah fungsi admin obrolan",
+    "fullQueue": "Antrian sudah mencapai maksimum 10 daftar, {{name}}",
+    "alreadyInQueue": "<b>{{list}}</b> sudah ada dalam antrian, {{name}}",
+    "unfoundList": "Daftar ini tidak lagi ada"
+  },
+  "stats": {
+    "list": "Statistik Daftar",
+    "player": "Statistik Pemain",
+    "global": "Statistik Global",
+    "game": "Statistik Permainan"
+  }
+}

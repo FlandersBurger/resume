@@ -3,18 +3,9 @@ const request = require("request");
 const MAXHINTS = 6;
 
 const categories = require("./categories");
+const i18n = require("../../../i18n");
 
 module.exports = {
-  introduction: function (player) {
-    var message = "Hi " + player + ",\n";
-    message +=
-      "Ten Things, yours truly, is a game which will give you a subject and then you answer anything that comes to mind in that category.\n";
-    message += "Type /commands to see all the things you can ask me\n";
-    message +=
-      "If you want to add your own lists, please go to https://belgocanadian.com/tenthings\n";
-    message += "Have fun!";
-    return message;
-  },
   logic: function () {
     var rules = [
       "If an answer is 100% correct it will immediately be awarded to the guesser",
@@ -34,56 +25,10 @@ module.exports = {
     ];
     return rules.reduce((message, rule, i) => `${message}${i + 1}: ${rule}\n`, "");
   },
-  commands: (language = "EN") => {
-    var message = "";
-    if (language === "PT") {
-      message += "/lista - Respostas adivinhadas na rodada atual\n";
-      message += "/dica - Dar uma dica\n";
-      message += "/pule - Pular a rodada atual\n";
-      message += "/minijogo - Pergunta sobre trivialidades invertidas\n";
-      message += "/pontuacao - Pontuação diária\n";
-      message += "/estatisticas - Estatísticas sobre o jogo\n";
-      message += "/eu - Minhas estatísticas\n";
-      message += "/intro - O que sou eu?\n";
-      message += "/logica - Uma explicação da lógica utilizada\n";
-      message += "/confi - Configurações (Somente Admin)\n";
-      message += "/categorias - Selecione as categorias a incluir (Somente Admin)\n";
-      message += "/erro - Relatar um erro de digitação na lista atual\n";
-      message += "/bug - Relatar um bug com o bot\n";
-      message += "/pesquisar - Listas de busca para fila\n";
-      message += "/listas - Ver listas enfileiradas\n";
-      message += "/parar - Desligue-me\n";
-    } else {
-      message += "/list - Guessed answers in the current round\n";
-      message += "/hint - Give a hint\n";
-      message += "/skip - Skip the current round\n";
-      message += "/minigame - Reverse trivia question\n";
-      message += "/minihint - Give a hint for minigame\n";
-      message += "/miniskip - Skip the current minigame\n";
-      message += "/tinygame - Guess the list\n";
-      message += "/tinyhint - Give a hint for tinygame\n";
-      message += "/tinyskip - Skip the current tinygame\n";
-      message += "/score - Daily score standing\n";
-      message += "/stats - Statistics on the game\n";
-      message += "/me - My stats\n";
-      message += "/intro - What am I?\n";
-      message += "/logic - An explanation of the logic used\n";
-      message += "/settings - Bot behaviour settings (Admin Only)\n";
-      message += "/categories - Select which categories to include (Admin Only)\n";
-      message += "/typo - Report a typo in the current list\n";
-      message += "/bug - Report a bug with the bot\n";
-      message += "/feature - Recommend a new feature for the bot\n";
-      message += "/search - Search lists to queue\n";
-      message += "/lists - See queued lists\n";
-      message += "/stop - Switch me off\n";
-      message += "/comandos - Commands in Portuguese\n";
-    }
-    return message;
-  },
   categories: function (game) {
     return _.difference(categories, game.disabledCategories)
       .sort()
-      .reduce((result, category) => result + `- ${category}\n`, "");
+      .reduce((result, category) => result + `- ${i18n(game.settings.language, category)}\n`, "");
   },
   guessed: function (match, player) {
     var message = "";

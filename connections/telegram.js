@@ -317,8 +317,8 @@ function TelegramBot() {
         "me",
         "stats",
       ].map((command) => ({
-        command: i18n(language, `commands.${command}`),
-        description: i18n(language, `commands.${command}Description`),
+        command: command,
+        description: i18n(language, `commands.${command}.description`),
       }));
       const scope = {
         type: "chat",
