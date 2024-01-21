@@ -4,7 +4,7 @@
   "dailyUpdates": "Dagelijkse updates",
   "language_one": "Taal",
   "language_other": "Talen",
-  "botLanguage": "Bot-taal",
+  "botLanguage": "Bottaal",
   "snubs": "Afkeuringen",
   "on": "AAN",
   "off": "UIT",
@@ -69,7 +69,7 @@
     "logic": { "name": "logica", "description": "Een uitleg van de gebruikte logica" },
     "settings": {
       "name": "instellingen",
-      "description": "Bot-gedragsinstellingen (Alleen voor beheerders)"
+      "description": "Botinstellingen (Alleen voor beheerders)"
     },
     "categories": {
       "name": "categorieën",
@@ -92,9 +92,9 @@
     "introduction": "Hoi {{name}},\nTen Things, de jouwe echt, is een spel waarbij je een onderwerp krijgt en dan antwoord geeft op alles wat in die categorie naar boven komt.\nTyp /commando's om alle dingen te zien die je me kunt vragen\nAls je je eigen lijsten wilt toevoegen, ga dan naar https://belgocanadian.com/tenthings\nVeel plezier!",
     "suggestionNoted": "Suggestie genoteerd",
     "findTheConnection": "Vind de connectie",
-    "minigameAnswered": "Minigame-antwoord geraden!",
+    "minigameAnswered": "Minigame antwoord geraden!",
     "findTheTitle": "Vind de lijsttitel",
-    "tinygameAnswered": "Tinygame-antwoord geraden!",
+    "tinygameAnswered": "Tinygame antwoord geraden!",
     "roundOver": "Ronde voorbij",
     "createdBy": "Door {{creator}}"
   },
