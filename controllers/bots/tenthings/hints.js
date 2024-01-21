@@ -44,11 +44,11 @@ exports.process = async (game, player, type = "main") => {
     switch (type) {
       case "minigame":
         game.minigame.hints++;
-        message = minigame.message(game.minigame);
+        message = minigame.message(game);
         break;
       case "tinygame":
         game.tinygame.hints++;
-        message = tinygame.message(game.tinygame);
+        message = tinygame.message(game);
         break;
       default:
         game.hints++;
