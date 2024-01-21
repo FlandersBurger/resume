@@ -31,9 +31,9 @@ module.exports = {
       .sort()
       .reduce((result, category) => result + `- ${i18n(game.settings.language, category)}\n`, "");
   },
-  guessed: function (match, player) {
+  guessed: function (language, answer, guesser) {
     var message = "";
-    message += "<b>" + player + " got " + match + "</b> ";
+    message += `<b>${i18n(language, "sentences.guessedBy", { answer, guesser })}</b> `;
     return message;
   },
   alreadyGuessed: function (match, loser, winner) {

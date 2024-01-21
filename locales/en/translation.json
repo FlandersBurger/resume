@@ -95,7 +95,8 @@
     "findTheTitle": "Find the list title",
     "tinygameAnswered": "Tinygame answer guessed!",
     "roundOver": "Round over",
-    "createdBy": "By {{creator}}"
+    "createdBy": "By {{creator}}",
+    "guessedBy": "{{guesser}} got {{answer}}"
   },
   "warnings": {
     "minimum1Category": "A minimum of 1 category is required",

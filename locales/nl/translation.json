@@ -98,7 +98,8 @@
     "findTheTitle": "Vind de lijsttitel",
     "tinygameAnswered": "Tinygame antwoord geraden!",
     "roundOver": "Ronde voorbij",
-    "createdBy": "Door {{creator}}"
+    "createdBy": "Door {{creator}}",
+    "guessedBy": "{{guesser}} heeft {{answer}} geraden"
   },
   "warnings": {
     "minimum1Category": "Minimaal 1 categorie is vereist",

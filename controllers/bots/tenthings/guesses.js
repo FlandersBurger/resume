@@ -245,7 +245,7 @@ const guessed = async (
   score,
   accuracy
 ) => {
-  let message = messages.guessed(value.angleBrackets(), first_name);
+  let message = messages.guessed(game.settings.language, value.angleBrackets(), first_name);
   message += messages.streak(game.streak.count);
   message += blurb;
   message += `\n<u>${scoreDaily - score} + ${i18n(game.settings.language, "point", {

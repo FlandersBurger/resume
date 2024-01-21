@@ -98,7 +98,8 @@
     "findTheTitle": "Encontre o título da lista",
     "tinygameAnswered": "Resposta do jogominusculo adivinhada!",
     "roundOver": "Fim da rodada",
-    "createdBy": "Por {{creator}}"
+    "createdBy": "Por {{creator}}",
+    "guessedBy": "{{guesser}} acertou {{answer}}"
   },
   "warnings": {
     "minimum1Category": "É necessário pelo menos 1 categoria",

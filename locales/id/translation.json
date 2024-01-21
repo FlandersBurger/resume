@@ -104,7 +104,8 @@
     "findTheTitle": "Temukan judul daftar",
     "tinygameAnswered": "Jawaban tinygame berhasil ditebak!",
     "roundOver": "Putaran berakhir",
-    "createdBy": "Oleh {{creator}}"
+    "createdBy": "Oleh {{creator}}",
+    "guessedBy": "{{guesser}} menebak {{answer}}"
   },
   "warnings": {
     "minimum1Category": "Setidaknya 1 kategori diperlukan",
