@@ -356,6 +356,7 @@ router.post("/", async ({ body, get }, res, next) => {
       game.save(async (err, savedGame) => {
         if (err) return bot.notifyAdmin(`Language Save Error: \n${JSON.stringify(err)}`);
         bot.answerCallback(body.callback_query.id, `${data.id} -> New bot language`);
+        bot.notifyAdmin(`Language changed to ${data.id} by ${data.requestor} in ${data.chat_id}`);
         bot.setCommands(data.chat_id, data.id);
         const availableLanguages = await List.aggregate([
           { $group: { _id: "$language", count: { $sum: 1 } } },
