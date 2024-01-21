@@ -7,23 +7,8 @@ const categories = require("./categories");
 const i18n = require("../../../i18n");
 
 module.exports = {
-  logic: function () {
-    var rules = [
-      "If an answer is 100% correct it will immediately be awarded to the guesser",
-      "If an answer is over 75% correct it will be awarded after (2 * correctness percentage) seconds if no better answer is provided",
-      "Non-alphanumerical signs and letter cases are ignored when determining correctness",
-      "Points scored = (Max hints [" +
-        MAXHINTS +
-        "] - hints asked + # of current players) * (answer accuracy % - 0.6) * 2.5",
-      "Hints are revealed in this order: first letters, last letters, vowels, and the rest. The rest will be revealed from least frequent to most frequent letter",
-      "There is a 10 second cooldown between asking hints",
-      "A list can be skipped if 2 players /skip it",
-      "If only 1 player skips a list there will be a 15 second cooldown until the list is skipped",
-      "A skip can be cancelled by anyone by typing /veto or a correct answer",
-      "If a skip is vetoed, new skips will be ignored for 15 seconds",
-      "Every day at midnight (universal time) the daily scores will be reset and a winner recorded",
-      "Spammers will be ignored until they are silent for at least 10 seconds",
-    ];
+  logic: function (language) {
+    var rules = i18n(language, "rules", { maxHints: MAXHINTS, returnObjects: true });
     return rules.reduce((message, rule, i) => `${message}${i + 1}: ${rule}\n`, "");
   },
   categories: function (game) {

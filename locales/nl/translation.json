@@ -98,7 +98,7 @@
     "findTheTitle": "Vind de lijsttitel",
     "tinygameAnswered": "Tinygame antwoord geraden!",
     "roundOver": "Ronde voorbij",
-    "createdBy": "Door {{creator}}",
+    "createdBy": "door {{creator}}",
     "guessedBy": "{{guesser}} heeft {{answer}} geraden"
   },
   "warnings": {
@@ -107,5 +107,19 @@
     "fullQueue": "De wachtrij heeft al het maximum van 10 lijsten, {{name}}",
     "alreadyInQueue": "<b>{{list}}</b> staat al in de wachtrij, {{name}}",
     "unfoundList": "Deze lijst bestaat niet meer"
-  }
+  },
+  "rules": [
+    "Als een antwoord 100% correct is, wordt het onmiddellijk toegekend aan de gokker",
+    "Als een antwoord meer dan 75% correct is, wordt het toegekend na (2 * percentage correctheid) seconden als er geen beter antwoord wordt gegeven",
+    "Niet-alfanumerieke tekens en letterhoofdletters worden genegeerd bij het bepalen van de correctheid",
+    "Behaalde punten = (Max hints {{maxHints}} - gevraagde hints + # huidige spelers) * (nauwkeurigheid antwoord % - 0.6) * 2.5",
+    "Hints worden in deze volgorde onthuld: eerste letters, laatste letters, klinkers en de rest. De rest wordt onthuld van minst frequente naar meest frequente letter",
+    "Er is een afkoelperiode van 10 seconden tussen het vragen van hints",
+    "Een lijst kan worden overgeslagen als 2 spelers het /skippen",
+    "Als slechts 1 speler een lijst overslaat, is er een afkoelperiode van 15 seconden totdat de lijst wordt overgeslagen",
+    "Een overslaan kan door iedereen worden geannuleerd door /veto of een correct antwoord te typen",
+    "Als een overslaan wordt afgewezen, worden nieuwe overslaan genegeerd gedurende 15 seconden",
+    "Elke dag om middernacht (universele tijd) worden de dagelijkse scores gereset en een winnaar opgenomen",
+    "Spammers worden genegeerd totdat ze ten minste 10 seconden stil zijn"
+  ]
 }

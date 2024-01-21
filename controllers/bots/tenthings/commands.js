@@ -88,7 +88,7 @@ exports.evaluate = async (msg, game, isNew) => {
       break;
     case "/logica":
     case "/logic":
-      bot.queueMessage(msg.chat.id, messages.logic());
+      bot.queueMessage(msg.chat.id, messages.logic(game.settings.language));
       break;
     case "/comandos":
       bot.queueMessage(
@@ -130,9 +130,9 @@ exports.evaluate = async (msg, game, isNew) => {
         stats.getList(game, (list) => {
           let message = `<b>${game.list.name}</b> (${game.list.totalValues})`;
           message += game.list.creator
-            ? i18n(game.settings.language, "sentences.createdBy", {
+            ? ` ${i18n(game.settings.language, "sentences.createdBy", {
                 creator: game.list.creator.username,
-              })
+              })}`
             : "";
           message += "\n";
           message +=
