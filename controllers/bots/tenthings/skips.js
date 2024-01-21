@@ -120,7 +120,7 @@ exports.checkSkipper = async (game, msg, player) => {
           bot.queueMessage(
             msg.chat.id,
             `Banned ${player.first_name} from skipping again for ${
-              cache.skippers[player.id].delay
+              skippers[player.id].delay
             } seconds`
           );
           return false;
