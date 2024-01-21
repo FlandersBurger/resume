@@ -129,7 +129,12 @@ exports.evaluate = async (msg, game, isNew) => {
       } else {
         stats.getList(game, (list) => {
           let message = `<b>${game.list.name}</b> (${game.list.totalValues})`;
-          message += game.list.creator ? ` by ${game.list.creator.username}\n` : "\n";
+          message += game.list.creator
+            ? i18n(game.settings.language, "sentences.createdBy", {
+                creator: game.list.creator.username,
+              })
+            : "";
+          message += "\n";
           message +=
             game.list.categories.length > 0
               ? `${i18n(game.settings.language, "category", {
@@ -186,7 +191,11 @@ exports.evaluate = async (msg, game, isNew) => {
       try {
         stats.getList(game, (list) => {
           let message = `<b>${game.list.name}</b> (${game.list.totalValues})`;
-          message += game.list.creator ? ` by ${game.list.creator.username}\n` : "\n";
+          if (game.list.creator)
+            message += i18n(game.settings.language, "sentences.createdBy", {
+              creator: game.list.creator.username,
+            });
+          message += "\n";
           message +=
             game.list.categories.length > 0
               ? `Categor${

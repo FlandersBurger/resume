@@ -7,6 +7,7 @@ const Game = require("../../../models/tenthings/game")();
 
 const config = require("../../../config");
 const bot = require("../../../connections/telegram");
+const i18n = require("../../../i18n");
 const sass = require("./sass");
 const messages = require("./messages");
 const maingame = require("./maingame");
@@ -247,7 +248,9 @@ const guessed = async (
   let message = messages.guessed(value.angleBrackets(), first_name);
   message += messages.streak(game.streak.count);
   message += blurb;
-  message += `\n<u>${scoreDaily - score} + ${score} points (${accuracy})</u>`;
+  message += `\n<u>${scoreDaily - score} + ${i18n(game.settings.language, "point", {
+    count: score,
+  })} (${accuracy})</u>`;
   const answersLeft = game.list.values.filter(({ guesser }) => !guesser.first_name);
   if (answersLeft.length > 0) {
     message += `\n<b>${game.list.name}</b>`;
@@ -262,7 +265,7 @@ const guessed = async (
       return str;
     }, "");
   } else {
-    message += "\nRound over.";
+    message += `\n${i18n(game.settings.language, "sentences.roundOver")}`;
   }
   return await bot.queueMessage(chat.id, message);
 };

@@ -7,6 +7,7 @@ const bot = require("../../../connections/telegram");
 const stats = require("./stats");
 const minigame = require("./minigame");
 const backup = require("../../../backup-db");
+const i18n = require("../../../i18n");
 const List = require("../../../models/tenthings/list")();
 const TenThingsGame = require("../../../models/tenthings/game")();
 const TenThingsPlayer = require("../../../models/tenthings/player")();
@@ -122,7 +123,11 @@ const resetDailyScore = (force = false) => {
               game.hints = 4;
             }
             message = `<b>${game.list.name}</b> (${game.list.totalValues})`;
-            message += game.list.creator ? ` by ${game.list.creator.username}\n` : "\n";
+            if (game.list.creator)
+              message += i18n(game.settings.language, "sentences.createdBy", {
+                creator: game.list.creator.username,
+              });
+            message += "\n";
             if (game.list.categories) {
               message +=
                 game.list.categories.length > 0

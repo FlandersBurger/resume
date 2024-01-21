@@ -4,6 +4,7 @@ const _ = require("underscore");
 const bot = require("../../../connections/telegram");
 const messages = require("./messages");
 const hints = require("./hints");
+const i18n = require("../../../i18n");
 
 const List = require("../../../models/tenthings/list")();
 const Minigame = require("../../../models/tenthings/minigame")();
@@ -44,7 +45,7 @@ const create = async (game, msg) => {
   game.minigame.hints = 0;
   game.minigame.date = moment();
   game.minigame.lists = minigame.lists.getRandom(10);
-  bot.queueMessage(msg.chat.id, message(game.minigame));
+  bot.queueMessage(msg.chat.id, message(game));
   try {
     await game.save();
   } catch (err) {
@@ -108,13 +109,13 @@ exports.createMinigames = async () => {
 // Count the possible minigames
 // getMinigames({}).then((minigames) => console.log(minigames.length));
 
-const message = (minigame) => {
-  let message = "<b>Find the connection</b>\n";
-  message += minigame.lists.reduce((msg, list) => {
+const message = (game) => {
+  let message = `<b>${i18n(game.settings.language, "sentences.findTheConnection")}</b>\n`;
+  message += game.minigame.lists.reduce((msg, list) => {
     msg += `- ${list}\n`;
     return msg;
   }, "");
-  message += `\n<b>${hints.getHint(minigame.hints, minigame.answer)}</b>`;
+  message += `\n<b>${hints.getHint(game.minigame.hints, game.minigame.answer)}</b>`;
   return message;
 };
 
@@ -131,9 +132,13 @@ exports.check = async (game, player, guess, msg) => {
   await player.save();
   game.minigame.plays++;
   await game.save();
-  let message = `Minigame answer guessed! (${(guess.match.distance * 100).toFixed(0)}%)\n`;
+  let message = `${i18n(game.settings.language, "sentences.minigameAnswered")} (${(
+    guess.match.distance * 100
+  ).toFixed(0)}%)\n`;
   message += messages.guessed(game.minigame.answer, msg.from.first_name);
-  message += `\n<u>${player.scoreDaily - score} + ${score} points</u>`;
+  message += `\n<u>${player.scoreDaily - score} + ${i18n(game.settings.language, "point", {
+    count: score,
+  })}</u>`;
   bot.queueMessage(msg.chat.id, message);
   setTimeout(() => {
     create(game, msg);

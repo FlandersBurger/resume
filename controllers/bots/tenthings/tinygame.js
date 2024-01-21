@@ -5,6 +5,7 @@ const bot = require("../../../connections/telegram");
 const messages = require("./messages");
 const hints = require("./hints");
 const lists = require("./lists");
+const i18n = require("../../../i18n");
 
 const create = async (game, msg) => {
   const availableLanguages =
@@ -44,13 +45,13 @@ const create = async (game, msg) => {
   return true;
 };
 
-const message = (tinygame) => {
-  let message = "<b>Find the list title</b>\n";
-  message += tinygame.clues.reduce((msg, clue) => {
+const message = (game) => {
+  let message = `<b>${i18n(game.settings.language, "sentences.findTheTitle")}</b>\n`;
+  message += game.tinygame.clues.reduce((msg, clue) => {
     msg += `- ${clue}\n`;
     return msg;
   }, "");
-  message += `\n<b>${hints.getHint(tinygame.hints, tinygame.answer)}</b>`;
+  message += `\n<b>${hints.getHint(game.tinygame.hints, game.tinygame.answer)}</b>`;
   return message;
 };
 
@@ -67,9 +68,13 @@ exports.check = async (game, player, guess, msg) => {
   await player.save();
   game.tinygame.plays++;
   await game.save();
-  let message = `Tinygame answer guessed! (${(guess.match.distance * 100).toFixed(0)}%)\n`;
+  let message = `${i18n(game.settings.language, "sentences.tinygameAnswered")} (${(
+    guess.match.distance * 100
+  ).toFixed(0)}%)\n`;
   message += messages.guessed(game.tinygame.answer, msg.from.first_name);
-  message += `\n<u>${player.scoreDaily - score} + ${score} points</u>`;
+  message += `\n<u>${player.scoreDaily - score} + ${i18n(game.settings.language, "point", {
+    count: score,
+  })}</u>`;
   bot.queueMessage(msg.chat.id, message);
   setTimeout(() => {
     create(game, msg);

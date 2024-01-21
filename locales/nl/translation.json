@@ -89,7 +89,14 @@
     "addedListToQueue": "<b>{{list}}</b> toegevoegd aan de wachtrij, {{name}}.\nTyp /lists om de wachtrij te bekijken",
     "addOwnList": "Let op dat je je eigen lijsten kunt toevoegen op https://belgocanadian.com/tenthings",
     "inactivity": "Ik slaap, typ /list of /start om me wakker te maken.\nIk ga slapen na 30 dagen inactiviteit.",
-    "introduction": "Hoi {{name}},\nTen Things, de jouwe echt, is een spel waarbij je een onderwerp krijgt en dan antwoord geeft op alles wat in die categorie naar boven komt.\nTyp /commando's om alle dingen te zien die je me kunt vragen\nAls je je eigen lijsten wilt toevoegen, ga dan naar https://belgocanadian.com/tenthings\nVeel plezier!"
+    "introduction": "Hoi {{name}},\nTen Things, de jouwe echt, is een spel waarbij je een onderwerp krijgt en dan antwoord geeft op alles wat in die categorie naar boven komt.\nTyp /commando's om alle dingen te zien die je me kunt vragen\nAls je je eigen lijsten wilt toevoegen, ga dan naar https://belgocanadian.com/tenthings\nVeel plezier!",
+    "suggestionNoted": "Suggestie genoteerd",
+    "findTheConnection": "Vind de connectie",
+    "minigameAnswered": "Minigame-antwoord geraden!",
+    "findTheTitle": "Vind de lijsttitel",
+    "tinygameAnswered": "Tinygame-antwoord geraden!",
+    "roundOver": "Ronde voorbij",
+    "createdBy": "Door {{creator}}"
   },
   "warnings": {
     "minimum1Category": "Minimaal 1 categorie is vereist",

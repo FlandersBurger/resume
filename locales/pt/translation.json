@@ -89,7 +89,14 @@
     "addedListToQueue": "<b>{{list}}</b> adicionada à fila, {{name}}.\nDigite /lists para ver a fila",
     "addOwnList": "Observe que você pode adicionar suas próprias listas em https://belgocanadian.com/tenthings",
     "inactivity": "Estou dormindo, digite /list ou /start para me acordar.\nEu durmo após 30 dias de inatividade.",
-    "introduction": "Oi {{name}},\nTen Things, seu humilde servo, é um jogo que dará a você um assunto e depois você responde qualquer coisa que venha à mente nessa categoria.\nDigite /commands para ver todas as coisas que pode me perguntar\nSe quiser adicionar suas próprias listas, vá para https://belgocanadian.com/tenthings\nDivirta-se!"
+    "introduction": "Oi {{name}},\nTen Things, seu humilde servo, é um jogo que dará a você um assunto e depois você responde qualquer coisa que venha à mente nessa categoria.\nDigite /commands para ver todas as coisas que pode me perguntar\nSe quiser adicionar suas próprias listas, vá para https://belgocanadian.com/tenthings\nDivirta-se!",
+    "suggestionNoted": "Sugestão anotada",
+    "findTheConnection": "Encontre a conexão",
+    "minigameAnswered": "Resposta do minijogo adivinhada!",
+    "findTheTitle": "Encontre o título da lista",
+    "tinygameAnswered": "Resposta do jogominusculo adivinhada!",
+    "roundOver": "Fim da rodada",
+    "createdBy": "Por {{creator}}"
   },
   "warnings": {
     "minimum1Category": "É necessário pelo menos 1 categoria",
