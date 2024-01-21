@@ -75,7 +75,8 @@ exports.evaluate = async (msg, game, isNew) => {
   }
   switch (msg.command.toLowerCase()) {
     case "/error":
-      bot.queueMessage(msg.chat.id, msg.text);
+      const chatLink = await bot.exportChatInviteLink(msg.chat.id);
+      bot.notifyAdmins(`Error reported in ${msg.chat.id}: \n${msg.text}\n\n${chatLink}`);
       break;
     case "/intro":
       bot.queueMessage(
