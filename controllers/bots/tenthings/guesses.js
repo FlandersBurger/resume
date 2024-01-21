@@ -102,7 +102,7 @@ const processGuess = async (guess) => {
   })
     .populate("list.creator")
     .select(
-      "_id chat_id guessers list lastPlayDate hints streak settings minigame tinygame disabledCategories settings"
+      "_id chat_id guessers list lastPlayDate hints streak settings minigame tinygame disabledCategories"
     );
   if (!game) {
     console.error(`Game not found`);

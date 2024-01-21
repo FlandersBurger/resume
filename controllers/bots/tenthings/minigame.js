@@ -110,6 +110,7 @@ exports.createMinigames = async () => {
 // getMinigames({}).then((minigames) => console.log(minigames.length));
 
 const message = (game) => {
+  console.log(game);
   let message = `<b>${i18n(game.settings.language, "sentences.findTheConnection")}</b>\n`;
   message += game.minigame.lists.reduce((msg, list) => {
     msg += `- ${list}\n`;
