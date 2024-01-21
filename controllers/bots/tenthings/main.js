@@ -601,6 +601,7 @@ router.post("/", async ({ body, get }, res, next) => {
       await commands.evaluate(msg, existingGame, false);
     }
   } catch (e) {
+    console.error(e);
     bot.sendMessage(
       msg.chat.id,
       "<b>Error</b>\nUse the /error command to explain to the admins what didn't work"
