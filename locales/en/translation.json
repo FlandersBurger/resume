@@ -95,6 +95,7 @@
     "findTheTitle": "Find the list title",
     "tinygameAnswered": "Tinygame answer guessed!",
     "roundOver": "Round over",
+    "newRound": "A new round will start in 2 seconds",
     "createdBy": "by {{creator}}",
     "guessedBy": "{{guesser}} got {{answer}}"
   },
@@ -119,7 +120,7 @@
     "Hints are revealed in this order: first letters, last letters, vowels, and the rest. The rest will be revealed from least frequent to most frequent letter",
     "There is a 10 second cooldown between asking hints",
     "A list can be skipped if 2 players /skip it",
-    "If only 1 player skips a list there will be a 15 second cooldown until the list is skipped",
+    "If only 1 player skips a list there will be a 10 second cooldown until the list is skipped",
     "A skip can be cancelled by anyone by typing /veto or a correct answer",
     "If a skip is vetoed, new skips will be ignored for 15 seconds",
     "Every day at midnight (universal time) the daily scores will be reset and a winner recorded",

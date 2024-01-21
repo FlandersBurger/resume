@@ -6,6 +6,7 @@ const stats = require("./stats");
 const lists = require("./lists");
 const hints = require("./hints");
 const messages = require("./messages");
+const i18n = require("../../../i18n");
 
 const Game = require("../../../models/tenthings/game")();
 const List = require("../../../models/tenthings/list")();
@@ -94,12 +95,14 @@ const newRound = (currentGame, player) => {
           hints.cache[game.id] = 3;
           hints.cooldown(game.id);
           game.guessers = [];
-          let message = "A new round will start in 2 seconds";
+          let message = i18n(game.settings.language, "sentences.newRound");
           message +=
             game.list.categories.length > 0
-              ? `\nCategor${game.list.categories.length > 1 ? "ies" : "y"}: <b>${
-                  game.list.categories
-                }</b>`
+              ? `\n${i18n(game.settings.language, "category", {
+                  count: game.list.categories.length,
+                })}: <b>${game.list.categories
+                  .map((category) => i18n(game.settings.language, `categories.${category}`))
+                  .join(", ")}</b>`
               : "";
           bot.queueMessage(game.chat_id, message);
           setTimeout(() => {

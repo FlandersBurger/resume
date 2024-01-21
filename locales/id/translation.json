@@ -104,6 +104,7 @@
     "findTheTitle": "Temukan judul daftar",
     "tinygameAnswered": "Jawaban tinygame berhasil ditebak!",
     "roundOver": "Putaran berakhir",
+    "newRound": "Ronde baru akan dimulai dalam 2 detik",
     "createdBy": "oleh {{creator}}",
     "guessedBy": "{{guesser}} menebak {{answer}}"
   },
@@ -128,7 +129,7 @@
     "Petunjuk diungkapkan dalam urutan ini: huruf pertama, huruf terakhir, vokal, dan sisanya. Sisanya akan diungkapkan dari huruf yang paling jarang hingga paling sering",
     "Ada pendingin selama 10 detik antara meminta petunjuk",
     "Sebuah daftar dapat dilewati jika 2 pemain /skip",
-    "Jika hanya 1 pemain melewatkan daftar, akan ada pendingin selama 15 detik sampai daftar dilewati",
+    "Jika hanya 1 pemain melewatkan daftar, akan ada pendingin selama 10 detik sampai daftar dilewati",
     "Lewatan dapat dibatalkan oleh siapa saja dengan mengetik /veto atau jawaban yang benar",
     "Jika lewatan dibatalkan, lewatan baru akan diabaikan selama 15 detik",
     "Setiap hari pada tengah malam (waktu universal) skor harian akan direset dan pemenang dicatat",

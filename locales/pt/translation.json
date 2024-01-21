@@ -98,6 +98,7 @@
     "findTheTitle": "Encontre o título da lista",
     "tinygameAnswered": "Resposta do jogominusculo adivinhada!",
     "roundOver": "Fim da rodada",
+    "newRound": "Uma nova rodada começará em 2 segundos",
     "createdBy": "por {{creator}}",
     "guessedBy": "{{guesser}} acertou {{answer}}"
   },
@@ -121,8 +122,8 @@
     "Pontos marcados = (Máximo de dicas {{maxHints}} - dicas pedidas + # de jogadores atuais) * (precisão da resposta % - 0.6) * 2.5",
     "As dicas são reveladas nesta ordem: primeiras letras, últimas letras, vogais e o restante. O restante será revelado da letra menos frequente para a mais frequente",
     "Há um cooldown de 10 segundos entre pedir dicas",
-    "Uma lista pode ser pulada se 2 jogadores a /skiparem",
-    "Se apenas 1 jogador pular uma lista, haverá um cooldown de 15 segundos até a lista ser pulada",
+    "Uma lista pode ser pulada se 2 jogadores a /skip",
+    "Se apenas 1 jogador pular uma lista, haverá um cooldown de 10 segundos até a lista ser pulada",
     "Um pulo pode ser cancelado por qualquer pessoa digitando /veto ou uma resposta correta",
     "Se um pulo for vetado, novos pulos serão ignorados por 15 segundos",
     "Todo dia à meia-noite (tempo universal), as pontuações diárias serão redefinidas e um vencedor registrado",
