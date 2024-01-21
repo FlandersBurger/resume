@@ -9,6 +9,8 @@
   "on": "AAN",
   "off": "UIT",
   "description": "Omschrijving",
+  "point_one": "{{count}} punt",
+  "point_other": "{{count}} punten",
   "category_one": "Categorie",
   "category_other": "Categorieën",
   "categories": {

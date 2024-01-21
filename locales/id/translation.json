@@ -9,6 +9,8 @@
   "on": "NYALA",
   "off": "MATI",
   "description": "Deskripsi",
+  "point_one": "{{count}} poin",
+  "point_other": "{{count}} poin",
   "category_one": "Kategori",
   "category_other": "Kategori",
   "categories": {

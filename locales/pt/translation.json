@@ -9,6 +9,8 @@
   "on": "LIGADO",
   "off": "DESLIGADO",
   "description": "Descrição",
+  "point_one": "{{count}} ponto",
+  "point_other": "{{count}} pontos",
   "category_one": "Categoria",
   "category_other": "Categorias",
   "categories": {
