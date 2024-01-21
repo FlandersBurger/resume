@@ -2,8 +2,10 @@
   "playerIntro": "Player intro",
   "sass": "Sass",
   "dailyUpdates": "Daily updates",
-  "languages": "Languages",
+  "language_one": "Language",
+  "language_other": "Languages",
   "botLanguage": "Bot language",
+  "snubs": "Snubs",
   "on": "ON",
   "off": "OFF",
   "description": "Description",
@@ -84,7 +86,8 @@
     "addedListToQueue": "<b>{{list}}</b> added to the queue, {{name}}.\nType /lists to see the queue",
     "addOwnList": "Note that you can add your own lists at https://belgocanadian.com/tenthings",
     "inactivity": "I'm sleeping, type /list or /start to wake me up.\nI go to sleep after 30 days of inactivity.",
-    "introduction": "Hi {{name}},\nTen Things, yours truly, is a game which will give you a subject and then you answer anything that comes to mind in that category.\nType /commands to see all the things you can ask me\nIf you want to add your own lists, please go to https://belgocanadian.com/tenthings\nHave fun!"
+    "introduction": "Hi {{name}},\nTen Things, yours truly, is a game which will give you a subject and then you answer anything that comes to mind in that category.\nType /commands to see all the things you can ask me\nIf you want to add your own lists, please go to https://belgocanadian.com/tenthings\nHave fun!",
+    "suggestionNoted": "Suggestion noted"
   },
   "warnings": {
     "minimum1Category": "A minimum of 1 category is required",

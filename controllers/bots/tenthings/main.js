@@ -135,7 +135,7 @@ router.post("/", async ({ body, get }, res, next) => {
   } else {
     return res.sendStatus(200);
   }
-  let msg, i, item;
+  let msg;
 
   /*
   ██████  █████  ██      ██      ██████   █████   ██████ ██   ██ ███████ 
@@ -226,12 +226,10 @@ router.post("/", async ({ body, get }, res, next) => {
         }
       }
     } else if (data.type === "stat") {
-      //bot.notifyAdmin(`${body.callback_query.from.id} (${body.callback_query.from.first_name}) requested stats`);
       bot.answerCallback(body.callback_query.id, "");
       stats.getStats(data.chat_id, data, data.from_id);
     } else if (data.type === "score") {
       if (data.requestor === "^") return "";
-      //bot.notifyAdmin(`${body.callback_query.from.id} (${body.callback_query.from.first_name}) requested stats`);
       bot.answerCallback(body.callback_query.id, "Score");
       stats.getScores(data.chat_id, data.id);
     } else if (data.type === "cat") {
@@ -438,7 +436,10 @@ router.post("/", async ({ body, get }, res, next) => {
       bot.notifyAdmins(message);
       message +=
         data.id === "list" ? `\n${i18n(game.settings.language, "sentences.addOwnList")}}` : "";
-      bot.answerCallback(body.callback_query.id, `Suggestion noted`);
+      bot.answerCallback(
+        body.callback_query.id,
+        i18n(game.settings.language, "sentences.suggestionNoted")
+      );
       bot.deleteMessage(data.chat_id, data.message_id);
       bot.queueMessage(data.chat_id, message);
     } else if (data.type === "values") {
@@ -577,35 +578,33 @@ router.post("/", async ({ body, get }, res, next) => {
     bot.notifyAdmin(`Can't send message:\n${JSON.stringify(msg)}`);
     return res.sendStatus(200);
   }
-  Game.findOne({ chat_id: msg.chat.id })
+  const existingGame = await Game.findOne({ chat_id: msg.chat.id })
     .populate("list.creator")
     .select("-playedLists")
-    //.select('chat_id enabled players hints cycles lastCycleDate lastPlayDate listsPlayed guessers streak disabledCategories pickedLists list date minigame tinygame settings')
-    .exec((err, existingGame) => {
-      if (err) {
-        bot.notifyAdmin(`Error finding game: ${msg.chat.id}`);
-        return next(err);
-      }
-      if (!existingGame) {
-        createGame(msg.chat.id).then((newGame) => {
-          if (err) bot.notifyAdmin("POST: " + JSON.stringify(err) + "\n" + JSON.stringify(newGame));
-          bot.notifyAdmin(`New game created for ${msg.chat.id}`);
-          return commands.evaluate(res, msg, newGame, true);
-        });
-      } else {
-        if (msg.command.includes("@")) {
-          msg.command = msg.command.substring(0, msg.command.indexOf("@"));
-          if (!existingGame.enabled && !["/list", "/start"].includes(msg.command.toLowerCase())) {
-            bot.sendMessage(
-              msg.chat.id,
-              i18n(existingGame.settings.language, "sentences.inactivity")
-            );
-            return res.sendStatus(200);
-          }
+    .exec();
+  try {
+    if (!existingGame) {
+      const newGame = await createGame(msg.chat.id);
+      console.log(`New game created for ${msg.chat.id}`);
+      await commands.evaluate(msg, newGame, true);
+    } else {
+      if (msg.command.includes("@")) {
+        msg.command = msg.command.substring(0, msg.command.indexOf("@"));
+        if (!existingGame.enabled && !["/list", "/start"].includes(msg.command.toLowerCase())) {
+          bot.sendMessage(
+            msg.chat.id,
+            i18n(existingGame.settings.language, "sentences.inactivity")
+          );
+          return res.sendStatus(200);
         }
-        return commands.evaluate(res, msg, existingGame, false);
       }
-    });
+      await commands.evaluate(msg, existingGame, false);
+    }
+  } catch (e) {
+    bot.notifyAdmin(`Error in game ${msg.chat.id}:\n${e}`);
+  } finally {
+    res.sendStatus(200);
+  }
 });
 
 router.get("/", ({ query }, res, next) => {

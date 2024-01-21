@@ -382,6 +382,26 @@ module.exports = {
       inline_keyboard: [
         [
           {
+            text: `${i18n(settings.language, "botLanguage")}: ${settings.language}`,
+            callback_data: JSON.stringify({
+              type: "setting",
+              id: "lang",
+              game: chat_id,
+            }),
+          },
+          {
+            text: `${i18n(settings.language, "language", {
+              count: settings.languages.length,
+            })}: ${settings.languages.join(", ")}`,
+            callback_data: JSON.stringify({
+              type: "setting",
+              id: "langs",
+              game: chat_id,
+            }),
+          },
+        ],
+        [
+          {
             text: `${i18n(settings.language, "playerIntro")}: ${settings.intro ? ON : OFF}`,
             callback_data: JSON.stringify({
               type: "setting",
@@ -408,30 +428,13 @@ module.exports = {
             }),
           },
           {
-            text: `${i18n(settings.language, "languages")}: ${settings.languages.join(", ")}`,
+            text: `${i18n(settings.language, "snubs")}: ${settings.snubs ? ON : OFF}`,
             callback_data: JSON.stringify({
               type: "setting",
-              id: "langs",
+              id: "snubs",
               game: chat_id,
             }),
           },
-          {
-            text: `${i18n(settings.language, "botLanguage")}: ${settings.language}`,
-            callback_data: JSON.stringify({
-              type: "setting",
-              id: "lang",
-              game: chat_id,
-            }),
-          },
-          /*
-                    {
-                      'text': `Snub Messages: ${settings.snubs ? THUMBS_UP : OFF}`,
-                      'callback_data': JSON.stringify({
-                        type: 'setting',
-                        id: 'snubs',
-                        game: game
-                      })
-                    },*/
         ],
       ],
     };

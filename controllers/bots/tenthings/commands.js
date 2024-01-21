@@ -48,14 +48,14 @@ const commands = [
   "commands",
 ];
 
-exports.evaluate = async (res, msg, game, isNew) => {
+exports.evaluate = async (msg, game, isNew) => {
   //bot.notifyAdmin(tenthings);
   //bot.notifyAdmin(games[msg.chat.id].list);
   let player = await players.getPlayer(game, msg.from);
   if (!player.first_name) {
     console.error("msg without a first_name?");
     console.error(msg);
-    return res.sendStatus(200);
+    return;
   } else if (msg.chat.id === config.adminChat) {
     //Admin group chat
     if (
@@ -63,12 +63,8 @@ exports.evaluate = async (res, msg, game, isNew) => {
         msg.command.toLowerCase()
       )
     ) {
-      return res.sendStatus(200);
-    } else {
-      res.sendStatus(200);
+      return;
     }
-  } else {
-    res.sendStatus(200);
   }
   /*
   const flood = await floodChecker();

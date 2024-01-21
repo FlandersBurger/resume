@@ -219,7 +219,6 @@ const checkGuess = async (game, player, guess, msg) => {
     }, 200);
   } else {
     player.snubs++;
-
     if (game.settings.snubs) {
       bot.queueMessage(msg.chat.id, messages.alreadyGuessed(match.value, player, match.guesser));
     }
