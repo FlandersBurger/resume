@@ -41,7 +41,7 @@ exports.process = (game, skipper) => {
     } else {
       bot.queueMessage(
         game.chat_id,
-        i18n(game.settings.language, "sentences.veto", {
+        i18n(game.settings.language, "sentences.skipConfirm", {
           list: game.list.name,
           skipDelay: SKIP_DELAY,
         })
@@ -165,10 +165,18 @@ exports.veto = async (game, player) => {
     vetoes[game.id] = moment();
     bot.queueMessage(
       game.chat_id,
-      `Skip vetoed by ${player.first_name}\nNo skipping allowed for ${VETO_DELAY} seconds`
+      i18n(game.settings.language, "sentences.skipVeto", {
+        name: player.first_name,
+        vetoDelay: VETO_DELAY,
+      })
     );
   } else {
-    bot.queueMessage(game.chat_id, `I can't find a skip request, ${player.first_name}`);
+    bot.queueMessage(
+      game.chat_id,
+      i18n(game.settings.language, "sentences.skipNotFound", {
+        name: player.first_name,
+      })
+    );
   }
 };
 
@@ -177,6 +185,9 @@ exports.abort = (game, player) => {
   vetoes[game.id] = moment();
   bot.queueMessage(
     game.chat_id,
-    `Skip vetoed by ${player.first_name} giving a correct answer\nNo skipping allowed for ${VETO_DELAY} seconds`
+    i18n(game.settings.language, "sentences.skipAbort", {
+      name: player.first_name,
+      vetoDelay: VETO_DELAY,
+    })
   );
 };
