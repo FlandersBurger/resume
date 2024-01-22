@@ -125,9 +125,10 @@ exports.checkSkipper = async (game, msg, player) => {
           skippers[player.id].delay += 10;
           bot.queueMessage(
             msg.chat.id,
-            `Banned ${player.first_name} from skipping again for ${
-              skippers[player.id].delay
-            } seconds`
+            i18n(game.settings.language, "sentences.skipShortBan", {
+              name: player.first_name,
+              delay: skippers[player.id].delay,
+            })
           );
           return false;
         } else if (skippers[player.id].delay < 60) {
@@ -135,14 +136,17 @@ exports.checkSkipper = async (game, msg, player) => {
           skippers[player.id].delay += 10;
           bot.queueMessage(
             msg.chat.id,
-            `If you skip again within ${skippers[player.id].delay} seconds, ${
-              player.first_name
-            }, you will be banned from skipping for 1 hour`
+            i18n(game.settings.language, "sentences.skipBanThreat", {
+              name: player.first_name,
+              delay: skippers[player.id].delay,
+            })
           );
           return false;
         } else if (skippers[player.id].delay != 3600) {
           skippers[player.id].delay = 3600;
-          bot.queueMessage(msg.chat.id, `Banned ${player.first_name} from skipping for 1 hour`);
+          i18n(game.settings.language, "sentences.skipLongBan", {
+            name: player.first_name,
+          });
           return false;
         }
       }

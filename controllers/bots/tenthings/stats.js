@@ -93,7 +93,7 @@ exports.getScores = (game_id, type) => {
     });
 };
 
-const getDailyScores = async ({ _id, chat_id }, limit) => {
+const getDailyScores = async ({ _id, settings }, limit) => {
   const players = await Player.find({
     game: _id,
     scoreDaily: {
