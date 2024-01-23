@@ -3,6 +3,7 @@ const _ = require("underscore");
 const bot = require("../../../connections/telegram");
 const messages = require("./messages");
 const hints = require("./hints");
+const i18n = require("../../../i18n");
 const Game = require("../../../models/tenthings/game")();
 const Player = require("../../../models/tenthings/player")();
 const List = require("../../../models/tenthings/list")();
@@ -18,7 +19,7 @@ exports.getScores = (game_id, type) => {
   Game.findOne({
     chat_id: game_id,
   })
-    .select("chat_id")
+    .select("chat_id settings")
     .exec((err, game) => {
       Player.find({
         game: game._id,
@@ -26,7 +27,7 @@ exports.getScores = (game_id, type) => {
         let str = "";
         switch (type) {
           case "td":
-            str = "<b>Top Daily Scores</b>\n";
+            str = i18n(game.settings.language, "sentences.topDailyScores") + "\n";
             str += "<i>Highest single day score</i>\n";
             console.log(str);
             players
@@ -107,7 +108,7 @@ const getDailyScores = async ({ _id, settings }, limit) => {
     .reduce((str, { first_name, scoreDaily }, index) => {
       str += `${index + 1}: ${first_name} - ${scoreDaily}\n`;
       return str;
-    }, `<b>${limit ? `Top ${limit} ` : ""}Daily Scores</b>\n`);
+    }, i18n(settings.language, limit ? "sentences.dailyScoresWithLimit" : "dailyScores", { limit }) + `\n`);
   return message;
 };
 

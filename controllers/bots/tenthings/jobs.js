@@ -122,7 +122,7 @@ const resetDailyScore = (force = false) => {
             if (game.hints < 4) {
               game.hints = 4;
             }
-            message = `<b>${game.list.name}</b> (${game.list.totalValues})`;
+            message = `<b>${game.list.name}</b> (${game.list.totalValues}) `;
             if (game.list.creator)
               message += i18n(game.settings.language, "sentences.createdBy", {
                 creator: game.list.creator.username,

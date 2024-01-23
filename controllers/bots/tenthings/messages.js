@@ -21,7 +21,7 @@ module.exports = {
     message += `<b>${i18n(language, "sentences.guessedBy", { answer, guesser })}</b> `;
     return message;
   },
-  alreadyGuessed: function (match, loser, winner) {
+  snubbed: function (match, loser, winner) {
     var random = Math.floor(Math.random() * 9);
     if (loser.id != winner.id) {
       switch (random) {

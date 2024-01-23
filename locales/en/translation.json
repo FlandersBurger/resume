@@ -107,7 +107,10 @@
     "newRound": "A new round will start in 2 seconds",
     "createdBy": "by {{creator}}",
     "guessedBy": "{{guesser}} got {{answer}}",
-    "notGuessed": "Not guessed"
+    "notGuessed": "Not guessed",
+    "dailyScores": "<b>Daily Scores</b>",
+    "topDailyScores": "<b>Top Daily Scores</b>",
+    "dailyScoresWithLimit": "<b>Top {{limit}} Daily Scores</b>"
   },
   "warnings": {
     "minimum1Category": "A minimum of 1 category is required",

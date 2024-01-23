@@ -110,7 +110,10 @@
     "newRound": "Een nieuwe ronde begint over 2 seconden",
     "createdBy": "door {{creator}}",
     "guessedBy": "{{guesser}} heeft {{answer}} geraden",
-    "notGuessed": "Niet geraden"
+    "notGuessed": "Niet geraden",
+    "dailyScores": "<b>Dagelijkse Scores</b>",
+    "topDailyScores": "<b>Top Dagelijkse Scores</b>",
+    "dailyScoresWithLimit": "<b>Top {{limit}} Dagelijkse Scores</b>"
   },
   "warnings": {
     "minimum1Category": "Minimaal 1 categorie is vereist",

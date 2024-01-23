@@ -110,7 +110,10 @@
     "newRound": "Uma nova rodada começará em 2 segundos",
     "createdBy": "por {{creator}}",
     "guessedBy": "{{guesser}} acertou {{answer}}",
-    "notGuessed": "Não adivinhado"
+    "notGuessed": "Não adivinhado",
+    "dailyScores": "<b>Pontuações Diárias</b>",
+    "topDailyScores": "<b>Top Pontuações Diárias</b>",
+    "dailyScoresWithLimit": "<b>Top {{limit}} Pontuações Diárias</b>"
   },
   "warnings": {
     "minimum1Category": "É necessário pelo menos 1 categoria",

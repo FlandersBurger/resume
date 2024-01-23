@@ -116,7 +116,10 @@
     "newRound": "Ronde baru akan dimulai dalam 2 detik",
     "createdBy": "oleh {{creator}}",
     "guessedBy": "{{guesser}} menebak {{answer}}",
-    "notGuessed": "Belum ditebak"
+    "notGuessed": "Belum ditebak",
+    "dailyScores": "<b>Skor Harian</b>",
+    "topDailyScores": "<b>Top Skor Harian</b>",
+    "dailyScoresWithLimit": "<b>Top {{limit}} Skor Harian</b>"
   },
   "warnings": {
     "minimum1Category": "Setidaknya 1 kategori diperlukan",

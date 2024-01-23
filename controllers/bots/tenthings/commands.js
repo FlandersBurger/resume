@@ -190,7 +190,7 @@ exports.evaluate = async (msg, game, isNew) => {
     case "/list":
       try {
         stats.getList(game, (list) => {
-          let message = `<b>${game.list.name}</b> (${game.list.totalValues})`;
+          let message = `<b>${game.list.name}</b> (${game.list.totalValues}) `;
           if (game.list.creator)
             message += i18n(game.settings.language, "sentences.createdBy", {
               creator: game.list.creator.username,
