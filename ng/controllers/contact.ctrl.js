@@ -1,24 +1,21 @@
-angular.module('app')
-.controller('ContactCtrl', function ($scope, EmailSvc) {
-
+angular.module("app").controller("ContactCtrl", function ($scope, EmailSvc) {
   $scope.options = [
     {
       name: "Spam",
-      text: "I am a spam bot and automatically check the first option I find!"
+      text: "I am a spam bot and automatically check the first option I find!",
     },
     {
-      name: "Opportunitiy",
-      text: "You seem to have the skills I seek, I'd like to talk about some opportunities."
+      name: "Opportunity",
+      text: "You seem to have the skills I seek, I'd like to talk about some opportunities.",
     },
     {
       name: "Resume",
-      text: "I dig the resume, how did you make it?"
+      text: "I dig the resume, how did you make it?",
     },
     {
       name: "Other",
-      text: "Sumtin else!"
-    }
-
+      text: "Sumtin else!",
+    },
   ];
 
   $scope.contact = {
@@ -26,27 +23,28 @@ angular.module('app')
     name: "",
     phone: "",
     about: "",
-    message: ""
+    message: "",
   };
 
-  $scope.send = function() {
+  $scope.send = function () {
     $scope.sending = true;
-    console.log('here');
+    console.log("here");
     EmailSvc.send({
-      "email": $scope.contact.email,
-      "name": $scope.contact.name,
-      "phone":  $scope.contact.phone,
-      "about": $scope.contact.about,
-      "message": $scope.contact.message
-    })
-    .then(function(response) {
-      $scope.sent = true;
-      console.log("SUCCESS. status=%d, text=%s", response.status, response.text);
-      console.log(response);
-    }, function(err) {
-      $scope.sending = false;
-      console.log("FAILED. error=", err);
-    });
+      email: $scope.contact.email,
+      name: $scope.contact.name,
+      phone: $scope.contact.phone,
+      about: $scope.contact.about,
+      message: $scope.contact.message,
+    }).then(
+      function (response) {
+        $scope.sent = true;
+        console.log("SUCCESS. status=%d, text=%s", response.status, response.text);
+        console.log(response);
+      },
+      function (err) {
+        $scope.sending = false;
+        console.log("FAILED. error=", err);
+      }
+    );
   };
-
 });

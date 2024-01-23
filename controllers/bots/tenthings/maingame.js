@@ -80,7 +80,12 @@ const newRound = (currentGame, player) => {
           }
           list.plays++;
           list.score = lists.getScore(list);
-          await list.save();
+          try {
+            await list.save();
+          } catch (error) {
+            console.log(list);
+            console.error(error);
+          }
           for (let player of players) {
             player.lists++;
             const savedPlayer = await player.save();
