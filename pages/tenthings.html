@@ -84,50 +84,55 @@
           <div class="btn-group">
             <div class="dropdown">
               <button class="btn btn-default dropdown-toggle" type="button" data-toggle="dropdown">
-                {{sortLabel}} {{(sortDirection ? 'A-Z' : 'Z-A')}}
+                {{listOrder.label}} {{(listOrder.direction ? 'A-Z' : 'Z-A')}}
               </button>
               <ul class="dropdown-menu">
                 <li>
-                  <a href="#" ng-click="sort('name', 'Name')"
-                    >Name {{sortValue === 'name' ? (sortDirection ? 'Z-A' : 'A-Z') : 'A-Z'}}</a
-                  >
-                </li>
-                <li>
-                  <a href="#" ng-click="sort('date', 'Creation Date')"
-                    >Creation Date {{sortValue === 'date' ? (sortDirection ? 'Z-A' : 'A-Z') :
+                  <a href="#" ng-click="sort('listOrder', 'name', 'Name')"
+                    >Name {{listOrder.field === 'name' ? (listOrder.direction ? 'Z-A' : 'A-Z') :
                     'A-Z'}}</a
                   >
                 </li>
                 <li>
-                  <a href="#" ng-click="sort('modifyDate', 'Modify Date')"
-                    >Modify Date {{sortValue === 'modifyDate' ? (sortDirection ? 'Z-A' : 'A-Z') :
+                  <a href="#" ng-click="sort('listOrder', 'date', 'Creation Date')"
+                    >Creation Date {{listOrder.field === 'date' ? (listOrder.direction ? 'Z-A' :
+                    'A-Z') : 'A-Z'}}</a
+                  >
+                </li>
+                <li>
+                  <a href="#" ng-click="sort('listOrder', 'modifyDate', 'Modify Date')"
+                    >Modify Date {{listOrder.field === 'modifyDate' ? (listOrder.direction ? 'Z-A' :
+                    'A-Z') : 'A-Z'}}</a
+                  >
+                </li>
+                <li>
+                  <a href="#" ng-click="sort('listOrder', 'skips', '# of Skips')"
+                    >Skips {{listOrder.field === 'skips' ? (listOrder.direction ? 'Z-A' : 'A-Z') :
                     'A-Z'}}</a
                   >
                 </li>
                 <li>
-                  <a href="#" ng-click="sort('skips', '# of Skips')"
-                    >Skips {{sortValue === 'skips' ? (sortDirection ? 'Z-A' : 'A-Z') : 'A-Z'}}</a
-                  >
-                </li>
-                <li>
-                  <a href="#" ng-click="sort('plays', '# of Plays')"
-                    >Plays {{sortValue === 'plays' ? (sortDirection ? 'Z-A' : 'A-Z') : 'A-Z'}}</a
-                  >
-                </li>
-                <li>
-                  <a href="#" ng-click="sort('hints', '# of Hints')"
-                    >Hints {{sortValue === 'hints' ? (sortDirection ? 'Z-A' : 'A-Z') : 'A-Z'}}</a
-                  >
-                </li>
-                <li>
-                  <a href="#" ng-click="sort('score', 'Score')"
-                    >Score {{sortValue === 'score' ? (sortDirection ? 'Z-A' : 'A-Z') : 'A-Z'}}</a
-                  >
-                </li>
-                <li>
-                  <a href="#" ng-click="sort('answers', '# of Answer')"
-                    >Answers {{sortValue === 'answers' ? (sortDirection ? 'Z-A' : 'A-Z') :
+                  <a href="#" ng-click="sort('listOrder', 'plays', '# of Plays')"
+                    >Plays {{listOrder.field === 'plays' ? (listOrder.direction ? 'Z-A' : 'A-Z') :
                     'A-Z'}}</a
+                  >
+                </li>
+                <li>
+                  <a href="#" ng-click="sort('listOrder', 'hints', '# of Hints')"
+                    >Hints {{listOrder.field === 'hints' ? (listOrder.direction ? 'Z-A' : 'A-Z') :
+                    'A-Z'}}</a
+                  >
+                </li>
+                <li>
+                  <a href="#" ng-click="sort('listOrder', 'score', 'Score')"
+                    >Score {{listOrder.field === 'score' ? (listOrder.direction ? 'Z-A' : 'A-Z') :
+                    'A-Z'}}</a
+                  >
+                </li>
+                <li>
+                  <a href="#" ng-click="sort('listOrder', 'answers', '# of Answer')"
+                    >Answers {{listOrder.field === 'answers' ? (listOrder.direction ? 'Z-A' : 'A-Z')
+                    : 'A-Z'}}</a
                   >
                 </li>
               </ul>
@@ -140,7 +145,7 @@
           <button
             class="btn btn-sm"
             ng-class="listButtonClass(list)"
-            ng-repeat="list in filteredLists() | filter: searchAll | filter: search | orderBy: sorter | limitTo: 1000"
+            ng-repeat="list in filteredLists() | filter: searchAll | filter: search | orderBy: listOrder.field:listOrder.direction | limitTo: 1000"
             ng-click="selectList(list)"
             style="white-space: normal"
             uib-tooltip="{{list.description}}"
@@ -171,28 +176,59 @@
             ></i>
             Save
           </div>
-          <div
-            class="btn btn-danger"
-            ng-click="deleteList(selectedList)"
-            ng-disabled="!selectedList || (!currentUser.admin && selectedList.creator._id !== currentUser._id && selectedList._id)"
-          >
-            <i class="fas fa-trash" aria-hidden="true"></i> Delete
-          </div>
-          <div
-            class="btn btn-default"
-            ng-click="reportList(selectedList)"
-            ng-disabled="selectedList.reported"
-            ng-hide="!selectedList || selectedList.creator._id === currentUser._id"
-          >
-            <i class="fas fa-bug" aria-hidden="true"></i> Report
-          </div>
-          <div
-            class="btn btn-default"
-            ng-click="sortList = sortList === 'value' ? 'blurb' : 'value'"
-            ng-hide="!selectedList"
-          >
-            <i class="fas fa-sort-numeric-down" aria-hidden="true"></i> Sort by {{sortList ===
-            'value' ? 'blurb' : 'value'}}
+          <div class="btn-group">
+            <div
+              class="btn btn-danger"
+              ng-click="deleteList(selectedList)"
+              ng-disabled="!selectedList || (!currentUser.admin && selectedList.creator._id !== currentUser._id && selectedList._id)"
+            >
+              <i class="fas fa-trash" aria-hidden="true"></i> Delete
+            </div>
+            <div
+              class="btn btn-default"
+              ng-click="reportList(selectedList)"
+              ng-disabled="selectedList.reported"
+              ng-hide="!selectedList || selectedList.creator._id === currentUser._id"
+            >
+              <i class="fas fa-bug" aria-hidden="true"></i> Report
+            </div>
+            <div class="btn-group">
+              <div class="dropdown">
+                <button
+                  class="btn btn-default dropdown-toggle"
+                  type="button"
+                  data-toggle="dropdown"
+                >
+                  {{valueOrder.label}} {{(valueOrder.direction ? 'Z-A' : 'A-Z')}}
+                </button>
+                <ul class="dropdown-menu">
+                  <li>
+                    <a href="#" ng-click="sort('valueOrder', 'value', 'Value')"
+                      >Value {{valueOrder.field === 'value' ? (valueOrder.direction ? 'A-Z': 'Z-A')
+                      : 'A-Z'}}</a
+                    >
+                  </li>
+                  <li>
+                    <a href="#" ng-click="sort('valueOrder', 'blurb', 'Blurb')"
+                      >Blurb {{valueOrder.field === 'blurb' ? (valueOrder.direction ? 'A-Z': 'Z-A')
+                      : 'A-Z'}}</a
+                    >
+                  </li>
+                  <li>
+                    <a href="#" ng-click="sort('valueOrder', 'date', 'Creation Date')"
+                      >Creation Date {{valueOrder.field === 'date' ? (valueOrder.direction ? 'A-Z':
+                      'Z-A') : 'A-Z'}}</a
+                    >
+                  </li>
+                  <li>
+                    <a href="#" ng-click="sort('valueOrder', 'creator', 'Creator')"
+                      >Creator {{valueOrder.field === 'creator' ? (valueOrder.direction ? 'A-Z':
+                      'Z-A') : 'A-Z'}}</a
+                    >
+                  </li>
+                </ul>
+              </div>
+            </div>
           </div>
           <br />
           <kbd
@@ -373,7 +409,10 @@
             </div>
           </div>
           <hr />
-          <div class="input-group" ng-repeat="item in selectedList.values | orderBy: sortList">
+          <div
+            class="input-group"
+            ng-repeat="item in selectedList.values | orderBy: valueOrder.field:valueOrder.direction"
+          >
             <span
               class="input-group-addon"
               uib-tooltip="{{item.creator.username}}"

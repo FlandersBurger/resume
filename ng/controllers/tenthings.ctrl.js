@@ -1,42 +1,42 @@
 angular
-  .module('app')
+  .module("app")
   //AngularJs can't have an arrow function here
-  .controller('TenThingsCtrl', function ($scope, $location, TenThingsSvc) {
+  .controller("TenThingsCtrl", function ($scope, $location, TenThingsSvc) {
     $scope.search = {
-      name: '',
-      values: '',
+      name: "",
+      values: "",
     };
 
     TenThingsSvc.getCategories().then((response) => {
       $scope.categories = response.data;
       $scope.categoryFilters = $scope.categories.map((category) => category);
-      $scope.categoryFilters.push('All');
-      $scope.categoryFilters.push('Blank');
-      $scope.categoryFilter = 'All';
-      $scope.updateFilter = 'all';
+      $scope.categoryFilters.push("All");
+      $scope.categoryFilters.push("Blank");
+      $scope.categoryFilter = "All";
+      $scope.updateFilter = "all";
     });
     TenThingsSvc.getLanguages().then((response) => {
       $scope.languages = response.data;
       $scope.languageFilters = $scope.languages.map((language) => language);
-      $scope.languageFilters.push({ name: 'All', code: 'all' });
-      $scope.languageFilter = { name: 'All', code: 'all' };
+      $scope.languageFilters.push({ name: "All", code: "all" });
+      $scope.languageFilter = { name: "All", code: "all" };
     });
 
     $scope.keyDown = (e) => {
       e = e || window.event;
       switch (e.keyCode) {
         case 9:
-          if ($('#new-blurb').is(':focus')) {
+          if ($("#new-blurb").is(":focus")) {
             setTimeout(() => {
               $scope.addValue();
             }, 100);
           }
           break;
         case 13:
-          if ($('#new-blurb').is(':focus')) {
+          if ($("#new-blurb").is(":focus")) {
             $scope.addValue();
-          } else if ($('#new-value').is(':focus')) {
-            $('#new-blurb').focus();
+          } else if ($("#new-value").is(":focus")) {
+            $("#new-blurb").focus();
           }
           break;
         default:
@@ -44,7 +44,7 @@ angular
       // use e.keyCode
     };
 
-    $scope.searchName = '';
+    $scope.searchName = "";
     $scope.newItem = {};
 
     $scope.setCategoryFilter = (category) => ($scope.categoryFilter = category);
@@ -56,35 +56,35 @@ angular
       if (!$scope.lists) return [];
       return $scope.lists
         .filter(({ isDynamic }) => {
-          if ($scope.updateFilter !== 'all') {
+          if ($scope.updateFilter !== "all") {
             if (
-              ($scope.updateFilter === 'static' && isDynamic === true) ||
-              ($scope.updateFilter === 'dynamic' && isDynamic === false)
+              ($scope.updateFilter === "static" && isDynamic === true) ||
+              ($scope.updateFilter === "dynamic" && isDynamic === false)
             )
               return false;
           }
           return true;
         })
         .filter(({ categories }) => {
-          if ($scope.categoryFilter === 'All') {
+          if ($scope.categoryFilter === "All") {
             return true;
           } else {
             if (categories.length > 0) {
               return categories.indexOf($scope.categoryFilter) >= 0;
             } else {
-              return $scope.categoryFilter === 'Blank';
+              return $scope.categoryFilter === "Blank";
             }
           }
         })
         .filter(({ creator }) => {
-          if ($scope.userFilter === 'All') {
+          if ($scope.userFilter === "All") {
             return true;
           } else {
             return creator === $scope.userFilter;
           }
         })
         .filter(({ language }) => {
-          if ($scope.languageFilter.code === 'all') {
+          if ($scope.languageFilter.code === "all") {
             return true;
           } else {
             return language === $scope.languageFilter.code;
@@ -92,34 +92,40 @@ angular
         });
     };
 
-    $scope.$on('login', (_) => {
+    $scope.$on("login", (_) => {
       $scope.getLists();
     });
 
-    $scope.sort = (sortValue, sortLabel) => {
-      $scope.sortLabel = sortLabel;
-      if ($scope.sortValue === sortValue) {
-        $scope.sortDirection = !$scope.sortDirection;
-      } else {
-        $scope.sortValue = sortValue;
-        $scope.sortDirection = true;
-      }
-      $scope.sorter = ($scope.sortDirection ? '+' : '-') + $scope.sortValue;
+    $scope.listOrder = {
+      field: "date",
+      direction: true,
+      label: "Creation Date",
     };
 
-    $scope.sortList = 'value';
-    $scope.sortValue = 'date';
-    $scope.sortDirection = true;
-    $scope.sort('date', 'Creation Date');
+    $scope.valueOrder = {
+      field: "value",
+      direction: false,
+      label: "Value",
+    };
+
+    $scope.sort = (sorter, sortField, sortLabel) => {
+      $scope[sorter].label = sortLabel;
+      if ($scope[sorter].field === sortField) {
+        $scope[sorter].direction = !$scope[sorter].direction;
+      } else {
+        $scope[sorter].field = sortField;
+        $scope[sorter].direction = true;
+      }
+    };
 
     $scope.getLanguageCount = (language) => {
       if (!$scope.lists) return 0;
       const count = $scope.lists.filter(
         (list) =>
-          ($scope.categoryFilter === 'All' || list.categories.includes($scope.categoryFilter)) &&
-          (language.code === 'all' || list.language === language.code) &&
-          ($scope.userFilter === 'All' || list.creator === $scope.userFilter) &&
-          ($scope.updateFilter === 'all' || list.isDynamic === ($scope.updateFilter === 'dynamic'))
+          ($scope.categoryFilter === "All" || list.categories.includes($scope.categoryFilter)) &&
+          (language.code === "all" || list.language === language.code) &&
+          ($scope.userFilter === "All" || list.creator === $scope.userFilter) &&
+          ($scope.updateFilter === "all" || list.isDynamic === ($scope.updateFilter === "dynamic"))
       ).length;
       return `${count} - ${Math.round((count / $scope.lists.length) * 100)}%`;
     };
@@ -128,10 +134,10 @@ angular
       if (!$scope.lists) return 0;
       const count = $scope.lists.filter(
         (list) =>
-          (category === 'All' || list.categories.indexOf(category) >= 0) &&
-          ($scope.languageFilter.code === 'all' || list.language === $scope.languageFilter.code) &&
-          ($scope.userFilter === 'All' || list.creator === $scope.userFilter) &&
-          ($scope.updateFilter === 'all' || list.isDynamic === ($scope.updateFilter === 'dynamic'))
+          (category === "All" || list.categories.indexOf(category) >= 0) &&
+          ($scope.languageFilter.code === "all" || list.language === $scope.languageFilter.code) &&
+          ($scope.userFilter === "All" || list.creator === $scope.userFilter) &&
+          ($scope.updateFilter === "all" || list.isDynamic === ($scope.updateFilter === "dynamic"))
       ).length;
       return `${count} - ${Math.round((count / $scope.lists.length) * 100)}%`;
     };
@@ -140,9 +146,9 @@ angular
       if (!$scope.lists) return 0;
       const count = $scope.lists.filter(
         (list) =>
-          type === 'all' ||
-          (list.isDynamic && type === 'dynamic') ||
-          (!list.isDynamic && type === 'static')
+          type === "all" ||
+          (list.isDynamic && type === "dynamic") ||
+          (!list.isDynamic && type === "static")
       ).length;
       return `${count} - ${Math.round((count / $scope.lists.length) * 100)}%`;
     };
@@ -163,7 +169,7 @@ angular
             }, $scope.userFilters);
           $scope.userCount = Object.keys($scope.userFilters).length;
           $scope.userFilters = sortObject($scope.userFilters, false);
-          $scope.userFilter = 'All';
+          $scope.userFilter = "All";
           $scope.loading = false;
         });
       }
@@ -172,7 +178,7 @@ angular
     $scope.selectList = (list) => {
       TenThingsSvc.getList(list).then(({ data }) => {
         $scope.selectedList = data;
-        $location.search('list', data._id);
+        $location.search("list", data._id);
       });
     };
 
@@ -182,13 +188,13 @@ angular
 
     $scope.selectCategory = (category) => {
       $scope.selectedList.category = category;
-      $('#category-select').hide();
+      $("#category-select").hide();
     };
 
     $scope.getCategoryClass = (category) => {
       return $scope.selectedList && $scope.selectedList.categories.indexOf(category) >= 0
-        ? 'btn-success'
-        : 'btn-default';
+        ? "btn-success"
+        : "btn-default";
     };
 
     $scope.toggleCategory = (category) => {
@@ -202,25 +208,25 @@ angular
 
     $scope.selectLanguage = (language) => {
       $scope.selectedList.language = language.code;
-      const nonEnglishIndex = $scope.selectedList.categories.indexOf('Non-English');
-      if (language.code !== 'EN' && nonEnglishIndex < 0) {
-        $scope.selectedList.categories.push('Non-English');
-      } else if (language.code === 'EN' && nonEnglishIndex >= 0) {
+      const nonEnglishIndex = $scope.selectedList.categories.indexOf("Non-English");
+      if (language.code !== "EN" && nonEnglishIndex < 0) {
+        $scope.selectedList.categories.push("Non-English");
+      } else if (language.code === "EN" && nonEnglishIndex >= 0) {
         $scope.selectedList.categories.splice(nonEnglishIndex, 1);
       }
     };
 
     $scope.addList = () => {
-      const currentLanguage = $scope.selectedList ? $scope.selectedList.language : 'EN';
-      $location.search('list', '');
+      const currentLanguage = $scope.selectedList ? $scope.selectedList.language : "EN";
+      $location.search("list", "");
       $scope.selectedList = {
-        name: '',
+        name: "",
         creator: $scope.currentUser._id,
         date: new Date(),
         values: [],
         answers: 0,
         isDynamic: true,
-        category: '',
+        category: "",
         categories: [],
         language: currentLanguage,
       };
@@ -248,8 +254,8 @@ angular
           $scope.newItem.creator = $scope.currentUser._id;
           $scope.selectedList.values.unshift(JSON.parse(JSON.stringify($scope.newItem)));
           $scope.selectedList.answers++;
-          $scope.newItem.value = '';
-          $scope.newItem.blurb = '';
+          $scope.newItem.value = "";
+          $scope.newItem.blurb = "";
           if (
             $scope.selectedList.values.length >= 10 &&
             $scope.selectedList.name &&
@@ -259,7 +265,7 @@ angular
           }
         }
       }
-      $('#new-value').focus();
+      $("#new-value").focus();
     };
 
     $scope.reportList = (list) => {
@@ -294,20 +300,20 @@ angular
             }
           );
         } else if (list.values.length < 10) {
-          alert('Lists must contain 10 or more values!');
+          alert("Lists must contain 10 or more values!");
         } else if (!list.name) {
-          flash('#list-name');
+          flash("#list-name");
         } else {
-          flash('.list-category');
+          flash(".list-category");
         }
       }
     };
 
     function flash(element) {
-      const color = $(element).css('background-color');
+      const color = $(element).css("background-color");
       $(element).animate(
         {
-          backgroundColor: '#FA8072',
+          backgroundColor: "#FA8072",
         },
         100,
         () => {
@@ -326,7 +332,7 @@ angular
         $scope.lists = $scope.lists.filter(({ _id }) => _id);
         $scope.selectedList = null;
       } else {
-        if (confirm('Are you sure you want to delete this list?')) {
+        if (confirm("Are you sure you want to delete this list?")) {
           TenThingsSvc.deleteList(list).then((response) => {
             $scope.getLists();
             $scope.selectedList = null;
@@ -339,13 +345,13 @@ angular
       const values = list.values.length;
       const blurbs = list.blurbs;
       if (values === blurbs && list.description) {
-        return 'btn-default';
+        return "btn-default";
       } else if (blurbs === 0 && !list.description) {
-        return 'btn-warning';
+        return "btn-warning";
       } else if (blurbs === 0 && list.description) {
-        return 'btn-info';
+        return "btn-info";
       } else {
-        return 'btn-primary';
+        return "btn-primary";
       }
     };
 
