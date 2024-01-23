@@ -83,8 +83,7 @@ const newRound = (currentGame, player) => {
           try {
             await list.save();
           } catch (error) {
-            console.log(list);
-            console.error(error);
+            bot.notifyAdmin(`New Round List Error\n${error}\n\n${list}`);
           }
           for (let player of players) {
             player.lists++;
