@@ -278,7 +278,11 @@ exports.evaluate = async (msg, game, isNew) => {
     case "/hint":
       maingame.activate(game, false);
       if (game.list.values.filter(({ guesser }) => !guesser.first_name).length !== 0) {
-        hints.process(game, player);
+        try {
+          hints.process(game, player);
+        } catch (e) {
+          bot.notifyAdmin(`Hint Error:\n${e}`);
+        }
       }
       break;
     case "/minidica":
