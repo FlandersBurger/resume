@@ -99,7 +99,12 @@ const skipList = (game, skipper) => {
       }
       foundList.skips++;
       foundList.score = lists.getScore(foundList);
-      await foundList.save();
+      try {
+        await foundList.validate();
+        await foundList.save();
+      } catch (err) {
+        return bot.notifyAdmin(`Skip List Error:\n${err}`);
+      }
       bot.queueMessage(game.chat_id, await stats.getDailyScores(game, 5));
       maingame.newRound(game);
     });

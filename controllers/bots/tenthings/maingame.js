@@ -81,6 +81,7 @@ const newRound = (currentGame, player) => {
           list.plays++;
           list.score = lists.getScore(list);
           try {
+            await list.validate();
             await list.save();
           } catch (error) {
             bot.notifyAdmin(`New Round List Error\n${error}\n\n${list}`);

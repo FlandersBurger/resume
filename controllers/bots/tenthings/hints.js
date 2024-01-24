@@ -70,7 +70,12 @@ exports.process = async (game, player, type = "main") => {
             list.hints = 0;
           }
           list.hints++;
-          await list.save();
+          try {
+            await list.validate();
+            await list.save();
+          } catch (err) {
+            return bot.notifyAdmin(`Hint List Error:\n${err}`);
+          }
         }
         break;
     }
