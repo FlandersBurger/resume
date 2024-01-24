@@ -92,7 +92,9 @@ const skipList = (game, skipper) => {
       delete cache[game._id];
       let foundList = await List.findOne({
         _id: game.list._id,
-      }).exec();
+      })
+        .select("_id plays skips votes score")
+        .exec();
       if (!foundList) return maingame.newRound(game);
       if (!foundList.skips) {
         foundList.skips = 0;
