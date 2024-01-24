@@ -11,7 +11,9 @@ const getRandomList = async (parameters) => {
   const count = await List.countDocuments(parameters).exec();
   if (count === 0) return;
   const lists = await List.find(parameters)
+    .select("-votes")
     .populate("creator")
+    .populate("values.creator")
     .limit(1)
     .skip(Math.floor(Math.random() * count))
     .exec();
