@@ -64,7 +64,9 @@ exports.process = async (game, player, type = "main") => {
         }, "");
         let list = await List.findOne({
           _id: game.list._id,
-        }).exec();
+        })
+          .select("_id name hints")
+          .exec();
         if (list) {
           if (!list.hints) {
             list.hints = 0;
@@ -74,7 +76,7 @@ exports.process = async (game, player, type = "main") => {
             await list.validate();
             await list.save();
           } catch (err) {
-            return bot.notifyAdmin(`Hint List Error:\n${err}`);
+            return bot.notifyAdmin(`Hint List Error:\n${list.name}`);
           }
         }
         break;
