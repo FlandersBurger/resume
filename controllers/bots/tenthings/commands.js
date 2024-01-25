@@ -298,6 +298,7 @@ exports.evaluate = async (msg, game, isNew) => {
         Game.find({})
           .select("chat_id")
           .then((games) => {
+            bot.notifyAdmin(`Notifying ${games.length} chats`);
             bot.broadcast(
               games.map(({ chat_id }) => chat_id),
               msg.text.replace("/notify ", "")

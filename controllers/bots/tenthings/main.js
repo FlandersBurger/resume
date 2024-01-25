@@ -356,7 +356,6 @@ router.post("/", async ({ body, get }, res, next) => {
       game.save(async (err, savedGame) => {
         if (err) return bot.notifyAdmin(`Language Save Error: \n${JSON.stringify(err)}`);
         bot.answerCallback(body.callback_query.id, `${data.id} -> New bot language`);
-        bot.notifyAdmin(`Language changed to ${data.id} by ${data.requestor} in ${data.chat_id}`);
         bot.setCommands(data.chat_id, data.id);
         const availableLanguages = await List.aggregate([
           { $group: { _id: "$language", count: { $sum: 1 } } },
@@ -445,12 +444,16 @@ router.post("/", async ({ body, get }, res, next) => {
       bot.queueMessage(data.chat_id, message);
     } else if (data.type === "values") {
       List.findOne({ _id: data.list }).exec((err, list) => {
-        bot.queueMessage(
-          data.chat_id,
-          list.values
-            .sort((a, b) => (a.value < b.value ? -1 : 1))
-            .reduce((message, item) => `${message}- ${item.value}\n`, `<b>${list.name}</b>\n`)
-        );
+        if (!list) {
+          bot.queueMessage(data.chat_id, "List not found");
+        } else {
+          bot.queueMessage(
+            data.chat_id,
+            list.values
+              .sort((a, b) => (a.value < b.value ? -1 : 1))
+              .reduce((message, item) => `${message}- ${item.value}\n`, `<b>${list.name}</b>\n`)
+          );
+        }
       });
     } else if (data.type === "desc") {
       const game = await Game.findOne({ chat_id: data.chat_id }).select("settings").exec();

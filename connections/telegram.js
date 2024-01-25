@@ -138,6 +138,9 @@ function TelegramBot() {
     channels.forEach((channel, index) => {
       setTimeout(() => {
         bot.queueMessage(channel, message);
+        if (index === channels.length - 1) {
+          bot.notifyAdmin("Broadcast finished");
+        }
       }, index * 50);
     });
   };
