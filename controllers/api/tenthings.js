@@ -118,7 +118,7 @@ router.get("/lists/:id", (req, res, next) => {
         upvotes: list.votes ? list.votes.filter(({ vote }) => vote > 0).length : 0,
         downvotes: list.votes ? list.votes.filter(({ vote }) => vote < 0).length : 0,
         playRatio: list.plays ? (list.plays - list.skips) / list.plays : 0,
-        difficulty: list.plays ? list.hints / 6 / (list.plays - list.skips) : 0,
+        calculatedDifficulty: list.plays ? list.hints / 6 / (list.plays - list.skips) : 0,
       })
     );
 });

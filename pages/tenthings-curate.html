@@ -1,61 +1,96 @@
 <div id="tenthingscurate-page" class="col-md-12">
   <h1>Ten Things List Curation</h1>
-	<button class="btn btn-default" ng-click="getLists()">
-		<i class="fas fa-sync" ng-class="{ 'fa-spin': loading }" aria-hidden="true"></i>
-	</button>
-	<table class="table table-striped">
-		<thead>
-			<tr>
-				<th ng-click="orderBy('name')">Name</th>
-				<th ng-click="orderBy('language')">Language</th>
-				<th ng-click="orderBy('difficulty')">Difficulty</th>
-				<th ng-click="orderBy('score')">Score</th>
-				<th ng-click="orderBy('date')">Created</th>
-			</tr>
-			<tr>
-				<th><input class="form-control" /></th>
-				<th>
-					<div class="dropdown">
-						<button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-							Language
-						</button>
-						<ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-							<li ng-repeat="language in languages">
-								<a class="dropdown-item">{{language.name}}</a>
-							</li>
-						</ul>
-					</div>
-				</th>
-				<th>				
-					<div class="dropdown">
-						<button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-							Difficulty
-						</button>
-						<ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-							<li><a class="dropdown-item">&#128524; Easy</a></li>
-							<li><a class="dropdown-item">&#129300; Medium</a></li>
-							<li><a class="dropdown-item">&#128565; Hard</a></li>
-						</ul>
-					</div>
-				</th>
-				<th>Score</th>
-				<th>Created</th>
-			</tr>
-		</thead>
-		<tbody>
-			<tr ng-repeat="list in lists | orderBy:order.field:order.reverse">
-				<td>{{list.name}}</td>
-				<td>{{list.language}}</td>
-				<td>
-					<div class="btn-group" role="group">
-						<button type="button" class="btn btn-sm btn-secondary" ng-class="{ 'btn-primary': list.difficulty === 0 }" ng-click="setDifficulty(list, 0)">&#128524;</button>
-						<button type="button" class="btn btn-sm btn-secondary" ng-class="{ 'btn-primary': list.difficulty === 1 }" ng-click="setDifficulty(list, 1)">&#129300;</button>
-						<button type="button" class="btn btn-sm btn-secondary" ng-class="{ 'btn-primary': list.difficulty === 2 }" ng-click="setDifficulty(list, 2)">&#128565;</button>
-					</div>
-				</td>
-				<td>{{(list.score * 100).toFixed(2)}}%</td>
-				<td>{{formatDate(list.date)}}</td>
-			</tr>
-		</tbody>
-	</table>
+  <button class="btn btn-default" ng-click="getLists()">
+    <i class="fas fa-sync" ng-class="{ 'fa-spin': loading }" aria-hidden="true"></i>
+  </button>
+  <table class="table table-striped">
+    <thead>
+      <tr>
+        <th ng-click="orderBy('name')">Name</th>
+        <th ng-click="orderBy('language')">Language</th>
+        <th ng-click="orderBy('difficulty')">Difficulty</th>
+        <th ng-click="orderBy('score')">Score</th>
+        <th ng-click="orderBy('date')">Created</th>
+      </tr>
+      <tr>
+        <th><input class="form-control" /></th>
+        <th>
+          <div class="dropdown">
+            <button
+              class="btn btn-secondary dropdown-toggle"
+              type="button"
+              id="dropdownMenuButton"
+              data-toggle="dropdown"
+              aria-haspopup="true"
+              aria-expanded="false"
+            >
+              Language
+            </button>
+            <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+              <li ng-repeat="language in languages">
+                <a class="dropdown-item">{{language.name}}</a>
+              </li>
+            </ul>
+          </div>
+        </th>
+        <th>
+          <div class="dropdown">
+            <button
+              class="btn btn-secondary dropdown-toggle"
+              type="button"
+              id="dropdownMenuButton"
+              data-toggle="dropdown"
+              aria-haspopup="true"
+              aria-expanded="false"
+            >
+              Difficulty
+            </button>
+            <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+              <li><a class="dropdown-item">&#128524; Easy</a></li>
+              <li><a class="dropdown-item">&#129300; Medium</a></li>
+              <li><a class="dropdown-item">&#128565; Hard</a></li>
+            </ul>
+          </div>
+        </th>
+        <th>Score</th>
+        <th>Created</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr ng-repeat="list in lists | orderBy:order.field:order.reverse">
+        <td>{{list.name}}</td>
+        <td>{{list.language}}</td>
+        <td>
+          <div class="btn-group" role="group">
+            <button
+              type="button"
+              class="btn btn-sm btn-secondary"
+              ng-class="{ 'btn-primary': list.difficulty === 0 }"
+              ng-click="setDifficulty(list, 0)"
+            >
+              &#128524;
+            </button>
+            <button
+              type="button"
+              class="btn btn-sm btn-secondary"
+              ng-class="{ 'btn-primary': list.difficulty === 1 }"
+              ng-click="setDifficulty(list, 1)"
+            >
+              &#129300;
+            </button>
+            <button
+              type="button"
+              class="btn btn-sm btn-secondary"
+              ng-class="{ 'btn-primary': list.difficulty === 2 }"
+              ng-click="setDifficulty(list, 2)"
+            >
+              &#128565;
+            </button>
+          </div>
+        </td>
+        <td>{{(list.score * 100).toFixed(2)}}%</td>
+        <td>{{formatDate(list.date)}}</td>
+      </tr>
+    </tbody>
+  </table>
 </div>
