@@ -404,8 +404,7 @@ router.post("/", async ({ body, get }, res, next) => {
         bot.queueMessage(data.chat_id, message);
       });
     } else if (data.type === "diff") {
-      const result = await List.findOneAndUpdate({ _id: data.list }, { difficulty: data.vote });
-      console.log(data);
+      await List.findOneAndUpdate({ _id: data.list }, { difficulty: data.vote });
       bot.answerCallback(body.callback_query.id, `${messages.difficulty(data.vote)}`);
       bot.editKeyboard(data.chat_id, data.message_id, keyboards.curate(await List.findOne({ _id: data.list })));
     } else if (data.type === "freq") {
