@@ -17,6 +17,7 @@ const categories = require("./categories");
 const jobs = require("./jobs");
 const commands = require("./commands");
 const i18n = require("../../../i18n");
+const emojis = require("./emojis");
 
 //-------------//
 //redis.set('pause', true);
@@ -97,18 +98,6 @@ const createGame = async (chat_id) => {
 };
 
 /*
-bot.sendKeyboard(config.masterChat, 'test', {
-  //reply_to_message_id: '32936',
-  //reply_markup: {
-    keyboard: [[
-      { 'text': '\ud83d\udc4d', 'callback_data': '1' },
-      { 'text': '\ud83d\udc4e', 'callback_data': '2' }
-    ]]
-  //}
-});
-*/
-
-/*
  ██████   ██████  ███████ ████████ 
  ██   ██ ██    ██ ██         ██    
  ██████  ██    ██ ███████    ██    
@@ -179,7 +168,7 @@ router.post("/", async ({ body, get }, res, next) => {
         foundList.score = lists.getScore(foundList);
         delete foundList.voters;
         await foundList.save();
-        bot.answerCallback(body.callback_query.id, data.vote > 0 ? "\ud83d\udc4d" : "\ud83d\udc4e");
+        bot.answerCallback(body.callback_query.id, data.vote > 0 ? emojis.thumbsUp : emojis.thumbsDown);
         //bot.notifyAdmin(`"<b>${foundList.name}</b>" ${data.vote > 0 ? 'up' : 'down'}voted by <i>${body.callback_query.from.first_name}</i>!`);
         if (moment(data.date) > moment().subtract(1, "days")) {
           const game = await Game.findOne({ chat_id: data.chat_id }).select("settings").exec();

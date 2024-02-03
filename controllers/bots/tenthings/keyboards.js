@@ -4,11 +4,7 @@ const categories = require("./categories");
 const messages = require("./messages");
 const languages = require("./languages");
 const i18n = require("../../../i18n");
-const THUMBS_UP = "\ud83d\udc4d";
-const THUMBS_DOWN = "\ud83d\udc4e";
-const OFF = "\ud83c\udf11";
-const ON = "\ud83c\udf15";
-const GREEN = "🟢";
+const emojis = require("./emojis");
 
 module.exports = {
   stats: function (chat_id) {
@@ -360,7 +356,7 @@ module.exports = {
       inline_keyboard: categories.sort().reduce((result, category, i) => {
         const button = {
           text: `${i18n(settings.language, `categories.${category}`)}: ${
-            disabledCategories.indexOf(category) < 0 ? ON : OFF
+            disabledCategories.indexOf(category) < 0 ? emojis.on : emojis.off
           }`,
           callback_data: JSON.stringify({
             type: "cat",
@@ -402,7 +398,7 @@ module.exports = {
         ],
         [
           {
-            text: `${i18n(settings.language, "playerIntro")}: ${settings.intro ? ON : OFF}`,
+            text: `${i18n(settings.language, "playerIntro")}: ${settings.intro ? emojis.on : emojis.off}`,
             callback_data: JSON.stringify({
               type: "setting",
               id: "intro",
@@ -410,7 +406,7 @@ module.exports = {
             }),
           },
           {
-            text: `${i18n(settings.language, "sass")}: ${settings.sass ? ON : OFF}`,
+            text: `${i18n(settings.language, "sass")}: ${settings.sass ? emojis.on : emojis.off}`,
             callback_data: JSON.stringify({
               type: "setting",
               id: "sass",
@@ -420,7 +416,7 @@ module.exports = {
         ],
         [
           {
-            text: `${i18n(settings.language, "dailyUpdates")}: ${settings.updates ? ON : OFF}`,
+            text: `${i18n(settings.language, "dailyUpdates")}: ${settings.updates ? emojis.on : emojis.off}`,
             callback_data: JSON.stringify({
               type: "setting",
               id: "updates",
@@ -428,7 +424,7 @@ module.exports = {
             }),
           },
           {
-            text: `${i18n(settings.language, "snubs")}: ${settings.snubs ? ON : OFF}`,
+            text: `${i18n(settings.language, "snubs")}: ${settings.snubs ? emojis.on : emojis.off}`,
             callback_data: JSON.stringify({
               type: "setting",
               id: "snubs",
@@ -448,9 +444,9 @@ module.exports = {
         .sort()
         .reduce((result, language, i) => {
           const button = {
-            text: `${language.code} - ${language.native} (${
-              _.find(availableLanguages, (availableLanguage) => availableLanguage._id === language.code).count
-            }): ${settings.languages.includes(language.code) ? ON : OFF}`,
+            text: `${settings.languages.includes(language.code) ? emojis.on : emojis.off} ${language.code} - ${
+              language.native
+            } (${_.find(availableLanguages, (availableLanguage) => availableLanguage._id === language.code).count})`,
             callback_data: JSON.stringify({
               type: "langs",
               id: language.code,
@@ -476,7 +472,7 @@ module.exports = {
         .sort()
         .reduce((result, language, i) => {
           const button = {
-            text: `${language.code} - ${language.native} ${settings.language === language.code ? GREEN : ""}`,
+            text: `${language.code} - ${language.native} ${settings.language === language.code ? emojis.green : ""}`,
             callback_data: JSON.stringify({
               type: "lang",
               id: language.code,
@@ -497,7 +493,7 @@ module.exports = {
       inline_keyboard: [
         [
           {
-            text: THUMBS_UP,
+            text: emojis.thumbsUp,
             callback_data: JSON.stringify({
               type: "rate",
               list: game.list._id,
@@ -505,7 +501,7 @@ module.exports = {
             }),
           },
           {
-            text: THUMBS_DOWN,
+            text: emojis.thumbsDown,
             callback_data: JSON.stringify({
               type: "rate",
               list: game.list._id,
@@ -537,7 +533,23 @@ module.exports = {
     inline_keyboard: [
       [
         {
-          text: messages.difficulty(0) + (list.difficulty === 0 ? GREEN : ""),
+          text: `${emojis.thumbsUp} (${list.votes ? list.votes.filter(({ vote }) => vote > 0).length : 0})`,
+          callback_data: JSON.stringify({
+            type: "rate",
+            list: list._id,
+            vote: 1,
+          }),
+        },
+        {
+          text: `${emojis.thumbsDown} (${list.votes ? list.votes.filter(({ vote }) => vote < 0).length : 0})`,
+          callback_data: JSON.stringify({
+            type: "rate",
+            list: list._id,
+            vote: -1,
+          }),
+        },
+        {
+          text: messages.difficulty(0) + (list.difficulty === 0 ? emojis.green : ""),
           callback_data: JSON.stringify({
             type: "diff",
             vote: 0,
@@ -545,7 +557,7 @@ module.exports = {
           }),
         }, //Easy
         {
-          text: messages.difficulty(1) + (list.difficulty === 1 ? GREEN : ""),
+          text: messages.difficulty(1) + (list.difficulty === 1 ? emojis.green : ""),
           callback_data: JSON.stringify({
             type: "diff",
             vote: 1,
@@ -553,7 +565,7 @@ module.exports = {
           }),
         }, //Medium
         {
-          text: messages.difficulty(2) + (list.difficulty === 2 ? GREEN : ""),
+          text: messages.difficulty(2) + (list.difficulty === 2 ? emojis.green : ""),
           callback_data: JSON.stringify({
             type: "diff",
             vote: 2,
@@ -563,7 +575,7 @@ module.exports = {
       ],
       [
         {
-          text: messages.frequency(0).capitalize() + (list.frequency === 0 ? GREEN : ""),
+          text: messages.frequency(0).capitalize() + (list.frequency === 0 ? emojis.green : ""),
           callback_data: JSON.stringify({
             type: "freq",
             vote: 0,
@@ -571,7 +583,7 @@ module.exports = {
           }),
         },
         {
-          text: messages.frequency(1).capitalize() + (list.frequency === 1 ? GREEN : ""),
+          text: messages.frequency(1).capitalize() + (list.frequency === 1 ? emojis.green : ""),
           callback_data: JSON.stringify({
             type: "freq",
             vote: 1,
@@ -579,7 +591,7 @@ module.exports = {
           }),
         },
         {
-          text: messages.frequency(2).capitalize() + (list.frequency === 2 ? GREEN : ""),
+          text: messages.frequency(2).capitalize() + (list.frequency === 2 ? emojis.green : ""),
           callback_data: JSON.stringify({
             type: "freq",
             vote: 2,
@@ -587,7 +599,7 @@ module.exports = {
           }),
         },
         {
-          text: messages.frequency(3).capitalize() + (list.frequency === 3 ? GREEN : ""),
+          text: messages.frequency(3).capitalize() + (list.frequency === 3 ? emojis.green : ""),
           callback_data: JSON.stringify({
             type: "freq",
             vote: 3,
