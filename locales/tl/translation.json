@@ -19,8 +19,8 @@
   "on": "BUKAS",
   "off": "HINDI BUO",
   "description": "Deskripsyon",
-  "point_one": "{{bilang}} punto",
-  "point_other": "{{bilang}} mga puntos",
+  "point_one": "{{count}} punto",
+  "point_other": "{{count}} mga puntos",
   "category_one": "Kategorya",
   "category_other": "Mga Kategorya",
   "categories": {
