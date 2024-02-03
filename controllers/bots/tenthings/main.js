@@ -404,11 +404,12 @@ router.post("/", async ({ body, get }, res, next) => {
         bot.queueMessage(data.chat_id, message);
       });
     } else if (data.type === "diff") {
-      List.updateOne({ _id: data.list }, { $set: { difficulty: data.vote } });
+      const result = await List.findOneAndUpdate({ _id: data.list }, { difficulty: data.vote });
+      console.log(result);
       bot.answerCallback(body.callback_query.id, `${messages.difficulty(data.vote)}`);
       bot.editKeyboard(data.chat_id, data.message_id, keyboards.curate(await List.findOne({ _id: data.list })));
     } else if (data.type === "freq") {
-      List.updateOne({ _id: data.list }, { $set: { frequency: data.vote } });
+      await List.findOneAndUpdate({ _id: data.list }, { frequency: data.vote });
       bot.answerCallback(body.callback_query.id, `${messages.frequency(data.vote).capitalize()} changes`);
       bot.editKeyboard(data.chat_id, data.message_id, keyboards.curate(await List.findOne({ _id: data.list })));
     }
