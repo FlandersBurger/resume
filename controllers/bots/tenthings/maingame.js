@@ -26,7 +26,11 @@ exports.checkRound = (game) => {
       stats.getList(game, async (list) => {
         const foundList = await List.findOne({ _id: game.list._id }).exec();
         let message = `<b>${game.list.name}</b>`;
-        message += game.list.creator ? ` by ${game.list.creator.username}\n` : "\n";
+        message += game.list.creator
+          ? ` ${i18n(game.settings.language, "sentences.createdBy", {
+              creator: game.list.creator.username,
+            })}\n`
+          : "\n";
         message += `${i18n(game.settings.language, "category", { count: game.list.categories.length })}: `;
         message += `<b>${game.list.categories
           .map((category) => i18n(game.settings.language, `categories.${category}`))

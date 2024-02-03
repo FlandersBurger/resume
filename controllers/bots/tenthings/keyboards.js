@@ -449,10 +449,7 @@ module.exports = {
         .reduce((result, language, i) => {
           const button = {
             text: `${language.code} - ${language.native} (${
-              _.find(
-                availableLanguages,
-                (availableLanguage) => availableLanguage._id === language.code
-              ).count
+              _.find(availableLanguages, (availableLanguage) => availableLanguage._id === language.code).count
             }): ${settings.languages.includes(language.code) ? ON : OFF}`,
             callback_data: JSON.stringify({
               type: "langs",
@@ -472,16 +469,14 @@ module.exports = {
   language: ({ chat_id, settings }, availableLanguages) => {
     return {
       inline_keyboard: languages
-        .filter((language) => ["EN", "NL", "ID", "PT"].includes(language.code))
+        .filter((language) => ["EN", "NL", "ID", "PT", "TL"].includes(language.code))
         .filter((language) =>
           _.some(availableLanguages, (availableLanguage) => availableLanguage._id === language.code)
         )
         .sort()
         .reduce((result, language, i) => {
           const button = {
-            text: `${language.code} - ${language.native} ${
-              settings.language === language.code ? GREEN : ""
-            }`,
+            text: `${language.code} - ${language.native} ${settings.language === language.code ? GREEN : ""}`,
             callback_data: JSON.stringify({
               type: "lang",
               id: language.code,
