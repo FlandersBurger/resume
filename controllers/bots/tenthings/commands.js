@@ -283,7 +283,7 @@ exports.evaluate = async (msg, game, isNew) => {
       break;
     case "/notify":
       if (msg.chat.id === config.masterChat) {
-        Game.find({})
+        Game.find({ enabled: true })
           .select("chat_id")
           .then((games) => {
             bot.broadcast(

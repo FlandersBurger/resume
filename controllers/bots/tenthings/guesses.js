@@ -113,16 +113,18 @@ const processGuess = async (guess) => {
   }
   if (guess.match.type === "game") {
     await checkGuess(game, player, guess, guess.msg);
-    console.log(`${guess.game} - Guess for ${game.list.name}: "${guess.msg.text}" by ${player.first_name}`);
+    console.log(
+      `${guess.game} (${game.settings.language}) - Guess for ${game.list.name}: "${guess.msg.text}" by ${player.first_name}`
+    );
   } else if (guess.match.type === "minigame") {
     await minigame.check(game, player, guess, guess.msg);
     console.log(
-      `${guess.game} - Minigame guess for ${game.minigame.answer}: "${guess.msg.text}" by ${player.first_name}`
+      `${guess.game} (${game.settings.language}) - Minigame guess for ${game.minigame.answer}: "${guess.msg.text}" by ${player.first_name}`
     );
   } else if (guess.match.type === "tinygame") {
     await tinygame.check(game, player, guess, guess.msg);
     console.log(
-      `${guess.game} - Tinygame guess for ${game.tinygame.answer}: "${guess.msg.text}" by ${player.first_name}`
+      `${guess.game} (${game.settings.language}) - Tinygame guess for ${game.tinygame.answer}: "${guess.msg.text}" by ${player.first_name}`
     );
   }
 };

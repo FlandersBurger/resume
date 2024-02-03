@@ -25,7 +25,6 @@ const resetDailyScore = (force = false) => {
       .populate("list.creator")
       .then(
         async (games) => {
-          const uniquePlayers = [];
           const dailyPlayers = await TenThingsPlayer.find({
             scoreDaily: {
               $gt: 0,
@@ -319,6 +318,7 @@ const updateDailyStats = async (games, totalPlayers, uniquePlayers) => {
     });
   });
 };
+
 /*
   const game = new TenThingsStats({
     base: true,

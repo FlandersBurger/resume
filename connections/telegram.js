@@ -2,6 +2,7 @@ const request = require("request");
 const Queue = require("bull");
 const config = require("../config");
 const i18n = require("../i18n");
+const errors = require("../controllers/bots/tenthings/errors");
 
 const TOKEN = config.tokens.telegram.tenthings;
 
@@ -84,6 +85,9 @@ function TelegramBot() {
           console.error("Send Fail");
           console.error(err);
           //return reject(err);
+        }
+        if (!body.ok && body.error_code === 400) {
+          errors.chatNotFound(channel);
         }
       });
       resolve();
