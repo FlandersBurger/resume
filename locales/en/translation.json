@@ -136,7 +136,7 @@
     "player": "Player stats",
     "global": "Global stats",
     "game": "Game stats",
-    "misc": "Stats for {{something}}"
+    "misc": "Stats for <b>{{something}}</b>"
   },
   "rules": [
     "If an answer is 100% correct it will immediately be awarded to the guesser",

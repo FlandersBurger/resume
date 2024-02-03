@@ -105,27 +105,27 @@ module.exports = {
   },
   listStats: function (language, list, requestor = null, expanded = false) {
     var message = "";
-    message += requestor ? `<i>Requested by ${requestor}</i>\n` : "";
-    message += `<b>${i18n(language, "stats.misc", { something: list.name })}</b>\n`;
-    message += `${i18n(language, "score")}: ${list.score.makePercentage()}\n`;
-    message += `${i18n(language, "votes")}: ${list.votes.filter(({ vote }) => vote > 0).length} ${emojis.thumbsUp} / ${
-      list.votes.filter(({ vote }) => vote < 0).length
-    } ${emojis.thumbsDown}\n`;
-    message += `${i18n(language, "values")}: ${list.values.length}\n`;
-    message += `${i18n(language, "plays")}: ${list.plays} ${
+    message += requestor ? `<i>${i18n(language, "sentences.requestedBy", { requestor })}</i>\n` : "";
+    message += `${i18n(language, "stats.misc", { something: list.name })}\n`;
+    message += `\t${i18n(language, "score")}: ${list.score.makePercentage()}\n`;
+    message += `\t${i18n(language, "votes")}: ${list.votes.filter(({ vote }) => vote > 0).length} ${
+      emojis.thumbsUp
+    } / ${list.votes.filter(({ vote }) => vote < 0).length} ${emojis.thumbsDown}\n`;
+    message += `\t${i18n(language, "values")}: ${list.values.length}\n`;
+    message += `\t${i18n(language, "plays")}: ${list.plays} (${
       list.plays ? ((list.plays - list.skips) / list.plays).makePercentage() : ""
-    }\n`;
-    message += `${i18n(language, "skips")}: ${list.skips}\n`;
-    message += `${i18n(language, "hints")}: ${list.hints}\n`;
+    })\n`;
+    message += `\t${i18n(language, "skips")}: ${list.skips}\n`;
+    message += `\t${i18n(language, "hints")}: ${list.hints}\n`;
     if (requestor) {
       if (list.plays)
-        message += `${i18n(language, "difficulty")}: ${(
+        message += `\t${i18n(language, "difficulty")}: ${(
           list.hints /
           6 /
           (list.plays - list.skips)
         ).makePercentage()}\n`;
-      message += `${i18n(language, "createdOn")}: ${moment(list.date).format("DD-MMM-YYYY")}\n`;
-      message += `${i18n(language, "modifiedOn")}: ${moment(list.modifyDate).format("DD-MMM-YYYY")}\n`;
+      message += `\t${i18n(language, "createdOn")}: ${moment(list.date).format("DD-MMM-YYYY")}\n`;
+      message += `\t${i18n(language, "modifiedOn")}: ${moment(list.modifyDate).format("DD-MMM-YYYY")}\n`;
     }
     return message;
   },

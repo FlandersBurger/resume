@@ -139,7 +139,7 @@
     "player": "Estatísticas do jogador",
     "global": "Estatísticas globais",
     "game": "Estatísticas do jogo",
-    "misc": "Estatísticas para {{something}}"
+    "misc": "Estatísticas para <b>{{something}}</b>"
   },
   "rules": [
     "Se uma resposta estiver 100% correta, ela será imediatamente atribuída ao jogador",

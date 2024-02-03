@@ -33,9 +33,7 @@ guessQueue.on("completed", function (job) {
 exports.getCount = () => guessQueue.count();
 
 exports.queue = async (game, msg) => {
-  const values = game.list.values
-    .filter(({ guesser }) => guesser)
-    .map(({ value }) => ({ type: "game", value }));
+  const values = game.list.values.filter(({ guesser }) => guesser).map(({ value }) => ({ type: "game", value }));
   if (game.minigame.answer) values.push({ type: "minigame", value: game.minigame.answer });
   if (game.tinygame.answer) values.push({ type: "tinygame", value: game.tinygame.answer });
   const text = msg.text.removeAllButLetters();
@@ -101,9 +99,7 @@ const processGuess = async (guess) => {
     chat_id: guess.game,
   })
     .populate("list.creator")
-    .select(
-      "_id chat_id guessers list lastPlayDate hints streak settings minigame tinygame disabledCategories"
-    );
+    .select("_id chat_id guessers list lastPlayDate hints streak settings minigame tinygame disabledCategories");
   if (!game) {
     console.error(`Game not found`);
     console.error(guess);
@@ -117,9 +113,7 @@ const processGuess = async (guess) => {
   }
   if (guess.match.type === "game") {
     await checkGuess(game, player, guess, guess.msg);
-    console.log(
-      `${guess.game} - Guess for ${game.list.name}: "${guess.msg.text}" by ${player.first_name}`
-    );
+    console.log(`${guess.game} - Guess for ${game.list.name}: "${guess.msg.text}" by ${player.first_name}`);
   } else if (guess.match.type === "minigame") {
     await minigame.check(game, player, guess, guess.msg);
     console.log(
@@ -236,15 +230,7 @@ const checkGuess = async (game, player, guess, msg) => {
   }
 };
 
-const guessed = async (
-  game,
-  { scoreDaily, first_name },
-  { chat },
-  value,
-  blurb,
-  score,
-  accuracy
-) => {
+const guessed = async (game, { scoreDaily, first_name }, { chat }, value, blurb, score, accuracy) => {
   let message = messages.guessed(game.settings.language, value.angleBrackets(), first_name);
   message += messages.streak(game.streak.count);
   message += blurb;
@@ -257,7 +243,7 @@ const guessed = async (
     //message += `\n${answersLeft} answer${answersLeft > 1 ? 's' : ''} left.`;
     message += game.list.values.reduce((str, { guesser, value }, index) => {
       if (!guesser.first_name) {
-        str += "\n";
+        str += "\n\t";
         str += index + 1;
         str += ": ";
         str += hints.getHint(game.hints, value);

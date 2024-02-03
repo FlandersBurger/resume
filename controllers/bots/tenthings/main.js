@@ -122,8 +122,7 @@ router.post("/", async ({ body, get }, res, next) => {
   }
   if (body.message || body.callback_query) {
     const from = body.message ? body.message.from.id : body.callback_query.from.id;
-    if (from != config.masterChat && (await redis.get("pause")) === "true")
-      return res.sendStatus(200);
+    if (from != config.masterChat && (await redis.get("pause")) === "true") return res.sendStatus(200);
     //if (date.diff(moment(), 'hours') > 1) return res.sendStatus(200);
     if (BANNED_USERS.indexOf(from) >= 0) {
       bot.notifyAdmin(JSON.stringify(get("host")));
@@ -159,10 +158,7 @@ router.post("/", async ({ body, get }, res, next) => {
     if (data.type === "rate") {
       let doVote = false;
       if (cache.voters[data.from_id]) {
-        if (
-          cache.voters[data.from_id].lastVoted <
-          moment().subtract(cache.voters[data.from_id].delay, "seconds")
-        ) {
+        if (cache.voters[data.from_id].lastVoted < moment().subtract(cache.voters[data.from_id].delay, "seconds")) {
           doVote = true;
           delete cache.voters[data.from_id];
         }
@@ -171,9 +167,7 @@ router.post("/", async ({ body, get }, res, next) => {
         doVote = true;
       }
       if (doVote) {
-        let foundList = await List.findOne({ _id: data.list })
-          .select("name votes modifyDate score skips plays")
-          .exec();
+        let foundList = await List.findOne({ _id: data.list }).select("name votes modifyDate score skips plays").exec();
         let voter = _.find(foundList.votes, (vote) => vote.voter == data.from_id);
         if (!voter) {
           foundList.votes.push({ voter: data.from_id, vote: data.vote });
@@ -202,9 +196,7 @@ router.post("/", async ({ body, get }, res, next) => {
     } else if (data.type === "stats") {
       const isAdmin = data.chat_id > 0 || (await bot.checkAdmin(data.chat_id, data.from_id));
       if (isAdmin) {
-        const game = await Game.findOne({ chat_id: data.chat_id })
-          .select("chat_id list settings")
-          .exec();
+        const game = await Game.findOne({ chat_id: data.chat_id }).select("chat_id list settings").exec();
         const text = i18n(game.settings.language, `stats.${data.data}`);
         switch (data.data) {
           case "list":
@@ -244,10 +236,7 @@ router.post("/", async ({ body, get }, res, next) => {
             game.disabledCategories.splice(categoryIndex, 1);
           } else {
             if (game.disabledCategories.length === categories.length - 1) {
-              return bot.queueMessage(
-                data.chat_id,
-                i18n(game.settings.language, "warnings.minimum1Category")
-              );
+              return bot.queueMessage(data.chat_id, i18n(game.settings.language, "warnings.minimum1Category"));
             }
             game.disabledCategories.push(data.id);
           }
@@ -256,9 +245,7 @@ router.post("/", async ({ body, get }, res, next) => {
             bot.answerCallback(
               body.callback_query.id,
               `${data.id} -> ${
-                categoryIndex >= 0
-                  ? i18n(game.settings.language, "on")
-                  : i18n(game.settings.language, "off")
+                categoryIndex >= 0 ? i18n(game.settings.language, "on") : i18n(game.settings.language, "off")
               }`
             );
             bot.editKeyboard(data.chat_id, data.message_id, keyboards.categories(game));
@@ -275,27 +262,17 @@ router.post("/", async ({ body, get }, res, next) => {
       if (body.callback_query.message.chat_id != config.masterChat) {
         const isAdmin = data.chat_id > 0 || (await bot.checkAdmin(data.chat_id, data.from_id));
         if (isAdmin) {
-          const game = await Game.findOne({ chat_id: data.chat_id })
-            .select("chat_id settings")
-            .exec();
+          const game = await Game.findOne({ chat_id: data.chat_id }).select("chat_id settings").exec();
           if (data.id === "langs") {
             const availableLanguages = await List.aggregate([
               { $group: { _id: "$language", count: { $sum: 1 } } },
             ]).exec();
-            bot.editKeyboard(
-              data.chat_id,
-              data.message_id,
-              keyboards.languages(game, availableLanguages)
-            );
+            bot.editKeyboard(data.chat_id, data.message_id, keyboards.languages(game, availableLanguages));
           } else if (data.id === "lang") {
             const availableLanguages = await List.aggregate([
               { $group: { _id: "$language", count: { $sum: 1 } } },
             ]).exec();
-            bot.editKeyboard(
-              data.chat_id,
-              data.message_id,
-              keyboards.language(game, availableLanguages)
-            );
+            bot.editKeyboard(data.chat_id, data.message_id, keyboards.language(game, availableLanguages));
           } else {
             console.log(`${data.id} toggled for ${game._id}`);
             game.settings[data.id] = !game.settings[data.id];
@@ -304,9 +281,7 @@ router.post("/", async ({ body, get }, res, next) => {
               bot.answerCallback(
                 body.callback_query.id,
                 `${data.id} -> ${
-                  game.settings[data.id]
-                    ? i18n(game.settings.language, "on")
-                    : i18n(game.settings.language, "off")
+                  game.settings[data.id] ? i18n(game.settings.language, "on") : i18n(game.settings.language, "off")
                 }`
               );
               bot.editKeyboard(data.chat_id, data.message_id, keyboards.settings(game));
@@ -324,9 +299,7 @@ router.post("/", async ({ body, get }, res, next) => {
       const game = await Game.findOne({ chat_id: data.chat_id }).select("chat_id settings").exec();
       const isSelected = game.settings.languages.includes(data.id);
       if (isSelected) {
-        game.settings.languages = game.settings.languages.filter(
-          (language) => language !== data.id
-        );
+        game.settings.languages = game.settings.languages.filter((language) => language !== data.id);
       } else {
         game.settings.languages.push(data.id);
       }
@@ -337,18 +310,10 @@ router.post("/", async ({ body, get }, res, next) => {
         if (err) return bot.notifyAdmin(`Languages Save Error: \n${JSON.stringify(err)}`);
         bot.answerCallback(
           body.callback_query.id,
-          `${data.id} -> ${
-            isSelected ? i18n(game.settings.language, "off") : i18n(game.settings.language, "on")
-          }`
+          `${data.id} -> ${isSelected ? i18n(game.settings.language, "off") : i18n(game.settings.language, "on")}`
         );
-        const availableLanguages = await List.aggregate([
-          { $group: { _id: "$language", count: { $sum: 1 } } },
-        ]).exec();
-        bot.editKeyboard(
-          data.chat_id,
-          data.message_id,
-          keyboards.languages(game, availableLanguages)
-        );
+        const availableLanguages = await List.aggregate([{ $group: { _id: "$language", count: { $sum: 1 } } }]).exec();
+        bot.editKeyboard(data.chat_id, data.message_id, keyboards.languages(game, availableLanguages));
       });
     } else if (data.type === "lang") {
       const game = await Game.findOne({ chat_id: data.chat_id }).select("chat_id settings").exec();
@@ -357,14 +322,8 @@ router.post("/", async ({ body, get }, res, next) => {
         if (err) return bot.notifyAdmin(`Language Save Error: \n${JSON.stringify(err)}`);
         bot.answerCallback(body.callback_query.id, `${data.id} -> New bot language`);
         bot.setCommands(data.chat_id, data.id);
-        const availableLanguages = await List.aggregate([
-          { $group: { _id: "$language", count: { $sum: 1 } } },
-        ]).exec();
-        bot.editKeyboard(
-          data.chat_id,
-          data.message_id,
-          keyboards.language(game, availableLanguages)
-        );
+        const availableLanguages = await List.aggregate([{ $group: { _id: "$language", count: { $sum: 1 } } }]).exec();
+        bot.editKeyboard(data.chat_id, data.message_id, keyboards.language(game, availableLanguages));
       });
     } else if (data.type === "pick") {
       if (data.chat_id === config.adminChat) {
@@ -380,9 +339,7 @@ router.post("/", async ({ body, get }, res, next) => {
         msg += `Rate Difficulty and Update Frequency`;
         bot.notifyAdmins(msg, keyboards.curate(list));
       } else {
-        const game = await Game.findOne({ chat_id: data.chat_id })
-          .select("chat_id pickedLists")
-          .exec();
+        const game = await Game.findOne({ chat_id: data.chat_id }).select("chat_id pickedLists").exec();
         if (game.pickedLists >= 10)
           return bot.queueMessage(
             data.chat_id,
@@ -422,9 +379,7 @@ router.post("/", async ({ body, get }, res, next) => {
         });
       }
     } else if (data.type === "suggest") {
-      const game = await Game.findOne({ chat_id: data.chat_id })
-        .select("chat_id list settings")
-        .exec();
+      const game = await Game.findOne({ chat_id: data.chat_id }).select("chat_id list settings").exec();
       const suggestion = body.callback_query.message.text.substring(
         body.callback_query.message.text.indexOf(' "') + 2,
         body.callback_query.message.text.indexOf('",')
@@ -434,12 +389,8 @@ router.post("/", async ({ body, get }, res, next) => {
       message += data.id === "typo" ? `\nList: ${game.list.name}` : "";
       bot.notify(message);
       bot.notifyAdmins(message);
-      message +=
-        data.id === "list" ? `\n${i18n(game.settings.language, "sentences.addOwnList")}}` : "";
-      bot.answerCallback(
-        body.callback_query.id,
-        i18n(game.settings.language, "sentences.suggestionNoted")
-      );
+      message += data.id === "list" ? `\n${i18n(game.settings.language, "sentences.addOwnList")}}` : "";
+      bot.answerCallback(body.callback_query.id, i18n(game.settings.language, "sentences.suggestionNoted"));
       bot.deleteMessage(data.chat_id, data.message_id);
       bot.queueMessage(data.chat_id, message);
     } else if (data.type === "values") {
@@ -466,22 +417,11 @@ router.post("/", async ({ body, get }, res, next) => {
     } else if (data.type === "diff") {
       List.updateOne({ _id: data.list }, { $set: { difficulty: data.vote } });
       bot.answerCallback(body.callback_query.id, `${messages.difficulty(data.vote)}`);
-      bot.editKeyboard(
-        data.chat_id,
-        data.message_id,
-        keyboards.curate(await List.findOne({ _id: data.list }))
-      );
+      bot.editKeyboard(data.chat_id, data.message_id, keyboards.curate(await List.findOne({ _id: data.list })));
     } else if (data.type === "freq") {
       List.updateOne({ _id: data.list }, { $set: { frequency: data.vote } });
-      bot.answerCallback(
-        body.callback_query.id,
-        `${messages.frequency(data.vote).capitalize()} changes`
-      );
-      bot.editKeyboard(
-        data.chat_id,
-        data.message_id,
-        keyboards.curate(await List.findOne({ _id: data.list }))
-      );
+      bot.answerCallback(body.callback_query.id, `${messages.frequency(data.vote).capitalize()} changes`);
+      bot.editKeyboard(data.chat_id, data.message_id, keyboards.curate(await List.findOne({ _id: data.list })));
     }
     return res.sendStatus(200);
   } else if (!body.message.text) {
@@ -511,15 +451,13 @@ router.post("/", async ({ body, get }, res, next) => {
       Game.findOne({ chat_id: body.message.chat.id }).exec((err, game) => {
         if (err) return console.error(err);
         if (!game) return;
-        Player.findOne({ game: game._id, id: `${body.message.left_chat_participant.id}` }).exec(
-          (err, player) => {
-            if (err || !player) return;
-            if (player) {
-              player.present = false;
-              player.save();
-            }
+        Player.findOne({ game: game._id, id: `${body.message.left_chat_participant.id}` }).exec((err, player) => {
+          if (err || !player) return;
+          if (player) {
+            player.present = false;
+            player.save();
           }
-        );
+        });
       });
       return res.sendStatus(200);
     } else if (
@@ -567,10 +505,7 @@ router.post("/", async ({ body, get }, res, next) => {
       chat: body.message.chat,
     };
   }
-  if (
-    msg.command.includes("@") &&
-    msg.command.substring(msg.command.indexOf("@") + 1) !== "TenThings_Bot"
-  ) {
+  if (msg.command.includes("@") && msg.command.substring(msg.command.indexOf("@") + 1) !== "TenThings_Bot") {
     return res.sendStatus(200);
   }
   try {
@@ -595,10 +530,7 @@ router.post("/", async ({ body, get }, res, next) => {
       if (msg.command.includes("@")) {
         msg.command = msg.command.substring(0, msg.command.indexOf("@"));
         if (!existingGame.enabled && !["/list", "/start"].includes(msg.command.toLowerCase())) {
-          bot.sendMessage(
-            msg.chat.id,
-            i18n(existingGame.settings.language, "sentences.inactivity")
-          );
+          bot.sendMessage(msg.chat.id, i18n(existingGame.settings.language, "sentences.inactivity"));
           return res.sendStatus(200);
         }
       }
@@ -606,10 +538,7 @@ router.post("/", async ({ body, get }, res, next) => {
     }
   } catch (e) {
     console.error(e);
-    bot.sendMessage(
-      msg.chat.id,
-      "<b>Error</b>\nUse the /error command to explain to the admins what didn't work"
-    );
+    bot.sendMessage(msg.chat.id, "<b>Error</b>\nUse the /error command to explain to the admins what didn't work");
     bot.notifyAdmin(`Error in game ${msg.chat.id}:\n${e}`);
   } finally {
     res.sendStatus(200);

@@ -139,7 +139,7 @@
     "player": "Spelerstatistieken",
     "global": "Algemene statistieken",
     "game": "Spelstatistieken",
-    "misc": "Statistieken voor {{something}}"
+    "misc": "Statistieken voor <b>{{something}}</b>"
   },
   "rules": [
     "Als een antwoord 100% correct is, wordt het onmiddellijk toegekend aan de gokker",

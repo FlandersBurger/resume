@@ -81,9 +81,7 @@ exports.getScores = (game_id, type) => {
               )
               .slice(0, 10)
               .forEach(({ first_name, plays, score }, index) => {
-                str += `${index + 1}: ${first_name}: ${Math.round(
-                  plays === 0 ? 0 : score / plays
-                )}\n`;
+                str += `${index + 1}: ${first_name}: ${Math.round(plays === 0 ? 0 : score / plays)}\n`;
               });
             bot.queueMessage(game_id, str);
             break;
@@ -106,7 +104,7 @@ const getDailyScores = async ({ _id, settings }, limit) => {
     .sort((player1, player2) => player2.scoreDaily - player1.scoreDaily)
     .slice(0, limit ? limit : players.length)
     .reduce((str, { first_name, scoreDaily }, index) => {
-      str += `${index + 1}: ${first_name} - ${scoreDaily}\n`;
+      str += `\t${index + 1}: ${first_name} - ${scoreDaily}\n`;
       return str;
     }, i18n(settings.language, limit ? "sentences.dailyScoresWithLimit" : "dailyScores", { limit }) + `\n`);
   return message;
@@ -118,11 +116,11 @@ exports.getList = (game, callback) => {
   let str = "";
   game.list.values.forEach(({ guesser, value }, index) => {
     if (!guesser || !guesser.first_name) {
-      str += `<b>${index + 1}:</b> `;
+      str += `\t<b>${index + 1}:</b> `;
       str += `<b>${hints.getHint(game.hints, value)}</b>`;
       str += "\n";
     } else {
-      str += `${index + 1}: `;
+      str += `\t${index + 1}: `;
       str += `${value.angleBrackets()} - <i>${guesser.first_name.removeHTML().maskURLs()}</i>`;
       str += "\n";
     }
@@ -237,41 +235,24 @@ exports.getStats = async (chat_id, data, requestor) => {
         (score, { scoreDaily }) => (scoreDaily ? (score > scoreDaily ? score : scoreDaily) : score),
         0
       )}\n`;
-      message += `Total Score: ${players.reduce(
-        (count, { score }) => count + (score ? score : 0),
-        0
-      )}\n`;
+      message += `Total Score: ${players.reduce((count, { score }) => count + (score ? score : 0), 0)}\n`;
       message += `Best Answer Streak: ${players.reduce(
         (score, { streak }) => (streak ? (score > streak ? score : streak) : score),
         0
       )}\n`;
       message += `Best Play Streak: ${players.reduce(
-        (score, { maxPlayStreak }) =>
-          maxPlayStreak ? (score > maxPlayStreak ? score : maxPlayStreak) : score,
+        (score, { maxPlayStreak }) => (maxPlayStreak ? (score > maxPlayStreak ? score : maxPlayStreak) : score),
         0
       )}\n`;
       message += `Best No Hint Streak: ${players.reduce(
-        (score, { maxHintStreak }) =>
-          maxHintStreak ? (score > maxHintStreak ? score : maxHintStreak) : score,
+        (score, { maxHintStreak }) => (maxHintStreak ? (score > maxHintStreak ? score : maxHintStreak) : score),
         0
       )}\n`;
       message += `Answers Given: ${players.reduce((count, { answers }) => count + answers, 0)}\n`;
-      message += `Minigame Answers Given: ${players.reduce(
-        (count, { minigamePlays }) => count + minigamePlays,
-        0
-      )}\n`;
-      message += `Tinygame Answers Given: ${players.reduce(
-        (count, { tinygamePlays }) => count + tinygamePlays,
-        0
-      )}\n`;
-      message += `Answer Snubs: ${players.reduce(
-        (count, { snubs }) => count + (snubs ? snubs : 0),
-        0
-      )}\n`;
-      message += `Hints Asked: ${players.reduce(
-        (count, { hints }) => count + (hints ? hints : 0),
-        0
-      )}\n`;
+      message += `Minigame Answers Given: ${players.reduce((count, { minigamePlays }) => count + minigamePlays, 0)}\n`;
+      message += `Tinygame Answers Given: ${players.reduce((count, { tinygamePlays }) => count + tinygamePlays, 0)}\n`;
+      message += `Answer Snubs: ${players.reduce((count, { snubs }) => count + (snubs ? snubs : 0), 0)}\n`;
+      message += `Hints Asked: ${players.reduce((count, { hints }) => count + (hints ? hints : 0), 0)}\n`;
       message += `Suggestions given: ${players.reduce(
         (count, { suggestions }) => count + (suggestions ? suggestions : 0),
         0
@@ -281,9 +262,7 @@ exports.getStats = async (chat_id, data, requestor) => {
       message += `${players.filter(({ scoreDaily }) => scoreDaily).length} out of ${
         players.filter(({ present }) => present).length
       } players played today\n`;
-      message += game.cycles
-        ? `Last cycled: ${moment(game.lastCycleDate).format("DD-MMM-YYYY")}\n`
-        : "";
+      message += game.cycles ? `Last cycled: ${moment(game.lastCycleDate).format("DD-MMM-YYYY")}\n` : "";
       message += `${game.playedLists.length} of ${count} lists played (${Math.round(
         (game.playedLists.length / count) * 100
       ).toFixed(0)}%)\n`;
@@ -304,35 +283,14 @@ exports.getStats = async (chat_id, data, requestor) => {
       })
         .populate("creator")
         .exec((err, gameList) => {
-          bot.queueMessage(
-            game.chat_id,
-            messages.listStats(game.settings.language, gameList, data.requestor)
-          );
+          bot.queueMessage(game.chat_id, messages.listStats(game.settings.language, gameList, data.requestor));
         });
       break;
     case "mostskipped":
-      listStats(
-        game,
-        "skips",
-        "plays",
-        1,
-        "Most Skipped Lists",
-        "Skip commands / Amount played",
-        1,
-        data.requestor
-      );
+      listStats(game, "skips", "plays", 1, "Most Skipped Lists", "Skip commands / Amount played", 1, data.requestor);
       break;
     case "leastskipped":
-      listStats(
-        game,
-        "skips",
-        "plays",
-        1,
-        "Least Skipped Lists",
-        "Skip commands / Amount played",
-        -1,
-        data.requestor
-      );
+      listStats(game, "skips", "plays", 1, "Least Skipped Lists", "Skip commands / Amount played", -1, data.requestor);
       break;
     case "mosthinted":
       listStats(
@@ -377,16 +335,7 @@ exports.getStats = async (chat_id, data, requestor) => {
       listStats(game, "score", "", 1, "Most Popular Lists", "Vote & skip ratio", 1, data.requestor);
       break;
     case "leastpopular":
-      listStats(
-        game,
-        "score",
-        "",
-        1,
-        "Least Popular Lists",
-        "Vote & skip ratio",
-        -1,
-        data.requestor
-      );
+      listStats(game, "score", "", 1, "Least Popular Lists", "Vote & skip ratio", -1, data.requestor);
       break;
     case "skippers":
       playerStats(
@@ -506,17 +455,7 @@ exports.getStats = async (chat_id, data, requestor) => {
       );
       break;
     case "plays":
-      playerStats(
-        game,
-        players,
-        "plays",
-        "",
-        1,
-        "Most Games Played",
-        "Sum days played",
-        1,
-        data.requestor
-      );
+      playerStats(game, players, "plays", "", 1, "Most Games Played", "Sum days played", 1, data.requestor);
       break;
     case "wins":
       playerStats(game, players, "wins", "", 1, "Most Wins", "Sum of wins", 1, data.requestor);
@@ -525,17 +464,7 @@ exports.getStats = async (chat_id, data, requestor) => {
       playerStats(game, players, "wins", "", 1, "Least Wins", "Sum of wins", -1, data.requestor);
       break;
     case "astreak":
-      playerStats(
-        game,
-        players,
-        "streak",
-        "",
-        1,
-        "Best Answer Streak",
-        "Consecutive answers given",
-        1,
-        data.requestor
-      );
+      playerStats(game, players, "streak", "", 1, "Best Answer Streak", "Consecutive answers given", 1, data.requestor);
       break;
     case "pstreak":
       playerStats(
@@ -581,11 +510,7 @@ const listStats = ({ chat_id }, field, divisor, ratio, title, description, sorte
       lists
         .sort((a, b) => {
           if (divisor) {
-            return (
-              (b[field] / (b[divisor] ? b[divisor] : 1) -
-                a[field] / (a[divisor] ? a[divisor] : 1)) *
-              sorter
-            );
+            return (b[field] / (b[divisor] ? b[divisor] : 1) - a[field] / (a[divisor] ? a[divisor] : 1)) * sorter;
           } else {
             return (b[field] - a[field]) * sorter;
           }
@@ -593,10 +518,7 @@ const listStats = ({ chat_id }, field, divisor, ratio, title, description, sorte
         .slice(0, 20)
         .forEach((list, index) => {
           message += `${index + 1}. ${list.name} (${
-            Math.round(
-              ((list[field] * ratio) / (divisor ? (list[divisor] ? list[divisor] : 1) / 100 : 1)) *
-                100
-            ) / 100
+            Math.round(((list[field] * ratio) / (divisor ? (list[divisor] ? list[divisor] : 1) / 100 : 1)) * 100) / 100
           }${divisor ? "%" : ""})\n`;
         });
       message += requestor ? `<i>Requested by ${requestor}</i>\n` : "";
@@ -604,27 +526,14 @@ const listStats = ({ chat_id }, field, divisor, ratio, title, description, sorte
     });
 };
 
-const playerStats = async (
-  { chat_id },
-  players,
-  field,
-  divisor,
-  ratio,
-  title,
-  description,
-  sorter,
-  requestor
-) => {
+const playerStats = async ({ chat_id }, players, field, divisor, ratio, title, description, sorter, requestor) => {
   let message = `<b>${title}</b>\n`;
   message += description ? `<i>${description}</i>\n` : "";
   players
     .filter((player) => player.present && player[field] > 0)
     .sort((a, b) => {
       if (divisor) {
-        return (
-          (b[field] / (b[divisor] ? b[divisor] : 1) - a[field] / (a[divisor] ? a[divisor] : 1)) *
-          sorter
-        );
+        return (b[field] / (b[divisor] ? b[divisor] : 1) - a[field] / (a[divisor] ? a[divisor] : 1)) * sorter;
       } else {
         return (b[field] - a[field]) * sorter;
       }
@@ -632,11 +541,8 @@ const playerStats = async (
     .slice(0, 20)
     .forEach((player, index) => {
       message += `${index + 1}. ${player.first_name} (${
-        Math.round(
-          ((player[field] * ratio) /
-            (divisor ? (player[divisor] ? player[divisor] : 1) / 100 : 1)) *
-            100
-        ) / 100
+        Math.round(((player[field] * ratio) / (divisor ? (player[divisor] ? player[divisor] : 1) / 100 : 1)) * 100) /
+        100
       }${divisor ? "%" : ""})\n`;
     });
   message += requestor ? `<i>Requested by ${requestor}</i>\n` : "";
@@ -750,8 +656,7 @@ const creatorStats = async () => {
   ]);
   //const listsWithCreators = await List.populate(lists, { path: '_id' });
   //const listCount = await List.countDocuments();
-  for (const list of lists)
-    list.creator = await User.findOne({ _id: list._id }).select("username displayName").lean();
+  for (const list of lists) list.creator = await User.findOne({ _id: list._id }).select("username displayName").lean();
   console.log(
     lists
       .filter((list) => list.lists >= 25)

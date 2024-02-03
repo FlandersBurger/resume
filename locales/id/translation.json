@@ -145,7 +145,7 @@
     "player": "Statistik pemain",
     "global": "Statistik global",
     "game": "Statistik permainan",
-    "misc": "Statistik untuk {{something}}"
+    "misc": "Statistik untuk <b>{{something}}</b>"
   },
   "rules": [
     "Jika jawabannya 100% benar, itu akan langsung diberikan kepada penembak",
