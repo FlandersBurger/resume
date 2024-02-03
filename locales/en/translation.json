@@ -1,11 +1,21 @@
 {
+  "settings": "Settings",
   "playerIntro": "Player intro",
   "sass": "Sass",
   "dailyUpdates": "Daily updates",
   "language_one": "Language",
   "language_other": "Languages",
   "botLanguage": "Bot language",
+  "plays": "Plays",
+  "votes": "Votes",
   "snubs": "Snubs",
+  "hints": "Hints",
+  "skips": "Skips",
+  "values": "Values",
+  "score": "score",
+  "difficulty": "Difficulty",
+  "createdOn": "Created on",
+  "modifiedOn": "Modified on",
   "on": "ON",
   "off": "OFF",
   "description": "Description",
@@ -106,6 +116,7 @@
     "roundOver": "Round over",
     "newRound": "A new round will start in 2 seconds",
     "createdBy": "by {{creator}}",
+    "requestedBy": "Requested by {{requestor}}",
     "guessedBy": "{{guesser}} got {{answer}}",
     "notGuessed": "Not guessed",
     "dailyScores": "<b>Daily Scores</b>",
@@ -120,10 +131,12 @@
     "unfoundList": "This list no longer exists"
   },
   "stats": {
+    "stats": "Stats",
     "list": "List stats",
     "player": "Player stats",
     "global": "Global stats",
-    "game": "Game stats"
+    "game": "Game stats",
+    "misc": "Stats for {{something}}"
   },
   "rules": [
     "If an answer is 100% correct it will immediately be awarded to the guesser",

@@ -135,6 +135,7 @@ function TelegramBot() {
   };
 
   bot.broadcast = (channels, message) => {
+    bot.notifyAdmin(`Starting broadcast to ${channels.length} chats`);
     channels.forEach((channel, index) => {
       setTimeout(() => {
         bot.queueMessage(channel, message);
@@ -250,8 +251,7 @@ function TelegramBot() {
       request(url, (error, r, body) => {
         const response = JSON.parse(body).result;
         if (error) return;
-        if (!response || ["restricted", "left", "kicked"].includes(response.status))
-          return reject();
+        if (!response || ["restricted", "left", "kicked"].includes(response.status)) return reject();
         resolve(response);
       });
     });
@@ -260,9 +260,7 @@ function TelegramBot() {
     new Promise((resolve, reject) => {
       const url = `https://api.telegram.org/bot${
         bot.token
-      }/editMessageReplyMarkup?chat_id=${channel}&message_id=${message_id}&reply_markup=${JSON.stringify(
-        keyboard
-      )}`;
+      }/editMessageReplyMarkup?chat_id=${channel}&message_id=${message_id}&reply_markup=${JSON.stringify(keyboard)}`;
       request(encodeURI(url), (error, r, body) => {
         if (error) return;
         resolve();
@@ -287,9 +285,7 @@ function TelegramBot() {
   };
 
   bot.introduceYourself = () => {
-    console.log(
-      `Hello, my name is ${bot.getName()}. You can talk to me through my username: @${bot.username}`
-    );
+    console.log(`Hello, my name is ${bot.getName()}. You can talk to me through my username: @${bot.username}`);
   };
 
   bot.reset = () => {
@@ -327,9 +323,9 @@ function TelegramBot() {
         type: "chat",
         chat_id: channel,
       };
-      const url = `https://api.telegram.org/beta/bot${
-        bot.token
-      }/setMyCommands?commands=${JSON.stringify(commands)}&scope=${JSON.stringify(scope)}`;
+      const url = `https://api.telegram.org/beta/bot${bot.token}/setMyCommands?commands=${JSON.stringify(
+        commands
+      )}&scope=${JSON.stringify(scope)}`;
       request(encodeURI(url), (error, r, body) => {
         if (error) return console.error(error);
         console.log(body);

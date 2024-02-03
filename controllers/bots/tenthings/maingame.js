@@ -27,14 +27,12 @@ exports.checkRound = (game) => {
         const foundList = await List.findOne({ _id: game.list._id }).exec();
         let message = `<b>${game.list.name}</b>`;
         message += game.list.creator ? ` by ${game.list.creator.username}\n` : "\n";
-        message +=
-          game.list.categories.length > 0
-            ? `Categor${
-                game.list.categories.length > 1 ? "ies" : "y"
-              }: <b>${game.list.categories.join(", ")}</b>\n`
-            : "";
+        message += `${i18n(game.settings.language, "category", { count: game.list.categories.length })}: `;
+        message += `<b>${game.list.categories
+          .map((category) => i18n(game.settings.language, `categories.${category}`))
+          .join(", ")}</b>\n`;
         message += list;
-        message += messages.listStats(foundList);
+        message += messages.listStats(game.settings.language, foundList);
         message += await stats.getDailyScores(game, 5);
         bot.queueMessage(game.chat_id, message);
         setTimeout(() => {
@@ -101,14 +99,12 @@ const newRound = (currentGame, player) => {
           hints.cooldown(game.id);
           game.guessers = [];
           let message = i18n(game.settings.language, "sentences.newRound");
-          message +=
-            game.list.categories.length > 0
-              ? `\n${i18n(game.settings.language, "category", {
-                  count: game.list.categories.length,
-                })}: <b>${game.list.categories
-                  .map((category) => i18n(game.settings.language, `categories.${category}`))
-                  .join(", ")}</b>`
-              : "";
+          message += `\n${i18n(game.settings.language, "category", {
+            count: game.list.categories.length,
+          })}: `;
+          message += `<b>${game.list.categories
+            .map((category) => i18n(game.settings.language, `categories.${category}`))
+            .join(", ")}</b>`;
           bot.queueMessage(game.chat_id, message);
           setTimeout(() => {
             let message = `<b>${game.list.name}</b> (${game.list.totalValues}) ${i18n(
@@ -116,17 +112,12 @@ const newRound = (currentGame, player) => {
               "sentences.createdBy",
               { creator: game.list.creator.username }
             )}`;
-            message += game.list.description
-              ? `\n<i>${game.list.description.angleBrackets()}</i>`
-              : "";
+            message += game.list.description ? `\n<i>${game.list.description.angleBrackets()}</i>` : "";
             bot.queueMessage(game.chat_id, message);
           }, 2000);
           game.playedLists.push(game.list._id);
           game.save((err) => {
-            if (err)
-              return bot.notifyAdmin(
-                "newRound: " + JSON.stringify(err) + "\n" + JSON.stringify(game)
-              );
+            if (err) return bot.notifyAdmin("newRound: " + JSON.stringify(err) + "\n" + JSON.stringify(game));
             console.log(`${game.chat_id} - New round started -> "${list.name}"`);
           });
         },

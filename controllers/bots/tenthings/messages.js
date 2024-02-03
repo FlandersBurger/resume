@@ -5,6 +5,7 @@ const MAXHINTS = 6;
 
 const categories = require("./categories");
 const i18n = require("../../../i18n");
+const emojis = require("./emojis");
 
 module.exports = {
   logic: function (language) {
@@ -26,15 +27,7 @@ module.exports = {
     if (loser.id != winner.id) {
       switch (random) {
         case 0:
-          return (
-            "Too slow, " +
-            loser.first_name +
-            ". " +
-            winner.first_name +
-            " said " +
-            match +
-            " ages ago."
-          );
+          return "Too slow, " + loser.first_name + ". " + winner.first_name + " said " + match + " ages ago.";
         case 1:
           return winner.first_name + " beat you to " + match + ", " + loser.first_name;
         case 2:
@@ -42,41 +35,15 @@ module.exports = {
         case 3:
           return loser.first_name + " was pwned, " + winner.first_name + " guessed " + match;
         case 4:
-          return (
-            loser.first_name + " got schooled by " + winner.first_name + "'s " + match + " answer"
-          );
+          return loser.first_name + " got schooled by " + winner.first_name + "'s " + match + " answer";
         case 5:
-          return (
-            "You got majorly snubbed by " +
-            winner.first_name +
-            " for " +
-            match +
-            ", " +
-            loser.first_name
-          );
+          return "You got majorly snubbed by " + winner.first_name + " for " + match + ", " + loser.first_name;
         case 6:
-          return (
-            winner.first_name + " showed " + loser.first_name + " who's the boss with " + match
-          );
+          return winner.first_name + " showed " + loser.first_name + " who's the boss with " + match;
         case 7:
-          return (
-            "Nobody puts " +
-            winner.first_name +
-            " in the corner " +
-            loser.first_name +
-            " (" +
-            match +
-            ")"
-          );
+          return "Nobody puts " + winner.first_name + " in the corner " + loser.first_name + " (" + match + ")";
         case 8:
-          return (
-            "What if I told you that " +
-            winner.first_name +
-            " already said " +
-            match +
-            ", " +
-            loser.first_name
-          );
+          return "What if I told you that " + winner.first_name + " already said " + match + ", " + loser.first_name;
         default:
           return winner.first_name + " already got " + match + ", too bad " + loser.first_name;
       }
@@ -101,9 +68,7 @@ module.exports = {
         case 8:
           return loser.first_name + " tried to cheat with " + match + " and failed";
         default:
-          return (
-            loser.first_name + " already got " + match + ", too bad, um..., " + loser.first_name
-          );
+          return loser.first_name + " already got " + match + ", too bad, um..., " + loser.first_name;
       }
     }
   },
@@ -113,9 +78,7 @@ module.exports = {
     msg += `${list.decription ? `${list.decription}\n` : ""}`;
     msg += ` - Categories: ${list.categories.join(", ")}\n`;
     msg += list.difficulty ? ` - Difficulty: ${this.difficulty(list.difficulty)}\n` : "";
-    msg += list.frequency
-      ? ` - Frequency: ${this.frequency(list.frequency).capitalize()} changes\n`
-      : "";
+    msg += list.frequency ? ` - Frequency: ${this.frequency(list.frequency).capitalize()} changes\n` : "";
     return msg;
   },
   frequency: (frequency) => {
@@ -133,41 +96,37 @@ module.exports = {
   difficulty: (difficulty) => {
     switch (difficulty) {
       case 0:
-        return "\uD83D\uDE42"; //Easy
+        return emojis.easy;
       case 1:
-        return "\uD83E\uDD14"; //Medium
+        return emojis.medium;
       case 2:
-        return "\uD83D\uDE35"; //Hard
+        return emojis.hard;
     }
   },
-  listStats: function (list, requestor = null) {
+  listStats: function (language, list, requestor = null, expanded = false) {
     var message = "";
     message += requestor ? `<i>Requested by ${requestor}</i>\n` : "";
-    message += "<b>Stats for " + list.name + "</b>\n";
-    message += "Score: " + list.score.makePercentage() + "\n";
-    message +=
-      "Upvotes: " +
-      list.votes.filter(({ vote }) => vote > 0).length +
-      "\\" +
-      list.votes.length +
-      "\n";
-    message +=
-      "Downvotes: " +
-      list.votes.filter(({ vote }) => vote < 0).length +
-      "\\" +
-      list.votes.length +
-      "\n";
-    message += "Values: " + list.values.length + "\n";
-    message += "Plays: " + list.plays + "\n";
-    if (list.plays)
-      message += "Play Ratio: " + ((list.plays - list.skips) / list.plays).makePercentage() + "\n";
-    message += "Skips: " + list.skips + "\n";
-    message += "Hints: " + list.hints + "\n";
-    if (list.plays)
-      message +=
-        "Difficulty: " + (list.hints / 6 / (list.plays - list.skips)).makePercentage() + "\n";
-    message += "Created on: " + moment(list.date).format("DD-MMM-YYYY") + "\n";
-    message += "Modified on: " + moment(list.modifyDate).format("DD-MMM-YYYY") + "\n";
+    message += `<b>${i18n(language, "stats.misc", { something: list.name })}</b>\n`;
+    message += `${i18n(language, "score")}: ${list.score.makePercentage()}\n`;
+    message += `${i18n(language, "votes")}: ${list.votes.filter(({ vote }) => vote > 0).length} ${emojis.thumbsUp} / ${
+      list.votes.filter(({ vote }) => vote < 0).length
+    } ${emojis.thumbsDown}\n`;
+    message += `${i18n(language, "values")}: ${list.values.length}\n`;
+    message += `${i18n(language, "plays")}: ${list.plays} ${
+      list.plays ? ((list.plays - list.skips) / list.plays).makePercentage() : ""
+    }\n`;
+    message += `${i18n(language, "skips")}: ${list.skips}\n`;
+    message += `${i18n(language, "hints")}: ${list.hints}\n`;
+    if (requestor) {
+      if (list.plays)
+        message += `${i18n(language, "difficulty")}: ${(
+          list.hints /
+          6 /
+          (list.plays - list.skips)
+        ).makePercentage()}\n`;
+      message += `${i18n(language, "createdOn")}: ${moment(list.date).format("DD-MMM-YYYY")}\n`;
+      message += `${i18n(language, "modifiedOn")}: ${moment(list.modifyDate).format("DD-MMM-YYYY")}\n`;
+    }
     return message;
   },
   playerStats: function (player, requestor = null) {
@@ -271,13 +230,7 @@ module.exports = {
         ];
         break;
       case 7:
-        messages = [
-          "James Bond",
-          "Lucky Number Seven",
-          "Seven Year Itch",
-          "Rainbow",
-          "Sail the Seven Seas",
-        ];
+        messages = ["James Bond", "Lucky Number Seven", "Seven Year Itch", "Rainbow", "Sail the Seven Seas"];
         break;
       case 8:
         messages = ["8-ball", "The Ocho"];
@@ -384,9 +337,7 @@ module.exports = {
     }
     return (
       "\n--- " +
-      (messages.length > 0
-        ? messages[Math.floor(Math.random() * messages.length)]
-        : `Streak: ${streak}`) +
+      (messages.length > 0 ? messages[Math.floor(Math.random() * messages.length)] : `Streak: ${streak}`) +
       " ---"
     );
   },
@@ -529,10 +480,7 @@ module.exports = {
             "https://i.imgur.com/So903cz.gif",
             "https://i.imgur.com/nBhImyG.gif",
           ];
-        } else if (
-          (checkString(text, "favourite") || checkString(text, "favorite")) &&
-          checkString(text, "things")
-        ) {
+        } else if ((checkString(text, "favourite") || checkString(text, "favorite")) && checkString(text, "things")) {
           messages = [
             "Rain drops on roses",
             "Whiskers on kittens",
@@ -547,11 +495,7 @@ module.exports = {
             "Snowflakes that stay on my nose and eyelashes",
             "Silver white winters that melt into springs",
           ];
-        } else if (
-          checkString(text, "fuck") ||
-          checkString(text, "fuckin") ||
-          checkString(text, "fucking")
-        ) {
+        } else if (checkString(text, "fuck") || checkString(text, "fuckin") || checkString(text, "fucking")) {
           messages = [
             "Fuck you too, old chap",
             "https://i.imgur.com/zUeBxmP.gif",
@@ -752,17 +696,9 @@ module.exports = {
         messages = ["To seek the holy grail"];
       } else if (checkString(text, "inconceivable")) {
         messages = ["My name is Inigo Montoya. You killed my father. Prepare to die."];
-      } else if (
-        checkString(text, "who") &&
-        checkString(text, "gonna") &&
-        checkString(text, "call")
-      ) {
+      } else if (checkString(text, "who") && checkString(text, "gonna") && checkString(text, "call")) {
         messages = ["Ghostbusters"];
-      } else if (
-        checkString(text, "who's") &&
-        checkString(text, "your") &&
-        checkString(text, "daddy")
-      ) {
+      } else if (checkString(text, "who's") && checkString(text, "your") && checkString(text, "daddy")) {
         messages = ["@flandersburger"];
       } else if (/^[^\s]+ \bis\b$/.test(text)) {
         messages = adjectives.map((adjective) => `${text} ${adjective}!`);

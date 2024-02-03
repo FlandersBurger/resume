@@ -6,6 +6,7 @@
     "node": true
   },
   "rules": {
+    "max-len": ["error", { "code": 120 }],
     "indent": [
       2,
       2,

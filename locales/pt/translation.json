@@ -1,11 +1,21 @@
 {
+  "settings": "Configurações",
   "playerIntro": "Introdução do jogador",
   "sass": "Safadeza",
   "dailyUpdates": "Atualizações diárias",
   "language_one": "Idioma",
   "language_other": "Idiomas",
   "botLanguage": "Idioma do Bot",
+  "plays": "Jogos",
+  "votes": "Votos",
   "snubs": "Desaprovação",
+  "hints": "Dicas",
+  "skips": "Pulos",
+  "values": "Valores",
+  "score": "Pontuação",
+  "difficulty": "Dificuldade",
+  "createdOn": "Criado em",
+  "modifiedOn": "Modificado em",
   "on": "LIGADO",
   "off": "DESLIGADO",
   "description": "Descrição",
@@ -109,6 +119,7 @@
     "roundOver": "Fim da rodada",
     "newRound": "Uma nova rodada começará em 2 segundos",
     "createdBy": "por {{creator}}",
+    "requestedBy": "Solicitado por {{requestor}}",
     "guessedBy": "{{guesser}} acertou {{answer}}",
     "notGuessed": "Não adivinhado",
     "dailyScores": "<b>Pontuações Diárias</b>",
@@ -123,10 +134,12 @@
     "unfoundList": "Esta lista não existe mais"
   },
   "stats": {
-    "list": "Estatísticas da Lista",
-    "player": "Estatísticas do Jogador",
-    "global": "Estatísticas Globais",
-    "game": "Estatísticas do Jogo"
+    "stats": "Estatísticas",
+    "list": "Estatísticas da lista",
+    "player": "Estatísticas do jogador",
+    "global": "Estatísticas globais",
+    "game": "Estatísticas do jogo",
+    "misc": "Estatísticas para {{something}}"
   },
   "rules": [
     "Se uma resposta estiver 100% correta, ela será imediatamente atribuída ao jogador",

@@ -58,11 +58,7 @@ exports.evaluate = async (msg, game, isNew) => {
     return;
   } else if (msg.chat.id === config.adminChat) {
     //Admin group chat
-    if (
-      !["/search", "/stats", "/typo", "/bug", "/feature", "/suggest"].includes(
-        msg.command.toLowerCase()
-      )
-    ) {
+    if (!["/search", "/stats", "/typo", "/bug", "/feature", "/suggest"].includes(msg.command.toLowerCase())) {
       return;
     }
   }
@@ -93,19 +89,14 @@ exports.evaluate = async (msg, game, isNew) => {
     case "/comandos":
       bot.queueMessage(
         msg.chat.id,
-        commands
-          .map((command) => `/${command} - ${i18n("PT", `commands.${command}.description`)}`)
-          .join("\n")
+        commands.map((command) => `/${command} - ${i18n("PT", `commands.${command}.description`)}`).join("\n")
       );
       break;
     case "/commands":
       bot.queueMessage(
         msg.chat.id,
         commands
-          .map(
-            (command) =>
-              `/${command} - ${i18n(game.settings.language, `commands.${command}.description`)}`
-          )
+          .map((command) => `/${command} - ${i18n(game.settings.language, `commands.${command}.description`)}`)
           .join("\n")
       );
       break;
@@ -135,14 +126,12 @@ exports.evaluate = async (msg, game, isNew) => {
               })}`
             : "";
           message += "\n";
-          message +=
-            game.list.categories.length > 0
-              ? `${i18n(game.settings.language, "category", {
-                  count: game.list.categories.length,
-                })}: <b>${game.list.categories
-                  .map((category) => i18n(game.settings.language, `categories.${category}`))
-                  .join(", ")}</b>\n`
-              : "";
+          message += `${i18n(game.settings.language, "category", {
+            count: game.list.categories.length,
+          })}: `;
+          message += `<b>${game.list.categories
+            .map((category) => i18n(game.settings.language, `categories.${category}`))
+            .join(", ")}</b>\n`;
           message += game.list.description
             ? game.list.description.includes("href")
               ? game.list.description
@@ -184,7 +173,11 @@ exports.evaluate = async (msg, game, isNew) => {
       break;
     case "/estatisticas":
     case "/stats":
-      bot.sendKeyboard(game.chat_id, "<b>Stats</b>", keyboards.stats(game.chat_id));
+      bot.sendKeyboard(
+        game.chat_id,
+        `<b>${i18n(game.settings.language, "stats.stats")}</b>`,
+        keyboards.stats(game.chat_id)
+      );
       break;
     case "/lista":
     case "/list":
@@ -198,9 +191,7 @@ exports.evaluate = async (msg, game, isNew) => {
           message += "\n";
           message +=
             game.list.categories.length > 0
-              ? `Categor${
-                  game.list.categories.length > 1 ? "ies" : "y"
-                }: <b>${game.list.categories.join(", ")}</b>\n`
+              ? `Categor${game.list.categories.length > 1 ? "ies" : "y"}: <b>${game.list.categories.join(", ")}</b>\n`
               : "";
           message += game.list.description
             ? game.list.description.includes("href")
@@ -242,9 +233,7 @@ exports.evaluate = async (msg, game, isNew) => {
           const keyboard = keyboards.lists(foundLists);
           bot.sendKeyboard(
             game.chat_id,
-            `<b>Which list would you like to ${
-              msg.chat.id === config.adminChat ? "curate" : "queue"
-            }?</b>`,
+            `<b>Which list would you like to ${msg.chat.id === config.adminChat ? "curate" : "queue"}?</b>`,
             keyboard
           );
         } else {
@@ -270,8 +259,7 @@ exports.evaluate = async (msg, game, isNew) => {
       message += "/typo -> Report a typo in the current list\n";
       message += "/bug -> Report a bug with the bot\n";
       message += "/feature -> Suggest an enhancement feature\n";
-      message +=
-        "<i>Note that lists can be added and enhanced by anyone at https://belgocanadian.com/tenthings</i>";
+      message += "<i>Note that lists can be added and enhanced by anyone at https://belgocanadian.com/tenthings</i>";
       bot.queueMessage(game.chat_id, message);
       break;
     case "/dica":
@@ -298,7 +286,6 @@ exports.evaluate = async (msg, game, isNew) => {
         Game.find({})
           .select("chat_id")
           .then((games) => {
-            bot.notifyAdmin(`Notifying ${games.length} chats`);
             bot.broadcast(
               games.map(({ chat_id }) => chat_id),
               msg.text.replace("/notify ", "")
@@ -330,7 +317,7 @@ exports.evaluate = async (msg, game, isNew) => {
       if (!game.minigame.answer) {
         minigame.create(game, msg);
       } else {
-        let message = "<b>Find the connection</b>\n";
+        let message = `<b>${i18n(game.settings.language, "findTheConnection")}</b>\n`;
         message += game.minigame.lists.reduce((msg, list) => {
           msg += `- ${list}\n`;
           return msg;
@@ -345,7 +332,7 @@ exports.evaluate = async (msg, game, isNew) => {
       if (!game.tinygame.answer) {
         tinygame.create(game, msg);
       } else {
-        let message = "<b>Find the list name</b>\n";
+        let message = `<b>${i18n(game.settings.language, "findTheTitle")}</b>\n`;
         message += game.tinygame.clues.reduce((msg, clue) => {
           msg += `- ${clue}\n`;
           return msg;
@@ -360,7 +347,11 @@ exports.evaluate = async (msg, game, isNew) => {
       if (game.chat_id != config.groupChat) {
         bot.checkAdmin(game.chat_id, msg.from.id).then((admin) => {
           if (admin) {
-            bot.sendKeyboard(game.chat_id, "<b>Categories</b>", keyboards.categories(game));
+            bot.sendKeyboard(
+              game.chat_id,
+              `<b>${i18n(game.settings.language, "category")}</b>`,
+              keyboards.categories(game)
+            );
           } else {
             bot.queueMessage(game.chat_id, messages.categories(game));
           }
@@ -372,11 +363,15 @@ exports.evaluate = async (msg, game, isNew) => {
       if (game.chat_id != config.groupChat) {
         bot.checkAdmin(game.chat_id, msg.from.id).then((admin) => {
           if (admin) {
-            bot.sendKeyboard(game.chat_id, "<b>Settings</b>", keyboards.settings(game));
+            bot.sendKeyboard(
+              game.chat_id,
+              `<b>${i18n(game.settings.language, "settings")}</b>`,
+              keyboards.settings(game)
+            );
           } else {
             bot.queueMessage(
               game.chat_id,
-              `Sorry ${player.first_name}, that's an admin only function`
+              i18n(game.settings.language, "warnings.adminFunction", { name: player.first_name })
             );
           }
         });
@@ -386,9 +381,9 @@ exports.evaluate = async (msg, game, isNew) => {
       if (msg.from.id === config.masterChat) {
         bot.queueMessage(msg.chat.id, "Yes, master. Let me send you what you need!");
         bot.notifyAdmin(
-          `Chat id: ${msg.chat.id}\nGame _id: ${game._id}\nSettings:\n${JSON.stringify(
-            game.settings
-          )}\nList: ${game.list.name}\nMinigame: ${game.minigame.answer}\nTinygame: ${
+          `Chat id: ${msg.chat.id}\nGame _id: ${game._id}\nSettings:\n${JSON.stringify(game.settings)}\nList: ${
+            game.list.name
+          }\nMinigame: ${game.minigame.answer}\nTinygame: ${
             game.tinygame.answer
           }\nhttps://belgocanadian.com/tenthings/${game.chat_id}`
         );
@@ -434,10 +429,7 @@ exports.evaluate = async (msg, game, isNew) => {
           bot.queueMessage(msg.chat.id, message);
         });
       } else {
-        bot.queueMessage(
-          msg.chat.id,
-          "There are no lists queued, use the /search [message] command to find some"
-        );
+        bot.queueMessage(msg.chat.id, "There are no lists queued, use the /search [message] command to find some");
       }
       break;
     default:

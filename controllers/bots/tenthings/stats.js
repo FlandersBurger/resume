@@ -304,7 +304,10 @@ exports.getStats = async (chat_id, data, requestor) => {
       })
         .populate("creator")
         .exec((err, gameList) => {
-          bot.queueMessage(game.chat_id, messages.listStats(gameList, data.requestor));
+          bot.queueMessage(
+            game.chat_id,
+            messages.listStats(game.settings.language, gameList, data.requestor)
+          );
         });
       break;
     case "mostskipped":
