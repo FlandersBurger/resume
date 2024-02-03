@@ -131,9 +131,7 @@ const resetDailyScore = (force = false) => {
             if (game.list.categories) {
               message +=
                 game.list.categories.length > 0
-                  ? `Categor${game.list.categories.length > 1 ? "ies" : "y"}: <b>${
-                      game.list.categories
-                    }</b>\n`
+                  ? `Categor${game.list.categories.length > 1 ? "ies" : "y"}: <b>${game.list.categories}</b>\n`
                   : "";
             }
             message += game.list.description
@@ -144,11 +142,7 @@ const resetDailyScore = (force = false) => {
             stats.getList(game, (list) => bot.queueMessage(game.chat_id, message + list));
             game.save();
           }
-          updateDailyStats(
-            games,
-            dailyPlayers.length,
-            _.uniq(dailyPlayers, (player) => player.id).length
-          );
+          updateDailyStats(games, dailyPlayers.length, _.uniq(dailyPlayers, (player) => player.id).length);
         },
         (err) => {
           console.error(err);
@@ -279,20 +273,15 @@ const updateDailyStats = async (games, totalPlayers, uniquePlayers) => {
   message += `${(playerStats[0].skips - base.skips).makeReadable()} lists skipped\n`;
   message += `${(playerStats[0].answers - base.answers).makeReadable()} answers given\n`;
   message += `${(playerStats[0].snubs - base.snubs).makeReadable()} answers snubbed\n`;
-  message += `${(
-    playerStats[0].minigamePlays - base.minigamePlays
-  ).makeReadable()} minigame answers given\n`;
-  message += `${(
-    playerStats[0].tinygamePlays - base.tinygamePlays
-  ).makeReadable()} tinygame answers given\n`;
+  message += `${(playerStats[0].minigamePlays - base.minigamePlays).makeReadable()} minigame answers given\n`;
+  message += `${(playerStats[0].tinygamePlays - base.tinygamePlays).makeReadable()} tinygame answers given\n`;
   message += `${(playerStats[0].hints - base.hints).makeReadable()} hints asked\n`;
   message += `${(playerStats[0].score - base.score).makeReadable()} points scored overall\n`;
-  message += `${(
-    playerStats[0].suggestions - base.suggestions
-  ).makeReadable()} suggestions given\n`;
+  message += `${(playerStats[0].suggestions - base.suggestions).makeReadable()} suggestions given\n`;
   message += `${(playerStats[0].searches - base.searches).makeReadable()} lists searched\n`;
   bot.notifyAdmins(message);
   bot.notifyAdmin(message);
+  bot.notifyCosmicForce(message);
   const dailyStats = new TenThingsStats({
     hints: playerStats[0].hints - base.hints,
     chats: games.length,

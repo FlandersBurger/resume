@@ -74,10 +74,11 @@ function TelegramBot() {
       });
     });
 
-  bot.sendMessage = (channel, message) => {
+  bot.sendMessage = (channel, message, topic = null) => {
     message = encodeURIComponent(message);
     return new Promise((resolve, reject) => {
-      const url = `https://api.telegram.org/bot${bot.token}/sendMessage?chat_id=${channel}&disable_notification=true&parse_mode=html&text=${message}`;
+      let url = `https://api.telegram.org/bot${bot.token}/sendMessage?chat_id=${channel}&disable_notification=true&parse_mode=html&text=${message}`;
+      if (topic) url += `&message_thread_id=${topic}`;
       request(url, (err, r, body) => {
         if (err) {
           console.error("Send Fail");
@@ -121,8 +122,12 @@ function TelegramBot() {
     });
   };
 
+  bot.notifyCosmicForce = (msg) => {
+    bot.sendMessage(config.cosmicForceChat, msg, 17);
+  };
+
   bot.notifyAdmin = (msg) => {
-    bot.queueMessage(config.masterChat, msg);
+    bot.sendMessage(config.masterChat, msg);
   };
 
   bot.notify = (msg) => {
