@@ -96,11 +96,11 @@ module.exports = {
   difficulty: (difficulty) => {
     switch (difficulty) {
       case 0:
-        return emojis.easy;
+        return "easy";
       case 1:
-        return emojis.medium;
+        return "medium";
       case 2:
-        return emojis.hard;
+        return "hard";
     }
   },
   listStats: function (language, list, requestor = null, expanded = false) {

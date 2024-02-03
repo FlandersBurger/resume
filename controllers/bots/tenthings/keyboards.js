@@ -549,7 +549,7 @@ module.exports = {
           }),
         },
         {
-          text: messages.difficulty(0) + (list.difficulty === 0 ? emojis.green : ""),
+          text: emojis.difficulty0 + (list.difficulty === 0 ? emojis.green : ""),
           callback_data: JSON.stringify({
             type: "diff",
             vote: 0,
@@ -557,7 +557,7 @@ module.exports = {
           }),
         }, //Easy
         {
-          text: messages.difficulty(1) + (list.difficulty === 1 ? emojis.green : ""),
+          text: emojis.difficulty1 + (list.difficulty === 1 ? emojis.green : ""),
           callback_data: JSON.stringify({
             type: "diff",
             vote: 1,
@@ -565,7 +565,7 @@ module.exports = {
           }),
         }, //Medium
         {
-          text: messages.difficulty(2) + (list.difficulty === 2 ? emojis.green : ""),
+          text: emojis.difficulty2 + (list.difficulty === 2 ? emojis.green : ""),
           callback_data: JSON.stringify({
             type: "diff",
             vote: 2,

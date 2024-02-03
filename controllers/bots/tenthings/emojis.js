@@ -1,9 +1,9 @@
 module.exports = {
   thumbsUp: "👍",
   thumbsDown: "👎",
-  easy: "😏",
-  medium: "🤔",
-  hard: "😵",
+  difficulty0: "😏",
+  difficulty1: "🤔",
+  difficulty2: "😵",
   off: "⚫",
   on: "🟡",
   green: "🟢",
