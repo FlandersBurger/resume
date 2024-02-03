@@ -132,9 +132,9 @@ router.get("/lists/:id/movies", async (req, res, next) => {
     for (let value of list.values) {
       if (!value.blurb) {
         const movieDB = await request(
-          `https://api.themoviedb.org/3/search/movie?api_key=${
-            config.tokens.tmdbapi
-          }&query=${encodeURIComponent(value.value)}`
+          `https://api.themoviedb.org/3/search/movie?api_key=${config.tokens.tmdbapi}&query=${encodeURIComponent(
+            value.value
+          )}`
         );
         try {
           const posterPath = JSON.parse(movieDB).results[0].poster_path;
@@ -167,9 +167,9 @@ router.get("/lists/:id/tv", async (req, res, next) => {
     for (let value of list.values) {
       if (!value.blurb) {
         const movieDB = await request(
-          `https://api.themoviedb.org/3/search/tv?api_key=${
-            config.tokens.tmdbapi
-          }&query=${encodeURIComponent(value.value)}`
+          `https://api.themoviedb.org/3/search/tv?api_key=${config.tokens.tmdbapi}&query=${encodeURIComponent(
+            value.value
+          )}`
         );
         try {
           const posterPath = JSON.parse(movieDB).results[0].poster_path;
@@ -202,9 +202,9 @@ router.get("/lists/:id/actors", async (req, res, next) => {
     for (let value of list.values) {
       if (!value.blurb) {
         const movieDB = await request(
-          `https://api.themoviedb.org/3/search/person?api_key=${
-            config.tokens.tmdbapi
-          }&query=${encodeURIComponent(value.value)}`
+          `https://api.themoviedb.org/3/search/person?api_key=${config.tokens.tmdbapi}&query=${encodeURIComponent(
+            value.value
+          )}`
         );
         try {
           const posterPath = JSON.parse(movieDB).results[0].profile_path;
@@ -244,8 +244,7 @@ router.get("/lists/:id/books", async (req, res, next) => {
         );
         try {
           const parsedXML = await parseString(goodreadsDB);
-          const posterPath = await parsedXML.GoodreadsResponse.search[0].results[0].work[0]
-            .best_book[0].image_url[0];
+          const posterPath = await parsedXML.GoodreadsResponse.search[0].results[0].work[0].best_book[0].image_url[0];
           if (posterPath && posterPath.indexOf("nophoto") < 0) {
             value.blurb = posterPath;
           }
@@ -322,9 +321,7 @@ const getWikiImage = async (query) => {
           page.images &&
           page.images.filter(
             (image) =>
-              ["jpg", "jpeg", "png"].indexOf(
-                image.title.substring(image.title.lastIndexOf(".") + 1).toLowerCase()
-              ) >= 0
+              ["jpg", "jpeg", "png"].indexOf(image.title.substring(image.title.lastIndexOf(".") + 1).toLowerCase()) >= 0
           ).length > 0
       );
     let filename = "";
@@ -445,15 +442,11 @@ router.put("/lists", (req, res, next) => {
         .exec((err, foundList) => {
           if (err) return next(err);
           if (!req.body.list._id) {
-            bot.notifyAdmins(
-              `<u>List Created</u>\n${messages.listInfo(foundList)}`,
-              keyboards.curate(foundList)
-            );
+            bot.notifyAdmins(`<u>List Created</u>\n${messages.listInfo(foundList)}`, keyboards.curate(foundList));
+            bot.notifyCosmicForce(`<u>List Created</u>\n${messages.listInfo(foundList)}`, keyboards.curate(foundList));
           } else if (previousModifyDate < yesterday) {
             bot.notifyAdmins(
-              `<u>List Updated</u>\nUpdated by <i>${
-                req.body.user.username
-              }</i>\n${messages.listInfo(foundList)}`,
+              `<u>List Updated</u>\nUpdated by <i>${req.body.user.username}</i>\n${messages.listInfo(foundList)}`,
               keyboards.curate(foundList)
             );
           }

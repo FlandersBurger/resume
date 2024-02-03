@@ -126,8 +126,9 @@ function TelegramBot() {
     });
   };
 
-  bot.notifyCosmicForce = (msg) => {
-    bot.sendMessage(config.cosmicForceChat, msg, 17);
+  bot.notifyCosmicForce = (msg, keyboard) => {
+    if (keyboard) bot.sendKeyboard(config.adminChat, msg, keyboard, 17);
+    else bot.sendMessage(config.cosmicForceChat, msg, 17);
   };
 
   bot.notifyAdmin = (msg) => {
@@ -223,13 +224,14 @@ function TelegramBot() {
       });
     });
 
-  bot.sendKeyboard = (channel, message, keyboard) =>
+  bot.sendKeyboard = (channel, message, keyboard, topic = null) =>
     new Promise((resolve, reject) => {
-      const url = `https://api.telegram.org/bot${
+      let url = `https://api.telegram.org/bot${
         bot.token
       }/sendMessage?chat_id=${channel}&disable_notification=true&parse_mode=html&text=${message}&reply_markup=${JSON.stringify(
         keyboard
       )}`;
+      if (topic) url += `&message_thread_id=${topic}`;
       request(encodeURI(url), (error, r, body) => {
         if (error) return;
         resolve();
