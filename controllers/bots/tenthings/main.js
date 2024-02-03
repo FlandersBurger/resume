@@ -405,7 +405,7 @@ router.post("/", async ({ body, get }, res, next) => {
       });
     } else if (data.type === "diff") {
       const result = await List.findOneAndUpdate({ _id: data.list }, { difficulty: data.vote });
-      console.log(result);
+      console.log(data);
       bot.answerCallback(body.callback_query.id, `${messages.difficulty(data.vote)}`);
       bot.editKeyboard(data.chat_id, data.message_id, keyboards.curate(await List.findOne({ _id: data.list })));
     } else if (data.type === "freq") {
