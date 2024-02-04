@@ -9,6 +9,7 @@ const Player = require("../../../models/tenthings/player")();
 const lists = require("./lists");
 const stats = require("./stats");
 const maingame = require("./maingame");
+const keyboards = require("./keyboards");
 
 const SKIP_DELAY = 10;
 const VETO_DELAY = 15;
@@ -88,7 +89,8 @@ const skipList = (game, skipper) => {
         list: game.list.name,
       })}\n`;
       message += list;
-      bot.queueMessage(game.chat_id, message);
+      message += "\nExperimental feature to permanently ban list from game:";
+      bot.sendKeyboard(game.chat_id, message, keyboards.ban(game.settings.language, game.list));
       delete cache[game._id];
       let foundList = await List.findOne({
         _id: game.list._id,
@@ -118,9 +120,7 @@ exports.checkSkipper = async (game, msg, player) => {
     delete vetoes[game.id];
     if (skippers[player.id]) {
       //Check for spamming if it's the same player
-      if (
-        skippers[player.id].lastSkipped < moment().subtract(skippers[player.id].delay, "seconds")
-      ) {
+      if (skippers[player.id].lastSkipped < moment().subtract(skippers[player.id].delay, "seconds")) {
         delete skippers[player.id];
       } else {
         if (skippers[player.id].delay < 10) {

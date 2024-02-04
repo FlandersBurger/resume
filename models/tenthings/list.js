@@ -28,6 +28,7 @@ var listSchema = new mongoose.Schema(
     plays: { type: Number, required: true, default: 0 },
     hints: { type: Number, required: true, default: 0 },
     skips: { type: Number, required: true, default: 0 },
+    bans: { type: Number, required: true, default: 0 },
     score: { type: Number, required: true, default: 0 },
     voters: [{ type: String }],
     votes: [

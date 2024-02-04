@@ -91,7 +91,6 @@
     "lists": { "name": "listahan", "description": "Makita ang mga naka-queue na listahan" },
     "stop": { "name": "itigil", "description": "Patayin ako" }
   },
-
   "sentences": {
     "likesList": " \ud83d\udc4d Si {{name}} ay gusto ng <b>{{list}}</b> ({{score}})",
     "dislikesList": " \ud83d\udc4e Si {{name}} ay hindi gusto ang <b>{{list}}</b> ({{score}})",
@@ -107,6 +106,12 @@
     "addedList": "Idinagdag ang {{list}}",
     "addedListToQueue": "<b>{{list}}</b> idinagdag sa pila, {{name}}.\nMag-type ng /lists para makita ang pila",
     "addOwnList": "Tandaan na maaari mong idagdag ang iyong sariling mga listahan sa https://belgocanadian.com/tenthings",
+    "banListQuestion": "I-ban ang listahan {{list}}?",
+    "banListCommand": "I-ban ang listahan {{list}}!",
+    "confirmBan": "Kumpirmahin mo ba ang pagbaban ng listahan {{list}}?",
+    "corroboratBan": "Mayroon bang sumasang-ayon sa pagbaban ng listahan {{list}}?",
+    "alreadyBannedList": "{{list}} ay mayroon nang ban!",
+    "listBanned": "Binalaan na ang {{list}}!",
     "inactivity": "Natutulog ako, mag-type ng /list o /start para gisingin ako.\nNatutulog ako pagkatapos ng 30 araw ng inactivity.",
     "introduction": "Hi {{name}},\nAng Ten Things, yours truly, ay isang laro na magbibigay sa iyo ng isang paksa at pagkatapos ay sasagutin mo ang anumang pumapasok sa iyong isip sa nasabing kategorya.\nMag-type ng /commands para makita ang lahat ng bagay na maaari mong itanong sa akin\nKung nais mong idagdag ang iyong sariling mga listahan, mangyaring pumunta sa https://belgocanadian.com/tenthings\nMag-enjoy!",
     "suggestionNoted": "Suggestion naaayon",
@@ -129,7 +134,8 @@
     "adminFunction": "Pasensya na {{name}}, ito ay isang chat admin na function",
     "fullQueue": "Ang pila ay puno na at umabot na sa maximum na 10 listahan, {{name}}",
     "alreadyInQueue": "Ang <b>{{list}}</b> ay nasa pila na, {{name}}",
-    "unfoundList": "Ang listahang ito ay hindi na umiiral"
+    "unfoundList": "Ang listahang ito ay hindi na umiiral",
+    "corroborateBanBySamePlayer": "Kumuha ng ibang tao upang kumpirmahin ang ban, {{name}}!"
   },
   "stats": {
     "stats": "Estadistika",

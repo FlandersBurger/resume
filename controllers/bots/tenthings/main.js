@@ -7,6 +7,7 @@ const redis = require("../../../redis");
 const bot = require("../../../connections/telegram");
 
 const lists = require("./lists");
+const bans = require("./bans");
 const messages = require("./messages");
 const keyboards = require("./keyboards");
 const stats = require("./stats");
@@ -367,6 +368,12 @@ router.post("/", async ({ body, get }, res, next) => {
           }
         });
       }
+    } else if (data.type === "ban") {
+      const game = await Game.findOne({ chat_id: data.chat_id }).select("chat_id list settings").exec();
+      bans.initiate(game, data);
+    } else if (data.type === "c_ban") {
+      const game = await Game.findOne({ chat_id: data.chat_id }).select("chat_id list settings").exec();
+      bans.process(game, data);
     } else if (data.type === "suggest") {
       const game = await Game.findOne({ chat_id: data.chat_id }).select("chat_id list settings").exec();
       const suggestion = body.callback_query.message.text.substring(

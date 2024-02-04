@@ -106,6 +106,12 @@
     "addedList": "{{list}} added",
     "addedListToQueue": "<b>{{list}}</b> added to the queue, {{name}}.\nType /lists to see the queue",
     "addOwnList": "Note that you can add your own lists at https://belgocanadian.com/tenthings",
+    "banListQuestion": "Ban list {{list}}?",
+    "banListCommand": "Ban list {{list}}!",
+    "confirmBan": "Do you confirm banning list {{list}}?",
+    "corroboratBan": "Does someone agree to banning list {{list}}?",
+    "alreadyBannedList": "{{list}} is already banned!",
+    "listBanned": "{{list}} banned!",
     "inactivity": "I'm sleeping, type /list or /start to wake me up.\nI go to sleep after 30 days of inactivity.",
     "introduction": "Hi {{name}},\nTen Things, yours truly, is a game which will give you a subject and then you answer anything that comes to mind in that category.\nType /commands to see all the things you can ask me\nIf you want to add your own lists, please go to https://belgocanadian.com/tenthings\nHave fun!",
     "suggestionNoted": "Suggestion noted",
@@ -128,7 +134,8 @@
     "adminFunction": "Sorry {{name}}, this is a chat admin function",
     "fullQueue": "The queue already has the maximum of 10 lists, {{name}}",
     "alreadyInQueue": "<b>{{list}}</b> is already in the queue, {{name}}",
-    "unfoundList": "This list no longer exists"
+    "unfoundList": "This list no longer exists",
+    "corroborateBanBySamePlayer": "Get someone else to confirm the ban, {{name}}!"
   },
   "stats": {
     "stats": "Stats",

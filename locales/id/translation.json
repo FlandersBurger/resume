@@ -115,6 +115,12 @@
     "addedList": "{{list}} ditambahkan",
     "addedListToQueue": "<b>{{list}}</b> ditambahkan ke antrian, {{name}}.\nKetik /lists untuk melihat antrian",
     "addOwnList": "Perhatikan bahwa Anda dapat menambahkan daftar Anda sendiri di https://belgocanadian.com/tenthings",
+    "banListQuestion": "Larang daftar {{list}}?",
+    "banListCommand": "Larang daftar {{list}}!",
+    "confirmBan": "Apakah Anda mengonfirmasi pelarangan daftar {{list}}?",
+    "corroboratBan": "Ada yang setuju untuk melarang daftar {{list}}?",
+    "alreadyBannedList": "{{list}} sudah dilarang!",
+    "listBanned": "{{list}} dilarang!",
     "inactivity": "Saya sedang tidur, ketik /list atau /start untuk membangunkan saya.\nSaya tidur setelah 30 hari tidak aktif.",
     "introduction": "Hai {{name}},\nTen Things, ciptaanmu sendiri, adalah permainan yang akan memberimu subjek dan kemudian kamu menjawab apa saja yang terlintas dalam pikiranmu dalam kategori tersebut.\nKetik /perintah untuk melihat semua yang bisa kamu tanyakan kepada saya\nJika kamu ingin menambahkan daftar sendiri, silakan kunjungi https://belgocanadian.com/tenthings\nSelamat bersenang-senang!",
     "suggestionNoted": "Saran dicatat",
@@ -137,7 +143,8 @@
     "adminFunction": "Maaf {{name}}, ini adalah fungsi admin obrolan",
     "fullQueue": "Antrian sudah mencapai maksimum 10 daftar, {{name}}",
     "alreadyInQueue": "<b>{{list}}</b> sudah ada dalam antrian, {{name}}",
-    "unfoundList": "Daftar ini tidak lagi ada"
+    "unfoundList": "Daftar ini tidak lagi ada",
+    "corroborateBanBySamePlayer": "Dapatkan orang lain untuk mengonfirmasi pelarangan, {{name}}!"
   },
   "stats": {
     "stats": "Statistik",

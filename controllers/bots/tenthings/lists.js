@@ -61,7 +61,7 @@ const select = async (game) => {
     }
   } else {
     let list = await getRandomList({
-      _id: { $nin: game.playedLists },
+      _id: { $nin: game.playedLists.concat(game.bannedLists) },
       categories: { $nin: game.disabledCategories },
       language: { $in: availableLanguages },
     });
@@ -71,11 +71,13 @@ const select = async (game) => {
       game.lastCycleDate = moment();
       bot.queueMessage(game.chat_id, "All lists have been played, a new cycle will now start.");
       list = await getRandomList({
+        _id: { $nin: game.bannedLists },
         categories: { $nin: game.disabledCategories },
         language: { $in: availableLanguages },
       });
       if (!list) {
         list = await getRandomList({
+          _id: { $nin: game.bannedLists },
           categories: { $nin: game.disabledCategories },
           language: "EN",
         });

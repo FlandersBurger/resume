@@ -18,6 +18,7 @@ var tenthingsSchema = new mongoose.Schema({
   disabledCategories: [String],
   playedLists: [{ type: String }],
   pickedLists: [{ type: String }],
+  bannedLists: [{ type: String }],
   list: {
     _id: String,
     name: String,
