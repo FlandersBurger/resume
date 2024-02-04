@@ -39,8 +39,8 @@ const banList = async (game, listId) => {
       bot.queueMessage(game.chat_id, i18n(game.settings.language, "sentences.alreadyBannedList", { list: list.name }));
     } else {
       game.bannedLists.push(list._id);
-      const validation = await game.validate();
-      console.log(validation);
+      let error = game.validateSync();
+      console.log(error);
       await game.save();
       list.bans++;
       await list.save();
