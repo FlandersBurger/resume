@@ -41,12 +41,10 @@ exports.process = (game, { list, from_id, requestor }) => {
 const banList = async (game, listId) => {
   const list = await List.findOne({ _id: listId }).select("_id bans name").exec();
   if (list) {
-    if (game.bannedLists.some((bannedListId) => bannedListId === listId)) {
+    if (game.bannedLists.some((bannedListId) => bannedListId == listId)) {
       bot.queueMessage(game.chat_id, i18n(game.settings.language, "sentences.alreadyBannedList", { list: list.name }));
     } else {
-      game.bannedLists.push(list._id);
-      const error = game.validateSync();
-      console.log(error);
+      game.bannedLists.push(list._id.toString());
       await game.save();
       list.bans++;
       await list.save();
