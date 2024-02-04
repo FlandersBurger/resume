@@ -6,11 +6,11 @@ const List = require("../../../models/tenthings/list")();
 
 const cache = {};
 
-exports.initiate = (game, { list, from_id, requestor }) => {
-  bot.checkAdmin(game.chat_id, from_id).then(async (admin) => {
+exports.initiate = async (game, data) => {
+  bot.checkAdmin(game.chat_id, data.from_id).then(async (admin) => {
     if (admin) {
-      cache[`${game._id}-${list}`] = from_id;
-      const foundList = await List.findOne({ _id: list }).exec();
+      cache[`${game._id}-${data.list}`] = data.rom_id;
+      const foundList = await List.findOne({ _id: data.list }).exec();
       if (foundList) {
         bot.sendKeyboard(
           game.chat_id,
@@ -21,22 +21,25 @@ exports.initiate = (game, { list, from_id, requestor }) => {
         );
       }
     } else {
-      bot.queueMessage(game.chat_id, i18n(game.settings.language, "warnings.adminFunction", { name: requestor }));
+      bot.queueMessage(game.chat_id, i18n(game.settings.language, "warnings.adminFunction", { name: data.requestor }));
     }
   });
   bot.answerCallback(game.chat_id);
+  bot.editKeyboard(data.chat_id, data.message_id);
 };
 
-exports.process = (game, { list, from_id, requestor }) => {
-  if (!cache[`${game._id}-${list}`]) {
-    bot.queueMessage(game.chat_id, i18n(game.settings.language, "sentences.banNotFound", { name: requestor }));
-  } else if (cache[`${game._id}-${list}`] !== from_id || game.chat_id > 0) {
-    banList(game, list);
-    delete cache[`${game._id}-${list}`];
+exports.process = (game, data) => {
+  if (!cache[`${game._id}-${data.list}`]) {
+    bot.queueMessage(game.chat_id, i18n(game.settings.language, "sentences.banNotFound", { name: data.requestor }));
+    bot.editKeyboard(data.chat_id, data.message_id);
+  } else if (cache[`${game._id}-${data.list}`] !== data.from_id || game.chat_id > 0) {
+    banList(game, data.list);
+    delete cache[`${game._id}-${data.list}`];
+    bot.editKeyboard(data.chat_id, data.message_id);
   } else {
     bot.queueMessage(
       game.chat_id,
-      i18n(game.settings.language, "warnings.corroborateBanBySamePlayer", { name: requestor })
+      i18n(game.settings.language, "warnings.corroborateBanBySamePlayer", { name: data.requestor })
     );
   }
   bot.answerCallback(game.chat_id);

@@ -267,11 +267,10 @@ function TelegramBot() {
       });
     });
 
-  bot.editKeyboard = (channel, message_id, keyboard) =>
+  bot.editKeyboard = (channel, message_id, keyboard = null) =>
     new Promise((resolve, reject) => {
-      const url = `https://api.telegram.org/bot${
-        bot.token
-      }/editMessageReplyMarkup?chat_id=${channel}&message_id=${message_id}&reply_markup=${JSON.stringify(keyboard)}`;
+      let url = `https://api.telegram.org/bot${bot.token}/editMessageReplyMarkup?chat_id=${channel}&message_id=${message_id}`;
+      if (keyboard) url += `&reply_markup=${JSON.stringify(keyboard)}`;
       request(encodeURI(url), (error, r, body) => {
         if (error) return;
         resolve();
