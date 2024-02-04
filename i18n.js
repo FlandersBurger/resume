@@ -18,7 +18,7 @@ i18next.use(Backend).init({
   backend: {
     loadPath: join(localesFolder, "{{lng}}/{{ns}}.json"),
   },
+  interpolation: { escapeValue: false },
 });
 
-module.exports = (lng, key, params = {}) =>
-  i18next.getFixedT(lng ? lng.toLowerCase() : systemLocale)(key, params);
+module.exports = (lng, key, params = {}) => i18next.getFixedT(lng ? lng.toLowerCase() : systemLocale)(key, params);
