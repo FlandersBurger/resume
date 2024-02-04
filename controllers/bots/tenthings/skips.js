@@ -116,6 +116,7 @@ const skipList = (game, skipper) => {
 };
 
 exports.checkSkipper = async (game, msg, player) => {
+  if (game.chat_id > 0) return true;
   if (!vetoes[game.id] || vetoes[game.id] < moment().subtract(VETO_DELAY, "seconds")) {
     delete vetoes[game.id];
     if (skippers[player.id]) {
