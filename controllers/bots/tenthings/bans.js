@@ -6,18 +6,24 @@ const List = require("../../../models/tenthings/list")();
 
 const cache = {};
 
-exports.initiate = async (game, { list, from_id }) => {
-  cache[`${game._id}-${list}`] = from_id;
-  const foundList = await List.findOne({ _id: list }).exec();
-  if (foundList) {
-    bot.sendKeyboard(
-      game.chat_id,
-      i18n(game.settings.language, `sentences.${game.chat_id > 0 ? "confirmBan" : "corroborateBan"}`, {
-        list: foundList.name,
-      }),
-      keyboards.confirmBan(game.settings.language, foundList)
-    );
-  }
+exports.initiate = (game, { list, from_id, requestor }) => {
+  bot.checkAdmin(game.chat_id, from_id).then(async (admin) => {
+    if (admin) {
+      cache[`${game._id}-${list}`] = from_id;
+      const foundList = await List.findOne({ _id: list }).exec();
+      if (foundList) {
+        bot.sendKeyboard(
+          game.chat_id,
+          i18n(game.settings.language, `sentences.${game.chat_id > 0 ? "confirmBan" : "corroborateBan"}`, {
+            list: foundList.name,
+          }),
+          keyboards.confirmBan(game.settings.language, foundList)
+        );
+      }
+    } else {
+      bot.queueMessage(game.chat_id, i18n(game.settings.language, "warnings.adminFunction", { name: requestor }));
+    }
+  });
 };
 
 exports.process = (game, { list, from_id, requestor }) => {
