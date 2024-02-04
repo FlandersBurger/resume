@@ -24,6 +24,7 @@ exports.initiate = (game, { list, from_id, requestor }) => {
       bot.queueMessage(game.chat_id, i18n(game.settings.language, "warnings.adminFunction", { name: requestor }));
     }
   });
+  bot.answerCallback(game.chat_id);
 };
 
 exports.process = (game, { list, from_id, requestor }) => {
@@ -36,6 +37,7 @@ exports.process = (game, { list, from_id, requestor }) => {
       i18n(game.settings.language, "warnings.corroborateBanBySamePlayer", { name: requestor })
     );
   }
+  bot.answerCallback(game.chat_id);
 };
 
 const banList = async (game, listId) => {
