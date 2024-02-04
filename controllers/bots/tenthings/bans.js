@@ -9,13 +9,15 @@ const cache = {};
 exports.initiate = async (game, { list, from_id }) => {
   cache[`${game._id}-${list}`] = from_id;
   const foundList = await List.findOne({ _id: list }).exec();
-  bot.sendKeyboard(
-    game.chat_id,
-    i18n(game.settings.language, `sentences.${game.chat_id > 0 ? "confirmBan" : "corroborateBan"}`, {
-      list: foundList.name,
-    }),
-    keyboards.confirmBan(foundList)
-  );
+  if (foundList) {
+    bot.sendKeyboard(
+      game.chat_id,
+      i18n(game.settings.language, `sentences.${game.chat_id > 0 ? "confirmBan" : "corroborateBan"}`, {
+        list: foundList.name,
+      }),
+      keyboards.confirmBan(game.settings.language, foundList)
+    );
+  }
 };
 
 exports.process = (game, { list, from_id, requestor }) => {
