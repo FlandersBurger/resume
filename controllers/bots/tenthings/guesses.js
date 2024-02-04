@@ -148,7 +148,7 @@ const checkGuess = async (game, player, guess, msg) => {
     match.guesser = msg.from;
     player.answers++;
     const score = Math.round(
-      (hints.MAX_HINTS - game.hints + game.guessers.length) * (guess.match.distance - 0.6) * 2.5
+      (hints.MAX_HINTS - game.hints + game.guessers.length) * (guess.match.distance - 0.6) * (10 / 4)
     );
     const accuracy = `${(guess.match.distance * 100).toFixed(0)}%`;
     player.score += score;

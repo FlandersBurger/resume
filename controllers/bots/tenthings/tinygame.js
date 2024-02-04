@@ -58,7 +58,7 @@ exports.message = message;
 
 exports.check = async (game, player, guess, msg) => {
   if (guess.match.value !== game.tinygame.answer) return;
-  const score = Math.floor(10 * guess.match.distance);
+  const score = Math.round((hints.MAX_HINTS - game.tinygame.hints + 1) * (guess.match.distance - 0.6) * (25 / 7));
   player.score += score;
   player.scoreDaily += score;
   if (game.tinygame.hints === 0) player.hintStreak++;

@@ -122,7 +122,7 @@ exports.message = message;
 
 exports.check = async (game, player, guess, msg) => {
   if (guess.match.value !== game.minigame.answer) return;
-  const score = Math.floor(10 * guess.match.distance);
+  const score = Math.round((hints.MAX_HINTS - game.minigame.hints + 1) * (guess.match.distance - 0.6) * (25 / 7));
   player.score += score;
   player.scoreDaily += score;
   if (game.minigame.hints === 0) player.hintStreak++;
