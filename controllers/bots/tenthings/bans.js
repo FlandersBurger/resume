@@ -24,7 +24,6 @@ exports.initiate = async (game, data) => {
       bot.queueMessage(game.chat_id, i18n(game.settings.language, "warnings.adminFunction", { name: data.requestor }));
     }
   });
-  bot.answerCallback(game.chat_id);
 };
 
 exports.process = (game, data) => {
@@ -40,7 +39,6 @@ exports.process = (game, data) => {
       game.chat_id,
       i18n(game.settings.language, "warnings.corroborateBanBySamePlayer", { name: data.requestor })
     );
-    bot.answerCallback(game.chat_id);
   }
 };
 
