@@ -112,6 +112,7 @@
     "corroboratBan": "Does someone agree to banning list \"{{list}}\"?",
     "alreadyBannedList": "\"{{list}}\" is already banned!",
     "listBanned": "\"{{list}}\" banned!",
+    "banNotFound": "I can't find a ban request, {{name}}",
     "inactivity": "I'm sleeping, type /list or /start to wake me up.\nI go to sleep after 30 days of inactivity.",
     "introduction": "Hi {{name}},\nTen Things, yours truly, is a game which will give you a subject and then you answer anything that comes to mind in that category.\nType /commands to see all the things you can ask me\nIf you want to add your own lists, please go to https://belgocanadian.com/tenthings\nHave fun!",
     "suggestionNoted": "Suggestion noted",

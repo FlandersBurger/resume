@@ -115,6 +115,7 @@
     "corroboratBan": "Alguém concorda com o banimento da lista \"{{list}}\"?",
     "alreadyBannedList": "\"{{list}}\" já está banida!",
     "listBanned": "\"{{list}}\" banida!",
+    "banNotFound": "Não consigo encontrar um pedido de proibição, {{name}}",
     "inactivity": "Estou dormindo, digite /list ou /start para me acordar.\nEu durmo após 30 dias de inatividade.",
     "introduction": "Oi {{name}},\nTen Things, seu humilde servo, é um jogo que dará a você um assunto e depois você responde qualquer coisa que venha à mente nessa categoria.\nDigite /commands para ver todas as coisas que pode me perguntar\nSe quiser adicionar suas próprias listas, vá para https://belgocanadian.com/tenthings\nDivirta-se!",
     "suggestionNoted": "Sugestão anotada",

@@ -28,7 +28,9 @@ exports.initiate = (game, { list, from_id, requestor }) => {
 };
 
 exports.process = (game, { list, from_id, requestor }) => {
-  if (cache[`${game._id}-${list}`] && (cache[`${game._id}-${list}`] !== from_id || game.chat_id > 0)) {
+  if (!cache[`${game._id}-${list}`]) {
+    bot.queueMessage(game.chat_id, i18n(game.settings.language, "sentences.banNotFound", { name: requestor }));
+  } else if (cache[`${game._id}-${list}`] !== from_id || game.chat_id > 0) {
     banList(game, list);
     delete cache[`${game._id}-${list}`];
   } else {

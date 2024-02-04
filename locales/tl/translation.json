@@ -112,6 +112,7 @@
     "corroboratBan": "Mayroon bang sumasang-ayon sa pagbaban ng listahan \"{{list}}\"?",
     "alreadyBannedList": "\"{{list}}\" ay mayroon nang ban!",
     "listBanned": "Binalaan na ang \"{{list}}\"!",
+    "banNotFound": "Hindi ko mahanap ang kahilingan ng ban, {{name}}",
     "inactivity": "Natutulog ako, mag-type ng /list o /start para gisingin ako.\nNatutulog ako pagkatapos ng 30 araw ng inactivity.",
     "introduction": "Hi {{name}},\nAng Ten Things, yours truly, ay isang laro na magbibigay sa iyo ng isang paksa at pagkatapos ay sasagutin mo ang anumang pumapasok sa iyong isip sa nasabing kategorya.\nMag-type ng /commands para makita ang lahat ng bagay na maaari mong itanong sa akin\nKung nais mong idagdag ang iyong sariling mga listahan, mangyaring pumunta sa https://belgocanadian.com/tenthings\nMag-enjoy!",
     "suggestionNoted": "Suggestion naaayon",

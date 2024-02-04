@@ -121,6 +121,7 @@
     "corroboratBan": "Ada yang setuju untuk melarang daftar \"{{list}}\"?",
     "alreadyBannedList": "\"{{list}}\" sudah dilarang!",
     "listBanned": "\"{{list}}\" dilarang!",
+    "banNotFound": "Saya tidak bisa menemukan permintaan larangan, {{name}}",
     "inactivity": "Saya sedang tidur, ketik /list atau /start untuk membangunkan saya.\nSaya tidur setelah 30 hari tidak aktif.",
     "introduction": "Hai {{name}},\nTen Things, ciptaanmu sendiri, adalah permainan yang akan memberimu subjek dan kemudian kamu menjawab apa saja yang terlintas dalam pikiranmu dalam kategori tersebut.\nKetik /perintah untuk melihat semua yang bisa kamu tanyakan kepada saya\nJika kamu ingin menambahkan daftar sendiri, silakan kunjungi https://belgocanadian.com/tenthings\nSelamat bersenang-senang!",
     "suggestionNoted": "Saran dicatat",
