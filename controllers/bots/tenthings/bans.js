@@ -25,7 +25,6 @@ exports.initiate = async (game, data) => {
     }
   });
   bot.answerCallback(game.chat_id);
-  bot.editKeyboard(data.chat_id, data.message_id);
 };
 
 exports.process = (game, data) => {
