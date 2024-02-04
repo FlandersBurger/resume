@@ -369,7 +369,7 @@ router.post("/", async ({ body, get }, res, next) => {
         });
       }
     } else if (data.type === "ban") {
-      const game = await Game.findOne({ chat_id: data.chat_id }).select("chat_id settings").exec();
+      const game = await Game.findOne({ chat_id: data.chat_id }).select("chat_id bannedLists settings").exec();
       bans.initiate(game, data);
       bot.answerCallback(body.callback_query.id, "");
     } else if (data.type === "c_ban") {

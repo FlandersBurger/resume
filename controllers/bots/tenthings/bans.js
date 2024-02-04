@@ -9,16 +9,24 @@ const cache = {};
 exports.initiate = async (game, data) => {
   bot.checkAdmin(game.chat_id, data.from_id).then(async (admin) => {
     if (admin) {
-      cache[`${game._id}-${data.list}`] = data.from_id;
       const foundList = await List.findOne({ _id: data.list }).exec();
-      if (foundList) {
-        bot.sendKeyboard(
+      if (game.bannedLists.some((bannedListId) => bannedListId == data.list)) {
+        bot.queueMessage(
           game.chat_id,
-          i18n(game.settings.language, `sentences.${game.chat_id > 0 ? "confirmBan" : "corroborateBan"}`, {
-            list: foundList.name,
-          }),
-          keyboards.confirmBan(game.settings.language, foundList)
+          i18n(game.settings.language, "sentences.alreadyBannedList", { list: foundList.name })
         );
+        bot.editKeyboard(data.chat_id, data.message_id);
+      } else {
+        cache[`${game._id}-${data.list}`] = data.from_id;
+        if (foundList) {
+          bot.sendKeyboard(
+            game.chat_id,
+            i18n(game.settings.language, `sentences.${game.chat_id > 0 ? "confirmBan" : "corroborateBan"}`, {
+              list: foundList.name,
+            }),
+            keyboards.confirmBan(game.settings.language, foundList)
+          );
+        }
       }
     } else {
       bot.queueMessage(game.chat_id, i18n(game.settings.language, "warnings.adminFunction", { name: data.requestor }));
