@@ -372,7 +372,7 @@ router.post("/", async ({ body, get }, res, next) => {
       const game = await Game.findOne({ chat_id: data.chat_id }).select("chat_id list settings").exec();
       bans.initiate(game, data);
     } else if (data.type === "c_ban") {
-      const game = await Game.findOne({ chat_id: data.chat_id }).select("chat_id list settings").exec();
+      const game = await Game.findOne({ chat_id: data.chat_id }).select("chat_id bannedLists list settings").exec();
       bans.process(game, data);
     } else if (data.type === "suggest") {
       const game = await Game.findOne({ chat_id: data.chat_id }).select("chat_id list settings").exec();
