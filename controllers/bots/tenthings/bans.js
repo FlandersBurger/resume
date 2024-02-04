@@ -9,7 +9,7 @@ const cache = {};
 exports.initiate = async (game, data) => {
   bot.checkAdmin(game.chat_id, data.from_id).then(async (admin) => {
     if (admin) {
-      cache[`${game._id}-${data.list}`] = data.rom_id;
+      cache[`${game._id}-${data.list}`] = data.from_id;
       const foundList = await List.findOne({ _id: data.list }).exec();
       if (foundList) {
         bot.sendKeyboard(
