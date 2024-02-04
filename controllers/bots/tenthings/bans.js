@@ -31,18 +31,18 @@ exports.initiate = async (game, data) => {
 exports.process = (game, data) => {
   if (!cache[`${game._id}-${data.list}`]) {
     bot.queueMessage(game.chat_id, i18n(game.settings.language, "sentences.banNotFound", { name: data.requestor }));
-    bot.editKeyboard(data.chat_id, data.message_id);
+    bot.deleteMessage(data.chat_id, data.message_id);
   } else if (cache[`${game._id}-${data.list}`] !== data.from_id || game.chat_id > 0) {
     banList(game, data.list);
     delete cache[`${game._id}-${data.list}`];
-    bot.editKeyboard(data.chat_id, data.message_id);
+    bot.deleteMessage(data.chat_id, data.message_id);
   } else {
     bot.queueMessage(
       game.chat_id,
       i18n(game.settings.language, "warnings.corroborateBanBySamePlayer", { name: data.requestor })
     );
+    bot.answerCallback(game.chat_id);
   }
-  bot.answerCallback(game.chat_id);
 };
 
 const banList = async (game, listId) => {
