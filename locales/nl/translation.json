@@ -153,7 +153,7 @@
     "Als een antwoord 100% correct is, wordt het onmiddellijk toegekend aan de gokker",
     "Als een antwoord meer dan 75% correct is, wordt het toegekend na (2 * nauwkeurigheid %) seconden als er geen beter antwoord wordt gegeven",
     "Niet-alfanumerieke tekens en hoofdletters worden genegeerd bij het bepalen van de nauwkeurigheid",
-    "Behaalde punten = (Max hints {{maxHints}} - gevraagde hints + # huidige spelers) * (nauwkeurigheid % - 0.6) * 2.5",
+    "Punten gescoord = (Max hints {{maxHints}} - gevraagde hints + # huidige spelers) / (Max hints {{maxHints}} + # huidige spelers) * nauwkeurigheid van het antwoord % * 10",
     "Hints worden in deze volgorde onthuld: eerste letters, laatste letters, klinkers en de rest. De rest wordt onthuld van minst frequente naar meest frequente letter",
     "Er is een afkoelperiode van 10 seconden tussen het vragen van hints",
     "Een lijst kan worden overgeslagen als 2 spelers /skip typen",

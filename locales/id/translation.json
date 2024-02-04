@@ -159,7 +159,7 @@
     "Jika jawabannya 100% benar, itu akan langsung diberikan kepada penembak",
     "Jika jawaban lebih dari 75% benar, itu akan diberikan setelah (2 * persentase kebenaran) detik jika tidak ada jawaban yang lebih baik",
     "Tanda non-alfanumerik dan huruf besar diabaikan saat menentukan kebenaran",
-    "Skor yang diperoleh = (Max petunjuk {{maxHints}} - petunjuk yang diminta + # pemain saat ini) * (akurasi jawaban % - 0.6) * 2.5",
+    "Skor poin = (Petunjuk maksimal {{maxHints}} - petunjuk yang diminta + # pemain saat ini) / (Petunjuk maksimal {{maxHints}} + # pemain saat ini) * akurasi jawaban % * 10",
     "Petunjuk diungkapkan dalam urutan ini: huruf pertama, huruf terakhir, vokal, dan sisanya. Sisanya akan diungkapkan dari huruf yang paling jarang hingga paling sering",
     "Ada pendingin selama 10 detik antara meminta petunjuk",
     "Sebuah daftar dapat dilewati jika 2 pemain /skip",

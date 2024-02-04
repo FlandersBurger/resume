@@ -3,6 +3,7 @@ const _ = require("underscore");
 
 const bot = require("../../../connections/telegram");
 const messages = require("./messages");
+const guesses = require("./guesses");
 const hints = require("./hints");
 const i18n = require("../../../i18n");
 
@@ -122,7 +123,7 @@ exports.message = message;
 
 exports.check = async (game, player, guess, msg) => {
   if (guess.match.value !== game.minigame.answer) return;
-  const score = Math.round((hints.MAX_HINTS - game.minigame.hints + 1) * (guess.match.distance - 0.6) * (25 / 7));
+  const score = guesses.getAnswerScore(game.minigame.hints, guess.match.distance);
   player.score += score;
   player.scoreDaily += score;
   if (game.minigame.hints === 0) player.hintStreak++;
@@ -139,6 +140,6 @@ exports.check = async (game, player, guess, msg) => {
   })}</u>`;
   bot.queueMessage(msg.chat.id, message);
   setTimeout(() => {
-    create(game, msg);
+    create(game);
   }, 1000);
 };

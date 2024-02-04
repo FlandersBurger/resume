@@ -150,7 +150,7 @@
     "Kung ang sagot ay 100% na tama, ito agad na ibibigay sa nagsagot",
     "Kung ang sagot ay higit sa 75% na tama, ito ay ibibigay pagkatapos ng (2 * bahagyang koreksyon) segundo kung walang mas magandang sagot na ibinigay",
     "Ang mga non-alphanumeric na mga sagisag at kaso ng mga titik ay ina-ignored kapag ini-determine ang koreksyon",
-    "Mga puntos na nakuha = (Maksimum na mga hint {{maxHints}} - mga hint na hiningi + # ng mga kasalukuyang manlalaro) * (bahagyang koreksyon % - 0.6) * 2.5",
+    "Mga puntos na nakuha = (Mga Max na Hint {{maxHints}} - mga hint na hinihingi + # ng kasalukuyang mga manlalaro) / (Mga Max na Hint {{maxHints}} + # ng kasalukuyang mga manlalaro) * porsyento ng kahusayan ng sagot * 10",
     "Ang mga hint ay inilalabas sa ganitong ayos: unang mga titik, huling mga titik, mga patinig, at ang iba pa. Ang iba ay ilalabas mula sa pinakamababa hanggang sa pinakamataas na bilang ng titik",
     "Mayroong cooldown na 10 segundo sa pagitan ng pagtatanong ng mga hint",
     "Ang isang listahan ay maaaring i-skip kung 2 players ang i-skip ito",

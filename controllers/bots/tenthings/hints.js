@@ -27,10 +27,7 @@ const cooldown = (gameId) => {
 exports.cooldown = cooldown;
 
 exports.process = async (game, player, type = "main") => {
-  if (
-    (type === "main" && game.hints >= MAX_HINTS) ||
-    (type !== "main" && game[type].hints >= MAX_HINTS)
-  ) {
+  if ((type === "main" && game.hints >= MAX_HINTS) || (type !== "main" && game[type].hints >= MAX_HINTS)) {
     bot.queueMessage(game.chat_id, "What? Another hint? I'm just gonna ignore that request");
   } else if (cache[game.id] && cache[game.id] > 0) {
     bot.queueMessage(game.chat_id, `Calm down with the hints, wait ${cache[game.id]} more seconds`);
@@ -40,18 +37,18 @@ exports.process = async (game, player, type = "main") => {
       player.hintStreak = 0;
       await player.save();
     }
-    let message;
     switch (type) {
       case "minigame":
         game.minigame.hints++;
-        message = minigame.message(game);
+        minigame.message(game);
         break;
       case "tinygame":
         game.tinygame.hints++;
-        message = tinygame.message(game);
+        tinygame.message(game);
         break;
       default:
         game.hints++;
+        let message;
         message = `<b>${game.list.name}</b>\n`;
         message += game.list.values.reduce((str, { guesser, value }, index) => {
           if (!guesser.first_name) {
@@ -79,9 +76,9 @@ exports.process = async (game, player, type = "main") => {
             return bot.notifyAdmin(`Hint List Error:\n${list.name}`);
           }
         }
+        bot.queueMessage(game.chat_id, message);
         break;
     }
-    bot.queueMessage(game.chat_id, message);
     cache[game.id] = 10;
     cooldown(game.id);
     await game.save();
@@ -104,12 +101,7 @@ const getHint = (hints, value) => {
     }
     const letters = countLetters(croppedValue);
     let revealCount = Math.floor((letters.length * (hints - 3)) / 4);
-    revealCount =
-      revealCount < hints - 3
-        ? hints - 3 < letters.length
-          ? hints - 3
-          : letters.length
-        : revealCount;
+    revealCount = revealCount < hints - 3 ? (hints - 3 < letters.length ? hints - 3 : letters.length) : revealCount;
     for (i = 0; i < revealCount; i++) {
       tester += letters[i].letter;
     }

@@ -150,7 +150,7 @@
     "If an answer is 100% correct it will immediately be awarded to the guesser",
     "If an answer is over 75% correct it will be awarded after (2 * correctness percentage) seconds if no better answer is provided",
     "Non-alphanumerical signs and letter cases are ignored when determining correctness",
-    "Points scored = (Max hints {{maxHints}} - hints asked + # of current players) * (answer accuracy % - 0.6) * 2.5",
+    "Points scored = (Max hints {{maxHints}} - hints asked + # of current players) / (Max hints {{maxHints}} + # of current players) * answer accuracy % * 10",
     "Hints are revealed in this order: first letters, last letters, vowels, and the rest. The rest will be revealed from least frequent to most frequent letter",
     "There is a 10 second cooldown between asking hints",
     "A list can be skipped if 2 players /skip it",

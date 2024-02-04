@@ -153,7 +153,7 @@
     "Se uma resposta estiver 100% correta, ela será imediatamente atribuída ao jogador",
     "Se uma resposta estiver acima de 75% correta, será atribuída após (2 * porcentagem de corretude) segundos se nenhuma resposta melhor for fornecida",
     "Sinais não alfanuméricos e maiúsculas são ignorados ao determinar a correção",
-    "Pontos marcados = (Máximo de dicas {{maxHints}} - dicas pedidas + # de jogadores atuais) * (precisão da resposta % - 0.6) * 2.5",
+    "Pontos marcados = (Máximas dicas {{maxHints}} - dicas solicitadas + # de jogadores atuais) / (Máximas dicas {{maxHints}} + # de jogadores atuais) * precisão da resposta % * 10",
     "As dicas são reveladas nesta ordem: primeiras letras, últimas letras, vogais e o restante. O restante será revelado da letra menos frequente para a mais frequente",
     "Há um cooldown de 10 segundos entre pedir dicas",
     "Uma lista pode ser pulada se 2 jogadores a /skip",

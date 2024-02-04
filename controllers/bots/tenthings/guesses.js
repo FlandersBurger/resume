@@ -147,9 +147,7 @@ const checkGuess = async (game, player, guess, msg) => {
   if (!match.guesser.first_name) {
     match.guesser = msg.from;
     player.answers++;
-    const score = Math.round(
-      (hints.MAX_HINTS - game.hints + game.guessers.length) * (guess.match.distance - 0.6) * (10 / 4)
-    );
+    const score = getAnswerScore(game.hints, guess.match.distance, game.guessers.length);
     const accuracy = `${(guess.match.distance * 100).toFixed(0)}%`;
     player.score += score;
     player.scoreDaily += score;
@@ -231,6 +229,10 @@ const checkGuess = async (game, player, guess, msg) => {
     throw e;
   }
 };
+
+const getAnswerScore = (hintCount, accuracy, playerCount = 1) =>
+  Math.round(((hints.MAX_HINTS - hintCount + playerCount) / (hints.MAX_HINTS + playerCount)) * 10 * accuracy);
+exports.getAnswerScore = getAnswerScore;
 
 const guessed = async (game, { scoreDaily, first_name }, { chat }, value, blurb, score, accuracy) => {
   let message = messages.guessed(game.settings.language, value.angleBrackets(), first_name);
