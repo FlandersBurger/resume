@@ -89,8 +89,12 @@ const skipList = (game, skipper) => {
         list: game.list.name,
       })}\n`;
       message += list;
-      message += "\nExperimental feature to permanently ban list from game:";
-      bot.sendKeyboard(game.chat_id, message, keyboards.ban(game.settings.language, game.list));
+      bot.queueMessage(game.chat_id, message);
+      bot.sendKeyboard(
+        game.chat_id,
+        `Experimental feature to permanently ban list from game\nDo you want to ban "${game.list.name}"`,
+        keyboards.ban(game.settings.language, game.list)
+      );
       delete cache[game._id];
       let foundList = await List.findOne({
         _id: game.list._id,
