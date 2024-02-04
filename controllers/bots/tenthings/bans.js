@@ -15,7 +15,7 @@ exports.initiate = async (game, data) => {
           game.chat_id,
           i18n(game.settings.language, "sentences.alreadyBannedList", { list: foundList.name })
         );
-        bot.editKeyboard(data.chat_id, data.message_id);
+        bot.deleteMessage(data.chat_id, data.message_id);
       } else {
         cache[`${game._id}-${data.list}`] = data.from_id;
         if (foundList) {
