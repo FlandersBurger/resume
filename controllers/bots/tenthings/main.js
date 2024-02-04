@@ -369,10 +369,10 @@ router.post("/", async ({ body, get }, res, next) => {
         });
       }
     } else if (data.type === "ban") {
-      const game = await Game.findOne({ chat_id: data.chat_id }).select("chat_id list settings").exec();
+      const game = await Game.findOne({ chat_id: data.chat_id }).select("chat_id settings").exec();
       bans.initiate(game, data);
     } else if (data.type === "c_ban") {
-      const game = await Game.findOne({ chat_id: data.chat_id }).select("chat_id bannedLists list settings").exec();
+      const game = await Game.findOne({ chat_id: data.chat_id }).select("chat_id bannedLists settings").exec();
       bans.process(game, data);
     } else if (data.type === "suggest") {
       const game = await Game.findOne({ chat_id: data.chat_id }).select("chat_id list settings").exec();

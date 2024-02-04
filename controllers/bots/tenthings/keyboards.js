@@ -493,7 +493,7 @@ module.exports = {
       inline_keyboard: [
         [
           {
-            text: i18n(language, "sentences.banListQuestion", { list: list.name }),
+            text: i18n(language, "sentences.banListQuestion"),
             callback_data: JSON.stringify({
               type: "ban",
               list: list._id,
@@ -508,7 +508,7 @@ module.exports = {
       inline_keyboard: [
         [
           {
-            text: i18n(language, "sentences.banListCommand", { list: list.name }),
+            text: i18n(language, "sentences.banListCommand"),
             callback_data: JSON.stringify({
               type: "c_ban",
               list: list._id,
