@@ -155,7 +155,7 @@ exports.evaluate = async (msg, game, isNew) => {
       if (await skips.checkSkipper(game, msg, player)) {
         bot.queueMessage(msg.chat.id, `The minigame answer was:\n<i>${game.minigame.answer}</i>`);
         setTimeout(() => {
-          minigame.create(game, msg);
+          minigame.create(game);
         }, 200);
       }
       break;
@@ -164,7 +164,7 @@ exports.evaluate = async (msg, game, isNew) => {
       if (await skips.checkSkipper(game, msg, player)) {
         bot.queueMessage(msg.chat.id, `The tinygame answer was:\n<i>${game.tinygame.answer}</i>`);
         setTimeout(() => {
-          tinygame.create(game, msg);
+          tinygame.create(game);
         }, 200);
       }
       break;
@@ -315,31 +315,17 @@ exports.evaluate = async (msg, game, isNew) => {
     case "/minijogo":
     case "/minigame":
       if (!game.minigame.answer) {
-        minigame.create(game, msg);
+        minigame.create(game);
       } else {
-        let message = `<b>${i18n(game.settings.language, "findTheConnection")}</b>\n`;
-        message += game.minigame.lists.reduce((msg, list) => {
-          msg += `- ${list}\n`;
-          return msg;
-        }, "");
-        message += "\n";
-        message += `<b>${hints.getHint(game.minigame.hints, game.minigame.answer)}</b>`;
-        bot.queueMessage(msg.chat.id, message);
+        minigame.message(game);
       }
       break;
     case "/jogominusculo":
     case "/tinygame":
       if (!game.tinygame.answer) {
-        tinygame.create(game, msg);
+        tinygame.create(game);
       } else {
-        let message = `<b>${i18n(game.settings.language, "findTheTitle")}</b>\n`;
-        message += game.tinygame.clues.reduce((msg, clue) => {
-          msg += `- ${clue}\n`;
-          return msg;
-        }, "");
-        message += "\n";
-        message += `<b>${hints.getHint(game.tinygame.hints, game.tinygame.answer)}</b>`;
-        bot.queueMessage(msg.chat.id, message);
+        tinygame.message(game);
       }
       break;
     case "/categorias":

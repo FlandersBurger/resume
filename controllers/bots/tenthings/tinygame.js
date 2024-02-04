@@ -7,11 +7,9 @@ const hints = require("./hints");
 const lists = require("./lists");
 const i18n = require("../../../i18n");
 
-const create = async (game, msg) => {
+const create = async (game) => {
   const availableLanguages =
-    game.settings.languages && game.settings.languages.length > 0
-      ? game.settings.languages
-      : ["EN"];
+    game.settings.languages && game.settings.languages.length > 0 ? game.settings.languages : ["EN"];
   let list = await lists.getRandomList({
     categories: { $nin: game.disabledCategories },
     language: { $in: availableLanguages },
@@ -35,7 +33,7 @@ const create = async (game, msg) => {
   game.tinygame.hints = 1;
   game.tinygame.date = moment();
   game.tinygame.clues = tinygame.clues;
-  bot.queueMessage(msg.chat.id, message(game));
+  message(game);
   try {
     await game.save();
   } catch (err) {
@@ -52,7 +50,7 @@ const message = (game) => {
     return msg;
   }, "");
   message += `\n<b>${hints.getHint(game.tinygame.hints, game.tinygame.answer)}</b>`;
-  return message;
+  bot.queueMessage(game.chat_id, message);
 };
 
 exports.create = create;
@@ -68,9 +66,9 @@ exports.check = async (game, player, guess, msg) => {
   await player.save();
   game.tinygame.plays++;
   await game.save();
-  let message = `${i18n(game.settings.language, "sentences.tinygameAnswered")} (${(
-    guess.match.distance * 100
-  ).toFixed(0)}%)\n`;
+  let message = `${i18n(game.settings.language, "sentences.tinygameAnswered")} (${(guess.match.distance * 100).toFixed(
+    0
+  )}%)\n`;
   message += messages.guessed(game.settings.language, game.tinygame.answer, msg.from.first_name);
   message += `\n<u>${player.scoreDaily - score} + ${i18n(game.settings.language, "point", {
     count: score,
