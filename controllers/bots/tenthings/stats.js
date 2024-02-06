@@ -106,7 +106,7 @@ const getDailyScores = async ({ _id, settings }, limit) => {
     .reduce((str, { first_name, scoreDaily }, index) => {
       str += `\t${index + 1}: ${first_name} - ${scoreDaily}\n`;
       return str;
-    }, i18n(settings.language, limit ? "sentences.dailyScoresWithLimit" : "dailyScores", { limit }) + `\n`);
+    }, i18n(settings.language, `sentences.${limit ? "dailyScoresWithLimit" : "dailyScores"}`, { limit }) + `\n`);
   return message;
 };
 

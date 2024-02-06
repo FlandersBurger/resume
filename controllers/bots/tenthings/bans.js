@@ -60,7 +60,7 @@ const banList = async (game, listId) => {
       list.bans++;
       await list.save();
       bot.queueMessage(game.chat_id, i18n(game.settings.language, "sentences.listBanned", { list: list.name }));
-      bot.notifyAdmin(`${game.chat_id} (${game.settings.language}) banned ${list.name}`);
+      console.log(`${game.chat_id} (${game.settings.language}) banned ${list.name}`);
     }
   } else {
     bot.queueMessage(game.chat_id, i18n(game.settings.language, "warnings.unfoundList"));
