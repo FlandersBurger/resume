@@ -528,6 +528,7 @@ const formatList = (list) => ({
   blurbs: list.values ? list.values.filter((item) => item.blurb).length : 0,
   skips: list.skips,
   score: list.score,
+  playRatio: list.plays ? (list.plays - list.skips) / list.plays : 0,
   answers: list.values.length,
   //blurbs: list.values.filter(item => item.blurb).length,
   values: list.values.map((item) => item.value),
