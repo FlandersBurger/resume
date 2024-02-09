@@ -1,11 +1,14 @@
 const moment = require("moment");
+const _ = require("underscore");
 
 const bot = require("../../../connections/telegram");
 
 const stats = require("./stats");
 const lists = require("./lists");
 const hints = require("./hints");
+const skips = require("./skips");
 const messages = require("./messages");
+const guesses = require("./guesses");
 const i18n = require("../../../i18n");
 
 const Game = require("../../../models/tenthings/game")();
@@ -29,7 +32,7 @@ exports.create = async (chat_id) => {
   ██████ ██   ██ ███████  ██████ ██   ██     ██   ██  ██████   ██████  ██   ████ ██████  
 */
 
-exports.checkRound = (game) => {
+const checkRound = (game) => {
   if (game.list.values.filter(({ guesser }) => !guesser.first_name).length === 0) {
     setTimeout(async () => {
       sendMessage(game);
@@ -149,6 +152,107 @@ exports.deactivate = (game) => {
   }
 };
 
+exports.check = async (game, player, guess, msg) => {
+  if (guess.list !== game.list._id) return;
+  game.lastPlayDate = moment();
+  player.lastPlayDate = moment();
+  if (skips.cache[game.id]) {
+    skips.abort(game, player);
+  }
+  if (!_.some(game.guessers, (guesser) => guesser == msg.from.id)) {
+    game.guessers.push(`${msg.from.id}`);
+  }
+  const match = game.list.values.find(({ value }) => value === guess.match.value);
+  if (!player) {
+    bot.notifyAdmin(`Something wrong with this guess:\n${JSON.stringify(guess)}`);
+    console.error(`Something wrong with this guess:\n${JSON.stringify(guess)}`);
+  }
+  if (!match.guesser.first_name) {
+    match.guesser = msg.from;
+    player.answers++;
+    const score = guesses.getAnswerScore(game.hints, guess.match.distance, game.guessers.length);
+    const accuracy = `${(guess.match.distance * 100).toFixed(0)}%`;
+    player.score += score;
+    player.scoreDaily += score;
+    if (game.hints === 0) {
+      player.hintStreak++;
+    }
+    if (!game.streak || game.streak.player != player.id) {
+      game.streak = {
+        player: player.id,
+        count: 1,
+      };
+    } else {
+      game.streak.count++;
+    }
+    if (player.streak < game.streak.count) {
+      player.streak = game.streak.count;
+    }
+    if (player.scoreDaily > player.highScore) {
+      player.highScore = player.scoreDaily;
+    }
+    if (player.maxHintStreak < player.hintStreak) {
+      player.maxHintStreak = player.hintStreak;
+    }
+    if (match.blurb) {
+      guessed(
+        game,
+        player,
+        msg,
+        match.value,
+        match.blurb.substring(0, 4) === "http"
+          ? `<a href="${match.blurb}">&#8204;</a>`
+          : `\n<i>${match.blurb.angleBrackets()}</i>`,
+        score,
+        accuracy
+      );
+    } else {
+      guessed(game, player, msg, match.value, "", score, accuracy);
+      /*
+      request(`https://en.wikipedia.org/w/api.php?action=query&format=json&prop=extracts&titles=Earth&generator=prefixsearch&exintro=1&explaintext=1&gpssearch=${encodeURIComponent(match.value)}`, (err, response, body) => {
+        if (err) {
+          guessed(game, player, msg, match.value, '', score, accuracy);
+        } else {
+          try {
+            const pages = JSON.parse(body).query.pages;
+            let result = pages[Object.keys(pages)[0]].extract;
+            if (result.length > 200) {
+              result = result.substring(0, 200) + '...';
+            }
+            if (result && !result.includes('refer to:') && !result.includes('refers to:')) {
+              guessed(game, player, msg, match.value, `\nRandom Wiki:\n<i>${result}</i>`, score, accuracy);
+            } else {
+              guessed(game, player, msg, match.value, '', score, accuracy);
+            }
+          } catch (e) {
+            console.error(e);
+            guessed(game, player, msg, match.value, '', score, accuracy);
+          }
+        }
+      });
+      */
+    }
+    setTimeout(() => {
+      checkRound(game);
+    }, 200);
+  } else {
+    player.snubs++;
+    if (game.settings.snubs) {
+      bot.queueMessage(msg.chat.id, messages.snubbed(match.value, player, match.guesser));
+    }
+  }
+  try {
+    await player.save();
+    await game.save();
+    return true;
+  } catch (e) {
+    console.log(player);
+    console.error(e);
+    console.trace();
+    throw e;
+  }
+};
+
 const sendMessage = async (game, long = true) => {
   let message;
   if (long) {
@@ -198,3 +302,29 @@ const sendMessage = async (game, long = true) => {
   bot.queueMessage(game.chat_id, message);
 };
 exports.sendMessage = sendMessage;
+
+const guessed = async (game, { scoreDaily, first_name }, { chat }, value, blurb, score, accuracy) => {
+  let message = messages.guessed(game.settings.language, value.angleBrackets(), first_name);
+  message += messages.streak(game.streak.count);
+  message += blurb;
+  message += `\n<u>${scoreDaily - score} + ${i18n(game.settings.language, "point", {
+    count: score,
+  })} (${accuracy})</u>`;
+  const answersLeft = game.list.values.filter(({ guesser }) => !guesser.first_name);
+  if (answersLeft.length > 0) {
+    message += `\n<b>${game.list.name}</b>`;
+    //message += `\n${answersLeft} answer${answersLeft > 1 ? 's' : ''} left.`;
+    message += game.list.values.reduce((str, { guesser, value }, index) => {
+      if (!guesser.first_name) {
+        str += "\n\t";
+        str += index + 1;
+        str += ": ";
+        str += hints.getHint(game.hints, value);
+      }
+      return str;
+    }, "");
+  } else {
+    message += `\n${i18n(game.settings.language, "sentences.roundOver")}`;
+  }
+  return await bot.queueMessage(chat.id, message);
+};

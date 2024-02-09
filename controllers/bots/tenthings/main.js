@@ -91,14 +91,6 @@ router.post("/", async ({ body, get }, res, next) => {
     return res.sendStatus(200);
   }
   let msg;
-
-  /*
-  ██████  █████  ██      ██      ██████   █████   ██████ ██   ██ ███████ 
- ██      ██   ██ ██      ██      ██   ██ ██   ██ ██      ██  ██  ██      
- ██      ███████ ██      ██      ██████  ███████ ██      █████   ███████ 
- ██      ██   ██ ██      ██      ██   ██ ██   ██ ██      ██  ██       ██ 
-  ██████ ██   ██ ███████ ███████ ██████  ██   ██  ██████ ██   ██ ███████ 
-*/
   if (body.callback_query) {
     const data = JSON.parse(body.callback_query.data);
     data.requestor = (
@@ -113,7 +105,9 @@ router.post("/", async ({ body, get }, res, next) => {
     data.message_id = body.callback_query.message.message_id;
     data.callback_query_id = body.callback_query.id;
     data.message = body.callback_query.message.text;
+
     await callbacks(data);
+
     return res.sendStatus(200);
   } else if (!body.message.text) {
     if (body.message.new_chat_participant) {
@@ -237,7 +231,6 @@ router.post("/", async ({ body, get }, res, next) => {
 });
 
 router.get("/", ({ query }, res, next) => {
-  const token = query["hub.verify_token"];
   if (query["hub.verify_token"] === config.tokens.facebook.tenthings) {
     res.status(200).send(query["hub.challenge"]);
   } else {

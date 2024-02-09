@@ -1,4 +1,3 @@
-const moment = require("moment");
 const _ = require("underscore");
 const FuzzyMatching = require("fuzzy-matching");
 const Queue = require("bull");
@@ -6,15 +5,11 @@ const Queue = require("bull");
 const Game = require("../../../models/tenthings/game")();
 
 const config = require("../../../config");
-const bot = require("../../../connections/telegram");
-const i18n = require("../../../i18n");
 const sass = require("./sass");
-const messages = require("./messages");
 const maingame = require("./maingame");
 const minigame = require("./minigame");
 const tinygame = require("./tinygame");
 const players = require("./players");
-const skips = require("./skips");
 const hints = require("./hints");
 
 const guessQueue = new Queue("processGuess", {
@@ -33,7 +28,7 @@ guessQueue.on("completed", function (job) {
 exports.getCount = () => guessQueue.count();
 
 exports.queue = async (game, msg) => {
-  const values = game.list.values.filter(({ guesser }) => guesser).map(({ value }) => ({ type: "game", value }));
+  const values = game.list.values.filter(({ guesser }) => guesser).map(({ value }) => ({ type: "maingame", value }));
   if (game.minigame.answer) values.push({ type: "minigame", value: game.minigame.answer });
   if (game.tinygame.answer) values.push({ type: "tinygame", value: game.tinygame.answer });
   const text = msg.text.removeAllButLetters();
@@ -92,7 +87,10 @@ exports.queue = async (game, msg) => {
 
 const queueingGuess = (guess) => guessQueue.add(guess);
 
-guessQueue.process(({ data }) => processGuess(data));
+guessQueue.process(async ({ data }, done) => {
+  await processGuess(data);
+  done();
+});
 
 const processGuess = async (guess) => {
   const game = await Game.findOne({
@@ -111,10 +109,10 @@ const processGuess = async (guess) => {
     console.error(`Error with player in ProcessGuess`);
     console.error(guess);
   }
-  if (guess.match.type === "game") {
-    await checkGuess(game, player, guess, guess.msg);
+  if (guess.match.type === "maingame") {
+    await maingame.check(game, player, guess, guess.msg);
     console.log(
-      `${guess.game} (${game.settings.language}) - Guess for ${game.list.name}: "${guess.msg.text}" by ${player.first_name}`
+      `${guess.game} (${game.settings.language}) - ${game.list.name} for ${guess.match.value}: "${guess.msg.text}" by ${player.first_name}`
     );
   } else if (guess.match.type === "minigame") {
     await minigame.check(game, player, guess, guess.msg);
@@ -129,133 +127,6 @@ const processGuess = async (guess) => {
   }
 };
 
-const checkGuess = async (game, player, guess, msg) => {
-  if (guess.list !== game.list._id) return;
-  game.lastPlayDate = moment();
-  player.lastPlayDate = moment();
-  if (skips.cache[game.id]) {
-    skips.abort(game, player);
-  }
-  if (!_.some(game.guessers, (guesser) => guesser == msg.from.id)) {
-    game.guessers.push(`${msg.from.id}`);
-  }
-  const match = game.list.values.find(({ value }) => value === guess.match.value);
-  if (!player) {
-    bot.notifyAdmin(`Something wrong with this guess:\n${JSON.stringify(guess)}`);
-    console.error(`Something wrong with this guess:\n${JSON.stringify(guess)}`);
-  }
-  if (!match.guesser.first_name) {
-    match.guesser = msg.from;
-    player.answers++;
-    const score = getAnswerScore(game.hints, guess.match.distance, game.guessers.length);
-    const accuracy = `${(guess.match.distance * 100).toFixed(0)}%`;
-    player.score += score;
-    player.scoreDaily += score;
-    if (game.hints === 0) {
-      player.hintStreak++;
-    }
-    if (!game.streak || game.streak.player != player.id) {
-      game.streak = {
-        player: player.id,
-        count: 1,
-      };
-    } else {
-      game.streak.count++;
-    }
-    if (player.streak < game.streak.count) {
-      player.streak = game.streak.count;
-    }
-    if (player.scoreDaily > player.highScore) {
-      player.highScore = player.scoreDaily;
-    }
-    if (player.maxHintStreak < player.hintStreak) {
-      player.maxHintStreak = player.hintStreak;
-    }
-    if (match.blurb) {
-      guessed(
-        game,
-        player,
-        msg,
-        match.value,
-        match.blurb.substring(0, 4) === "http"
-          ? `<a href="${match.blurb}">&#8204;</a>`
-          : `\n<i>${match.blurb.angleBrackets()}</i>`,
-        score,
-        accuracy
-      );
-    } else {
-      guessed(game, player, msg, match.value, "", score, accuracy);
-      /*
-      request(`https://en.wikipedia.org/w/api.php?action=query&format=json&prop=extracts&titles=Earth&generator=prefixsearch&exintro=1&explaintext=1&gpssearch=${encodeURIComponent(match.value)}`, (err, response, body) => {
-        if (err) {
-          guessed(game, player, msg, match.value, '', score, accuracy);
-        } else {
-          try {
-            const pages = JSON.parse(body).query.pages;
-            let result = pages[Object.keys(pages)[0]].extract;
-            if (result.length > 200) {
-              result = result.substring(0, 200) + '...';
-            }
-            if (result && !result.includes('refer to:') && !result.includes('refers to:')) {
-              guessed(game, player, msg, match.value, `\nRandom Wiki:\n<i>${result}</i>`, score, accuracy);
-            } else {
-              guessed(game, player, msg, match.value, '', score, accuracy);
-            }
-          } catch (e) {
-            console.error(e);
-            guessed(game, player, msg, match.value, '', score, accuracy);
-          }
-        }
-      });
-      */
-    }
-    setTimeout(() => {
-      maingame.checkRound(game);
-    }, 200);
-  } else {
-    player.snubs++;
-    if (game.settings.snubs) {
-      bot.queueMessage(msg.chat.id, messages.snubbed(match.value, player, match.guesser));
-    }
-  }
-  try {
-    await player.save();
-    await game.save();
-    return true;
-  } catch (e) {
-    console.log(player);
-    console.error(e);
-    console.trace();
-    throw e;
-  }
-};
-
 const getAnswerScore = (hintCount, accuracy, playerCount = 1) =>
   Math.round(((hints.MAX_HINTS - hintCount + playerCount) / (hints.MAX_HINTS + playerCount)) * 10 * accuracy);
 exports.getAnswerScore = getAnswerScore;
-
-const guessed = async (game, { scoreDaily, first_name }, { chat }, value, blurb, score, accuracy) => {
-  let message = messages.guessed(game.settings.language, value.angleBrackets(), first_name);
-  message += messages.streak(game.streak.count);
-  message += blurb;
-  message += `\n<u>${scoreDaily - score} + ${i18n(game.settings.language, "point", {
-    count: score,
-  })} (${accuracy})</u>`;
-  const answersLeft = game.list.values.filter(({ guesser }) => !guesser.first_name);
-  if (answersLeft.length > 0) {
-    message += `\n<b>${game.list.name}</b>`;
-    //message += `\n${answersLeft} answer${answersLeft > 1 ? 's' : ''} left.`;
-    message += game.list.values.reduce((str, { guesser, value }, index) => {
-      if (!guesser.first_name) {
-        str += "\n\t";
-        str += index + 1;
-        str += ": ";
-        str += hints.getHint(game.hints, value);
-      }
-      return str;
-    }, "");
-  } else {
-    message += `\n${i18n(game.settings.language, "sentences.roundOver")}`;
-  }
-  return await bot.queueMessage(chat.id, message);
-};
