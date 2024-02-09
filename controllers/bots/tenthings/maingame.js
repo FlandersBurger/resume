@@ -12,6 +12,15 @@ const Game = require("../../../models/tenthings/game")();
 const List = require("../../../models/tenthings/list")();
 const Player = require("../../../models/tenthings/player")();
 
+exports.create = async (chat_id) => {
+  const game = new Game({
+    chat_id,
+    settings: { languages: ["EN"] },
+  });
+  const savedGame = await game.save();
+  return savedGame;
+};
+
 /*
   ██████ ██   ██ ███████  ██████ ██   ██     ██████   ██████  ██    ██ ███    ██ ██████  
  ██      ██   ██ ██      ██      ██  ██      ██   ██ ██    ██ ██    ██ ████   ██ ██   ██ 
@@ -22,30 +31,18 @@ const Player = require("../../../models/tenthings/player")();
 
 exports.checkRound = (game) => {
   if (game.list.values.filter(({ guesser }) => !guesser.first_name).length === 0) {
-    setTimeout(() => {
-      stats.getList(game, async (list) => {
-        const foundList = await List.findOne({ _id: game.list._id }).exec();
-        let message = `<b>${game.list.name}</b>`;
-        message += game.list.creator
-          ? ` ${i18n(game.settings.language, "sentences.createdBy", {
-              creator: game.list.creator.username,
-            })}\n`
-          : "\n";
-        message += `${i18n(game.settings.language, "category", { count: game.list.categories.length })}: `;
-        message += `<b>${game.list.categories
-          .map((category) => i18n(game.settings.language, `categories.${category}`))
-          .join(", ")}</b>\n`;
-        message += list;
-        message += messages.listStats(game.settings.language, foundList);
-        message += await stats.getDailyScores(game, 5);
-        bot.queueMessage(game.chat_id, message);
+    setTimeout(async () => {
+      sendMessage(game);
+      const foundList = await List.findOne({ _id: game.list._id }).exec();
+      let message = messages.listStats(game.settings.language, foundList);
+      message += await stats.getDailyScores(game, 5);
+      bot.queueMessage(game.chat_id, message);
+      setTimeout(() => {
+        lists.rate(game);
         setTimeout(() => {
-          lists.rate(game);
-          setTimeout(() => {
-            newRound(game);
-          }, 1000);
+          newRound(game);
         }, 1000);
-      });
+      }, 1000);
     }, 1000);
   }
 };
@@ -151,3 +148,53 @@ exports.deactivate = (game) => {
     );
   }
 };
+
+const sendMessage = async (game, long = true) => {
+  let message;
+  if (long) {
+    message = `<b>${game.list.name}</b> (${game.list.totalValues})\n`;
+    message += game.list.creator
+      ? ` ${i18n(game.settings.language, "sentences.createdBy", {
+          creator: game.list.creator.username,
+        })}`
+      : "";
+    message += "\n";
+    message += `${i18n(game.settings.language, "category", {
+      count: game.list.categories.length,
+    })}: `;
+    message += `<b>${game.list.categories
+      .map((category) => i18n(game.settings.language, `categories.${category}`))
+      .join(", ")}</b>\n`;
+    message += game.list.description
+      ? game.list.description.includes("href")
+        ? game.list.description
+        : `<i>${game.list.description.angleBrackets()}</i>\n`
+      : "";
+  } else {
+    message = `<b>${game.list.name}</b>\n`;
+  }
+  message += game.list.values.reduce((str, { guesser, value }, index) => {
+    if (long) {
+      if (!guesser || !guesser.first_name) {
+        str += `\t<b>${index + 1}:</b> `;
+        str += `<b>${hints.getHint(game.hints, value)}</b>`;
+        str += "\n";
+      } else {
+        str += `\t${index + 1}: `;
+        str += `${value.angleBrackets()} - <i>${guesser.first_name.removeHTML().maskURLs()}</i>`;
+        str += "\n";
+      }
+    } else {
+      if (!guesser.first_name) {
+        str += "\t";
+        str += index + 1;
+        str += ": ";
+        str += hints.getHint(game.hints, value);
+        str += "\n";
+      }
+    }
+    return str;
+  }, "");
+  bot.queueMessage(game.chat_id, message);
+};
+exports.sendMessage = sendMessage;

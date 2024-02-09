@@ -267,7 +267,7 @@ function TelegramBot() {
       });
     });
 
-  bot.editKeyboard = (channel, message_id, keyboard = null) =>
+  bot.editKeyboard = (channel, message_id, keyboard) =>
     new Promise((resolve, reject) => {
       let url = `https://api.telegram.org/bot${bot.token}/editMessageReplyMarkup?chat_id=${channel}&message_id=${message_id}`;
       if (keyboard) url += `&reply_markup=${JSON.stringify(keyboard)}`;

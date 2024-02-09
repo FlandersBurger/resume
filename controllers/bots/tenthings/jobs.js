@@ -5,6 +5,7 @@ const moment = require("moment");
 const config = require("../../../config");
 const bot = require("../../../connections/telegram");
 const stats = require("./stats");
+const maingame = require("./maingame");
 const minigame = require("./minigame");
 const backup = require("../../../backup-db");
 const i18n = require("../../../i18n");
@@ -21,7 +22,7 @@ const resetDailyScore = (force = false) => {
         $gte: moment().subtract(1, "days"),
       },
     })
-      .select("chat_id list hints")
+      .select("chat_id list date hints")
       .populate("list.creator")
       .then(
         async (games) => {
@@ -121,24 +122,7 @@ const resetDailyScore = (force = false) => {
             if (game.hints < 4) {
               game.hints = 4;
             }
-            message = `<b>${game.list.name}</b> (${game.list.totalValues}) `;
-            if (game.list.creator)
-              message += i18n(game.settings.language, "sentences.createdBy", {
-                creator: game.list.creator.username,
-              });
-            message += "\n";
-            if (game.list.categories) {
-              message +=
-                game.list.categories.length > 0
-                  ? `Categor${game.list.categories.length > 1 ? "ies" : "y"}: <b>${game.list.categories}</b>\n`
-                  : "";
-            }
-            message += game.list.description
-              ? game.list.description.includes("href")
-                ? game.list.description
-                : `<i>${angleBrackets(game.list.description)}</i>\n`
-              : "";
-            stats.getList(game, (list) => bot.queueMessage(game.chat_id, message + list));
+            maingame.sendMessage(game);
             game.save();
           }
           updateDailyStats(games, dailyPlayers.length, _.uniq(dailyPlayers, (player) => player.id).length);
@@ -266,7 +250,9 @@ const updateDailyStats = async (games, totalPlayers, uniquePlayers) => {
       },
     },
   ]).exec();
+  const newGamesCount = games.filter((game) => game.date >= moment().subtract(1, "days")).length;
   let message = `${games.length} games played today with ${totalPlayers} players of which ${uniquePlayers} unique\n`;
+  message += `${newGamesCount} new games started`;
   message += `${(listStats[0].plays - base.listsPlayed).makeReadable()} lists played\n`;
   message += `${(listStats[0].votes - base.votes).makeReadable()} list votes given\n`;
   message += `${(playerStats[0].skips - base.skips).makeReadable()} lists skipped\n`;

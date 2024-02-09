@@ -34,7 +34,7 @@ const create = async (game) => {
   game.tinygame.hints = 1;
   game.tinygame.date = moment();
   game.tinygame.clues = tinygame.clues;
-  message(game);
+  sendMessage(game);
   try {
     await game.save();
   } catch (err) {
@@ -44,7 +44,7 @@ const create = async (game) => {
   return true;
 };
 
-const message = (game) => {
+const sendMessage = (game) => {
   let message = `<b>${i18n(game.settings.language, "sentences.findTheTitle")}</b>\n`;
   message += game.tinygame.clues.reduce((msg, clue) => {
     msg += `- ${clue}\n`;
@@ -55,7 +55,7 @@ const message = (game) => {
 };
 
 exports.create = create;
-exports.message = message;
+exports.sendMessage = sendMessage;
 
 exports.check = async (game, player, guess, msg) => {
   if (guess.match.value !== game.tinygame.answer) return;

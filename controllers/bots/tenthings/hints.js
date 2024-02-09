@@ -1,9 +1,9 @@
 const bot = require("../../../connections/telegram");
 
-const List = require("../../../models/tenthings/list")();
-
+const maingame = require("./maingame");
 const minigame = require("./minigame");
 const tinygame = require("./tinygame");
+const lists = require("./lists");
 
 const MAX_HINTS = 6;
 const SPECIAL_CHARACTERS = "\\\\/ !?@#$%^&*()_+:.{},;\\-'``’‘\"<>";
@@ -26,8 +26,8 @@ const cooldown = (gameId) => {
 
 exports.cooldown = cooldown;
 
-exports.process = async (game, player, type = "main") => {
-  if ((type === "main" && game.hints >= MAX_HINTS) || (type !== "main" && game[type].hints >= MAX_HINTS)) {
+exports.process = async (game, player, type = "maingame") => {
+  if ((type === "maingame" && game.hints >= MAX_HINTS) || (type !== "maingame" && game[type].hints >= MAX_HINTS)) {
     bot.queueMessage(game.chat_id, "What? Another hint? I'm just gonna ignore that request");
   } else if (cache[game.id] && cache[game.id] > 0) {
     bot.queueMessage(game.chat_id, `Calm down with the hints, wait ${cache[game.id]} more seconds`);
@@ -40,43 +40,16 @@ exports.process = async (game, player, type = "main") => {
     switch (type) {
       case "minigame":
         game.minigame.hints++;
-        minigame.message(game);
+        minigame.sendMessage(game);
         break;
       case "tinygame":
         game.tinygame.hints++;
-        tinygame.message(game);
+        tinygame.sendMessage(game);
         break;
       default:
         game.hints++;
-        let message;
-        message = `<b>${game.list.name}</b>\n`;
-        message += game.list.values.reduce((str, { guesser, value }, index) => {
-          if (!guesser.first_name) {
-            str += index + 1;
-            str += ": ";
-            str += getHint(game.hints, value);
-            str += "\n";
-          }
-          return str;
-        }, "");
-        let list = await List.findOne({
-          _id: game.list._id,
-        })
-          .select("_id name hints")
-          .exec();
-        if (list) {
-          if (!list.hints) {
-            list.hints = 0;
-          }
-          list.hints++;
-          try {
-            await list.validate();
-            await list.save();
-          } catch (err) {
-            return bot.notifyAdmin(`Hint List Error:\n${list.name}`);
-          }
-        }
-        bot.queueMessage(game.chat_id, message);
+        maingame.sendMessage(game, false);
+        lists.logHint(game.list._id);
         break;
     }
     cache[game.id] = 10;
@@ -197,9 +170,8 @@ function countLetters(string) {
     .filter(({ count }) => count)
     .sort((letter1, letter2) => letter1.count - letter2.count);
 }
-
 /*
-var string = 'Coinage metals';
+var string = "AC/DC";
 //string = 'TERA';
 console.log(getHint(0, string));
 console.log(getHint(1, string));

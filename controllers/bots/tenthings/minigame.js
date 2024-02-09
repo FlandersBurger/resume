@@ -44,7 +44,7 @@ const create = async (game) => {
   game.minigame.hints = 0;
   game.minigame.date = moment();
   game.minigame.lists = minigame.lists.getRandom(10);
-  message(game);
+  sendMessage(game);
   try {
     await game.save();
   } catch (err) {
@@ -108,7 +108,7 @@ exports.createMinigames = async () => {
 // Count the possible minigames
 // getMinigames({}).then((minigames) => console.log(minigames.length));
 
-const message = (game) => {
+const sendMessage = (game) => {
   let message = `<b>${i18n(game.settings.language, "sentences.findTheConnection")}</b>\n`;
   message += game.minigame.lists.reduce((msg, list) => {
     msg += `- ${list}\n`;
@@ -119,7 +119,7 @@ const message = (game) => {
 };
 
 exports.create = create;
-exports.message = message;
+exports.sendMessage = sendMessage;
 
 exports.check = async (game, player, guess, msg) => {
   if (guess.match.value !== game.minigame.answer) return;

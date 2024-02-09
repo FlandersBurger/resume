@@ -3,9 +3,7 @@
     <h1 class="text-danger" ng-show="!loggedIn">You have to be logged in to edit lists</h1>
     <div class="well well-sm">
       This page works in conjunction with the
-      <a href="https://t.me/joinchat/I1Di-1MXGXkjhgNPXi6Vfg" target="_blank"
-        >Ten Things Telegram Bot</a
-      >
+      <a href="https://t.me/joinchat/I1Di-1MXGXkjhgNPXi6Vfg" target="_blank">Ten Things Telegram Bot</a>
     </div>
     <div ng-show="loggedIn">
       <div class="col-md-4">
@@ -38,9 +36,7 @@
                   <a href="#" ng-click="setUpdateFilter('all')">All ({{getUpdateCount('all')}})</a>
                 </li>
                 <li>
-                  <a href="#" ng-click="setUpdateFilter('static')"
-                    >Never Changes ({{getUpdateCount('static')}})</a
-                  >
+                  <a href="#" ng-click="setUpdateFilter('static')">Never Changes ({{getUpdateCount('static')}})</a>
                 </li>
                 <li>
                   <a href="#" ng-click="setUpdateFilter('dynamic')"
@@ -53,14 +49,12 @@
           <div class="btn-group">
             <div class="dropdown">
               <button class="btn btn-default dropdown-toggle" type="button" data-toggle="dropdown">
-                <i class="fas fa-globe"></i> {{languageFilter ? languageFilter.code.capitalize() :
-                'All'}}
+                <i class="fas fa-globe"></i> {{languageFilter ? languageFilter.code.capitalize() : 'All'}}
               </button>
               <ul class="dropdown-menu">
                 <li ng-repeat="language in languageFilters | orderBy: 'code'">
                   <a href="#" ng-click="setLanguageFilter(language)"
-                    >{{language.code.capitalize()}} - {{language.native}}
-                    ({{getLanguageCount(language)}})</a
+                    >{{language.code.capitalize()}} - {{language.native}} ({{getLanguageCount(language)}})</a
                   >
                 </li>
               </ul>
@@ -73,9 +67,7 @@
               </button>
               <ul class="dropdown-menu">
                 <li ng-repeat="category in categoryFilters | orderBy">
-                  <a href="#" ng-click="setCategoryFilter(category)"
-                    >{{category}} ({{getCategoryCount(category)}})</a
-                  >
+                  <a href="#" ng-click="setCategoryFilter(category)">{{category}} ({{getCategoryCount(category)}})</a>
                 </li>
               </ul>
             </div>
@@ -89,50 +81,42 @@
               <ul class="dropdown-menu">
                 <li>
                   <a href="#" ng-click="sort('listOrder', 'name', 'Name')"
-                    >Name {{listOrder.field === 'name' ? (listOrder.direction ? 'Z-A' : 'A-Z') :
-                    'A-Z'}}</a
+                    >Name {{listOrder.field === 'name' ? (listOrder.direction ? 'Z-A' : 'A-Z') : 'A-Z'}}</a
                   >
                 </li>
                 <li>
                   <a href="#" ng-click="sort('listOrder', 'date', 'Creation Date')"
-                    >Creation Date {{listOrder.field === 'date' ? (listOrder.direction ? 'Z-A' :
-                    'A-Z') : 'A-Z'}}</a
+                    >Creation Date {{listOrder.field === 'date' ? (listOrder.direction ? 'Z-A' : 'A-Z') : 'A-Z'}}</a
                   >
                 </li>
                 <li>
                   <a href="#" ng-click="sort('listOrder', 'modifyDate', 'Modify Date')"
-                    >Modify Date {{listOrder.field === 'modifyDate' ? (listOrder.direction ? 'Z-A' :
-                    'A-Z') : 'A-Z'}}</a
+                    >Modify Date {{listOrder.field === 'modifyDate' ? (listOrder.direction ? 'Z-A' : 'A-Z') : 'A-Z'}}</a
                   >
                 </li>
                 <li>
                   <a href="#" ng-click="sort('listOrder', 'skips', '# of Skips')"
-                    >Skips {{listOrder.field === 'skips' ? (listOrder.direction ? 'Z-A' : 'A-Z') :
-                    'A-Z'}}</a
+                    >Skips {{listOrder.field === 'skips' ? (listOrder.direction ? 'Z-A' : 'A-Z') : 'A-Z'}}</a
                   >
                 </li>
                 <li>
                   <a href="#" ng-click="sort('listOrder', 'plays', '# of Plays')"
-                    >Plays {{listOrder.field === 'plays' ? (listOrder.direction ? 'Z-A' : 'A-Z') :
-                    'A-Z'}}</a
+                    >Plays {{listOrder.field === 'plays' ? (listOrder.direction ? 'Z-A' : 'A-Z') : 'A-Z'}}</a
                   >
                 </li>
                 <li>
                   <a href="#" ng-click="sort('listOrder', 'hints', '# of Hints')"
-                    >Hints {{listOrder.field === 'hints' ? (listOrder.direction ? 'Z-A' : 'A-Z') :
-                    'A-Z'}}</a
+                    >Hints {{listOrder.field === 'hints' ? (listOrder.direction ? 'Z-A' : 'A-Z') : 'A-Z'}}</a
                   >
                 </li>
                 <li>
                   <a href="#" ng-click="sort('listOrder', 'score', 'Score')"
-                    >Score {{listOrder.field === 'score' ? (listOrder.direction ? 'Z-A' : 'A-Z') :
-                    'A-Z'}}</a
+                    >Score {{listOrder.field === 'score' ? (listOrder.direction ? 'Z-A' : 'A-Z') : 'A-Z'}}</a
                   >
                 </li>
                 <li>
                   <a href="#" ng-click="sort('listOrder', 'answers', '# of Answer')"
-                    >Answers {{listOrder.field === 'answers' ? (listOrder.direction ? 'Z-A' : 'A-Z')
-                    : 'A-Z'}}</a
+                    >Answers {{listOrder.field === 'answers' ? (listOrder.direction ? 'Z-A' : 'A-Z') : 'A-Z'}}</a
                   >
                 </li>
               </ul>
@@ -157,18 +141,10 @@
       </div>
       <div class="col-md-8">
         <div class="col-md-12" ng-if="loggedIn">
-          <div
-            class="btn btn-default"
-            ng-click="addList()"
-            ng-disabled="selectedList && !selectedList._id"
-          >
+          <div class="btn btn-default" ng-click="addList()" ng-disabled="selectedList && !selectedList._id">
             <i class="fas fa-list-ul" aria-hidden="true"></i> New
           </div>
-          <div
-            class="btn btn-default"
-            ng-click="saveList(selectedList)"
-            ng-disabled="!selectedList"
-          >
+          <div class="btn btn-default" ng-click="saveList(selectedList)" ng-disabled="!selectedList">
             <i
               class="fas fa-save"
               ng-class="{ 'fa-save': !saving, 'fa-spin fa-spinner': saving }"
@@ -187,43 +163,35 @@
             <div
               class="btn btn-default"
               ng-click="reportList(selectedList)"
-              ng-disabled="selectedList.reported"
+              ng-disabled="selectedList.reported || !selectedList._id"
               ng-hide="!selectedList || selectedList.creator._id === currentUser._id"
             >
               <i class="fas fa-bug" aria-hidden="true"></i> Report
             </div>
             <div class="btn-group">
               <div class="dropdown">
-                <button
-                  class="btn btn-default dropdown-toggle"
-                  type="button"
-                  data-toggle="dropdown"
-                >
+                <button class="btn btn-default dropdown-toggle" type="button" data-toggle="dropdown">
                   {{valueOrder.label}} {{(valueOrder.direction ? 'Z-A' : 'A-Z')}}
                 </button>
                 <ul class="dropdown-menu">
                   <li>
                     <a href="#" ng-click="sort('valueOrder', 'value', 'Value')"
-                      >Value {{valueOrder.field === 'value' ? (valueOrder.direction ? 'A-Z': 'Z-A')
-                      : 'A-Z'}}</a
+                      >Value {{valueOrder.field === 'value' ? (valueOrder.direction ? 'A-Z': 'Z-A') : 'A-Z'}}</a
                     >
                   </li>
                   <li>
                     <a href="#" ng-click="sort('valueOrder', 'blurb', 'Blurb')"
-                      >Blurb {{valueOrder.field === 'blurb' ? (valueOrder.direction ? 'A-Z': 'Z-A')
-                      : 'A-Z'}}</a
+                      >Blurb {{valueOrder.field === 'blurb' ? (valueOrder.direction ? 'A-Z': 'Z-A') : 'A-Z'}}</a
                     >
                   </li>
                   <li>
                     <a href="#" ng-click="sort('valueOrder', 'date', 'Creation Date')"
-                      >Creation Date {{valueOrder.field === 'date' ? (valueOrder.direction ? 'A-Z':
-                      'Z-A') : 'A-Z'}}</a
+                      >Creation Date {{valueOrder.field === 'date' ? (valueOrder.direction ? 'A-Z': 'Z-A') : 'A-Z'}}</a
                     >
                   </li>
                   <li>
                     <a href="#" ng-click="sort('valueOrder', 'creator', 'Creator')"
-                      >Creator {{valueOrder.field === 'creator' ? (valueOrder.direction ? 'A-Z':
-                      'Z-A') : 'A-Z'}}</a
+                      >Creator {{valueOrder.field === 'creator' ? (valueOrder.direction ? 'A-Z': 'Z-A') : 'A-Z'}}</a
                     >
                   </li>
                 </ul>
@@ -232,8 +200,8 @@
           </div>
           <br />
           <kbd
-            >Please search existing lists first and add answers to them. Subjective, niche and
-            duplicate lists will be deleted.
+            >Please search existing lists first and add answers to them. Subjective, niche and duplicate lists will be
+            deleted.
             <span ng-if="selectedList.categories.indexOf('Music') >= 0"
               >Music lists will be scrutinized by admins for global recognition.</span
             ></kbd
@@ -294,9 +262,7 @@
               </button>
               <ul class="dropdown-menu">
                 <li ng-repeat="language in languages | orderBy: 'code'">
-                  <a href="#" ng-click="selectLanguage(language)"
-                    >{{language.code}} - {{language.native}}</a
-                  >
+                  <a href="#" ng-click="selectLanguage(language)">{{language.code}} - {{language.native}}</a>
                 </li>
               </ul>
             </div>
@@ -371,14 +337,12 @@
         </div>
         <div class="col-md-12">
           <h5 ng-show="selectedList.creator">
-            <b>{{selectedList.name}}</b> by {{selectedList.creator.username}} on
-            {{formatDate(selectedList.date)}} ---
+            <b>{{selectedList.name}}</b> by {{selectedList.creator.username}} on {{formatDate(selectedList.date)}} ---
             <span ng-show="selectedList.plays"
               >Plays: {{selectedList.plays}} / Skips: {{selectedList.skips}} / Play Ratio:
-              {{selectedList.playRatio.makePercentage()}} / Score:
-              {{selectedList.score.makePercentage()}} / Upvotes: {{selectedList.upvotes}} /
-              Downvotes: {{selectedList.downvotes}} / Hints: {{selectedList.hints}} / Difficulty:
-              {{selectedList.calculatedDifficulty.makePercentage()}}</span
+              {{selectedList.playRatio.makePercentage()}} / Score: {{selectedList.score.makePercentage()}} / Upvotes:
+              {{selectedList.upvotes}} / Downvotes: {{selectedList.downvotes}} / Hints: {{selectedList.hints}} /
+              Difficulty: {{selectedList.calculatedDifficulty.makePercentage()}}</span
             >
           </h5>
           <div class="input-group" ng-if="loggedIn">

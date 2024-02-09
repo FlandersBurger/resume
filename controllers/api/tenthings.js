@@ -97,11 +97,13 @@ router.get("/lists/:id/report/:user", (req, res, next) => {
   TenThingsList.findOne({
     _id: req.params.id,
   }).exec((err, list) => {
-    User.findOne({
-      _id: req.params.user,
-    }).exec((err, user) => {
-      bot.notifyAdmins("Check: " + list.name + " reported by " + user.username);
-    });
+    if (list) {
+      User.findOne({
+        _id: req.params.user,
+      }).exec((err, user) => {
+        bot.notifyAdmins("Check: " + list.name + " reported by " + user.username);
+      });
+    }
   });
 });
 

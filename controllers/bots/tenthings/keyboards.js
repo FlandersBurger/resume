@@ -113,6 +113,13 @@ module.exports = {
               id: "mostplayed",
             }),
           },
+          {
+            text: "Most Banned Lists",
+            callback_data: JSON.stringify({
+              type: "stat",
+              id: "mostbanned",
+            }),
+          },
         ],
       ],
     };

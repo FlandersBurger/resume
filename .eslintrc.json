@@ -30,6 +30,13 @@
       }
     ],
     "object-property-newline": ["error", { "allowAllPropertiesOnSameLine": true }],
+    "array-element-newline": [
+      "error",
+      {
+        "ArrayExpression": "consistent",
+        "ArrayPattern": { "minItems": 3 }
+      }
+    ],
     "radix": ["error", "as-needed"],
     "no-param-reassign": [
       "error",

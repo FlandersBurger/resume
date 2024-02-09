@@ -166,3 +166,23 @@ const curateList = async () => {
 };
 curateList();
 */
+
+exports.logHint = async (listId) => {
+  let list = await List.findOne({
+    _id: listId,
+  })
+    .select("_id name hints")
+    .exec();
+  if (list) {
+    if (!list.hints) {
+      list.hints = 0;
+    }
+    list.hints++;
+    try {
+      await list.validate();
+      await list.save();
+    } catch (err) {
+      return bot.notifyAdmin(`Hint List Error:\n${list.name}`);
+    }
+  }
+};

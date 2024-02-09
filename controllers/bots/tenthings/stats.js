@@ -106,27 +106,11 @@ const getDailyScores = async ({ _id, settings }, limit) => {
     .reduce((str, { first_name, scoreDaily }, index) => {
       str += `\t${index + 1}: ${first_name} - ${scoreDaily}\n`;
       return str;
-    }, i18n(settings.language, `sentences.${limit ? "dailyScoresWithLimit" : "dailyScores"}`, { limit }) + `\n`);
+    }, i18n(settings.language, `sentences.dailyScores${limit ? "WithLimit" : ""}`, { limit }) + `\n`);
   return message;
 };
 
 exports.getDailyScores = getDailyScores;
-
-exports.getList = (game, callback) => {
-  let str = "";
-  game.list.values.forEach(({ guesser, value }, index) => {
-    if (!guesser || !guesser.first_name) {
-      str += `\t<b>${index + 1}:</b> `;
-      str += `<b>${hints.getHint(game.hints, value)}</b>`;
-      str += "\n";
-    } else {
-      str += `\t${index + 1}: `;
-      str += `${value.angleBrackets()} - <i>${guesser.first_name.removeHTML().maskURLs()}</i>`;
-      str += "\n";
-    }
-  });
-  callback(str);
-};
 
 exports.getStats = async (chat_id, data, requestor) => {
   const type = data.id.split("_")[0];
@@ -330,6 +314,9 @@ exports.getStats = async (chat_id, data, requestor) => {
       break;
     case "mostplayed":
       listStats(game, "plays", "", 1, "Most Played Lists", "Sum of plays", 1, data.requestor);
+      break;
+    case "mostbanned":
+      listStats(game, "bans", "", 1, "Most Banned Lists", "Sum of bans", 1, data.requestor);
       break;
     case "mostpopular":
       listStats(game, "score", "", 1, "Most Popular Lists", "Vote & skip ratio", 1, data.requestor);

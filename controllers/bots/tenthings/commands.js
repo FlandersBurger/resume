@@ -1,7 +1,7 @@
 const moment = require("moment");
 
 const config = require("../../../config");
-
+const i18n = require("../../../i18n");
 const bot = require("../../../connections/telegram");
 
 const Game = require("../../../models/tenthings/game")();
@@ -20,7 +20,6 @@ const suggestions = require("./suggestions");
 const maingame = require("./maingame");
 const minigame = require("./minigame");
 const tinygame = require("./tinygame");
-const i18n = require("../../../i18n");
 
 const commands = [
   "list",
@@ -102,45 +101,28 @@ exports.evaluate = async (msg, game, isNew) => {
       break;
     case "/parar":
     case "/stop":
-      bot.checkAdmin(game.chat_id, msg.from.id).then((admin) => {
-        if (admin) {
-          maingame.deactivate(game);
-        } else {
-          bot.queueMessage(
-            game.chat_id,
-            i18n(game.settings.language, "warnings.adminFunction", { name: player.first_name })
-          );
-        }
-      });
+      if (await bot.checkAdmin(game.chat_id, msg.from.id)) {
+        maingame.deactivate(game);
+      } else {
+        bot.queueMessage(
+          game.chat_id,
+          i18n(game.settings.language, "warnings.adminFunction", { name: player.first_name })
+        );
+      }
       break;
     case "/new":
     case "/start":
       if (isNew) {
         maingame.newRound(game);
-      } else {
-        stats.getList(game, (list) => {
-          let message = `<b>${game.list.name}</b> (${game.list.totalValues})`;
-          message += game.list.creator
-            ? ` ${i18n(game.settings.language, "sentences.createdBy", {
-                creator: game.list.creator.username,
-              })}`
-            : "";
-          message += "\n";
-          message += `${i18n(game.settings.language, "category", {
-            count: game.list.categories.length,
-          })}: `;
-          message += `<b>${game.list.categories
-            .map((category) => i18n(game.settings.language, `categories.${category}`))
-            .join(", ")}</b>\n`;
-          message += game.list.description
-            ? game.list.description.includes("href")
-              ? game.list.description
-              : `<i>${game.list.description.angleBrackets()}</i>\n`
-            : "";
-          message += list;
-          bot.queueMessage(msg.chat.id, message);
-          maingame.activate(game, true);
-        });
+        break;
+      }
+    case "/lista":
+    case "/list":
+      try {
+        maingame.activate(game, true);
+        maingame.sendMessage(game);
+      } catch (e) {
+        console.error(e);
       }
       break;
     case "/pule":
@@ -178,33 +160,6 @@ exports.evaluate = async (msg, game, isNew) => {
         `<b>${i18n(game.settings.language, "stats.stats")}</b>`,
         keyboards.stats(game.chat_id)
       );
-      break;
-    case "/lista":
-    case "/list":
-      try {
-        stats.getList(game, (list) => {
-          let message = `<b>${game.list.name}</b> (${game.list.totalValues}) `;
-          if (game.list.creator)
-            message += i18n(game.settings.language, "sentences.createdBy", {
-              creator: game.list.creator.username,
-            });
-          message += "\n";
-          message +=
-            game.list.categories.length > 0
-              ? `Categor${game.list.categories.length > 1 ? "ies" : "y"}: <b>${game.list.categories.join(", ")}</b>\n`
-              : "";
-          message += game.list.description
-            ? game.list.description.includes("href")
-              ? game.list.description
-              : `<i>${game.list.description.angleBrackets()}</i>\n`
-            : "";
-          message += list;
-          bot.queueMessage(msg.chat.id, message);
-          maingame.activate(game, true);
-        });
-      } catch (e) {
-        console.error(e);
-      }
       break;
     case "/erro":
     case "/typo":
@@ -317,7 +272,7 @@ exports.evaluate = async (msg, game, isNew) => {
       if (!game.minigame.answer) {
         minigame.create(game);
       } else {
-        minigame.message(game);
+        minigame.sendMessage(game);
       }
       break;
     case "/jogominusculo":
@@ -325,42 +280,38 @@ exports.evaluate = async (msg, game, isNew) => {
       if (!game.tinygame.answer) {
         tinygame.create(game);
       } else {
-        tinygame.message(game);
+        tinygame.sendMessage(game);
       }
       break;
     case "/categorias":
     case "/categories":
       if (game.chat_id != config.groupChat) {
-        bot.checkAdmin(game.chat_id, msg.from.id).then((admin) => {
-          if (admin) {
-            bot.sendKeyboard(
-              game.chat_id,
-              `<b>${i18n(game.settings.language, "category")}</b>`,
-              keyboards.categories(game)
-            );
-          } else {
-            bot.queueMessage(game.chat_id, messages.categories(game));
-          }
-        }, console.error);
+        if (await bot.checkAdmin(game.chat_id, msg.from.id)) {
+          bot.sendKeyboard(
+            game.chat_id,
+            `<b>${i18n(game.settings.language, "category")}</b>`,
+            keyboards.categories(game)
+          );
+        } else {
+          bot.queueMessage(game.chat_id, messages.categories(game));
+        }
       }
       break;
     case "/confi":
     case "/settings":
       if (game.chat_id != config.groupChat) {
-        bot.checkAdmin(game.chat_id, msg.from.id).then((admin) => {
-          if (admin) {
-            bot.sendKeyboard(
-              game.chat_id,
-              `<b>${i18n(game.settings.language, "settings")}</b>`,
-              keyboards.settings(game)
-            );
-          } else {
-            bot.queueMessage(
-              game.chat_id,
-              i18n(game.settings.language, "warnings.adminFunction", { name: player.first_name })
-            );
-          }
-        });
+        if (await bot.checkAdmin(game.chat_id, msg.from.id)) {
+          bot.sendKeyboard(
+            game.chat_id,
+            `<b>${i18n(game.settings.language, "settings")}</b>`,
+            keyboards.settings(game)
+          );
+        } else {
+          bot.queueMessage(
+            game.chat_id,
+            i18n(game.settings.language, "warnings.adminFunction", { name: player.first_name })
+          );
+        }
       }
       break;
     case "/check":

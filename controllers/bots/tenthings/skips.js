@@ -60,11 +60,6 @@ exports.process = (game, skipper) => {
 };
 
 const skipList = (game, skipper) => {
-  game.list.values.forEach(function ({ guesser }, index) {
-    if (!guesser.first_name) {
-      this[index].guesser.first_name = i18n(game.settings.language, "sentences.notGuessed");
-    }
-  }, game.list.values);
   Player.updateMany(
     {
       game: game._id,
@@ -82,40 +77,47 @@ const skipList = (game, skipper) => {
         skips: 1,
       },
     }
-  ).exec((err) => {
+  ).exec(async (err) => {
     if (err) return bot.notifyAdmin(`Skip List Error:\n${err}`);
-    stats.getList(game, async (list) => {
-      let message = `${i18n(game.settings.language, "sentences.skippedList", {
-        list: game.list.name,
-      })}\n`;
-      message += list;
-      bot.queueMessage(game.chat_id, message);
-      bot.sendKeyboard(
-        game.chat_id,
-        `Experimental feature to permanently ban list from game\nDo you want to ban "${game.list.name}"`,
-        keyboards.ban(game.settings.language, game.list)
-      );
-      delete cache[game._id];
-      let foundList = await List.findOne({
-        _id: game.list._id,
-      })
-        .select("_id plays skips votes score")
-        .exec();
-      if (!foundList) return maingame.newRound(game);
-      if (!foundList.skips) {
-        foundList.skips = 0;
+    let message = `${i18n(game.settings.language, "sentences.skippedList", {
+      list: game.list.name,
+    })}\n`;
+    message += game.list.values.reduce((str, { guesser, value }, index) => {
+      str += `\t${index + 1}: ${value.angleBrackets()} - <i>`;
+      if (!guesser || !guesser.first_name) {
+        str += i18n(game.settings.language, "sentences.notGuessed");
+      } else {
+        str += guesser.first_name.removeHTML().maskURLs();
       }
-      foundList.skips++;
-      foundList.score = lists.getScore(foundList);
-      try {
-        await foundList.validate();
-        await foundList.save();
-      } catch (err) {
-        return bot.notifyAdmin(`Skip List Error:\n${err}`);
-      }
-      bot.queueMessage(game.chat_id, await stats.getDailyScores(game, 5));
-      maingame.newRound(game);
-    });
+      str += "</i>\n";
+      return str;
+    }, "");
+    bot.queueMessage(game.chat_id, message);
+    bot.sendKeyboard(
+      game.chat_id,
+      `Experimental feature to permanently ban list from game\nDo you want to ban "${game.list.name}"`,
+      keyboards.ban(game.settings.language, game.list)
+    );
+    delete cache[game._id];
+    let foundList = await List.findOne({
+      _id: game.list._id,
+    })
+      .select("_id plays skips votes score")
+      .exec();
+    if (!foundList) return maingame.newRound(game);
+    if (!foundList.skips) {
+      foundList.skips = 0;
+    }
+    foundList.skips++;
+    foundList.score = lists.getScore(foundList);
+    try {
+      await foundList.validate();
+      await foundList.save();
+    } catch (err) {
+      return bot.notifyAdmin(`Skip List Error:\n${err}`);
+    }
+    bot.queueMessage(game.chat_id, await stats.getDailyScores(game, 5));
+    maingame.newRound(game);
   });
 };
 
