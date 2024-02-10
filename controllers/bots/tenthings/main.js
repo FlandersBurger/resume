@@ -5,13 +5,14 @@ const moment = require("moment");
 const config = require("../../../config");
 const redis = require("../../../redis");
 const bot = require("../../../connections/telegram");
+const i18n = require("../../../i18n");
 
 const queue = require("./queue");
 const maingame = require("./maingame");
 const callbacks = require("./callbacks");
 const spam = require("./spam");
 const commands = require("./commands");
-const i18n = require("../../../i18n");
+const jobs = require("./jobs");
 
 //-------------//
 //redis.set('pause', true);
