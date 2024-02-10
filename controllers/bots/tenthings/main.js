@@ -1,7 +1,5 @@
 /*jslint esversion: 10*/
 const router = require("express").Router();
-const _ = require("underscore");
-const moment = require("moment");
 const config = require("../../../config");
 const redis = require("../../../redis");
 const bot = require("../../../connections/telegram");
@@ -23,6 +21,7 @@ const Game = require("../../../models/tenthings/game")();
 const Player = require("../../../models/tenthings/player")();
 
 const BANNED_USERS = [1726294650];
+
 //const BANNED_USERS = [513934222, 1051982986, 1049452899,1286805649, 1156746047, 1221878428, 928265957, 811672759, 1291668503, 1136025506, 1162690484, 1158491266, 1053547542, 1182973691, 1010339222, 906650538, 1153021237, 623100045, 1269984320];
 
 /*
@@ -101,7 +100,9 @@ router.post("/", async ({ body, get }, res, next) => {
         : `${body.callback_query.from.first_name} ${
             body.callback_query.from.last_name ? body.callback_query.from.last_name : ""
           }`
-    ).maskURLs();
+    )
+      //@ts-ignore
+      .maskURLs();
     data.from_id = body.callback_query.from.id;
     data.chat_id = body.callback_query.message.chat.id;
     data.message_id = body.callback_query.message.message_id;

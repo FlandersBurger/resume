@@ -117,6 +117,10 @@ router.get("/lists/:id", (req, res, next) => {
     .exec((err, list) =>
       res.json({
         ...list,
+        values: list.values.map((value) => ({
+          ...value,
+          creator: value.creator ? value.creator : list.creator,
+        })),
         upvotes: list.votes ? list.votes.filter(({ vote }) => vote > 0).length : 0,
         downvotes: list.votes ? list.votes.filter(({ vote }) => vote < 0).length : 0,
         playRatio: list.plays ? (list.plays - list.skips) / list.plays : 0,
@@ -150,7 +154,12 @@ router.get("/lists/:id/movies", async (req, res, next) => {
       }
     }
     if (changed) {
-      const saved = await list.save();
+      try {
+        const saved = await list.save();
+      } catch (error) {
+        bot.notifyAdmin(`Error saving ${list.name} ${list._id}`);
+        console.error(error);
+      }
       res.sendStatus(200);
     } else {
       res.sendStatus(304);
@@ -185,7 +194,12 @@ router.get("/lists/:id/tv", async (req, res, next) => {
       }
     }
     if (changed) {
-      const saved = await list.save();
+      try {
+        const saved = await list.save();
+      } catch (error) {
+        bot.notifyAdmin(`Error saving ${list.name} ${list._id}`);
+        console.error(error);
+      }
       res.sendStatus(200);
     } else {
       res.sendStatus(304);
@@ -220,7 +234,12 @@ router.get("/lists/:id/actors", async (req, res, next) => {
       }
     }
     if (changed) {
-      const saved = await list.save();
+      try {
+        const saved = await list.save();
+      } catch (error) {
+        bot.notifyAdmin(`Error saving ${list.name} ${list._id}`);
+        console.error(error);
+      }
       res.sendStatus(200);
     } else {
       res.sendStatus(304);
@@ -234,30 +253,49 @@ router.get("/lists/:id/books", async (req, res, next) => {
   let list = await TenThingsList.findOne({
     _id: req.params.id,
   });
+  const author = list.name.indexOf("Written by ") === 0 ? list.name.substring(11) : "";
+
+  const goodreadsAuthor = await request(
+    `https://www.goodreads.com/api/author_url/${author}?key=${config.tokens.goodreadsapi}`
+  );
+  const parsedAuthorXML = await parseString(goodreadsAuthor);
   if (list) {
     let changed = false;
     for (let value of list.values) {
       if (!value.blurb) {
-        const author = list.name.indexOf("Written by ") === 0 ? list.name.substring(11) : "";
         const goodreadsDB = await request(
-          `https://www.goodreads.com/search/index.xml?key=${
-            config.tokens.goodreadsapi
-          }&q=${author}%20${encodeURIComponent(value.value)}`
+          `https://www.goodreads.com/search.xml?key=${config.tokens.goodreadsapi}&q=${encodeURIComponent(
+            value.value
+          )}&search[field]=title`
         );
         try {
           const parsedXML = await parseString(goodreadsDB);
-          const posterPath = await parsedXML.GoodreadsResponse.search[0].results[0].work[0].best_book[0].image_url[0];
-          if (posterPath && posterPath.indexOf("nophoto") < 0) {
+          const mostRatedWork = parsedXML.GoodreadsResponse.search[0].results[0].work
+            .sort((workA, workB) => workB.ratings_count[0]._ - workA.ratings_count[0]._)
+            .filter((work) =>
+              work.best_book[0].author[0].id
+                .map((id) => id._)
+                .includes(parsedAuthorXML.GoodreadsResponse.author[0].$.id)
+            )
+            .filter((work) => work.best_book[0].image_url[0].indexOf("nophoto") < 0);
+          const posterPath = mostRatedWork[0].best_book[0].image_url[0];
+          if (posterPath) {
             value.blurb = posterPath;
           }
           changed = true;
         } catch (e) {
+          console.error(e);
           console.error(`No Poster for ${value.value}`);
         }
       }
     }
     if (changed) {
-      const saved = await list.save();
+      try {
+        const saved = await list.save();
+      } catch (error) {
+        bot.notifyAdmin(`Error saving ${list.name} ${list._id}`);
+        console.error(error);
+      }
       res.sendStatus(200);
     } else {
       res.sendStatus(304);
@@ -295,7 +333,12 @@ router.get("/lists/:id/musicvideos", async (req, res, next) => {
       }
     }
     if (changed) {
-      const saved = await list.save();
+      try {
+        const saved = await list.save();
+      } catch (error) {
+        bot.notifyAdmin(`Error saving ${list.name} ${list._id}`);
+        console.error(error);
+      }
       res.sendStatus(200);
     } else {
       res.sendStatus(304);
@@ -380,7 +423,12 @@ router.get("/lists/:id/pics", async (req, res, next) => {
       }
     }
     if (changed) {
-      const saved = await list.save();
+      try {
+        const saved = await list.save();
+      } catch (error) {
+        bot.notifyAdmin(`Error saving ${list.name} ${list._id}`);
+        console.error(error);
+      }
       res.sendStatus(200);
     } else {
       res.sendStatus(304);
@@ -407,6 +455,8 @@ router.post("/lists/:id", (req, res, next) => {
     _id: req.params.id,
   }).exec(function (err, list) {
     if (err) next(err);
+    list.values.filter(({ creator }) => !creator).forEach((value) => (value.creator = list.creator));
+    console.log(list.values);
     Object.keys(req.body).forEach((update) => {
       list[update] = req.body[update];
     });
@@ -428,6 +478,7 @@ router.put("/lists", (req, res, next) => {
   req.body.list.modifyDate = new Date();
   req.body.list.search = req.body.list.name.removeAllButLetters();
   req.body.list.score = lists.getScore(req.body.list);
+  req.body.list.values.filter(({ creator }) => !creator).forEach((value) => (value.creator = req.body.list.creator));
   TenThingsList.findByIdAndUpdate(
     req.body.list._id ? req.body.list._id : new mongoose.Types.ObjectId(),
     req.body.list,
@@ -525,13 +576,12 @@ module.exports = router;
 const formatList = (list) => ({
   _id: list._id,
   plays: list.plays,
-  blurbs: list.values ? list.values.filter((item) => item.blurb).length : 0,
   skips: list.skips,
   score: list.score,
   playRatio: list.plays ? (list.plays - list.skips) / list.plays : 0,
   answers: list.values.length,
-  //blurbs: list.values.filter(item => item.blurb).length,
   values: list.values.map((item) => item.value),
+  blurbs: list.values ? list.values.filter((item) => item.blurb).length : 0,
   date: list.date,
   modifyDate: list.modifyDate,
   creator: list.creator.username,

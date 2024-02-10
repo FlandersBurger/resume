@@ -106,6 +106,7 @@ function TelegramBot() {
 
   messageQueue.process(({ data }) => bot.sendMessage(data.channel, data.message));
 
+  //@ts-ignore
   bot.getQueue = async () => await messageQueue.count();
 
   bot.kick = async (channel, user, minutes) => {
@@ -319,8 +320,8 @@ function TelegramBot() {
 const b = new TelegramBot();
 
 b.init(TOKEN).then(() => {
-  b.getWebhook().then((response) => {
-    if (response && "https://belgocanadian.com/bots/tenthings" === response.data.result.url) {
+  b.getWebhook().then(({ url }) => {
+    if ("https://belgocanadian.com/bots/tenthings" === url) {
       console.log("Webhook Set");
     } else {
       b.setWebhook("tenthings").then(() => {
@@ -329,17 +330,5 @@ b.init(TOKEN).then(() => {
     }
   });
 });
-
-/*
-let url = `https://api.telegram.org/bot${TOKEN}/setWebhook?url=`;
-request(url, (error, r, body) => {
-  if (error) return console.error(error);
-  console.log(body);
-  url = `https://api.telegram.org/bot${TOKEN}/getUpdates?offset=-5`;
-  request(url, (error, r, body) => {
-    if (error) return console.error(error);
-    console.log(body);
-  });
-});*/
 
 module.exports = b;

@@ -8,7 +8,7 @@ const emojis = require("./emojis");
 
 module.exports = {
   logic: function (language) {
-    var rules = i18n(language, "rules", { maxHints: MAXHINTS, returnObjects: true });
+    const rules = i18n(language, "rules", { maxHints: MAXHINTS, returnObjects: true });
     return rules.reduce((message, rule, i) => `${message}${i + 1}: ${rule}\n`, "");
   },
   categories: function (game) {

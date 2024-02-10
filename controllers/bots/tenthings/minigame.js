@@ -2,10 +2,10 @@ const moment = require("moment");
 const _ = require("underscore");
 
 const bot = require("../../../connections/telegram");
+const i18n = require("../../../i18n");
 const messages = require("./messages");
 const guesses = require("./guesses");
 const hints = require("./hints");
-const i18n = require("../../../i18n");
 
 const List = require("../../../models/tenthings/list")();
 const Minigame = require("../../../models/tenthings/minigame")();

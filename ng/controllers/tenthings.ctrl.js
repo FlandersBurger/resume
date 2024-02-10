@@ -145,10 +145,7 @@ angular
     $scope.getUpdateCount = (type) => {
       if (!$scope.lists) return 0;
       const count = $scope.lists.filter(
-        (list) =>
-          type === "all" ||
-          (list.isDynamic && type === "dynamic") ||
-          (!list.isDynamic && type === "static")
+        (list) => type === "all" || (list.isDynamic && type === "dynamic") || (!list.isDynamic && type === "static")
       ).length;
       return `${count} - ${Math.round((count / $scope.lists.length) * 100)}%`;
     };
@@ -245,8 +242,7 @@ angular
         if (
           _.some(
             $scope.selectedList.values,
-            (answer) =>
-              answer.value.removeAllButLetters() == $scope.newItem.value.removeAllButLetters()
+            (answer) => answer.value.removeAllButLetters() == $scope.newItem.value.removeAllButLetters()
           )
         ) {
           alert(`${$scope.newItem.value} is already in the list`);
