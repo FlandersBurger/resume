@@ -60,7 +60,8 @@ function TelegramBot() {
   bot.getWebhook = async () => {
     const url = `${bot.baseUrl}/getWebhookInfo`;
     try {
-      return await axios.get(url);
+      const response = await axios.get(url);
+      return response.data.result;
     } catch (error) {
       console.error("Get Webhook Fail");
       console.error(error);
