@@ -1,4 +1,5 @@
-const request = require("request");
+const axios = require("axios").default;
+
 const Queue = require("bull");
 const config = require("../config");
 const i18n = require("../i18n");
@@ -17,6 +18,7 @@ const messageQueue = new Queue("sendMessage", {
     duration: 1000,
   },
 });
+
 messageQueue.on("completed", function (job) {
   //Job finished we remove it]
   job.remove();
@@ -25,127 +27,119 @@ messageQueue.on("completed", function (job) {
 function TelegramBot() {
   const bot = this;
 
-  bot.init = (TOKEN) => {
-    bot.token = TOKEN;
-    return new Promise((resolve, reject) => {
-      const url = `https://api.telegram.org/bot${bot.token}/getMe`;
-      request(url, (error, r, body) => {
-        if (error) return;
-        const response = JSON.parse(body).result;
-        if (!response) return;
-        bot.id = response.id || "";
-        bot.first_name = response.first_name || "";
-        bot.last_name = response.last_name || "";
-        bot.username = response.username || "";
-        bot.language_code = response.language_code || "";
-        resolve();
-      });
-    });
+  bot.token = "";
+  bot.baseUrl = "";
+  bot.first_name = "";
+  bot.last_name = "";
+  bot.username = "";
+
+  bot.init = async (token) => {
+    Object.assign(bot, { token, baseUrl: `https://api.telegram.org/bot${token}` });
+    const url = `${bot.baseUrl}/getMe`;
+    try {
+      const response = await axios.get(url);
+      if (!response || !response.data) return;
+      Object.assign(bot, response.data.result);
+    } catch (error) {
+      console.error(error);
+    }
   };
 
-  bot.setWebhook = (api) =>
-    new Promise((resolve, reject) => {
-      //var url = 'https://api.telegram.org/beta/bot' + bot.token + '/setWebhook?url=https://belgocanadian.com/bots/' + api;
-      const allowed_updates = JSON.stringify(["message", "callback_query"]);
-      const url = `https://api.telegram.org/bot${bot.token}/setWebhook?url=https://belgocanadian.com/bots/${api}&allowed_updates=${allowed_updates}`;
-      request(url, (error, r, body) => {
-        if (error) return console.error(error);
-        console.log(body);
-        resolve(body);
-      });
-    });
+  bot.setWebhook = async (api) => {
+    //var url = 'https://api.telegram.org/beta/bot' + bot.token + '/setWebhook?url=https://belgocanadian.com/bots/' + api;
+    const allowed_updates = JSON.stringify(["message", "callback_query"]);
+    const url = `${bot.baseUrl}/setWebhook?url=https://belgocanadian.com/bots/${api}&allowed_updates=${allowed_updates}`;
+    try {
+      return await axios.get(url);
+    } catch (error) {
+      console.error("Set Webhook Fail");
+      console.error(error);
+    }
+  };
 
-  bot.getWebhook = () =>
-    new Promise((resolve, reject) => {
-      const url = `https://api.telegram.org/bot${bot.token}/getWebhookInfo`;
-      request(url, (error, r, body) => {
-        if (error) return;
-        const response = JSON.parse(body).result;
-        if (!response) return;
-        resolve(response);
-      });
-    });
+  bot.getWebhook = async () => {
+    const url = `${bot.baseUrl}/getWebhookInfo`;
+    try {
+      return await axios.get(url);
+    } catch (error) {
+      console.error("Get Webhook Fail");
+      console.error(error);
+    }
+  };
 
-  bot.deleteWebhook = () =>
-    new Promise((resolve, reject) => {
-      const url = `https://api.telegram.org/beta/bot${bot.token}/deleteWebhook`;
-      request(url, (error, r, body) => {
-        if (error) return;
-        resolve(body);
-      });
-    });
+  bot.deleteWebhook = async () => {
+    const url = `${bot.baseUrl}/deleteWebhook`;
+    try {
+      return await axios.get(url);
+    } catch (error) {
+      console.error("Delete Webhook Fail");
+      console.error(error);
+    }
+  };
 
-  bot.sendMessage = (channel, message, topic = null) => {
+  bot.sendMessage = async (channel, message, topic) => {
     message = encodeURIComponent(message);
-    return new Promise((resolve, reject) => {
-      let url = `https://api.telegram.org/bot${bot.token}/sendMessage?chat_id=${channel}&disable_notification=true&parse_mode=html&text=${message}`;
-      if (topic) url += `&message_thread_id=${topic}`;
-      request(url, (err, r, body) => {
-        if (err) {
-          console.error("Send Fail");
-          console.error(err);
-          //return reject(err);
-        }
-        if (!body.ok && body.error_code === 400) {
-          errors.chatNotFound(channel);
-        }
-      });
-      resolve();
-    });
+    let url = `${bot.baseUrl}/sendMessage?chat_id=${channel}&disable_notification=true&parse_mode=html&text=${message}`;
+    if (topic) url += `&message_thread_id=${topic}`;
+    try {
+      await axios.get(url);
+    } catch (error) {
+      console.error("Send Fail");
+      console.error(error);
+    }
   };
 
-  bot.deleteMessage = (channel, message_id) => {
-    const url = `https://api.telegram.org/beta/bot${bot.token}/deleteMessage?chat_id=${channel}&message_id=${message_id}`;
-    request(url, (error, r, body) => {
-      if (error) return;
-    });
+  bot.deleteMessage = async (channel, message_id) => {
+    const url = `${bot.baseUrl}/deleteMessage?chat_id=${channel}&message_id=${message_id}`;
+    try {
+      await axios.get(url);
+    } catch (error) {
+      console.error("Delete Message Fail");
+      console.error(error);
+    }
   };
 
   bot.queueMessage = (channel, message) => {
-    messageQueue.add({
-      channel,
-      message,
-    });
+    messageQueue.add("", { channel, message }, {});
   };
 
   messageQueue.process(async ({ data }) => await bot.sendMessage(data.channel, data.message));
 
   bot.getQueue = async () => await messageQueue.count();
 
-  bot.kick = (channel, user, minutes) => {
+  bot.kick = async (channel, user, minutes) => {
     if (!minutes) minutes = 1;
     let date = new Date();
-    date.setTime(date.getTime() + minutes * 60 * 1000);
-    date = Math.floor(date / 1000);
-    return new Promise((resolve, reject) => {
-      const url = `https://api.telegram.org/bot${bot.token}/kickChatMember?chat_id=${channel}&user_id=${user}&until_date=${date}`;
-      request(url, (error, r, body) => {
-        if (error) return;
-        resolve();
-      });
-    });
+    const untilDate = Math.floor(date.setTime(date.getTime() + minutes * 60 * 1000) / 1000);
+    const url = `${bot.baseUrl}/kickChatMember?chat_id=${channel}&user_id=${user}&until_date=${untilDate}`;
+    try {
+      await axios.get(url);
+    } catch (error) {
+      console.error("Kick Fail");
+      console.error(error);
+    }
   };
 
-  bot.notifyCosmicForce = (msg, keyboard) => {
-    if (keyboard) bot.sendKeyboard(config.adminChat, msg, keyboard, 17);
-    else bot.sendMessage(config.cosmicForceChat, msg, 17);
+  bot.notifyCosmicForce = async (msg, keyboard) => {
+    if (keyboard) await bot.sendKeyboard(config.cosmicForceChat, msg, keyboard, 17);
+    else await bot.sendMessage(config.cosmicForceChat, msg, 17);
   };
 
-  bot.notifyAdmin = (msg) => {
-    bot.sendMessage(config.masterChat, msg);
+  bot.notifyAdmin = async (msg) => {
+    await bot.queueMessage(config.masterChat, msg);
   };
 
-  bot.notify = (msg) => {
-    bot.queueMessage(config.noticeChannel, msg);
+  bot.notify = async (msg) => {
+    await bot.queueMessage(config.noticeChannel, msg);
   };
 
-  bot.notifyAdmins = (msg, keyboard) => {
-    if (keyboard) bot.sendKeyboard(config.adminChat, msg, keyboard);
-    else bot.queueMessage(config.adminChat, msg);
+  bot.notifyAdmins = async (msg, keyboard) => {
+    if (keyboard) await bot.sendKeyboard(config.adminChat, msg, keyboard);
+    else await bot.queueMessage(config.adminChat, msg);
   };
 
-  bot.broadcast = (channels, message) => {
-    bot.notifyAdmin(`Starting broadcast to ${channels.length} chats`);
+  bot.broadcast = async (channels, message) => {
+    await bot.notifyAdmin(`Starting broadcast to ${channels.length} chats`);
     channels.forEach((channel, index) => {
       setTimeout(() => {
         bot.queueMessage(channel, message);
@@ -156,135 +150,120 @@ function TelegramBot() {
     });
   };
 
-  bot.getChat = (channel) =>
-    new Promise((resolve, reject) => {
-      const url = `https://api.telegram.org/bot${bot.token}/getChat?chat_id=${channel}`;
-      request(encodeURI(url), (error, r, body) => {
-        if (error)
-          return reject({
-            id: channel,
-            code: 500,
-            error,
-          });
-        const response = JSON.parse(body);
-        if (!response || !response.ok)
-          return reject({
-            id: channel,
-            code: 404,
-          });
-        resolve({
-          id: channel,
-          code: 200,
-        });
-      });
-    });
+  bot.exportChatInviteLink = async (channel) => {
+    const url = `${bot.baseUrl}/exportChatInviteLink?chat_id=${channel}`;
+    try {
+      const response = await axios.get(encodeURI(url));
+      if (!response || !response.data || !response.data.result) return;
+      return response.data.result;
+    } catch (error) {
+      console.error("Get Invite Link Fail");
+      console.error(error);
+    }
+  };
 
-  bot.exportChatInviteLink = (channel) =>
-    new Promise((resolve, reject) => {
-      const url = `https://api.telegram.org/bot${bot.token}/exportChatInviteLink?chat_id=${channel}`;
-      request(encodeURI(url), (error, r, body) => {
-        if (error) resolve();
-        const response = JSON.parse(body);
-        if (!response || !response.ok || !response.result) resolve();
-        resolve(response.result);
-      });
-    });
+  bot.getChat = async (channel) => {
+    const url = `${bot.baseUrl}/getChat?chat_id=${channel}`;
+    try {
+      const response = await axios.get(encodeURI(url));
+      if (!response || !response.data || !response.data.result) return;
+      if (response.data.result.invite_link) return response.data.result.invite_link;
+      else if (response.data.result.username) return `Private Chat: @${response.data.result.username}`;
+    } catch (error) {
+      console.error("Get Chat Fail");
+      if (error.response.data.error_code === 400) {
+        errors.chatNotFound(channel);
+      } else {
+        console.error(error);
+      }
+    }
+  };
 
-  bot.getChat = (channel) =>
-    new Promise((resolve, reject) => {
-      const url = `https://api.telegram.org/bot${bot.token}/getChat?chat_id=${channel}`;
-      request(encodeURI(url), (error, r, body) => {
-        if (error) resolve();
-        const response = JSON.parse(body);
-        if (!response || !response.ok || !response.result) resolve();
-        if (response.result.invite_link) return resolve(response.result.invite_link);
-        else if (response.result.username) return resolve(`@${response.result.username}`);
-        resolve();
-      });
-    });
+  bot.getChatMember = async (channel, user_id) => {
+    const url = `${bot.baseUrl}/getChatMember?chat_id=${channel}&user_id=${user_id}`;
+    try {
+      const response = await axios.get(url);
+      return (
+        response &&
+        response.data &&
+        response.data.result &&
+        !["restricted", "left", "kicked"].includes(response.data.result.status)
+      );
+    } catch (error) {
+      console.error("Get Chat Member Fail");
+      console.error(error);
+    }
+  };
 
-  bot.getChatMember = (channel, user_id) =>
-    new Promise((resolve, reject) => {
-      const url = `https://api.telegram.org/bot${bot.token}/getChatMember?chat_id=${channel}&user_id=${user_id}`;
-      request(url, (error, r, body) => {
-        if (error) return reject(error);
-        const response = JSON.parse(body).result;
-        resolve(!(!response || ["restricted", "left", "kicked"].includes(response.status)));
-      });
-    });
+  bot.checkAdmin = async (channel, user_id) => {
+    const url = `${bot.baseUrl}/getChatMember?chat_id=${channel}&user_id=${user_id}`;
+    try {
+      const response = await axios.get(url);
+      return (
+        response &&
+        response.data &&
+        response.data.result &&
+        ["creator", "administrator"].includes(response.data.result.status)
+      );
+    } catch (error) {
+      console.error("Check Admin Fail");
+      console.error(error);
+    }
+  };
 
-  bot.checkAdmin = (channel, user_id) =>
-    new Promise((resolve, reject) => {
-      if (channel > 0 || user_id === config.masterChat) resolve(true);
-      const url = `https://api.telegram.org/bot${bot.token}/getChatMember?chat_id=${channel}&user_id=${user_id}`;
-      request(url, (error, r, body) => {
-        if (error) return reject(error);
-        const response = JSON.parse(body).result;
-        resolve(response && ["creator", "administrator"].includes(response.status));
-      });
-    });
+  bot.sendKeyboard = async (channel, message, keyboard, topic) => {
+    let url = `${bot.baseUrl}/sendMessage?chat_id=${channel}&disable_notification=true&parse_mode=html`;
+    url += `&text=${message}`;
+    url += `&reply_markup=${JSON.stringify(keyboard)}`;
+    if (topic) url += `&message_thread_id=${topic}`;
+    try {
+      await axios.get(encodeURI(url));
+    } catch (error) {
+      console.error("Send Keyboard Fail");
+      console.error(error);
+    }
+  };
 
-  bot.sendKeyboard = (channel, message, keyboard, topic = null) =>
-    new Promise((resolve, reject) => {
-      let url = `https://api.telegram.org/bot${
-        bot.token
-      }/sendMessage?chat_id=${channel}&disable_notification=true&parse_mode=html&text=${message}&reply_markup=${JSON.stringify(
-        keyboard
-      )}`;
-      if (topic) url += `&message_thread_id=${topic}`;
-      request(encodeURI(url), (error, r, body) => {
-        if (error) return;
-        resolve();
-      });
-    });
+  bot.sendPhoto = async (channel, photo) => {
+    const url = `${bot.baseUrl}/sendPhoto?chat_id=${channel}&photo=${photo}`;
+    try {
+      await axios.get(encodeURI(url));
+    } catch (error) {
+      console.error("Send Photo Fail");
+      console.error(error);
+    }
+  };
 
-  bot.sendPhoto = (channel, photo) =>
-    new Promise((resolve, reject) => {
-      const url = `https://api.telegram.org/bot${bot.token}/sendPhoto?chat_id=${channel}&photo=${photo}`;
-      request(encodeURI(url), (error, r, body) => {
-        if (error) return;
-        resolve();
-      });
-    });
+  bot.sendAnimation = async (channel, animation) => {
+    const url = `${bot.baseUrl}/sendAnimation?chat_id=${channel}&animation=${animation}`;
+    try {
+      await axios.get(encodeURI(url));
+    } catch (error) {
+      console.error("Send Animation Fail");
+      console.error(error);
+    }
+  };
 
-  bot.sendAnimation = (channel, animation) =>
-    new Promise((resolve, reject) => {
-      const url = `https://api.telegram.org/bot${bot.token}/sendAnimation?chat_id=${channel}&animation=${animation}`;
-      request(encodeURI(url), (error, r, body) => {
-        if (error) return;
-        resolve();
-      });
-    });
+  bot.editKeyboard = async (channel, message_id, keyboard) => {
+    let url = `${bot.baseUrl}/editMessageReplyMarkup?chat_id=${channel}&message_id=${message_id}`;
+    if (keyboard) url += `&reply_markup=${JSON.stringify(keyboard)}`;
+    try {
+      await axios.get(encodeURI(url));
+    } catch (error) {
+      console.error("Edit Keyboard Fail");
+      console.error(error);
+    }
+  };
 
-  bot.getChatMember = (channel, user_id) =>
-    new Promise((resolve, reject) => {
-      const url = `https://api.telegram.org/bot${bot.token}/getChatMember?chat_id=${channel}&user_id=${user_id}`;
-      request(url, (error, r, body) => {
-        const response = JSON.parse(body).result;
-        if (error) return;
-        if (!response || ["restricted", "left", "kicked"].includes(response.status)) return reject();
-        resolve(response);
-      });
-    });
-
-  bot.editKeyboard = (channel, message_id, keyboard) =>
-    new Promise((resolve, reject) => {
-      let url = `https://api.telegram.org/bot${bot.token}/editMessageReplyMarkup?chat_id=${channel}&message_id=${message_id}`;
-      if (keyboard) url += `&reply_markup=${JSON.stringify(keyboard)}`;
-      request(encodeURI(url), (error, r, body) => {
-        if (error) return;
-        resolve();
-      });
-    });
-
-  bot.answerCallback = (callback_query_id, text) =>
-    new Promise((resolve, reject) => {
-      const url = `https://api.telegram.org/bot${bot.token}/answerCallbackQuery?callback_query_id=${callback_query_id}&text=${text}`;
-      request(encodeURI(url), (error, r, body) => {
-        if (error) return;
-        resolve();
-      });
-    });
+  bot.answerCallback = async (callback_query_id, text) => {
+    const url = `${bot.baseUrl}/answerCallbackQuery?callback_query_id=${callback_query_id}&text=${text}`;
+    try {
+      await axios.get(encodeURI(url));
+    } catch (error) {
+      console.error("Answer Callback Fail");
+      console.error(error);
+    }
+  };
 
   bot.getName = () => {
     if (bot.last_name) {
@@ -298,60 +277,52 @@ function TelegramBot() {
     console.log(`Hello, my name is ${bot.getName()}. You can talk to me through my username: @${bot.username}`);
   };
 
-  bot.reset = () => {
-    let url = `https://api.telegram.org/bot${TOKEN}/setWebhook?url=`;
-    request(url, (error, r, body) => {
-      if (error) return console.error(error);
-      url = `https://api.telegram.org/bot${TOKEN}/getUpdates?offset=-5`;
-      request(url, (error, r, body) => {
-        if (error) return console.error(error);
-        bot.init(TOKEN);
-      });
-    });
+  bot.reset = async () => {
+    await axios.get(`${bot.baseUrl}/setWebhook?url=`);
+    await axios.get(`${bot.baseUrl}/getUpdates?offset=-5`);
+    await bot.init(bot.token);
   };
 
-  bot.setCommands = (channel, language) =>
-    new Promise((resolve, reject) => {
-      const commands = [
-        "list",
-        "hint",
-        "minigame",
-        "tinygame",
-        "minihint",
-        "tinyhint",
-        "skip",
-        "miniskip",
-        "tinyskip",
-        "commands",
-        "me",
-        "stats",
-      ].map((command) => ({
-        command: command,
-        description: i18n(language, `commands.${command}.description`),
-      }));
-      const scope = {
-        type: "chat",
-        chat_id: channel,
-      };
-      const url = `https://api.telegram.org/beta/bot${bot.token}/setMyCommands?commands=${JSON.stringify(
-        commands
-      )}&scope=${JSON.stringify(scope)}`;
-      request(encodeURI(url), (error, r, body) => {
-        if (error) return console.error(error);
-        console.log(body);
-        resolve();
-      });
-    });
+  bot.setCommands = async (channel, language) => {
+    const commands = [
+      "list",
+      "hint",
+      "minigame",
+      "tinygame",
+      "minihint",
+      "tinyhint",
+      "skip",
+      "miniskip",
+      "tinyskip",
+      "commands",
+      "me",
+      "stats",
+    ].map((command) => ({
+      command: command,
+      description: i18n(language, `commands.${command}.description`),
+    }));
+    const scope = {
+      type: "chat",
+      chat_id: channel,
+    };
+    const url = `${bot.baseUrl}/setMyCommands?commands=${JSON.stringify(commands)}&scope=${JSON.stringify(scope)}`;
+    try {
+      await axios.get(encodeURI(url));
+    } catch (error) {
+      console.error("Set Commands  Fail");
+      console.error(error);
+    }
+  };
 }
+
 const b = new TelegramBot();
 
 b.init(TOKEN).then(() => {
   b.getWebhook().then((response) => {
-    //console.log(response);
-    if (response && "https://belgocanadian.com/bots/tenthings" === response.url) {
+    if (response && "https://belgocanadian.com/bots/tenthings" === response.data.result.url) {
       console.log("Webhook Set");
     } else {
-      b.setWebhook("tenthings").then((body) => {
+      b.setWebhook("tenthings").then(() => {
         b.introduceYourself();
       });
     }

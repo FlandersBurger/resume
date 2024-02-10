@@ -12,6 +12,7 @@ const maingame = require("./maingame");
 const callbacks = require("./callbacks");
 const spam = require("./spam");
 const commands = require("./commands");
+// DO NOT REMOVE jobs
 const jobs = require("./jobs");
 
 //-------------//
