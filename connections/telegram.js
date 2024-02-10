@@ -103,7 +103,7 @@ function TelegramBot() {
     messageQueue.add("", { channel, message }, {});
   };
 
-  messageQueue.process(async ({ data }) => await bot.sendMessage(data.channel, data.message));
+  messageQueue.process(({ data }) => bot.sendMessage(data.channel, data.message));
 
   bot.getQueue = async () => await messageQueue.count();
 
