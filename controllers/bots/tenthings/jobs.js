@@ -311,7 +311,6 @@ const sendNewLists = () => {
               games.map((game) => game.chat_id),
               message
             );
-            bot.notifyAdmins(message);
           });
       } else {
         bot.notifyAdmin("No lists created");
@@ -408,7 +407,7 @@ const deactivateInactiveChats = () => {
         })
       ).then(
         (chats) => {
-          console.log(chats.filter((chat) => chat.includes("not found")));
+          bot.notifyAdmin(`${chats.filter((chat) => chat.includes("not found"))} inactive chats deactivated`);
         },
         (err) => console.error(err)
       );
@@ -446,9 +445,9 @@ const deleteStalePlayers = () => {
     answers: 0,
     minigamePlays: 0,
     tinygamePlays: 0,
-  }).exec((err, players) => {
+  }).exec((err, results) => {
     if (err) console.error(err);
-    else console.log(players);
+    else bot.notifyAdmin(`${results.deletedCount} stale players deleted`);
   });
 };
 
