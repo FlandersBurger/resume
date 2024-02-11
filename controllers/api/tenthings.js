@@ -352,7 +352,7 @@ const getWikiImage = async (query) => {
   let url = "";
   try {
     const wikiDB = await request(
-      `https://en.wikipedia.org/w/api.php?action=query&format=json&prop=images&titles=Earth&generator=prefixsearch&gpssearch=${encodeURIComponent(
+      `https://en.wikipedia.org/w/api.php?action=query&format=json&prop=images&generator=prefixsearch&gpssearch=${encodeURIComponent(
         query
       )}`
     );

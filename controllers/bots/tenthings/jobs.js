@@ -186,6 +186,9 @@ const updateDailyStats = async (games, totalPlayers, uniquePlayers) => {
   let base = await TenThingsStats.findOne({
     base: true,
   }).exec();
+  const yearStats = (
+    await TenThingsStats.find({ base: false, uniquePlayers: { $gt: 0 } }).select("date uniquePlayers")
+  ).filter(({ date }) => moment(date) >= moment().subtract(1, "years"));
   const listStats = await List.aggregate([
     {
       $project: {
@@ -250,9 +253,20 @@ const updateDailyStats = async (games, totalPlayers, uniquePlayers) => {
       },
     },
   ]).exec();
+  const yearPlayerStats = {
+    minPlayers: _.min(yearStats, (stat) => stat.uniquePlayers),
+    maxPlayers: _.max(yearStats, (stat) => stat.uniquePlayers),
+  };
   const newGamesCount = games.filter((game) => game.date >= moment().subtract(1, "days")).length;
-  let message = `${games.length} games played today with ${totalPlayers} players of which ${uniquePlayers} unique\n`;
-  message += `${newGamesCount} new games started`;
+  let message = `${games.length} games played today\n`;
+  message += `${newGamesCount} new games started\n`;
+  message += `${totalPlayers} players of which ${uniquePlayers} unique`;
+  message += `52-week high unique: ${yearPlayerStats.maxPlayers.uniquePlayers} on ${moment(
+    yearPlayerStats.maxPlayers.date
+  ).format("DD-MMM-YYYY")}\n`;
+  message += `52-week low unique: ${yearPlayerStats.minPlayers.uniquePlayers} on ${moment(
+    yearPlayerStats.minPlayers.date
+  ).format("DD-MMM-YYYY")}\n`;
   message += `${(listStats[0].plays - base.listsPlayed).makeReadable()} lists played\n`;
   message += `${(listStats[0].votes - base.votes).makeReadable()} list votes given\n`;
   message += `${(playerStats[0].skips - base.skips).makeReadable()} lists skipped\n`;
