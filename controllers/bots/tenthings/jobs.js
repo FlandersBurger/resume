@@ -14,25 +14,19 @@ const TenThingsGame = require("../../../models/tenthings/game")();
 const TenThingsPlayer = require("../../../models/tenthings/player")();
 const TenThingsStats = require("../../../models/tenthings/stats")();
 
-const resetDailyScore = (force = false) => {
-  if (moment().utc().hour() === 1 || force) {
+const resetDailyScore = () => {
+  if (moment().utc().hour() === 1) {
     bot.notifyAdmin(`Score Reset Triggered; ${moment().format("DD-MMM-YYYY hh:mm")}`);
     TenThingsGame.find({
-      lastPlayDate: {
-        $gte: moment().subtract(1, "days"),
-      },
+      lastPlayDate: { $gte: moment().subtract(1, "days") },
     })
       .select("chat_id list date hints")
       .populate("list.creator")
       .then(
         async (games) => {
           const dailyPlayers = await TenThingsPlayer.find({
-            scoreDaily: {
-              $gt: 0,
-            },
-            lastPlayDate: {
-              $gte: moment().subtract(1, "days"),
-            },
+            scoreDaily: { $gt: 0 },
+            lastPlayDate: { $gte: moment().subtract(1, "days") },
           })
             .lean()
             .select("_id id")
@@ -41,82 +35,46 @@ const resetDailyScore = (force = false) => {
             bot.queueMessage(game.chat_id, await stats.getDailyScores(game));
             const players = await TenThingsPlayer.find({
               game: game._id,
-              scoreDaily: {
-                $gt: 0,
-              },
-              lastPlayDate: {
-                $gte: moment().subtract(1, "days"),
-              },
+              scoreDaily: { $gt: 0 },
+              lastPlayDate: { $gte: moment().subtract(1, "days") },
             })
               .select("_id id scoreDaily first_name")
               .exec();
             const highScore = await getHighScore(players);
-            let winners = players.filter((player) => player.scoreDaily === highScore);
-            let message = winners.reduce((msg, { first_name }, index, length) => {
-              if (index < length - 1) {
-                msg += `${first_name} & `;
-              } else {
-                msg += first_name;
-              }
-              return msg;
-            }, "");
-            bot.queueMessage(
-              game.chat_id,
-              `<b>${message} won with ${highScore} points!</b>\n\nThanks for playing! I gotta say it warms my heart knowing the game is getting popular and I want to keep it going.\nHowever, the game costs me money to host so if you\'re feeling generous and want to support Ten Things then please consider giving me a donation.\nYour gratitude won\'t go unnoticed :)\n\n - <a href="https://paypal.me/tenthingsgame">Paypal</a>\nIf you want to support me in another way just shoot me a message -> FlandersBurger\n
-							${
-                game.chat_id != config.groupChat
-                  ? '\n\nCome join us in the <a href="https://t.me/tenthings">Ten Things Supergroup</a>!'
-                  : ""
-              }`
-              /*
-							`<b>${message} won with ${highScore} points!</b>${
-								'\n\nThanks for playing! I gotta say it warms my heart knowing the game is so popular and I want to keep it going.\nHowever, the game costs me money to host so if you\'re feeling generous and want to support this Ten Things then please consider giving a donation.\nYour gratitude won\'t go unnoticed :) \n\n - <a href="https://paypal.me/tenthingsgame">Paypal</a>\n - Bitcoin Address: 17ZhRg1iQTqhwUgEYq4MnEYfENMftuurqs'
-													
-								game.chat_id != config.groupChat
-									? '\n\nCome join us in the <a href="https://t.me/tenthings">Ten Things Supergroup</a>!'
-									: ''
-									
-							}`*/
-            );
+            let winners = players
+              .filter((player) => player.scoreDaily === highScore)
+              .reduce((msg, { first_name }, index, length) => {
+                if (index < length - 1) {
+                  msg += `${first_name} & `;
+                } else {
+                  msg += first_name;
+                }
+                return msg;
+              }, "");
+            let message = `<b>${winners} won with ${highScore} points!</b>\n\n`;
+            message += `Thanks for playing! I gotta say it warms my heart knowing the game is played widely and I want to keep it free.\n`;
+            message += `However, the game costs me around <i>$40/month</i> to host so if you\'re feeling generous and want to support Ten Things then please consider donating.\n`;
+            message += `Your gratitude won\'t go unnoticed :)\n\n`;
+            message += `\t - <a href="https://paypal.me/tenthingsgame">Paypal</a>\n`;
+            message += `\t - Bitcoin Address: bc1qnr4y95d3w5rwahcypazpjdv33g8wupewmw6rpa3s2927qvgmduqsvcpgfs`;
+            //'\n\nCome join us in the <a href="https://t.me/tenthings">Ten Things Supergroup</a>!'
+            bot.queueMessage(game.chat_id, message);
             const savedIdlers = await TenThingsPlayer.updateMany(
-              {
-                game: game._id,
-                scoreDaily: 0,
-              },
-              {
-                $set: {
-                  playStreak: 0,
-                },
-              }
+              { game: game._id, scoreDaily: 0 },
+              { $set: { playStreak: 0 } }
             );
             const savedWinners = await TenThingsPlayer.updateMany(
               {
                 game: game._id,
-                _id: {
-                  $in: winners.map((winner) => winner._id),
-                },
+                _id: { $in: winners.map((winner) => winner._id) },
               },
-              {
-                $inc: {
-                  wins: 1,
-                },
-              }
+              { $inc: { wins: 1 } }
             ).exec();
             const savedPlayers = await TenThingsPlayer.updateMany(
+              { game: game._id, scoreDaily: { $gt: 0 } },
               {
-                game: game._id,
-                scoreDaily: {
-                  $gt: 0,
-                },
-              },
-              {
-                $inc: {
-                  plays: 1,
-                  playStreak: 1,
-                },
-                $set: {
-                  scoreDaily: 0,
-                },
+                $inc: { plays: 1, playStreak: 1 },
+                $set: { scoreDaily: 0 },
               }
             ).exec();
             if (game.hints < 4) {
@@ -136,8 +94,8 @@ const resetDailyScore = (force = false) => {
     bot.notifyAdmin(`Schedule incorrectly triggered: ${moment().format("DD-MMM-YYYY hh:mm")}`);
   }
 };
-//resetDailyScore(true);
-const backupDatabase = schedule.scheduleJob("0 0 21 * * *", () => {
+
+const backupDatabase = () => {
   backup().then(
     () => {
       bot.notifyAdmin(`Database backed up successfuly`);
@@ -146,13 +104,13 @@ const backupDatabase = schedule.scheduleJob("0 0 21 * * *", () => {
       bot.notifyAdmin(`Database Backup Failed\n${err}`);
     }
   );
-});
+};
 
 const getHighScore = (players) =>
   new Promise((resolve, reject) => {
     try {
       resolve(
-        players.reduce((highScore, { id, scoreDaily }) => {
+        players.reduce((highScore, { scoreDaily }) => {
           return scoreDaily > highScore ? scoreDaily : highScore;
         }, 0)
       );
@@ -161,11 +119,7 @@ const getHighScore = (players) =>
     }
   });
 
-function angleBrackets(str) {
-  return str.replace("<", "&lt;").replace(">", "&gt;");
-}
-
-function getChat(chat, delay) {
+function getChatWithDelay(chat, delay) {
   return new Promise((resolve, reject) => {
     setTimeout(() => {
       bot.getChat(chat).then(
@@ -183,9 +137,7 @@ TenThingsStats.find()
   });*/
 
 const updateDailyStats = async (games, totalPlayers, uniquePlayers) => {
-  let base = await TenThingsStats.findOne({
-    base: true,
-  }).exec();
+  let base = await TenThingsStats.findOne({ base: true }).exec();
   const yearStats = (
     await TenThingsStats.find({ base: false, uniquePlayers: { $gt: 0 } }).select("date uniquePlayers")
   ).filter(({ date }) => moment(date) >= moment().subtract(1, "years"));
@@ -194,22 +146,14 @@ const updateDailyStats = async (games, totalPlayers, uniquePlayers) => {
       $project: {
         _id: 1,
         plays: 1,
-        votes: {
-          $size: {
-            $ifNull: ["$votes", []],
-          },
-        },
+        votes: { $size: { $ifNull: ["$votes", []] } },
       },
     },
     {
       $group: {
         _id: "total",
-        plays: {
-          $sum: "$plays",
-        },
-        votes: {
-          $sum: "$votes",
-        },
+        plays: { $sum: "$plays" },
+        votes: { $sum: "$votes" },
       },
     },
   ]).exec();
@@ -217,39 +161,17 @@ const updateDailyStats = async (games, totalPlayers, uniquePlayers) => {
     {
       $group: {
         _id: "total",
-        hints: {
-          $sum: "$hints",
-        },
-        score: {
-          $sum: "$score",
-        },
-        highScore: {
-          $max: "$scoreDaily",
-        },
-        scoreDaily: {
-          $sum: "$scoreDaily",
-        },
-        answers: {
-          $sum: "$answers",
-        },
-        snubs: {
-          $sum: "$snubs",
-        },
-        skips: {
-          $sum: "$skips",
-        },
-        suggestions: {
-          $sum: "$suggestions",
-        },
-        searches: {
-          $sum: "$searches",
-        },
-        minigamePlays: {
-          $sum: "$minigamePlays",
-        },
-        tinygamePlays: {
-          $sum: "$tinygamePlays",
-        },
+        hints: { $sum: "$hints" },
+        score: { $sum: "$score" },
+        highScore: { $max: "$scoreDaily" },
+        scoreDaily: { $sum: "$scoreDaily" },
+        answers: { $sum: "$answers" },
+        snubs: { $sum: "$snubs" },
+        skips: { $sum: "$skips" },
+        suggestions: { $sum: "$suggestions" },
+        searches: { $sum: "$searches" },
+        minigamePlays: { $sum: "$minigamePlays" },
+        tinygamePlays: { $sum: "$tinygamePlays" },
       },
     },
   ]).exec();
@@ -338,8 +260,7 @@ const updateDailyStats = async (games, totalPlayers, uniquePlayers) => {
   });
 */
 
-if (process.env.NODE_ENV === "production") {
-  /*
+/*
   const getJoke = schedule.scheduleJob('0 0 0 * * *', () => {
     request({
       method: 'GET',
@@ -367,120 +288,82 @@ if (process.env.NODE_ENV === "production") {
   });
   */
 
-  console.log(`Time: ${moment().utc().hour()}`);
-
-  /*
-  TenThingsGame.find()
-  .then(function(games) {
-    games.forEach(function(game, index) {
-      setTimeout(function() {
-        Promise.all(game.players.map(function(player, index) {
-          return isPlayerPresent(game.chat_id, player.id, index);
-        })).then(function(absentPlayers) {
-          for (var i = 0; i < game.players.length; i++) {
-            if (absentPlayers.indexOf(game.players[i].id) >= 0) {
-              console.log(game.chat_id, game.players[i].first_name);
-              game.players[i].present = false;
-            }
-          }
-          //game.save();
+const sendNewLists = () => {
+  List.find({
+    date: { $gte: moment().subtract(1, "days") },
+  })
+    .select("name")
+    .lean()
+    .then((lists) => {
+      if (lists.length > 0) {
+        let message = "<b>New lists created today</b>";
+        lists.forEach(({ name }) => {
+          message += `\n- ${name}`;
         });
-      }, index * 10)
-    });
-  });
-
-  function isPlayerPresent(channel, player, index) {
-    return new Promise(function(resolve, reject) {
-      setTimeout(function() {
-        bot.getChatMember(channel, player)
-        .then(function(chatMember) {
-          resolve()
-        }, function(err) {
-          resolve(player)
-        });
-      }, index * 10)
-    });
-  }*/
-
-  const newLists = schedule.scheduleJob("0 0 12 * * *", () => {
-    List.find({
-      date: {
-        $gte: moment().subtract(1, "days"),
-      },
-    })
-      .select("name")
-      .lean()
-      .then((lists) => {
-        if (lists.length > 0) {
-          let message = "<b>New lists created today</b>";
-          lists.forEach(({ name }) => {
-            message += `\n- ${name}`;
+        message += "\n<i>Switch off daily updates through /settings</i>";
+        TenThingsGame.find({
+          "settings.updates": true,
+          enabled: true,
+        })
+          .select("chat_id")
+          .then((games) => {
+            bot.broadcast(
+              games.map((game) => game.chat_id),
+              message
+            );
+            bot.notifyAdmins(message);
           });
-          message += "\n<i>Switch off daily updates through /settings</i>";
-          TenThingsGame.find({
-            "settings.updates": true,
-            enabled: true,
-          })
-            .select("chat_id")
-            .then((games) => {
-              bot.broadcast(
-                games.map((game) => game.chat_id),
-                message
-              );
-              bot.notifyAdmins(message);
-            });
-        } else {
-          bot.notifyAdmin("No lists created");
-        }
-      });
-  });
-  /*
-	const modifiedLists = schedule.scheduleJob('0 30 12 * * *', () => {
-		List.find({
-			$or: [
-				{
-					modifyDate: {
-						$gte: moment().subtract(1, 'days'),
-					},
-					date: {
-						$lt: moment().subtract(1, 'days'),
-					},
-				},
-			],
-		})
-			.select('name')
-			.lean()
-			.then(lists => {
-				if (lists.length > 0) {
-					let message = '<b>Lists updated today</b>';
-					lists.forEach(({ name }) => {
-						message += `\n- ${name}`;
-					});
-					message += '\n<i>Switch off daily updates through /settings</i>';
-					TenThingsGame.find({
-						'settings.updates': true,
-						enabled: true,
-					})
-						.select('chat_id')
-						.then(games => {
-							bot.broadcast(
-								games.map(game => game.chat_id),
-								message
-							);
-							bot.notifyAdmins(message);
-						});
-				} else {
-					bot.notifyAdmin('No lists modified');
-				}
-			});
-	});
-	*/
-  //bot.sendPhoto(config.masterChat, 'https://m.media-amazon.com/images/M/MV5BNmE1OWI2ZGItMDUyOS00MmU5LWE0MzUtYTQ0YzA1YTE5MGYxXkEyXkFqcGdeQXVyMDM5ODIyNw@@._V1._SX40_CR0,0,40,54_.jpg')
+      } else {
+        bot.notifyAdmin("No lists created");
+      }
+    });
+};
 
-  //var dailyScore = schedule.scheduleJob('*/10 * * * * *', function() {
-  const dailyScore = schedule.scheduleJob("0 2 1 * * *", resetDailyScore);
-  //resetDailyScore()
-  /*
+const sendUpdatedLists = () => {
+  List.find({
+    $or: [
+      {
+        modifyDate: {
+          $gte: moment().subtract(1, "days"),
+        },
+        date: {
+          $lt: moment().subtract(1, "days"),
+        },
+      },
+    ],
+  })
+    .select("name")
+    .lean()
+    .then((lists) => {
+      if (lists.length > 0) {
+        let message = "<b>Lists updated today</b>";
+        lists.forEach(({ name }) => {
+          message += `\n- ${name}`;
+        });
+        message += "\n<i>Switch off daily updates through /settings</i>";
+        TenThingsGame.find({
+          "settings.updates": true,
+          enabled: true,
+        })
+          .select("chat_id")
+          .then((games) => {
+            bot.broadcast(
+              games.map((game) => game.chat_id),
+              message
+            );
+            bot.notifyAdmins(message);
+          });
+      } else {
+        bot.notifyAdmin("No lists modified");
+      }
+    });
+};
+
+//bot.sendPhoto(config.masterChat, 'https://m.media-amazon.com/images/M/MV5BNmE1OWI2ZGItMDUyOS00MmU5LWE0MzUtYTQ0YzA1YTE5MGYxXkEyXkFqcGdeQXVyMDM5ODIyNw@@._V1._SX40_CR0,0,40,54_.jpg')
+
+//var dailyScore = schedule.scheduleJob('*/10 * * * * *', function() {
+//resetDailyScore()
+/*
   const deleteStaleGames = schedule.scheduleJob('0 0 4 * * *', () => {
     //Delete stale games
     TenThingsGame.find({
@@ -511,86 +394,74 @@ if (process.env.NODE_ENV === "production") {
         }
       });
   });
-
-  const inactiveChats = schedule.scheduleJob('0 0 3 * * *', () => {
-    TenThingsGame.find({
-        'lastPlayDate': {
-          $lt: moment().subtract(30, 'days')
-        }
-      })
-      .select('chat_id')
-      .then(games => {
-        Promise.all(games.map((game, i) => {
-            return getChat(game.chat_id, i * 50);
-          }))
-          .then(chats => {
-            const inactiveChats = chats.filter(chat => chat.code === 404).map(chat => chat.id);
-            TenThingsGame.deleteMany({
-              chat_id: {
-                $in: inactiveChats
-              }
-            }, (err, response) => {
-              if (err) return console.error(err);
-              bot.notifyAdmin(`${inactiveChats.length} inactive chats deleted`);
-            });
-          }, err => console.error(err));
-      });
-  });
-  */
-  /*
-  TenThingsGame.find({ 'players.playStreak': { $gt: 0 } })
-  .then(games => {
-
-    const activePlayers = games.reduce((players, game) => {
-      return players.concat(game.players.filter(player => player.playStreak))
-    }, []).length;
-    if (games.length > 0) console.log(`${activePlayers} game streaks updated in ${games.length} games`);
-    games.forEach(game => {
-      console.log(game._id, game.players.filter(player => player.playStreak).map(player => player._id + ' ' + player.playStreak + '/' + player.maxPlayStreak + ' ' + player.lastPlayDate));
-      for (const player of game.players) {
-        if (player.playStreak <= player.maxPlayStreak && player.lastPlayDate <= moment().subtract(1, 'days')) {
-          player.playStreak = 0;
-        } else if (player.playStreak > player.maxPlayStreak) {
-          player.maxPlayStreak = player.playStreak;
-        }
-      }
-      console.log(game._id, game.players.filter(player => player.playStreak).map(player => player._id + ' ' + player.playStreak + '/' + player.maxPlayStreak + ' ' + player.lastPlayDate));
+*/
+const deactivateInactiveChats = () => {
+  TenThingsGame.find({
+    lastPlayDate: { $lt: moment().subtract(30, "days") },
+    enabled: true,
+  })
+    .select("chat_id")
+    .then((games) => {
+      Promise.all(
+        games.map((game, i) => {
+          return getChatWithDelay(game.chat_id, i * 50);
+        })
+      ).then(
+        (chats) => {
+          console.log(chats.filter((chat) => chat.includes("not found")));
+        },
+        (err) => console.error(err)
+      );
     });
-  });
-  */
+};
 
-  const updatePlayStreak = schedule.scheduleJob("0 0 2 * * *", () => {
-    //Update play streaks
-    TenThingsPlayer.find({
-      playStreak: {
-        $gt: 0,
-      },
-    })
-      .select("game playStreak maxPlayStreak lastPlayDate")
-      .then((players) => {
-        const uniqueGames = _.uniq(players.map((player) => player.game));
-        if (players.length > 0)
-          bot.notifyAdmin(`${players.length} game streaks updated in ${uniqueGames.length} games`);
-        players.forEach((player) => {
-          if (player.playStreak > 0) {
-            if (player.playStreak > player.maxPlayStreak) {
-              player.maxPlayStreak = player.playStreak;
-            }
-            if (player.lastPlayDate <= moment().subtract(1, "days")) {
-              player.playStreak = 0;
-            }
+const updatePlayStreak = () => {
+  //Update play streaks
+  TenThingsPlayer.find({ playStreak: { $gt: 0 } })
+    .select("game playStreak maxPlayStreak lastPlayDate")
+    .then((players) => {
+      const uniqueGames = _.uniq(players.map((player) => player.game));
+      if (players.length > 0) bot.notifyAdmin(`${players.length} game streaks updated in ${uniqueGames.length} games`);
+      players.forEach((player) => {
+        if (player.playStreak > 0) {
+          if (player.playStreak > player.maxPlayStreak) {
+            player.maxPlayStreak = player.playStreak;
           }
-          player.save((err, saved, rows) => {
-            if (err) console.error(err);
-            //console.log(saved, player._id);
-          });
+          if (player.lastPlayDate <= moment().subtract(1, "days")) {
+            player.playStreak = 0;
+          }
+        }
+        player.save((err, saved, rows) => {
+          if (err) console.error(err);
+          //console.log(saved, player._id);
         });
       });
+    });
+};
+
+const deleteStalePlayers = () => {
+  TenThingsPlayer.deleteMany({
+    date: { $lt: moment().subtract(30, "days") },
+    lastPlayDate: { $lt: moment().subtract(30, "days") },
+    answers: 0,
+    minigamePlays: 0,
+    tinygamePlays: 0,
+  }).exec((err, players) => {
+    if (err) console.error(err);
+    else console.log(players);
   });
+};
+
+if (process.env.NODE_ENV === "production") {
+  console.log(`Time: ${moment().utc().hour()}`);
+  schedule.scheduleJob("0 2 1 * * *", resetDailyScore);
+  schedule.scheduleJob("0 0 2 * * *", updatePlayStreak);
+  schedule.scheduleJob("0 0 3 * * *", minigame.createMinigames);
+  schedule.scheduleJob("0 0 4 * * *", deactivateInactiveChats);
+  schedule.scheduleJob("0 0 5 * * *", deleteStalePlayers);
+  schedule.scheduleJob("0 0 12 * * *", sendNewLists);
+  // schedule.scheduleJob('0 30 12 * * *', sendUpdatedLists)
+  schedule.scheduleJob("0 0 21 * * *", backupDatabase);
 } else {
   console.log("Schedules only run on production");
 }
-
-const createMinigames = schedule.scheduleJob("0 0 3 * * *", () => {
-  minigame.createMinigames();
-});

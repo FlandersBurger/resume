@@ -170,7 +170,10 @@ function TelegramBot() {
       const response = await axios.get(encodeURI(url));
       if (!response || !response.data || !response.data.result) return;
       if (response.data.result.invite_link) return response.data.result.invite_link;
+      else if (response.data.result.title) return `Group Chat: ${response.data.result.title}`;
       else if (response.data.result.username) return `Private Chat: @${response.data.result.username}`;
+      else if (response.data.result.first_name) return `Private Chat: @${response.data.result.first_name}`;
+      else if (response.data.result.type === "private") return `Private Chat`;
     } catch (error) {
       console.error("Get Chat Fail");
       if (error.response.data.error_code === 400) {
@@ -178,6 +181,7 @@ function TelegramBot() {
       } else {
         console.error(error);
       }
+      return `Chat not found: ${channel} - ${error.response.data.error_code}`;
     }
   };
 

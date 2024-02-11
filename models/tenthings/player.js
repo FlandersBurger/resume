@@ -26,6 +26,7 @@ var playerSchema = new mongoose.Schema({
   maxPlayStreak: { type: Number, required: true, default: 0 },
   hintStreak: { type: Number, required: true, default: 0 },
   maxHintStreak: { type: Number, required: true, default: 0 },
+  date: { type: Date, required: false, default: Date.now },
   lastPlayDate: { type: Date, required: false, default: new Date(2019, 5, 15).valueOf() }, //Date when lastPlayDate was implemented
   present: { type: Boolean, required: true, default: true },
   minigamePlays: { type: Number, required: false, default: 0 },
