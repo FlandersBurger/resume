@@ -40,7 +40,7 @@ const resetDailyScore = () => {
             })
               .select("_id id scoreDaily first_name")
               .exec();
-            const highScore = await getHighScore(players);
+            const highScore = players.reduce((highScore, { scoreDaily }) => _.max([highScore, scoreDaily]), 0);
             let winners = players.filter((player) => player.scoreDaily === highScore);
             let message = `<b>${winners
               .map(({ first_name }) => first_name)
@@ -102,19 +102,6 @@ const backupDatabase = () => {
     }
   );
 };
-
-const getHighScore = (players) =>
-  new Promise((resolve, reject) => {
-    try {
-      resolve(
-        players.reduce((highScore, { scoreDaily }) => {
-          return scoreDaily > highScore ? scoreDaily : highScore;
-        }, 0)
-      );
-    } catch (e) {
-      reject();
-    }
-  });
 
 function getChatWithDelay(chat, delay) {
   return new Promise((resolve, reject) => {

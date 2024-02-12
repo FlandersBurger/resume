@@ -39,25 +39,28 @@ var listSchema = new mongoose.Schema(
         modifyDate: { type: Date, required: false },
       },
     ],
+  },
+  {
+    toObject: { virtuals: true, getters: true },
+    toJSON: { virtuals: true, getters: true },
   }
-  // {
-  //   toObject: { virtuals: true, getters: true },
-  //   toJSON: { virtuals: true, getters: true },
-  // }
 );
 
-//listSchema.virtual('answers').get(() => this.values.length);
-// listSchema.virtual("blurbs").get(function () {
-//   return this.values ? this.values.filter((item) => item.blurb).length : 0;
-// });
-
-// listSchema.plugin(mongooseLeanVirtuals);
-
-/*
-listSchema.virtual('search').get(function() {
-  return this.name.removeAllButLetters();
+listSchema.virtual("answers").get(function () {
+  return this.values.length;
 });
-*/
+listSchema.virtual("blurbs").get(function () {
+  return this.values ? this.values.filter((item) => item.blurb).length : 0;
+});
+listSchema.virtual("playRatio").get(function () {
+  return this.plays ? (this.plays - this.skips) / this.plays : 0;
+});
+
+listSchema.plugin(mongooseLeanVirtuals);
+
+// listSchema.virtual("search").get(function () {
+//   return this.name.removeAllButLetters();
+// });
 
 for (const name in db) {
   List[name] = db[name].model("List", listSchema);

@@ -10,16 +10,13 @@ exports.send = async (type, msg, player, extraText = "") => {
     }</i>`;
     bot.notify(message);
     const chatLink = await bot.getChat(msg.chat.id);
-    message += chatLink ? `\nChat: ${chatLink}` : "";
+    message += chatLink ? `\n${chatLink}` : "";
     bot.notifyAdmins(message);
     message = `<b>${type.capitalize()}</b>\n<i>${suggestion}</i>\nThank you, ${
       player.username ? `@${player.username}` : player.first_name
     }`;
     bot.queueMessage(msg.chat.id, message);
   } else {
-    bot.queueMessage(
-      msg.chat.id,
-      `You didn't add a feature ${player.first_name}. Add your message after /feature`
-    );
+    bot.queueMessage(msg.chat.id, `You didn't add a feature ${player.first_name}. Add your message after /feature`);
   }
 };

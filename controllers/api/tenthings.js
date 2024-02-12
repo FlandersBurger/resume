@@ -113,7 +113,7 @@ router.get("/lists/:id", (req, res, next) => {
   })
     .populate("creator", "_id username displayName")
     .populate("values.creator", "_id username displayName")
-    .lean()
+    .lean({ virtuals: true })
     .exec((err, list) =>
       res.json({
         ...list,
@@ -578,10 +578,10 @@ const formatList = (list) => ({
   plays: list.plays,
   skips: list.skips,
   score: list.score,
-  playRatio: list.plays ? (list.plays - list.skips) / list.plays : 0,
-  answers: list.values.length,
+  playRatio: list.playRatio,
+  answers: list.answers,
   values: list.values.map((item) => item.value),
-  blurbs: list.values ? list.values.filter((item) => item.blurb).length : 0,
+  blurbs: list.blurbs,
   date: list.date,
   modifyDate: list.modifyDate,
   creator: list.creator.username,
