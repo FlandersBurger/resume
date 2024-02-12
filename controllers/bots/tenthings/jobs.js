@@ -41,17 +41,10 @@ const resetDailyScore = () => {
               .select("_id id scoreDaily first_name")
               .exec();
             const highScore = await getHighScore(players);
-            let winners = players
-              .filter((player) => player.scoreDaily === highScore)
-              .reduce((msg, { first_name }, index, length) => {
-                if (index < length - 1) {
-                  msg += `${first_name} & `;
-                } else {
-                  msg += first_name;
-                }
-                return msg;
-              }, "");
-            let message = `<b>${winners} won with ${highScore} points!</b>\n\n`;
+            let winners = players.filter((player) => player.scoreDaily === highScore);
+            let message = `<b>${winners
+              .map(({ first_name }) => first_name)
+              .join(" & ")} won with ${highScore} points!</b>\n\n`;
             message += `Thanks for playing! I gotta say it warms my heart knowing the game is played widely and I want to keep it free.\n`;
             message += `However, the game costs me around <i>$40/month</i> to host so if you\'re feeling generous and want to support Ten Things then please consider donating.\n`;
             message += `Your gratitude won\'t go unnoticed :)\n\n`;
@@ -83,7 +76,11 @@ const resetDailyScore = () => {
             maingame.sendMessage(game);
             game.save();
           }
-          updateDailyStats(games, dailyPlayers.length, _.uniq(dailyPlayers, (player) => player.id).length);
+          try {
+            updateDailyStats(games, dailyPlayers.length, _.uniq(dailyPlayers, (player) => player.id).length);
+          } catch (error) {
+            if (error) return bot.notifyAdmin(`Daily stat update issue\n${error}`);
+          }
         },
         (err) => {
           console.error(err);
@@ -135,12 +132,19 @@ TenThingsStats.find()
   .then(stats => {
     console.log(stats.forEach(stat => console.log(stat.date)));
   });*/
-
-const updateDailyStats = async (games, totalPlayers, uniquePlayers) => {
-  let base = await TenThingsStats.findOne({ base: true }).exec();
+const getYearlyStats = async () => {
   const yearStats = (
     await TenThingsStats.find({ base: false, uniquePlayers: { $gt: 0 } }).select("date uniquePlayers")
   ).filter(({ date }) => moment(date) >= moment().subtract(1, "years"));
+  return {
+    min: _.min(yearStats, (stat) => stat.uniquePlayers),
+    max: _.max(yearStats, (stat) => stat.uniquePlayers),
+  };
+};
+
+const updateDailyStats = async (games, totalPlayers, uniquePlayers) => {
+  let base = await TenThingsStats.findOne({ base: true }).exec();
+  const yearStats = await getYearlyStats();
   const listStats = await List.aggregate([
     {
       $project: {
@@ -175,20 +179,12 @@ const updateDailyStats = async (games, totalPlayers, uniquePlayers) => {
       },
     },
   ]).exec();
-  const yearPlayerStats = {
-    minPlayers: _.min(yearStats, (stat) => stat.uniquePlayers),
-    maxPlayers: _.max(yearStats, (stat) => stat.uniquePlayers),
-  };
   const newGamesCount = games.filter((game) => game.date >= moment().subtract(1, "days")).length;
   let message = `${games.length} games played today\n`;
   message += `${newGamesCount} new games started\n`;
-  message += `${totalPlayers} players of which ${uniquePlayers} unique`;
-  message += `52-week high unique: ${yearPlayerStats.maxPlayers.uniquePlayers} on ${moment(
-    yearPlayerStats.maxPlayers.date
-  ).format("DD-MMM-YYYY")}\n`;
-  message += `52-week low unique: ${yearPlayerStats.minPlayers.uniquePlayers} on ${moment(
-    yearPlayerStats.minPlayers.date
-  ).format("DD-MMM-YYYY")}\n`;
+  message += `${uniquePlayers} unique of ${totalPlayers} players\n`;
+  message += `52W high unique: ${yearStats.max.uniquePlayers} on ${moment(yearStats.max.date).format("DD-MMM-YYYY")}\n`;
+  message += `52W low unique: ${yearStats.min.uniquePlayers} on ${moment(yearStats.min.date).format("DD-MMM-YYYY")}\n`;
   message += `${(listStats[0].plays - base.listsPlayed).makeReadable()} lists played\n`;
   message += `${(listStats[0].votes - base.votes).makeReadable()} list votes given\n`;
   message += `${(playerStats[0].skips - base.skips).makeReadable()} lists skipped\n`;
