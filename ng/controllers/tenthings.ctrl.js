@@ -173,10 +173,12 @@ angular
     };
 
     $scope.selectList = (list) => {
-      TenThingsSvc.getList(list).then(({ data }) => {
-        $scope.selectedList = data;
-        $location.search("list", data._id);
-      });
+      TenThingsSvc.getList(list)
+        .then(({ data }) => {
+          $scope.selectedList = data;
+          $location.search("list", data._id);
+        })
+        .catch((err) => console.error(err));
     };
 
     if ($location.search().list) {

@@ -24,9 +24,7 @@ const TenThingsGame = require("../../models/tenthings/game")();
 const TenThingsPlayer = require("../../models/tenthings/player")();
 
 router.get("/games", (req, res, next) => {
-  if (!req.auth || req.auth.userid == "5ece428af848aa2fc392d099") {
-    return res.sendStatus(401);
-  }
+  if (!req.isAdmin) return res.sendStatus(401);
   TenThingsGame.find({
     lastPlayDate: { $gt: "2019-06-15T00:00:00.000Z" },
     ...req.body.query,
@@ -44,9 +42,7 @@ router.get("/games", (req, res, next) => {
 });
 
 router.get("/players/:id", (req, res, next) => {
-  if (!req.auth || req.auth.userid == "5ece428af848aa2fc392d099") {
-    return res.sendStatus(401);
-  }
+  if (!req.isAdmin) return res.sendStatus(401);
   TenThingsPlayer.find({
     id: req.params.id,
   }).exec((err, result) => {
@@ -56,6 +52,7 @@ router.get("/players/:id", (req, res, next) => {
 });
 
 router.get("/names", (req, res, next) => {
+  if (!req.isAuthorized) return res.sendStatus(401);
   TenThingsList.find({})
     .select("_id name")
     .exec((err, result) => {
@@ -73,9 +70,7 @@ router.get("/languages", (req, res, next) => {
 });
 
 router.get("/lists", (req, res, next) => {
-  if (!req.auth || req.auth.userid == "5ece428af848aa2fc392d099") {
-    return res.sendStatus(401);
-  }
+  if (!req.isAuthorized) return res.sendStatus(401);
   TenThingsList.find({})
     .select(
       "_id plays skips score values date modifyDate creator name description categories language isDynamic frequency difficulty"
@@ -94,6 +89,7 @@ router.get("/lists", (req, res, next) => {
 });
 
 router.get("/lists/:id/report/:user", (req, res, next) => {
+  if (!req.isAuthorized) return res.sendStatus(401);
   TenThingsList.findOne({
     _id: req.params.id,
   }).exec((err, list) => {
@@ -108,14 +104,16 @@ router.get("/lists/:id/report/:user", (req, res, next) => {
 });
 
 router.get("/lists/:id", (req, res, next) => {
+  if (!req.isAuthorized) return res.sendStatus(401);
   TenThingsList.findOne({
     _id: req.params.id,
   })
     .populate("creator", "_id username displayName")
     .populate("values.creator", "_id username displayName")
     .lean({ virtuals: true })
-    .exec((err, list) =>
-      res.json({
+    .exec((err, list) => {
+      if (!list) return res.sendStatus(404);
+      return res.json({
         ...list,
         values: list.values.map((value) => ({
           ...value,
@@ -125,11 +123,12 @@ router.get("/lists/:id", (req, res, next) => {
         downvotes: list.votes ? list.votes.filter(({ vote }) => vote < 0).length : 0,
         playRatio: list.plays ? (list.plays - list.skips) / list.plays : 0,
         calculatedDifficulty: list.plays ? list.hints / 6 / (list.plays - list.skips) : 0,
-      })
-    );
+      });
+    });
 });
 
 router.get("/lists/:id/movies", async (req, res, next) => {
+  if (!req.isAuthorized) return res.sendStatus(401);
   let list = await TenThingsList.findOne({
     _id: req.params.id,
   });
@@ -170,6 +169,7 @@ router.get("/lists/:id/movies", async (req, res, next) => {
 });
 
 router.get("/lists/:id/tv", async (req, res, next) => {
+  if (!req.isAuthorized) return res.sendStatus(401);
   let list = await TenThingsList.findOne({
     _id: req.params.id,
   });
@@ -210,6 +210,7 @@ router.get("/lists/:id/tv", async (req, res, next) => {
 });
 
 router.get("/lists/:id/actors", async (req, res, next) => {
+  if (!req.isAuthorized) return res.sendStatus(401);
   let list = await TenThingsList.findOne({
     _id: req.params.id,
   });
@@ -250,6 +251,7 @@ router.get("/lists/:id/actors", async (req, res, next) => {
 });
 
 router.get("/lists/:id/books", async (req, res, next) => {
+  if (!req.isAuthorized) return res.sendStatus(401);
   let list = await TenThingsList.findOne({
     _id: req.params.id,
   });
@@ -306,6 +308,7 @@ router.get("/lists/:id/books", async (req, res, next) => {
 });
 
 router.get("/lists/:id/musicvideos", async (req, res, next) => {
+  if (!req.isAuthorized) return res.sendStatus(401);
   let list = await TenThingsList.findOne({
     _id: req.params.id,
   });
@@ -392,6 +395,7 @@ const getWikiImage = async (query) => {
 };
 
 router.get("/lists/:id/pics", async (req, res, next) => {
+  if (!req.isAuthorized) return res.sendStatus(401);
   let list = await TenThingsList.findOne({
     _id: req.params.id,
   });
@@ -439,6 +443,7 @@ router.get("/lists/:id/pics", async (req, res, next) => {
 });
 
 router.get("/game/:id", async (req, res, next) => {
+  if (!req.isAdmin) return res.sendStatus(401);
   const game = await TenThingsGame.findOne({ chat_id: req.params.id }).lean();
   const players = await TenThingsPlayer.find({ game: game._id }).lean();
   res.json({
@@ -448,9 +453,7 @@ router.get("/game/:id", async (req, res, next) => {
 });
 
 router.post("/lists/:id", (req, res, next) => {
-  if (!req.auth || req.auth.userid == "5ece428af848aa2fc392d099") {
-    return res.sendStatus(401);
-  }
+  if (!req.isAuthorized) return res.sendStatus(401);
   TenThingsList.findOne({
     _id: req.params.id,
   }).exec(function (err, list) {
@@ -470,9 +473,7 @@ router.post("/lists/:id", (req, res, next) => {
 });
 
 router.put("/lists", (req, res, next) => {
-  if (req.auth.userid == "5ece428af848aa2fc392d099") {
-    return res.sendStatus(401);
-  }
+  if (!req.isAuthorized) return res.sendStatus(401);
   var yesterday = moment().subtract(1, "days");
   var previousModifyDate = moment(req.body.list.modifyDate);
   req.body.list.modifyDate = new Date();
@@ -510,45 +511,41 @@ router.put("/lists", (req, res, next) => {
 });
 
 router.delete("/lists/:id", (req, res, next) => {
-  User.findOne({
-    _id: req.auth.userid,
-  }).exec((err, user) => {
-    if (err) return next(err);
-    TenThingsList.findOne(
-      {
-        _id: req.params.id,
-      },
-      (err, list) => {
-        if (err) return next(err);
-        if (list) {
-          if (config.admins.indexOf(req.auth.userid) >= 0 || req.auth.userid === list.creator) {
-            TenThingsList.findByIdAndRemove(
-              {
-                _id: req.params.id,
-              },
-              (err, list) => {
-                if (err) return next(err);
-                bot.notifyAdmins(
-                  list.values
-                    .sort((a, b) => (a.value < b.value ? -1 : 1))
-                    .reduce(
-                      (message, item) => `${message}- ${item.value}\n`,
-                      `<b>${list.name}</b>\ndeleted by ${user.username}\n`
-                    )
-                );
-                res.sendStatus(200);
-              }
-            );
-          } else {
-            bot.notifyAdmins(
-              `Unauthorized deletion (not an admin nor the creator):\n<b>${list.name}</b> by ${user.username} (${user._id})\nIf it persists -> Block them at https://belgocanadian.com/tenthings-admin`
-            );
-            res.sendStatus(200);
-          }
+  if (!req.isAuthorized) return res.sendStatus(401);
+  TenThingsList.findOne(
+    {
+      _id: req.params.id,
+    },
+    (err, list) => {
+      if (err) return next(err);
+      if (list) {
+        if (req.isAdmin || req.auth.userid === list.creator) {
+          TenThingsList.findByIdAndRemove(
+            {
+              _id: req.params.id,
+            },
+            (err, list) => {
+              if (err) return next(err);
+              bot.notifyAdmins(
+                list.values
+                  .sort((a, b) => (a.value < b.value ? -1 : 1))
+                  .reduce(
+                    (message, item) => `${message}- ${item.value}\n`,
+                    `<b>${list.name}</b>\ndeleted by ${user.username}\n`
+                  )
+              );
+              res.sendStatus(200);
+            }
+          );
+        } else {
+          bot.notifyAdmins(
+            `Unauthorized deletion (not an admin nor the creator):\n<b>${list.name}</b> by ${user.username} (${user._id})\nIf it persists -> Block them at https://belgocanadian.com/tenthings-admin`
+          );
+          res.sendStatus(200);
         }
       }
-    );
-  });
+    }
+  );
 });
 
 router.post("/", (req, res, next) => {

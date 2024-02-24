@@ -210,6 +210,7 @@ exports.categories = {
     "leaders",
     "politics",
     "social_movements",
+    "tourism",
     "transportation",
   ],
   language: ["euphemisms", "foreign", "grammar", "idioms", "loanwords", "synonyms", "terms", "words"],
