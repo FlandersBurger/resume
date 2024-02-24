@@ -112,7 +112,7 @@
     "banListQuestion": "Banir lista?",
     "banListCommand": "Banir lista!",
     "confirmBan": "Você confirma o banimento da lista \"{{list}}\"?",
-    "corroboratBan": "Alguém concorda com o banimento da lista \"{{list}}\"?",
+    "corroborateBan": "Alguém concorda com o banimento da lista \"{{list}}\"?",
     "alreadyBannedList": "\"{{list}}\" já está banida!",
     "listBanned": "\"{{list}}\" banida!",
     "banNotFound": "Não consigo encontrar um pedido de proibição, {{name}}",

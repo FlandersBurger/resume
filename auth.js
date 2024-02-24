@@ -9,6 +9,7 @@ module.exports = async (req, res, next) => {
   if (req.auth && req.auth.userid) {
     const user = await User.findOne({ _id: req.auth.userid });
     if (user) {
+      req.user = user;
       req.isAuthorized = user && req.auth.userid != "5ece428af848aa2fc392d099";
       req.isAdmin = user && config.admins.indexOf(req.auth.userid) >= 0;
     }

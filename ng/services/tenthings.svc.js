@@ -1,4 +1,4 @@
-angular.module('app').service('TenThingsSvc', function ($http) {
+angular.module("app").service("TenThingsSvc", function ($http) {
   var svc = this;
 
   svc.getQueue = function () {
@@ -18,50 +18,50 @@ angular.module('app').service('TenThingsSvc', function ($http) {
   };
 
   svc.getList = function (list) {
-    return $http.get('/api/tenthings/lists/' + list._id);
+    return $http.get("/api/tenthings/lists/" + list._id);
   };
 
   svc.updateList = function (list) {
-    return $http.post('/api/tenthings/lists/' + list._id, list);
+    return $http.post("/api/tenthings/lists/" + list._id, list);
   };
 
   svc.saveList = function (user, list) {
-    return $http.put('/api/tenthings/lists', {
+    return $http.put("/api/tenthings/lists", {
       user: user,
       list: list,
     });
   };
 
   svc.reportList = function (user, list) {
-    $http.get('/api/tenthings/lists/' + list._id + '/report/' + user._id);
+    $http.get("/api/tenthings/lists/" + list._id + "/report/" + user._id);
   };
 
   svc.deleteList = function (list) {
-    return $http.delete('/api/tenthings/lists/' + list._id);
+    return $http.delete("/api/tenthings/lists/" + list._id);
   };
 
   svc.getMoviePics = function (list) {
-    return $http.get(`/api/tenthings/lists/${list._id}/movies`);
+    return $http.post(`/api/tenthings/lists/${list._id}/blurbs/movies`);
   };
 
   svc.getTVPics = function (list) {
-    return $http.get(`/api/tenthings/lists/${list._id}/tv`);
+    return $http.post(`/api/tenthings/lists/${list._id}/blurbs/tv`);
   };
 
   svc.getActorPics = function (list) {
-    return $http.get(`/api/tenthings/lists/${list._id}/actors`);
+    return $http.post(`/api/tenthings/lists/${list._id}/blurbs/actors`);
   };
 
   svc.getBookPics = function (list) {
-    return $http.get(`/api/tenthings/lists/${list._id}/books`);
+    return $http.post(`/api/tenthings/lists/${list._id}/blurbs/books`);
   };
 
   svc.getMusicVideos = function (list) {
-    return $http.get(`/api/tenthings/lists/${list._id}/musicvideos`);
+    return $http.post(`/api/tenthings/lists/${list._id}/blurbs/musicvideos`);
   };
 
   svc.getPics = function (list) {
-    return $http.get(`/api/tenthings/lists/${list._id}/pics`);
+    return $http.post(`/api/tenthings/lists/${list._id}/blurbs/pics`);
   };
 
   svc.getPause = function () {

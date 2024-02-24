@@ -118,7 +118,7 @@
     "banListQuestion": "Larang daftar?",
     "banListCommand": "Larang daftar!",
     "confirmBan": "Apakah Anda mengonfirmasi pelarangan daftar \"{{list}}\"?",
-    "corroboratBan": "Ada yang setuju untuk melarang daftar \"{{list}}\"?",
+    "corroborateBan": "Ada yang setuju untuk melarang daftar \"{{list}}\"?",
     "alreadyBannedList": "\"{{list}}\" sudah dilarang!",
     "listBanned": "\"{{list}}\" dilarang!",
     "banNotFound": "Saya tidak bisa menemukan permintaan larangan, {{name}}",

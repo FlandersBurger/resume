@@ -109,7 +109,7 @@
     "banListQuestion": "I-ban ang listahan?",
     "banListCommand": "I-ban ang listahan!",
     "confirmBan": "Kumpirmahin mo ba ang pagbaban ng listahan \"{{list}}\"?",
-    "corroboratBan": "Mayroon bang sumasang-ayon sa pagbaban ng listahan \"{{list}}\"?",
+    "corroborateBan": "Mayroon bang sumasang-ayon sa pagbaban ng listahan \"{{list}}\"?",
     "alreadyBannedList": "\"{{list}}\" ay mayroon nang ban!",
     "listBanned": "Binalaan na ang \"{{list}}\"!",
     "banNotFound": "Hindi ko mahanap ang kahilingan ng ban, {{name}}",

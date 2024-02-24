@@ -1,89 +1,52 @@
-var router = require('express').Router();
-var bcrypt = require('bcryptjs');
-var jwt = require('jwt-simple');
-var admin = require('firebase-admin');
-var config = require('../../config');
-var User = require('../../models/user')();
+var router = require("express").Router();
+var bcrypt = require("bcryptjs");
+var jwt = require("jwt-simple");
+var admin = require("firebase-admin");
+var config = require("../../config");
+var User = require("../../models/user")();
 
-router.get('/', function (req, res, next) {
-  if (!req.auth.userid) {
-    return res.send(401);
-  }
-  User.findOne(
-    {
-      _id: req.auth.userid,
-    },
-    function (err, user) {
-      if (err) return next(err);
-      res.json(user);
-    }
-  );
+router.get("/", function (req, res, next) {
+  if (!req.isAuthorized) return res.sendStatus(401);
+  User.findOne({ _id: req.auth.userid }, function (err, user) {
+    if (err) return next(err);
+    res.json(user);
+  });
 });
 
-router.get('/all', (req, res, next) => {
-  if (!req.auth.userid) {
-    return res.send(401);
-  }
-  User.findOne(
-    {
-      _id: req.auth.userid,
-    },
-    function (err, user) {
-      if (err) return next(err);
-      if (user.admin) {
-        User.find({})
-          .select('-gender -flags -highscore')
-          .limit(parseInt(req.query.limit || 0))
-          .skip(parseInt(req.query.limit * (req.query.page - 1) || 0))
-          .exec((err, users) => {
-            if (err) {
-              return next(err);
-            }
-            res.json(users);
-          });
+router.get("/all", (req, res, next) => {
+  if (!req.isAdmin) return res.send(401);
+  User.find({})
+    .select("-gender -flags -highscore")
+    .limit(parseInt(req.query.limit || 0))
+    .skip(parseInt(req.query.limit * (req.query.page - 1) || 0))
+    .exec((err, users) => {
+      if (err) {
+        return next(err);
       }
-    }
-  );
+      res.json(users);
+    });
 });
 
-router.get('/ban/:id', (req, res, next) => {
-  if (!req.auth.userid) {
-    return res.send(401);
-  }
-  console.log(req.params);
-  User.findOne(
-    {
-      _id: req.auth.userid,
-    },
-    (err, user) => {
-      if (err) return next(err);
-      if (user.admin) {
-        User.findOne(
-          {
-            _id: req.params.id,
-          },
-          (err, user) => {
-            if (err) {
-              return next(err);
-            }
-            if (user) {
-              console.log(user);
-              user.banned = !user.banned;
-              try {
-                user.save();
-              } catch (e) {
-                return next(err);
-              }
-              res.sendStatus(200);
-            }
-          }
-        );
+router.get("/ban/:id", (req, res, next) => {
+  if (!req.isAdmin) return res.sendStatus(401);
+  User.findOne({ _id: req.params.id }, (err, user) => {
+    if (err) {
+      return next(err);
+    }
+    if (user) {
+      console.log(user);
+      user.banned = !user.banned;
+      try {
+        user.save();
+      } catch (e) {
+        return next(err);
       }
+      res.sendStatus(200);
     }
-  );
+  });
 });
 
-router.post('/', function (req, res, next) {
+router.post("/", function (req, res, next) {
   var user = new User({
     username: req.body.username,
     usernameLC: req.body.username.toLowerCase(),
@@ -103,7 +66,7 @@ router.post('/', function (req, res, next) {
   });
 });
 
-router.post('/authenticate', function (req, res, next) {
+router.post("/authenticate", function (req, res, next) {
   var user = req.body.user;
   admin
     .auth()
@@ -135,7 +98,7 @@ router.post('/authenticate', function (req, res, next) {
             if (err) {
               throw next(err);
             }
-            console.log(user.username + ' created');
+            console.log(user.username + " created");
             var token = jwt.encode(
               {
                 userid: user.id,
@@ -145,7 +108,7 @@ router.post('/authenticate', function (req, res, next) {
             res.json(token);
           });
         } else {
-          console.log(foundUser.username + ' authenticated');
+          console.log(foundUser.username + " authenticated");
           var token = jwt.encode(
             {
               userid: foundUser.id,
@@ -161,7 +124,7 @@ router.post('/authenticate', function (req, res, next) {
     });
 });
 
-router.get('/:id/login', function (req, res, next) {
+router.get("/:id/login", function (req, res, next) {
   User.findOne({
     _id: req.params.id,
   }).exec(function (err, foundUser) {
@@ -173,7 +136,7 @@ router.get('/:id/login', function (req, res, next) {
     } else if (foundUser.banned) {
       res.sendStatus(401);
     } else {
-      console.log(foundUser.username + ' logged in');
+      console.log(foundUser.username + " logged in");
       var token = jwt.encode(
         {
           userid: foundUser.id,
@@ -185,12 +148,12 @@ router.get('/:id/login', function (req, res, next) {
   });
 });
 
-router.post('/:id/verification', function (req, res, next) {
+router.post("/:id/verification", function (req, res, next) {
   if (checkUser(req.params.id, req)) {
     User.findOne({
       _id: req.auth.userid,
     })
-      .select('password')
+      .select("password")
       .exec(function (err, user) {
         if (user.banned) return res.sendStatus(401);
         bcrypt.compare(req.body.password, user.password, function (err, valid) {
@@ -208,7 +171,7 @@ router.post('/:id/verification', function (req, res, next) {
   }
 });
 
-router.post('/:id', function (req, res, next) {
+router.post("/:id", function (req, res, next) {
   if (checkUser(req.params.id, req)) {
     User.findOne({
       _id: req.auth.userid,
@@ -223,7 +186,7 @@ router.post('/:id', function (req, res, next) {
         if (err) {
           throw next(err);
         }
-        console.log(user.username + ' updated their profile');
+        console.log(user.username + " updated their profile");
         res.sendStatus(200);
       });
     });
@@ -232,13 +195,13 @@ router.post('/:id', function (req, res, next) {
   }
 });
 
-router.post('/:id/password', function (req, res, next) {
+router.post("/:id/password", function (req, res, next) {
   if (checkUser(req.params.id, req)) {
     User.findOne({
       _id: req.auth.userid,
     })
-      .select('username')
-      .select('password')
+      .select("username")
+      .select("password")
       .exec(function (err, user) {
         if (err) return next(err);
         if (user.banned) return res.sendStatus(401);
@@ -256,7 +219,7 @@ router.post('/:id/password', function (req, res, next) {
                 if (err) {
                   throw next(err);
                 }
-                console.log(user.username + ' changed their password');
+                console.log(user.username + " changed their password");
                 res.sendStatus(200);
               });
             });
@@ -268,13 +231,13 @@ router.post('/:id/password', function (req, res, next) {
   }
 });
 
-router.post('/:id/username', function (req, res, next) {
+router.post("/:id/username", function (req, res, next) {
   if (checkUser(req.params.id, req)) {
     User.findOne({
       _id: req.auth.userid,
     })
-      .select('username')
-      .select('usernameLC')
+      .select("username")
+      .select("usernameLC")
       .exec(function (err, user) {
         User.findOne(
           {
@@ -286,11 +249,11 @@ router.post('/:id/username', function (req, res, next) {
             }
             if (user2) {
               if (user2.id !== auth.userid) {
-                console.log(req.body.newUsername + ' already taken');
+                console.log(req.body.newUsername + " already taken");
                 return res.sendStatus(304);
               }
             }
-            console.log(user.username + ' changed their name to ' + req.body.newUsername);
+            console.log(user.username + " changed their name to " + req.body.newUsername);
             user.username = req.body.newUsername;
             user.usernameLC = req.body.newUsername.toLowerCase();
             user.save(function (err, user) {

@@ -109,7 +109,7 @@
     "banListQuestion": "Ban list?",
     "banListCommand": "Ban list!",
     "confirmBan": "Do you confirm banning list \"{{list}}\"?",
-    "corroboratBan": "Does someone agree to banning list \"{{list}}\"?",
+    "corroborateBan": "Does someone agree to banning list \"{{list}}\"?",
     "alreadyBannedList": "\"{{list}}\" is already banned!",
     "listBanned": "\"{{list}}\" banned!",
     "banNotFound": "I can't find a ban request, {{name}}",

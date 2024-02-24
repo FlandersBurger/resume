@@ -112,7 +112,7 @@
     "banListQuestion": "Lijst verbannen?",
     "banListCommand": "Lijst verbannen!",
     "confirmBan": "Bevestig je het verbannen van lijst \"{{list}}\"?",
-    "corroboratBan": "Is er iemand die het eens is met het verbannen van lijst \"{{list}}\"?",
+    "corroborateBan": "Is er iemand die het eens is met het verbannen van lijst \"{{list}}\"?",
     "alreadyBannedList": "\"{{list}}\" is al verbannen!",
     "listBanned": "\"{{list}}\" verbannen!",
     "banNotFound": "Ik kan geen verbodsverzoek vinden, {{name}}",
