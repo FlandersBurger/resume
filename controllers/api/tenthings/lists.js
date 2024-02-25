@@ -1,16 +1,16 @@
 const router = require("express").Router();
 const mongoose = require("mongoose");
-const request = require("request-promise");
 const moment = require("moment");
-const _ = require("underscore");
-const parseString = require("xml2js").parseStringPromise;
-const FuzzyMatching = require("fuzzy-matching");
 
-const config = require("../../../config");
 const bot = require("../../../connections/telegram");
 const messages = require("../../bots/tenthings/messages");
 const keyboards = require("../../bots/tenthings/keyboards");
 const lists = require("../../bots/tenthings/lists");
+const { getAuthor, getBookCover } = require("../../../connections/goodreads");
+const { getMovieDbImage } = require("../../../connections/moviedb");
+const { getMusicVideo } = require("../../../connections/youtube");
+const { getUnsplashImage } = require("../../../connections/unsplash");
+const { getWikiImage } = require("../../../connections/wikipedia");
 // const Spotify = require('../../connections/spotify');
 // const spotify = new Spotify();
 // spotify.init();
@@ -86,16 +86,18 @@ router.post("/:id/blurbs/:type", async (req, res, next) => {
             break;
           case "books":
             const author = list.name.indexOf("Written by ") === 0 ? list.name.substring(11) : "";
-            const goodreadsAuthor = author ? await getGoodreadsAuthor(author) : "";
-            blurbUrl = await getGoodreadsImage(value.value, goodreadsAuthor);
+            const goodreadsAuthor = author ? await getAuthor(author) : "";
+            blurbUrl = await getBookCover(value.value, goodreadsAuthor);
             break;
           case "musicvideos":
             const artist = list.name.substring(0, list.name.indexOf(" - ")).replace(/\s/, "+");
             blurbUrl = await getMusicVideo(value.value, artist);
             break;
-          case "pics":
+          case "wiki":
+            blurbUrl = await getWikiImage(value.value);
+            break;
+          case "unsplash":
             blurbUrl = await getUnsplashImage(value.value);
-            if (!blurbUrl) blurbUrl = await getWikiImage(value.value);
           default:
             break;
         }
@@ -120,120 +122,6 @@ router.post("/:id/blurbs/:type", async (req, res, next) => {
     res.sendStatus(404);
   }
 });
-
-const getMovieDbImage = async (query, type) => {
-  const movieDB = await request(
-    `https://api.themoviedb.org/3/search/${type}?api_key=${config.tokens.tmdbapi}&query=${encodeURIComponent(query)}`
-  );
-  try {
-    const posterPath = JSON.parse(movieDB).results[0].poster_path;
-    if (posterPath) {
-      return `http://image.tmdb.org/t/p/w500${posterPath}`;
-    }
-  } catch (e) {
-    console.error(e);
-  }
-};
-
-const getGoodreadsAuthor = async (author) => {
-  const goodreadsAuthor = await request(
-    `https://www.goodreads.com/api/author_url/${author}?key=${config.tokens.goodreadsapi}`
-  );
-  const parsedAuthorXML = await parseString(goodreadsAuthor);
-  return parsedAuthorXML.GoodreadsResponse.author[0].$.id;
-};
-
-const getGoodreadsImage = async (query, author) => {
-  const goodreadsDB = await request(
-    `https://www.goodreads.com/search.xml?key=${config.tokens.goodreadsapi}&q=${encodeURIComponent(
-      query
-    )}&search[field]=title`
-  );
-  try {
-    const parsedXML = await parseString(goodreadsDB);
-    const mostRatedWork = parsedXML.GoodreadsResponse.search[0].results[0].work
-      .sort((workA, workB) => workB.ratings_count[0]._ - workA.ratings_count[0]._)
-      .filter((work) => !author || work.best_book[0].author[0].id.map((id) => id._).includes(author))
-      .filter((work) => work.best_book[0].image_url[0].indexOf("nophoto") < 0);
-    const posterPath = mostRatedWork[0].best_book[0].image_url[0];
-    if (posterPath) {
-      return posterPath;
-    }
-  } catch (e) {
-    console.error(e);
-  }
-};
-
-const getMusicVideo = async (query, artist) => {
-  const youtubeDB = await request(
-    `https://www.googleapis.com/youtube/v3/search?key=${
-      config.tokens.youtubeapi
-    }&order=relevance&videoDefinition=high&type=video&maxResults=1&part=snippet&q=${artist}+VEVO+${encodeURIComponent(
-      query.replace(" ", "+")
-    )}`
-  );
-  try {
-    const videoPath = JSON.parse(youtubeDB).items[0].id.videoId;
-    if (videoPath) {
-      return `https://www.youtube.com/watch?v=${videoPath}`;
-    }
-  } catch (e) {
-    console.error(e);
-  }
-};
-
-const getWikiImage = async (query) => {
-  try {
-    const wikiDB = await request(
-      `https://en.wikipedia.org/w/api.php?action=query&format=json&prop=images&generator=prefixsearch&gpssearch=${encodeURIComponent(
-        query
-      )}`
-    );
-    const pages = Object.values(JSON.parse(wikiDB).query.pages)
-      .map((page) => ({
-        ...page,
-        lean: page.title.removeAllButLetters(),
-      }))
-      .filter(
-        (page) =>
-          page.images &&
-          page.images.filter(
-            (image) =>
-              ["jpg", "jpeg", "png"].indexOf(image.title.substring(image.title.lastIndexOf(".") + 1).toLowerCase()) >= 0
-          ).length > 0
-      );
-    const fuzzyMatchPages = new FuzzyMatching(pages.map((page) => page.lean));
-    const matchPage = fuzzyMatchPages.get(query.removeAllButLetters(), {});
-    const page = _.find(pages, (page) => page.lean === matchPage.value);
-    const images = page.images
-      .map((image) => ({
-        ...image,
-        lean: image.title.substring(4, image.title.lastIndexOf(".")).removeAllButLetters(),
-        ext: image.title.substring(image.title.lastIndexOf(".") + 1).toLowerCase(),
-      }))
-      .filter((image) => ["jpg", "jpeg", "png"].indexOf(image.ext) >= 0);
-    const fuzzyMatchImages = new FuzzyMatching(images.map((image) => image.lean));
-    const matchImage = fuzzyMatchImages.get(query.removeAllButLetters(), {});
-    const image = _.find(images, (image) => image.lean === matchImage.value);
-    if (!image) console.log(pages.map((page) => page.images));
-    return `https://commons.wikimedia.org/wiki/Special:FilePath/${image.title.substring(5)}`;
-  } catch (e) {
-    console.error(e);
-  }
-};
-
-const getUnsplashImage = async (query) => {
-  try {
-    const unsplashDB = await request(
-      `https://api.unsplash.com/search/photos?client_id=${config.tokens.unsplashapi.key}&query=${encodeURIComponent(
-        query.replace(" ", "+")
-      )}`
-    );
-    return JSON.parse(unsplashDB).results[0].urls.regular;
-  } catch (e) {
-    console.error(e);
-  }
-};
 
 router.post("/:id", (req, res, next) => {
   if (!req.isAuthorized) return res.sendStatus(401);

@@ -273,7 +273,7 @@
             </div>
             <button
               class="btn btn-default"
-              ng-click="getMoviePics()"
+              ng-click="getBlurbs('movies')"
               ng-if="selectedList.categories.indexOf('Movies') >= 0"
               ng-disabled="gettingBlurbs || !selectedList || (!currentUser.admin && selectedList.creator._id !== currentUser._id && selectedList._id)"
             >
@@ -281,7 +281,7 @@
             </button>
             <button
               class="btn btn-default"
-              ng-click="getTVPics()"
+              ng-click="getBlurbs('tv')"
               ng-if="selectedList.categories.indexOf('Television') >= 0"
               ng-disabled="gettingBlurbs || !selectedList || (!currentUser.admin && selectedList.creator._id !== currentUser._id && selectedList._id)"
             >
@@ -289,7 +289,7 @@
             </button>
             <button
               class="btn btn-default"
-              ng-click="getActorPics()"
+              ng-click="getBlurbs('actors')"
               ng-if="selectedList.categories.indexOf('Movies') >= 0 || selectedList.categories.indexOf('Television') >= 0"
               ng-disabled="gettingBlurbs || !selectedList || (!currentUser.admin && selectedList.creator._id !== currentUser._id && selectedList._id)"
             >
@@ -297,7 +297,7 @@
             </button>
             <button
               class="btn btn-default"
-              ng-click="getBookPics()"
+              ng-click="getBlurbs('books')"
               ng-if="selectedList.categories.indexOf('Literature') >= 0"
               ng-disabled="gettingBlurbs || !selectedList || (!currentUser.admin && selectedList.creator._id !== currentUser._id && selectedList._id)"
             >
@@ -305,7 +305,7 @@
             </button>
             <button
               class="btn btn-default"
-              ng-click="getMusicVideos()"
+              ng-click="getBlurbs('musicvideos')"
               ng-if="false && selectedList.categories.indexOf('Music') >= 0"
               ng-disabled="gettingBlurbs || !selectedList || (!currentUser.admin && selectedList.creator._id !== currentUser._id && selectedList._id)"
             >
@@ -313,11 +313,19 @@
             </button>
             <button
               class="btn btn-default"
-              ng-click="getPics()"
+              ng-click="getBlurbs('unsplash')"
               ng-if="selectedList.categories.indexOf('Nature') >= 0"
               ng-disabled="gettingBlurbs || !selectedList || (!currentUser.admin && selectedList.creator._id !== currentUser._id && selectedList._id)"
             >
-              Get Pics
+              Get Unsplash Pics
+            </button>
+            <button
+              class="btn btn-default"
+              ng-click="getBlurbs('wiki')"
+              ng-if="selectedList.categories.indexOf('Nature') >= 0"
+              ng-disabled="gettingBlurbs || !selectedList || (!currentUser.admin && selectedList.creator._id !== currentUser._id && selectedList._id)"
+            >
+              Get Wiki Pics
             </button>
           </div>
           <!--div id="category-select">

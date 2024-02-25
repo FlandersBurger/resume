@@ -7,21 +7,6 @@ angular
       values: "",
     };
 
-    TenThingsSvc.getCategories().then((response) => {
-      $scope.categories = response.data;
-      $scope.categoryFilters = $scope.categories.map((category) => category);
-      $scope.categoryFilters.push("All");
-      $scope.categoryFilters.push("Blank");
-      $scope.categoryFilter = "All";
-      $scope.updateFilter = "all";
-    });
-    TenThingsSvc.getLanguages().then((response) => {
-      $scope.languages = response.data;
-      $scope.languageFilters = $scope.languages.map((language) => language);
-      $scope.languageFilters.push({ name: "All", code: "all" });
-      $scope.languageFilter = { name: "All", code: "all" };
-    });
-
     $scope.keyDown = (e) => {
       e = e || window.event;
       switch (e.keyCode) {
@@ -94,6 +79,23 @@ angular
 
     $scope.$on("login", (_) => {
       $scope.getLists();
+      TenThingsSvc.getCategories().then((response) => {
+        $scope.categories = response.data;
+        $scope.categoryFilters = $scope.categories.map((category) => category);
+        $scope.categoryFilters.push("All");
+        $scope.categoryFilters.push("Blank");
+        $scope.categoryFilter = "All";
+        $scope.updateFilter = "all";
+      });
+      TenThingsSvc.getLanguages().then((response) => {
+        $scope.languages = response.data;
+        $scope.languageFilters = $scope.languages.map((language) => language);
+        $scope.languageFilters.push({ name: "All", code: "all" });
+        $scope.languageFilter = { name: "All", code: "all" };
+      });
+      if ($location.search().list) {
+        $scope.selectList({ _id: $location.search().list });
+      }
     });
 
     $scope.listOrder = {
@@ -180,10 +182,6 @@ angular
         })
         .catch((err) => console.error(err));
     };
-
-    if ($location.search().list) {
-      $scope.selectList({ _id: $location.search().list });
-    }
 
     $scope.selectCategory = (category) => {
       $scope.selectedList.category = category;
@@ -353,51 +351,16 @@ angular
       }
     };
 
-    $scope.getMoviePics = () => {
+    $scope.getBlurbs = (type) => {
       $scope.gettingBlurbs = true;
-      TenThingsSvc.getMoviePics($scope.selectedList).then((response) => {
-        $scope.selectList($scope.selectedList);
-        $scope.gettingBlurbs = false;
-      });
-    };
-
-    $scope.getTVPics = () => {
-      $scope.gettingBlurbs = true;
-      TenThingsSvc.getTVPics($scope.selectedList).then((response) => {
-        $scope.selectList($scope.selectedList);
-        $scope.gettingBlurbs = false;
-      });
-    };
-
-    $scope.getActorPics = () => {
-      $scope.gettingBlurbs = true;
-      TenThingsSvc.getActorPics($scope.selectedList).then((response) => {
-        $scope.selectList($scope.selectedList);
-        $scope.gettingBlurbs = false;
-      });
-    };
-
-    $scope.getBookPics = () => {
-      $scope.gettingBlurbs = true;
-      TenThingsSvc.getBookPics($scope.selectedList).then((response) => {
-        $scope.selectList($scope.selectedList);
-        $scope.gettingBlurbs = false;
-      });
-    };
-
-    $scope.getMusicVideos = () => {
-      $scope.gettingBlurbs = true;
-      TenThingsSvc.getMusicVideos($scope.selectedList).then((response) => {
-        $scope.selectList($scope.selectedList);
-        $scope.gettingBlurbs = false;
-      });
-    };
-
-    $scope.getPics = () => {
-      $scope.gettingBlurbs = true;
-      TenThingsSvc.getPics($scope.selectedList).then((response) => {
-        $scope.selectList($scope.selectedList);
-        $scope.gettingBlurbs = false;
-      });
+      TenThingsSvc.getBlurbs($scope.selectedList, type)
+        .then(() => {
+          $scope.selectList($scope.selectedList);
+          $scope.gettingBlurbs = false;
+        })
+        .catch((err) => {
+          console.error(err);
+          $scope.gettingBlurbs = false;
+        });
     };
   });

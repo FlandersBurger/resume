@@ -40,28 +40,8 @@ angular.module("app").service("TenThingsSvc", function ($http) {
     return $http.delete("/api/tenthings/lists/" + list._id);
   };
 
-  svc.getMoviePics = function (list) {
-    return $http.post(`/api/tenthings/lists/${list._id}/blurbs/movies`);
-  };
-
-  svc.getTVPics = function (list) {
-    return $http.post(`/api/tenthings/lists/${list._id}/blurbs/tv`);
-  };
-
-  svc.getActorPics = function (list) {
-    return $http.post(`/api/tenthings/lists/${list._id}/blurbs/actors`);
-  };
-
-  svc.getBookPics = function (list) {
-    return $http.post(`/api/tenthings/lists/${list._id}/blurbs/books`);
-  };
-
-  svc.getMusicVideos = function (list) {
-    return $http.post(`/api/tenthings/lists/${list._id}/blurbs/musicvideos`);
-  };
-
-  svc.getPics = function (list) {
-    return $http.post(`/api/tenthings/lists/${list._id}/blurbs/pics`);
+  svc.getBlurbs = function (list, type) {
+    return $http.post(`/api/tenthings/lists/${list._id}/blurbs/${type}`);
   };
 
   svc.getPause = function () {

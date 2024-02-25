@@ -2,12 +2,11 @@ angular
   .module("app")
   //AngularJs can't have an arrow function here
   .controller("TenThingsCurateCtrl", function ($scope, TenThingsSvc) {
-    TenThingsSvc.getLanguages().then((response) => {
-      $scope.languages = response.data;
-    });
-
     $scope.$on("login", (_) => {
       $scope.getLists();
+      TenThingsSvc.getLanguages().then((response) => {
+        $scope.languages = response.data;
+      });
     });
 
     $scope.order = {

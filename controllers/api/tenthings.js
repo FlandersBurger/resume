@@ -49,6 +49,7 @@ router.get("/names", (req, res, next) => {
 });
 
 router.get("/categories", (req, res, next) => {
+  if (!req.isAuthorized) return res.sendStatus(401);
   res.json(categories);
 });
 
@@ -57,6 +58,7 @@ router.get("/new-categories", (req, res, next) => {
 });
 
 router.get("/languages", (req, res, next) => {
+  if (!req.isAuthorized) return res.sendStatus(401);
   res.json(languages);
 });
 
