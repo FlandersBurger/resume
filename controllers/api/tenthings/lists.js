@@ -11,6 +11,7 @@ const { getMovieDbImage } = require("../../../connections/moviedb");
 const { getMusicVideo } = require("../../../connections/youtube");
 const { getUnsplashImage } = require("../../../connections/unsplash");
 const { getWikiImage } = require("../../../connections/wikipedia");
+const { getPexelsImage } = require("../../../connections/pexels");
 // const Spotify = require('../../connections/spotify');
 // const spotify = new Spotify();
 // spotify.init();
@@ -98,6 +99,10 @@ router.post("/:id/blurbs/:type", async (req, res, next) => {
             break;
           case "unsplash":
             blurbUrl = await getUnsplashImage(value.value);
+            break;
+          case "pexels":
+            blurbUrl = await getPexelsImage(value.value);
+            break;
           default:
             break;
         }

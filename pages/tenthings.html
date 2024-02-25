@@ -321,6 +321,14 @@
             </button>
             <button
               class="btn btn-default"
+              ng-click="getBlurbs('pexels')"
+              ng-if="selectedList.categories.indexOf('Nature') >= 0"
+              ng-disabled="gettingBlurbs || !selectedList || (!currentUser.admin && selectedList.creator._id !== currentUser._id && selectedList._id)"
+            >
+              Get Pexels Pics
+            </button>
+            <button
+              class="btn btn-default"
               ng-click="getBlurbs('wiki')"
               ng-if="selectedList.categories.indexOf('Nature') >= 0"
               ng-disabled="gettingBlurbs || !selectedList || (!currentUser.admin && selectedList.creator._id !== currentUser._id && selectedList._id)"
