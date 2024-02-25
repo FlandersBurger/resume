@@ -3,6 +3,8 @@ var config = require("./config");
 const User = require("./models/user")();
 
 module.exports = async (req, res, next) => {
+  req.isAuthorized = false;
+  req.isAdmin = false;
   if (req.headers["x-auth"]) {
     req.auth = jwt.decode(req.headers["x-auth"], config.secret);
   }
