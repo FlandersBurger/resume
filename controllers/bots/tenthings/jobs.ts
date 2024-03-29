@@ -1,7 +1,7 @@
 /*jslint esversion: 10*/
 const schedule = require("node-schedule");
 import moment from "moment";
-const bot = require("../../../connections/telegram");
+import bot from "../../../connections/telegram";
 import minBy from "lodash/minBy";
 import maxBy from "lodash/maxBy";
 import max from "lodash/max";
@@ -16,6 +16,7 @@ import { IStats } from "../../../models/tenthings/stats";
 import { IList } from "../../../models/tenthings/list";
 import { createMinigames } from "./minigame";
 import { getDailyScores } from "./stats";
+import { Job } from "node-schedule";
 const backup = require("../../../backup-db");
 const { Game, Player, Stats, List } = require("../../../models");
 
@@ -434,16 +435,18 @@ const deleteStalePlayers = async () => {
   bot.notifyAdmin(`${results.deletedCount} stale players deleted`);
 };
 
+let jobs: Job[] = [];
+
 if (process.env.NODE_ENV === "production") {
-  console.log(`Time: ${moment().utc().hour()}`);
-  schedule.scheduleJob("0 2 1 * * *", resetDailyScore);
-  schedule.scheduleJob("0 0 2 * * *", updatePlayStreak);
-  schedule.scheduleJob("0 0 3 * * *", createMinigames);
-  schedule.scheduleJob("0 0 4 * * *", deactivateInactiveChats);
-  schedule.scheduleJob("0 0 5 * * *", deleteStalePlayers);
-  schedule.scheduleJob("0 0 12 * * *", sendNewLists);
-  // schedule.scheduleJob('0 30 12 * * *', sendUpdatedLists)
-  schedule.scheduleJob("0 0 21 * * *", backupDatabase);
-} else {
-  console.log("Schedules only run on production");
+  jobs.push(schedule.scheduleJob("Reset Daily Scores", "0 2 1 * * *", resetDailyScore));
+  jobs.push(schedule.scheduleJob("Update Play Streaks", "0 0 2 * * *", updatePlayStreak));
+  jobs.push(schedule.scheduleJob("Create Mini Games", "0 0 3 * * *", createMinigames));
+  jobs.push(schedule.scheduleJob("Deactivate Inactive Chats", "0 0 4 * * *", deactivateInactiveChats));
+  jobs.push(schedule.scheduleJob("Delete Stale Players", "0 0 5 * * *", deleteStalePlayers));
+  jobs.push(schedule.scheduleJob("Send New List Notice", "0 0 12 * * *", sendNewLists));
+  // jobs.push(schedule.scheduleJob('0 30 12 * * *', sendUpdatedLists))
 }
+
+jobs.push(schedule.scheduleJob("Backup Database", "0 0 21 * * *", backupDatabase));
+
+export default jobs;

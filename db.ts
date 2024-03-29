@@ -16,18 +16,15 @@ export interface IDb {
 
 const connect = (db: IDb) => {
   connections[db.name] = createConnection(db.url, {});
-  console.log(`Connected to DB ${db.name}`);
+  connections[db.name].on("open", () => {
+    console.log(`DB ${db.name} connected`);
+  });
 };
 
 config.mongoDBs.forEach(async (db: IDb) => {
   connect(db);
   if (db.tunnel) {
-    await createTunnel({ autoClose: true }, {}, db.tunnel, {
-      srcAddr: "127.0.0.1",
-      srcPort: 27000,
-      dstAddr: "127.0.0.1",
-      dstPort: 27017,
-    });
+    await createTunnel({ autoClose: true }, { host: "127.0.0.1", port: 27017 }, db.tunnel, { dstPort: 27017 });
     console.log(`DB tunnel created for DB ${db.name}`);
   }
 });

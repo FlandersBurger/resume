@@ -10,15 +10,14 @@ import { angleBrackets, maskUrls, removeHTML } from "../../../utils/string-helpe
 import { IUser } from "../../../models/user";
 import { IPlayer } from "../../../models/tenthings/player";
 import { IGuess, getAnswerScore } from "./guesses";
-import { IMessage } from "./main";
-import { getGuessedMessage, getListStats, getSnubbedMessage, getStreakMessage } from "./messages";
+import { IMessage, getGuessedMessage, getListStats, getSnubbedMessage, getStreakMessage } from "./messages";
 import { getHint, hintCache, hintCooldown } from "./hints";
 import { getListScore, rateList, selectList } from "./lists";
 import { getDailyScores } from "./stats";
 import { abortSkip, skipCache } from "./skips";
 import i18n from "../../../i18n";
 
-const bot = require("../../../connections/telegram");
+import bot from "../../../connections/telegram";
 
 export const createMaingame = async (chat_id: string): Promise<HydratedDocument<IGame>> => {
   const game = new Game({
@@ -163,7 +162,7 @@ export const checkMaingame = async (
   if (skipCache[game.chat_id]) {
     abortSkip(game, player);
   }
-  if (!some(game.guessers, (guesser: string) => guesser == msg.from.id)) {
+  if (!some(game.guessers, (guesser: number) => guesser == msg.from.id)) {
     game.guessers.push(`${msg.from.id}`);
   }
   const match = game.list.values.find(({ value }) => value === guess.match.value);
@@ -242,7 +241,7 @@ export const checkMaingame = async (
   } else if (match) {
     player.snubs++;
     if (game.settings.snubs) {
-      bot.queueMessage(msg.chat.id, getSnubbedMessage(match.value, player, match.guesser));
+      bot.queueMessage(msg.chatId, getSnubbedMessage(match.value, player, match.guesser));
     }
   }
   try {
@@ -309,7 +308,7 @@ export const sendMaingameMessage = async (game: IGame, long = true) => {
 const guessed = async (
   game: IGame,
   { scoreDaily, first_name }: IPlayer,
-  { chat }: IMessage,
+  { chatId }: IMessage,
   value: string,
   blurb: string,
   score: number,
@@ -337,5 +336,5 @@ const guessed = async (
   } else {
     message += `\n${i18n(game.settings.language, "sentences.roundOver")}`;
   }
-  return await bot.queueMessage(chat.id, message);
+  return await bot.queueMessage(chatId, message);
 };

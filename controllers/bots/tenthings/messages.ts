@@ -11,11 +11,22 @@ import categories from "./categories";
 import { makePercentage } from "../../../utils/number-helpers";
 import { capitalize } from "../../../utils/string-helpers";
 import difference from "lodash/difference";
-import i18n from "../../../i18n";
+import i18n, { t_list } from "../../../i18n";
 import emojis from "./emojis";
+import { ICallbackData } from "./callbacks";
+import { ITelegramUser } from "../../../connections/telegram";
+
+export type IMessageType = IMessage | ICallbackData;
+export interface IMessage {
+  id: string;
+  from: ITelegramUser;
+  command?: string;
+  text: string;
+  chatId: string;
+}
 
 export const getLogicMessage = (language: string): string => {
-  const rules = i18n(language, "rules", { maxHints: MAXHINTS, returnObjects: true }) as string[];
+  const rules = t_list(language, "rules", { maxHints: MAXHINTS, returnObjects: true });
   return rules.reduce((message: string, rule: string, i: number) => `${message}${i + 1}: ${rule}\n`, "");
 };
 export const getCategoriesMessage = (game: IGame): string => {

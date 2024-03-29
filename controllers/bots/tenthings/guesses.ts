@@ -7,13 +7,13 @@ import { GameType, IGame } from "../../../models/tenthings/game";
 import { removeAllButLetters } from "../../../utils/string-helpers";
 import { Types } from "mongoose";
 import { IPlayer } from "../../../models/tenthings/player";
-import { IMessage } from "./main";
 import { MAX_HINTS } from "./hints";
 import sass from "./sass";
 import { checkMaingame } from "./maingame";
 import { checkMinigame } from "./minigame";
 import { checkTinygame } from "./tinygame";
 import { getPlayer } from "./players";
+import { IMessage } from "./messages";
 
 const config = require("../../../config");
 

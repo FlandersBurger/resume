@@ -4,15 +4,15 @@ import { IGame } from "../../../models/tenthings/game";
 import { IPlayer } from "../../../models/tenthings/player";
 import { HydratedDocument, Types } from "mongoose";
 import { angleBrackets, maskUrls, removeHTML } from "../../../utils/string-helpers";
-import { IMessage } from "./main";
 import { newRound } from "./maingame";
 import { getListScore } from "./lists";
 
-const bot = require("../../../connections/telegram");
+import bot from "../../../connections/telegram";
 import i18n from "../../../i18n";
 
-import keyboards from "./keyboards";
 import { getDailyScores } from "./stats";
+import { banListKeyboard } from "./keyboards";
+import { IMessage } from "./messages";
 
 const SKIP_DELAY = 10;
 const VETO_DELAY = 15;
@@ -89,7 +89,7 @@ const skipList = (game: IGame, skipper: IPlayer) => {
     bot.sendKeyboard(
       game.chat_id,
       `Experimental feature to permanently ban list from game\nDo you want to ban "${game.list.name}"`,
-      keyboards.ban(game.settings.language, game.list)
+      banListKeyboard(game.settings.language, game.list)
     );
     delete skipCache[game.chat_id];
     let foundList = await List.findOne({
@@ -131,7 +131,7 @@ export const checkSkipper = async (game: IGame, msg: IMessage, player: IPlayer) 
           skippers[player.id].lastSkipped = moment();
           skippers[player.id].delay += 10;
           bot.queueMessage(
-            msg.chat.id,
+            msg.chatId,
             i18n(game.settings.language, "sentences.skipShortBan", {
               name: player.first_name,
               delay: skippers[player.id].delay,
@@ -142,7 +142,7 @@ export const checkSkipper = async (game: IGame, msg: IMessage, player: IPlayer) 
           skippers[player.id].lastSkipped = moment();
           skippers[player.id].delay += 10;
           bot.queueMessage(
-            msg.chat.id,
+            msg.chatId,
             i18n(game.settings.language, "sentences.skipBanThreat", {
               name: player.first_name,
               delay: skippers[player.id].delay,

@@ -1,10 +1,9 @@
-const bot = require("../../../connections/telegram");
-
+import bot from "../../../connections/telegram";
 import { getCount } from "./guesses";
 
 export const getQueue = async () => {
   const guessCount = await getCount();
-  const outgoing = await bot.getQueue();
+  const outgoing = await bot.getQueueCount();
   const { pending_update_count } = await bot.getWebhook();
   let message = `<b>Queue</b>\n`;
   message += `${guessCount} correct answers queued\n`;

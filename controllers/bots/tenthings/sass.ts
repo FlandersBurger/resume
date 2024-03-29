@@ -1,8 +1,7 @@
 import moment from "moment";
 import axios from "axios";
 import { IGame } from "../../../models/tenthings/game";
-
-const bot = require("../../../connections/telegram");
+import bot from "../../../connections/telegram";
 
 export default (game: IGame, text: string) => {
   if (game.settings.sass && game.enabled) {

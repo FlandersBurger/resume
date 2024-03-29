@@ -1,14 +1,16 @@
+import { ITelegramUser } from "../../../connections/telegram";
 import { Player } from "../../../models";
 import { IGame } from "../../../models/tenthings/game";
+import { IPlayer } from "../../../models/tenthings/player";
 import { maskUrls } from "../../../utils/string-helpers";
-import { IMessage } from "./main";
+import { IMessage } from "./messages";
 
-export const getPlayer = async (game: IGame, from: IMessage["from"]) => {
+export const getPlayer = async (game: IGame, from: ITelegramUser | IPlayer) => {
   let player = await Player.findOne({
     game: game._id,
     id: `${from.id}`, //Stringified
   }).exec();
-  if (!player) player = await createPlayer(game, from);
+  if (!player) player = await createPlayer(game, from as ITelegramUser);
   else if (player && player.first_name) {
     player.first_name = player.first_name ? maskUrls(player.first_name) : "";
     player.last_name = player.last_name ? maskUrls(player.last_name) : "";

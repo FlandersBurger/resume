@@ -3,54 +3,60 @@ import { List } from "../../../models";
 import { IGame } from "../../../models/tenthings/game";
 import { ICallbackData } from "./callbacks";
 
-const bot = require("../../../connections/telegram");
+import bot from "../../../connections/telegram";
 import i18n from "../../../i18n";
-import keyboards from "./keyboards";
+import { confirmBanListKeyboard } from "./keyboards";
 const config = require("../../../config");
 
-const cache: { [key: string]: string } = {};
+const cache: { [key: string]: number } = {};
 
-export const initiateBan = async (game: IGame, data: ICallbackData) => {
-  if (game.chat_id !== config.groupChat || (await bot.checkAdmin(game.chat_id, data.from_id))) {
-    const foundList = await List.findOne({ _id: data.list }).exec();
+export const initiateBan = async (game: IGame, callbackQuery: ICallbackData) => {
+  if (game.chat_id !== config.groupChat || (await bot.checkAdmin(game.chat_id, callbackQuery.from.id))) {
+    const foundList = await List.findOne({ _id: callbackQuery.data }).exec();
     if (!foundList) {
       return bot.queueMessage(game.chat_id, i18n(game.settings.language, "warnings.unfoundList"));
     }
-    if (game.bannedLists.some((bannedListId) => bannedListId.toString() == data.list)) {
+    if (game.bannedLists.some((bannedListId) => bannedListId.toString() == callbackQuery.data)) {
       bot.queueMessage(
         game.chat_id,
         i18n(game.settings.language, "sentences.alreadyBannedList", { list: foundList.name })
       );
-      bot.deleteMessage(data.chat_id, data.message_id);
+      bot.deleteMessage(callbackQuery.chatId, callbackQuery.id);
     } else {
-      cache[`${game._id}-${data.list}`] = data.from_id;
+      cache[`${game._id}-${callbackQuery.data}`] = callbackQuery.from.id;
       if (foundList) {
         bot.sendKeyboard(
           game.chat_id,
           i18n(game.settings.language, `sentences.${parseInt(game.chat_id) > 0 ? "confirmBan" : "corroborateBan"}`, {
             list: foundList.name,
           }),
-          keyboards.confirmBan(game.settings.language, foundList)
+          confirmBanListKeyboard(game.settings.language, foundList)
         );
       }
     }
   } else {
-    bot.queueMessage(game.chat_id, i18n(game.settings.language, "warnings.adminFunction", { name: data.requestor }));
+    bot.queueMessage(
+      game.chat_id,
+      i18n(game.settings.language, "warnings.adminFunction", { name: callbackQuery.from.name })
+    );
   }
 };
 
-export const processBan = (game: HydratedDocument<IGame>, data: ICallbackData) => {
-  if (!cache[`${game._id}-${data.list}`]) {
-    bot.queueMessage(game.chat_id, i18n(game.settings.language, "sentences.banNotFound", { name: data.requestor }));
-    bot.deleteMessage(data.chat_id, data.message_id);
-  } else if (cache[`${game._id}-${data.list}`] !== data.from_id || parseInt(game.chat_id) > 0) {
-    banList(game, data.list!);
-    delete cache[`${game._id}-${data.list}`];
-    bot.deleteMessage(data.chat_id, data.message_id);
+export const processBan = (game: HydratedDocument<IGame>, callbackQuery: ICallbackData) => {
+  if (!cache[`${game._id}-${callbackQuery.data}`]) {
+    bot.queueMessage(
+      game.chat_id,
+      i18n(game.settings.language, "sentences.banNotFound", { name: callbackQuery.from.name })
+    );
+    bot.deleteMessage(callbackQuery.chatId, callbackQuery.id);
+  } else if (cache[`${game._id}-${callbackQuery.data}`] !== callbackQuery.from.id || parseInt(game.chat_id) > 0) {
+    banList(game, callbackQuery.data);
+    delete cache[`${game._id}-${callbackQuery.data}`];
+    bot.deleteMessage(callbackQuery.chatId, callbackQuery.id);
   } else {
     bot.queueMessage(
       game.chat_id,
-      i18n(game.settings.language, "warnings.corroborateBanBySamePlayer", { name: data.requestor })
+      i18n(game.settings.language, "warnings.corroborateBanBySamePlayer", { name: callbackQuery.from.name })
     );
   }
 };

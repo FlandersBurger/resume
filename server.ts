@@ -5,12 +5,12 @@ import { WebSocketServer } from "./websockets";
 import auth from "./auth";
 import http from "http";
 
-import redisClient from "./redis";
 import { categoriesRoute } from "./controllers/api/categories";
 import { emailRoute } from "./controllers/api/email";
 import { filesRoute } from "./controllers/api/files";
 import { gamesRoute } from "./controllers/api/games";
 import { postsRoute } from "./controllers/api/posts";
+import { staticRoute } from "./controllers/static";
 import { tenthingsCategoriesRoute } from "./controllers/api/tenthings/categories";
 import { tenthingsGamesRoute } from "./controllers/api/tenthings/games";
 import { tenthingsLanguagesRoute } from "./controllers/api/tenthings/languages";
@@ -56,7 +56,7 @@ app.use(logger('dev', {
 */
 app.use("/bots/tenthings", tenthingsBotRoute);
 
-app.use(require("./controllers/static"));
+app.use(staticRoute);
 /*
 app.use((req, res) => {
   let buffs = [];

@@ -3,7 +3,7 @@ import { HydratedDocument, QueryOptions } from "mongoose";
 import uniq from "lodash/uniq";
 import sampleSize from "lodash/sampleSize";
 
-const bot = require("../../../connections/telegram");
+import bot from "../../../connections/telegram";
 import i18n from "../../../i18n";
 
 import { List, Minigame } from "../../../models";
@@ -11,7 +11,7 @@ import { IGame } from "../../../models/tenthings/game";
 import { ILanguage } from "./languages";
 import { IList } from "../../../models/tenthings/list";
 import { IPlayer } from "../../../models/tenthings/player";
-import { IMessage } from "./main";
+import { IMessage } from "./messages";
 import { IGuess, getAnswerScore } from "./guesses";
 import { IMinigame } from "../../../models/tenthings/minigame";
 import { getGuessedMessage } from "./messages";
@@ -160,7 +160,7 @@ export const checkMinigame = async (
   message += `\n<u>${player.scoreDaily - score} + ${i18n(game.settings.language, "point", {
     count: score,
   })}</u>`;
-  bot.queueMessage(msg.chat.id, message);
+  bot.queueMessage(msg.chatId, message);
   setTimeout(() => {
     createMinigame(game);
   }, 1000);

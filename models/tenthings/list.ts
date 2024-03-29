@@ -2,9 +2,10 @@ import { Model, Schema, Types } from "mongoose";
 import mongooseLeanVirtuals from "mongoose-lean-virtuals";
 import db from "../../db";
 import { IUser } from "../user";
+import { AllowedLanguage } from "../../controllers/bots/tenthings/languages";
 
 export interface IVote {
-  voter: string;
+  voter: number;
   vote: number;
   date: Date;
   modifyDate: Date;
@@ -22,7 +23,7 @@ export interface IList {
   name: string;
   search: string;
   description: string;
-  language: string;
+  language: AllowedLanguage;
   categories: string[];
   creator: Types.ObjectId | IUser;
   frequency: number;

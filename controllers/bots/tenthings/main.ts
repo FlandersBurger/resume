@@ -1,39 +1,38 @@
 import { Router, Request, Response } from "express";
+import moment from "moment";
 import { Game, Player } from "../../../models";
-import { maskUrls } from "../../../utils/string-helpers";
 import { createMaingame } from "./maingame";
 
 /*jslint esversion: 10*/
 const config = require("../../../config");
-import redis from "../../../redis";
-const bot = require("../../../connections/telegram");
+import bot from "../../../connections/telegram";
 import i18n from "../../../i18n";
 import { getQueue } from "./queue";
-import callbacks from "./callbacks";
-import { checkSpam } from "./spam";
+import callbacks, { ICallbackData } from "./callbacks";
 import { evaluate } from "./commands";
+import { IMessage } from "./messages";
 
 // DO NOT REMOVE jobs
-const jobs = require("./jobs");
+import jobs from "./jobs";
+console.log(
+  `Scheduled Jobs:\n${jobs
+    .map((j) => ` - ${j.name}: ${moment.duration(moment(new Date()).diff(j.nextInvocation())).humanize(true)}`)
+    .join("\n")}`
+);
+
+export enum MessageType {
+  Callback = "callback",
+  Command = "command",
+  NewPlayer = "newPlayer",
+  NewGame = "newGame",
+  PlayerLeft = "playerLeft",
+  Message = "message",
+  Ignore = "ignore",
+}
 
 //-------------//
 //redis.set('pause', true);
 //-------------//
-
-const BANNED_USERS = [1726294650];
-
-export interface IMessage {
-  id: string;
-  from: {
-    id: string;
-    username?: string;
-    first_name: string;
-    is_bot?: boolean;
-  };
-  command: string;
-  text: string;
-  chat: { id: string };
-}
 
 export const tenthingsBotRoute = Router();
 
@@ -88,73 +87,19 @@ bot.exportChatInviteLink('-1001394022777').then(function(chat) {
  ██       ██████  ███████    ██    
 */
 tenthingsBotRoute.post("/", async (req: Request, res: Response) => {
-  const body = req.body;
-  if (body.object === "page") {
-    res.status(200).send("EVENT_RECEIVED");
-    return console.log(body);
-  }
-  if (body.message || body.callback_query) {
-    const from = body.message ? body.message.from.id : body.callback_query.from.id;
-    if (from != config.masterChat && (await redis.get("pause")) === "true") return res.sendStatus(200);
-    //if (date.diff(moment(), 'hours') > 1) return res.sendStatus(200);
-    if (BANNED_USERS.indexOf(from) >= 0) {
-      bot.notifyAdmin(JSON.stringify(req.get("host")));
+  const domainMessage = await bot.toDomainMessage(req.body);
+  switch (domainMessage.messageType) {
+    case MessageType.Ignore:
       return res.sendStatus(200);
-    }
-    if (checkSpam(body)) {
+    case MessageType.Callback:
+      await callbacks(domainMessage.message as ICallbackData);
       return res.sendStatus(200);
-    }
-  } else {
-    return res.sendStatus(200);
-  }
-  let msg: IMessage;
-  if (body.callback_query) {
-    const data = JSON.parse(body.callback_query.data);
-    data.requestor = maskUrls(
-      body.callback_query.from.username
-        ? `@${body.callback_query.from.username}`
-        : `${body.callback_query.from.first_name} ${
-            body.callback_query.from.last_name ? body.callback_query.from.last_name : ""
-          }`
-    );
-    data.from_id = body.callback_query.from.id;
-    data.chat_id = body.callback_query.message.chat.id;
-    data.message_id = body.callback_query.message.message_id;
-    data.callback_query_id = body.callback_query.id;
-    data.message = body.callback_query.message.text;
-
-    await callbacks(data);
-
-    return res.sendStatus(200);
-  } else if (!body.message.text) {
-    if (body.message.new_chat_participant) {
-      Game.findOne({ chat_id: body.message.chat.id })
-        .select("settings")
-        .exec((err, game) => {
-          if (err) return bot.notifyAdmin(`New Participant Error:\n${err}`);
-          if (game && game.settings.intro) {
-            bot.queueMessage(
-              body.message.chat.id,
-              i18n(game.settings.language, "sentences.introduction", {
-                name: body.message.new_chat_participant.first_name,
-              })
-            );
-          }
-        });
-      return res.sendStatus(200);
-    } else if (body.message.group_chat_created) {
-      msg = {
-        id: body.message.chat.id,
-        from: body.from,
-        command: "/info",
-        chat: body.message.chat,
-        text: "",
-      };
-    } else if (body.message.left_chat_participant) {
-      Game.findOne({ chat_id: body.message.chat.id }).exec((err, game) => {
+      break;
+    case MessageType.PlayerLeft:
+      Game.findOne({ chat_id: domainMessage.message!.chatId }).exec((err, game) => {
         if (err) return console.error(err);
         if (!game) return;
-        Player.findOne({ game: game._id, id: `${body.message.left_chat_participant.id}` }).exec((err, player) => {
+        Player.findOne({ game: game._id, id: `${domainMessage.message!.from.id}` }).exec((err, player) => {
           if (err || !player) return;
           if (player) {
             player.present = false;
@@ -163,56 +108,12 @@ tenthingsBotRoute.post("/", async (req: Request, res: Response) => {
         });
       });
       return res.sendStatus(200);
-    } else if (
-      body.edited_message ||
-      body.update_id ||
-      body.message.from.is_bot ||
-      body.message.game ||
-      body.message.photo ||
-      body.message.video ||
-      body.message.audio ||
-      body.message.video_note ||
-      body.message.emoji ||
-      body.message.voice ||
-      body.message.animation ||
-      body.message.sticker ||
-      body.message.reply_to_message ||
-      body.message.migrate_to_chat_id ||
-      body.message.pinned_message ||
-      body.message.new_chat_title ||
-      body.message.new_chat_photo ||
-      body.message.document
-    ) {
-      //Ignore these messages as they're just chat interactions
-      //console.log('Ignoring this message:');
-      //console.log(body.message);
-      return res.sendStatus(200);
-    } else {
-      msg = {
-        id: config.masterChat,
-        from: { id: "none", first_name: "Bot Error" },
-        command: "/error",
-        text: JSON.stringify(body),
-        chat: { id: config.masterChat },
-      };
-    }
-  } else {
-    msg = {
-      id: body.message.message_id,
-      from: body.message.from,
-      command: body.message.text.substring(
-        0,
-        !body.message.text.includes(" ") ? body.message.text.length : body.message.text.indexOf(" ")
-      ),
-      text: body.message.text,
-      chat: body.message.chat,
-    };
+    default:
+      break;
   }
-  if (msg.command.includes("@") && msg.command.substring(msg.command.indexOf("@") + 1) !== "TenThings_Bot") {
-    return res.sendStatus(200);
-  }
+  let msg: IMessage = domainMessage.message as IMessage;
   try {
-    if (!msg.from || !msg.from.id) {
+    if (!msg.from.id) {
       return res.sendStatus(200);
     }
   } catch (e) {
@@ -220,29 +121,26 @@ tenthingsBotRoute.post("/", async (req: Request, res: Response) => {
     bot.notifyAdmin(`Can't send message:\n${JSON.stringify(msg)}`);
     return res.sendStatus(200);
   }
-  const existingGame = await Game.findOne({ chat_id: msg.chat.id })
+  const existingGame = await Game.findOne({ chat_id: msg.chatId })
     .populate("list.creator")
     .select("-playedLists")
     .exec();
   try {
     if (!existingGame) {
-      const newGame = await createMaingame(msg.chat.id);
-      console.log(`New game created for ${msg.chat.id}`);
+      const newGame = await createMaingame(msg.chatId);
+      console.log(`New game created for ${msg.chatId}`);
       await evaluate(msg, newGame, true);
     } else {
-      if (msg.command.includes("@")) {
-        msg.command = msg.command.substring(0, msg.command.indexOf("@"));
-        if (!existingGame.enabled && !["/list", "/start"].includes(msg.command.toLowerCase())) {
-          bot.sendMessage(msg.chat.id, i18n(existingGame.settings.language, "sentences.inactivity"));
-          return res.sendStatus(200);
-        }
+      if (!existingGame.enabled && !["/list", "/start"].includes(msg.command!.toLowerCase())) {
+        bot.sendMessage(msg.chatId, i18n(existingGame.settings.language, "sentences.inactivity"));
+        return res.sendStatus(200);
       }
       await evaluate(msg, existingGame, false);
     }
   } catch (e) {
     console.error(e);
-    bot.sendMessage(msg.chat.id, "<b>Error</b>\nUse the /error command to explain to the admins what didn't work");
-    bot.notifyAdmin(`Error in game ${msg.chat.id}:\n${e}`);
+    bot.sendMessage(msg.chatId, "<b>Error</b>\nUse the /error command to explain to the admins what didn't work");
+    bot.notifyAdmin(`Error in game ${msg.chatId}:\n${e}`);
   } finally {
     res.sendStatus(200);
   }

@@ -1,8 +1,8 @@
 import moment from "moment";
-import { IMessage } from "./main";
+import { IMessage } from "./messages";
 
 const config = require("../../../config");
-const bot = require("../../../connections/telegram");
+import bot from "../../../connections/telegram";
 
 const cache: {
   [key: string]: {
@@ -17,7 +17,7 @@ export const checkSpam = (body: {
 }) => {
   const from = body.message ? body.message.from.id : body.callback_query!.from.id;
   const name = body.message ? body.message.from.first_name : body.callback_query!.from.first_name;
-  const chat = body.message ? body.message.chat.id : body.callback_query!.message.chat.id;
+  const chat = body.message ? body.message.chatId : body.callback_query!.message.chatId;
 
   if (cache[from]) {
     if (cache[from].lastMessage < moment().subtract(10, "seconds")) {

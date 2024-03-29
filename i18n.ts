@@ -21,5 +21,8 @@ i18next.use(Backend).init({
   interpolation: { escapeValue: false },
 });
 
-export default (lng: string, key: string, params = {}): string | string[] =>
+export default (lng: string, key: string, params = {}): string =>
   i18next.getFixedT(lng ? lng.toLowerCase() : systemLocale)(key, params);
+
+export const t_list = (lng: string, key: string, params = {}): string[] =>
+  i18next.getFixedT(lng ? lng.toLowerCase() : systemLocale)(key, params) as unknown as string[];

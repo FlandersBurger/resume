@@ -1,9 +1,8 @@
 import { HydratedDocument } from "mongoose";
 import { IPlayer } from "../../../models/tenthings/player";
-import { IMessage } from "./main";
 import { capitalize } from "../../../utils/string-helpers";
-
-const bot = require("../../../connections/telegram");
+import bot from "../../../connections/telegram";
+import { IMessage } from "./messages";
 
 export const sendSuggestion = async (
   type: string,
@@ -11,7 +10,7 @@ export const sendSuggestion = async (
   player: HydratedDocument<IPlayer>,
   extraText = ""
 ) => {
-  const suggestion = msg.text.substring(msg.command.length + 1, msg.text.length);
+  const suggestion = msg.text.substring(msg.command!.length + 1, msg.text.length);
   if (suggestion && suggestion != "TenThings_Bot" && suggestion != "@TenThings_Bot") {
     player.suggestions++;
     await player.save();
@@ -19,14 +18,14 @@ export const sendSuggestion = async (
       player.username ? `@${player.username}` : player.first_name
     }</i>`;
     bot.notify(message);
-    const chatLink = await bot.getChat(msg.chat.id);
+    const chatLink = await bot.getChat(msg.chatId);
     message += chatLink ? `\n${chatLink}` : "";
     bot.notifyAdmins(message);
     message = `<b>${capitalize(type)}</b>\n<i>${suggestion}</i>\nThank you, ${
       player.username ? `@${player.username}` : player.first_name
     }`;
-    bot.queueMessage(msg.chat.id, message);
+    bot.queueMessage(msg.chatId, message);
   } else {
-    bot.queueMessage(msg.chat.id, `You didn't add a feature ${player.first_name}. Add your message after /feature`);
+    bot.queueMessage(msg.chatId, `You didn't add a feature ${player.first_name}. Add your message after /feature`);
   }
 };

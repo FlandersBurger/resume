@@ -7,7 +7,7 @@ import { IList } from "../../../models/tenthings/list";
 import { IPlayer } from "../../../models/tenthings/player";
 import { getListStats, getPlayerStats } from "./messages";
 
-const bot = require("../../../connections/telegram");
+import bot from "../../../connections/telegram";
 import i18n from "../../../i18n";
 
 export const getScores = async (game_id: string, type: string) => {
@@ -99,9 +99,8 @@ export const getDailyScores = async ({ _id, settings }: IGame, limit = 0) => {
   return message;
 };
 
-export const getStats = async (chat_id: string, data: { id: string }, requestor?: string) => {
-  const type = data.id.split("_")[0];
-  const id = data.id.split("_")[1];
+export const getStats = async (chat_id: string, data: string, requestor?: string) => {
+  const [type, id] = data.split("_");
   const game = await Game.findOne({ chat_id }).exec();
   if (!game) return;
   const players = await Player.find({ game: game._id, present: true }).exec();

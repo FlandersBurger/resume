@@ -11,74 +11,102 @@ import { getDifficultyMessage, getFrequencyMessage, getListMessage } from "./mes
 import { getListScore } from "./lists";
 
 const config = require("../../../config");
-const bot = require("../../../connections/telegram");
 import i18n from "../../../i18n";
 
-import keyboards from "./keyboards";
 import categories from "./categories";
 import emojis from "./emojis";
 import { initiateBan, processBan } from "./bans";
 import { getScores, getStats } from "./stats";
 import { votersCache } from "./cache";
+import {
+  categoriesKeyboard,
+  curateListKeyboard,
+  languageKeyboard,
+  languagesKeyboard,
+  listStatsKeyboard,
+  playerStatsKeyboard,
+  settingsKeyboard,
+} from "./keyboards";
+import bot, { ITelegramUser } from "../../../connections/telegram";
 
 export interface ICallbackData {
+  id: string;
   type: string;
   date: Date;
-  requestor: string;
-  from_id: string;
-  chat_id: string;
-  message_id: string;
-  callback_query_id: string;
-  message: string;
+  from: ITelegramUser;
+  chatId: string;
+  callbackQueryId: string;
+  text: string;
 
-  vote?: number;
-  list?: string;
-  data?: string;
-  id?: string;
+  data: string;
 }
 
-export default async (data: ICallbackData) => {
+export enum CallbackDataType {
+  Ban = "ban",
+  BotLanguage = "lang",
+  Category = "cat",
+  ConfirmBan = "cban",
+  Description = "desc",
+  Difficulty = "diff",
+  Frequency = "freq",
+  Pick = "pick",
+  Score = "score",
+  Setting = "setting",
+  Stats = "stat",
+  StatOptions = "stats",
+  Suggestion = "suggest",
+  TriviaLanguages = "langs",
+  Values = "values",
+  Vote = "vote",
+}
+
+export default async (callbackQuery: ICallbackData) => {
   let game: HydratedDocument<IGame> | null;
   let list: HydratedDocument<IList> | null;
-  switch (data.type) {
-    case "rate":
+  switch (callbackQuery.type) {
+    case CallbackDataType.Vote:
       let doVote = false;
-      if (votersCache[data.from_id]) {
-        if (votersCache[data.from_id].lastVoted < moment().subtract(votersCache[data.from_id].delay, "seconds")) {
+      if (votersCache[callbackQuery.from.id]) {
+        if (
+          votersCache[callbackQuery.from.id].lastVoted <
+          moment().subtract(votersCache[callbackQuery.from.id].delay, "seconds")
+        ) {
           doVote = true;
-          delete votersCache[data.from_id];
+          delete votersCache[callbackQuery.from.id];
         }
       } else {
-        votersCache[data.from_id] = { lastVoted: moment(), delay: 10 };
+        votersCache[callbackQuery.from.id] = { lastVoted: moment(), delay: 10 };
         doVote = true;
       }
       if (doVote) {
-        const foundList: HydratedDocument<IList> | null = await List.findOne({ _id: data.list })
+        const [voteString, listId] = callbackQuery.id.split("_");
+        const vote = parseInt(voteString);
+        const foundList: HydratedDocument<IList> | null = await List.findOne({ _id: listId })
           .select("name votes modifyDate score skips plays")
           .exec();
         if (!foundList) {
-          return bot.answerCallback(data.callback_query_id, "Can't find list 😱");
+          return bot.answerCallback(callbackQuery.callbackQueryId, "Can't find list 😱");
         }
-        let voter = find(foundList.votes, (vote: IVote) => vote.voter == data.from_id);
+        let voter = find(foundList.votes, (vote: IVote) => vote.voter == callbackQuery.from.id);
         if (!voter) {
-          foundList.votes.push({ voter: data.from_id, vote: data.vote!, date: new Date(), modifyDate: new Date() });
+          foundList.votes.push({ voter: callbackQuery.from.id, vote, date: new Date(), modifyDate: new Date() });
           voter = foundList.votes[foundList.votes.length - 1];
         } else {
-          voter.vote = data.vote!;
+          voter.vote = vote;
           voter.modifyDate = new Date();
         }
         foundList.score = getListScore(foundList);
         delete foundList.voters;
         await foundList.save();
-        bot.answerCallback(data.callback_query_id, data.vote! > 0 ? emojis.thumbsUp : emojis.thumbsDown);
+        bot.answerCallback(callbackQuery.callbackQueryId, vote > 0 ? emojis.thumbsUp : emojis.thumbsDown);
         //bot.notifyAdmin(`"<b>${foundList.name}</b>" ${data.vote > 0 ? 'up' : 'down'}voted by <i>${body.callback_query.from.first_name}</i>!`);
-        if (moment(data.date) > moment().subtract(1, "days")) {
-          game = await Game.findOne({ chat_id: data.chat_id }).select("settings").exec();
+        if (moment(callbackQuery.date) > moment().subtract(1, "days")) {
+          game = await Game.findOne({ chat_id: callbackQuery.chatId }).select("settings").exec();
           if (!game) return;
           bot.queueMessage(
-            data.chat_id,
-            i18n(game.settings.language, `sentences.${data.vote! > 0 ? "" : "dis"}likesList`, {
-              name: data.requestor,
+            callbackQuery.chatId,
+            i18n(game.settings.language, `sentences.${vote > 0 ? "" : "dis"}likesList`, {
+              name: callbackQuery.from.name,
               list: foundList.name,
               score: makePercentage(foundList.score),
             })
@@ -86,146 +114,154 @@ export default async (data: ICallbackData) => {
         }
       }
       break;
-    case "stats":
-      if (await bot.checkAdmin(data.chat_id, data.from_id)) {
-        game = await Game.findOne({ chat_id: data.chat_id }).select("chat_id list settings").exec();
+    case CallbackDataType.StatOptions:
+      if (await bot.checkAdmin(callbackQuery.chatId, callbackQuery.from.id)) {
+        game = await Game.findOne({ chat_id: callbackQuery.chatId }).select("chat_id list settings").exec();
         if (!game) return;
-        const text = i18n(game.settings.language, `stats.${data.data}`);
-        switch (data.data) {
+        const text = i18n(game.settings.language, `stats.${callbackQuery.data}`);
+        switch (callbackQuery.id) {
           case "list":
-            bot.answerCallback(data.callback_query_id, text);
-            bot.sendKeyboard(game.chat_id, `<b>${text}</b>`, keyboards.stats_list(game));
+            bot.answerCallback(callbackQuery.callbackQueryId, text);
+            bot.sendKeyboard(game.chat_id, `<b>${text}</b>`, listStatsKeyboard(game));
             break;
           case "player":
-            bot.answerCallback(data.callback_query_id, text);
-            bot.sendKeyboard(game.chat_id, `<b>${text}</b>`, keyboards.stats_player());
+            bot.answerCallback(callbackQuery.callbackQueryId, text);
+            bot.sendKeyboard(game.chat_id, `<b>${text}</b>`, playerStatsKeyboard());
             break;
           case "global":
-            bot.answerCallback(data.callback_query_id, text);
+            bot.answerCallback(callbackQuery.callbackQueryId, text);
             bot.queueMessage(game.chat_id, "Coming Soon");
             break;
           case "game":
-            bot.answerCallback(data.callback_query_id, text);
+            bot.answerCallback(callbackQuery.callbackQueryId, text);
             bot.queueMessage(game.chat_id, "Coming Soon");
             break;
         }
       }
       break;
-    case "stat":
-      bot.answerCallback(data.callback_query_id, "");
-      getStats(data.chat_id, data as { id: string }, data.from_id);
+    case CallbackDataType.Stats:
+      bot.answerCallback(callbackQuery.callbackQueryId, "");
+      getStats(callbackQuery.chatId, callbackQuery.data, callbackQuery.from.name);
       break;
-    case "score":
-      if (data.requestor === "^") return "";
-      bot.answerCallback(data.callback_query_id, "Score");
-      getScores(data.chat_id, data.id!);
+    case CallbackDataType.Score:
+      if (callbackQuery.from.name === "^") return "";
+      bot.answerCallback(callbackQuery.callbackQueryId, "Score");
+      getScores(callbackQuery.chatId, callbackQuery.data);
       break;
-    case "cat":
-      if (data.chat_id != config.groupChat) {
-        if (await bot.checkAdmin(data.chat_id, data.from_id)) {
-          game = await Game.findOne({ chat_id: data.chat_id }).select("chat_id disabledCategories settings").exec();
-          if (!game || !data.id) return;
-          const categoryIndex = game.disabledCategories.indexOf(data.id);
+    case CallbackDataType.Category:
+      if (callbackQuery.chatId != config.groupChat) {
+        if (await bot.checkAdmin(callbackQuery.chatId, callbackQuery.from.id)) {
+          game = await Game.findOne({ chat_id: callbackQuery.chatId })
+            .select("chat_id disabledCategories settings")
+            .exec();
+          if (!game || !callbackQuery.data) return;
+          const categoryIndex = game.disabledCategories.indexOf(callbackQuery.data);
           if (categoryIndex >= 0) {
             game.disabledCategories.splice(categoryIndex, 1);
           } else {
             if (game.disabledCategories.length === categories.length - 1) {
-              return bot.queueMessage(data.chat_id, i18n(game.settings.language, "warnings.minimum1Category"));
+              return bot.queueMessage(callbackQuery.chatId, i18n(game.settings.language, "warnings.minimum1Category"));
             }
-            game.disabledCategories.push(data.id!);
+            game.disabledCategories.push(callbackQuery.data);
           }
           await game.save();
           bot.answerCallback(
-            data.callback_query_id,
-            `${data.id} -> ${
+            callbackQuery.callbackQueryId,
+            `${callbackQuery.data} -> ${
               categoryIndex >= 0 ? i18n(game.settings.language, "on") : i18n(game.settings.language, "off")
             }`
           );
-          bot.editKeyboard(data.chat_id, data.message_id, keyboards.categories(game));
+          bot.editKeyboard(callbackQuery.chatId, callbackQuery.data, categoriesKeyboard(game));
         } else {
-          game = await Game.findOne({ chat_id: data.chat_id }).select("settings").exec();
+          game = await Game.findOne({ chat_id: callbackQuery.chatId }).select("settings").exec();
           if (!game) return;
           bot.queueMessage(
-            data.chat_id,
-            i18n(game.settings.language, "warnings.adminFunction", { name: data.requestor })
+            callbackQuery.chatId,
+            i18n(game.settings.language, "warnings.adminFunction", { name: callbackQuery.from.name })
           );
         }
       }
       break;
-    case "setting":
-      if (data.chat_id != config.masterChat) {
-        if (await bot.checkAdmin(data.chat_id, data.from_id)) {
-          game = await Game.findOne({ chat_id: data.chat_id }).select("chat_id settings").exec();
-          if (!game || !data.id) return;
-          if (data.id === "langs") {
+    case CallbackDataType.Setting:
+      if (callbackQuery.chatId != config.masterChat) {
+        if (await bot.checkAdmin(callbackQuery.chatId, callbackQuery.from.id)) {
+          game = await Game.findOne({ chat_id: callbackQuery.chatId }).select("chat_id settings").exec();
+          if (!game || !callbackQuery.id) return;
+          if (callbackQuery.data === "langs") {
             const availableLanguages = await List.aggregate([
               { $group: { _id: "$language", count: { $sum: 1 } } },
             ]).exec();
-            bot.editKeyboard(data.chat_id, data.message_id, keyboards.languages(game, availableLanguages));
-          } else if (data.id === "lang") {
+            bot.editKeyboard(callbackQuery.chatId, callbackQuery.id, languagesKeyboard(game, availableLanguages));
+          } else if (callbackQuery.data === "lang") {
             const availableLanguages = await List.aggregate([
               { $group: { _id: "$language", count: { $sum: 1 } } },
             ]).exec();
-            bot.editKeyboard(data.chat_id, data.message_id, keyboards.language(game, availableLanguages));
+            bot.editKeyboard(callbackQuery.chatId, callbackQuery.id, languageKeyboard(game, availableLanguages));
           } else {
-            console.log(`${data.id} toggled for ${game._id}`);
-            game.settings[data.id] = !game.settings[data.id as keyof IGameSettings];
+            console.log(`${callbackQuery.data} toggled for ${game._id}`);
+            game.settings[callbackQuery.data] = !game.settings[callbackQuery.id as keyof IGameSettings];
             await game.save();
             bot.answerCallback(
-              data.callback_query_id,
-              `${data.id} -> ${
-                game.settings[data.id] ? i18n(game.settings.language, "on") : i18n(game.settings.language, "off")
+              callbackQuery.callbackQueryId,
+              `${callbackQuery.data} -> ${
+                game.settings[callbackQuery.data]
+                  ? i18n(game.settings.language, "on")
+                  : i18n(game.settings.language, "off")
               }`
             );
-            bot.editKeyboard(data.chat_id, data.message_id, keyboards.settings(game));
+            bot.editKeyboard(callbackQuery.chatId, callbackQuery.data, settingsKeyboard(game));
           }
         } else {
-          game = await Game.findOne({ chat_id: data.chat_id }).select("settings").exec();
+          game = await Game.findOne({ chat_id: callbackQuery.chatId }).select("settings").exec();
           if (!game) return;
           bot.queueMessage(
-            data.chat_id,
-            i18n(game.settings.language, "warnings.adminFunction", { name: data.requestor })
+            callbackQuery.chatId,
+            i18n(game.settings.language, "warnings.adminFunction", { name: callbackQuery.from.name })
           );
         }
       }
       break;
-    case "langs":
-      if (await bot.checkAdmin(data.chat_id, data.from_id)) {
-        game = await Game.findOne({ chat_id: data.chat_id }).select("chat_id settings").exec();
-        if (!game || !data.id) return;
-        const isSelected = game.settings.languages.includes(data.id);
+    case CallbackDataType.TriviaLanguages:
+      if (await bot.checkAdmin(callbackQuery.chatId, callbackQuery.from.id)) {
+        game = await Game.findOne({ chat_id: callbackQuery.chatId }).select("chat_id settings").exec();
+        if (!game || !callbackQuery.data) return;
+        const isSelected = game.settings.languages.includes(callbackQuery.data);
         if (isSelected) {
-          game.settings.languages = game.settings.languages.filter((language) => language !== data.id);
+          game.settings.languages = game.settings.languages.filter((language) => language !== callbackQuery.data);
         } else {
-          game.settings.languages.push(data.id);
+          game.settings.languages.push(callbackQuery.data);
         }
         if (!game.settings.languages || game.settings.languages.length === 0) {
           game.settings.languages = ["EN"];
         }
         game.save();
         bot.answerCallback(
-          data.callback_query_id,
-          `${data.id} -> ${isSelected ? i18n(game.settings.language, "off") : i18n(game.settings.language, "on")}`
+          callbackQuery.callbackQueryId,
+          `${callbackQuery.data} -> ${
+            isSelected ? i18n(game.settings.language, "off") : i18n(game.settings.language, "on")
+          }`
         );
         const availableLanguages = await List.aggregate([{ $group: { _id: "$language", count: { $sum: 1 } } }]).exec();
-        bot.editKeyboard(data.chat_id, data.message_id, keyboards.languages(game, availableLanguages));
+        bot.editKeyboard(callbackQuery.chatId, callbackQuery.data, languagesKeyboard(game, availableLanguages));
       }
       break;
-    case "lang":
-      if (await bot.checkAdmin(data.chat_id, data.from_id)) {
-        game = await Game.findOne({ chat_id: data.chat_id }).select("chat_id settings").exec();
-        if (!game || !data.id) return;
-        game.settings.language = data.id;
+    case CallbackDataType.BotLanguage:
+      if (await bot.checkAdmin(callbackQuery.chatId, callbackQuery.from.id)) {
+        game = await Game.findOne({ chat_id: callbackQuery.chatId }).select("chat_id settings").exec();
+        if (!game || !callbackQuery.data) return;
+        game.settings.language = callbackQuery.data;
         await game.save();
-        bot.answerCallback(data.callback_query_id, `${data.id} -> New bot language`);
-        bot.setCommands(data.chat_id, data.id);
+        bot.answerCallback(callbackQuery.callbackQueryId, `${callbackQuery.data} -> New bot language`);
+        bot.setCommands(callbackQuery.chatId, callbackQuery.data);
         const availableLanguages = await List.aggregate([{ $group: { _id: "$language", count: { $sum: 1 } } }]).exec();
-        bot.editKeyboard(data.chat_id, data.message_id, keyboards.language(game, availableLanguages));
+        bot.editKeyboard(callbackQuery.chatId, callbackQuery.data, languageKeyboard(game, availableLanguages));
       }
       break;
-    case "pick":
-      if (data.chat_id === config.adminChat) {
-        const list: HydratedDocument<IList> | null = await List.findOne({ _id: data.list }).populate("creator").exec();
+    case CallbackDataType.Pick:
+      if (callbackQuery.chatId === config.adminChat) {
+        const list: HydratedDocument<IList> | null = await List.findOne({ _id: callbackQuery.data })
+          .populate("creator")
+          .exec();
         if (!list) return;
         let msg = getListMessage(list);
         msg += ` - Created: ${moment(list.date).format("DD-MMM-YYYY")}\n`;
@@ -236,79 +272,84 @@ export default async (data: ICallbackData) => {
         msg += ` - Skips: ${list.skips}\n`;
         msg += ` - Hints: ${list.hints}\n\n`;
         msg += `Rate Difficulty and Update Frequency`;
-        bot.notifyAdmins(msg, keyboards.curate(list));
+        bot.notifyAdmins(msg, curateListKeyboard(list));
       } else {
-        game = await Game.findOne({ chat_id: data.chat_id }).select("chat_id pickedLists").exec();
+        game = await Game.findOne({ chat_id: callbackQuery.chatId }).select("chat_id pickedLists").exec();
         if (!game) return;
         if (game.pickedLists.length >= 10)
           return bot.queueMessage(
-            data.chat_id,
-            i18n(game.settings.language, "warnings.fullQueue", { name: data.requestor })
+            callbackQuery.chatId,
+            i18n(game.settings.language, "warnings.fullQueue", { name: callbackQuery.from.name })
           );
-        const list = await List.findOne({ _id: data.list }).exec();
-        if (!list) return bot.queueMessage(data.chat_id, i18n(game.settings.language, "warnings.unfoundList"));
+        const list = await List.findOne({ _id: callbackQuery.data }).exec();
+        if (!list) return bot.queueMessage(callbackQuery.chatId, i18n(game.settings.language, "warnings.unfoundList"));
         const foundList = find(game.pickedLists, (pickedListId: Types.ObjectId) => pickedListId == list._id);
         if (foundList) {
           bot.queueMessage(
-            data.chat_id,
+            callbackQuery.chatId,
             i18n(game.settings.language, "warnings.alreadyInQueue", {
               list: list.name,
-              name: data.requestor,
+              name: callbackQuery.from.name,
             })
           );
         } else {
           game.pickedLists.push(list._id);
           game.save();
           bot.answerCallback(
-            data.callback_query_id,
+            callbackQuery.callbackQueryId,
             i18n(game.settings.language, "sentences.addedList", {
               list: list.name,
             })
           );
           bot.queueMessage(
-            data.chat_id,
+            callbackQuery.chatId,
             i18n(game.settings.language, "sentences.addedListToQueue", {
               list: list.name,
-              name: data.requestor,
+              name: callbackQuery.from.name,
             })
           );
         }
       }
       break;
-    case "ban":
-      game = await Game.findOne({ chat_id: data.chat_id }).select("chat_id bannedLists settings").exec();
+    case CallbackDataType.Ban:
+      game = await Game.findOne({ chat_id: callbackQuery.chatId }).select("chat_id bannedLists settings").exec();
       if (!game) return;
-      initiateBan(game, data);
-      bot.answerCallback(data.callback_query_id, "");
+      initiateBan(game, callbackQuery);
+      bot.answerCallback(callbackQuery.callbackQueryId, "");
       break;
-    case "c_ban":
-      game = await Game.findOne({ chat_id: data.chat_id }).select("chat_id bannedLists settings").exec();
+    case CallbackDataType.ConfirmBan:
+      game = await Game.findOne({ chat_id: callbackQuery.chatId }).select("chat_id bannedLists settings").exec();
       if (!game) return;
       if (!game) return;
-      processBan(game, data);
-      bot.answerCallback(data.callback_query_id, "");
+      processBan(game, callbackQuery);
+      bot.answerCallback(callbackQuery.callbackQueryId, "");
       break;
-    case "suggest":
-      game = await Game.findOne({ chat_id: data.chat_id }).select("chat_id list settings").exec();
+    case CallbackDataType.Suggestion:
+      game = await Game.findOne({ chat_id: callbackQuery.chatId }).select("chat_id list settings").exec();
       if (!game) return;
-      const suggestion = data.message.substring(data.message.indexOf(' "') + 2, data.message.indexOf('",'));
+      const suggestion = callbackQuery.text.substring(
+        callbackQuery.text.indexOf(' "') + 2,
+        callbackQuery.text.indexOf('",')
+      );
 
-      let message = `<b>${capitalize(data.id as string)}</b>\n${suggestion}\n<i>By ${data.requestor}</i>`;
-      message += data.id === "typo" ? `\nList: ${game.list.name}` : "";
+      let message = `<b>${capitalize(callbackQuery.data as string)}</b>\n${suggestion}\n<i>By ${
+        callbackQuery.from.name
+      }</i>`;
+      message += callbackQuery.data === "typo" ? `\nList: ${game.list.name}` : "";
       bot.notify(message);
       bot.notifyAdmins(message);
-      message += data.id === "list" ? `\n${i18n(game.settings.language, "sentences.addOwnList")}}` : "";
-      bot.answerCallback(data.callback_query_id, i18n(game.settings.language, "sentences.suggestionNoted"));
-      bot.deleteMessage(data.chat_id, data.message_id);
-      bot.queueMessage(data.chat_id, message);
+      message += callbackQuery.data === "list" ? `\n${i18n(game.settings.language, "sentences.addOwnList")}}` : "";
+      bot.answerCallback(callbackQuery.callbackQueryId, i18n(game.settings.language, "sentences.suggestionNoted"));
+      bot.deleteMessage(callbackQuery.chatId, callbackQuery.id);
+      bot.queueMessage(callbackQuery.chatId, message);
       break;
-    case "values":
-      List.findOne({ _id: data.list }).exec((err, list) => {
+    case CallbackDataType.Values:
+      List.findOne({ _id: callbackQuery.data }).exec((err, list) => {
         if (!list) {
-          bot.queueMessage(data.chat_id, "List not found");
+          bot.queueMessage(callbackQuery.chatId, "List not found");
         } else {
           bot.queueMessage(
-            data.chat_id,
+            callbackQuery.chatId,
             list.values
               .sort((a, b) => (a.value < b.value ? -1 : 1))
               .reduce((message, item) => `${message}- ${item.value}\n`, `<b>${list.name}</b>\n`)
@@ -316,29 +357,33 @@ export default async (data: ICallbackData) => {
         }
       });
       break;
-    case "desc":
-      game = await Game.findOne({ chat_id: data.chat_id }).select("settings").exec();
+    case CallbackDataType.Description:
+      game = await Game.findOne({ chat_id: callbackQuery.chatId }).select("settings").exec();
       if (!game) return;
-      list = await List.findOne({ _id: data.list }).exec();
+      list = await List.findOne({ _id: callbackQuery.data }).exec();
       if (!list) return;
       bot.queueMessage(
-        data.chat_id,
+        callbackQuery.chatId,
         `<b>${list.name}</b>\n${i18n(game.settings.language, "description")}:\n<i>${list.description || "N/A"}</i>`
       );
       break;
-    case "diff":
-      await List.findOneAndUpdate({ _id: data.list }, { difficulty: data.vote });
-      bot.answerCallback(data.callback_query_id, `List is ${getDifficultyMessage(data.vote!)}`);
-      list = await List.findOne({ _id: data.list }).exec();
+    case CallbackDataType.Difficulty:
+      const [difficultyString, difficultyListId] = callbackQuery.data.split("_");
+      const difficulty = parseInt(difficultyString);
+      await List.findOneAndUpdate({ _id: difficultyListId }, { difficulty });
+      bot.answerCallback(callbackQuery.callbackQueryId, `List is ${getDifficultyMessage(difficulty)}`);
+      list = await List.findOne({ _id: difficultyListId }).exec();
       if (!list) return;
-      bot.editKeyboard(data.chat_id, data.message_id, keyboards.curate(list));
+      bot.editKeyboard(callbackQuery.chatId, callbackQuery.id, curateListKeyboard(list));
       break;
-    case "freq":
-      await List.findOneAndUpdate({ _id: data.list }, { frequency: data.vote });
-      bot.answerCallback(data.callback_query_id, `${capitalize(getFrequencyMessage(data.vote!))} changes`);
-      list = await List.findOne({ _id: data.list }).exec();
+    case CallbackDataType.Frequency:
+      const [frequencyString, frequencyListId] = callbackQuery.data.split("_");
+      const frequency = parseInt(frequencyString);
+      await List.findOneAndUpdate({ _id: frequencyListId }, { frequency });
+      bot.answerCallback(callbackQuery.callbackQueryId, `${capitalize(getFrequencyMessage(frequency))} changes`);
+      list = await List.findOne({ _id: frequencyListId }).exec();
       if (!list) return;
-      bot.editKeyboard(data.chat_id, data.message_id, keyboards.curate(list));
+      bot.editKeyboard(callbackQuery.chatId, callbackQuery.id, curateListKeyboard(list));
       break;
   }
 };

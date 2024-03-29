@@ -7,8 +7,7 @@ import { sendMaingameMessage } from "./maingame";
 import { sendMinigameMessage } from "./minigame";
 import { sendTinygameMessage } from "./tinygame";
 import { logHint } from "./lists";
-
-const bot = require("../../../connections/telegram");
+import bot from "../../../connections/telegram";
 
 export const MAX_HINTS = 6;
 const SPECIAL_CHARACTERS = "\\\\/ !?@#$%^&*()_+:.{},;\\-'``’‘\"<>";

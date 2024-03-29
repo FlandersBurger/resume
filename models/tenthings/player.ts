@@ -4,7 +4,7 @@ import db from "../../db";
 export interface IPlayer {
   _id: Types.ObjectId;
   game: Types.ObjectId;
-  id: string;
+  id: number;
   first_name: string;
   last_name?: string;
   username?: string;
@@ -38,7 +38,7 @@ let Player: { [key: string]: Model<IPlayer> } = {};
 const playerSchema = new Schema<IPlayer>(
   {
     game: { type: Schema.Types.ObjectId, ref: "TenThings", required: true },
-    id: { type: String, required: true },
+    id: { type: Number, required: true },
     first_name: { type: String, required: true },
     last_name: { type: String, required: false },
     username: { type: String, required: false },

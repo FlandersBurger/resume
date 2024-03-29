@@ -1,10 +1,8 @@
 import { Request, Response, Router } from "express";
-import { Types, HydratedDocument, LeanDocument } from "mongoose";
+import { Types, LeanDocument } from "mongoose";
 import moment from "moment";
 
-const bot = require("../../../connections/telegram");
-const keyboards = require("../../bots/tenthings/keyboards");
-const lists = require("../../bots/tenthings/lists");
+import bot from "../../../connections/telegram";
 const { getAuthor, getBookCover } = require("../../../connections/goodreads");
 const { getMovieDbImage } = require("../../../connections/moviedb");
 const { getMusicVideo } = require("../../../connections/youtube");
@@ -20,6 +18,8 @@ import { IList, IListValue } from "../../../models/tenthings/list";
 import { List, User } from "../../../models";
 import { removeAllButLetters } from "../../../utils/string-helpers";
 import { getListMessage } from "../../bots/tenthings/messages";
+import { getListScore } from "../../bots/tenthings/lists";
+import { curateListKeyboard } from "../../bots/tenthings/keyboards";
 
 export const tenthingsListsRoute = Router();
 
@@ -145,7 +145,7 @@ tenthingsListsRoute.put("/", async (req: Request, res: Response) => {
   var previousModifyDate = moment(req.body.list.modifyDate);
   req.body.list.modifyDate = new Date();
   req.body.list.search = removeAllButLetters(req.body.list.name);
-  req.body.list.score = lists.getScore(req.body.list);
+  req.body.list.score = getListScore(req.body.list);
   req.body.list.values
     .filter(({ creator }: { creator: Types.ObjectId }) => !creator)
     .forEach((value: IListValue) => (value.creator = req.body.list.creator));
@@ -159,12 +159,12 @@ tenthingsListsRoute.put("/", async (req: Request, res: Response) => {
   const list = await List.findOne({ _id: updatedList._id }).populate("creator");
   if (!list) return res.sendStatus(500);
   if (!req.body.list._id) {
-    bot.notifyAdmins(`<u>List Created</u>\n${getListMessage(list)}`, keyboards.curate(list));
-    bot.notifyCosmicForce(`<u>List Created</u>\n${getListMessage(list)}`, keyboards.curate(list));
+    bot.notifyAdmins(`<u>List Created</u>\n${getListMessage(list)}`, curateListKeyboard(list));
+    bot.notifyCosmicForce(`<u>List Created</u>\n${getListMessage(list)}`, curateListKeyboard(list));
   } else if (previousModifyDate < yesterday) {
     bot.notifyAdmins(
       `<u>List Updated</u>\nUpdated by <i>${req.body.user.username}</i>\n${getListMessage(list)}`,
-      keyboards.curate(list)
+      curateListKeyboard(list)
     );
   }
   res.json(formatList(list));

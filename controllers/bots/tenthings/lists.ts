@@ -1,14 +1,13 @@
 import moment from "moment";
 
-const bot = require("../../../connections/telegram");
-
+import bot from "../../../connections/telegram";
 import { List } from "../../../models";
 import { HydratedDocument, QueryOptions, Types } from "mongoose";
 import { IList } from "../../../models/tenthings/list";
 import { IGame, IGameSettings } from "../../../models/tenthings/game";
 
-import keyboards from "./keyboards";
 import some from "lodash/some";
+import { likeListKeyboard } from "./keyboards";
 
 export const getRandomList = async (parameters: QueryOptions = {}): Promise<HydratedDocument<IList> | undefined> => {
   const count = await List.countDocuments(parameters).exec();
@@ -36,7 +35,7 @@ export const getListScore = (list: IList): number => {
 };
 
 export const rateList = (game: IGame) => {
-  bot.sendKeyboard(game.chat_id, `Did you like <b>${game.list!.name}</b>?`, keyboards.like(game));
+  bot.sendKeyboard(game.chat_id, `Did you like <b>${game.list!.name}</b>?`, likeListKeyboard(game));
 };
 
 const getAvailableLanguages = ({ settings }: { settings: IGameSettings }) =>

@@ -21,7 +21,7 @@ export interface IGameListValue {
   value: string;
   blurb: string;
   guesser?: {
-    id: string;
+    id: number;
     first_name: string;
     last_name?: string;
     username?: string;

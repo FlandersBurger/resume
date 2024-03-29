@@ -5,13 +5,10 @@ import { IGame } from "../../../models/tenthings/game";
 import { IListValue } from "../../../models/tenthings/list";
 import { IPlayer } from "../../../models/tenthings/player";
 import { IGuess, getAnswerScore } from "./guesses";
-import { IMessage } from "./main";
-import { getGuessedMessage } from "./messages";
+import { IMessage, getGuessedMessage } from "./messages";
 import { getHint } from "./hints";
 import { getRandomList } from "./lists";
-
-const bot = require("../../../connections/telegram");
-
+import bot from "../../../connections/telegram";
 import i18n from "../../../i18n";
 
 export const createTinygame = async (game: HydratedDocument<IGame>) => {
@@ -83,7 +80,7 @@ export const checkTinygame = async (
   message += `\n<u>${player.scoreDaily - score} + ${i18n(game.settings.language, "point", {
     count: score,
   })}</u>`;
-  bot.queueMessage(msg.chat.id, message);
+  bot.queueMessage(msg.chatId, message);
   setTimeout(() => {
     createTinygame(game);
   }, 1000);
