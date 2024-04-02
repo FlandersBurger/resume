@@ -78,12 +78,12 @@ function TelegramBot() {
     }
   };
 
-  bot.sendMessage = (channel, message, topic) => {
+  bot.sendMessage = async (channel, message, topic) => {
     message = encodeURIComponent(message);
     let url = `${bot.baseUrl}/sendMessage?chat_id=${channel}&disable_notification=true&parse_mode=html&text=${message}`;
     if (topic) url += `&message_thread_id=${topic}`;
     try {
-      axios.get(url);
+      await axios.get(url);
     } catch (error) {
       console.error("Send Fail");
       console.error(error);
