@@ -86,7 +86,7 @@ function TelegramBot() {
       await axios.get(url);
     } catch (error) {
       console.error("Send Fail");
-      console.error(error);
+      console.error(error.response.data);
     }
   };
 
