@@ -1,5 +1,14 @@
 {
   "name": "resume",
+  "scripts": {
+    "build": "copyfiles --flat ./config.js src && npm run bundle",
+    "bundle": "tsc -p .",
+    "dev": "npm run bundle && nodemon --watch src src/boot.ts",
+    "start": "npm run build -- -w"
+  },
+  "_moduleAliases": {
+    "@": "dist"
+  },
   "dependencies": {
     "@types/bcrypt": "^5.0.2",
     "@types/bcryptjs": "^2.4.6",
@@ -39,6 +48,7 @@
     "jquery-ui": "^1.13.2",
     "jwt-simple": "^0.5.6",
     "lodash": "^4.17.21",
+    "module-alias": "^2.2.3",
     "moment": "^2.29.4",
     "mongoose": "^6.12.7",
     "mongoose-lean-virtuals": "^0.9.1",
@@ -63,6 +73,9 @@
     "@babel/polyfill": "^7.12.1",
     "@babel/preset-env": "^7.23.7",
     "@babel/register": "^7.21.0",
+    "@swc/core": "^1.4.12",
+    "@swc/helpers": "^0.5.8",
+    "copyfiles": "^2.4.1",
     "gulp": "^4.0.2",
     "gulp-babel": "^8.0.0",
     "gulp-cli": "^2.3.0",
@@ -75,6 +88,10 @@
     "gulp-stylus": "^2.7.0",
     "gulp-terser": "^1.4.0",
     "gulp-uglify": "^3.0.2",
+    "nodemon": "^3.1.0",
+    "regenerator-runtime": "^0.14.1",
+    "ts-node": "^10.9.2",
+    "tsconfig-paths": "^4.2.0",
     "typescript": "^5.3.3",
     "uglify-es": "^3.3.9"
   }
