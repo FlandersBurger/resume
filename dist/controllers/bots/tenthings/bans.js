@@ -13,11 +13,11 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.processBan = exports.initiateBan = void 0;
-const models_1 = require("@/models");
-const i18n_1 = __importDefault(require("@/i18n"));
+const models_1 = require("@root/models");
+const i18n_1 = __importDefault(require("@root/i18n"));
 const keyboards_1 = require("./keyboards");
-const telegram_1 = __importDefault(require("@/connections/telegram"));
-const config = require("@/config");
+const telegram_1 = __importDefault(require("@root/connections/telegram"));
+const config = require("@root/config");
 const cache = {};
 const initiateBan = (game, callbackQuery) => __awaiter(void 0, void 0, void 0, function* () {
     if (game.chat_id !== config.groupChat || (yield telegram_1.default.checkAdmin(game.chat_id, callbackQuery.from.id))) {

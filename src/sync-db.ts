@@ -15,7 +15,7 @@ import {
   StatsBackup,
   User,
   UserBackup,
-} from "@/models";
+} from "@models/index";
 
 const _ = require("underscore");
 const moment = require("moment");

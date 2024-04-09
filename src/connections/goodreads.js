@@ -1,6 +1,6 @@
 const axios = require("axios").default;
 const parseString = require("xml2js").parseStringPromise;
-const config = require("@/config");
+const config = require("@root/config");
 
 exports.getAuthor = async (author) => {
   const goodreadsAuthor = await axios.get(

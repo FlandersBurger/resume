@@ -1,13 +1,13 @@
 import { HydratedDocument } from "mongoose";
-import { GameType, IGame } from "@/models/tenthings/game";
-import { IPlayer } from "@/models/tenthings/player";
-import { conceal, concealMiddle } from "@/utils/string-helpers";
+import { GameType, IGame } from "@models/tenthings/game";
+import { IPlayer } from "@models/tenthings/player";
+import { conceal, concealMiddle } from "@root/utils/string-helpers";
 import uniq from "lodash/uniq";
 import { sendMaingameMessage } from "./maingame";
 import { sendMinigameMessage } from "./minigame";
 import { sendTinygameMessage } from "./tinygame";
 import { logHint } from "./lists";
-import bot from "@/connections/telegram";
+import bot from "@root/connections/telegram";
 
 export const MAX_HINTS = 6;
 const SPECIAL_CHARACTERS = "\\\\/ !?@#$%^&*()_+:.{},;\\-'``’‘\"<>";

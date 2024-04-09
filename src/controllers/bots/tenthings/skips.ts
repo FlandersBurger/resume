@@ -1,14 +1,14 @@
 import moment, { Moment } from "moment";
-import { List, Player } from "@/models";
-import { IGame } from "@/models/tenthings/game";
-import { IPlayer } from "@/models/tenthings/player";
+import { List, Player } from "@models/index";
+import { IGame } from "@models/tenthings/game";
+import { IPlayer } from "@models/tenthings/player";
 import { HydratedDocument, Types } from "mongoose";
-import { angleBrackets, maskUrls, removeHTML } from "@/utils/string-helpers";
+import { angleBrackets, maskUrls, removeHTML } from "@root/utils/string-helpers";
 import { newRound } from "./maingame";
 import { getListScore } from "./lists";
 
-import bot from "@/connections/telegram";
-import i18n from "@/i18n";
+import bot from "@root/connections/telegram";
+import i18n from "@root/i18n";
 
 import { getDailyScores } from "./stats";
 import { banListKeyboard } from "./keyboards";

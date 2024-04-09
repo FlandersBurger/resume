@@ -10,7 +10,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 const moment = require("moment");
 const _ = require("underscore");
-const config = require("@/config");
+const config = require("@root/config");
 const request = require("request-promise");
 module.exports = function () {
     const api = this;

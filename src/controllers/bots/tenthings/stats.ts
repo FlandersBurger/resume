@@ -1,14 +1,14 @@
 import { SortOrder } from "mongoose";
 import moment from "moment";
 import find from "lodash/find";
-import { Game, List, Player, User } from "@/models";
-import { IGame } from "@/models/tenthings/game";
-import { IList } from "@/models/tenthings/list";
-import { IPlayer } from "@/models/tenthings/player";
+import { Game, List, Player, User } from "@models/index";
+import { IGame } from "@models/tenthings/game";
+import { IList } from "@models/tenthings/list";
+import { IPlayer } from "@models/tenthings/player";
 import { getListStats, getPlayerStats } from "./messages";
 
-import bot from "@/connections/telegram";
-import i18n from "@/i18n";
+import bot from "@root/connections/telegram";
+import i18n from "@root/i18n";
 
 export const getScores = async (game_id: number, type: string) => {
   /*

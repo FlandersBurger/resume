@@ -1,6 +1,6 @@
 import { Request, Response, Router } from "express";
 
-import { Category } from "@/models";
+import { Category } from "@models/index";
 
 export const categoriesRoute = Router();
 

@@ -14,13 +14,13 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const axios_1 = __importDefault(require("axios"));
 const bull_1 = __importDefault(require("bull"));
-const i18n_1 = __importDefault(require("@/i18n"));
-const redis_1 = __importDefault(require("@/redis"));
-const errors_1 = require("@/controllers/bots/tenthings/errors");
-const spam_1 = require("@/controllers/bots/tenthings/spam");
-const main_1 = require("@/controllers/bots/tenthings/main");
-const string_helpers_1 = require("@/utils/string-helpers");
-const config = require("@/config");
+const i18n_1 = __importDefault(require("@root/i18n"));
+const queue_1 = __importDefault(require("@root/queue"));
+const errors_1 = require("@tenthings/errors");
+const spam_1 = require("@tenthings/spam");
+const main_1 = require("@tenthings/main");
+const string_helpers_1 = require("@root/utils/string-helpers");
+const config = require("@root/config");
 const BANNED_TELEGRAM_USERS = [1726294650];
 const TOKEN = config.tokens.telegram.tenthings;
 const messageQueue = new bull_1.default("sendMessage", {
@@ -329,7 +329,7 @@ class TelegramBot {
             }
             if (body.message || body.callback_query) {
                 const from = this.toDomainUser(body.message ? body.message.from : body.callback_query.from);
-                if (from.id != config.masterChat && (yield redis_1.default.get("pause")) === "true")
+                if (from.id != config.masterChat && (yield queue_1.default.get("pause")) === "true")
                     return { messageType: main_1.MessageType.Ignore };
                 if (BANNED_TELEGRAM_USERS.indexOf(from.id) >= 0) {
                     return { messageType: main_1.MessageType.Ignore };

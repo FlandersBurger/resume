@@ -1,12 +1,12 @@
 import { HydratedDocument, Types } from "mongoose";
-import { List } from "@/models";
-import { IGame } from "@/models/tenthings/game";
+import { List } from "@models/index";
+import { IGame } from "@models/tenthings/game";
 import { ICallbackData } from "./callbacks";
 
-import i18n from "@/i18n";
+import i18n from "@root/i18n";
 import { confirmBanListKeyboard } from "./keyboards";
-import bot from "@/connections/telegram";
-const config = require("@/config");
+import bot from "@root/connections/telegram";
+const config = require("@root/config");
 
 const cache: { [key: string]: number } = {};
 

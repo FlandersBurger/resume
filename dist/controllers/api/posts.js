@@ -14,9 +14,9 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.postsRoute = void 0;
 const express_1 = require("express");
-const redis_1 = __importDefault(require("@/redis"));
-const server_1 = require("@/server");
-const models_1 = require("@/models");
+const queue_1 = __importDefault(require("@root/queue"));
+const server_1 = __importDefault(require("@root/server"));
+const models_1 = require("@root/models");
 exports.postsRoute = (0, express_1.Router)();
 exports.postsRoute.get("/", (_, res) => __awaiter(void 0, void 0, void 0, function* () {
     const posts = yield models_1.Post.find().populate("poster", "username").sort("-date");
@@ -34,10 +34,10 @@ exports.postsRoute.post("/", (req, res) => __awaiter(void 0, void 0, void 0, fun
     });
     const savedPost = yield post.save();
     // @ts-ignore
-    redis_1.default.publish("new_post", savedPost);
+    queue_1.default.publish("new_post", savedPost);
     res.status(201).json(savedPost);
 }));
-redis_1.default.subscribe("new_post", (post) => {
-    server_1.websocketServer.broadcast("new_post", post);
+queue_1.default.subscribe("new_post", (post) => {
+    server_1.default.broadcast("new_post", post);
 });
 //# sourceMappingURL=posts.js.map

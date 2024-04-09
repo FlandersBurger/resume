@@ -1,15 +1,15 @@
 import moment from "moment";
 import sampleSize from "lodash/sampleSize";
 import { HydratedDocument } from "mongoose";
-import { IGame } from "@/models/tenthings/game";
-import { IListValue } from "@/models/tenthings/list";
-import { IPlayer } from "@/models/tenthings/player";
+import { IGame } from "@models/tenthings/game";
+import { IListValue } from "@models/tenthings/list";
+import { IPlayer } from "@models/tenthings/player";
 import { IGuess, getAnswerScore } from "./guesses";
 import { IMessage, getGuessedMessage } from "./messages";
 import { getHint } from "./hints";
 import { getRandomList } from "./lists";
-import bot from "@/connections/telegram";
-import i18n from "@/i18n";
+import bot from "@root/connections/telegram";
+import i18n from "@root/i18n";
 
 export const createTinygame = async (game: HydratedDocument<IGame>) => {
   const availableLanguages =

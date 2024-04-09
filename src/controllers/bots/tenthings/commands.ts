@@ -1,6 +1,6 @@
 import moment from "moment";
-import { GameType, IGame } from "@/models/tenthings/game";
-import { Game, List } from "@/models";
+import { GameType, IGame } from "@models/tenthings/game";
+import { Game, List } from "@models/index";
 import { HydratedDocument, LeanDocument } from "mongoose";
 import { IMessage, getCategoriesMessage, getLogicMessage } from "./messages";
 import { activate, deactivate, newRound, sendMaingameMessage } from "./maingame";
@@ -9,9 +9,9 @@ import { createTinygame, sendTinygameMessage } from "./tinygame";
 import { processHint } from "./hints";
 import { queueGuess } from "./guesses";
 import { getRandomList, searchList } from "./lists";
-import { IList } from "@/models/tenthings/list";
-const config = require("@/config");
-import i18n from "@/i18n";
+import { IList } from "@models/tenthings/list";
+const config = require("@root/config");
+import i18n from "@root/i18n";
 
 import { getPlayer } from "./players";
 import { getQueue } from "./queue";
@@ -19,7 +19,7 @@ import { checkSkipper, processSkip, vetoSkip } from "./skips";
 import { getDailyScores, getStats } from "./stats";
 import { sendSuggestion } from "./suggestions";
 import { categoriesKeyboard, listsKeyboard, settingsKeyboard, statsKeyboard } from "./keyboards";
-import bot from "@/connections/telegram";
+import bot from "@root/connections/telegram";
 
 const commands = [
   "list",

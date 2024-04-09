@@ -8,16 +8,14 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
-const _ = require('underscore');
-const moment = require('moment');
-const srcUser = require('./models/user')('backup');
-const dstUser = require('./models/user')('master');
+const _ = require("underscore");
+const moment = require("moment");
+const srcUser = require("@root/models/user")("backup");
+const dstUser = require("@root/models/user")("master");
 const backup = () => __awaiter(void 0, void 0, void 0, function* () {
-    const existingUsers = yield dstUser.find({}).select('_id').lean();
+    const existingUsers = yield dstUser.find({}).select("_id").lean();
     N = 0;
-    const listCursor = yield srcUser
-        .find({ _id: { $nin: existingUsers } })
-        .cursor();
+    const listCursor = yield srcUser.find({ _id: { $nin: existingUsers } }).cursor();
     yield listCursor.eachAsync((list) => __awaiter(void 0, void 0, void 0, function* () {
         N++;
         if (N % 50 === 0)

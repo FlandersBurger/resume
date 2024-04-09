@@ -1,5 +1,5 @@
 import { Model, Schema, Types } from "mongoose";
-import db from "@/db";
+import db from "@root/db";
 
 export interface IPlayer {
   _id: Types.ObjectId;

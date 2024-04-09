@@ -1,8 +1,8 @@
 import { Request, Response, Router } from "express";
 const FuzzyMatching = require("fuzzy-matching");
 
-import { IUser } from "@/models/user";
-import { User } from "@/models";
+import { IUser } from "@models/user";
+import { User } from "@models/index";
 
 export const gamesRoute = Router();
 

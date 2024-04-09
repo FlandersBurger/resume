@@ -10,8 +10,8 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.getPlayer = void 0;
-const models_1 = require("@/models");
-const string_helpers_1 = require("@/utils/string-helpers");
+const models_1 = require("@root/models");
+const string_helpers_1 = require("@root/utils/string-helpers");
 const getPlayer = (game, from) => __awaiter(void 0, void 0, void 0, function* () {
     let player = yield models_1.Player.findOne({
         game: game._id,

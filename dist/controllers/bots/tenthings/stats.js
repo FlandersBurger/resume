@@ -15,10 +15,10 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.getStats = exports.getDailyScores = exports.getScores = void 0;
 const moment_1 = __importDefault(require("moment"));
 const find_1 = __importDefault(require("lodash/find"));
-const models_1 = require("@/models");
+const models_1 = require("@root/models");
 const messages_1 = require("./messages");
-const telegram_1 = __importDefault(require("@/connections/telegram"));
-const i18n_1 = __importDefault(require("@/i18n"));
+const telegram_1 = __importDefault(require("@root/connections/telegram"));
+const i18n_1 = __importDefault(require("@root/i18n"));
 const getScores = (game_id, type) => __awaiter(void 0, void 0, void 0, function* () {
     /*
     stats('score', game_id, scoreType)

@@ -2,8 +2,8 @@ import { Router, Request, Response } from "express";
 
 export const tenthingsPauseRoute = Router();
 
-import redis from "@/redis";
-import bot from "@/connections/telegram";
+import redis from "@root/queue";
+import bot from "@root/connections/telegram";
 
 tenthingsPauseRoute.post("/", async (_: Request, res: Response) => {
   const value = await redis.get("pause");

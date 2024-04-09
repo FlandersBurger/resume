@@ -1,10 +1,10 @@
 import moment from "moment";
 
-import bot from "@/connections/telegram";
-import { List } from "@/models";
+import bot from "@root/connections/telegram";
+import { List } from "@models/index";
 import { HydratedDocument, QueryOptions, Types } from "mongoose";
-import { IList } from "@/models/tenthings/list";
-import { IGame, IGameSettings } from "@/models/tenthings/game";
+import { IList } from "@models/tenthings/list";
+import { IGame, IGameSettings } from "@models/tenthings/game";
 
 import some from "lodash/some";
 import { likeListKeyboard } from "./keyboards";

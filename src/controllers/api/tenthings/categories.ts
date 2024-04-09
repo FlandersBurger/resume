@@ -1,6 +1,6 @@
 import { Request, Response, Router } from "express";
-import categories from "@/controllers/bots/tenthings/categories";
-import newCategories from "@/controllers/bots/tenthings/categories-new";
+import categories from "@tenthings/categories";
+import newCategories from "@tenthings/categories-new";
 
 export const tenthingsCategoriesRoute = Router();
 

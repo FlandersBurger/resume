@@ -1,20 +1,20 @@
 import { HydratedDocument } from "mongoose";
-import { IGame, IGameListValue } from "@/models/tenthings/game";
-import { IList } from "@/models/tenthings/list";
-import { IPlayer } from "@/models/tenthings/player";
-import { IUser } from "@/models/user";
+import { IGame, IGameListValue } from "@models/tenthings/game";
+import { IList } from "@models/tenthings/list";
+import { IPlayer } from "@models/tenthings/player";
+import { IUser } from "@models/user";
 
 import moment from "moment";
 const MAXHINTS = 6;
 
 import categories from "./categories";
-import { makePercentage } from "@/utils/number-helpers";
-import { capitalize } from "@/utils/string-helpers";
+import { makePercentage } from "@root/utils/number-helpers";
+import { capitalize } from "@root/utils/string-helpers";
 import difference from "lodash/difference";
-import i18n, { t_list } from "@/i18n";
+import i18n, { t_list } from "@root/i18n";
 import emojis from "./emojis";
 import { ICallbackData } from "./callbacks";
-import { ITelegramUser } from "@/connections/telegram";
+import { ITelegramUser } from "@root/connections/telegram";
 
 export type IMessageType = IMessage | ICallbackData;
 export interface IMessage {

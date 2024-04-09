@@ -1,36 +1,45 @@
 "use strict";
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.websocketServer = exports.server = void 0;
 require("module-alias/register");
 const express_1 = __importDefault(require("express"));
 const body_parser_1 = require("body-parser");
 const firebase_admin_1 = __importDefault(require("firebase-admin"));
-const websockets_1 = require("./websockets");
-const auth_1 = __importDefault(require("./auth"));
+const websockets_1 = require("@root/websockets");
+const auth_1 = __importDefault(require("@root/auth"));
 const http_1 = __importDefault(require("http"));
-const categories_1 = require("./controllers/api/categories");
-const email_1 = require("./controllers/api/email");
-const files_1 = require("./controllers/api/files");
-const games_1 = require("./controllers/api/games");
-const posts_1 = require("./controllers/api/posts");
-const static_1 = require("./controllers/static");
-const categories_2 = require("./controllers/api/tenthings/categories");
-const games_2 = require("./controllers/api/tenthings/games");
-const languages_1 = require("./controllers/api/tenthings/languages");
-const lists_1 = require("./controllers/api/tenthings/lists");
-const pause_1 = require("./controllers/api/tenthings/pause");
-const players_1 = require("./controllers/api/tenthings/players");
-const users_1 = require("./controllers/api/users");
-const main_1 = require("./controllers/bots/tenthings/main");
+const categories_1 = require("@api/categories");
+const email_1 = require("@api/email");
+const files_1 = require("@api/files");
+const games_1 = require("@api/games");
+const posts_1 = require("@api/posts");
+const static_1 = require("@root/controllers/static");
+const categories_2 = require("@api/tenthings/categories");
+const games_2 = require("@api/tenthings/games");
+const languages_1 = require("@api/tenthings/languages");
+const lists_1 = require("@api/tenthings/lists");
+const pause_1 = require("@api/tenthings/pause");
+const players_1 = require("@api/tenthings/players");
+const users_1 = require("@api/users");
+const main_1 = require("@tenthings/main");
+const queue_1 = require("@root/queue");
 require("dotenv").config();
 const serviceAccount = require("../keys/resume-172205-firebase-adminsdk-r34t7-0028c702be.json");
 firebase_admin_1.default.initializeApp({
     credential: firebase_admin_1.default.credential.cert(serviceAccount),
     databaseURL: "https://resume-172205.firebaseio.com",
-});
+}, "resume");
 const app = (0, express_1.default)();
 app.use((0, body_parser_1.json)({ limit: "5mb" }));
 app.use(auth_1.default);
@@ -68,11 +77,12 @@ app.use((req, res) => {
   });
 });
 */
-exports.server = http_1.default.createServer(app);
-/*
-var server = app.listen(8080, function () {
-  console.log('Server Listening at http://162.243.132.240 on', 8080);
-})
-*/
-exports.websocketServer = new websockets_1.WebSocketServer(exports.server);
+const port = process.env.PORT || 3000;
+const server = http_1.default.createServer(app);
+server.listen(port, () => __awaiter(void 0, void 0, void 0, function* () {
+    console.log("Server ", process.pid, " listening on", port);
+    (0, queue_1.redisConnect)();
+}));
+const websocketServer = new websockets_1.WebSocketServer(server);
+exports.default = websocketServer;
 //# sourceMappingURL=server.js.map

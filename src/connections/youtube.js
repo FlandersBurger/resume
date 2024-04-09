@@ -1,5 +1,5 @@
 const request = require("request-promise");
-const config = require("@/config");
+const config = require("@root/config");
 
 exports.getMusicVideo = async (query, artist) => {
   const youtubeDB = await request(

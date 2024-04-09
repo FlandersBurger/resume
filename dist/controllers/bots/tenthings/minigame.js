@@ -16,9 +16,9 @@ exports.checkMinigame = exports.sendMinigameMessage = exports.createMinigames = 
 const moment_1 = __importDefault(require("moment"));
 const uniq_1 = __importDefault(require("lodash/uniq"));
 const sampleSize_1 = __importDefault(require("lodash/sampleSize"));
-const telegram_1 = __importDefault(require("@/connections/telegram"));
-const i18n_1 = __importDefault(require("@/i18n"));
-const models_1 = require("@/models");
+const telegram_1 = __importDefault(require("@root/connections/telegram"));
+const i18n_1 = __importDefault(require("@root/i18n"));
+const models_1 = require("@root/models");
 const guesses_1 = require("./guesses");
 const messages_1 = require("./messages");
 const hints_1 = require("./hints");

@@ -3,11 +3,15 @@
   "scripts": {
     "build": "copyfiles --flat ./config.js src && npm run bundle",
     "bundle": "tsc -p .",
-    "dev": "npm run bundle && nodemon --watch src src/boot.ts",
+    "trace": "tsc --traceResolution",
+    "dev": "tsx watch src/server.ts",
     "start": "npm run build -- -w"
   },
   "_moduleAliases": {
-    "@": "dist"
+    "@root": "./dist",
+    "@api": "./dist/controllers/api",
+    "@tenthings": "./dist/controllers/bots/tenthings",
+    "@models/index": "./dist/models"
   },
   "dependencies": {
     "@types/bcrypt": "^5.0.2",
@@ -21,7 +25,6 @@
     "@types/node": "^20.11.20",
     "@types/node-schedule": "^2.1.6",
     "@types/nodemailer": "^6.4.14",
-    "@types/redis": "^4.0.11",
     "@types/sequelize": "^4.28.20",
     "@types/tunnel-ssh": "^5.0.4",
     "@types/ws": "^8.5.10",
@@ -90,8 +93,7 @@
     "gulp-uglify": "^3.0.2",
     "nodemon": "^3.1.0",
     "regenerator-runtime": "^0.14.1",
-    "ts-node": "^10.9.2",
-    "tsconfig-paths": "^4.2.0",
+    "tsx": "^4.7.2",
     "typescript": "^5.3.3",
     "uglify-es": "^3.3.9"
   }

@@ -9,7 +9,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 const axios = require("axios").default;
-const config = require("@/config");
+const config = require("@root/config");
 exports.getPexelsImage = (query) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const result = yield axios.get(`https://api.pexels.com/v1/search?query=${encodeURIComponent(query)}&per_page=1}`, {

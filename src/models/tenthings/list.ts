@@ -1,8 +1,8 @@
 import { Model, Schema, Types } from "mongoose";
 import mongooseLeanVirtuals from "mongoose-lean-virtuals";
-import db from "@/db";
-import { IUser } from "@/models/user";
-import { AllowedLanguage } from "@/controllers/bots/tenthings/languages";
+import db from "@root/db";
+import { IUser } from "@models/user";
+import { AllowedLanguage } from "@tenthings/languages";
 
 export interface IVote {
   voter: number;

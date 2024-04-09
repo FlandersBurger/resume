@@ -1,17 +1,17 @@
 import { HydratedDocument, Types } from "mongoose";
-import { Game, List } from "@/models";
-import { IGame, IGameSettings } from "@/models/tenthings/game";
-import { IList, IVote } from "@/models/tenthings/list";
-import { capitalize } from "@/utils/string-helpers";
-import { makePercentage } from "@/utils/number-helpers";
+import { Game, List } from "@models/index";
+import { IGame, IGameSettings } from "@models/tenthings/game";
+import { IList, IVote } from "@models/tenthings/list";
+import { capitalize } from "@root/utils/string-helpers";
+import { makePercentage } from "@root/utils/number-helpers";
 import find from "lodash/find";
 
 import moment from "moment";
 import { getDifficultyMessage, getFrequencyMessage, getListMessage } from "./messages";
 import { getListScore } from "./lists";
 
-const config = require("@/config");
-import i18n from "@/i18n";
+const config = require("@root/config");
+import i18n from "@root/i18n";
 
 import categories from "./categories";
 import emojis from "./emojis";
@@ -27,7 +27,7 @@ import {
   playerStatsKeyboard,
   settingsKeyboard,
 } from "./keyboards";
-import bot, { ITelegramUser } from "@/connections/telegram";
+import bot, { ITelegramUser } from "@root/connections/telegram";
 
 export interface ICallbackData {
   id: string;

@@ -1,6 +1,6 @@
 import { Connection, createConnection } from "mongoose";
 import { createTunnel } from "tunnel-ssh";
-const config = require("@/config");
+const config = require("@root/config");
 const connections: { [key: string]: Connection } = {};
 
 export interface IDb {

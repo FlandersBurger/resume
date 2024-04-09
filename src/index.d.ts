@@ -1,5 +1,5 @@
 import "express";
-import { IUser } from "@/models/user";
+import { IUser } from "@models/user";
 
 declare module "express" {
   export interface Response {

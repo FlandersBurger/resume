@@ -8,18 +8,16 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
-const _ = require('underscore');
-const moment = require('moment');
-const srcStat = require('./models/tenthings/stats')('backup');
-const dstStat = require('./models/tenthings/stats')('master');
+const _ = require("underscore");
+const moment = require("moment");
+const srcStat = require("@root/models/tenthings/stats")("backup");
+const dstStat = require("@root/models/tenthings/stats")("master");
 const backup = () => __awaiter(void 0, void 0, void 0, function* () {
-    const existingStats = yield dstStat.find({}).select('_id').lean();
+    const existingStats = yield dstStat.find({}).select("_id").lean();
     //const missingStats = await srcStat.find({ _id: { $nin: existingStats } });
     //console.log(missingStats.map(stat => stat.name));
     N = 0;
-    const statCursor = yield srcStat
-        .find({ _id: { $nin: existingStats } })
-        .cursor();
+    const statCursor = yield srcStat.find({ _id: { $nin: existingStats } }).cursor();
     yield statCursor.eachAsync((stat) => __awaiter(void 0, void 0, void 0, function* () {
         N++;
         if (N % 50 === 0)

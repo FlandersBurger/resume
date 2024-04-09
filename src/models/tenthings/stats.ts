@@ -1,5 +1,5 @@
 import { Model, Schema, Types } from "mongoose";
-import db from "@/db";
+import db from "@root/db";
 
 export interface IStats {
   _id: Types.ObjectId;

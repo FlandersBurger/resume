@@ -17,8 +17,8 @@ const express_1 = require("express");
 const bcryptjs_1 = __importDefault(require("bcryptjs"));
 const jwt_simple_1 = __importDefault(require("jwt-simple"));
 const admin = require("firebase-admin");
-const config = require("../../config");
-const models_1 = require("@/models");
+const config = require("@root/config");
+const models_1 = require("@root/models");
 exports.usersRoute = (0, express_1.Router)();
 exports.usersRoute.get("/", function (_, res) {
     if (!res.locals.isAuthorized)

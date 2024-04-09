@@ -1,4 +1,4 @@
-import { Game, Player } from "@/models";
+import { Game, Player } from "@models/index";
 
 export const chatNotFound = async (chat_id: number) => {
   const inactiveGame = await Game.findOneAndUpdate({ chat_id }, { $set: { enabled: false } });

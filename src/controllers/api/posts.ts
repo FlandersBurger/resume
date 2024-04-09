@@ -1,7 +1,7 @@
 import { Request, Response, Router } from "express";
-import redis from "@/redis";
-import websocketServer from "@/server";
-import { Post } from "@/models";
+import redis from "@root/queue";
+import websocketServer from "@root/server";
+import { Post } from "@models/index";
 
 export const postsRoute = Router();
 

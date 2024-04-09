@@ -1,8 +1,8 @@
 import { NextFunction, Request, Response } from "express";
 import jwt from "jwt-simple";
 
-var config = require("@/config");
-import UserModels from "@/models/user";
+var config = require("@root/config");
+import UserModels from "@models/user";
 const User = UserModels();
 
 export default async (req: Request, res: Response, next: NextFunction) => {

@@ -11,7 +11,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 const fs = require("fs");
 const moment = require("moment");
 const exec = require("child_process").exec;
-const config = require("@/config");
+const config = require("@root/config");
 const masterDB = config.mongoDBs.find((db) => db.name === "master");
 // Auto backup script
 const backup = () => __awaiter(void 0, void 0, void 0, function* () {

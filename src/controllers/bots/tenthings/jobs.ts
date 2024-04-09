@@ -1,24 +1,23 @@
 /*jslint esversion: 10*/
-const schedule = require("node-schedule");
+import schedule, { Job } from "node-schedule";
 import moment from "moment";
-import bot from "@/connections/telegram";
+import bot from "@root/connections/telegram";
 import minBy from "lodash/minBy";
 import maxBy from "lodash/maxBy";
 import max from "lodash/max";
 import uniqBy from "lodash/uniqBy";
 import uniq from "lodash/uniq";
 import { sendMaingameMessage } from "./maingame";
-import { IGame } from "@/models/tenthings/game";
-import { makeReadable } from "@/utils/number-helpers";
+import { IGame } from "@models/tenthings/game";
+import { makeReadable } from "@root/utils/number-helpers";
 import { HydratedDocument } from "mongoose";
-import { IPlayer } from "@/models/tenthings/player";
-import { IStats } from "@/models/tenthings/stats";
-import { IList } from "@/models/tenthings/list";
+import { IPlayer } from "@models/tenthings/player";
+import { IStats } from "@models/tenthings/stats";
+import { IList } from "@models/tenthings/list";
 import { createMinigames } from "./minigame";
 import { getDailyScores } from "./stats";
-import { Job } from "node-schedule";
-const backup = require("@/utils/backup/backup-db");
-const { Game, Player, Stats, List } = require("@/models");
+const backup = require("@root/utils/backup/backup-db");
+const { Game, Player, Stats, List } = require("@models/index");
 
 const resetDailyScore = () => {
   if (moment().utc().hour() === 1) {

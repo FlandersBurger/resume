@@ -1,6 +1,6 @@
 import { Model, Schema, Types } from "mongoose";
-import db from "@/db";
-import { IUser } from "@/models/user";
+import db from "@root/db";
+import { IUser } from "@models/user";
 
 export interface IGameSettings extends Record<string, boolean | string[] | string> {
   intro: boolean;

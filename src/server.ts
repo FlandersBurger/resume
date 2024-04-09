@@ -1,26 +1,26 @@
-import "module-alias/register";
+require("module-alias/register");
 import express from "express";
 import { json } from "body-parser";
 import admin from "firebase-admin";
-import { WebSocketServer } from "@/websockets";
-import auth from "@/auth";
+import { WebSocketServer } from "@root/websockets";
+import auth from "@root/auth";
 import http from "http";
 
-import { categoriesRoute } from "@/controllers/api/categories";
-import { emailRoute } from "@/controllers/api/email";
-import { filesRoute } from "@/controllers/api/files";
-import { gamesRoute } from "@/controllers/api/games";
-import { postsRoute } from "@/controllers/api/posts";
-import { staticRoute } from "@/controllers/static";
-import { tenthingsCategoriesRoute } from "@/controllers/api/tenthings/categories";
-import { tenthingsGamesRoute } from "@/controllers/api/tenthings/games";
-import { tenthingsLanguagesRoute } from "@/controllers/api/tenthings/languages";
-import { tenthingsListsRoute } from "@/controllers/api/tenthings/lists";
-import { tenthingsPauseRoute } from "@/controllers/api/tenthings/pause";
-import { tenthingsPlayersRoute } from "@/controllers/api/tenthings/players";
-import { usersRoute } from "@/controllers/api/users";
-import { tenthingsBotRoute } from "@/controllers/bots/tenthings/main";
-import { connect } from "@/redis";
+import { categoriesRoute } from "@api/categories";
+import { emailRoute } from "@api/email";
+import { filesRoute } from "@api/files";
+import { gamesRoute } from "@api/games";
+import { postsRoute } from "@api/posts";
+import { staticRoute } from "@root/controllers/static";
+import { tenthingsCategoriesRoute } from "@api/tenthings/categories";
+import { tenthingsGamesRoute } from "@api/tenthings/games";
+import { tenthingsLanguagesRoute } from "@api/tenthings/languages";
+import { tenthingsListsRoute } from "@api/tenthings/lists";
+import { tenthingsPauseRoute } from "@api/tenthings/pause";
+import { tenthingsPlayersRoute } from "@api/tenthings/players";
+import { usersRoute } from "@api/users";
+import { tenthingsBotRoute } from "@tenthings/main";
+import { redisConnect } from "@root/queue";
 
 require("dotenv").config();
 
@@ -79,14 +79,8 @@ const server = http.createServer(app);
 
 server.listen(port, async () => {
   console.log("Server ", process.pid, " listening on", port);
-  connect();
-  // redisClient.connect();
+  redisConnect();
 });
 
-/*
-var server = app.listen(8080, function () {
-  console.log('Server Listening at http://162.243.132.240 on', 8080);
-})
-*/
 const websocketServer = new WebSocketServer(server);
 export default websocketServer;

@@ -4,7 +4,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const mongoose_1 = require("mongoose");
-const db_1 = __importDefault(require("../db"));
+const db_1 = __importDefault(require("@root/db"));
 let Post = {};
 const postSchema = new mongoose_1.Schema({
     poster: { type: mongoose_1.Schema.Types.ObjectId, ref: "User", required: true },

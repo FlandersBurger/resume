@@ -13,8 +13,8 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.sendSuggestion = void 0;
-const string_helpers_1 = require("@/utils/string-helpers");
-const telegram_1 = __importDefault(require("@/connections/telegram"));
+const string_helpers_1 = require("@root/utils/string-helpers");
+const telegram_1 = __importDefault(require("@root/connections/telegram"));
 const sendSuggestion = (type, msg, player, extraText = "") => __awaiter(void 0, void 0, void 0, function* () {
     const suggestion = msg.text.substring(msg.command.length + 1, msg.text.length);
     if (suggestion && suggestion != "TenThings_Bot" && suggestion != "@TenThings_Bot") {

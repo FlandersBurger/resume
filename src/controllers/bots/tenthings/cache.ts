@@ -1,9 +1,9 @@
 import { HydratedDocument, Types } from "mongoose";
 import { Moment } from "moment";
-import { Game, List } from "@/models";
-import redis from "@/redis";
-import { IGame } from "@/models/tenthings/game";
-import { IList } from "@/models/tenthings/list";
+import { Game, List } from "@models/index";
+import redis from "@root/queue";
+import { IGame } from "@models/tenthings/game";
+import { IList } from "@models/tenthings/list";
 
 export const votersCache: { [key: string]: { lastVoted: Moment; delay: number } } = {};
 

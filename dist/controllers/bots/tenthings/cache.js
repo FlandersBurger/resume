@@ -13,11 +13,11 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.getList = exports.saveGame = exports.getGame = exports.votersCache = void 0;
-const models_1 = require("@/models");
-const redis_1 = __importDefault(require("@/redis"));
+const models_1 = require("@root/models");
+const queue_1 = __importDefault(require("@root/queue"));
 exports.votersCache = {};
 const getGame = (chat_id) => __awaiter(void 0, void 0, void 0, function* () {
-    const cachedGame = yield redis_1.default.get(chat_id.toString());
+    const cachedGame = yield queue_1.default.get(chat_id.toString());
     if (cachedGame)
         return cachedGame;
     else {
@@ -26,19 +26,19 @@ const getGame = (chat_id) => __awaiter(void 0, void 0, void 0, function* () {
         });
         if (!game)
             return;
-        yield redis_1.default.set(game.chat_id.toString(), JSON.stringify(game));
+        yield queue_1.default.set(game.chat_id.toString(), JSON.stringify(game));
         return game;
     }
 });
 exports.getGame = getGame;
 const saveGame = (game) => __awaiter(void 0, void 0, void 0, function* () {
     yield game.save();
-    yield redis_1.default.set(game.chat_id.toString(), JSON.stringify(game));
+    yield queue_1.default.set(game.chat_id.toString(), JSON.stringify(game));
 });
 exports.saveGame = saveGame;
 const getList = (_id) => __awaiter(void 0, void 0, void 0, function* () {
     const listId = `list_${_id.toString()}`;
-    const cachedList = yield redis_1.default.get(listId);
+    const cachedList = yield queue_1.default.get(listId);
     if (cachedList)
         return cachedList;
     else {
@@ -47,13 +47,13 @@ const getList = (_id) => __awaiter(void 0, void 0, void 0, function* () {
         });
         if (!list)
             return;
-        yield redis_1.default.set(listId, JSON.stringify(list));
+        yield queue_1.default.set(listId, JSON.stringify(list));
         return list;
     }
 });
 exports.getList = getList;
 exports.saveList = (list) => __awaiter(void 0, void 0, void 0, function* () {
     yield list.save();
-    yield redis_1.default.set(`list_${list._id.toString()}`, JSON.stringify(list));
+    yield queue_1.default.set(`list_${list._id.toString()}`, JSON.stringify(list));
 });
 //# sourceMappingURL=cache.js.map

@@ -8,18 +8,16 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
-const _ = require('underscore');
-const moment = require('moment');
-const srcList = require('./models/tenthings/list')('backup');
-const dstList = require('./models/tenthings/list')('master');
+const _ = require("underscore");
+const moment = require("moment");
+const srcList = require("@root/models/tenthings/list")("backup");
+const dstList = require("@root/models/tenthings/list")("master");
 const backup = () => __awaiter(void 0, void 0, void 0, function* () {
-    const existingLists = yield dstList.find({}).select('_id').lean();
+    const existingLists = yield dstList.find({}).select("_id").lean();
     //const missingLists = await srcList.find({ _id: { $nin: existingLists } });
     //console.log(missingLists.map(list => list.name));
     N = 0;
-    const listCursor = yield srcList
-        .find({ _id: { $nin: existingLists } })
-        .cursor();
+    const listCursor = yield srcList.find({ _id: { $nin: existingLists } }).cursor();
     yield listCursor.eachAsync((list) => __awaiter(void 0, void 0, void 0, function* () {
         N++;
         if (N % 50 === 0)

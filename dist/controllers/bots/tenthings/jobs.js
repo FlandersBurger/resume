@@ -13,20 +13,20 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 /*jslint esversion: 10*/
-const schedule = require("node-schedule");
+const node_schedule_1 = __importDefault(require("node-schedule"));
 const moment_1 = __importDefault(require("moment"));
-const telegram_1 = __importDefault(require("@/connections/telegram"));
+const telegram_1 = __importDefault(require("@root/connections/telegram"));
 const minBy_1 = __importDefault(require("lodash/minBy"));
 const maxBy_1 = __importDefault(require("lodash/maxBy"));
 const max_1 = __importDefault(require("lodash/max"));
 const uniqBy_1 = __importDefault(require("lodash/uniqBy"));
 const uniq_1 = __importDefault(require("lodash/uniq"));
 const maingame_1 = require("./maingame");
-const number_helpers_1 = require("@/utils/number-helpers");
+const number_helpers_1 = require("@root/utils/number-helpers");
 const minigame_1 = require("./minigame");
 const stats_1 = require("./stats");
-const backup = require("@/utils/backup/backup-db");
-const { Game, Player, Stats, List } = require("@/models");
+const backup = require("@root/utils/backup/backup-db");
+const { Game, Player, Stats, List } = require("@root/models");
 const resetDailyScore = () => {
     if ((0, moment_1.default)().utc().hour() === 1) {
         telegram_1.default.notifyAdmin(`Score Reset Triggered; ${(0, moment_1.default)().format("DD-MMM-YYYY hh:mm")}`);
@@ -411,14 +411,14 @@ const deleteStalePlayers = () => __awaiter(void 0, void 0, void 0, function* () 
 });
 let jobs = [];
 if (process.env.NODE_ENV === "production") {
-    jobs.push(schedule.scheduleJob("Reset Daily Scores", "0 2 1 * * *", resetDailyScore));
-    jobs.push(schedule.scheduleJob("Update Play Streaks", "0 0 2 * * *", updatePlayStreak));
-    jobs.push(schedule.scheduleJob("Create Mini Games", "0 0 3 * * *", minigame_1.createMinigames));
-    jobs.push(schedule.scheduleJob("Deactivate Inactive Chats", "0 0 4 * * *", deactivateInactiveChats));
-    jobs.push(schedule.scheduleJob("Delete Stale Players", "0 0 5 * * *", deleteStalePlayers));
-    jobs.push(schedule.scheduleJob("Send New List Notice", "0 0 12 * * *", sendNewLists));
+    jobs.push(node_schedule_1.default.scheduleJob("Reset Daily Scores", "0 2 1 * * *", resetDailyScore));
+    jobs.push(node_schedule_1.default.scheduleJob("Update Play Streaks", "0 0 2 * * *", updatePlayStreak));
+    jobs.push(node_schedule_1.default.scheduleJob("Create Mini Games", "0 0 3 * * *", minigame_1.createMinigames));
+    jobs.push(node_schedule_1.default.scheduleJob("Deactivate Inactive Chats", "0 0 4 * * *", deactivateInactiveChats));
+    jobs.push(node_schedule_1.default.scheduleJob("Delete Stale Players", "0 0 5 * * *", deleteStalePlayers));
+    jobs.push(node_schedule_1.default.scheduleJob("Send New List Notice", "0 0 12 * * *", sendNewLists));
     // jobs.push(schedule.scheduleJob('0 30 12 * * *', sendUpdatedLists))
 }
-jobs.push(schedule.scheduleJob("Backup Database", "0 0 21 * * *", backupDatabase));
+jobs.push(node_schedule_1.default.scheduleJob("Backup Database", "0 0 21 * * *", backupDatabase));
 exports.default = jobs;
 //# sourceMappingURL=jobs.js.map

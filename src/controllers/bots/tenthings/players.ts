@@ -1,8 +1,8 @@
-import { ITelegramUser } from "@/connections/telegram";
-import { Player } from "@/models";
-import { IGame } from "@/models/tenthings/game";
-import { IPlayer } from "@/models/tenthings/player";
-import { maskUrls } from "@/utils/string-helpers";
+import { ITelegramUser } from "@root/connections/telegram";
+import { Player } from "@models/index";
+import { IGame } from "@models/tenthings/game";
+import { IPlayer } from "@models/tenthings/player";
+import { maskUrls } from "@root/utils/string-helpers";
 import { IMessage } from "./messages";
 
 export const getPlayer = async (game: IGame, from: ITelegramUser | IPlayer) => {

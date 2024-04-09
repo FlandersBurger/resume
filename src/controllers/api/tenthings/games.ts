@@ -1,6 +1,6 @@
 import { Router, Request, Response } from "express";
 
-import { Game, Player } from "@/models";
+import { Game, Player } from "@models/index";
 
 export const tenthingsGamesRoute = Router();
 

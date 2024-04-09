@@ -2,11 +2,11 @@ const FuzzyMatching = require("fuzzy-matching");
 import Queue, { Job } from "bull";
 import find from "lodash/find";
 
-import { Game } from "@/models";
-import { GameType, IGame } from "@/models/tenthings/game";
-import { removeAllButLetters } from "@/utils/string-helpers";
+import { Game } from "@models/index";
+import { GameType, IGame } from "@models/tenthings/game";
+import { removeAllButLetters } from "@root/utils/string-helpers";
 import { Types } from "mongoose";
-import { IPlayer } from "@/models/tenthings/player";
+import { IPlayer } from "@models/tenthings/player";
 import { MAX_HINTS } from "./hints";
 import sass from "./sass";
 import { checkMaingame } from "./maingame";
@@ -15,7 +15,7 @@ import { checkTinygame } from "./tinygame";
 import { getPlayer } from "./players";
 import { IMessage } from "./messages";
 
-const config = require("@/config");
+const config = require("@root/config");
 
 export interface IGuess {
   msg: IMessage;

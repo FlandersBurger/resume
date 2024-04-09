@@ -1,5 +1,5 @@
-import { IGame, IGameList } from "@/models/tenthings/game";
-import { IList } from "@/models/tenthings/list";
+import { IGame, IGameList } from "@models/tenthings/game";
+import { IList } from "@models/tenthings/list";
 
 import some from "lodash/some";
 import find from "lodash/find";
@@ -7,10 +7,10 @@ import shuffle from "lodash/shuffle";
 import categories from "./categories";
 import languages, { ILanguage, ILanguageCount } from "./languages";
 import { getFrequencyMessage } from "./messages";
-import { capitalize } from "@/utils/string-helpers";
-import i18n from "@/i18n";
+import { capitalize } from "@root/utils/string-helpers";
+import i18n from "@root/i18n";
 import emojis from "./emojis";
-import { IKeyboard, IKeyboardButton, IKeyboardCallbackButton } from "@/connections/telegram";
+import { IKeyboard, IKeyboardButton, IKeyboardCallbackButton } from "@root/connections/telegram";
 import { CallbackDataType } from "./callbacks";
 
 const getButton = (text: string | string[], callback_data: object): IKeyboardCallbackButton => ({

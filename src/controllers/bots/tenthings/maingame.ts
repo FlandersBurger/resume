@@ -3,21 +3,21 @@ import { HydratedDocument } from "mongoose";
 const sampleSize = require("lodash/sampleSize");
 const some = require("lodash/some");
 
-import { Game, List, Player } from "@/models";
-import { IGame } from "@/models/tenthings/game";
-import { IList } from "@/models/tenthings/list";
-import { angleBrackets, maskUrls, removeHTML } from "@/utils/string-helpers";
-import { IUser } from "@/models/user";
-import { IPlayer } from "@/models/tenthings/player";
+import { Game, List, Player } from "@models/index";
+import { IGame } from "@models/tenthings/game";
+import { IList } from "@models/tenthings/list";
+import { angleBrackets, maskUrls, removeHTML } from "@root/utils/string-helpers";
+import { IUser } from "@models/user";
+import { IPlayer } from "@models/tenthings/player";
 import { IGuess, getAnswerScore } from "./guesses";
 import { IMessage, getGuessedMessage, getListStats, getSnubbedMessage, getStreakMessage } from "./messages";
 import { getHint, hintCache, hintCooldown } from "./hints";
 import { getListScore, rateList, selectList } from "./lists";
 import { getDailyScores } from "./stats";
 import { abortSkip, skipCache } from "./skips";
-import i18n from "@/i18n";
+import i18n from "@root/i18n";
 
-import bot from "@/connections/telegram";
+import bot from "@root/connections/telegram";
 
 export const createMaingame = async (chat_id: number): Promise<HydratedDocument<IGame>> => {
   const game = new Game({

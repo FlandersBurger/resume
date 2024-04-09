@@ -1,8 +1,8 @@
 import moment from "moment";
 import { IMessage } from "./messages";
 
-const config = require("@/config");
-import bot from "@/connections/telegram";
+const config = require("@root/config");
+import bot from "@root/connections/telegram";
 
 const cache: {
   [key: string]: {

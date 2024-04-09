@@ -1,11 +1,11 @@
 import { Router, Request, Response } from "express";
 import moment from "moment";
-import { Game, Player } from "@/models";
+import { Game, Player } from "@models/index";
 import { createMaingame } from "./maingame";
 
-const config = require("@/config");
-import bot from "@/connections/telegram";
-import i18n from "@/i18n";
+const config = require("@root/config");
+import bot from "@root/connections/telegram";
+import i18n from "@root/i18n";
 import { getQueue } from "./queue";
 import callbacks, { ICallbackData } from "./callbacks";
 import { evaluate } from "./commands";

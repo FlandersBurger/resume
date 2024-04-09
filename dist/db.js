@@ -11,7 +11,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 Object.defineProperty(exports, "__esModule", { value: true });
 const mongoose_1 = require("mongoose");
 const tunnel_ssh_1 = require("tunnel-ssh");
-const config = require("@/config");
+const config = require("@root/config");
 const connections = {};
 const connect = (db) => {
     connections[db.name] = (0, mongoose_1.createConnection)(db.url, {});

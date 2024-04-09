@@ -1,7 +1,7 @@
 import { HydratedDocument } from "mongoose";
-import { IPlayer } from "@/models/tenthings/player";
-import { capitalize } from "@/utils/string-helpers";
-import bot from "@/connections/telegram";
+import { IPlayer } from "@models/tenthings/player";
+import { capitalize } from "@root/utils/string-helpers";
+import bot from "@root/connections/telegram";
 import { IMessage } from "./messages";
 
 export const sendSuggestion = async (

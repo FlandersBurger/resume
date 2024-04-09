@@ -1,4 +1,4 @@
-import bot from "@/connections/telegram";
+import bot from "@root/connections/telegram";
 import { getCount } from "./guesses";
 
 export const getQueue = async () => {

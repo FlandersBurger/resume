@@ -1,5 +1,5 @@
 import { Request, Response, Router } from "express";
-import languages from "@/controllers/bots/tenthings/languages";
+import languages from "@tenthings/languages";
 
 export const tenthingsLanguagesRoute = Router();
 

@@ -1,15 +1,15 @@
 import axios from "axios";
 
 import Queue, { Job } from "bull";
-import i18n from "@/i18n";
-import redis from "@/redis";
-import { chatNotFound } from "@/controllers/bots/tenthings/errors";
-import { checkSpam } from "@/controllers/bots/tenthings/spam";
-import { MessageType } from "@/controllers/bots/tenthings/main";
-import { IMessageType } from "@/controllers/bots/tenthings/messages";
-import { maskUrls } from "@/utils/string-helpers";
+import i18n from "@root/i18n";
+import redis from "@root/queue";
+import { chatNotFound } from "@tenthings/errors";
+import { checkSpam } from "@tenthings/spam";
+import { MessageType } from "@tenthings/main";
+import { IMessageType } from "@tenthings/messages";
+import { maskUrls } from "@root/utils/string-helpers";
 
-const config = require("@/config");
+const config = require("@root/config");
 const BANNED_TELEGRAM_USERS = [1726294650];
 
 const TOKEN = config.tokens.telegram.tenthings;

@@ -1,7 +1,7 @@
 const fs = require("fs");
 const moment = require("moment");
 const exec = require("child_process").exec;
-const config = require("@/config");
+const config = require("@root/config");
 
 const masterDB = config.mongoDBs.find((db) => db.name === "master");
 

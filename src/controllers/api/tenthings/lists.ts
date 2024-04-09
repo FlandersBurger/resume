@@ -2,24 +2,24 @@ import { Request, Response, Router } from "express";
 import { Types, LeanDocument } from "mongoose";
 import moment from "moment";
 
-import bot from "@/connections/telegram";
-const { getAuthor, getBookCover } = require("@/connections/goodreads");
-const { getMovieDbImage } = require("@/connections/moviedb");
-const { getMusicVideo } = require("@/connections/youtube");
-const { getUnsplashImage } = require("@/connections/unsplash");
-const { getWikiImage } = require("@/connections/wikipedia");
-const { getPexelsImage } = require("@/connections/pexels");
+import bot from "@root/connections/telegram";
+const { getAuthor, getBookCover } = require("@root/connections/goodreads");
+const { getMovieDbImage } = require("@root/connections/moviedb");
+const { getMusicVideo } = require("@root/connections/youtube");
+const { getUnsplashImage } = require("@root/connections/unsplash");
+const { getWikiImage } = require("@root/connections/wikipedia");
+const { getPexelsImage } = require("@root/connections/pexels");
 // const Spotify = require('@/controllers/connections/spotify');
 // const spotify = new Spotify();
 // spotify.init();
 
-import { IUser } from "@/models/user";
-import { IList, IListValue } from "@/models/tenthings/list";
-import { List, User } from "@/models";
-import { removeAllButLetters } from "@/utils/string-helpers";
-import { getListMessage } from "@/controllers/bots/tenthings/messages";
-import { getListScore } from "@/controllers/bots/tenthings/lists";
-import { curateListKeyboard } from "@/controllers/bots/tenthings/keyboards";
+import { IUser } from "@models/user";
+import { IList, IListValue } from "@models/tenthings/list";
+import { List, User } from "@models/index";
+import { removeAllButLetters } from "@root/utils/string-helpers";
+import { getListMessage } from "@tenthings/messages";
+import { getListScore } from "@tenthings/lists";
+import { curateListKeyboard } from "@tenthings/keyboards";
 
 export const tenthingsListsRoute = Router();
 
