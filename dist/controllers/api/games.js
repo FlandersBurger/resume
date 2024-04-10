@@ -12,10 +12,10 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.gamesRoute = void 0;
 const express_1 = require("express");
 const FuzzyMatching = require("fuzzy-matching");
-const models_1 = require("@root/models");
+const index_1 = require("@models/index");
 exports.gamesRoute = (0, express_1.Router)();
 exports.gamesRoute.post("/:game/:userId/highscore", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const user = yield models_1.User.findOne({ _id: req.params.userId });
+    const user = yield index_1.User.findOne({ _id: req.params.userId });
     if (!user)
         return res.sendStatus(404);
     user.highscore[req.params.game] = req.body.score;

@@ -18,7 +18,7 @@ const bcryptjs_1 = __importDefault(require("bcryptjs"));
 const jwt_simple_1 = __importDefault(require("jwt-simple"));
 const admin = require("firebase-admin");
 const config = require("@root/config");
-const models_1 = require("@root/models");
+const index_1 = require("@models/index");
 exports.usersRoute = (0, express_1.Router)();
 exports.usersRoute.get("/", function (_, res) {
     if (!res.locals.isAuthorized)
@@ -28,7 +28,7 @@ exports.usersRoute.get("/", function (_, res) {
 exports.usersRoute.get("/all", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     if (!res.locals.isAdmin)
         return res.send(401);
-    const users = yield models_1.User.find({})
+    const users = yield index_1.User.find({})
         .select("-gender -flags -highscore")
         .limit(parseInt(req.query.limit))
         .skip(parseInt(req.query.limit) * (parseInt(req.query.page) - 1));
@@ -37,7 +37,7 @@ exports.usersRoute.get("/all", (req, res) => __awaiter(void 0, void 0, void 0, f
 exports.usersRoute.get("/ban/:id", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     if (!res.locals.isAdmin)
         return res.sendStatus(401);
-    const user = yield models_1.User.findOne({ _id: req.params.id });
+    const user = yield index_1.User.findOne({ _id: req.params.id });
     if (user) {
         console.log(user);
         user.banned = !user.banned;
@@ -49,7 +49,7 @@ exports.usersRoute.get("/ban/:id", (req, res) => __awaiter(void 0, void 0, void 
     }
 }));
 exports.usersRoute.post("/", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const user = new models_1.User({
+    const user = new index_1.User({
         username: req.body.username,
         usernameLC: req.body.username.toLowerCase(),
     });
@@ -66,12 +66,12 @@ exports.usersRoute.post("/authenticate", (req, res) => __awaiter(void 0, void 0,
     console.log(decodedToken);
     var uid = decodedToken.uid;
     console.log(uid);
-    const foundUser = yield models_1.User.findOne({
+    const foundUser = yield index_1.User.findOne({
         uid: uid,
         banned: false,
     });
     if (!foundUser) {
-        var newUser = new models_1.User({
+        var newUser = new index_1.User({
             username: user.displayName,
             displayName: user.displayName,
             email: user.email,
@@ -91,7 +91,7 @@ exports.usersRoute.post("/authenticate", (req, res) => __awaiter(void 0, void 0,
     }
 }));
 exports.usersRoute.get("/:id/login", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const foundUser = yield models_1.User.findOne({ _id: req.params.id });
+    const foundUser = yield index_1.User.findOne({ _id: req.params.id });
     if (!foundUser) {
         res.sendStatus(404);
     }
@@ -107,7 +107,7 @@ exports.usersRoute.get("/:id/login", (req, res) => __awaiter(void 0, void 0, voi
 exports.usersRoute.post("/:id/verification", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     var _a;
     if (checkUser(req.params.id, res)) {
-        const user = yield models_1.User.findOne({ _id: (_a = res.locals.user) === null || _a === void 0 ? void 0 : _a._id }).select("password");
+        const user = yield index_1.User.findOne({ _id: (_a = res.locals.user) === null || _a === void 0 ? void 0 : _a._id }).select("password");
         if (!user || user.banned)
             return res.sendStatus(401);
         const valid = yield bcryptjs_1.default.compare(req.body.password, user.password);
@@ -122,7 +122,7 @@ exports.usersRoute.post("/:id", (req, res) => __awaiter(void 0, void 0, void 0, 
     if (checkUser(req.params.id, res)) {
         if (!((_b = res.locals.user) === null || _b === void 0 ? void 0 : _b._id))
             return res.sendStatus(400);
-        const user = yield models_1.User.findOne({ _id: res.locals.user._id });
+        const user = yield index_1.User.findOne({ _id: res.locals.user._id });
         if (!user || user.banned)
             return res.sendStatus(401);
         user.gender = req.body.user.gender;
@@ -138,7 +138,7 @@ exports.usersRoute.post("/:id", (req, res) => __awaiter(void 0, void 0, void 0, 
 exports.usersRoute.post("/:id/password", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     var _c;
     if (checkUser(req.params.id, res)) {
-        const user = yield models_1.User.findOne({ _id: (_c = res.locals.user) === null || _c === void 0 ? void 0 : _c._id }).select("username").select("password");
+        const user = yield index_1.User.findOne({ _id: (_c = res.locals.user) === null || _c === void 0 ? void 0 : _c._id }).select("username").select("password");
         if (!user || user.banned)
             return res.sendStatus(401);
         const valid = yield bcryptjs_1.default.compare(req.body.oldPassword, user.password);
@@ -158,10 +158,10 @@ exports.usersRoute.post("/:id/password", (req, res) => __awaiter(void 0, void 0,
 exports.usersRoute.post("/:id/username", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     var _d, _e;
     if (checkUser(req.params.id, res)) {
-        const user = yield models_1.User.findOne({ _id: (_d = res.locals.user) === null || _d === void 0 ? void 0 : _d._id }).select("username").select("usernameLC");
+        const user = yield index_1.User.findOne({ _id: (_d = res.locals.user) === null || _d === void 0 ? void 0 : _d._id }).select("username").select("usernameLC");
         if (!user || user.banned)
             return res.sendStatus(401);
-        const user2 = yield models_1.User.findOne({ username_lower: req.body.newUsername.toLowerCase() });
+        const user2 = yield index_1.User.findOne({ username_lower: req.body.newUsername.toLowerCase() });
         if (user2) {
             if (user2._id !== ((_e = res.locals.user) === null || _e === void 0 ? void 0 : _e._id)) {
                 console.log(req.body.newUsername + " already taken");

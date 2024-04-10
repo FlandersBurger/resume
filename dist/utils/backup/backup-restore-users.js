@@ -10,8 +10,8 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 const _ = require("underscore");
 const moment = require("moment");
-const srcUser = require("@root/models/user")("backup");
-const dstUser = require("@root/models/user")("master");
+const srcUser = require("@models/user")("backup");
+const dstUser = require("@models/user")("master");
 const backup = () => __awaiter(void 0, void 0, void 0, function* () {
     const existingUsers = yield dstUser.find({}).select("_id").lean();
     N = 0;

@@ -16,19 +16,19 @@ exports.postsRoute = void 0;
 const express_1 = require("express");
 const queue_1 = __importDefault(require("@root/queue"));
 const server_1 = __importDefault(require("@root/server"));
-const models_1 = require("@root/models");
+const index_1 = require("@models/index");
 exports.postsRoute = (0, express_1.Router)();
 exports.postsRoute.get("/", (_, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const posts = yield models_1.Post.find().populate("poster", "username").sort("-date");
+    const posts = yield index_1.Post.find().populate("poster", "username").sort("-date");
     res.json(posts);
 }));
 exports.postsRoute.get("/:id", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const post = yield models_1.Post.findOne({ _id: req.params.id }).populate("poster", "username");
+    const post = yield index_1.Post.findOne({ _id: req.params.id }).populate("poster", "username");
     res.json(post);
 }));
 exports.postsRoute.post("/", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     var _a;
-    const post = new models_1.Post({
+    const post = new index_1.Post({
         body: req.body.body,
         poster: (_a = res.locals.user) === null || _a === void 0 ? void 0 : _a._id,
     });

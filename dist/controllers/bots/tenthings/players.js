@@ -10,10 +10,10 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.getPlayer = void 0;
-const models_1 = require("@root/models");
+const index_1 = require("@models/index");
 const string_helpers_1 = require("@root/utils/string-helpers");
 const getPlayer = (game, from) => __awaiter(void 0, void 0, void 0, function* () {
-    let player = yield models_1.Player.findOne({
+    let player = yield index_1.Player.findOne({
         game: game._id,
         id: `${from.id}`, //Stringified
     }).exec();
@@ -31,7 +31,7 @@ exports.getPlayer = getPlayer;
 const createPlayer = (game, from) => __awaiter(void 0, void 0, void 0, function* () {
     if (!from.first_name)
         console.trace();
-    const player = new models_1.Player(Object.assign({ game: game._id }, from));
+    const player = new index_1.Player(Object.assign({ game: game._id }, from));
     const savedPlayer = yield player.save();
     console.log(`${game.chat_id} - Player ${from.id} created`);
     return savedPlayer;

@@ -13,7 +13,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.processBan = exports.initiateBan = void 0;
-const models_1 = require("@root/models");
+const index_1 = require("@models/index");
 const i18n_1 = __importDefault(require("@root/i18n"));
 const keyboards_1 = require("./keyboards");
 const telegram_1 = __importDefault(require("@root/connections/telegram"));
@@ -21,7 +21,7 @@ const config = require("@root/config");
 const cache = {};
 const initiateBan = (game, callbackQuery) => __awaiter(void 0, void 0, void 0, function* () {
     if (game.chat_id !== config.groupChat || (yield telegram_1.default.checkAdmin(game.chat_id, callbackQuery.from.id))) {
-        const foundList = yield models_1.List.findOne({ _id: callbackQuery.data }).exec();
+        const foundList = yield index_1.List.findOne({ _id: callbackQuery.data }).exec();
         if (!foundList) {
             return telegram_1.default.queueMessage(game.chat_id, (0, i18n_1.default)(game.settings.language, "warnings.unfoundList"));
         }
@@ -59,7 +59,7 @@ const processBan = (game, callbackQuery) => {
 };
 exports.processBan = processBan;
 const banList = (game, listId) => __awaiter(void 0, void 0, void 0, function* () {
-    const list = yield models_1.List.findOne({ _id: listId }).select("_id bans name").exec();
+    const list = yield index_1.List.findOne({ _id: listId }).select("_id bans name").exec();
     if (list) {
         if (game.bannedLists.some((bannedListId) => bannedListId.toString() == listId)) {
             telegram_1.default.queueMessage(game.chat_id, (0, i18n_1.default)(game.settings.language, "sentences.alreadyBannedList", { list: list.name }));

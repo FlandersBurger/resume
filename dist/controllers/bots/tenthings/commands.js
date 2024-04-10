@@ -14,8 +14,8 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.evaluate = void 0;
 const moment_1 = __importDefault(require("moment"));
-const game_1 = require("@root/models/tenthings/game");
-const models_1 = require("@root/models");
+const game_1 = require("@models/tenthings/game");
+const index_1 = require("@models/index");
 const messages_1 = require("./messages");
 const maingame_1 = require("./maingame");
 const minigame_1 = require("./minigame");
@@ -226,7 +226,7 @@ const evaluate = (msg, game, isNew) => __awaiter(void 0, void 0, void 0, functio
                 break;
             case "/notify":
                 if (msg.chatId === config.masterChat) {
-                    models_1.Game.find({ enabled: true })
+                    index_1.Game.find({ enabled: true })
                         .select("chat_id")
                         .then((games) => {
                         telegram_1.default.broadcast(games.map(({ chat_id }) => chat_id), msg.text.replace("/notify ", ""));
@@ -326,7 +326,7 @@ const evaluate = (msg, game, isNew) => __awaiter(void 0, void 0, void 0, functio
             case "/listas":
             case "/lists":
                 if (game.pickedLists.length > 0) {
-                    models_1.List.find({
+                    index_1.List.find({
                         _id: {
                             $in: game.pickedLists,
                         },

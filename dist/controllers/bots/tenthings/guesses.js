@@ -16,8 +16,8 @@ exports.getAnswerScore = exports.queueGuess = exports.getCount = void 0;
 const FuzzyMatching = require("fuzzy-matching");
 const bull_1 = __importDefault(require("bull"));
 const find_1 = __importDefault(require("lodash/find"));
-const models_1 = require("@root/models");
-const game_1 = require("@root/models/tenthings/game");
+const index_1 = require("@models/index");
+const game_1 = require("@models/tenthings/game");
 const string_helpers_1 = require("@root/utils/string-helpers");
 const hints_1 = require("./hints");
 const sass_1 = __importDefault(require("./sass"));
@@ -95,7 +95,7 @@ guessQueue.process(({ data }, done) => __awaiter(void 0, void 0, void 0, functio
     done();
 }));
 const processGuess = (guess) => __awaiter(void 0, void 0, void 0, function* () {
-    const game = yield models_1.Game.findOne({
+    const game = yield index_1.Game.findOne({
         chat_id: guess.game,
     })
         .populate("list.creator")

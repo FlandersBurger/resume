@@ -15,7 +15,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.tenthingsBotRoute = exports.MessageType = void 0;
 const express_1 = require("express");
 const moment_1 = __importDefault(require("moment"));
-const models_1 = require("@root/models");
+const index_1 = require("@models/index");
 const maingame_1 = require("./maingame");
 const config = require("@root/config");
 const telegram_1 = __importDefault(require("@root/connections/telegram"));
@@ -32,7 +32,6 @@ var MessageType;
 (function (MessageType) {
     MessageType["Callback"] = "callback";
     MessageType["Command"] = "command";
-    MessageType["NewPlayer"] = "newPlayer";
     MessageType["NewGame"] = "newGame";
     MessageType["PlayerLeft"] = "playerLeft";
     MessageType["Message"] = "message";
@@ -97,12 +96,12 @@ exports.tenthingsBotRoute.post("/", (req, res) => __awaiter(void 0, void 0, void
             return res.sendStatus(200);
             break;
         case MessageType.PlayerLeft:
-            models_1.Game.findOne({ chat_id: domainMessage.message.chatId }).exec((err, game) => {
+            index_1.Game.findOne({ chat_id: domainMessage.message.chatId }).exec((err, game) => {
                 if (err)
                     return console.error(err);
                 if (!game)
                     return;
-                models_1.Player.findOne({ game: game._id, id: `${domainMessage.message.from.id}` }).exec((err, player) => {
+                index_1.Player.findOne({ game: game._id, id: `${domainMessage.message.from.id}` }).exec((err, player) => {
                     if (err || !player)
                         return;
                     if (player) {
@@ -126,7 +125,7 @@ exports.tenthingsBotRoute.post("/", (req, res) => __awaiter(void 0, void 0, void
         telegram_1.default.notifyAdmin(`Can't send message:\n${JSON.stringify(msg)}`);
         return res.sendStatus(200);
     }
-    const existingGame = yield models_1.Game.findOne({ chat_id: msg.chatId })
+    const existingGame = yield index_1.Game.findOne({ chat_id: msg.chatId })
         .populate("list.creator")
         .select("-playedLists")
         .exec();

@@ -11,12 +11,12 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.tenthingsGamesRoute = void 0;
 const express_1 = require("express");
-const models_1 = require("@root/models");
+const index_1 = require("@models/index");
 exports.tenthingsGamesRoute = (0, express_1.Router)();
 exports.tenthingsGamesRoute.get("/games", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     if (!res.locals.isAdmin)
         return res.sendStatus(401);
-    const games = yield models_1.Game.find(Object.assign({ lastPlayDate: { $gt: "2019-06-15T00:00:00.000Z" } }, req.body.query))
+    const games = yield index_1.Game.find(Object.assign({ lastPlayDate: { $gt: "2019-06-15T00:00:00.000Z" } }, req.body.query))
         .select("_id chat_id enabled date lastPlayDate")
         .limit(parseInt(req.query.limit))
         .skip(parseInt(req.query.limit) * (parseInt(req.query.page) - 1));
@@ -28,10 +28,10 @@ exports.tenthingsGamesRoute.get("/games", (req, res) => __awaiter(void 0, void 0
 exports.tenthingsGamesRoute.get("/game/:id", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     if (!res.locals.isAdmin)
         return res.sendStatus(401);
-    const game = yield models_1.Game.findOne({ chat_id: req.params.id }).lean();
+    const game = yield index_1.Game.findOne({ chat_id: req.params.id }).lean();
     if (!game)
         return res.sendStatus(404);
-    const players = yield models_1.Player.find({ game: game._id }).lean();
+    const players = yield index_1.Player.find({ game: game._id }).lean();
     res.json(Object.assign(Object.assign({}, game), { players }));
 }));
 //# sourceMappingURL=games.js.map

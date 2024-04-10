@@ -14,7 +14,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.abortSkip = exports.vetoSkip = exports.checkSkipper = exports.processSkip = exports.vetoCache = exports.skipCache = void 0;
 const moment_1 = __importDefault(require("moment"));
-const models_1 = require("@root/models");
+const index_1 = require("@models/index");
 const string_helpers_1 = require("@root/utils/string-helpers");
 const maingame_1 = require("./maingame");
 const lists_1 = require("./lists");
@@ -67,7 +67,7 @@ const processSkip = (game, skipper) => {
 };
 exports.processSkip = processSkip;
 const skipList = (game, skipper) => {
-    models_1.Player.updateMany({
+    index_1.Player.updateMany({
         game: game._id,
         _id: exports.skipCache[game.chat_id] ? { $in: [exports.skipCache[game.chat_id].playerId, skipper._id] } : skipper._id,
     }, {
@@ -93,7 +93,7 @@ const skipList = (game, skipper) => {
         telegram_1.default.queueMessage(game.chat_id, message);
         telegram_1.default.sendKeyboard(game.chat_id, `Experimental feature to permanently ban list from game\nDo you want to ban "${game.list.name}"`, (0, keyboards_1.banListKeyboard)(game.settings.language, game.list));
         delete exports.skipCache[game.chat_id];
-        let foundList = yield models_1.List.findOne({
+        let foundList = yield index_1.List.findOne({
             _id: game.list._id,
         })
             .select("_id plays skips votes score")

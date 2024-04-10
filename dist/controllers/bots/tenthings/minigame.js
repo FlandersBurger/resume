@@ -18,7 +18,7 @@ const uniq_1 = __importDefault(require("lodash/uniq"));
 const sampleSize_1 = __importDefault(require("lodash/sampleSize"));
 const telegram_1 = __importDefault(require("@root/connections/telegram"));
 const i18n_1 = __importDefault(require("@root/i18n"));
-const models_1 = require("@root/models");
+const index_1 = require("@models/index");
 const guesses_1 = require("./guesses");
 const messages_1 = require("./messages");
 const hints_1 = require("./hints");
@@ -60,7 +60,7 @@ const createMinigame = (game) => __awaiter(void 0, void 0, void 0, function* () 
 });
 exports.createMinigame = createMinigame;
 const getAllMinigames = () => __awaiter(void 0, void 0, void 0, function* () {
-    const lists = yield models_1.List.find({}).select("name language values categories").lean();
+    const lists = yield index_1.List.find({}).select("name language values categories").lean();
     telegram_1.default.notifyAdmin(`Vetting ${lists.length} lists for minigames`);
     let answers = lists.reduce((answers, list) => {
         for (const value of list.values) {
@@ -90,15 +90,15 @@ const getAllMinigames = () => __awaiter(void 0, void 0, void 0, function* () {
         .filter((minigame) => minigame.lists && minigame.lists.length > 0);
 });
 const getMinigames = (parameters) => __awaiter(void 0, void 0, void 0, function* () {
-    let minigames = yield models_1.Minigame.find(parameters).lean();
+    let minigames = yield index_1.Minigame.find(parameters).lean();
     if (minigames.length === 0)
-        minigames = yield models_1.Minigame.find({}).lean();
+        minigames = yield index_1.Minigame.find({}).lean();
     return minigames;
 });
 const createMinigames = () => __awaiter(void 0, void 0, void 0, function* () {
     const minigames = yield getAllMinigames();
     yield Promise.all(minigames.map((game) => __awaiter(void 0, void 0, void 0, function* () {
-        yield models_1.Minigame.findOneAndUpdate({ language: game.language, answer: game.answer }, game, {
+        yield index_1.Minigame.findOneAndUpdate({ language: game.language, answer: game.answer }, game, {
             new: true,
             upsert: true,
         });

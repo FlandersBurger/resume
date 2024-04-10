@@ -13,7 +13,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.getList = exports.saveGame = exports.getGame = exports.votersCache = void 0;
-const models_1 = require("@root/models");
+const index_1 = require("@models/index");
 const queue_1 = __importDefault(require("@root/queue"));
 exports.votersCache = {};
 const getGame = (chat_id) => __awaiter(void 0, void 0, void 0, function* () {
@@ -21,7 +21,7 @@ const getGame = (chat_id) => __awaiter(void 0, void 0, void 0, function* () {
     if (cachedGame)
         return cachedGame;
     else {
-        const game = yield models_1.Game.findOne({
+        const game = yield index_1.Game.findOne({
             chat_id,
         });
         if (!game)
@@ -42,7 +42,7 @@ const getList = (_id) => __awaiter(void 0, void 0, void 0, function* () {
     if (cachedList)
         return cachedList;
     else {
-        const list = yield models_1.List.findOne({
+        const list = yield index_1.List.findOne({
             _id,
         });
         if (!list)

@@ -3,7 +3,6 @@
   "scripts": {
     "build": "copyfiles --flat ./config.js src && npm run bundle",
     "bundle": "tsc -p .",
-    "trace": "tsc --traceResolution",
     "dev": "tsx watch src/server.ts",
     "start": "npm run build -- -w"
   },

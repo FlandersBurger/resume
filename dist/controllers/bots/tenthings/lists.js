@@ -15,14 +15,14 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.logHint = exports.searchList = exports.selectList = exports.rateList = exports.getListScore = exports.getRandomList = void 0;
 const moment_1 = __importDefault(require("moment"));
 const telegram_1 = __importDefault(require("@root/connections/telegram"));
-const models_1 = require("@root/models");
+const index_1 = require("@models/index");
 const some_1 = __importDefault(require("lodash/some"));
 const keyboards_1 = require("./keyboards");
 const getRandomList = (parameters = {}) => __awaiter(void 0, void 0, void 0, function* () {
-    const count = yield models_1.List.countDocuments(parameters).exec();
+    const count = yield index_1.List.countDocuments(parameters).exec();
     if (count === 0)
         return;
-    const lists = yield models_1.List.find(parameters)
+    const lists = yield index_1.List.find(parameters)
         .select("-votes")
         .populate("creator")
         .populate("values.creator")
@@ -53,7 +53,7 @@ const getAvailableLanguages = ({ settings }) => settings.languages && settings.l
 const selectList = (game) => __awaiter(void 0, void 0, void 0, function* () {
     const availableLanguages = getAvailableLanguages(game);
     if (game.pickedLists.length > 0) {
-        let list = yield models_1.List.findOne({
+        let list = yield index_1.List.findOne({
             _id: game.pickedLists[0],
         })
             .populate("creator")
@@ -104,7 +104,7 @@ const searchList = (search, game) => __awaiter(void 0, void 0, void 0, function*
         .replace(new RegExp("[^a-zA-Z0-9 ]+", "g"), ".*")
         .split(" ")
         .reduce((result, word) => `${result}(?=.*${word}.*)`, "");
-    let foundLists = yield models_1.List.find({
+    let foundLists = yield index_1.List.find({
         categories: { $nin: game.disabledCategories },
         language: { $in: availableLanguages },
         name: {
@@ -115,7 +115,7 @@ const searchList = (search, game) => __awaiter(void 0, void 0, void 0, function*
         .select("name")
         .lean();
     if (foundLists.length < 10) {
-        const count = yield models_1.List.countDocuments({
+        const count = yield index_1.List.countDocuments({
             categories: { $nin: game.disabledCategories },
             language: { $in: availableLanguages },
             "values.value": {
@@ -123,7 +123,7 @@ const searchList = (search, game) => __awaiter(void 0, void 0, void 0, function*
                 $options: "i",
             },
         });
-        const valueLists = yield models_1.List.find({
+        const valueLists = yield index_1.List.find({
             categories: { $nin: game.disabledCategories },
             language: { $in: availableLanguages },
             "values.value": {
@@ -138,14 +138,14 @@ const searchList = (search, game) => __awaiter(void 0, void 0, void 0, function*
         foundLists.push(...valueLists);
     }
     if (foundLists.length < 10) {
-        const count = yield models_1.List.countDocuments({
+        const count = yield index_1.List.countDocuments({
             language: { $in: availableLanguages },
             categories: {
                 $regex: `.*${regex}.*`,
                 $options: "i",
             },
         });
-        const categoryLists = yield models_1.List.find({
+        const categoryLists = yield index_1.List.find({
             language: { $in: availableLanguages },
             categories: {
                 $regex: `.*${regex}.*`,
@@ -175,7 +175,7 @@ const curateList = async () => {
 curateList();
 */
 const logHint = (listId) => __awaiter(void 0, void 0, void 0, function* () {
-    let list = yield models_1.List.findOne({ _id: listId }).select("_id name hints").exec();
+    let list = yield index_1.List.findOne({ _id: listId }).select("_id name hints").exec();
     if (list) {
         if (!list.hints) {
             list.hints = 0;

@@ -11,12 +11,16 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.tenthingsPlayersRoute = void 0;
 const express_1 = require("express");
-const models_1 = require("@root/models");
+const index_1 = require("@models/index");
 exports.tenthingsPlayersRoute = (0, express_1.Router)();
 exports.tenthingsPlayersRoute.get("/players/:id", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     if (!res.locals.isAdmin)
         return res.sendStatus(401);
-    const player = yield models_1.Player.find({ id: req.params.id });
+    const player = yield index_1.Player.find({ id: req.params.id });
     res.json(player);
+}));
+index_1.Player.find().then((players) => players.forEach(function (d) {
+    d.id = parseInt(d.id);
+    d.save();
 }));
 //# sourceMappingURL=players.js.map

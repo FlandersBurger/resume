@@ -23,7 +23,7 @@ const { getMusicVideo } = require("@root/connections/youtube");
 const { getUnsplashImage } = require("@root/connections/unsplash");
 const { getWikiImage } = require("@root/connections/wikipedia");
 const { getPexelsImage } = require("@root/connections/pexels");
-const models_1 = require("@root/models");
+const index_1 = require("@models/index");
 const string_helpers_1 = require("@root/utils/string-helpers");
 const messages_1 = require("@tenthings/messages");
 const lists_1 = require("@tenthings/lists");
@@ -33,7 +33,7 @@ exports.tenthingsListsRoute.get("/", (req, res) => __awaiter(void 0, void 0, voi
     var _a;
     if (!res.locals.isAuthorized)
         return res.sendStatus(401);
-    const lists = yield models_1.List.find({})
+    const lists = yield index_1.List.find({})
         .select("_id plays skips score values date modifyDate creator name description categories language isDynamic frequency difficulty")
         .limit(parseInt(req.query.limit) || 0)
         .skip(parseInt(req.query.limit) * (parseInt(((_a = req.query.page) !== null && _a !== void 0 ? _a : 0)) - 1) || 0)
@@ -44,11 +44,11 @@ exports.tenthingsListsRoute.get("/", (req, res) => __awaiter(void 0, void 0, voi
 exports.tenthingsListsRoute.get("/:id/report/:user", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     if (!res.locals.isAuthorized)
         return res.sendStatus(401);
-    const list = yield models_1.List.findOne({ _id: req.params.id });
+    const list = yield index_1.List.findOne({ _id: req.params.id });
     if (!list)
         return res.sendStatus(404);
     if (list) {
-        const user = yield models_1.User.findOne({ _id: req.params.user });
+        const user = yield index_1.User.findOne({ _id: req.params.user });
         if (!user)
             return res.sendStatus(400);
         telegram_1.default.notifyAdmins("Check: " + list.name + " reported by " + user.username);
@@ -57,7 +57,7 @@ exports.tenthingsListsRoute.get("/:id/report/:user", (req, res) => __awaiter(voi
 exports.tenthingsListsRoute.get("/:id", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     if (!res.locals.isAuthorized)
         return res.sendStatus(401);
-    const list = yield models_1.List.findOne({ _id: req.params.id })
+    const list = yield index_1.List.findOne({ _id: req.params.id })
         .populate("creator", "_id username displayName")
         .populate("values.creator", "_id username displayName")
         .lean({ virtuals: true });
@@ -68,7 +68,7 @@ exports.tenthingsListsRoute.get("/:id", (req, res) => __awaiter(void 0, void 0, 
 exports.tenthingsListsRoute.post("/:id/blurbs/:type", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     if (!res.locals.isAuthorized)
         return res.sendStatus(401);
-    let list = yield models_1.List.findOne({ _id: req.params.id });
+    let list = yield index_1.List.findOne({ _id: req.params.id });
     if (list) {
         let changed = false;
         for (let value of list.values) {
@@ -132,7 +132,7 @@ exports.tenthingsListsRoute.post("/:id/blurbs/:type", (req, res) => __awaiter(vo
 exports.tenthingsListsRoute.post("/:id", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     if (!res.locals.isAuthorized)
         return res.sendStatus(401);
-    const list = yield models_1.List.findOne({ _id: req.params.id });
+    const list = yield index_1.List.findOne({ _id: req.params.id });
     if (!list)
         return res.sendStatus(404);
     list.values.filter(({ creator }) => !creator).forEach((value) => (value.creator = list.creator));
@@ -151,8 +151,8 @@ exports.tenthingsListsRoute.put("/", (req, res) => __awaiter(void 0, void 0, voi
     req.body.list.values
         .filter(({ creator }) => !creator)
         .forEach((value) => (value.creator = req.body.list.creator));
-    const updatedList = yield models_1.List.findByIdAndUpdate(req.body.list._id ? req.body.list._id : new mongoose_1.Types.ObjectId(), req.body.list, { new: true, upsert: true });
-    const list = yield models_1.List.findOne({ _id: updatedList._id }).populate("creator");
+    const updatedList = yield index_1.List.findByIdAndUpdate(req.body.list._id ? req.body.list._id : new mongoose_1.Types.ObjectId(), req.body.list, { new: true, upsert: true });
+    const list = yield index_1.List.findOne({ _id: updatedList._id }).populate("creator");
     if (!list)
         return res.sendStatus(500);
     if (!req.body.list._id) {
@@ -168,10 +168,10 @@ exports.tenthingsListsRoute.delete("/:id", (req, res) => __awaiter(void 0, void 
     var _b;
     if (!res.locals.isAuthorized)
         return res.sendStatus(401);
-    const list = yield models_1.List.findOne({ _id: req.params.id });
+    const list = yield index_1.List.findOne({ _id: req.params.id });
     if (list) {
         if (res.locals.isAdmin || ((_b = res.locals.user) === null || _b === void 0 ? void 0 : _b._id) === list.creator) {
-            const deletedList = yield models_1.List.findByIdAndRemove({ _id: req.params.id });
+            const deletedList = yield index_1.List.findByIdAndRemove({ _id: req.params.id });
             telegram_1.default.notifyAdmins(list.values
                 .sort((a, b) => (a.value < b.value ? -1 : 1))
                 .reduce((message, item) => `${message}- ${item.value}\n`, `<b>${list.name}</b>\ndeleted by ${res.locals.user.username}\n`));
@@ -186,7 +186,7 @@ exports.tenthingsListsRoute.delete("/:id", (req, res) => __awaiter(void 0, void 
 exports.tenthingsListsRoute.get("/names", (_, res) => {
     if (!res.locals.isAuthorized)
         return res.sendStatus(401);
-    const listNames = models_1.List.find({}).select("_id name");
+    const listNames = index_1.List.find({}).select("_id name");
     res.json(listNames);
 });
 const formatList = (list) => ({

@@ -15,7 +15,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.getStats = exports.getDailyScores = exports.getScores = void 0;
 const moment_1 = __importDefault(require("moment"));
 const find_1 = __importDefault(require("lodash/find"));
-const models_1 = require("@root/models");
+const index_1 = require("@models/index");
 const messages_1 = require("./messages");
 const telegram_1 = __importDefault(require("@root/connections/telegram"));
 const i18n_1 = __importDefault(require("@root/i18n"));
@@ -26,10 +26,10 @@ const getScores = (game_id, type) => __awaiter(void 0, void 0, void 0, function*
       bot.queueMessage(game_id, str);
     });
     */
-    const game = yield models_1.Game.findOne({ chat_id: game_id }).select("chat_id settings").exec();
+    const game = yield index_1.Game.findOne({ chat_id: game_id }).select("chat_id settings").exec();
     if (!game)
         return;
-    const players = yield models_1.Player.find({ game: game._id }).exec();
+    const players = yield index_1.Player.find({ game: game._id }).exec();
     let str = "";
     switch (type) {
         case "td":
@@ -89,7 +89,7 @@ const getScores = (game_id, type) => __awaiter(void 0, void 0, void 0, function*
 });
 exports.getScores = getScores;
 const getDailyScores = ({ _id, settings }, limit = 0) => __awaiter(void 0, void 0, void 0, function* () {
-    const players = yield models_1.Player.find({ game: _id, scoreDaily: { $gt: 0 } }).exec();
+    const players = yield index_1.Player.find({ game: _id, scoreDaily: { $gt: 0 } }).exec();
     const message = players
         .filter(({ scoreDaily }) => scoreDaily)
         .sort((player1, player2) => player2.scoreDaily - player1.scoreDaily)
@@ -103,13 +103,13 @@ const getDailyScores = ({ _id, settings }, limit = 0) => __awaiter(void 0, void 
 exports.getDailyScores = getDailyScores;
 const getStats = (chat_id, data, requestor) => __awaiter(void 0, void 0, void 0, function* () {
     const [type, id] = data.split("_");
-    const game = yield models_1.Game.findOne({ chat_id }).exec();
+    const game = yield index_1.Game.findOne({ chat_id }).exec();
     if (!game)
         return;
-    const players = yield models_1.Player.find({ game: game._id, present: true }).exec();
+    const players = yield index_1.Player.find({ game: game._id, present: true }).exec();
     switch (type) {
         case "global":
-            models_1.Player.aggregate([
+            index_1.Player.aggregate([
                 { $match: { present: true } },
                 {
                     $group: {
@@ -157,7 +157,7 @@ const getStats = (chat_id, data, requestor) => __awaiter(void 0, void 0, void 0,
             });
             break;
         case "g":
-            const count = yield models_1.List.countDocuments().exec();
+            const count = yield index_1.List.countDocuments().exec();
             let message = "<b>Game Stats</b>\n";
             message += requestor ? `<i>Requested by ${requestor}</i>\n` : "";
             message += `Started ${(0, moment_1.default)(game.date).format("DD-MMM-YYYY")}\n`;
@@ -182,7 +182,7 @@ const getStats = (chat_id, data, requestor) => __awaiter(void 0, void 0, void 0,
             telegram_1.default.queueMessage(game.chat_id, message);
             break;
         case "p":
-            models_1.Player.findOne({
+            index_1.Player.findOne({
                 game: game._id,
                 id: `${id ? id : requestor}`,
             }).exec((err, player) => {
@@ -195,7 +195,7 @@ const getStats = (chat_id, data, requestor) => __awaiter(void 0, void 0, void 0,
             });
             break;
         case "l":
-            models_1.List.findOne({
+            index_1.List.findOne({
                 _id: id,
             })
                 .populate("creator")
@@ -297,7 +297,7 @@ exports.getStats = getStats;
 const listStats = ({ chat_id }, field, divisor, ratio, title, description, sorter, requestor) => {
     let message = `<b>${title}</b>\n`;
     message += description ? `<i>${description}</i>\n` : "";
-    models_1.List.find({ plays: { $gt: 0 } })
+    index_1.List.find({ plays: { $gt: 0 } })
         .select(`${field} ${divisor} name`)
         .exec((_, lists) => {
         lists
@@ -350,7 +350,7 @@ const playerStats = ({ chat_id }, players, field, divisor, ratio, title, descrip
     telegram_1.default.queueMessage(chat_id, message);
 });
 const voteStats = ({ chat_id }, players, sorter, title, requestor) => __awaiter(void 0, void 0, void 0, function* () {
-    models_1.List.aggregate([{ $unwind: "$votes" }, { $group: { _id: "$votes.voter", votes: { $sum: 1 } } }])
+    index_1.List.aggregate([{ $unwind: "$votes" }, { $group: { _id: "$votes.voter", votes: { $sum: 1 } } }])
         .sort({ votes: sorter })
         .limit(10)
         .exec((err, voters) => {
@@ -369,7 +369,7 @@ const voteStats = ({ chat_id }, players, sorter, title, requestor) => __awaiter(
     });
 });
 const creatorStats = () => __awaiter(void 0, void 0, void 0, function* () {
-    const lists = yield models_1.List.aggregate([
+    const lists = yield index_1.List.aggregate([
         { $unwind: "$votes" },
         {
             $group: {
@@ -411,7 +411,7 @@ const creatorStats = () => __awaiter(void 0, void 0, void 0, function* () {
     //const listsWithCreators = await List.populate(lists, { path: '_id' });
     //const listCount = await List.countDocuments();
     for (const list of lists)
-        list.creator = yield models_1.User.findOne({ _id: list._id }).select("username displayName").lean();
+        list.creator = yield index_1.User.findOne({ _id: list._id }).select("username displayName").lean();
     console.log(lists
         .filter((list) => list.lists >= 25)
         .sort((listA, listB) => listB.score - listA.score)
@@ -434,7 +434,7 @@ const creatorStats = () => __awaiter(void 0, void 0, void 0, function* () {
 });
 // creatorStats();
 const voteSentimentStats = ({ chat_id }, players, sorter, title, requestor) => __awaiter(void 0, void 0, void 0, function* () {
-    models_1.List.aggregate([
+    index_1.List.aggregate([
         { $match: { "votes.vote": sorter } },
         { $unwind: "$votes" },
         { $group: { _id: "$votes.voter", votes: { $sum: 1 } } },
@@ -457,7 +457,7 @@ const voteSentimentStats = ({ chat_id }, players, sorter, title, requestor) => _
     });
 });
 const tenThingsStats = (game, sorter, field, title) => {
-    models_1.Player.aggregate([
+    index_1.Player.aggregate([
         { $match: { game: game._id } },
         {
             $group: {

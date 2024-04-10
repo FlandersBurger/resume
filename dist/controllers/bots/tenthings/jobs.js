@@ -26,7 +26,7 @@ const number_helpers_1 = require("@root/utils/number-helpers");
 const minigame_1 = require("./minigame");
 const stats_1 = require("./stats");
 const backup = require("@root/utils/backup/backup-db");
-const { Game, Player, Stats, List } = require("@root/models");
+const { Game, Player, Stats, List } = require("@models/index");
 const resetDailyScore = () => {
     if ((0, moment_1.default)().utc().hour() === 1) {
         telegram_1.default.notifyAdmin(`Score Reset Triggered; ${(0, moment_1.default)().format("DD-MMM-YYYY hh:mm")}`);

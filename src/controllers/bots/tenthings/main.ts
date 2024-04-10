@@ -22,7 +22,6 @@ console.log(
 export enum MessageType {
   Callback = "callback",
   Command = "command",
-  NewPlayer = "newPlayer",
   NewGame = "newGame",
   PlayerLeft = "playerLeft",
   Message = "message",

@@ -16,7 +16,7 @@ exports.sendMaingameMessage = exports.checkMaingame = exports.deactivate = expor
 const moment_1 = __importDefault(require("moment"));
 const sampleSize = require("lodash/sampleSize");
 const some = require("lodash/some");
-const models_1 = require("@root/models");
+const index_1 = require("@models/index");
 const string_helpers_1 = require("@root/utils/string-helpers");
 const guesses_1 = require("./guesses");
 const messages_1 = require("./messages");
@@ -27,12 +27,12 @@ const skips_1 = require("./skips");
 const i18n_1 = __importDefault(require("@root/i18n"));
 const telegram_1 = __importDefault(require("@root/connections/telegram"));
 const createMaingame = (chat_id) => __awaiter(void 0, void 0, void 0, function* () {
-    const game = new models_1.Game({
+    const game = new index_1.Game({
         chat_id,
         settings: { languages: ["EN"] },
     });
     const savedGame = yield game.save();
-    const newGame = yield models_1.Game.findOne({ _id: savedGame._id }).exec();
+    const newGame = yield index_1.Game.findOne({ _id: savedGame._id }).exec();
     return newGame;
 });
 exports.createMaingame = createMaingame;
@@ -47,7 +47,7 @@ const checkRound = (game) => {
     if (game.list.values.filter(({ guesser }) => !guesser).length === 0) {
         setTimeout(() => __awaiter(void 0, void 0, void 0, function* () {
             (0, exports.sendMaingameMessage)(game);
-            const foundList = yield models_1.List.findOne({ _id: game.list._id }).exec();
+            const foundList = yield index_1.List.findOne({ _id: game.list._id }).exec();
             if (foundList) {
                 let message = (0, messages_1.getListStats)(game.settings.language, foundList, undefined);
                 message += yield (0, stats_1.getDailyScores)(game, 5);
@@ -71,7 +71,7 @@ exports.checkRound = checkRound;
  ██   ████ ███████  ███ ███      ██   ██  ██████   ██████  ██   ████ ██████
 */
 const newRound = (currentGame) => {
-    models_1.Game.findOne({
+    index_1.Game.findOne({
         _id: currentGame._id,
     })
         .select("_id chat_id playedLists list listsPlayed pickedLists cycles guessers hints disabledCategories settings")
@@ -81,7 +81,7 @@ const newRound = (currentGame) => {
             return console.error(err);
         if (!game)
             return console.log("Game not found");
-        let players = yield models_1.Player.find({
+        let players = yield index_1.Player.find({
             game: currentGame._id,
             id: {
                 $in: game.guessers,

@@ -13,7 +13,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.getSpecialCharacters = exports.getMaxHints = exports.getHint = exports.processHint = exports.hintCooldown = exports.hintCache = exports.MAX_HINTS = void 0;
-const game_1 = require("@root/models/tenthings/game");
+const game_1 = require("@models/tenthings/game");
 const string_helpers_1 = require("@root/utils/string-helpers");
 const uniq_1 = __importDefault(require("lodash/uniq"));
 const maingame_1 = require("./maingame");
