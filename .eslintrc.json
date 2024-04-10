@@ -44,7 +44,6 @@
         "props": true,
         "ignorePropertyModificationsFor": ["state", "e", "ctx"]
       }
-    ],
-    "no-unused-vars": ["error"]
+    ]
   }
 }
