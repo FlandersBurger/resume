@@ -78,12 +78,12 @@ function TelegramBot() {
     }
   };
 
-  bot.sendMessage = async (channel, message, topic) => {
+  bot.sendMessage = (channel, message, topic) => {
     message = encodeURIComponent(message);
     let url = `${bot.baseUrl}/sendMessage?chat_id=${channel}&disable_notification=true&parse_mode=html&text=${message}`;
     if (topic) url += `&message_thread_id=${topic}`;
     try {
-      await axios.get(url);
+      axios.get(url);
     } catch (error) {
       console.error(`Send Fail to channel: ${channel}`);
       console.error(error.response.data);
@@ -245,8 +245,7 @@ function TelegramBot() {
     try {
       await axios.get(encodeURI(url));
     } catch (error) {
-      console.error("Send Animation Fail");
-      console.error(error);
+      console.error(`Send Animation Fail to ${channel} -> animation`);
     }
   };
 
