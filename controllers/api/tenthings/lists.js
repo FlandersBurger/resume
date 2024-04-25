@@ -166,7 +166,6 @@ router.put("/", (req, res, next) => {
           if (err) return next(err);
           if (!req.body.list._id) {
             bot.notifyAdmins(`<u>List Created</u>\n${messages.listInfo(foundList)}`, keyboards.curate(foundList));
-            bot.notifyCosmicForce(`<u>List Created</u>\n${messages.listInfo(foundList)}`, keyboards.curate(foundList));
           } else if (previousModifyDate < yesterday) {
             bot.notifyAdmins(
               `<u>List Updated</u>\nUpdated by <i>${req.body.user.username}</i>\n${messages.listInfo(foundList)}`,
