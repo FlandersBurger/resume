@@ -10,7 +10,7 @@ import moment from "moment";
 import { getDifficultyMessage, getFrequencyMessage, getListMessage } from "./messages";
 import { getListScore } from "./lists";
 
-const config = require("@root/config");
+const config = require("@config");
 import i18n from "@root/i18n";
 
 import categories from "./categories";

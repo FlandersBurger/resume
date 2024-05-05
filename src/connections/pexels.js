@@ -1,5 +1,5 @@
 const axios = require("axios").default;
-const config = require("@root/config");
+const config = require("@config");
 
 exports.getPexelsImage = async (query) => {
   try {

@@ -1,5 +1,5 @@
 const axios = require("axios").default;
-const config = require("@root/config");
+const config = require("@config");
 
 exports.getMovieDbImage = async (query, type) => {
   const movieDB = await axios.get(

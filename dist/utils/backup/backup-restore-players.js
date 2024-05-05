@@ -10,8 +10,8 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 const _ = require("underscore");
 const moment = require("moment");
-const srcPlayer = require("@models/tenthings/player")("backup");
-const dstPlayer = require("@models/tenthings/player")("master");
+const srcPlayer = require("../../models/tenthings/player")("backup");
+const dstPlayer = require("../../models/tenthings/player")("master");
 const backup = () => __awaiter(void 0, void 0, void 0, function* () {
     const existingPlayers = yield dstPlayer.find({}).select("_id").lean();
     //const missingPlayers = await srcPlayer.find({ _id: { $nin: existingPlayers } });

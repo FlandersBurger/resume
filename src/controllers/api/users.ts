@@ -3,7 +3,7 @@ import { Router, Request, Response } from "express";
 import bcrypt from "bcryptjs";
 import jwt from "jwt-simple";
 const admin = require("firebase-admin");
-const config = require("@root/config");
+const config = require("@config");
 import { User } from "@models/index";
 
 export const usersRoute = Router();

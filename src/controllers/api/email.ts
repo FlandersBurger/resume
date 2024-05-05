@@ -1,6 +1,6 @@
 import { Request, Response, Router } from "express";
 import { createTransport } from "nodemailer";
-const config = require("@root/config");
+const config = require("@config");
 
 const transporter = createTransport(config.gmail);
 

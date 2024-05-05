@@ -1,7 +1,7 @@
 import { NextFunction, Request, Response } from "express";
 import jwt from "jwt-simple";
 
-var config = require("@root/config");
+var config = require("@config");
 import UserModels from "@models/user";
 const User = UserModels();
 

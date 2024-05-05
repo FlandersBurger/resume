@@ -9,7 +9,7 @@ import { MessageType } from "@tenthings/main";
 import { IMessageType } from "@tenthings/messages";
 import { maskUrls } from "@root/utils/string-helpers";
 
-const config = require("@root/config");
+const config = require("@config");
 const BANNED_TELEGRAM_USERS = [1726294650];
 
 const TOKEN = config.tokens.telegram.tenthings;

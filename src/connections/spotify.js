@@ -1,6 +1,6 @@
 const moment = require("moment");
 const _ = require("underscore");
-const config = require("@root/config");
+const config = require("@config");
 const request = require("request-promise");
 
 module.exports = function () {

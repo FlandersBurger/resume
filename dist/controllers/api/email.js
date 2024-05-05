@@ -12,7 +12,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.emailRoute = void 0;
 const express_1 = require("express");
 const nodemailer_1 = require("nodemailer");
-const config = require("@root/config");
+const config = require("../../config");
 const transporter = (0, nodemailer_1.createTransport)(config.gmail);
 exports.emailRoute = (0, express_1.Router)();
 //https://www.google.com/recaptcha/api/siteverify

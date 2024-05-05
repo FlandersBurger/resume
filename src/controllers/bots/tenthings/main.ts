@@ -3,7 +3,7 @@ import moment from "moment";
 import { Game, Player } from "@models/index";
 import { createMaingame } from "./maingame";
 
-const config = require("@root/config");
+const config = require("@config");
 import bot from "@root/connections/telegram";
 import i18n from "@root/i18n";
 import { getQueue } from "./queue";

@@ -9,7 +9,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 const request = require("request-promise");
-const config = require("@root/config");
+const config = require("../config");
 exports.getMusicVideo = (query, artist) => __awaiter(void 0, void 0, void 0, function* () {
     const youtubeDB = yield request(`https://www.googleapis.com/youtube/v3/search?key=${config.tokens.youtubeapi}&order=relevance&videoDefinition=high&type=video&maxResults=1&part=snippet&q=${artist}+VEVO+${encodeURIComponent(query.replace(" ", "+"))}`);
     try {

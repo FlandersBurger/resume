@@ -2,15 +2,9 @@
   "name": "resume",
   "scripts": {
     "build": "copyfiles --flat ./config.js src && npm run bundle",
-    "bundle": "tsc -p .",
+    "bundle": "tsc -p . && tsc-alias",
     "dev": "tsx watch src/server.ts",
     "start": "npm run build -- -w"
-  },
-  "_moduleAliases": {
-    "@root": "./dist",
-    "@api": "./dist/controllers/api",
-    "@tenthings": "./dist/controllers/bots/tenthings",
-    "@models/index": "./dist/models"
   },
   "dependencies": {
     "@types/bcrypt": "^5.0.2",
@@ -92,6 +86,7 @@
     "gulp-uglify": "^3.0.2",
     "nodemon": "^3.1.0",
     "regenerator-runtime": "^0.14.1",
+    "tsc-alias": "^1.8.8",
     "tsx": "^4.7.2",
     "typescript": "^5.3.3",
     "uglify-es": "^3.3.9"

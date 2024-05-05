@@ -15,7 +15,7 @@ import { checkTinygame } from "./tinygame";
 import { getPlayer } from "./players";
 import { IMessage } from "./messages";
 
-const config = require("@root/config");
+const config = require("@config");
 
 export interface IGuess {
   msg: IMessage;

@@ -10,7 +10,7 @@ import { processHint } from "./hints";
 import { queueGuess } from "./guesses";
 import { getRandomList, searchList } from "./lists";
 import { IList } from "@models/tenthings/list";
-const config = require("@root/config");
+const config = require("@config");
 import i18n from "@root/i18n";
 
 import { getPlayer } from "./players";

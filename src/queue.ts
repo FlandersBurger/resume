@@ -1,6 +1,6 @@
 import { createClient } from "redis";
 
-const config = require("@root/config");
+const config = require("@config");
 const url = process.env.REDISTOGO_URL || "redis://localhost:" + config.redis.port;
 const client = createClient({ url, password: config.redis.password });
 

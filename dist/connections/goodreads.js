@@ -10,7 +10,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 const axios = require("axios").default;
 const parseString = require("xml2js").parseStringPromise;
-const config = require("@root/config");
+const config = require("../config");
 exports.getAuthor = (author) => __awaiter(void 0, void 0, void 0, function* () {
     const goodreadsAuthor = yield axios.get(`https://www.goodreads.com/api/author_url/${author}?key=${config.tokens.goodreadsapi}`);
     const parsedAuthorXML = yield parseString(goodreadsAuthor.data);

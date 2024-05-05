@@ -1,0 +1,34 @@
+"use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.StatsBackup = exports.PlayerBackup = exports.MinigameBackup = exports.GameBackup = exports.ListBackup = exports.CategoryBackup = exports.PostBackup = exports.JokeBackup = exports.UserBackup = exports.Stats = exports.Player = exports.Minigame = exports.Game = exports.List = exports.Category = exports.Post = exports.Joke = exports.User = void 0;
+const user_1 = __importDefault(require("./user"));
+const joke_1 = __importDefault(require("./joke"));
+const post_1 = __importDefault(require("./post"));
+const category_1 = __importDefault(require("./category"));
+const list_1 = __importDefault(require("./tenthings/list"));
+const game_1 = __importDefault(require("./tenthings/game"));
+const minigame_1 = __importDefault(require("./tenthings/minigame"));
+const player_1 = __importDefault(require("./tenthings/player"));
+const stats_1 = __importDefault(require("./tenthings/stats"));
+exports.User = (0, user_1.default)();
+exports.Joke = (0, joke_1.default)();
+exports.Post = (0, post_1.default)();
+exports.Category = (0, category_1.default)();
+exports.List = (0, list_1.default)();
+exports.Game = (0, game_1.default)();
+exports.Minigame = (0, minigame_1.default)();
+exports.Player = (0, player_1.default)();
+exports.Stats = (0, stats_1.default)();
+exports.UserBackup = (0, user_1.default)("backup");
+exports.JokeBackup = (0, joke_1.default)("backup");
+exports.PostBackup = (0, post_1.default)("backup");
+exports.CategoryBackup = (0, category_1.default)("backup");
+exports.ListBackup = (0, list_1.default)("backup");
+exports.GameBackup = (0, game_1.default)("backup");
+exports.MinigameBackup = (0, minigame_1.default)("backup");
+exports.PlayerBackup = (0, player_1.default)("backup");
+exports.StatsBackup = (0, stats_1.default)("backup");
+//# sourceMappingURL=index.js.map

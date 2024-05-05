@@ -6,7 +6,7 @@ import { ICallbackData } from "./callbacks";
 import i18n from "@root/i18n";
 import { confirmBanListKeyboard } from "./keyboards";
 import bot from "@root/connections/telegram";
-const config = require("@root/config");
+const config = require("@config");
 
 const cache: { [key: string]: number } = {};
 

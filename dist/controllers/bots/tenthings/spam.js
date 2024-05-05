@@ -5,8 +5,8 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.checkSpam = void 0;
 const moment_1 = __importDefault(require("moment"));
-const config = require("@root/config");
-const telegram_1 = __importDefault(require("@root/connections/telegram"));
+const config = require("../../../config");
+const telegram_1 = __importDefault(require("../../../connections/telegram"));
 const cache = {};
 const checkSpam = (body) => {
     const from = body.message ? body.message.from.id : body.callback_query.from.id;
