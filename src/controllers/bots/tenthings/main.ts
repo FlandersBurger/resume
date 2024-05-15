@@ -3,7 +3,6 @@ import moment from "moment";
 import { Game, Player } from "@models/index";
 import { createMaingame } from "./maingame";
 
-const config = require("@config");
 import bot from "@root/connections/telegram";
 import i18n from "@root/i18n";
 import { getQueue } from "./queue";
@@ -56,7 +55,7 @@ export const tenthingsBotRoute = Router();
   );
 */
 /*
-  bot.getChatMember(config.groupChat, config.masterChat)
+  bot.getChatMember(parseInt(process.env.GROUP_CHAT || ""), parseInt(process.env.MASTER_CHAT || ""))
   .then(function(present) {
     console.log(present);
   });*/
@@ -67,8 +66,8 @@ if (process.env.NODE_ENV === "production") {
 
 //bot.queueMessage('-1001394022777', "test<a href=\'https://upload.wikimedia.org/wikipedia/commons/thumb/8/89/Regular_Hexagon_Inscribed_in_a_Circle.gif/360px-Regular_Hexagon_Inscribed_in_a_Circle.gif\'>&#8204;</a>\nsome other stuff")
 //var url = 'https://upload.wikimedia.org/wikipedia/commons/d/d8/Olympique_Marseille_logo.svg';
-//bot.queueMessage(config.masterChat, "test<a href=\'" + url + "\'>&#8204;</a>\nsome other stuff");
-//bot.queueMessage(config.masterChat, JSON.stringify(msg));
+//bot.queueMessage(parseInt(process.env.MASTER_CHAT || ""), "test<a href=\'" + url + "\'>&#8204;</a>\nsome other stuff");
+//bot.queueMessage(parseInt(process.env.MASTER_CHAT || ""), JSON.stringify(msg));
 //The Group: '5b6361dcbd0ff6645df5f225'  '-1001394022777'
 
 /*
@@ -145,7 +144,7 @@ tenthingsBotRoute.post("/", async (req: Request, res: Response) => {
 });
 
 tenthingsBotRoute.get("/", (req: Request, res: Response) => {
-  if (req.query["hub.verify_token"] === config.tokens.facebook.tenthings) {
+  if (req.query["hub.verify_token"] === process.env.FACEBOOK_TOKEN) {
     res.status(200).send(req.query["hub.challenge"]);
   } else {
     res.sendStatus(200);

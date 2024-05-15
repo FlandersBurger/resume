@@ -1,10 +1,9 @@
 const axios = require("axios").default;
 const parseString = require("xml2js").parseStringPromise;
-const config = require("@config");
 
 exports.getAuthor = async (author) => {
   const goodreadsAuthor = await axios.get(
-    `https://www.goodreads.com/api/author_url/${author}?key=${config.tokens.goodreadsapi}`
+    `https://www.goodreads.com/api/author_url/${author}?key=${process.env.GOODREADS_TOKEN}`
   );
   const parsedAuthorXML = await parseString(goodreadsAuthor.data);
   return parsedAuthorXML.GoodreadsResponse.author[0].$.id;
@@ -12,7 +11,7 @@ exports.getAuthor = async (author) => {
 
 exports.getBookCover = async (query, author) => {
   const goodreadsDB = await axios.get(
-    `https://www.goodreads.com/search.xml?key=${config.tokens.goodreadsapi}&q=${encodeURIComponent(
+    `https://www.goodreads.com/search.xml?key=${process.env.GOODREADS_TOKEN}&q=${encodeURIComponent(
       query
     )}&search[field]=title`
   );

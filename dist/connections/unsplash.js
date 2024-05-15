@@ -9,10 +9,9 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 const axios = require("axios").default;
-const config = require("../config");
 exports.getUnsplashImage = (query) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const unsplashDB = yield axios.get(`https://api.unsplash.com/search/photos?client_id=${config.tokens.unsplashapi.key}&query=${encodeURIComponent(query.replace(" ", "+"))}`);
+        const unsplashDB = yield axios.get(`https://api.unsplash.com/search/photos?client_id=${process.env.UNSPLASH_KEY}&query=${encodeURIComponent(query.replace(" ", "+"))}`);
         return unsplashDB.data.results[0].urls.regular;
     }
     catch (e) {

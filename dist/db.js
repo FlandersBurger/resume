@@ -9,9 +9,9 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.mongoDBs = void 0;
 const mongoose_1 = require("mongoose");
 const tunnel_ssh_1 = require("tunnel-ssh");
-const config = require("./config");
 const connections = {};
 const connect = (db) => {
     connections[db.name] = (0, mongoose_1.createConnection)(db.url, {});
@@ -19,7 +19,25 @@ const connect = (db) => {
         console.log(`DB ${db.name} connected`);
     });
 };
-config.mongoDBs.forEach((db) => __awaiter(void 0, void 0, void 0, function* () {
+exports.mongoDBs = [
+    Object.assign({ name: "backup", url: process.env.MONGO_BACKUP_URL }, (process.env.MONGO_BACKUP_TUNNEL_HOST && {
+        tunnel: {
+            username: process.env.MONGO_BACKUP_TUNNEL_USER,
+            host: process.env.MONGO_BACKUP_TUNNEL_HOST,
+            privateKey: require("fs").readFileSync(process.env.MONGO_BACKUP_TUNNEL_KEY_PATH),
+            port: parseInt(process.env.MONGO_BACKUP_TUNNEL_PORT || "22"),
+        },
+    })),
+    Object.assign({ name: "master", url: process.env.MONGO_URL }, (process.env.MONGO_TUNNEL_HOST && {
+        tunnel: {
+            username: process.env.MONGO_TUNNEL_USER,
+            host: process.env.MONGO_TUNNEL_HOST,
+            privateKey: require("fs").readFileSync(process.env.MONGO_TUNNEL_KEY_PATH),
+            port: parseInt(process.env.MONGO_TUNNEL_PORT || "22"),
+        },
+    })),
+];
+exports.mongoDBs.forEach((db) => __awaiter(void 0, void 0, void 0, function* () {
     connect(db);
     if (db.tunnel) {
         yield (0, tunnel_ssh_1.createTunnel)({ autoClose: true }, { host: "127.0.0.1", port: 27017 }, db.tunnel, { dstPort: 27017 });

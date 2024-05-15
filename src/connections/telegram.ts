@@ -9,16 +9,13 @@ import { MessageType } from "@tenthings/main";
 import { IMessageType } from "@tenthings/messages";
 import { maskUrls } from "@root/utils/string-helpers";
 
-const config = require("@config");
 const BANNED_TELEGRAM_USERS = [1726294650];
-
-const TOKEN = config.tokens.telegram.tenthings;
 
 const messageQueue = new Queue("sendMessage", {
   redis: {
-    port: config.redis.port,
+    port: parseInt(process.env.REDIS_PORT || "6379"),
     host: "localhost",
-    password: config.redis.password,
+    password: process.env.REDIS_PASSWORD,
   },
   limiter: {
     max: 30,
@@ -148,21 +145,21 @@ class TelegramBot {
   };
 
   public notifyCosmicForce = async (msg: string, keyboard?: IKeyboard) => {
-    if (keyboard) await this.sendKeyboard(config.cosmicForceChat, msg, keyboard, 17);
-    else await this.sendMessage(config.cosmicForceChat, msg, 17);
+    if (keyboard) await this.sendKeyboard(parseInt(process.env.COSMIC_FORCE_CHAT || ""), msg, keyboard, 17);
+    else await this.sendMessage(parseInt(process.env.COSMIC_FORCE_CHAT || ""), msg, 17);
   };
 
   public notifyAdmin = async (msg: string) => {
-    await this.queueMessage(config.masterChat, msg);
+    await this.queueMessage(parseInt(process.env.MASTER_CHAT || ""), msg);
   };
 
   public notify = async (msg: string) => {
-    await this.queueMessage(config.noticeChannel, msg);
+    await this.queueMessage(parseInt(process.env.NOTICE_CHAT || ""), msg);
   };
 
   public notifyAdmins = async (msg: string, keyboard?: IKeyboard) => {
-    if (keyboard) await this.sendKeyboard(config.adminChat, msg, keyboard);
-    else await this.queueMessage(config.adminChat, msg);
+    if (keyboard) await this.sendKeyboard(parseInt(process.env.ADMIN_CHAT || ""), msg, keyboard);
+    else await this.queueMessage(parseInt(process.env.ADMIN_CHAT || ""), msg);
   };
 
   public broadcast = async (channels: number[], message: string) => {
@@ -355,7 +352,7 @@ class TelegramBot {
     }
     if (body.message || body.callback_query) {
       const from = this.toDomainUser(body.message ? body.message.from : body.callback_query.from);
-      if (from.id != config.masterChat && (await redis.get("pause")) === "true")
+      if (from.id != parseInt(process.env.MASTER_CHAT || "") && (await redis.get("pause")) === "true")
         return { messageType: MessageType.Ignore };
       if (BANNED_TELEGRAM_USERS.indexOf(from.id) >= 0) {
         return { messageType: MessageType.Ignore };
@@ -427,7 +424,7 @@ class TelegramBot {
   };
 }
 
-const bot = new TelegramBot(TOKEN);
+const bot = new TelegramBot(process.env.TELEGRAM_TOKEN!);
 
 messageQueue.process(({ data }: { data: { channel: number; message: string } }) =>
   bot.sendMessage(data.channel, data.message)

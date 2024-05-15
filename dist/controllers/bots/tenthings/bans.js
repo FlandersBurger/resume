@@ -17,10 +17,10 @@ const index_1 = require("../../../models/index");
 const i18n_1 = __importDefault(require("../../../i18n"));
 const keyboards_1 = require("./keyboards");
 const telegram_1 = __importDefault(require("../../../connections/telegram"));
-const config = require("../../../config");
 const cache = {};
 const initiateBan = (game, callbackQuery) => __awaiter(void 0, void 0, void 0, function* () {
-    if (game.chat_id !== config.groupChat || (yield telegram_1.default.checkAdmin(game.chat_id, callbackQuery.from.id))) {
+    if (game.chat_id !== parseInt(process.env.GROUP_CHAT || "") ||
+        (yield telegram_1.default.checkAdmin(game.chat_id, callbackQuery.from.id))) {
         const foundList = yield index_1.List.findOne({ _id: callbackQuery.data }).exec();
         if (!foundList) {
             return telegram_1.default.queueMessage(game.chat_id, (0, i18n_1.default)(game.settings.language, "warnings.unfoundList"));

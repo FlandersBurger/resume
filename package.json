@@ -1,7 +1,7 @@
 {
   "name": "resume",
   "scripts": {
-    "build": "copyfiles --flat ./config.js src && npm run bundle",
+    "build": "npm run bundle",
     "bundle": "tsc -p . && tsc-alias",
     "dev": "tsx watch src/server.ts",
     "start": "npm run build -- -w"
@@ -33,7 +33,7 @@
     "bson": "^4.1.0",
     "bull": "^4.12.2",
     "chart.js": "^2.9.4",
-    "dotenv": "^8.2.0",
+    "dotenv": "^8.6.0",
     "express": "^4.17.3",
     "firebase-admin": "^9.1.1",
     "flag-icon-css": "^3.5.0",

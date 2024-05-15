@@ -3,7 +3,7 @@ import { Router, Request, Response } from "express";
 import bcrypt from "bcryptjs";
 import jwt from "jwt-simple";
 const admin = require("firebase-admin");
-const config = require("@config");
+
 import { User } from "@models/index";
 
 export const usersRoute = Router();
@@ -69,11 +69,11 @@ usersRoute.post("/authenticate", async (req: Request, res: Response) => {
     });
     await newUser.save();
     console.log(user.username + " created");
-    const token = jwt.encode({ userid: user.id }, config.secret);
+    const token = jwt.encode({ userid: user.id }, process.env.SECRET!);
     res.json(token);
   } else {
     console.log(foundUser.username + " authenticated");
-    const token = jwt.encode({ userid: foundUser.id }, config.secret);
+    const token = jwt.encode({ userid: foundUser.id }, process.env.SECRET!);
     res.json(token);
   }
 });
@@ -86,7 +86,7 @@ usersRoute.get("/:id/login", async (req: Request, res: Response) => {
     res.sendStatus(401);
   } else {
     console.log(foundUser.username + " logged in");
-    const token = jwt.encode({ userid: foundUser.id }, config.secret);
+    const token = jwt.encode({ userid: foundUser.id }, process.env.SECRET!);
     res.json(token);
   }
 });

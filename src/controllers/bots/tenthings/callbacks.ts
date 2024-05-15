@@ -10,7 +10,6 @@ import moment from "moment";
 import { getDifficultyMessage, getFrequencyMessage, getListMessage } from "./messages";
 import { getListScore } from "./lists";
 
-const config = require("@config");
 import i18n from "@root/i18n";
 
 import categories from "./categories";
@@ -149,7 +148,7 @@ export default async (callbackQuery: ICallbackData) => {
       getScores(callbackQuery.chatId, callbackQuery.data);
       break;
     case CallbackDataType.Category:
-      if (callbackQuery.chatId != config.groupChat) {
+      if (callbackQuery.chatId != parseInt(process.env.GROUP_CHAT || "")) {
         if (await bot.checkAdmin(callbackQuery.chatId, callbackQuery.from.id)) {
           game = await Game.findOne({ chat_id: callbackQuery.chatId })
             .select("chat_id disabledCategories settings")
@@ -183,7 +182,7 @@ export default async (callbackQuery: ICallbackData) => {
       }
       break;
     case CallbackDataType.Setting:
-      if (callbackQuery.chatId != config.masterChat) {
+      if (callbackQuery.chatId != parseInt(process.env.MASTER_CHAT || "")) {
         if (await bot.checkAdmin(callbackQuery.chatId, callbackQuery.from.id)) {
           game = await Game.findOne({ chat_id: callbackQuery.chatId }).select("chat_id settings").exec();
           if (!game || !callbackQuery.id) return;
@@ -258,7 +257,7 @@ export default async (callbackQuery: ICallbackData) => {
       }
       break;
     case CallbackDataType.Pick:
-      if (callbackQuery.chatId === config.adminChat) {
+      if (callbackQuery.chatId === parseInt(process.env.ADMIN_CHAT || "")) {
         const list: HydratedDocument<IList> | null = await List.findOne({ _id: callbackQuery.data })
           .populate("creator")
           .exec();

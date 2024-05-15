@@ -1,8 +1,13 @@
 import { Request, Response, Router } from "express";
 import { createTransport } from "nodemailer";
-const config = require("@config");
 
-const transporter = createTransport(config.gmail);
+const transporter = createTransport({
+  service: "gmail",
+  auth: {
+    user: process.env.GMAIL_USER,
+    pass: process.env.GMAIL_PASSWORD,
+  },
+});
 
 export const emailRoute = Router();
 
@@ -12,7 +17,7 @@ emailRoute.post("/", async (req: Request, res: Response) => {
   try {
     const info = await transporter.sendMail({
       from: email.email,
-      to: config.gmail.auth.user,
+      to: process.env.GMAIL_USER,
       subject: email.about,
       text: JSON.stringify(email),
     });

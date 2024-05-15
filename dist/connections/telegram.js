@@ -20,14 +20,12 @@ const errors_1 = require("../controllers/bots/tenthings/errors");
 const spam_1 = require("../controllers/bots/tenthings/spam");
 const main_1 = require("../controllers/bots/tenthings/main");
 const string_helpers_1 = require("../utils/string-helpers");
-const config = require("../config");
 const BANNED_TELEGRAM_USERS = [1726294650];
-const TOKEN = config.tokens.telegram.tenthings;
 const messageQueue = new bull_1.default("sendMessage", {
     redis: {
-        port: config.redis.port,
+        port: parseInt(process.env.REDIS_PORT || "6379"),
         host: "localhost",
-        password: config.redis.password,
+        password: process.env.REDIS_PASSWORD,
     },
     limiter: {
         max: 30,
@@ -123,21 +121,21 @@ class TelegramBot {
         });
         this.notifyCosmicForce = (msg, keyboard) => __awaiter(this, void 0, void 0, function* () {
             if (keyboard)
-                yield this.sendKeyboard(config.cosmicForceChat, msg, keyboard, 17);
+                yield this.sendKeyboard(parseInt(process.env.COSMIC_FORCE_CHAT || ""), msg, keyboard, 17);
             else
-                yield this.sendMessage(config.cosmicForceChat, msg, 17);
+                yield this.sendMessage(parseInt(process.env.COSMIC_FORCE_CHAT || ""), msg, 17);
         });
         this.notifyAdmin = (msg) => __awaiter(this, void 0, void 0, function* () {
-            yield this.queueMessage(config.masterChat, msg);
+            yield this.queueMessage(parseInt(process.env.MASTER_CHAT || ""), msg);
         });
         this.notify = (msg) => __awaiter(this, void 0, void 0, function* () {
-            yield this.queueMessage(config.noticeChannel, msg);
+            yield this.queueMessage(parseInt(process.env.NOTICE_CHAT || ""), msg);
         });
         this.notifyAdmins = (msg, keyboard) => __awaiter(this, void 0, void 0, function* () {
             if (keyboard)
-                yield this.sendKeyboard(config.adminChat, msg, keyboard);
+                yield this.sendKeyboard(parseInt(process.env.ADMIN_CHAT || ""), msg, keyboard);
             else
-                yield this.queueMessage(config.adminChat, msg);
+                yield this.queueMessage(parseInt(process.env.ADMIN_CHAT || ""), msg);
         });
         this.broadcast = (channels, message) => __awaiter(this, void 0, void 0, function* () {
             yield this.notifyAdmin(`Starting broadcast to ${channels.length} chats`);
@@ -329,7 +327,7 @@ class TelegramBot {
             }
             if (body.message || body.callback_query) {
                 const from = this.toDomainUser(body.message ? body.message.from : body.callback_query.from);
-                if (from.id != config.masterChat && (yield queue_1.default.get("pause")) === "true")
+                if (from.id != parseInt(process.env.MASTER_CHAT || "") && (yield queue_1.default.get("pause")) === "true")
                     return { messageType: main_1.MessageType.Ignore };
                 if (BANNED_TELEGRAM_USERS.indexOf(from.id) >= 0) {
                     return { messageType: main_1.MessageType.Ignore };
@@ -402,7 +400,7 @@ class TelegramBot {
         this.init();
     }
 }
-const bot = new TelegramBot(TOKEN);
+const bot = new TelegramBot(process.env.TELEGRAM_TOKEN);
 messageQueue.process(({ data }) => bot.sendMessage(data.channel, data.message));
 exports.default = bot;
 //# sourceMappingURL=telegram.js.map

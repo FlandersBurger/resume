@@ -6,12 +6,14 @@ import { ICallbackData } from "./callbacks";
 import i18n from "@root/i18n";
 import { confirmBanListKeyboard } from "./keyboards";
 import bot from "@root/connections/telegram";
-const config = require("@config");
 
 const cache: { [key: string]: number } = {};
 
 export const initiateBan = async (game: IGame, callbackQuery: ICallbackData) => {
-  if (game.chat_id !== config.groupChat || (await bot.checkAdmin(game.chat_id, callbackQuery.from.id))) {
+  if (
+    game.chat_id !== parseInt(process.env.GROUP_CHAT || "") ||
+    (await bot.checkAdmin(game.chat_id, callbackQuery.from.id))
+  ) {
     const foundList = await List.findOne({ _id: callbackQuery.data }).exec();
     if (!foundList) {
       return bot.queueMessage(game.chat_id, i18n(game.settings.language, "warnings.unfoundList"));

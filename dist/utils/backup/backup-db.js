@@ -8,11 +8,11 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
+const { mongoDBs } = require("../../db");
 const fs = require("fs");
 const moment = require("moment");
 const exec = require("child_process").exec;
-const config = require("../../config");
-const masterDB = config.mongoDBs.find((db) => db.name === "master");
+const masterDB = mongoDBs.find((db) => db.name === "master");
 // Auto backup script
 const backup = () => __awaiter(void 0, void 0, void 0, function* () {
     const newBackupPath = `/var/database-backup/mongodump-${moment().format("DD-MMM-YYYY")}`;

@@ -1,10 +1,9 @@
 const request = require("request-promise");
-const config = require("@config");
 
 exports.getMusicVideo = async (query, artist) => {
   const youtubeDB = await request(
     `https://www.googleapis.com/youtube/v3/search?key=${
-      config.tokens.youtubeapi
+      process.env.YOUTUBE_TOKEN
     }&order=relevance&videoDefinition=high&type=video&maxResults=1&part=snippet&q=${artist}+VEVO+${encodeURIComponent(
       query.replace(" ", "+")
     )}`

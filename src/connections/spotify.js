@@ -1,13 +1,13 @@
 const moment = require("moment");
 const _ = require("underscore");
-const config = require("@config");
+
 const request = require("request-promise");
 
 module.exports = function () {
   const api = this;
 
   api.init = async () => {
-    const token = Buffer.from(`${config.tokens.spotifyapi.id}:${config.tokens.spotifyapi.secret}`);
+    const token = Buffer.from(process.env.SPOTIFY_TOKEN);
     const options = {
       method: "POST",
       url: "https://accounts.spotify.com/api/token",

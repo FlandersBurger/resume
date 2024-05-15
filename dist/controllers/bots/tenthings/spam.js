@@ -5,7 +5,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.checkSpam = void 0;
 const moment_1 = __importDefault(require("moment"));
-const config = require("../../../config");
 const telegram_1 = __importDefault(require("../../../connections/telegram"));
 const cache = {};
 const checkSpam = (body) => {
@@ -35,7 +34,7 @@ const checkSpam = (body) => {
             cache[from].count++;
             if (cache[from].count === 35) {
                 telegram_1.default.exportChatInviteLink(chat).then((url) => {
-                    telegram_1.default.notifyAdmin(`Possible spammer: ${name} (${from}) in chat ${chat} ${chat == config.groupChat ? " - The main chat!" : ""}\n\n${body.message}\n\nURL: ${url ? url : "N/A"}`);
+                    telegram_1.default.notifyAdmin(`Possible spammer: ${name} (${from}) in chat ${chat} ${chat == parseInt(process.env.GROUP_CHAT || "") ? " - The main chat!" : ""}\n\n${body.message}\n\nURL: ${url ? url : "N/A"}`);
                 });
                 /*
                         } else if (cache[from].count % 10 === 0) {

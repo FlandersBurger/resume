@@ -17,7 +17,6 @@ const express_1 = require("express");
 const moment_1 = __importDefault(require("moment"));
 const index_1 = require("../../../models/index");
 const maingame_1 = require("./maingame");
-const config = require("../../../config");
 const telegram_1 = __importDefault(require("../../../connections/telegram"));
 const i18n_1 = __importDefault(require("../../../i18n"));
 const queue_1 = require("./queue");
@@ -62,7 +61,7 @@ exports.tenthingsBotRoute = (0, express_1.Router)();
   );
 */
 /*
-  bot.getChatMember(config.groupChat, config.masterChat)
+  bot.getChatMember(parseInt(process.env.GROUP_CHAT || ""), parseInt(process.env.MASTER_CHAT || ""))
   .then(function(present) {
     console.log(present);
   });*/
@@ -71,8 +70,8 @@ if (process.env.NODE_ENV === "production") {
 }
 //bot.queueMessage('-1001394022777', "test<a href=\'https://upload.wikimedia.org/wikipedia/commons/thumb/8/89/Regular_Hexagon_Inscribed_in_a_Circle.gif/360px-Regular_Hexagon_Inscribed_in_a_Circle.gif\'>&#8204;</a>\nsome other stuff")
 //var url = 'https://upload.wikimedia.org/wikipedia/commons/d/d8/Olympique_Marseille_logo.svg';
-//bot.queueMessage(config.masterChat, "test<a href=\'" + url + "\'>&#8204;</a>\nsome other stuff");
-//bot.queueMessage(config.masterChat, JSON.stringify(msg));
+//bot.queueMessage(parseInt(process.env.MASTER_CHAT || ""), "test<a href=\'" + url + "\'>&#8204;</a>\nsome other stuff");
+//bot.queueMessage(parseInt(process.env.MASTER_CHAT || ""), JSON.stringify(msg));
 //The Group: '5b6361dcbd0ff6645df5f225'  '-1001394022777'
 /*
 bot.exportChatInviteLink('-1001394022777').then(function(chat) {
@@ -153,7 +152,7 @@ exports.tenthingsBotRoute.post("/", (req, res) => __awaiter(void 0, void 0, void
     }
 }));
 exports.tenthingsBotRoute.get("/", (req, res) => {
-    if (req.query["hub.verify_token"] === config.tokens.facebook.tenthings) {
+    if (req.query["hub.verify_token"] === process.env.FACEBOOK_TOKEN) {
         res.status(200).send(req.query["hub.challenge"]);
     }
     else {

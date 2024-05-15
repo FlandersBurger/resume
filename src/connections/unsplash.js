@@ -1,10 +1,9 @@
 const axios = require("axios").default;
-const config = require("@config");
 
 exports.getUnsplashImage = async (query) => {
   try {
     const unsplashDB = await axios.get(
-      `https://api.unsplash.com/search/photos?client_id=${config.tokens.unsplashapi.key}&query=${encodeURIComponent(
+      `https://api.unsplash.com/search/photos?client_id=${process.env.UNSPLASH_KEY}&query=${encodeURIComponent(
         query.replace(" ", "+")
       )}`
     );

@@ -20,7 +20,6 @@ const find_1 = __importDefault(require("lodash/find"));
 const moment_1 = __importDefault(require("moment"));
 const messages_1 = require("./messages");
 const lists_1 = require("./lists");
-const config = require("../../../config");
 const i18n_1 = __importDefault(require("../../../i18n"));
 const categories_1 = __importDefault(require("./categories"));
 const emojis_1 = __importDefault(require("./emojis"));
@@ -137,7 +136,7 @@ exports.default = (callbackQuery) => __awaiter(void 0, void 0, void 0, function*
             (0, stats_1.getScores)(callbackQuery.chatId, callbackQuery.data);
             break;
         case CallbackDataType.Category:
-            if (callbackQuery.chatId != config.groupChat) {
+            if (callbackQuery.chatId != parseInt(process.env.GROUP_CHAT || "")) {
                 if (yield telegram_1.default.checkAdmin(callbackQuery.chatId, callbackQuery.from.id)) {
                     game = yield index_1.Game.findOne({ chat_id: callbackQuery.chatId })
                         .select("chat_id disabledCategories settings")
@@ -167,7 +166,7 @@ exports.default = (callbackQuery) => __awaiter(void 0, void 0, void 0, function*
             }
             break;
         case CallbackDataType.Setting:
-            if (callbackQuery.chatId != config.masterChat) {
+            if (callbackQuery.chatId != parseInt(process.env.MASTER_CHAT || "")) {
                 if (yield telegram_1.default.checkAdmin(callbackQuery.chatId, callbackQuery.from.id)) {
                     game = yield index_1.Game.findOne({ chat_id: callbackQuery.chatId }).select("chat_id settings").exec();
                     if (!game || !callbackQuery.id)
@@ -237,7 +236,7 @@ exports.default = (callbackQuery) => __awaiter(void 0, void 0, void 0, function*
             }
             break;
         case CallbackDataType.Pick:
-            if (callbackQuery.chatId === config.adminChat) {
+            if (callbackQuery.chatId === parseInt(process.env.ADMIN_CHAT || "")) {
                 const list = yield index_1.List.findOne({ _id: callbackQuery.data })
                     .populate("creator")
                     .exec();

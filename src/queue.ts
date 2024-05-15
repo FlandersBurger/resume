@@ -1,8 +1,7 @@
 import { createClient } from "redis";
 
-const config = require("@config");
-const url = process.env.REDISTOGO_URL || "redis://localhost:" + config.redis.port;
-const client = createClient({ url, password: config.redis.password });
+const url = process.env.REDISTOGO_URL || "redis://localhost:" + process.env.REDIS_PORT;
+const client = createClient({ url, password: process.env.REDIS_PASSWORD });
 
 export const redisConnect = async () => {
   /*

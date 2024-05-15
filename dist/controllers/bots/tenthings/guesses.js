@@ -25,12 +25,11 @@ const maingame_1 = require("./maingame");
 const minigame_1 = require("./minigame");
 const tinygame_1 = require("./tinygame");
 const players_1 = require("./players");
-const config = require("../../../config");
 const guessQueue = new bull_1.default("processGuess", {
     redis: {
-        port: config.redis.port,
+        port: parseInt(process.env.REDIS_PORT || "6379"),
         host: "localhost",
-        password: config.redis.password,
+        password: process.env.REDIS_PASSWORD,
     },
 });
 guessQueue.on("completed", function (job) {

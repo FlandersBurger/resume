@@ -10,12 +10,11 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 const moment = require("moment");
 const _ = require("underscore");
-const config = require("../config");
 const request = require("request-promise");
 module.exports = function () {
     const api = this;
     api.init = () => __awaiter(this, void 0, void 0, function* () {
-        const token = Buffer.from(`${config.tokens.spotifyapi.id}:${config.tokens.spotifyapi.secret}`);
+        const token = Buffer.from(process.env.SPOTIFY_TOKEN);
         const options = {
             method: "POST",
             url: "https://accounts.spotify.com/api/token",

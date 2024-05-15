@@ -10,14 +10,13 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 const axios = require("axios").default;
 const parseString = require("xml2js").parseStringPromise;
-const config = require("../config");
 exports.getAuthor = (author) => __awaiter(void 0, void 0, void 0, function* () {
-    const goodreadsAuthor = yield axios.get(`https://www.goodreads.com/api/author_url/${author}?key=${config.tokens.goodreadsapi}`);
+    const goodreadsAuthor = yield axios.get(`https://www.goodreads.com/api/author_url/${author}?key=${process.env.GOODREADS_TOKEN}`);
     const parsedAuthorXML = yield parseString(goodreadsAuthor.data);
     return parsedAuthorXML.GoodreadsResponse.author[0].$.id;
 });
 exports.getBookCover = (query, author) => __awaiter(void 0, void 0, void 0, function* () {
-    const goodreadsDB = yield axios.get(`https://www.goodreads.com/search.xml?key=${config.tokens.goodreadsapi}&q=${encodeURIComponent(query)}&search[field]=title`);
+    const goodreadsDB = yield axios.get(`https://www.goodreads.com/search.xml?key=${process.env.GOODREADS_TOKEN}&q=${encodeURIComponent(query)}&search[field]=title`);
     try {
         const parsedXML = yield parseString(goodreadsDB.data);
         const mostRatedWork = parsedXML.GoodreadsResponse.search[0].results[0].work

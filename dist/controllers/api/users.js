@@ -17,7 +17,6 @@ const express_1 = require("express");
 const bcryptjs_1 = __importDefault(require("bcryptjs"));
 const jwt_simple_1 = __importDefault(require("jwt-simple"));
 const admin = require("firebase-admin");
-const config = require("../../config");
 const index_1 = require("../../models/index");
 exports.usersRoute = (0, express_1.Router)();
 exports.usersRoute.get("/", function (_, res) {
@@ -81,12 +80,12 @@ exports.usersRoute.post("/authenticate", (req, res) => __awaiter(void 0, void 0,
         });
         yield newUser.save();
         console.log(user.username + " created");
-        const token = jwt_simple_1.default.encode({ userid: user.id }, config.secret);
+        const token = jwt_simple_1.default.encode({ userid: user.id }, process.env.SECRET);
         res.json(token);
     }
     else {
         console.log(foundUser.username + " authenticated");
-        const token = jwt_simple_1.default.encode({ userid: foundUser.id }, config.secret);
+        const token = jwt_simple_1.default.encode({ userid: foundUser.id }, process.env.SECRET);
         res.json(token);
     }
 }));
@@ -100,7 +99,7 @@ exports.usersRoute.get("/:id/login", (req, res) => __awaiter(void 0, void 0, voi
     }
     else {
         console.log(foundUser.username + " logged in");
-        const token = jwt_simple_1.default.encode({ userid: foundUser.id }, config.secret);
+        const token = jwt_simple_1.default.encode({ userid: foundUser.id }, process.env.SECRET);
         res.json(token);
     }
 }));

@@ -11,9 +11,8 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.subscribe = exports.publish = exports.redisConnect = void 0;
 const redis_1 = require("redis");
-const config = require("./config.js");
-const url = process.env.REDISTOGO_URL || "redis://localhost:" + config.redis.port;
-const client = (0, redis_1.createClient)({ url, password: config.redis.password });
+const url = process.env.REDISTOGO_URL || "redis://localhost:" + process.env.REDIS_PORT;
+const client = (0, redis_1.createClient)({ url, password: process.env.REDIS_PASSWORD });
 const redisConnect = () => __awaiter(void 0, void 0, void 0, function* () {
     /*
     const client = process.env.NODE_ENV === 'development' ? redis.createClient({url}) : redis.createClient({

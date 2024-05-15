@@ -10,7 +10,7 @@ import { processHint } from "./hints";
 import { queueGuess } from "./guesses";
 import { getRandomList, searchList } from "./lists";
 import { IList } from "@models/tenthings/list";
-const config = require("@config");
+
 import i18n from "@root/i18n";
 
 import { getPlayer } from "./players";
@@ -55,7 +55,7 @@ export const evaluate = async (msg: IMessage, game: HydratedDocument<IGame>, isN
     console.error("msg without a first_name?");
     console.error(msg);
     return;
-  } else if (msg.chatId === config.adminChat && msg.command) {
+  } else if (msg.chatId === parseInt(process.env.ADMIN_CHAT || "") && msg.command) {
     //Admin group chat
     if (!["/search", "/stats", "/typo", "/bug", "/feature", "/suggest"].includes(msg.command)) {
       return;
@@ -185,7 +185,9 @@ export const evaluate = async (msg: IMessage, game: HydratedDocument<IGame>, isN
             const keyboard = listsKeyboard(foundLists);
             bot.sendKeyboard(
               game.chat_id,
-              `<b>Which list would you like to ${msg.chatId === config.adminChat ? "curate" : "queue"}?</b>`,
+              `<b>Which list would you like to ${
+                msg.chatId === parseInt(process.env.ADMIN_CHAT || "") ? "curate" : "queue"
+              }?</b>`,
               keyboard
             );
           } else {
@@ -234,7 +236,7 @@ export const evaluate = async (msg: IMessage, game: HydratedDocument<IGame>, isN
         processHint(game, player, GameType.TINYGAME);
         break;
       case "/notify":
-        if (msg.chatId === config.masterChat) {
+        if (msg.chatId === parseInt(process.env.MASTER_CHAT || "")) {
           Game.find({ enabled: true })
             .select("chat_id")
             .then((games) => {
@@ -247,7 +249,7 @@ export const evaluate = async (msg: IMessage, game: HydratedDocument<IGame>, isN
         break;
       /*
     case '/pause':
-      if (msg.chatId === config.masterChat) {
+      if (msg.chatId === parseInt(process.env.MASTER_CHAT || "")) {
         redis.get('pause').then(value => {
           const pause = value === 'true';
           bot.notifyAdmin(`Pause = ${!pause}`);
@@ -282,7 +284,7 @@ export const evaluate = async (msg: IMessage, game: HydratedDocument<IGame>, isN
         break;
       case "/categorias":
       case "/categories":
-        if (game.chat_id != config.groupChat) {
+        if (game.chat_id != parseInt(process.env.GROUP_CHAT || "")) {
           if (await bot.checkAdmin(game.chat_id, msg.from.id)) {
             bot.sendKeyboard(
               game.chat_id,
@@ -296,7 +298,7 @@ export const evaluate = async (msg: IMessage, game: HydratedDocument<IGame>, isN
         break;
       case "/confi":
       case "/settings":
-        if (game.chat_id != config.groupChat) {
+        if (game.chat_id != parseInt(process.env.GROUP_CHAT || "")) {
           if (await bot.checkAdmin(game.chat_id, msg.from.id)) {
             bot.sendKeyboard(
               game.chat_id,
@@ -312,7 +314,7 @@ export const evaluate = async (msg: IMessage, game: HydratedDocument<IGame>, isN
         }
         break;
       case "/check":
-        if (msg.from.id === config.masterChat) {
+        if (msg.from.id === parseInt(process.env.MASTER_CHAT || "")) {
           bot.queueMessage(msg.chatId, "Yes, master. Let me send you what you need!");
           bot.notifyAdmin(
             `Chat id: ${msg.chatId}\nGame _id: ${game._id}\nSettings:\n${JSON.stringify(game.settings)}\nList: ${
@@ -324,7 +326,7 @@ export const evaluate = async (msg: IMessage, game: HydratedDocument<IGame>, isN
         }
         break;
       case "/flush":
-        if (msg.from.id === config.masterChat) {
+        if (msg.from.id === parseInt(process.env.MASTER_CHAT || "")) {
           game.list = (await getRandomList()) as LeanDocument<IList>;
           game.pickedLists = [];
           //game.playedLists = [];
@@ -333,7 +335,7 @@ export const evaluate = async (msg: IMessage, game: HydratedDocument<IGame>, isN
         }
         break;
       case "/minigames":
-        if (msg.from.id === config.masterChat) {
+        if (msg.from.id === parseInt(process.env.MASTER_CHAT || "")) {
           createMinigames();
         }
         break;
@@ -372,7 +374,7 @@ export const evaluate = async (msg: IMessage, game: HydratedDocument<IGame>, isN
   } else {
     if (game.lastPlayDate <= moment().subtract(30, "days").toDate()) {
       deactivate(game);
-    } else if (game.enabled && msg.chatId != config.adminChat) {
+    } else if (game.enabled && msg.chatId != parseInt(process.env.ADMIN_CHAT || "")) {
       queueGuess(game, msg);
     }
   }

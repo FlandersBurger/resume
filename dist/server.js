@@ -13,6 +13,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 require("module-alias/register");
+require("dotenv/config");
 const express_1 = __importDefault(require("express"));
 const body_parser_1 = require("body-parser");
 const firebase_admin_1 = __importDefault(require("firebase-admin"));
@@ -34,7 +35,6 @@ const players_1 = require("./controllers/api/tenthings/players");
 const users_1 = require("./controllers/api/users");
 const main_1 = require("./controllers/bots/tenthings/main");
 const queue_1 = require("./queue");
-require("dotenv").config();
 const serviceAccount = require("../keys/resume-172205-firebase-adminsdk-r34t7-0028c702be.json");
 firebase_admin_1.default.initializeApp({
     credential: firebase_admin_1.default.credential.cert(serviceAccount),

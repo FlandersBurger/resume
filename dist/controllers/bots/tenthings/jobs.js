@@ -246,7 +246,7 @@ const updateDailyStats = (games, totalPlayers, uniquePlayers) => __awaiter(void 
       qs: {minRating: '7'},
       headers: {
         'X-RapidAPI-Host': 'webknox-jokes.p.rapidapi.com' ,
-        'X-RapidAPI-Key': config.tokens.rapidapi
+        'X-RapidAPI-Key': process.env.RAPID_API_TOKEN
       }
     }, (err, response, body) => {
       const joke = JSON.parse(body);
@@ -329,7 +329,7 @@ const sendUpdatedLists = () => {
         }
     });
 };
-//bot.sendPhoto(config.masterChat, 'https://m.media-amazon.com/images/M/MV5BNmE1OWI2ZGItMDUyOS00MmU5LWE0MzUtYTQ0YzA1YTE5MGYxXkEyXkFqcGdeQXVyMDM5ODIyNw@@._V1._SX40_CR0,0,40,54_.jpg')
+//bot.sendPhoto(parseInt(process.env.MASTER_CHAT || ""), 'https://m.media-amazon.com/images/M/MV5BNmE1OWI2ZGItMDUyOS00MmU5LWE0MzUtYTQ0YzA1YTE5MGYxXkEyXkFqcGdeQXVyMDM5ODIyNw@@._V1._SX40_CR0,0,40,54_.jpg')
 //var dailyScore = schedule.scheduleJob('*/10 * * * * *', function() {
 //resetDailyScore()
 /*

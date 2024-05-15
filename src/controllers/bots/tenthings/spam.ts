@@ -1,7 +1,6 @@
 import moment from "moment";
 import { IMessage } from "./messages";
 
-const config = require("@config");
 import bot from "@root/connections/telegram";
 
 const cache: {
@@ -43,7 +42,7 @@ export const checkSpam = (body: {
         bot.exportChatInviteLink(chat).then((url: string | undefined) => {
           bot.notifyAdmin(
             `Possible spammer: ${name} (${from}) in chat ${chat} ${
-              chat == config.groupChat ? " - The main chat!" : ""
+              chat == parseInt(process.env.GROUP_CHAT || "") ? " - The main chat!" : ""
             }\n\n${body.message}\n\nURL: ${url ? url : "N/A"}`
           );
         });

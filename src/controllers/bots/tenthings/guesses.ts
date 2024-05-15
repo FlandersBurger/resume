@@ -15,8 +15,6 @@ import { checkTinygame } from "./tinygame";
 import { getPlayer } from "./players";
 import { IMessage } from "./messages";
 
-const config = require("@config");
-
 export interface IGuess {
   msg: IMessage;
   game: number;
@@ -31,9 +29,9 @@ export interface IGuess {
 
 const guessQueue = new Queue("processGuess", {
   redis: {
-    port: config.redis.port,
+    port: parseInt(process.env.REDIS_PORT || "6379"),
     host: "localhost",
-    password: config.redis.password,
+    password: process.env.REDIS_PASSWORD,
   },
 });
 

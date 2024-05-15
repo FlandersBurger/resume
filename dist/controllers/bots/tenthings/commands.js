@@ -23,7 +23,6 @@ const tinygame_1 = require("./tinygame");
 const hints_1 = require("./hints");
 const guesses_1 = require("./guesses");
 const lists_1 = require("./lists");
-const config = require("../../../config");
 const i18n_1 = __importDefault(require("../../../i18n"));
 const players_1 = require("./players");
 const queue_1 = require("./queue");
@@ -66,7 +65,7 @@ const evaluate = (msg, game, isNew) => __awaiter(void 0, void 0, void 0, functio
         console.error(msg);
         return;
     }
-    else if (msg.chatId === config.adminChat && msg.command) {
+    else if (msg.chatId === parseInt(process.env.ADMIN_CHAT || "") && msg.command) {
         //Admin group chat
         if (!["/search", "/stats", "/typo", "/bug", "/feature", "/suggest"].includes(msg.command)) {
             return;
@@ -181,7 +180,7 @@ const evaluate = (msg, game, isNew) => __awaiter(void 0, void 0, void 0, functio
                     const foundLists = yield (0, lists_1.searchList)(search, game);
                     if (foundLists.length > 0) {
                         const keyboard = (0, keyboards_1.listsKeyboard)(foundLists);
-                        telegram_1.default.sendKeyboard(game.chat_id, `<b>Which list would you like to ${msg.chatId === config.adminChat ? "curate" : "queue"}?</b>`, keyboard);
+                        telegram_1.default.sendKeyboard(game.chat_id, `<b>Which list would you like to ${msg.chatId === parseInt(process.env.ADMIN_CHAT || "") ? "curate" : "queue"}?</b>`, keyboard);
                     }
                     else {
                         telegram_1.default.queueMessage(game.chat_id, `I didn't find any corresponding lists for <b>"${search}"</b>, ${player.first_name}.\nSimpler queries return better results.`);
@@ -225,7 +224,7 @@ const evaluate = (msg, game, isNew) => __awaiter(void 0, void 0, void 0, functio
                 (0, hints_1.processHint)(game, player, game_1.GameType.TINYGAME);
                 break;
             case "/notify":
-                if (msg.chatId === config.masterChat) {
+                if (msg.chatId === parseInt(process.env.MASTER_CHAT || "")) {
                     index_1.Game.find({ enabled: true })
                         .select("chat_id")
                         .then((games) => {
@@ -235,7 +234,7 @@ const evaluate = (msg, game, isNew) => __awaiter(void 0, void 0, void 0, functio
                 break;
             /*
           case '/pause':
-            if (msg.chatId === config.masterChat) {
+            if (msg.chatId === parseInt(process.env.MASTER_CHAT || "")) {
               redis.get('pause').then(value => {
                 const pause = value === 'true';
                 bot.notifyAdmin(`Pause = ${!pause}`);
@@ -272,7 +271,7 @@ const evaluate = (msg, game, isNew) => __awaiter(void 0, void 0, void 0, functio
                 break;
             case "/categorias":
             case "/categories":
-                if (game.chat_id != config.groupChat) {
+                if (game.chat_id != parseInt(process.env.GROUP_CHAT || "")) {
                     if (yield telegram_1.default.checkAdmin(game.chat_id, msg.from.id)) {
                         telegram_1.default.sendKeyboard(game.chat_id, `<b>${(0, i18n_1.default)(game.settings.language, "category")}</b>`, (0, keyboards_1.categoriesKeyboard)(game));
                     }
@@ -283,7 +282,7 @@ const evaluate = (msg, game, isNew) => __awaiter(void 0, void 0, void 0, functio
                 break;
             case "/confi":
             case "/settings":
-                if (game.chat_id != config.groupChat) {
+                if (game.chat_id != parseInt(process.env.GROUP_CHAT || "")) {
                     if (yield telegram_1.default.checkAdmin(game.chat_id, msg.from.id)) {
                         telegram_1.default.sendKeyboard(game.chat_id, `<b>${(0, i18n_1.default)(game.settings.language, "settings")}</b>`, (0, keyboards_1.settingsKeyboard)(game));
                     }
@@ -293,13 +292,13 @@ const evaluate = (msg, game, isNew) => __awaiter(void 0, void 0, void 0, functio
                 }
                 break;
             case "/check":
-                if (msg.from.id === config.masterChat) {
+                if (msg.from.id === parseInt(process.env.MASTER_CHAT || "")) {
                     telegram_1.default.queueMessage(msg.chatId, "Yes, master. Let me send you what you need!");
                     telegram_1.default.notifyAdmin(`Chat id: ${msg.chatId}\nGame _id: ${game._id}\nSettings:\n${JSON.stringify(game.settings)}\nList: ${game.list.name}\nMinigame: ${game.minigame.answer}\nTinygame: ${game.tinygame.answer}\nhttps://belgocanadian.com/tenthings/${game.chat_id}`);
                 }
                 break;
             case "/flush":
-                if (msg.from.id === config.masterChat) {
+                if (msg.from.id === parseInt(process.env.MASTER_CHAT || "")) {
                     game.list = (yield (0, lists_1.getRandomList)());
                     game.pickedLists = [];
                     //game.playedLists = [];
@@ -308,7 +307,7 @@ const evaluate = (msg, game, isNew) => __awaiter(void 0, void 0, void 0, functio
                 }
                 break;
             case "/minigames":
-                if (msg.from.id === config.masterChat) {
+                if (msg.from.id === parseInt(process.env.MASTER_CHAT || "")) {
                     (0, minigame_1.createMinigames)();
                 }
                 break;
@@ -350,7 +349,7 @@ const evaluate = (msg, game, isNew) => __awaiter(void 0, void 0, void 0, functio
         if (game.lastPlayDate <= (0, moment_1.default)().subtract(30, "days").toDate()) {
             (0, maingame_1.deactivate)(game);
         }
-        else if (game.enabled && msg.chatId != config.adminChat) {
+        else if (game.enabled && msg.chatId != parseInt(process.env.ADMIN_CHAT || "")) {
             (0, guesses_1.queueGuess)(game, msg);
         }
     }

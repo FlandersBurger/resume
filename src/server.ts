@@ -1,4 +1,5 @@
 require("module-alias/register");
+import "dotenv/config";
 import express from "express";
 import { json } from "body-parser";
 import admin from "firebase-admin";
@@ -21,8 +22,6 @@ import { tenthingsPlayersRoute } from "@api/tenthings/players";
 import { usersRoute } from "@api/users";
 import { tenthingsBotRoute } from "@tenthings/main";
 import { redisConnect } from "@root/queue";
-
-require("dotenv").config();
 
 const serviceAccount = require("../keys/resume-172205-firebase-adminsdk-r34t7-0028c702be.json");
 

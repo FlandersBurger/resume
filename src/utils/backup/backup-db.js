@@ -1,9 +1,9 @@
+const { mongoDBs } = require("@root/db");
 const fs = require("fs");
 const moment = require("moment");
 const exec = require("child_process").exec;
-const config = require("@config");
 
-const masterDB = config.mongoDBs.find((db) => db.name === "master");
+const masterDB = mongoDBs.find((db) => db.name === "master");
 
 // Auto backup script
 const backup = async () => {
