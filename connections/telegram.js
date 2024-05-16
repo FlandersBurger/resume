@@ -86,10 +86,10 @@ function TelegramBot() {
       bot
         .exportChatInviteLink(channel)
         .then((url) => {
-          bot.notifyAdmin(`Send Fail to channel: ${channel} -> chat: ${url}`);
+          bot.notifyAdmin(`Failed to send '${message}' to channel: ${channel} -> chat: ${url}`);
         })
-        .catch((error) => {
-          bot.notifyAdmin(`Send Fail to channel: ${channel}`);
+        .catch(() => {
+          bot.notifyAdmin(`Failed to send '${message}' to channel: ${channel}`);
         });
       console.error(error.response.data);
     });
@@ -167,7 +167,7 @@ function TelegramBot() {
       return response.data.result;
     } catch (error) {
       console.error("Get Invite Link Fail");
-      console.error(error);
+      console.error(error.response.data);
     }
   };
 
