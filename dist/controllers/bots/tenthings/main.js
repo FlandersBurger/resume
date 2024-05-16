@@ -65,9 +65,6 @@ exports.tenthingsBotRoute = (0, express_1.Router)();
   .then(function(present) {
     console.log(present);
   });*/
-if (process.env.NODE_ENV === "production") {
-    telegram_1.default.notifyAdmin("<b>Started Ten Things</b>");
-}
 //bot.queueMessage('-1001394022777', "test<a href=\'https://upload.wikimedia.org/wikipedia/commons/thumb/8/89/Regular_Hexagon_Inscribed_in_a_Circle.gif/360px-Regular_Hexagon_Inscribed_in_a_Circle.gif\'>&#8204;</a>\nsome other stuff")
 //var url = 'https://upload.wikimedia.org/wikipedia/commons/d/d8/Olympique_Marseille_logo.svg';
 //bot.queueMessage(parseInt(process.env.MASTER_CHAT || ""), "test<a href=\'" + url + "\'>&#8204;</a>\nsome other stuff");

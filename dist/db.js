@@ -13,6 +13,12 @@ exports.mongoDBs = void 0;
 const mongoose_1 = require("mongoose");
 const tunnel_ssh_1 = require("tunnel-ssh");
 const connections = {};
+const connect = (db) => {
+    connections[db.name] = (0, mongoose_1.createConnection)(db.url, {});
+    connections[db.name].on("open", () => {
+        console.log(`DB ${db.name} connected`);
+    });
+};
 exports.mongoDBs = [
     Object.assign({ name: "backup", url: process.env.MONGO_BACKUP_URL }, (process.env.MONGO_BACKUP_TUNNEL_HOST && {
         tunnel: {
@@ -31,12 +37,6 @@ exports.mongoDBs = [
         },
     })),
 ];
-const connect = (db) => {
-    connections[db.name] = (0, mongoose_1.createConnection)(db.url, {});
-    connections[db.name].on("open", () => {
-        console.log(`DB ${db.name} connected`);
-    });
-};
 exports.mongoDBs.forEach((db) => __awaiter(void 0, void 0, void 0, function* () {
     connect(db);
     if (db.tunnel) {

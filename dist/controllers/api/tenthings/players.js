@@ -19,10 +19,8 @@ exports.tenthingsPlayersRoute.get("/players/:id", (req, res) => __awaiter(void 0
     const player = yield index_1.Player.find({ id: req.params.id });
     res.json(player);
 }));
-// Player.find().then((players) =>
-//   players.forEach(function (d) {
-//     d.id = parseInt(d.id);
-//     d.save();
-//   })
-// );
+index_1.Player.find().then((players) => players.forEach(function (d) {
+    d.id = parseInt(d.id);
+    d.save();
+}));
 //# sourceMappingURL=players.js.map
