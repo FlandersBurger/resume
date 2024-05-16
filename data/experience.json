@@ -1,5 +1,13 @@
 [
   {
+    "company": "Autodesk",
+    "code": "autodesk",
+    "title": "Full Stack Developer",
+    "startDate": "2023-08-14",
+    "image": "autodesk.png",
+    "story": "After VINN collapsed as a startup I found myself looking for another challenging opportunity where I would be working with highly motivated people in a closely knit team. I found my place within the Construction Cloud team at Autodesk where work is being delivered to facilitate the construction process."
+  },
+  {
     "company": "VINN Automotive",
     "code": "vinn",
     "title": "Senior Developer",
@@ -9,35 +17,14 @@
     "projects": [
       {
         "name": "Private Car Sale",
-        "skills": [
-          "rails",
-          "react",
-          "git",
-          "js",
-          "html5",
-          "vscode",
-          "postgresql",
-          "cypress",
-          "rspec"
-        ],
+        "skills": ["rails", "react", "git", "js", "html5", "vscode", "postgresql", "cypress", "rspec"],
         "url": "https://vinnauto.com",
         "description": "Adding private sale functionality to the existing Ruby on Rail website. Developing front and back end functionality including making the necessary database changes. Added social media authentication through the Devise gem and set up the necessary permissions on Facebook and Google.",
         "tldr": "Enabled customers to login and sell their cars"
       },
       {
         "name": "Private Car Sale Communication",
-        "skills": [
-          "rails",
-          "react",
-          "git",
-          "js",
-          "html5",
-          "redis",
-          "vscode",
-          "ws",
-          "postgresql",
-          "cypress"
-        ],
+        "skills": ["rails", "react", "git", "js", "html5", "redis", "vscode", "ws", "postgresql", "cypress"],
         "url": "https://vinnauto.com",
         "description": "Added the ability for customers to put offers on user-listed cars and for them to communicate amongst each other via a websocket enabled chat. Added the functionality for users to report other users and for admin users to review reported chatters. And finally added notification functionality to the app so any parties involved would get properly notified.",
         "tldr": "Enabled customers to chat about listed cars"
@@ -50,18 +37,7 @@
       },
       {
         "name": "Communication Media",
-        "skills": [
-          "rails",
-          "react",
-          "git",
-          "js",
-          "html5",
-          "redis",
-          "vscode",
-          "aws",
-          "postman",
-          "rspec"
-        ],
+        "skills": ["rails", "react", "git", "js", "html5", "redis", "vscode", "aws", "postman", "rspec"],
         "description": "Adding the ability for users to add images to texts and emails sent out to the customers in the internal CRM using AWS S3 to save the images and ensuring the images remained private. The images were sent via either SendGrid for emails or Twilio for texting. Both services had to have their APIs setup for the project to be successful. I finished the coding side of this project in 2 weeks.",
         "tldr": "Enabled employees to add images to texts and emails"
       }
@@ -135,36 +111,14 @@
     "projects": [
       {
         "name": "NPG Cloud",
-        "skills": [
-          "git",
-          "js",
-          "mongo",
-          "redis",
-          "atom",
-          "angular",
-          "node",
-          "bootstrap",
-          "ws",
-          "certification"
-        ],
+        "skills": ["git", "js", "mongo", "redis", "atom", "angular", "node", "bootstrap", "ws", "certification"],
         "url": "https://npgcloud.com",
         "description": "An HTML5 web application written from scratch in Atom to accomodate 2 aging name badge creation web apps: a discontinued java applet and Silverlight app. The app is used by big corporate clients (including Hudson Bay Company, Canadian Tire, Sprint, Lego, Philips, Bell, Virgin, Chartwell and many more. The server side uses Node for the API and general processing, Mongo as its [No-SQL] database, Redis for scalability, Gulp for building and distribution, Git as the repository and wkhtmltopdf for accurate PDF creation. The client side relies on Angular for the flow and feel of the app while Bootstrap and Font Awesome provide the look. I executed all steps of the project from concept to plan, development, QC, deployment and pitch to corporate customers.",
         "tldr": "Replaced Java Applet with Full-stack MEAN application"
       },
       {
         "name": "Design Studio",
-        "skills": [
-          "git",
-          "js",
-          "mongo",
-          "redis",
-          "atom",
-          "angular",
-          "node",
-          "bootstrap",
-          "ws",
-          "certification"
-        ],
+        "skills": ["git", "js", "mongo", "redis", "atom", "angular", "node", "bootstrap", "ws", "certification"],
         "url": "https://design.imprintplus.com/",
         "description": "An HTML5 web application based on NPG Cloud but embedded within the e-store. All aspects of the app were made by me. The technologies used are identical to NPG Cloud but the front end was completely revamped with the input of a UX designer and the backend communicates with the Magento e-store using Magento's API.",
         "tldr": "An e-store embedded name badge designs"
@@ -177,17 +131,7 @@
       },
       {
         "name": "CD-Less Delivery",
-        "skills": [
-          "sql",
-          "angular",
-          "node",
-          "sequelize",
-          "atom",
-          "git",
-          "js",
-          "bootstrap",
-          "certification"
-        ],
+        "skills": ["sql", "angular", "node", "sequelize", "atom", "git", "js", "bootstrap", "certification"],
         "url": "https://dnd.imprintplus.com",
         "description": "Due to CDs pretty much being obsolete nowadays, the aging C++ application flagship software needed to be adjusted so it could be delivered completely online. The problem was that most CDs had the customer's customized templates on it. I needed to devise a way for the production department to deliver the templates with a download. An outsourced vendor adjusted the C++ application itself to be able to communicate with an API (express + node) I developed. The API would take the serial number entered by the customer in the software and then translate that into which templates should be downloaded. This portion was fairly easy. However, our production department needed a way to tie the serial numbers to templates files for the customer. I built a custom interface (html5, angular, bootstrap) to facilitate the production process and so with a few clicks they could upload templates that were instantly available for the software to download. I further created and certified all MSI installers and created a download site for the user to get the software (link above).",
         "tldr": "Made customized CD software available online"
