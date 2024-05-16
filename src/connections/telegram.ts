@@ -106,7 +106,10 @@ class TelegramBot {
     let url = `${this.baseUrl}/sendMessage?chat_id=${channel}&disable_notification=true&parse_mode=html&text=${message}`;
     if (topic) url += `&message_thread_id=${topic}`;
     try {
-      axios.get(url);
+      //Do not await
+      axios.get(url).then((response) => {
+        console.log(response.data);
+      });
     } catch (error) {
       this.notifyAdmin(`Send Message to ${channel} Fail`);
       console.error(error);

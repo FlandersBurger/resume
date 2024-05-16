@@ -82,7 +82,10 @@ class TelegramBot {
             if (topic)
                 url += `&message_thread_id=${topic}`;
             try {
-                axios_1.default.get(url);
+                //Do not await
+                axios_1.default.get(url).then((response) => {
+                    console.log(response.data);
+                });
             }
             catch (error) {
                 this.notifyAdmin(`Send Message to ${channel} Fail`);
