@@ -82,12 +82,10 @@ function TelegramBot() {
     message = encodeURIComponent(message);
     let url = `${bot.baseUrl}/sendMessage?chat_id=${channel}&disable_notification=true&parse_mode=html&text=${message}`;
     if (topic) url += `&message_thread_id=${topic}`;
-    try {
-      axios.get(url);
-    } catch (error) {
+    axios.get(url).catch((error) => {
       console.error(`Send Fail to channel: ${channel}`);
       console.error(error.response.data);
-    }
+    });
   };
 
   bot.deleteMessage = async (channel, message_id) => {
@@ -104,7 +102,9 @@ function TelegramBot() {
     messageQueue.add("", { channel, message }, {});
   };
 
-  messageQueue.process(({ data }) => bot.sendMessage(data.channel, data.message));
+  messageQueue.process(({ data }) => {
+    bot.sendMessage(data.channel, data.message);
+  });
 
   //@ts-ignore
   bot.getQueue = async () => await messageQueue.count();
