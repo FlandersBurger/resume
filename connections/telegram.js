@@ -83,7 +83,14 @@ function TelegramBot() {
     let url = `${bot.baseUrl}/sendMessage?chat_id=${channel}&disable_notification=true&parse_mode=html&text=${message}`;
     if (topic) url += `&message_thread_id=${topic}`;
     axios.get(url).catch((error) => {
-      bot.notifyAdmin(`Send Fail to channel: ${channel}`);
+      bot
+        .exportChatInviteLink(channel)
+        .then((url) => {
+          bot.notifyAdmin(`Send Fail to channel: ${channel} -> chat: ${url}`);
+        })
+        .catch((error) => {
+          bot.notifyAdmin(`Send Fail to channel: ${channel}`);
+        });
       console.error(error.response.data);
     });
   };
