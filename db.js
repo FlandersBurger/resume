@@ -1,16 +1,16 @@
-const mongoose = require('mongoose');
-const tunnel = require('tunnel-ssh');
-const config = require('./config');
+const mongoose = require("mongoose");
+const tunnel = require("tunnel-ssh");
+const config = require("./config");
 const connections = {};
 
 const connect = (db) => {
   connections[db.name] = mongoose.createConnection(
     db.url,
     {
-      useCreateIndex: true,
-      useNewUrlParser: true,
-      useUnifiedTopology: true,
-      useFindAndModify: false,
+      // useCreateIndex: true,
+      // useNewUrlParser: true,
+      // useUnifiedTopology: true,
+      // useFindAndModify: false,
     },
     (err) => {
       if (err) return console.error(err);
