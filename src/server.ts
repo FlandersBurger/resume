@@ -1,5 +1,5 @@
 require("module-alias/register");
-import "dotenv/config";
+import "@root/env";
 import express from "express";
 import { json } from "body-parser";
 import admin from "firebase-admin";

@@ -1,6 +1,6 @@
 import { createClient } from "redis";
 
-const url = process.env.REDISTOGO_URL || "redis://localhost:" + process.env.REDIS_PORT;
+const url = process.env.REDISTOGO_URL || "redis://localhost:" + (process.env.REDIS_PORT || "6379");
 const client = createClient({ url, password: process.env.REDIS_PASSWORD });
 
 export const redisConnect = async () => {
