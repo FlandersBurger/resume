@@ -41,7 +41,7 @@ function TelegramBot() {
       if (!response || !response.data) return;
       Object.assign(bot, response.data.result);
     } catch (error) {
-      console.error(error);
+      console.error(error.response.data);
     }
   };
 
@@ -53,7 +53,7 @@ function TelegramBot() {
       return await axios.get(url);
     } catch (error) {
       console.error("Set Webhook Fail");
-      console.error(error);
+      console.error(error.response.data);
     }
   };
 
@@ -64,7 +64,7 @@ function TelegramBot() {
       return response.data.result;
     } catch (error) {
       console.error("Get Webhook Fail");
-      console.error(error);
+      console.error(error.response.data);
     }
   };
 
@@ -74,7 +74,7 @@ function TelegramBot() {
       return await axios.get(url);
     } catch (error) {
       console.error("Delete Webhook Fail");
-      console.error(error);
+      console.error(error.response.data);
     }
   };
 
@@ -105,7 +105,7 @@ function TelegramBot() {
       await axios.get(url);
     } catch (error) {
       console.error("Delete Message Fail");
-      console.error(error);
+      console.error(error.response.data);
     }
   };
 
@@ -129,7 +129,7 @@ function TelegramBot() {
       await axios.get(url);
     } catch (error) {
       console.error("Kick Fail");
-      console.error(error);
+      console.error(error.response.data);
     }
   };
 
@@ -190,7 +190,7 @@ function TelegramBot() {
       if (error.response.data.error_code === 400) {
         errors.chatNotFound(channel);
       } else {
-        console.error(error);
+        console.error(error.response.data);
       }
       return `Chat not found: ${channel} - ${error.response.data.error_code}`;
     }
@@ -208,7 +208,7 @@ function TelegramBot() {
       );
     } catch (error) {
       console.error("Get Chat Member Fail");
-      console.error(error);
+      console.error(error.response.data);
     }
   };
 
@@ -224,7 +224,7 @@ function TelegramBot() {
       );
     } catch (error) {
       console.error("Check Admin Fail");
-      console.error(error);
+      console.error(error.response.data);
     }
   };
 
@@ -237,7 +237,7 @@ function TelegramBot() {
       await axios.get(encodeURI(url));
     } catch (error) {
       console.error("Send Keyboard Fail");
-      console.error(error);
+      console.error(error.response.data);
     }
   };
 
@@ -247,7 +247,7 @@ function TelegramBot() {
       await axios.get(encodeURI(url));
     } catch (error) {
       console.error("Send Photo Fail");
-      console.error(error);
+      console.error(error.response.data);
     }
   };
 
@@ -267,7 +267,7 @@ function TelegramBot() {
       await axios.get(encodeURI(url));
     } catch (error) {
       console.error("Edit Keyboard Fail");
-      console.error(error);
+      console.error(error.response.data);
     }
   };
 
@@ -277,7 +277,7 @@ function TelegramBot() {
       await axios.get(encodeURI(url));
     } catch (error) {
       console.error("Answer Callback Fail");
-      console.error(error);
+      console.error(error.response.data);
     }
   };
 
@@ -326,7 +326,7 @@ function TelegramBot() {
       await axios.get(encodeURI(url));
     } catch (error) {
       console.error("Set Commands  Fail");
-      console.error(error);
+      console.error(error.response.data);
     }
   };
 }
