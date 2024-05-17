@@ -7,3 +7,11 @@ export const chatNotFound = async (chat_id: number) => {
   }
   console.error(`Inactive chat disabled: ${chat_id}`);
 };
+
+export const botMuted = async (chat_id: number) => {
+  const mutedGame = await Game.findOneAndUpdate({ chat_id }, { $set: { enabled: false } });
+  if (mutedGame) {
+    await Player.updateMany({ game: mutedGame._id }, { $set: { present: false } }, { multi: true });
+  }
+  console.error(`Muted game disabled: ${chat_id}`);
+};

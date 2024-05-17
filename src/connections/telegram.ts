@@ -3,7 +3,7 @@ import axios from "axios";
 import Queue, { Job } from "bull";
 import i18n from "@root/i18n";
 import redis from "@root/queue";
-import { chatNotFound } from "@tenthings/errors";
+import { chatNotFound, botMuted } from "@tenthings/errors";
 import { checkSpam } from "@tenthings/spam";
 import { MessageType } from "@tenthings/main";
 import { IMessageType } from "@tenthings/messages";
@@ -106,14 +106,18 @@ class TelegramBot {
     let url = `${this.baseUrl}/sendMessage?chat_id=${channel}&disable_notification=true&parse_mode=html&text=${message}`;
     if (topic) url += `&message_thread_id=${topic}`;
     axios.get(url).catch((error) => {
-      this.exportChatInviteLink(channel)
-        .then((url) => {
-          this.notifyAdmin(`Failed to send '${message}' to channel: ${channel} -> chat: ${url}`);
-        })
-        .catch(() => {
-          this.notifyAdmin(`Failed to send '${message}' to channel: ${channel}`);
-        });
-      console.error(error.response.data);
+      if (error.response.data.description === "Bad Request: not enough rights to send text messages to the chat") {
+        botMuted(channel);
+      } else {
+        this.exportChatInviteLink(channel)
+          .then((url) => {
+            this.notifyAdmin(`Failed to send '${message}' to channel: ${channel} -> chat: ${url}`);
+          })
+          .catch(() => {
+            this.notifyAdmin(`Failed to send '${message}' to channel: ${channel}`);
+          });
+        console.error(error.response.data);
+      }
     });
   };
 
