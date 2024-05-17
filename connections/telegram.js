@@ -83,7 +83,7 @@ function TelegramBot() {
     let url = `${bot.baseUrl}/sendMessage?chat_id=${channel}&disable_notification=true&parse_mode=html&text=${message}`;
     if (topic) url += `&message_thread_id=${topic}`;
     axios.get(url).catch((error) => {
-      if (error.respnse.data.error_code === 400) {
+      if (error.response.data.error_code === 400) {
         errors.botMuted(channel);
       } else {
         bot
