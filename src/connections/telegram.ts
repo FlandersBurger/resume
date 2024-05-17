@@ -105,12 +105,16 @@ class TelegramBot {
     message = encodeURIComponent(message);
     let url = `${this.baseUrl}/sendMessage?chat_id=${channel}&disable_notification=true&parse_mode=html&text=${message}`;
     if (topic) url += `&message_thread_id=${topic}`;
-    try {
-      axios.get(url);
-    } catch (error) {
-      this.notifyAdmin(`Send Message to ${channel} Fail`);
-      console.error(error);
-    }
+    axios.get(url).catch((error) => {
+      this.exportChatInviteLink(channel)
+        .then((url) => {
+          this.notifyAdmin(`Failed to send '${message}' to channel: ${channel} -> chat: ${url}`);
+        })
+        .catch(() => {
+          this.notifyAdmin(`Failed to send '${message}' to channel: ${channel}`);
+        });
+      console.error(error.response.data);
+    });
   };
 
   public deleteMessage = async (channel: number, message_id: string) => {
