@@ -89,10 +89,10 @@ function TelegramBot() {
         bot
           .exportChatInviteLink(channel)
           .then((url) => {
-            bot.notifyAdmin(`Failed to send '${message}' to channel: ${channel} -> chat: ${url}`);
+            bot.notifyAdmin(`Failed to send to channel: ${channel} -> chat: ${url}`);
           })
           .catch(() => {
-            bot.notifyAdmin(`Failed to send '${message}' to channel: ${channel}`);
+            bot.notifyAdmin(`Failed to send to channel: ${channel}`);
           });
         console.error(error.response.data);
       }
