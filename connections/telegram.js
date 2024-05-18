@@ -86,14 +86,6 @@ function TelegramBot() {
       if (error.response.data.description === "Bad Request: not enough rights to send text messages to the chat") {
         errors.botMuted(channel);
       } else {
-        bot
-          .exportChatInviteLink(channel)
-          .then((url) => {
-            bot.notifyAdmin(`Failed to send to channel: ${channel} -> chat: ${url}`);
-          })
-          .catch(() => {
-            bot.notifyAdmin(`Failed to send to channel: ${channel}`);
-          });
         console.error(error.response.data);
       }
     });
