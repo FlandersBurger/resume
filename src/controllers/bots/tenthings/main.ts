@@ -139,7 +139,7 @@ tenthingsBotRoute.post("/", async (req: Request, res: Response) => {
     bot.sendMessage(msg.chatId, "<b>Error</b>\nUse the /error command to explain to the admins what didn't work");
     bot.notifyAdmin(`Error in game ${msg.chatId}:\n${e}`);
   } finally {
-    res.sendStatus(200);
+    if (!res.headersSent) res.sendStatus(200);
   }
 });
 
