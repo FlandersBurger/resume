@@ -1,16 +1,40 @@
 "use strict";
-var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
-    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+var __awaiter =
+  (this && this.__awaiter) ||
+  function (thisArg, _arguments, P, generator) {
+    function adopt(value) {
+      return value instanceof P
+        ? value
+        : new P(function (resolve) {
+            resolve(value);
+          });
+    }
     return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
+      function fulfilled(value) {
+        try {
+          step(generator.next(value));
+        } catch (e) {
+          reject(e);
+        }
+      }
+      function rejected(value) {
+        try {
+          step(generator["throw"](value));
+        } catch (e) {
+          reject(e);
+        }
+      }
+      function step(result) {
+        result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected);
+      }
+      step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
-};
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
+  };
+var __importDefault =
+  (this && this.__importDefault) ||
+  function (mod) {
+    return mod && mod.__esModule ? mod : { default: mod };
+  };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.tenthingsBotRoute = exports.MessageType = void 0;
 const express_1 = require("express");
@@ -24,17 +48,24 @@ const callbacks_1 = __importDefault(require("./callbacks"));
 const commands_1 = require("./commands");
 // DO NOT REMOVE jobs
 const jobs_1 = __importDefault(require("./jobs"));
-console.log(`Scheduled Jobs:\n${jobs_1.default
-    .map((j) => ` - ${j.name}: ${moment_1.default.duration((0, moment_1.default)(new Date()).diff(j.nextInvocation())).humanize(true)}`)
-    .join("\n")}`);
+console.log(
+  `Scheduled Jobs:\n${jobs_1.default
+    .map(
+      (j) =>
+        ` - ${j.name}: ${moment_1.default
+          .duration((0, moment_1.default)(new Date()).diff(j.nextInvocation()))
+          .humanize(true)}`
+    )
+    .join("\n")}`
+);
 var MessageType;
 (function (MessageType) {
-    MessageType["Callback"] = "callback";
-    MessageType["Command"] = "command";
-    MessageType["NewGame"] = "newGame";
-    MessageType["PlayerLeft"] = "playerLeft";
-    MessageType["Message"] = "message";
-    MessageType["Ignore"] = "ignore";
+  MessageType["Callback"] = "callback";
+  MessageType["Command"] = "command";
+  MessageType["NewGame"] = "newGame";
+  MessageType["PlayerLeft"] = "playerLeft";
+  MessageType["Message"] = "message";
+  MessageType["Ignore"] = "ignore";
 })(MessageType || (exports.MessageType = MessageType = {}));
 //-------------//
 //redis.set('pause', true);
@@ -66,7 +97,7 @@ exports.tenthingsBotRoute = (0, express_1.Router)();
     console.log(present);
   });*/
 if (process.env.NODE_ENV === "production") {
-    telegram_1.default.notifyAdmin("<b>Started Ten Things</b>");
+  telegram_1.default.notifyAdmin("<b>Started Ten Things</b>");
 }
 //bot.queueMessage('-1001394022777', "test<a href=\'https://upload.wikimedia.org/wikipedia/commons/thumb/8/89/Regular_Hexagon_Inscribed_in_a_Circle.gif/360px-Regular_Hexagon_Inscribed_in_a_Circle.gif\'>&#8204;</a>\nsome other stuff")
 //var url = 'https://upload.wikimedia.org/wikipedia/commons/d/d8/Olympique_Marseille_logo.svg';
@@ -85,79 +116,79 @@ bot.exportChatInviteLink('-1001394022777').then(function(chat) {
  ██      ██    ██      ██    ██
  ██       ██████  ███████    ██
 */
-exports.tenthingsBotRoute.post("/", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+exports.tenthingsBotRoute.post("/", (req, res) =>
+  __awaiter(void 0, void 0, void 0, function* () {
     const domainMessage = yield telegram_1.default.toDomainMessage(req.body);
     switch (domainMessage.messageType) {
-        case MessageType.Ignore:
-            return res.sendStatus(200);
-        case MessageType.Callback:
-            yield (0, callbacks_1.default)(domainMessage.message);
-            return res.sendStatus(200);
-            break;
-        case MessageType.PlayerLeft:
-            index_1.Game.findOne({ chat_id: domainMessage.message.chatId }).exec((err, game) => {
-                if (err)
-                    return console.error(err);
-                if (!game)
-                    return;
-                index_1.Player.findOne({ game: game._id, id: `${domainMessage.message.from.id}` }).exec((err, player) => {
-                    if (err || !player)
-                        return;
-                    if (player) {
-                        player.present = false;
-                        player.save();
-                    }
-                });
-            });
-            return res.sendStatus(200);
-        default:
-            break;
+      case MessageType.Ignore:
+        return res.sendStatus(200);
+      case MessageType.Callback:
+        yield (0, callbacks_1.default)(domainMessage.message);
+        return res.sendStatus(200);
+        break;
+      case MessageType.PlayerLeft:
+        index_1.Game.findOne({ chat_id: domainMessage.message.chatId }).exec((err, game) => {
+          if (err) return console.error(err);
+          if (!game) return;
+          index_1.Player.findOne({ game: game._id, id: `${domainMessage.message.from.id}` }).exec((err, player) => {
+            if (err || !player) return;
+            if (player) {
+              player.present = false;
+              player.save();
+            }
+          });
+        });
+        return res.sendStatus(200);
+      default:
+        break;
     }
     let msg = domainMessage.message;
     try {
-        if (!msg.from.id) {
-            return res.sendStatus(200);
-        }
-    }
-    catch (e) {
-        console.error(e);
-        telegram_1.default.notifyAdmin(`Can't send message:\n${JSON.stringify(msg)}`);
+      if (!msg.from.id) {
         return res.sendStatus(200);
+      }
+    } catch (e) {
+      console.error(e);
+      telegram_1.default.notifyAdmin(`Can't send message:\n${JSON.stringify(msg)}`);
+      return res.sendStatus(200);
     }
     const existingGame = yield index_1.Game.findOne({ chat_id: msg.chatId })
-        .populate("list.creator")
-        .select("-playedLists")
-        .exec();
+      .populate("list.creator")
+      .select("-playedLists")
+      .exec();
     try {
-        if (!existingGame) {
-            const newGame = yield (0, maingame_1.createMaingame)(msg.chatId);
-            console.log(`New game created for ${msg.chatId}`);
-            yield (0, commands_1.evaluate)(msg, newGame, true);
+      if (!existingGame) {
+        const newGame = yield (0, maingame_1.createMaingame)(msg.chatId);
+        console.log(`New game created for ${msg.chatId}`);
+        yield (0, commands_1.evaluate)(msg, newGame, true);
+      } else {
+        if (!existingGame.enabled && !["/list", "/start"].includes(msg.command.toLowerCase())) {
+          telegram_1.default.sendMessage(
+            msg.chatId,
+            (0, i18n_1.default)(existingGame.settings.language, "sentences.inactivity")
+          );
+          return res.sendStatus(200);
         }
-        else {
-            if (!existingGame.enabled && !["/list", "/start"].includes(msg.command.toLowerCase())) {
-                telegram_1.default.sendMessage(msg.chatId, (0, i18n_1.default)(existingGame.settings.language, "sentences.inactivity"));
-                return res.sendStatus(200);
-            }
-            yield (0, commands_1.evaluate)(msg, existingGame, false);
-        }
+        yield (0, commands_1.evaluate)(msg, existingGame, false);
+      }
+    } catch (e) {
+      console.error(e);
+      telegram_1.default.sendMessage(
+        msg.chatId,
+        "<b>Error</b>\nUse the /error command to explain to the admins what didn't work"
+      );
+      telegram_1.default.notifyAdmin(`Error in game ${msg.chatId}:\n${e}`);
+    } finally {
+      res.sendStatus(200);
     }
-    catch (e) {
-        console.error(e);
-        telegram_1.default.sendMessage(msg.chatId, "<b>Error</b>\nUse the /error command to explain to the admins what didn't work");
-        telegram_1.default.notifyAdmin(`Error in game ${msg.chatId}:\n${e}`);
-    }
-    finally {
-        res.sendStatus(200);
-    }
-}));
+  })
+);
 exports.tenthingsBotRoute.get("/", (req, res) => {
-    if (req.query["hub.verify_token"] === process.env.FACEBOOK_TOKEN) {
-        res.status(200).send(req.query["hub.challenge"]);
-    }
-    else {
-        res.sendStatus(200);
-    }
+  if (req.query["hub.verify_token"] === process.env.FACEBOOK_TOKEN) {
+    res.status(200).send(req.query["hub.challenge"]);
+  } else {
+    res.sendStatus(200);
+  }
 });
 /*
  ██     ██ ███████ ██████  ██   ██  ██████   ██████  ██   ██
@@ -168,47 +199,48 @@ exports.tenthingsBotRoute.get("/", (req, res) => {
 */
 // Creates the endpoint for our webhook
 exports.tenthingsBotRoute.post("/webhook", (req, res) => {
-    const body = req.body;
-    if (body.object === "page") {
-        // Iterates over each entry - there may be multiple if batched
-        body.entry.forEach(({ messaging }) => {
-            // Gets the message. entry.messaging is an array, but
-            // will only ever contain one message, so we get index 0
-            const webhook_event = messaging[0];
-            console.log(webhook_event);
-            // Get the sender PSID
-            const sender_psid = webhook_event.sender.id;
-            console.log(`Sender PSID: ${sender_psid}`);
-            // Check if the event is a message or postback and
-            // pass the event to the appropriate handler function
-            if (webhook_event.message) {
-                console.log(webhook_event.message);
-            }
-            else if (webhook_event.postback) {
-                console.log(webhook_event.postback);
-            }
-        });
-        // Returns a '200 OK' response to all requests
-        res.status(200).send("EVENT_RECEIVED");
-    }
-    else {
-        // Returns a '404 Not Found' if event is not = require(a page subscription
-        res.sendStatus(404);
-    }
+  const body = req.body;
+  if (body.object === "page") {
+    // Iterates over each entry - there may be multiple if batched
+    body.entry.forEach(({ messaging }) => {
+      // Gets the message. entry.messaging is an array, but
+      // will only ever contain one message, so we get index 0
+      const webhook_event = messaging[0];
+      console.log(webhook_event);
+      // Get the sender PSID
+      const sender_psid = webhook_event.sender.id;
+      console.log(`Sender PSID: ${sender_psid}`);
+      // Check if the event is a message or postback and
+      // pass the event to the appropriate handler function
+      if (webhook_event.message) {
+        console.log(webhook_event.message);
+      } else if (webhook_event.postback) {
+        console.log(webhook_event.postback);
+      }
+    });
+    // Returns a '200 OK' response to all requests
+    res.status(200).send("EVENT_RECEIVED");
+  } else {
+    // Returns a '404 Not Found' if event is not = require(a page subscription
+    res.sendStatus(404);
+  }
 });
 function countBytes(s) {
-    console.log(encodeURI(s).split(/%..|./).length - 1);
+  console.log(encodeURI(s).split(/%..|./).length - 1);
 }
-exports.tenthingsBotRoute.get("/queue", (_, res) => __awaiter(void 0, void 0, void 0, function* () {
+exports.tenthingsBotRoute.get("/queue", (_, res) =>
+  __awaiter(void 0, void 0, void 0, function* () {
     res.json(yield (0, queue_1.getQueue)());
-}));
-const floodChecker = () => __awaiter(void 0, void 0, void 0, function* () {
+  })
+);
+const floodChecker = () =>
+  __awaiter(void 0, void 0, void 0, function* () {
     const webhook = yield telegram_1.default.getWebhook();
     return webhook.pending_update_count > 500;
-});
+  });
 const newPlayerError = (err) => {
-    telegram_1.default.notifyAdmin("Can't add new player: " + JSON.stringify(err));
-    console.error(err);
+  telegram_1.default.notifyAdmin("Can't add new player: " + JSON.stringify(err));
+  console.error(err);
 };
 /*
 request(`https://api.themoviedb.org/3/search/movie?api_key=${moviedbAPIKey}&query=${encodeURIComponent('good will hunting')}`, (err, response, body) => {
