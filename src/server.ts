@@ -87,3 +87,14 @@ server.listen(port, async () => {
 
 const websocketServer = new WebSocketServer(server);
 export default websocketServer;
+
+process
+  .on("unhandledRejection", (reason, p) => {
+    console.error(reason, "Unhandled Rejection at Promise", p);
+    console.trace();
+  })
+  .on("uncaughtException", (err) => {
+    console.error(err, "Uncaught Exception thrown");
+    console.trace();
+    process.exit(1);
+  });

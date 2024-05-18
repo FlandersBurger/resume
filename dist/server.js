@@ -89,4 +89,14 @@ server.listen(port, () => __awaiter(void 0, void 0, void 0, function* () {
 }));
 const websocketServer = new websockets_1.WebSocketServer(server);
 exports.default = websocketServer;
+process
+    .on("unhandledRejection", (reason, p) => {
+    console.error(reason, "Unhandled Rejection at Promise", p);
+    console.trace();
+})
+    .on("uncaughtException", (err) => {
+    console.error(err, "Uncaught Exception thrown");
+    console.trace();
+    process.exit(1);
+});
 //# sourceMappingURL=server.js.map
