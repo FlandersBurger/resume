@@ -81,6 +81,7 @@ class TelegramBot {
             let url = `${this.baseUrl}/sendMessage?chat_id=${channel}&disable_notification=true&parse_mode=html&text=${message}`;
             if (topic)
                 url += `&message_thread_id=${topic}`;
+            console.log("Sending Message");
             axios_1.default.get(url).catch((error) => {
                 if (error.response.data.description === "Bad Request: not enough rights to send text messages to the chat") {
                     (0, errors_1.botMuted)(channel);
