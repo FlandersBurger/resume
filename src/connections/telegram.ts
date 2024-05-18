@@ -109,13 +109,6 @@ class TelegramBot {
       if (error.response.data.description === "Bad Request: not enough rights to send text messages to the chat") {
         botMuted(channel);
       } else {
-        this.exportChatInviteLink(channel)
-          .then((url) => {
-            this.notifyAdmin(`Failed to send '${message}' to channel: ${channel} -> chat: ${url}`);
-          })
-          .catch(() => {
-            this.notifyAdmin(`Failed to send '${message}' to channel: ${channel}`);
-          });
         console.error(error.response.data);
       }
     });
