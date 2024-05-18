@@ -35,6 +35,7 @@ const players_1 = require("./controllers/api/tenthings/players");
 const users_1 = require("./controllers/api/users");
 const main_1 = require("./controllers/bots/tenthings/main");
 const queue_1 = require("./queue");
+const telegram_1 = __importDefault(require("./connections/telegram"));
 const serviceAccount = require("../keys/resume-172205-firebase-adminsdk-r34t7-0028c702be.json");
 firebase_admin_1.default.initializeApp({
     credential: firebase_admin_1.default.credential.cert(serviceAccount),
@@ -82,6 +83,9 @@ const server = http_1.default.createServer(app);
 server.listen(port, () => __awaiter(void 0, void 0, void 0, function* () {
     console.log("Server ", process.pid, " listening on", port);
     (0, queue_1.redisConnect)();
+    if (process.env.NODE_ENV === "production") {
+        telegram_1.default.notifyAdmin("<b>Started Ten Things</b>");
+    }
 }));
 const websocketServer = new websockets_1.WebSocketServer(server);
 exports.default = websocketServer;
