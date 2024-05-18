@@ -66,6 +66,10 @@ app.use(logger('dev', {
 */
 app.use("/bots/tenthings", main_1.tenthingsBotRoute);
 app.use(static_1.staticRoute);
+app.use((err, _req, res, _next) => {
+    console.error(err.stack);
+    res.status(500).send("Something broke!");
+});
 /*
 app.use((req, res) => {
   let buffs = [];

@@ -1,6 +1,6 @@
 require("module-alias/register");
 import "@root/env";
-import express from "express";
+import express, { NextFunction, Request, Response } from "express";
 import { json } from "body-parser";
 import admin from "firebase-admin";
 import { WebSocketServer } from "@root/websockets";
@@ -62,6 +62,11 @@ app.use(logger('dev', {
 app.use("/bots/tenthings", tenthingsBotRoute);
 
 app.use(staticRoute);
+
+app.use((err: Error, _req: Request, res: Response, _next: NextFunction) => {
+  console.error(err.stack);
+  res.status(500).send("Something broke!");
+});
 /*
 app.use((req, res) => {
   let buffs = [];
