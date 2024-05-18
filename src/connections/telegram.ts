@@ -1,4 +1,4 @@
-import axios from "axios";
+import axios, { AxiosError } from "axios";
 
 import Queue, { Job } from "bull";
 import i18n from "@root/i18n";
@@ -74,9 +74,9 @@ class TelegramBot {
     const url = `${this.baseUrl}/setWebhook?url=https://belgocanadian.com/bots/${api}&allowed_updates=${allowed_updates}`;
     try {
       return await axios.get(url);
-    } catch (error) {
+    } catch (error: AxiosError | any) {
       this.notifyAdmin("Set Webhook Fail");
-      console.error(error);
+      console.error(error.response.data);
     }
   };
 
@@ -85,9 +85,9 @@ class TelegramBot {
     try {
       const { data } = await axios.get(url);
       return data.result;
-    } catch (error) {
+    } catch (error: AxiosError | any) {
       this.notifyAdmin("Get Webhook Fail");
-      console.error(error);
+      console.error(error.response.data);
     }
   };
 
@@ -95,9 +95,9 @@ class TelegramBot {
     const url = `${this.baseUrl}/deleteWebhook`;
     try {
       return await axios.get(url);
-    } catch (error) {
+    } catch (error: AxiosError | any) {
       this.notifyAdmin("Delete Webhook Fail");
-      console.error(error);
+      console.error(error.response.data);
     }
   };
 
@@ -118,9 +118,9 @@ class TelegramBot {
     const url = `${this.baseUrl}/deleteMessage?chat_id=${channel}&message_id=${message_id}`;
     try {
       await axios.get(url);
-    } catch (error) {
+    } catch (error: AxiosError | any) {
       this.notifyAdmin(`Delete Message in ${channel} Fail`);
-      console.error(error);
+      console.error(error?.response.data);
     }
   };
 
@@ -139,9 +139,9 @@ class TelegramBot {
     const url = `${this.baseUrl}/kickChatMember?chat_id=${channel}&user_id=${userId}&until_date=${untilDate}`;
     try {
       await axios.get(url);
-    } catch (error) {
+    } catch (error: AxiosError | any) {
       bot.notifyAdmin(`Kick user ${userId} Fail in ${channel}`);
-      console.error(error);
+      console.error(error.response.data);
     }
   };
 
@@ -180,9 +180,9 @@ class TelegramBot {
     try {
       const { data } = await axios.get(encodeURI(url));
       return data.result;
-    } catch (error) {
+    } catch (error: AxiosError | any) {
       this.notifyAdmin(`Get Invite Link to ${channel} Fail`);
-      console.error(error);
+      console.error(error.response.data);
     }
   };
 
@@ -200,7 +200,7 @@ class TelegramBot {
       if (error.response.data.error_code === 400) {
         chatNotFound(channel);
       } else {
-        console.error(error);
+        console.error(error.response.data);
       }
       return `Chat not found: ${channel} - ${error.response.data.error_code}`;
     }
@@ -217,9 +217,9 @@ class TelegramBot {
         response.data.result &&
         !["restricted", "left", "kicked"].includes(response.data.result.status)
       );
-    } catch (error) {
+    } catch (error: AxiosError | any) {
       this.notifyAdmin(`Get Chat Member ${userId} of ${channel} Fail`);
-      console.error(error);
+      console.error(error.response.data);
     }
   };
 
@@ -233,9 +233,9 @@ class TelegramBot {
         response.data.result &&
         ["creator", "administrator"].includes(response.data.result.status)
       );
-    } catch (error) {
+    } catch (error: AxiosError | any) {
       this.notifyAdmin(`Check Admin in ${channel} Fail`);
-      console.error(error);
+      console.error(error.response.data);
     }
   };
   public sendKeyboard = async (channel: number, message: string, keyboard: IKeyboard, topic?: number) => {
@@ -245,27 +245,27 @@ class TelegramBot {
     if (topic) url += `&message_thread_id=${topic}`;
     try {
       await axios.get(encodeURI(url));
-    } catch (error) {
+    } catch (error: AxiosError | any) {
       this.notifyAdmin(`Send Keyboard to ${channel} Fail`);
-      console.error(error);
+      console.error(error.response.data);
     }
   };
   public sendPhoto = async (channel: number, photo: string) => {
     const url = `${this.baseUrl}/sendPhoto?chat_id=${channel}&photo=${photo}`;
     try {
       await axios.get(encodeURI(url));
-    } catch (error) {
+    } catch (error: AxiosError | any) {
       this.notifyAdmin(`Send Photo to ${channel} Fail`);
-      console.error(error);
+      console.error(error.response.data);
     }
   };
   public sendAnimation = async (channel: number, animation: string) => {
     const url = `${this.baseUrl}/sendAnimation?chat_id=${channel}&animation=${animation}`;
     try {
       await axios.get(encodeURI(url));
-    } catch (error) {
+    } catch (error: AxiosError | any) {
       this.notifyAdmin(`Send Animation to ${channel} Fail`);
-      console.error(error);
+      console.error(error.response.data);
     }
   };
   public editKeyboard = async (channel: number, message_id: string, keyboard: IKeyboard) => {
@@ -273,18 +273,18 @@ class TelegramBot {
     if (keyboard) url += `&reply_markup=${JSON.stringify(keyboard)}`;
     try {
       await axios.get(encodeURI(url));
-    } catch (error) {
+    } catch (error: AxiosError | any) {
       this.notifyAdmin(`Edit Keyboard in ${channel} Fail`);
-      console.error(error);
+      console.error(error.response.data);
     }
   };
   public answerCallback = async (callback_query_id: string, text: string) => {
     const url = `${this.baseUrl}/answerCallbackQuery?callback_query_id=${callback_query_id}&text=${text}`;
     try {
       await axios.get(encodeURI(url));
-    } catch (error) {
+    } catch (error: AxiosError | any) {
       this.notifyAdmin(`Answer Callback of ${callback_query_id} Fail`);
-      console.error(error);
+      console.error(error.response.data);
     }
   };
 
@@ -336,9 +336,9 @@ class TelegramBot {
     const url = `${this.baseUrl}/setMyCommands?commands=${JSON.stringify(commands)}&scope=${JSON.stringify(scope)}`;
     try {
       await axios.get(encodeURI(url));
-    } catch (error) {
+    } catch (error: AxiosError | any) {
       this.notifyAdmin("Set Commands Fail");
-      console.error(error);
+      console.error(error.response.data);
     }
   };
 

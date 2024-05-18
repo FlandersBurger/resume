@@ -52,7 +52,7 @@ class TelegramBot {
             }
             catch (error) {
                 this.notifyAdmin("Set Webhook Fail");
-                console.error(error);
+                console.error(error.response.data);
             }
         });
         this.getWebhook = () => __awaiter(this, void 0, void 0, function* () {
@@ -63,7 +63,7 @@ class TelegramBot {
             }
             catch (error) {
                 this.notifyAdmin("Get Webhook Fail");
-                console.error(error);
+                console.error(error.response.data);
             }
         });
         this.deleteWebhook = () => __awaiter(this, void 0, void 0, function* () {
@@ -73,7 +73,7 @@ class TelegramBot {
             }
             catch (error) {
                 this.notifyAdmin("Delete Webhook Fail");
-                console.error(error);
+                console.error(error.response.data);
             }
         });
         this.sendMessage = (channel, message, topic) => {
@@ -97,7 +97,7 @@ class TelegramBot {
             }
             catch (error) {
                 this.notifyAdmin(`Delete Message in ${channel} Fail`);
-                console.error(error);
+                console.error(error === null || error === void 0 ? void 0 : error.response.data);
             }
         });
         this.queueMessage = (channel, message) => {
@@ -117,7 +117,7 @@ class TelegramBot {
             }
             catch (error) {
                 bot.notifyAdmin(`Kick user ${userId} Fail in ${channel}`);
-                console.error(error);
+                console.error(error.response.data);
             }
         });
         this.notifyCosmicForce = (msg, keyboard) => __awaiter(this, void 0, void 0, function* () {
@@ -157,7 +157,7 @@ class TelegramBot {
             }
             catch (error) {
                 this.notifyAdmin(`Get Invite Link to ${channel} Fail`);
-                console.error(error);
+                console.error(error.response.data);
             }
         });
         this.getChat = (channel) => __awaiter(this, void 0, void 0, function* () {
@@ -181,7 +181,7 @@ class TelegramBot {
                     (0, errors_1.chatNotFound)(channel);
                 }
                 else {
-                    console.error(error);
+                    console.error(error.response.data);
                 }
                 return `Chat not found: ${channel} - ${error.response.data.error_code}`;
             }
@@ -198,7 +198,7 @@ class TelegramBot {
             }
             catch (error) {
                 this.notifyAdmin(`Get Chat Member ${userId} of ${channel} Fail`);
-                console.error(error);
+                console.error(error.response.data);
             }
         });
         this.checkAdmin = (channel, userId) => __awaiter(this, void 0, void 0, function* () {
@@ -212,7 +212,7 @@ class TelegramBot {
             }
             catch (error) {
                 this.notifyAdmin(`Check Admin in ${channel} Fail`);
-                console.error(error);
+                console.error(error.response.data);
             }
         });
         this.sendKeyboard = (channel, message, keyboard, topic) => __awaiter(this, void 0, void 0, function* () {
@@ -226,7 +226,7 @@ class TelegramBot {
             }
             catch (error) {
                 this.notifyAdmin(`Send Keyboard to ${channel} Fail`);
-                console.error(error);
+                console.error(error.response.data);
             }
         });
         this.sendPhoto = (channel, photo) => __awaiter(this, void 0, void 0, function* () {
@@ -236,7 +236,7 @@ class TelegramBot {
             }
             catch (error) {
                 this.notifyAdmin(`Send Photo to ${channel} Fail`);
-                console.error(error);
+                console.error(error.response.data);
             }
         });
         this.sendAnimation = (channel, animation) => __awaiter(this, void 0, void 0, function* () {
@@ -246,7 +246,7 @@ class TelegramBot {
             }
             catch (error) {
                 this.notifyAdmin(`Send Animation to ${channel} Fail`);
-                console.error(error);
+                console.error(error.response.data);
             }
         });
         this.editKeyboard = (channel, message_id, keyboard) => __awaiter(this, void 0, void 0, function* () {
@@ -258,7 +258,7 @@ class TelegramBot {
             }
             catch (error) {
                 this.notifyAdmin(`Edit Keyboard in ${channel} Fail`);
-                console.error(error);
+                console.error(error.response.data);
             }
         });
         this.answerCallback = (callback_query_id, text) => __awaiter(this, void 0, void 0, function* () {
@@ -268,7 +268,7 @@ class TelegramBot {
             }
             catch (error) {
                 this.notifyAdmin(`Answer Callback of ${callback_query_id} Fail`);
-                console.error(error);
+                console.error(error.response.data);
             }
         });
         this.getName = () => {
@@ -318,7 +318,7 @@ class TelegramBot {
             }
             catch (error) {
                 this.notifyAdmin("Set Commands Fail");
-                console.error(error);
+                console.error(error.response.data);
             }
         });
         this.toDomainUser = (from) => (Object.assign(Object.assign({}, from), { name: (0, string_helpers_1.maskUrls)(from.username ? `@${from.username}` : `${from.first_name} ${from.last_name ? from.last_name : ""}`) }));
