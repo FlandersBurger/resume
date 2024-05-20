@@ -234,6 +234,7 @@ function TelegramBot() {
     } catch (error) {
       bot.notifyAdmin("Send Keyboard Fail");
       console.error(error.response.data);
+      console.error(keyboard);
     }
   };
 
