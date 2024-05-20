@@ -185,7 +185,7 @@ function TelegramBot() {
       if (error.response.data.error_code === 400) {
         errors.chatNotFound(channel);
       } else {
-        bot.notifyAdmin("Get Chat Fail"));
+        bot.notifyAdmin("Get Chat Fail");
         console.error(error.response.data);
       }
       return `Chat not found: ${channel} - ${error.response.data.error_code}`;
