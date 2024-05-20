@@ -89,7 +89,9 @@ function TelegramBot() {
       ) {
         errors.botMuted(channel);
       } else {
-        bot.notifyAdmin(error.response.data);
+        bot.notifyAdmin("Send Message Fail");
+        console.error(error);
+        console.trace();
       }
     });
   };
