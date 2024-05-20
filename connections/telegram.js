@@ -52,7 +52,7 @@ function TelegramBot() {
     try {
       return await axios.get(url);
     } catch (error) {
-      console.error("Set Webhook Fail");
+      bot.notifyAdmin("Set Webhook Fail");
       console.error(error.response.data);
     }
   };
@@ -63,7 +63,7 @@ function TelegramBot() {
       const response = await axios.get(url);
       return response.data.result;
     } catch (error) {
-      console.error("Get Webhook Fail");
+      bot.notifyAdmin("Get Webhook Fail");
       console.error(error.response.data);
     }
   };
@@ -73,7 +73,7 @@ function TelegramBot() {
     try {
       return await axios.get(url);
     } catch (error) {
-      console.error("Delete Webhook Fail");
+      bot.notifyAdmin("Delete Webhook Fail");
       console.error(error.response.data);
     }
   };
@@ -83,10 +83,13 @@ function TelegramBot() {
     let url = `${bot.baseUrl}/sendMessage?chat_id=${channel}&disable_notification=true&parse_mode=html&text=${message}`;
     if (topic) url += `&message_thread_id=${topic}`;
     axios.get(url).catch((error) => {
-      if (error.response.data.description === "Bad Request: not enough rights to send text messages to the chat") {
+      if (
+        error.response &&
+        error.response.data.description === "Bad Request: not enough rights to send text messages to the chat"
+      ) {
         errors.botMuted(channel);
       } else {
-        console.error(error.response.data);
+        bot.notifyAdmin(error.response.data);
       }
     });
   };
@@ -96,7 +99,7 @@ function TelegramBot() {
     try {
       await axios.get(url);
     } catch (error) {
-      console.error("Delete Message Fail");
+      bot.notifyAdmin("Delete Message Fail");
       console.error(error.response.data);
     }
   };
@@ -120,7 +123,7 @@ function TelegramBot() {
     try {
       await axios.get(url);
     } catch (error) {
-      console.error("Kick Fail");
+      bot.notifyAdmin("Kick Fail");
       console.error(error.response.data);
     }
   };
@@ -162,7 +165,7 @@ function TelegramBot() {
       if (!response || !response.data || !response.data.result) return;
       return response.data.result;
     } catch (error) {
-      console.error("Get Invite Link Fail");
+      bot.notifyAdmin("Get Invite Link Fail");
       console.error(error.response.data);
     }
   };
@@ -182,6 +185,7 @@ function TelegramBot() {
       if (error.response.data.error_code === 400) {
         errors.chatNotFound(channel);
       } else {
+        bot.notifyAdmin("Get Chat Fail"));
         console.error(error.response.data);
       }
       return `Chat not found: ${channel} - ${error.response.data.error_code}`;
@@ -199,7 +203,7 @@ function TelegramBot() {
         !["restricted", "left", "kicked"].includes(response.data.result.status)
       );
     } catch (error) {
-      console.error("Get Chat Member Fail");
+      bot.notifyAdmin("Get Chat Member Fail");
       console.error(error.response.data);
     }
   };
@@ -215,7 +219,7 @@ function TelegramBot() {
         ["creator", "administrator"].includes(response.data.result.status)
       );
     } catch (error) {
-      console.error("Check Admin Fail");
+      bot.notifyAdmin("Check Admin Fail");
       console.error(error.response.data);
     }
   };
@@ -228,7 +232,7 @@ function TelegramBot() {
     try {
       await axios.get(encodeURI(url));
     } catch (error) {
-      console.error("Send Keyboard Fail");
+      bot.notifyAdmin("Send Keyboard Fail");
       console.error(error.response.data);
     }
   };
@@ -238,7 +242,7 @@ function TelegramBot() {
     try {
       await axios.get(encodeURI(url));
     } catch (error) {
-      console.error("Send Photo Fail");
+      bot.notifyAdmin("Send Photo Fail");
       console.error(error.response.data);
     }
   };
@@ -258,7 +262,7 @@ function TelegramBot() {
     try {
       await axios.get(encodeURI(url));
     } catch (error) {
-      console.error("Edit Keyboard Fail");
+      bot.notifyAdmin("Edit Keyboard Fail");
       console.error(error.response.data);
     }
   };
@@ -268,7 +272,7 @@ function TelegramBot() {
     try {
       await axios.get(encodeURI(url));
     } catch (error) {
-      console.error("Answer Callback Fail");
+      bot.notifyAdmin("Answer Callback Fail");
       console.error(error.response.data);
     }
   };
@@ -317,7 +321,7 @@ function TelegramBot() {
     try {
       await axios.get(encodeURI(url));
     } catch (error) {
-      console.error("Set Commands  Fail");
+      bot.notifyAdmin("Set Commands  Fail");
       console.error(error.response.data);
     }
   };
