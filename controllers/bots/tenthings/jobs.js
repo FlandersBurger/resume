@@ -38,12 +38,12 @@ const resetDailyScore = () => {
               scoreDaily: { $gt: 0 },
               lastPlayDate: { $gte: moment().subtract(1, "days") },
             })
-              .select("_id id scoreDaily first_name")
+              .select("_id id scoreDaily first_name username")
               .exec();
             const highScore = players.reduce((highScore, { scoreDaily }) => _.max([highScore, scoreDaily]), 0);
             let winners = players.filter((player) => player.scoreDaily === highScore);
             let message = `<b>${winners
-              .map(({ first_name }) => first_name)
+              .map((player) => (player.username ? `@${player.username}` : player.first_name))
               .join(" & ")} won with ${highScore} points!</b>\n\n`;
             message += `Thanks for playing! I gotta say it warms my heart knowing the game is played widely and I want to keep it free.\n`;
             message += `However, the game costs me around <i>$40/month</i> to host so if you\'re feeling generous and want to support Ten Things then please consider donating.\n`;
