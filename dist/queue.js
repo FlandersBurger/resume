@@ -13,6 +13,8 @@ exports.subscribe = exports.publish = exports.redisConnect = void 0;
 const redis_1 = require("redis");
 const url = process.env.REDISTOGO_URL || "redis://localhost:" + (process.env.REDIS_PORT || "6379");
 const client = (0, redis_1.createClient)({ url, password: process.env.REDIS_PASSWORD });
+const publisher = (0, redis_1.createClient)({ url, password: process.env.REDIS_PASSWORD });
+const subscriber = (0, redis_1.createClient)({ url, password: process.env.REDIS_PASSWORD });
 const redisConnect = () => __awaiter(void 0, void 0, void 0, function* () {
     /*
     const client = process.env.NODE_ENV === 'development' ? redis.createClient({url}) : redis.createClient({
@@ -23,15 +25,17 @@ const redisConnect = () => __awaiter(void 0, void 0, void 0, function* () {
         console.error(error);
     });
     yield client.connect();
+    yield publisher.connect();
+    yield subscriber.connect();
     return client;
 });
 exports.redisConnect = redisConnect;
 const publish = (topic, data) => __awaiter(void 0, void 0, void 0, function* () {
-    client.publish(topic, JSON.stringify(data));
+    yield publisher.publish(topic, JSON.stringify(data));
 });
 exports.publish = publish;
 const subscribe = (topic, callback) => __awaiter(void 0, void 0, void 0, function* () {
-    client.subscribe(topic, (message) => {
+    yield subscriber.subscribe(topic, (message) => {
         callback(JSON.parse(message));
     });
 });

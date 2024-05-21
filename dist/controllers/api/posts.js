@@ -15,7 +15,6 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.postsRoute = void 0;
 const express_1 = require("express");
 const queue_1 = __importDefault(require("../../queue"));
-const server_1 = __importDefault(require("../../server"));
 const index_1 = require("../../models/index");
 exports.postsRoute = (0, express_1.Router)();
 exports.postsRoute.get("/", (_, res) => __awaiter(void 0, void 0, void 0, function* () {
@@ -33,11 +32,7 @@ exports.postsRoute.post("/", (req, res) => __awaiter(void 0, void 0, void 0, fun
         poster: (_a = res.locals.user) === null || _a === void 0 ? void 0 : _a._id,
     });
     const savedPost = yield post.save();
-    // @ts-ignore
-    queue_1.default.publish("new_post", savedPost);
+    yield queue_1.default.publish("new_post", JSON.stringify(savedPost));
     res.status(201).json(savedPost);
 }));
-queue_1.default.subscribe("new_post", (post) => {
-    server_1.default.broadcast("new_post", post);
-});
 //# sourceMappingURL=posts.js.map

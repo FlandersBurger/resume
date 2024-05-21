@@ -5,7 +5,7 @@ const clients: WebSocket[] = [];
 
 export class WebSocketServer {
   constructor(server: http.Server) {
-    var wss = new ws.Server({ server: server });
+    const wss = new ws.Server({ server: server });
     wss.on("connection", function (ws) {
       clients.push(ws);
       ws.on("message", function (message) {
@@ -18,7 +18,7 @@ export class WebSocketServer {
   }
 
   public broadcast(topic: string, data: object) {
-    var json = JSON.stringify({ topic: topic, data: data });
+    const json = JSON.stringify({ topic: topic, data: data });
     clients.forEach(function (client) {
       client.send(json);
     });

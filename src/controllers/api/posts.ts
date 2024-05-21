@@ -22,11 +22,6 @@ postsRoute.post("/", async (req: Request, res: Response) => {
   });
 
   const savedPost = await post.save();
-  // @ts-ignore
-  redis.publish("new_post", savedPost);
+  await redis.publish("new_post", JSON.stringify(savedPost));
   res.status(201).json(savedPost);
-});
-
-redis.subscribe("new_post", (post: any) => {
-  websocketServer.broadcast("new_post", post);
 });

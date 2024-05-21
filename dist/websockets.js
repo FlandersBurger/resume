@@ -9,7 +9,7 @@ const ws_1 = __importDefault(require("ws"));
 const clients = [];
 class WebSocketServer {
     constructor(server) {
-        var wss = new ws_1.default.Server({ server: server });
+        const wss = new ws_1.default.Server({ server: server });
         wss.on("connection", function (ws) {
             clients.push(ws);
             ws.on("message", function (message) {
@@ -21,7 +21,7 @@ class WebSocketServer {
         });
     }
     broadcast(topic, data) {
-        var json = JSON.stringify({ topic: topic, data: data });
+        const json = JSON.stringify({ topic: topic, data: data });
         clients.forEach(function (client) {
             client.send(json);
         });

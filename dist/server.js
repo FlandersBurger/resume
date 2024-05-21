@@ -84,15 +84,18 @@ app.use((req, res) => {
 */
 const port = process.env.PORT || 3000;
 const server = http_1.default.createServer(app);
+const websocketServer = new websockets_1.WebSocketServer(server);
+exports.default = websocketServer;
 server.listen(port, () => __awaiter(void 0, void 0, void 0, function* () {
     console.log("Server ", process.pid, " listening on", port);
     (0, queue_1.redisConnect)();
     if (process.env.NODE_ENV === "production") {
         telegram_1.default.notifyAdmin("<b>Started Ten Things</b>");
     }
+    yield (0, queue_1.subscribe)("new_post", (post) => {
+        websocketServer.broadcast("new_post", post);
+    });
 }));
-const websocketServer = new websockets_1.WebSocketServer(server);
-exports.default = websocketServer;
 process
     .on("unhandledRejection", (reason, p) => {
     console.error(reason, "Unhandled Rejection at Promise", p);

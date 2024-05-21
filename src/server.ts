@@ -21,7 +21,7 @@ import { tenthingsPauseRoute } from "@api/tenthings/pause";
 import { tenthingsPlayersRoute } from "@api/tenthings/players";
 import { usersRoute } from "@api/users";
 import { tenthingsBotRoute } from "@tenthings/main";
-import { redisConnect } from "@root/queue";
+import { redisConnect, subscribe } from "@root/queue";
 import bot from "./connections/telegram";
 
 const serviceAccount = require("../keys/resume-172205-firebase-adminsdk-r34t7-0028c702be.json");
@@ -82,16 +82,19 @@ app.use((req, res) => {
 const port = process.env.PORT || 3000;
 const server = http.createServer(app);
 
+const websocketServer = new WebSocketServer(server);
+export default websocketServer;
+
 server.listen(port, async () => {
   console.log("Server ", process.pid, " listening on", port);
   redisConnect();
   if (process.env.NODE_ENV === "production") {
     bot.notifyAdmin("<b>Started Ten Things</b>");
   }
+  await subscribe("new_post", (post: any) => {
+    websocketServer.broadcast("new_post", post);
+  });
 });
-
-const websocketServer = new WebSocketServer(server);
-export default websocketServer;
 
 process
   .on("unhandledRejection", (reason, p) => {
