@@ -89,7 +89,7 @@ function TelegramBot() {
       ) {
         errors.botMuted(channel);
       } else {
-        bot.notifyAdmin(`Send Message Fail -> ${message.substring(0, 100)}`);
+        bot.notifyAdmin(`Send Message Fail}`);
         console.error(error);
       }
     });
