@@ -290,6 +290,7 @@ const sendNewLists = () => {
         Game.find({
           "settings.updates": true,
           enabled: true,
+          listsPlayed: { $gt: 0 },
         })
           .select("chat_id")
           .then((games: IGame[]) => {
@@ -329,6 +330,7 @@ const sendUpdatedLists = () => {
         Game.find({
           "settings.updates": true,
           enabled: true,
+          listsPlayed: { $gt: 0 },
         })
           .select("chat_id")
           .then((games: IGame[]) => {
