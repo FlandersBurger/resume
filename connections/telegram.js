@@ -83,11 +83,12 @@ function TelegramBot() {
     let url = `${bot.baseUrl}/sendMessage?chat_id=${channel}&disable_notification=true&parse_mode=html&text=${message}`;
     if (topic) url += `&message_thread_id=${topic}`;
     axios.get(url).catch((error) => {
-      if (
-        error.response &&
-        error.response.data.description === "Bad Request: not enough rights to send text messages to the chat"
-      ) {
-        errors.botMuted(channel);
+      if (error.response) {
+        if (error.response.data.description === "Bad Request: not enough rights to send text messages to the chat") {
+          errors.botMuted(channel);
+        } else {
+          console.error(error.response.data);
+        }
       } else {
         bot.notifyAdmin(`Send Message Fail}`);
         console.error(error);
