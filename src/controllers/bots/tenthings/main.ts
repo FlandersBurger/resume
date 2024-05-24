@@ -87,7 +87,6 @@ tenthingsBotRoute.post("/", async (req: Request, res: Response) => {
     case MessageType.Callback:
       await callbacks(domainMessage.message as ICallbackData);
       return res.sendStatus(200);
-      break;
     case MessageType.PlayerLeft:
       Game.findOne({ chat_id: domainMessage.message!.chatId }).exec((err, game) => {
         if (err) return console.error(err);

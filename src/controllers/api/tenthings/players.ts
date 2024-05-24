@@ -8,10 +8,3 @@ tenthingsPlayersRoute.get("/players/:id", async (req: Request, res: Response) =>
   const player = await Player.find({ id: req.params.id });
   res.json(player);
 });
-
-Player.find().then((players) =>
-  players.forEach(function (d) {
-    d.id = parseInt(d.id);
-    d.save();
-  })
-);
