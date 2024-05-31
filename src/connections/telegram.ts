@@ -56,6 +56,12 @@ export interface IKeyboard {
 class TelegramBot {
   private baseUrl: string;
   private telegramBotUser: ITelegramUser | undefined;
+  private muteReasons: string[] = [
+    "Bad Request: not enough rights to send text messages to the chat",
+    "Forbidden: bot was kicked from the supergroup chat",
+    "Forbidden: bot was blocked by the user",
+    "Forbidden: the group chat was deleted",
+  ];
 
   constructor(token: string) {
     this.baseUrl = `https://api.telegram.org/bot${token}`;
@@ -106,11 +112,13 @@ class TelegramBot {
     let url = `${this.baseUrl}/sendMessage?chat_id=${channel}&disable_notification=true&parse_mode=html&text=${message}`;
     if (topic) url += `&message_thread_id=${topic}`;
     axios.get(url).catch((error) => {
-      if (error.response.data.description === "Bad Request: not enough rights to send text messages to the chat") {
-        botMuted(channel);
-      } else {
-        console.error(error.response.data);
+      if (error.response) {
+        if (this.muteReasons.includes(error.response.data.description)) {
+          return botMuted(channel);
+        }
       }
+      this.notifyAdmin(`Send Message to ${channel} Fail`);
+      console.error(error.response.data);
     });
   };
 
@@ -246,6 +254,11 @@ class TelegramBot {
     try {
       await axios.get(encodeURI(url));
     } catch (error: AxiosError | any) {
+      if (error.response) {
+        if (this.muteReasons.includes(error.response.data.description)) {
+          return botMuted(channel);
+        }
+      }
       this.notifyAdmin(`Send Keyboard to ${channel} Fail`);
       console.error(error.response.data);
     }
