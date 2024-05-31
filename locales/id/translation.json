@@ -18,6 +18,7 @@
   "modifiedOn": "Dimodifikasi pada",
   "on": "NYALA",
   "off": "MATI",
+  "and": "dan",
   "description": "Deskripsi",
   "point_one": "{{count}} poin",
   "point_other": "{{count}} poin",

@@ -18,6 +18,7 @@
   "modifiedOn": "Modified on",
   "on": "ON",
   "off": "OFF",
+  "and": "and",
   "description": "Description",
   "point_one": "{{count}} point",
   "point_other": "{{count}} points",

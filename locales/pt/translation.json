@@ -18,6 +18,7 @@
   "modifiedOn": "Modificado em",
   "on": "LIGADO",
   "off": "DESLIGADO",
+  "and": "e",
   "description": "Descrição",
   "point_one": "{{count}} ponto",
   "point_other": "{{count}} pontos",

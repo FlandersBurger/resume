@@ -18,6 +18,7 @@
   "modifiedOn": "Aangepast op",
   "on": "AAN",
   "off": "UIT",
+  "and": "en",
   "description": "Omschrijving",
   "point_one": "{{count}} punt",
   "point_other": "{{count}} punten",
