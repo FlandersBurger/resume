@@ -26,6 +26,7 @@
   "category_other": "Categorieën",
   "categories": {
     "Adult": "Volwassen",
+    "Albums": "Albums",
     "Animation": "Animatie",
     "Anime/Manga": "Anime/Manga",
     "Art": "Kunst",
@@ -46,6 +47,7 @@
     "K-Pop": "K-pop",
     "Language": "Taal",
     "Literature": "Literatuur",
+    "Lyrics": "Liedteksten",
     "Mathematics": "Wiskunde",
     "Medicine": "Geneeskunde",
     "Misc": "Diversen",

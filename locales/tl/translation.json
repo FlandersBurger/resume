@@ -26,6 +26,7 @@
   "category_other": "Mga Kategorya",
   "categories": {
     "Adult": "Adulto",
+    "Albums": "Mga Album",
     "Animation": "Animasyon",
     "Anime/Manga": "Anime/Manga",
     "Art": "Sining",
@@ -46,6 +47,7 @@
     "K-Pop": "K-pop",
     "Language": "Wika",
     "Literature": "Panitikan",
+    "Lyrics": "Liriko",
     "Mathematics": "Matematika",
     "Medicine": "Medisina",
     "Misc": "Iba't Ibang Bagay",

@@ -26,6 +26,7 @@
   "category_other": "Kategori",
   "categories": {
     "Adult": "Dewasa",
+    "Albums": "Album",
     "Animation": "Animasi",
     "Anime/Manga": "Anime/Manga",
     "Art": "Seni",
@@ -46,6 +47,7 @@
     "K-Pop": "K-pop",
     "Language": "Bahasa",
     "Literature": "Sastra",
+    "Lyrics": "Lirik",
     "Mathematics": "Matematika",
     "Medicine": "Kedokteran",
     "Misc": "Berbagai",
