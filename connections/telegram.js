@@ -84,7 +84,12 @@ function TelegramBot() {
     if (topic) url += `&message_thread_id=${topic}`;
     axios.get(url).catch((error) => {
       if (error.response) {
-        if (error.response.data.description === "Bad Request: not enough rights to send text messages to the chat") {
+        if (
+          error.response.data.description === "Bad Request: not enough rights to send text messages to the chat" ||
+          error.response.data.description === "Forbidden: bot was kicked from the supergroup chat" ||
+          error.response.data.description === "Forbidden: bot was blocked by the user" ||
+          error.response.data.description === "Forbidden: the group chat was deleted"
+        ) {
           errors.botMuted(channel);
         } else {
           console.error(error.response.data);
@@ -235,7 +240,12 @@ function TelegramBot() {
       await axios.get(encodeURI(url));
     } catch (error) {
       if (error.response) {
-        if (error.response.data.description === "Bad Request: not enough rights to send text messages to the chat") {
+        if (
+          error.response.data.description === "Bad Request: not enough rights to send text messages to the chat" ||
+          error.response.data.description === "Forbidden: bot was kicked from the supergroup chat" ||
+          error.response.data.description === "Forbidden: bot was blocked by the user" ||
+          error.response.data.description === "Forbidden: the group chat was deleted"
+        ) {
           errors.botMuted(channel);
         } else {
           console.error(error.response.data);
