@@ -90,7 +90,7 @@ function TelegramBot() {
           console.error(error.response.data);
         }
       } else {
-        bot.notifyAdmin(`Send Message Fail}`);
+        bot.notifyAdmin(`Send Message Fail`);
         console.error(error);
       }
     });
@@ -234,9 +234,17 @@ function TelegramBot() {
     try {
       await axios.get(encodeURI(url));
     } catch (error) {
-      bot.notifyAdmin("Send Keyboard Fail");
-      console.error(error.response.data);
-      console.error(keyboard.inline_keyboard[0]);
+      if (error.response) {
+        if (error.response.data.description === "Bad Request: not enough rights to send text messages to the chat") {
+          errors.botMuted(channel);
+        } else {
+          console.error(error.response.data);
+        }
+      } else {
+        bot.notifyAdmin("Send Keyboard Fail");
+        console.error(error);
+        console.error(keyboard.inline_keyboard[0]);
+      }
     }
   };
 

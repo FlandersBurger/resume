@@ -6,6 +6,7 @@ const bot = require("../../../connections/telegram");
 const List = require("../../../models/tenthings/list")();
 
 const keyboards = require("./keyboards");
+const i18n = require("../../../i18n");
 
 const getRandomList = async (parameters) => {
   const count = await List.countDocuments(parameters).exec();
@@ -35,7 +36,11 @@ exports.getScore = (list) => {
 };
 
 exports.rate = (game) => {
-  bot.sendKeyboard(game.chat_id, `Did you like <b>${game.list.name}</b>?`, keyboards.like(game));
+  bot.sendKeyboard(
+    game.chat_id,
+    `Did you like <b>${game.list.name.replace("&", i18n(game.settings.language, "and"))}</b>?`,
+    keyboards.like(game)
+  );
 };
 
 const getAvailableLanguages = ({ settings }) =>
