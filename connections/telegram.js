@@ -98,7 +98,7 @@ function TelegramBot() {
         }
       } else {
         bot.notifyAdmin(`Send Message Fail`);
-        console.error(error);
+        console.error(error.errors);
       }
     });
   };
