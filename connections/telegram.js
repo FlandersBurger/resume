@@ -33,6 +33,13 @@ function TelegramBot() {
   bot.last_name = "";
   bot.username = "";
 
+  bot.muteReasons = [
+    "Bad Request: not enough rights to send text messages to the chat",
+    "Forbidden: bot was kicked from the supergroup chat",
+    "Forbidden: bot was blocked by the user",
+    "Forbidden: the group chat was deleted",
+  ];
+
   bot.init = async (token) => {
     Object.assign(bot, { token, baseUrl: `https://api.telegram.org/bot${token}` });
     const url = `${bot.baseUrl}/getMe`;
@@ -84,12 +91,7 @@ function TelegramBot() {
     if (topic) url += `&message_thread_id=${topic}`;
     axios.get(url).catch((error) => {
       if (error.response) {
-        if (
-          error.response.data.description === "Bad Request: not enough rights to send text messages to the chat" ||
-          error.response.data.description === "Forbidden: bot was kicked from the supergroup chat" ||
-          error.response.data.description === "Forbidden: bot was blocked by the user" ||
-          error.response.data.description === "Forbidden: the group chat was deleted"
-        ) {
+        if (bot.muteReasons.includes(error.response.data.description)) {
           errors.botMuted(channel);
         } else {
           console.error(error.response.data);
@@ -240,12 +242,7 @@ function TelegramBot() {
       await axios.get(encodeURI(url));
     } catch (error) {
       if (error.response) {
-        if (
-          error.response.data.description === "Bad Request: not enough rights to send text messages to the chat" ||
-          error.response.data.description === "Forbidden: bot was kicked from the supergroup chat" ||
-          error.response.data.description === "Forbidden: bot was blocked by the user" ||
-          error.response.data.description === "Forbidden: the group chat was deleted"
-        ) {
+        if (bot.muteReasons.includes(error.response.data.description)) {
           errors.botMuted(channel);
         } else {
           console.error(error.response.data);
