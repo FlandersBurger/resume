@@ -124,8 +124,7 @@ exports.tenthingsBotRoute.post("/", (req, res) => __awaiter(void 0, void 0, void
         .populate("list.creator")
         .select("-playedLists")
         .exec();
-    if (msg.chatId !== parseInt(process.env.MASTER_CHAT || ""))
-        return res.sendStatus(200);
+    // if (msg.chatId !== parseInt(process.env.MASTER_CHAT || "")) return res.sendStatus(200);
     try {
         if (!existingGame) {
             const newGame = yield (0, maingame_1.createMaingame)(msg.chatId);

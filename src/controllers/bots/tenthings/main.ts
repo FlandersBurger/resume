@@ -117,7 +117,7 @@ tenthingsBotRoute.post("/", async (req: Request, res: Response) => {
     .populate("list.creator")
     .select("-playedLists")
     .exec();
-  if (msg.chatId !== parseInt(process.env.MASTER_CHAT || "")) return res.sendStatus(200);
+  // if (msg.chatId !== parseInt(process.env.MASTER_CHAT || "")) return res.sendStatus(200);
   try {
     if (!existingGame) {
       const newGame = await createMaingame(msg.chatId);
