@@ -316,7 +316,7 @@ const guessed = (game, { scoreDaily, first_name }, { chatId }, value, blurb, sco
         message += `\n<b>${game.list.name}</b>`;
         //message += `\n${answersLeft} answer${answersLeft > 1 ? 's' : ''} left.`;
         message += game.list.values.reduce((str, { guesser, value }, index) => {
-            if (!guesser) {
+            if (!(guesser === null || guesser === void 0 ? void 0 : guesser.first_name)) {
                 str += "\n\t";
                 str += index + 1;
                 str += ": ";

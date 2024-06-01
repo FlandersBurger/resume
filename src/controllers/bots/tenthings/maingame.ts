@@ -325,7 +325,7 @@ const guessed = async (
     message += `\n<b>${game.list.name}</b>`;
     //message += `\n${answersLeft} answer${answersLeft > 1 ? 's' : ''} left.`;
     message += game.list.values.reduce((str, { guesser, value }, index) => {
-      if (!guesser) {
+      if (!guesser?.first_name) {
         str += "\n\t";
         str += index + 1;
         str += ": ";
