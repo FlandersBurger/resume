@@ -156,6 +156,7 @@ export const checkMaingame = async (
   guess: IGuess,
   msg: IMessage
 ) => {
+  console.log("msg", msg);
   if (guess.list !== game.list._id) return;
   game.lastPlayDate = moment().toDate();
   player.lastPlayDate = moment().toDate();
@@ -170,6 +171,7 @@ export const checkMaingame = async (
     bot.notifyAdmin(`Something wrong with this guess:\n${JSON.stringify(guess)}`);
     console.error(`Something wrong with this guess:\n${JSON.stringify(guess)}`);
   }
+  console.log("match", match);
   if (match && !match.guesser) {
     match.guesser = msg.from;
     player.answers++;
@@ -197,7 +199,6 @@ export const checkMaingame = async (
     if (player.maxHintStreak < player.hintStreak) {
       player.maxHintStreak = player.hintStreak;
     }
-    console.log("msg", msg);
     if (match.blurb) {
       guessed(
         game,
