@@ -397,6 +397,7 @@ class TelegramBot {
                         command = command.substring(0, command.indexOf("@"));
                     }
                     command = command.toLowerCase();
+                    command = command.startsWith("/") ? command : undefined;
                     return {
                         messageType: main_1.MessageType.Message,
                         message: {
