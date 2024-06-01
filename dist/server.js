@@ -98,13 +98,23 @@ server.listen(port, () => __awaiter(void 0, void 0, void 0, function* () {
     });
     models_1.Player.find({ id: { $type: "string" } })
         .select("_id id")
-        .limit(10)
         .then((players) => {
         console.log("players", players.length);
         players.forEach((player, i) => __awaiter(void 0, void 0, void 0, function* () {
             if (i % 1000 === 0)
                 console.log(`${i + 1}/${players.length}`);
             const result = yield models_1.Player.findOneAndUpdate({ _id: player._id }, { $set: { id: parseInt(player.id) } }, { returnOriginal: false });
+        }));
+        console.log("done");
+    });
+    models_1.Game.find({ chat_id: { $type: "string" } })
+        .select("_id id")
+        .then((games) => {
+        console.log("games", games.length);
+        games.forEach((game, i) => __awaiter(void 0, void 0, void 0, function* () {
+            if (i % 1000 === 0)
+                console.log(`${i + 1}/${games.length}`);
+            const result = yield models_1.Player.findOneAndUpdate({ _id: game._id }, { $set: { chat_id: parseInt(game.chat_id) } }, { returnOriginal: false });
         }));
         console.log("done");
     });

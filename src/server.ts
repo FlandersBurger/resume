@@ -23,7 +23,7 @@ import { usersRoute } from "@api/users";
 import { tenthingsBotRoute } from "@tenthings/main";
 import { redisConnect, subscribe } from "@root/queue";
 import bot from "./connections/telegram";
-import { Player } from "./models";
+import { Game, Player } from "./models";
 
 const serviceAccount = require("../keys/resume-172205-firebase-adminsdk-r34t7-0028c702be.json");
 
@@ -98,7 +98,6 @@ server.listen(port, async () => {
 
   Player.find({ id: { $type: "string" } })
     .select("_id id")
-    .limit(10)
     .then((players) => {
       console.log("players", players.length);
       players.forEach(async (player, i) => {
@@ -106,6 +105,20 @@ server.listen(port, async () => {
         const result = await Player.findOneAndUpdate(
           { _id: player._id },
           { $set: { id: parseInt(player.id) } },
+          { returnOriginal: false }
+        );
+      });
+      console.log("done");
+    });
+  Game.find({ chat_id: { $type: "string" } })
+    .select("_id id")
+    .then((games) => {
+      console.log("games", games.length);
+      games.forEach(async (game, i) => {
+        if (i % 1000 === 0) console.log(`${i + 1}/${games.length}`);
+        const result = await Player.findOneAndUpdate(
+          { _id: game._id },
+          { $set: { chat_id: parseInt(game.chat_id as any) } },
           { returnOriginal: false }
         );
       });
