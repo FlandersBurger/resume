@@ -170,13 +170,13 @@ export const checkMaingame = async (
     bot.notifyAdmin(`Something wrong with this guess:\n${JSON.stringify(guess)}`);
     console.error(`Something wrong with this guess:\n${JSON.stringify(guess)}`);
   }
-  console.log("match", match);
-  console.log("player", player);
   if (match && !match.guesser) {
     match.guesser = msg.from;
     player.answers++;
     const score = getAnswerScore(game.hints, guess.match.distance, game.guessers.length);
+    console.log("score", score);
     const accuracy = `${(guess.match.distance * 100).toFixed(0)}%`;
+    console.log("accuracy", accuracy);
     player.score += score;
     player.scoreDaily += score;
     if (game.hints === 0) {
@@ -190,6 +190,7 @@ export const checkMaingame = async (
     } else {
       game.streak.count++;
     }
+    console.log("streak", game.streak);
     if (player.streak < game.streak.count) {
       player.streak = game.streak.count;
     }
@@ -199,6 +200,7 @@ export const checkMaingame = async (
     if (player.maxHintStreak < player.hintStreak) {
       player.maxHintStreak = player.hintStreak;
     }
+    console.log("player", player);
     if (match.blurb) {
       guessed(
         game,

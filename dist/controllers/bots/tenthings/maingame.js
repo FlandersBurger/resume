@@ -170,13 +170,13 @@ const checkMaingame = (game, player, guess, msg) => __awaiter(void 0, void 0, vo
         telegram_1.default.notifyAdmin(`Something wrong with this guess:\n${JSON.stringify(guess)}`);
         console.error(`Something wrong with this guess:\n${JSON.stringify(guess)}`);
     }
-    console.log("match", match);
-    console.log("player", player);
     if (match && !match.guesser) {
         match.guesser = msg.from;
         player.answers++;
         const score = (0, guesses_1.getAnswerScore)(game.hints, guess.match.distance, game.guessers.length);
+        console.log("score", score);
         const accuracy = `${(guess.match.distance * 100).toFixed(0)}%`;
+        console.log("accuracy", accuracy);
         player.score += score;
         player.scoreDaily += score;
         if (game.hints === 0) {
@@ -191,6 +191,7 @@ const checkMaingame = (game, player, guess, msg) => __awaiter(void 0, void 0, vo
         else {
             game.streak.count++;
         }
+        console.log("streak", game.streak);
         if (player.streak < game.streak.count) {
             player.streak = game.streak.count;
         }
@@ -200,6 +201,7 @@ const checkMaingame = (game, player, guess, msg) => __awaiter(void 0, void 0, vo
         if (player.maxHintStreak < player.hintStreak) {
             player.maxHintStreak = player.hintStreak;
         }
+        console.log("player", player);
         if (match.blurb) {
             guessed(game, player, msg, match.value, match.blurb.substring(0, 4) === "http"
                 ? `<a href="${match.blurb}">&#8204;</a>`
