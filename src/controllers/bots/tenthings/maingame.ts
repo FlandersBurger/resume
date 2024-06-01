@@ -38,7 +38,8 @@ export const createMaingame = async (chat_id: number): Promise<HydratedDocument<
 */
 
 export const checkRound = (game: IGame) => {
-  console.log(game.list.values.filter((value) => !("guesser" in value)));
+  console.log(game.list.values);
+  console.log(game.list.values.map(({ guesser }) => guesser));
   if (game.list.values.filter((value) => !("guesser" in value)).length === 0) {
     setTimeout(async () => {
       sendMaingameMessage(game);

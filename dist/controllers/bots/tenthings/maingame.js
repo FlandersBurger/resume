@@ -44,7 +44,8 @@ exports.createMaingame = createMaingame;
   ██████ ██   ██ ███████  ██████ ██   ██     ██   ██  ██████   ██████  ██   ████ ██████
 */
 const checkRound = (game) => {
-    console.log(game.list.values.filter((value) => !("guesser" in value)));
+    console.log(game.list.values);
+    console.log(game.list.values.map(({ guesser }) => guesser));
     if (game.list.values.filter((value) => !("guesser" in value)).length === 0) {
         setTimeout(() => __awaiter(void 0, void 0, void 0, function* () {
             (0, exports.sendMaingameMessage)(game);
@@ -283,6 +284,7 @@ const sendMaingameMessage = (game, long = true) => __awaiter(void 0, void 0, voi
         message = `<b>${game.list.name}</b>\n`;
     }
     message += game.list.values.reduce((str, { guesser, value }, index) => {
+        console.log("guesser:", guesser);
         if (long) {
             if (guesser === undefined || guesser.first_name === undefined) {
                 str += `\t<b>${index + 1}:</b> `;
@@ -296,7 +298,6 @@ const sendMaingameMessage = (game, long = true) => __awaiter(void 0, void 0, voi
             }
         }
         else {
-            console.log(guesser);
             if (guesser === undefined) {
                 str += "\t";
                 str += index + 1;
