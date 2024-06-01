@@ -286,7 +286,7 @@ export const sendMaingameMessage = async (game: IGame, long = true) => {
   }
   message += game.list.values.reduce((str, { guesser, value }, index) => {
     if (long) {
-      if (!guesser || !guesser.first_name) {
+      if (guesser === undefined || guesser.first_name === undefined) {
         str += `\t<b>${index + 1}:</b> `;
         str += `<b>${getHint(game.hints, value)}</b>`;
         str += "\n";
@@ -296,7 +296,7 @@ export const sendMaingameMessage = async (game: IGame, long = true) => {
         str += "\n";
       }
     } else {
-      if (!guesser) {
+      if (guesser === undefined) {
         str += "\t";
         str += index + 1;
         str += ": ";

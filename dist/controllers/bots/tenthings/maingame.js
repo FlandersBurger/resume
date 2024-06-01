@@ -283,7 +283,7 @@ const sendMaingameMessage = (game, long = true) => __awaiter(void 0, void 0, voi
     }
     message += game.list.values.reduce((str, { guesser, value }, index) => {
         if (long) {
-            if (!guesser || !guesser.first_name) {
+            if (guesser === undefined || guesser.first_name === undefined) {
                 str += `\t<b>${index + 1}:</b> `;
                 str += `<b>${(0, hints_1.getHint)(game.hints, value)}</b>`;
                 str += "\n";
@@ -295,7 +295,7 @@ const sendMaingameMessage = (game, long = true) => __awaiter(void 0, void 0, voi
             }
         }
         else {
-            if (!guesser) {
+            if (guesser === undefined) {
                 str += "\t";
                 str += index + 1;
                 str += ": ";
