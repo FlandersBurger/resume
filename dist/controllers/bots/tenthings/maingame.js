@@ -44,8 +44,6 @@ exports.createMaingame = createMaingame;
   ██████ ██   ██ ███████  ██████ ██   ██     ██   ██  ██████   ██████  ██   ████ ██████
 */
 const checkRound = (game) => {
-    console.log(game.list.values);
-    console.log(game.list.values.map(({ guesser }) => guesser));
     if (game.list.values.filter(({ guesser }) => !(guesser === null || guesser === void 0 ? void 0 : guesser.first_name)).length === 0) {
         setTimeout(() => __awaiter(void 0, void 0, void 0, function* () {
             (0, exports.sendMaingameMessage)(game);
@@ -176,9 +174,7 @@ const checkMaingame = (game, player, guess, msg) => __awaiter(void 0, void 0, vo
         match.guesser = msg.from;
         player.answers++;
         const score = (0, guesses_1.getAnswerScore)(game.hints, guess.match.distance, game.guessers.length);
-        console.log("score", score);
         const accuracy = `${(guess.match.distance * 100).toFixed(0)}%`;
-        console.log("accuracy", accuracy);
         player.score += score;
         player.scoreDaily += score;
         if (game.hints === 0) {
@@ -193,7 +189,6 @@ const checkMaingame = (game, player, guess, msg) => __awaiter(void 0, void 0, vo
         else {
             game.streak.count++;
         }
-        console.log("streak", game.streak);
         if (player.streak < game.streak.count) {
             player.streak = game.streak.count;
         }
@@ -203,7 +198,6 @@ const checkMaingame = (game, player, guess, msg) => __awaiter(void 0, void 0, vo
         if (player.maxHintStreak < player.hintStreak) {
             player.maxHintStreak = player.hintStreak;
         }
-        console.log("player", player);
         if (match.blurb) {
             guessed(game, player, msg, match.value, match.blurb.substring(0, 4) === "http"
                 ? `<a href="${match.blurb}">&#8204;</a>`
@@ -317,7 +311,7 @@ const guessed = (game, { scoreDaily, first_name }, { chatId }, value, blurb, sco
     message += `\n<u>${scoreDaily - score} + ${(0, i18n_1.default)(game.settings.language, "point", {
         count: score,
     })} (${accuracy})</u>`;
-    const answersLeft = game.list.values.filter(({ guesser }) => !guesser);
+    const answersLeft = game.list.values.filter(({ guesser }) => !(guesser === null || guesser === void 0 ? void 0 : guesser.first_name));
     if (answersLeft.length > 0) {
         message += `\n<b>${game.list.name}</b>`;
         //message += `\n${answersLeft} answer${answersLeft > 1 ? 's' : ''} left.`;

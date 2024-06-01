@@ -38,8 +38,6 @@ export const createMaingame = async (chat_id: number): Promise<HydratedDocument<
 */
 
 export const checkRound = (game: IGame) => {
-  console.log(game.list.values);
-  console.log(game.list.values.map(({ guesser }) => guesser));
   if (game.list.values.filter(({ guesser }) => !guesser?.first_name).length === 0) {
     setTimeout(async () => {
       sendMaingameMessage(game);
@@ -176,9 +174,7 @@ export const checkMaingame = async (
     match.guesser = msg.from;
     player.answers++;
     const score = getAnswerScore(game.hints, guess.match.distance, game.guessers.length);
-    console.log("score", score);
     const accuracy = `${(guess.match.distance * 100).toFixed(0)}%`;
-    console.log("accuracy", accuracy);
     player.score += score;
     player.scoreDaily += score;
     if (game.hints === 0) {
@@ -192,7 +188,6 @@ export const checkMaingame = async (
     } else {
       game.streak.count++;
     }
-    console.log("streak", game.streak);
     if (player.streak < game.streak.count) {
       player.streak = game.streak.count;
     }
@@ -202,7 +197,6 @@ export const checkMaingame = async (
     if (player.maxHintStreak < player.hintStreak) {
       player.maxHintStreak = player.hintStreak;
     }
-    console.log("player", player);
     if (match.blurb) {
       guessed(
         game,
@@ -326,7 +320,7 @@ const guessed = async (
   message += `\n<u>${scoreDaily - score} + ${i18n(game.settings.language, "point", {
     count: score,
   })} (${accuracy})</u>`;
-  const answersLeft = game.list.values.filter(({ guesser }) => !guesser);
+  const answersLeft = game.list.values.filter(({ guesser }) => !guesser?.first_name);
   if (answersLeft.length > 0) {
     message += `\n<b>${game.list.name}</b>`;
     //message += `\n${answersLeft} answer${answersLeft > 1 ? 's' : ''} left.`;
