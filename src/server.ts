@@ -96,34 +96,34 @@ server.listen(port, async () => {
     websocketServer.broadcast("new_post", post);
   });
 
-  Player.find({ id: { $type: "string" } })
-    .select("_id id")
-    .then((players) => {
-      console.log("players", players.length);
-      players.forEach(async (player, i) => {
-        if (i % 1000 === 0) console.log(`${i + 1}/${players.length}`);
-        const result = await Player.findOneAndUpdate(
-          { _id: player._id },
-          { $set: { id: parseInt(player.id) } },
-          { returnOriginal: false }
-        );
-      });
-      console.log("done");
-    });
-  Game.find({ chat_id: { $type: "string" } })
-    .select("_id id")
-    .then((games) => {
-      console.log("games", games.length);
-      games.forEach(async (game, i) => {
-        if (i % 1000 === 0) console.log(`${i + 1}/${games.length}`);
-        const result = await Game.findOneAndUpdate(
-          { _id: game._id },
-          { $set: { chat_id: parseInt(game.chat_id as any) } },
-          { returnOriginal: false }
-        );
-      });
-      console.log("done");
-    });
+  // Player.find({ id: { $type: "string" } })
+  //   .select("_id id")
+  //   .then((players) => {
+  //     console.log("players", players.length);
+  //     players.forEach(async (player, i) => {
+  //       if (i % 1000 === 0) console.log(`${i + 1}/${players.length}`);
+  //       const result = await Player.findOneAndUpdate(
+  //         { _id: player._id },
+  //         { $set: { id: parseInt(player.id) } },
+  //         { returnOriginal: false }
+  //       );
+  //     });
+  //     console.log("done");
+  //   });
+  // Game.find({ chat_id: { $type: "string" } })
+  //   .select("_id id")
+  //   .then((games) => {
+  //     console.log("games", games.length);
+  //     games.forEach(async (game, i) => {
+  //       if (i % 1000 === 0) console.log(`${i + 1}/${games.length}`);
+  //       const result = await Game.findOneAndUpdate(
+  //         { _id: game._id },
+  //         { $set: { chat_id: parseInt(game.chat_id as any) } },
+  //         { returnOriginal: false }
+  //       );
+  //     });
+  //     console.log("done");
+  //   });
 });
 
 process

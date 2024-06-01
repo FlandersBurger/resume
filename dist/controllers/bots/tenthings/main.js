@@ -133,6 +133,7 @@ exports.tenthingsBotRoute.post("/", (req, res) => __awaiter(void 0, void 0, void
             yield (0, commands_1.evaluate)(msg, newGame, true);
         }
         else {
+            console.log(msg.command);
             if (!existingGame.enabled && !["/list", "/start"].includes(msg.command.toLowerCase())) {
                 telegram_1.default.sendMessage(msg.chatId, (0, i18n_1.default)(existingGame.settings.language, "sentences.inactivity"));
                 return res.sendStatus(200);
