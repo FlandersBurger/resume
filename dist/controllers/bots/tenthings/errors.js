@@ -19,12 +19,12 @@ const chatNotFound = (chat_id) => __awaiter(void 0, void 0, void 0, function* ()
     console.error(`Inactive chat disabled: ${chat_id}`);
 });
 exports.chatNotFound = chatNotFound;
-const botMuted = (chat_id) => __awaiter(void 0, void 0, void 0, function* () {
+const botMuted = (chat_id, reason) => __awaiter(void 0, void 0, void 0, function* () {
     const mutedGame = yield index_1.Game.findOneAndUpdate({ chat_id }, { $set: { enabled: false } });
     if (mutedGame) {
         yield index_1.Player.updateMany({ game: mutedGame._id }, { $set: { present: false } }, { multi: true });
     }
-    console.error(`Muted game disabled: ${chat_id}`);
+    console.error(`Muted game disabled: ${chat_id}${reason ? `, Reason: ${reason}` : ""}`);
 });
 exports.botMuted = botMuted;
 //# sourceMappingURL=errors.js.map

@@ -116,7 +116,7 @@ class TelegramBot {
     axios.get(url).catch((error) => {
       if (error.response) {
         if (this.muteReasons.includes(error.response.data.description)) {
-          return botMuted(channel);
+          return botMuted(channel, error.response.data.description);
         }
       }
       if (channel !== parseInt(process.env.MASTER_CHAT || "")) {
