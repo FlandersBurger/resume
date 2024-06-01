@@ -198,8 +198,8 @@ const checkMaingame = (game, player, guess, msg) => __awaiter(void 0, void 0, vo
         if (player.maxHintStreak < player.hintStreak) {
             player.maxHintStreak = player.hintStreak;
         }
+        console.log("msg", msg);
         if (match.blurb) {
-            console.log("msg", msg);
             guessed(game, player, msg, match.value, match.blurb.substring(0, 4) === "http"
                 ? `<a href="${match.blurb}">&#8204;</a>`
                 : `\n<i>${(0, string_helpers_1.angleBrackets)(match.blurb)}</i>`, score, accuracy);
