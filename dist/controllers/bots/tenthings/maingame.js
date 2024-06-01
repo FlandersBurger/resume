@@ -46,7 +46,7 @@ exports.createMaingame = createMaingame;
 const checkRound = (game) => {
     console.log(game.list.values);
     console.log(game.list.values.map(({ guesser }) => guesser));
-    if (game.list.values.filter((value) => !("guesser" in value)).length === 0) {
+    if (game.list.values.filter(({ guesser }) => !(guesser === null || guesser === void 0 ? void 0 : guesser.first_name)).length === 0) {
         setTimeout(() => __awaiter(void 0, void 0, void 0, function* () {
             (0, exports.sendMaingameMessage)(game);
             const foundList = yield index_1.List.findOne({ _id: game.list._id }).exec();
@@ -284,9 +284,8 @@ const sendMaingameMessage = (game, long = true) => __awaiter(void 0, void 0, voi
         message = `<b>${game.list.name}</b>\n`;
     }
     message += game.list.values.reduce((str, { guesser, value }, index) => {
-        console.log("guesser:", guesser);
         if (long) {
-            if (guesser === undefined || guesser.first_name === undefined) {
+            if (!(guesser === null || guesser === void 0 ? void 0 : guesser.first_name)) {
                 str += `\t<b>${index + 1}:</b> `;
                 str += `<b>${(0, hints_1.getHint)(game.hints, value)}</b>`;
                 str += "\n";
@@ -298,7 +297,7 @@ const sendMaingameMessage = (game, long = true) => __awaiter(void 0, void 0, voi
             }
         }
         else {
-            if (guesser === undefined) {
+            if (!(guesser === null || guesser === void 0 ? void 0 : guesser.first_name)) {
                 str += "\t";
                 str += index + 1;
                 str += ": ";

@@ -40,7 +40,7 @@ export const createMaingame = async (chat_id: number): Promise<HydratedDocument<
 export const checkRound = (game: IGame) => {
   console.log(game.list.values);
   console.log(game.list.values.map(({ guesser }) => guesser));
-  if (game.list.values.filter((value) => !("guesser" in value)).length === 0) {
+  if (game.list.values.filter(({ guesser }) => !guesser?.first_name).length === 0) {
     setTimeout(async () => {
       sendMaingameMessage(game);
       const foundList = await List.findOne({ _id: game.list._id }).exec();
@@ -287,9 +287,8 @@ export const sendMaingameMessage = async (game: IGame, long = true) => {
     message = `<b>${game.list.name}</b>\n`;
   }
   message += game.list.values.reduce((str, { guesser, value }, index) => {
-    console.log("guesser:", guesser);
     if (long) {
-      if (guesser === undefined || guesser.first_name === undefined) {
+      if (!guesser?.first_name) {
         str += `\t<b>${index + 1}:</b> `;
         str += `<b>${getHint(game.hints, value)}</b>`;
         str += "\n";
@@ -299,7 +298,7 @@ export const sendMaingameMessage = async (game: IGame, long = true) => {
         str += "\n";
       }
     } else {
-      if (guesser === undefined) {
+      if (!guesser?.first_name) {
         str += "\t";
         str += index + 1;
         str += ": ";
