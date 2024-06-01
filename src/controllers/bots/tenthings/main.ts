@@ -124,7 +124,6 @@ tenthingsBotRoute.post("/", async (req: Request, res: Response) => {
       console.log(`New game created for ${msg.chatId}`);
       await evaluate(msg, newGame, true);
     } else {
-      console.log(msg.command);
       if (!existingGame.enabled && !["/list", "/start"].includes(msg.command!.toLowerCase())) {
         bot.sendMessage(msg.chatId, i18n(existingGame.settings.language, "sentences.inactivity"));
         return res.sendStatus(200);

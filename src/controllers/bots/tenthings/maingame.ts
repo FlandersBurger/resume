@@ -197,8 +197,8 @@ export const checkMaingame = async (
     if (player.maxHintStreak < player.hintStreak) {
       player.maxHintStreak = player.hintStreak;
     }
+    console.log("msg", msg);
     if (match.blurb) {
-      console.log("msg", msg);
       guessed(
         game,
         player,
