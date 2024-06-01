@@ -18,6 +18,7 @@
   "modifiedOn": "Modified on",
   "on": "ON",
   "off": "OFF",
+  "and": "and",
   "description": "Description",
   "point_one": "{{count}} point",
   "point_other": "{{count}} points",
@@ -25,6 +26,7 @@
   "category_other": "Categories",
   "categories": {
     "Adult": "Adult",
+    "Albums": "Albums",
     "Animation": "Animation",
     "Anime/Manga": "Anime/Manga",
     "Art": "Art",
@@ -45,6 +47,7 @@
     "K-Pop": "K-pop",
     "Language": "Language",
     "Literature": "Literature",
+    "Lyrics": "Lyrics",
     "Mathematics": "Mathematics",
     "Medicine": "Medicine",
     "Misc": "Misc",

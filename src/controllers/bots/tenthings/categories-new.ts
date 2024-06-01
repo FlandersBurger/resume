@@ -1,5 +1,7 @@
 const oldCategoryHelperDictionary: { [key: string]: string } = {
   Music: "music",
+  Albums: "music.albums",
+  Lyrics: "music.lyric",
   Television: "television",
   Movies: "movies",
   Culture: "culture",

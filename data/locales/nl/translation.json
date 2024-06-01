@@ -18,6 +18,7 @@
   "modifiedOn": "Aangepast op",
   "on": "AAN",
   "off": "UIT",
+  "and": "en",
   "description": "Omschrijving",
   "point_one": "{{count}} punt",
   "point_other": "{{count}} punten",
@@ -25,6 +26,7 @@
   "category_other": "Categorieën",
   "categories": {
     "Adult": "Volwassen",
+    "Albums": "Albums",
     "Animation": "Animatie",
     "Anime/Manga": "Anime/Manga",
     "Art": "Kunst",
@@ -45,6 +47,7 @@
     "K-Pop": "K-pop",
     "Language": "Taal",
     "Literature": "Literatuur",
+    "Lyrics": "Liedteksten",
     "Mathematics": "Wiskunde",
     "Medicine": "Geneeskunde",
     "Misc": "Diversen",
