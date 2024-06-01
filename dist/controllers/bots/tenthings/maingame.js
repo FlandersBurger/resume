@@ -155,7 +155,6 @@ const deactivate = (game) => {
 };
 exports.deactivate = deactivate;
 const checkMaingame = (game, player, guess, msg) => __awaiter(void 0, void 0, void 0, function* () {
-    console.log("msg", msg);
     if (guess.list !== game.list._id)
         return;
     game.lastPlayDate = (0, moment_1.default)().toDate();
@@ -172,6 +171,7 @@ const checkMaingame = (game, player, guess, msg) => __awaiter(void 0, void 0, vo
         console.error(`Something wrong with this guess:\n${JSON.stringify(guess)}`);
     }
     console.log("match", match);
+    console.log("player", player);
     if (match && !match.guesser) {
         match.guesser = msg.from;
         player.answers++;

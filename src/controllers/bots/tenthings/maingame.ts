@@ -156,7 +156,6 @@ export const checkMaingame = async (
   guess: IGuess,
   msg: IMessage
 ) => {
-  console.log("msg", msg);
   if (guess.list !== game.list._id) return;
   game.lastPlayDate = moment().toDate();
   player.lastPlayDate = moment().toDate();
@@ -172,6 +171,7 @@ export const checkMaingame = async (
     console.error(`Something wrong with this guess:\n${JSON.stringify(guess)}`);
   }
   console.log("match", match);
+  console.log("player", player);
   if (match && !match.guesser) {
     match.guesser = msg.from;
     player.answers++;
