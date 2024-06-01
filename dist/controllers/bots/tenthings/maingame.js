@@ -172,8 +172,9 @@ const checkMaingame = (game, player, guess, msg) => __awaiter(void 0, void 0, vo
     }
     console.log("Do the thing?", match && !match.guesser);
     console.log("match", match);
-    console.log("guesser", !(match === null || match === void 0 ? void 0 : match.guesser));
-    if (match && !match.guesser) {
+    // @ts-ignore
+    console.log("guesser", "guesser" in match);
+    if (match && "guesser" in match) {
         match.guesser = msg.from;
         player.answers++;
         const score = (0, guesses_1.getAnswerScore)(game.hints, guess.match.distance, game.guessers.length);

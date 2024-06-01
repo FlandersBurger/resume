@@ -172,8 +172,9 @@ export const checkMaingame = async (
   }
   console.log("Do the thing?", match && !match.guesser);
   console.log("match", match);
-  console.log("guesser", !match?.guesser);
-  if (match && !match.guesser) {
+  // @ts-ignore
+  console.log("guesser", "guesser" in match);
+  if (match && "guesser" in match) {
     match.guesser = msg.from;
     player.answers++;
     const score = getAnswerScore(game.hints, guess.match.distance, game.guessers.length);
