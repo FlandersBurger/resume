@@ -44,7 +44,7 @@ exports.createMaingame = createMaingame;
   ██████ ██   ██ ███████  ██████ ██   ██     ██   ██  ██████   ██████  ██   ████ ██████
 */
 const checkRound = (game) => {
-    if (game.list.values.filter(({ guesser }) => !guesser).length === 0) {
+    if (game.list.values.filter(({ guesser }) => guesser === undefined).length === 0) {
         setTimeout(() => __awaiter(void 0, void 0, void 0, function* () {
             (0, exports.sendMaingameMessage)(game);
             const foundList = yield index_1.List.findOne({ _id: game.list._id }).exec();

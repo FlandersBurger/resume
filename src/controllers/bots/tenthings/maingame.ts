@@ -38,7 +38,7 @@ export const createMaingame = async (chat_id: number): Promise<HydratedDocument<
 */
 
 export const checkRound = (game: IGame) => {
-  if (game.list.values.filter(({ guesser }) => !guesser).length === 0) {
+  if (game.list.values.filter(({ guesser }) => guesser === undefined).length === 0) {
     setTimeout(async () => {
       sendMaingameMessage(game);
       const foundList = await List.findOne({ _id: game.list._id }).exec();
