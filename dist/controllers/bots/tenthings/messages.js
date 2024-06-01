@@ -369,7 +369,9 @@ const getStreakMessage = (streak) => {
         default:
             messages = [];
     }
-    return "\n--- " + (length > 0 ? messages[Math.floor(Math.random() * length)] : `Streak: ${streak}`) + " ---";
+    return ("\n--- " +
+        (messages.length > 0 ? messages[Math.floor(Math.random() * messages.length)] : `Streak: ${streak}`) +
+        " ---");
 };
 exports.getStreakMessage = getStreakMessage;
 //# sourceMappingURL=messages.js.map

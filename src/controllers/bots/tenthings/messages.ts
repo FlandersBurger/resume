@@ -356,5 +356,9 @@ export const getStreakMessage = (streak: number): string => {
     default:
       messages = [];
   }
-  return "\n--- " + (length > 0 ? messages[Math.floor(Math.random() * length)] : `Streak: ${streak}`) + " ---";
+  return (
+    "\n--- " +
+    (messages.length > 0 ? messages[Math.floor(Math.random() * messages.length)] : `Streak: ${streak}`) +
+    " ---"
+  );
 };

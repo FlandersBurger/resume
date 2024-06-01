@@ -170,10 +170,6 @@ export const checkMaingame = async (
     bot.notifyAdmin(`Something wrong with this guess:\n${JSON.stringify(guess)}`);
     console.error(`Something wrong with this guess:\n${JSON.stringify(guess)}`);
   }
-  console.log("Do the thing?", match && !match.guesser);
-  console.log("match", match);
-  // @ts-ignore
-  console.log("guesser", "guesser" in match);
   if (match && "guesser" in match) {
     match.guesser = msg.from;
     player.answers++;
