@@ -171,7 +171,8 @@ export const checkMaingame = async (
     console.error(`Something wrong with this guess:\n${JSON.stringify(guess)}`);
   }
   console.log("Do the thing?", match && !match.guesser);
-  console.log("game", game);
+  console.log("match", match);
+  console.log("guesser", !match?.guesser);
   if (match && !match.guesser) {
     match.guesser = msg.from;
     player.answers++;
