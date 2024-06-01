@@ -117,7 +117,9 @@ class TelegramBot {
           return botMuted(channel);
         }
       }
-      this.notifyAdmin(`Send Message to ${channel} Fail`);
+      if (channel !== parseInt(process.env.MASTER_CHAT || "")) {
+        this.notifyAdmin(`Send Message to ${channel} Fail`);
+      }
       console.error(error.response.data);
     });
   };
