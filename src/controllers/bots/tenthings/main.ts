@@ -104,6 +104,8 @@ tenthingsBotRoute.post("/", async (req: Request, res: Response) => {
       break;
   }
   let msg: IMessage = domainMessage.message as IMessage;
+
+  console.log(msg);
   try {
     if (!msg.from.id) {
       return res.sendStatus(200);
