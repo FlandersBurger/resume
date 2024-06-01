@@ -65,7 +65,7 @@ exports.default = (callbackQuery) => __awaiter(void 0, void 0, void 0, function*
                 doVote = true;
             }
             if (doVote) {
-                console.log(callbackQuery.id);
+                console.log(callbackQuery);
                 const [voteString, listId] = callbackQuery.id.split("_");
                 const vote = parseInt(voteString);
                 const foundList = yield index_1.List.findOne({ _id: listId })

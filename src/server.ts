@@ -124,8 +124,6 @@ server.listen(port, async () => {
   //     });
   //     console.log("done");
   //   });
-  const command = "/list".substring(0, !"/list".includes(" ") ? "/list".length : "/list".indexOf(" "));
-  console.log(command);
 });
 
 process
