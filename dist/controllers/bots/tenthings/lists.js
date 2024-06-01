@@ -18,6 +18,7 @@ const telegram_1 = __importDefault(require("../../../connections/telegram"));
 const index_1 = require("../../../models/index");
 const some_1 = __importDefault(require("lodash/some"));
 const keyboards_1 = require("./keyboards");
+const i18n_1 = __importDefault(require("../../../i18n"));
 const getRandomList = (parameters = {}) => __awaiter(void 0, void 0, void 0, function* () {
     const count = yield index_1.List.countDocuments(parameters).exec();
     if (count === 0)
@@ -46,7 +47,7 @@ const getListScore = (list) => {
 };
 exports.getListScore = getListScore;
 const rateList = (game) => {
-    telegram_1.default.sendKeyboard(game.chat_id, `Did you like <b>${game.list.name}</b>?`, (0, keyboards_1.likeListKeyboard)(game));
+    telegram_1.default.sendKeyboard(game.chat_id, `Did you like <b>${game.list.name.replace("&", (0, i18n_1.default)(game.settings.language, "and"))}</b>?`, (0, keyboards_1.likeListKeyboard)(game));
 };
 exports.rateList = rateList;
 const getAvailableLanguages = ({ settings }) => settings.languages && settings.languages.length > 0 ? settings.languages : ["EN"];
