@@ -131,7 +131,6 @@ const processGuess = async (guess: IGuess) => {
     return;
   }
   if (guess.match.type === GameType.MAINGAME) {
-    console.log("guess", guess);
     await checkMaingame(game, player, guess, guess.msg);
     console.log(
       `${guess.game} (${game.settings.language}) - ${game.list.name} for ${guess.match.value}: "${guess.msg.text}" by ${player.first_name}`

@@ -170,6 +170,8 @@ const checkMaingame = (game, player, guess, msg) => __awaiter(void 0, void 0, vo
         telegram_1.default.notifyAdmin(`Something wrong with this guess:\n${JSON.stringify(guess)}`);
         console.error(`Something wrong with this guess:\n${JSON.stringify(guess)}`);
     }
+    console.log("Do the thing?", match && !match.guesser);
+    console.log("game", game);
     if (match && !match.guesser) {
         match.guesser = msg.from;
         player.answers++;
