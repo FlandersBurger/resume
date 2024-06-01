@@ -77,7 +77,7 @@ const processHint = (game, player, type = game_1.GameType.MAINGAME) => __awaiter
 });
 exports.processHint = processHint;
 const getHint = (hints, value) => {
-    if (!value)
+    if (value === undefined)
         return "";
     let i = 0;
     let tester = "";

@@ -44,6 +44,7 @@ exports.createMaingame = createMaingame;
   ██████ ██   ██ ███████  ██████ ██   ██     ██   ██  ██████   ██████  ██   ████ ██████
 */
 const checkRound = (game) => {
+    console.log(game.list.values);
     if (game.list.values.filter(({ guesser }) => guesser === undefined).length === 0) {
         setTimeout(() => __awaiter(void 0, void 0, void 0, function* () {
             (0, exports.sendMaingameMessage)(game);
@@ -295,6 +296,7 @@ const sendMaingameMessage = (game, long = true) => __awaiter(void 0, void 0, voi
             }
         }
         else {
+            console.log(guesser);
             if (guesser === undefined) {
                 str += "\t";
                 str += index + 1;

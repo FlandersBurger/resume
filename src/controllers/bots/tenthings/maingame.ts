@@ -38,6 +38,7 @@ export const createMaingame = async (chat_id: number): Promise<HydratedDocument<
 */
 
 export const checkRound = (game: IGame) => {
+  console.log(game.list.values);
   if (game.list.values.filter(({ guesser }) => guesser === undefined).length === 0) {
     setTimeout(async () => {
       sendMaingameMessage(game);
@@ -296,6 +297,7 @@ export const sendMaingameMessage = async (game: IGame, long = true) => {
         str += "\n";
       }
     } else {
+      console.log(guesser);
       if (guesser === undefined) {
         str += "\t";
         str += index + 1;

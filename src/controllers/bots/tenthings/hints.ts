@@ -67,7 +67,7 @@ export const processHint = async (
 };
 
 export const getHint = (hints: number, value: string): string => {
-  if (!value) return "";
+  if (value === undefined) return "";
   let i = 0;
   let tester = "";
   if (hints > MAX_HINTS) hints = MAX_HINTS;
