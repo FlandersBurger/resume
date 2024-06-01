@@ -155,6 +155,7 @@ const deactivate = (game) => {
 };
 exports.deactivate = deactivate;
 const checkMaingame = (game, player, guess, msg) => __awaiter(void 0, void 0, void 0, function* () {
+    var _a;
     if (guess.list !== game.list._id)
         return;
     game.lastPlayDate = (0, moment_1.default)().toDate();
@@ -170,7 +171,7 @@ const checkMaingame = (game, player, guess, msg) => __awaiter(void 0, void 0, vo
         telegram_1.default.notifyAdmin(`Something wrong with this guess:\n${JSON.stringify(guess)}`);
         console.error(`Something wrong with this guess:\n${JSON.stringify(guess)}`);
     }
-    if (match && "guesser" in match) {
+    if (match && !((_a = match.guesser) === null || _a === void 0 ? void 0 : _a.first_name)) {
         match.guesser = msg.from;
         player.answers++;
         const score = (0, guesses_1.getAnswerScore)(game.hints, guess.match.distance, game.guessers.length);

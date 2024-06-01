@@ -170,7 +170,7 @@ export const checkMaingame = async (
     bot.notifyAdmin(`Something wrong with this guess:\n${JSON.stringify(guess)}`);
     console.error(`Something wrong with this guess:\n${JSON.stringify(guess)}`);
   }
-  if (match && "guesser" in match) {
+  if (match && !match.guesser?.first_name) {
     match.guesser = msg.from;
     player.answers++;
     const score = getAnswerScore(game.hints, guess.match.distance, game.guessers.length);
