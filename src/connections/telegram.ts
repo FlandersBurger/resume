@@ -18,7 +18,7 @@ const messageQueue = new Queue("sendMessage", {
     password: process.env.REDIS_PASSWORD,
   },
   limiter: {
-    max: 30,
+    max: 28,
     duration: 1000,
   },
 });
@@ -58,6 +58,8 @@ class TelegramBot {
   private telegramBotUser: ITelegramUser | undefined;
   private muteReasons: string[] = [
     "Bad Request: not enough rights to send text messages to the chat",
+    "Bad Request: TOPIC_CLOSED",
+    "Bad Request: CHAT_WRITE_FORBIDDEN",
     "Forbidden: bot was kicked from the supergroup chat",
     "Forbidden: bot was blocked by the user",
     "Forbidden: the group chat was deleted",
