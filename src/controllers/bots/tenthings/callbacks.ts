@@ -36,7 +36,6 @@ export interface ICallbackData {
   chatId: number;
   callbackQueryId: string;
   text: string;
-
   data: string;
 }
 
@@ -78,6 +77,7 @@ export default async (callbackQuery: ICallbackData) => {
         doVote = true;
       }
       if (doVote) {
+        console.log(callbackQuery.id);
         const [voteString, listId] = callbackQuery.id.split("_");
         const vote = parseInt(voteString);
         const foundList: HydratedDocument<IList> | null = await List.findOne({ _id: listId })
