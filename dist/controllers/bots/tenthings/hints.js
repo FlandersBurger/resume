@@ -131,8 +131,7 @@ const getHint = (hints, value) => {
                 break;
         }
     }
-    // @ts-ignore
-    return str.angleBrackets();
+    return (0, string_helpers_1.angleBrackets)(str);
 };
 exports.getHint = getHint;
 const getMaxHints = () => exports.MAX_HINTS;

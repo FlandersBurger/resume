@@ -1,7 +1,7 @@
 import { HydratedDocument } from "mongoose";
 import { GameType, IGame } from "@models/tenthings/game";
 import { IPlayer } from "@models/tenthings/player";
-import { conceal, concealMiddle } from "@root/utils/string-helpers";
+import { angleBrackets, conceal, concealMiddle } from "@root/utils/string-helpers";
 import uniq from "lodash/uniq";
 import { sendMaingameMessage } from "./maingame";
 import { sendMinigameMessage } from "./minigame";
@@ -121,8 +121,7 @@ export const getHint = (hints: number, value: string): string => {
         break;
     }
   }
-  // @ts-ignore
-  return str.angleBrackets();
+  return angleBrackets(str);
 };
 
 export const getMaxHints = () => MAX_HINTS;
