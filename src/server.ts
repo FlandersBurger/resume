@@ -101,8 +101,8 @@ server.listen(port, async () => {
     .limit(10)
     .then((players) => {
       console.log("players", players.length);
-      players.forEach(async (player) => {
-        console.log("player", player.id);
+      players.forEach(async (player, i) => {
+        if (i % 1000 === 0) console.log(`${i + 1}/${players.length}`);
         const result = await Player.findOneAndUpdate(
           { _id: player._id },
           { $set: { id: parseInt(player.id) } },

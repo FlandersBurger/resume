@@ -8,7 +8,7 @@ import { IMessage } from "./messages";
 export const getPlayer = async (game: IGame, from: ITelegramUser | IPlayer) => {
   let player = await Player.findOne({
     game: game._id,
-    id: `${from.id}`, //Stringified
+    id: from.id,
   }).exec();
   if (!player) player = await createPlayer(game, from as ITelegramUser);
   else if (player && player.first_name) {

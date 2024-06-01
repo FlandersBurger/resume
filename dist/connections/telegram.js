@@ -38,6 +38,12 @@ messageQueue.on("completed", function (job) {
 });
 class TelegramBot {
     constructor(token) {
+        this.muteReasons = [
+            "Bad Request: not enough rights to send text messages to the chat",
+            "Forbidden: bot was kicked from the supergroup chat",
+            "Forbidden: bot was blocked by the user",
+            "Forbidden: the group chat was deleted",
+        ];
         this.init = () => __awaiter(this, void 0, void 0, function* () {
             const { data } = yield axios_1.default.get(`${this.baseUrl}/getMe`);
             this.telegramBotUser = data.result;
@@ -82,12 +88,13 @@ class TelegramBot {
             if (topic)
                 url += `&message_thread_id=${topic}`;
             axios_1.default.get(url).catch((error) => {
-                if (error.response.data.description === "Bad Request: not enough rights to send text messages to the chat") {
-                    (0, errors_1.botMuted)(channel);
+                if (error.response) {
+                    if (this.muteReasons.includes(error.response.data.description)) {
+                        return (0, errors_1.botMuted)(channel);
+                    }
                 }
-                else {
-                    console.error(error.response.data);
-                }
+                this.notifyAdmin(`Send Message to ${channel} Fail`);
+                console.error(error.response.data);
             });
         };
         this.deleteMessage = (channel, message_id) => __awaiter(this, void 0, void 0, function* () {
@@ -225,6 +232,11 @@ class TelegramBot {
                 yield axios_1.default.get(encodeURI(url));
             }
             catch (error) {
+                if (error.response) {
+                    if (this.muteReasons.includes(error.response.data.description)) {
+                        return (0, errors_1.botMuted)(channel);
+                    }
+                }
                 this.notifyAdmin(`Send Keyboard to ${channel} Fail`);
                 console.error(error.response.data);
             }

@@ -36,6 +36,7 @@ const users_1 = require("./controllers/api/users");
 const main_1 = require("./controllers/bots/tenthings/main");
 const queue_1 = require("./queue");
 const telegram_1 = __importDefault(require("./connections/telegram"));
+const models_1 = require("./models");
 const serviceAccount = require("../keys/resume-172205-firebase-adminsdk-r34t7-0028c702be.json");
 firebase_admin_1.default.initializeApp({
     credential: firebase_admin_1.default.credential.cert(serviceAccount),
@@ -94,6 +95,18 @@ server.listen(port, () => __awaiter(void 0, void 0, void 0, function* () {
     }
     yield (0, queue_1.subscribe)("new_post", (post) => {
         websocketServer.broadcast("new_post", post);
+    });
+    models_1.Player.find({ id: { $type: "string" } })
+        .select("_id id")
+        .limit(10)
+        .then((players) => {
+        console.log("players", players.length);
+        players.forEach((player, i) => __awaiter(void 0, void 0, void 0, function* () {
+            if (i % 1000 === 0)
+                console.log(`${i + 1}/${players.length}`);
+            const result = yield models_1.Player.findOneAndUpdate({ _id: player._id }, { $set: { id: parseInt(player.id) } }, { returnOriginal: false });
+        }));
+        console.log("done");
     });
 }));
 process

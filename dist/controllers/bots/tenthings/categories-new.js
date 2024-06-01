@@ -3,6 +3,8 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.convertCategory = void 0;
 const oldCategoryHelperDictionary = {
     Music: "music",
+    Albums: "music.albums",
+    Lyrics: "music.lyric",
     Television: "television",
     Movies: "movies",
     Culture: "culture",
