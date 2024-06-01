@@ -260,7 +260,7 @@ export const evaluate = async (msg: IMessage, game: HydratedDocument<IGame>, isN
       */
       case "/eu":
       case "/me":
-        getStats(msg.chatId, "p_", msg.from.first_name);
+        getStats(msg.chatId, `p_${msg.from.id}`, msg.from.first_name);
         break;
       case "/pontuacao":
       case "/score":

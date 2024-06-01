@@ -245,7 +245,7 @@ const evaluate = (msg, game, isNew) => __awaiter(void 0, void 0, void 0, functio
             */
             case "/eu":
             case "/me":
-                (0, stats_1.getStats)(msg.chatId, "p_", msg.from.first_name);
+                (0, stats_1.getStats)(msg.chatId, `p_${msg.from.id}`, msg.from.first_name);
                 break;
             case "/pontuacao":
             case "/score":
