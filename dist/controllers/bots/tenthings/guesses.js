@@ -116,6 +116,7 @@ const processGuess = (guess) => __awaiter(void 0, void 0, void 0, function* () {
         return;
     }
     if (guess.match.type === game_1.GameType.MAINGAME) {
+        console.log("guess", guess);
         yield (0, maingame_1.checkMaingame)(game, player, guess, guess.msg);
         console.log(`${guess.game} (${game.settings.language}) - ${game.list.name} for ${guess.match.value}: "${guess.msg.text}" by ${player.first_name}`);
     }
