@@ -116,7 +116,7 @@ server.listen(port, async () => {
       console.log("games", games.length);
       games.forEach(async (game, i) => {
         if (i % 1000 === 0) console.log(`${i + 1}/${games.length}`);
-        const result = await Player.findOneAndUpdate(
+        const result = await Game.findOneAndUpdate(
           { _id: game._id },
           { $set: { chat_id: parseInt(game.chat_id as any) } },
           { returnOriginal: false }

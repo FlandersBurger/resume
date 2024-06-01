@@ -114,7 +114,7 @@ server.listen(port, () => __awaiter(void 0, void 0, void 0, function* () {
         games.forEach((game, i) => __awaiter(void 0, void 0, void 0, function* () {
             if (i % 1000 === 0)
                 console.log(`${i + 1}/${games.length}`);
-            const result = yield models_1.Player.findOneAndUpdate({ _id: game._id }, { $set: { chat_id: parseInt(game.chat_id) } }, { returnOriginal: false });
+            const result = yield models_1.Game.findOneAndUpdate({ _id: game._id }, { $set: { chat_id: parseInt(game.chat_id) } }, { returnOriginal: false });
         }));
         console.log("done");
     });
