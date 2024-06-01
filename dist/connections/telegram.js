@@ -393,7 +393,9 @@ class TelegramBot {
                     if (command.includes("@") && command.substring(command.indexOf("@") + 1) !== "TenThings_Bot") {
                         return { messageType: main_1.MessageType.Ignore };
                     }
-                    command = command.substring(0, command.indexOf("@"));
+                    else if (command.includes("@") && command.substring(command.indexOf("@") + 1) === "TenThings_Bot") {
+                        command = command.substring(0, command.indexOf("@"));
+                    }
                     command = command.toLowerCase();
                     return {
                         messageType: main_1.MessageType.Message,

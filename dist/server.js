@@ -123,6 +123,8 @@ server.listen(port, () => __awaiter(void 0, void 0, void 0, function* () {
     //     });
     //     console.log("done");
     //   });
+    const command = "/list".substring(0, !"/list".includes(" ") ? "/list".length : "/list".indexOf(" "));
+    console.log(command);
 }));
 process
     .on("unhandledRejection", (reason, p) => {

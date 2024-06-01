@@ -110,7 +110,6 @@ exports.tenthingsBotRoute.post("/", (req, res) => __awaiter(void 0, void 0, void
             break;
     }
     let msg = domainMessage.message;
-    console.log(msg);
     try {
         if (!msg.from.id) {
             return res.sendStatus(200);
