@@ -113,13 +113,13 @@ export default async (callbackQuery: ICallbackData) => {
       }
       break;
     case CallbackDataType.StatOptions:
+      console.log(callbackQuery);
       if (await bot.checkAdmin(callbackQuery.chatId, callbackQuery.from.id)) {
         game = await Game.findOne({ chat_id: callbackQuery.chatId }).select("chat_id list settings").exec();
         if (!game) return;
         const text = i18n(game.settings.language, `stats.${callbackQuery.data}`);
         switch (callbackQuery.data) {
           case "list":
-            console.log(listStatsKeyboard(game));
             bot.answerCallback(callbackQuery.callbackQueryId, text);
             bot.sendKeyboard(game.chat_id, `<b>${text}</b>`, listStatsKeyboard(game));
             break;

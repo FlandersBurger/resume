@@ -100,6 +100,7 @@ exports.default = (callbackQuery) => __awaiter(void 0, void 0, void 0, function*
             }
             break;
         case CallbackDataType.StatOptions:
+            console.log(callbackQuery);
             if (yield telegram_1.default.checkAdmin(callbackQuery.chatId, callbackQuery.from.id)) {
                 game = yield index_1.Game.findOne({ chat_id: callbackQuery.chatId }).select("chat_id list settings").exec();
                 if (!game)
@@ -107,7 +108,6 @@ exports.default = (callbackQuery) => __awaiter(void 0, void 0, void 0, function*
                 const text = (0, i18n_1.default)(game.settings.language, `stats.${callbackQuery.data}`);
                 switch (callbackQuery.data) {
                     case "list":
-                        console.log((0, keyboards_1.listStatsKeyboard)(game));
                         telegram_1.default.answerCallback(callbackQuery.callbackQueryId, text);
                         telegram_1.default.sendKeyboard(game.chat_id, `<b>${text}</b>`, (0, keyboards_1.listStatsKeyboard)(game));
                         break;
