@@ -181,7 +181,8 @@ export default async (callbackQuery: ICallbackData) => {
       }
       break;
     case CallbackDataType.Setting:
-      if (callbackQuery.chatId != parseInt(process.env.MASTER_CHAT || "")) {
+      console.log(callbackQuery);
+      if (callbackQuery.chatId !== parseInt(process.env.MASTER_CHAT || "")) {
         if (await bot.checkAdmin(callbackQuery.chatId, callbackQuery.from.id)) {
           game = await Game.findOne({ chat_id: callbackQuery.chatId }).select("chat_id settings").exec();
           if (!game || !callbackQuery.data) return;
