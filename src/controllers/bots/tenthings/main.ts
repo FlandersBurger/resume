@@ -124,19 +124,13 @@ tenthingsBotRoute.post("/", async (req: Request, res: Response) => {
       console.log(`New game created for ${msg.chatId}`);
       await evaluate(msg, newGame, true);
     } else {
-      if (
-        !existingGame.enabled &&
-        msg.command &&
-        !["/list", "/start", "/minigame", "/tinygame"].includes(msg.command.toLowerCase())
-      ) {
-        bot.sendMessage(msg.chatId, i18n(existingGame.settings.language, "sentences.inactivity"));
-        return res.sendStatus(200);
-      } else if (
-        !existingGame.enabled &&
-        msg.command &&
-        ["/list", "/start", "/minigame", "/tinygame"].includes(msg.command.toLowerCase())
-      ) {
-        activate(existingGame);
+      if (!existingGame.enabled && msg.command) {
+        if (["/list", "/start", "/minigame", "/tinygame"].includes(msg.command.toLowerCase())) {
+          activate(existingGame);
+        } else {
+          bot.sendMessage(msg.chatId, i18n(existingGame.settings.language, "sentences.inactivity"));
+          return res.sendStatus(200);
+        }
       }
       await evaluate(msg, existingGame, false);
     }

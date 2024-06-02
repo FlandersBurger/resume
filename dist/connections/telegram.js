@@ -188,11 +188,11 @@ class TelegramBot {
                     return `Private Chat`;
             }
             catch (error) {
-                this.notifyAdmin(`Get Chat ${channel} Fail`);
                 if (error.response.data.error_code === 400) {
                     (0, errors_1.chatNotFound)(channel);
                 }
                 else {
+                    this.notifyAdmin(`Get Chat ${channel} Fail`);
                     console.error(error.response.data);
                 }
                 return `Chat not found: ${channel} - ${error.response.data.error_code}`;

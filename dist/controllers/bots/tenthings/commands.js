@@ -119,7 +119,6 @@ const evaluate = (msg, game, isNew) => __awaiter(void 0, void 0, void 0, functio
             case "/lista":
             case "/list":
                 try {
-                    (0, maingame_1.activate)(game, true);
                     (0, maingame_1.sendMaingameMessage)(game);
                 }
                 catch (e) {
@@ -129,7 +128,6 @@ const evaluate = (msg, game, isNew) => __awaiter(void 0, void 0, void 0, functio
             case "/pule":
             case "/skip":
                 if (yield (0, skips_1.checkSkipper)(game, msg, player)) {
-                    (0, maingame_1.activate)(game, true);
                     (0, skips_1.processSkip)(game, player);
                 }
                 break;
@@ -205,7 +203,6 @@ const evaluate = (msg, game, isNew) => __awaiter(void 0, void 0, void 0, functio
                 break;
             case "/dica":
             case "/hint":
-                (0, maingame_1.activate)(game, false);
                 if (game.list.values.filter(({ guesser }) => guesser).length !== 0) {
                     try {
                         (0, hints_1.processHint)(game, player);

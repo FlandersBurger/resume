@@ -132,16 +132,14 @@ exports.tenthingsBotRoute.post("/", (req, res) => __awaiter(void 0, void 0, void
             yield (0, commands_1.evaluate)(msg, newGame, true);
         }
         else {
-            if (!existingGame.enabled &&
-                msg.command &&
-                !["/list", "/start", "/minigame", "/tinygame"].includes(msg.command.toLowerCase())) {
-                telegram_1.default.sendMessage(msg.chatId, (0, i18n_1.default)(existingGame.settings.language, "sentences.inactivity"));
-                return res.sendStatus(200);
-            }
-            else if (!existingGame.enabled &&
-                msg.command &&
-                ["/list", "/start", "/minigame", "/tinygame"].includes(msg.command.toLowerCase())) {
-                (0, maingame_1.activate)(existingGame);
+            if (!existingGame.enabled && msg.command) {
+                if (["/list", "/start", "/minigame", "/tinygame"].includes(msg.command.toLowerCase())) {
+                    (0, maingame_1.activate)(existingGame);
+                }
+                else {
+                    telegram_1.default.sendMessage(msg.chatId, (0, i18n_1.default)(existingGame.settings.language, "sentences.inactivity"));
+                    return res.sendStatus(200);
+                }
             }
             yield (0, commands_1.evaluate)(msg, existingGame, false);
         }

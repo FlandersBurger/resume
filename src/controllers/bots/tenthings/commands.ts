@@ -3,7 +3,7 @@ import { GameType, IGame } from "@models/tenthings/game";
 import { Game, List } from "@models/index";
 import { HydratedDocument, LeanDocument } from "mongoose";
 import { IMessage, getCategoriesMessage, getLogicMessage } from "./messages";
-import { activate, deactivate, newRound, sendMaingameMessage } from "./maingame";
+import { deactivate, newRound, sendMaingameMessage } from "./maingame";
 import { createMinigame, createMinigames, sendMinigameMessage } from "./minigame";
 import { createTinygame, sendTinygameMessage } from "./tinygame";
 import { processHint } from "./hints";
@@ -120,7 +120,6 @@ export const evaluate = async (msg: IMessage, game: HydratedDocument<IGame>, isN
       case "/lista":
       case "/list":
         try {
-          activate(game, true);
           sendMaingameMessage(game);
         } catch (e) {
           console.error(e);
@@ -129,7 +128,6 @@ export const evaluate = async (msg: IMessage, game: HydratedDocument<IGame>, isN
       case "/pule":
       case "/skip":
         if (await checkSkipper(game, msg, player)) {
-          activate(game, true);
           processSkip(game, player);
         }
         break;
@@ -218,7 +216,6 @@ export const evaluate = async (msg: IMessage, game: HydratedDocument<IGame>, isN
         break;
       case "/dica":
       case "/hint":
-        activate(game, false);
         if (game.list.values.filter(({ guesser }) => guesser).length !== 0) {
           try {
             processHint(game, player);

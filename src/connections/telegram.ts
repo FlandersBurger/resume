@@ -209,10 +209,10 @@ class TelegramBot {
       else if (data.result.first_name) return `Private Chat: ${data.result.first_name}`;
       else if (data.result.type === "private") return `Private Chat`;
     } catch (error: any) {
-      this.notifyAdmin(`Get Chat ${channel} Fail`);
       if (error.response.data.error_code === 400) {
         chatNotFound(channel);
       } else {
+        this.notifyAdmin(`Get Chat ${channel} Fail`);
         console.error(error.response.data);
       }
       return `Chat not found: ${channel} - ${error.response.data.error_code}`;
