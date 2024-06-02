@@ -2,6 +2,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = [
     "Adult",
+    "Albums",
     "Animation",
     "Anime/Manga",
     "Art",
@@ -22,6 +23,7 @@ exports.default = [
     "K-pop",
     "Language",
     "Literature",
+    "Lyrics",
     "Mathematics",
     "Medicine",
     "Misc",
