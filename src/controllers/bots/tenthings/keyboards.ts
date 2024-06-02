@@ -128,7 +128,7 @@ export const categoriesKeyboard = ({ chat_id, settings, disabledCategories }: IG
         `${i18n(settings.language, `categories.${category}`)}: ${
           disabledCategories.indexOf(category) < 0 ? emojis.on : emojis.off
         }`,
-        { type: CallbackDataType.Category, id: category }
+        { type: CallbackDataType.Category, id: category },
       );
       if (i % 2 === 0) {
         result.push([button]);
@@ -149,9 +149,9 @@ export const settingsKeyboard = ({ chat_id, settings }: IGame): IKeyboard => {
         }),
         getButton(
           `${i18n(settings.language, "language", { count: settings.languages.length })}: ${settings.languages.join(
-            ", "
+            ", ",
           )}`,
-          { type: CallbackDataType.Setting, id: "langs" }
+          { type: CallbackDataType.Setting, id: "langs" },
         ),
       ],
       [
@@ -187,7 +187,7 @@ export const languagesKeyboard = ({ chat_id, settings }: IGame, availableLanguag
           `${settings.languages.includes(language.code) ? emojis.on : emojis.off} ${language.code} - ${
             language.native
           } (${find(availableLanguages, (availableLanguage) => availableLanguage._id === language.code)!.count})`,
-          { type: CallbackDataType.TriviaLanguages, id: language.code }
+          { type: CallbackDataType.TriviaLanguages, id: language.code },
         );
         if (i % 2 === 0) {
           result.push([button]);
@@ -198,18 +198,18 @@ export const languagesKeyboard = ({ chat_id, settings }: IGame, availableLanguag
       }, []),
   };
 };
-export const languageKeyboard = ({ chat_id, settings }: IGame, availableLanguages: string[]): IKeyboard => {
+export const languageKeyboard = ({ settings }: IGame, availableLanguages: string[]): IKeyboard => {
   return {
     inline_keyboard: languages
       .filter((language) => ["EN", "NL", "ID", "PT", "TL"].includes(language.code))
       .filter((language) =>
-        some(availableLanguages, (availableLanguage: string) => availableLanguage === language.code)
+        some(availableLanguages, (availableLanguage: string) => availableLanguage === language.code),
       )
       .sort()
       .reduce((result: IKeyboardButton[][], language: ILanguage, i: number) => {
         const button = getButton(
           `${language.code} - ${language.native} ${settings.language === language.code ? emojis.green : ""}`,
-          { type: CallbackDataType.BotLanguage, id: language.code }
+          { type: CallbackDataType.BotLanguage, id: language.code },
         );
         if (i % 2 === 0) {
           result.push([button]);

@@ -192,7 +192,7 @@ const languagesKeyboard = ({ chat_id, settings }, availableLanguages) => {
     };
 };
 exports.languagesKeyboard = languagesKeyboard;
-const languageKeyboard = ({ chat_id, settings }, availableLanguages) => {
+const languageKeyboard = ({ settings }, availableLanguages) => {
     return {
         inline_keyboard: languages_1.default
             .filter((language) => ["EN", "NL", "ID", "PT", "TL"].includes(language.code))

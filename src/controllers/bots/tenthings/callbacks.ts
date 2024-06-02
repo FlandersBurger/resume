@@ -195,7 +195,7 @@ export default async (callbackQuery: ICallbackData) => {
             const availableLanguages = await List.aggregate([
               { $group: { _id: "$language", count: { $sum: 1 } } },
             ]).exec();
-            console.log(callbackQuery, languageKeyboard(game, availableLanguages));
+            console.log(availableLanguages, languageKeyboard(game, availableLanguages));
             bot.editKeyboard(callbackQuery.chatId, callbackQuery.id, languageKeyboard(game, availableLanguages));
           } else {
             console.log(`${callbackQuery.data} toggled for ${game._id}`);

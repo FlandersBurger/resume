@@ -182,7 +182,7 @@ exports.default = (callbackQuery) => __awaiter(void 0, void 0, void 0, function*
                         const availableLanguages = yield index_1.List.aggregate([
                             { $group: { _id: "$language", count: { $sum: 1 } } },
                         ]).exec();
-                        console.log(callbackQuery, (0, keyboards_1.languageKeyboard)(game, availableLanguages));
+                        console.log(availableLanguages, (0, keyboards_1.languageKeyboard)(game, availableLanguages));
                         telegram_1.default.editKeyboard(callbackQuery.chatId, callbackQuery.id, (0, keyboards_1.languageKeyboard)(game, availableLanguages));
                     }
                     else {
