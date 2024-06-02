@@ -10,8 +10,8 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 const _ = require("underscore");
 const moment = require("moment");
-const srcStat = require("../../models/tenthings/stats")("backup");
-const dstStat = require("../../models/tenthings/stats")("master");
+const srcStat = require("@models/tenthings/stats")("backup");
+const dstStat = require("@models/tenthings/stats")("master");
 const backup = () => __awaiter(void 0, void 0, void 0, function* () {
     const existingStats = yield dstStat.find({}).select("_id").lean();
     //const missingStats = await srcStat.find({ _id: { $nin: existingStats } });

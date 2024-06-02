@@ -14,12 +14,12 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const axios_1 = __importDefault(require("axios"));
 const bull_1 = __importDefault(require("bull"));
-const i18n_1 = __importDefault(require("../i18n"));
-const queue_1 = __importDefault(require("../queue"));
-const errors_1 = require("../controllers/bots/tenthings/errors");
-const spam_1 = require("../controllers/bots/tenthings/spam");
-const main_1 = require("../controllers/bots/tenthings/main");
-const string_helpers_1 = require("../utils/string-helpers");
+const i18n_1 = __importDefault(require("@root/i18n"));
+const queue_1 = __importDefault(require("@root/queue"));
+const errors_1 = require("@tenthings/errors");
+const spam_1 = require("@tenthings/spam");
+const main_1 = require("@tenthings/main");
+const string_helpers_1 = require("@root/utils/string-helpers");
 const BANNED_TELEGRAM_USERS = [1726294650];
 const messageQueue = new bull_1.default("sendMessage", {
     redis: {
@@ -43,9 +43,12 @@ class TelegramBot {
             "Bad Request: chat not found",
             "Bad Request: TOPIC_CLOSED",
             "Bad Request: CHAT_WRITE_FORBIDDEN",
+            "Bad Request: group chat was upgraded to a supergroup chat",
             "Forbidden: bot was kicked from the supergroup chat",
+            "Forbidden: bot was kicked from the group chat",
             "Forbidden: bot was blocked by the user",
             "Forbidden: the group chat was deleted",
+            "Forbidden: user is deactivated",
         ];
         this.init = () => __awaiter(this, void 0, void 0, function* () {
             const { data } = yield axios_1.default.get(`${this.baseUrl}/getMe`);
@@ -161,7 +164,7 @@ class TelegramBot {
                     if (index === channels.length - 1) {
                         this.notifyAdmin("Broadcast finished");
                     }
-                }, index * 50);
+                }, index * 100);
             });
         });
         this.exportChatInviteLink = (channel) => __awaiter(this, void 0, void 0, function* () {

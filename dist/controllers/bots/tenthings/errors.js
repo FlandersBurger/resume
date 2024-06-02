@@ -10,7 +10,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.botMuted = exports.chatNotFound = void 0;
-const index_1 = require("../../../models/index");
+const index_1 = require("@models/index");
 const chatNotFound = (chat_id) => __awaiter(void 0, void 0, void 0, function* () {
     const inactiveGame = yield index_1.Game.findOneAndUpdate({ chat_id }, { $set: { enabled: false } });
     if (inactiveGame) {

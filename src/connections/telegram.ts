@@ -3,7 +3,7 @@ import axios, { AxiosError } from "axios";
 import Queue, { Job } from "bull";
 import i18n from "@root/i18n";
 import redis from "@root/queue";
-import { chatNotFound, botMuted } from "@tenthings/errors";
+import { chatNotFound, botMuted, chatMigrated } from "@tenthings/errors";
 import { checkSpam } from "@tenthings/spam";
 import { MessageType } from "@tenthings/main";
 import { IMessageType } from "@tenthings/messages";
@@ -61,9 +61,12 @@ class TelegramBot {
     "Bad Request: chat not found",
     "Bad Request: TOPIC_CLOSED",
     "Bad Request: CHAT_WRITE_FORBIDDEN",
+    "Bad Request: group chat was upgraded to a supergroup chat",
     "Forbidden: bot was kicked from the supergroup chat",
+    "Forbidden: bot was kicked from the group chat",
     "Forbidden: bot was blocked by the user",
     "Forbidden: the group chat was deleted",
+    "Forbidden: user is deactivated",
   ];
 
   constructor(token: string) {
@@ -186,7 +189,7 @@ class TelegramBot {
         if (index === channels.length - 1) {
           this.notifyAdmin("Broadcast finished");
         }
-      }, index * 50);
+      }, index * 100);
     });
   };
 

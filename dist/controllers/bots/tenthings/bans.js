@@ -13,10 +13,10 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.processBan = exports.initiateBan = void 0;
-const index_1 = require("../../../models/index");
-const i18n_1 = __importDefault(require("../../../i18n"));
+const index_1 = require("@models/index");
+const i18n_1 = __importDefault(require("@root/i18n"));
 const keyboards_1 = require("./keyboards");
-const telegram_1 = __importDefault(require("../../../connections/telegram"));
+const telegram_1 = __importDefault(require("@root/connections/telegram"));
 const cache = {};
 const initiateBan = (game, callbackQuery) => __awaiter(void 0, void 0, void 0, function* () {
     if (game.chat_id !== parseInt(process.env.GROUP_CHAT || "") ||

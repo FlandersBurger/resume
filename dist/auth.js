@@ -13,7 +13,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const jwt_simple_1 = __importDefault(require("jwt-simple"));
-const user_1 = __importDefault(require("./models/user"));
+const user_1 = __importDefault(require("@models/user"));
 const User = (0, user_1.default)();
 exports.default = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     res.locals.isAuthorized = false;

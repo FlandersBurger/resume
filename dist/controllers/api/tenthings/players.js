@@ -11,7 +11,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.tenthingsPlayersRoute = void 0;
 const express_1 = require("express");
-const index_1 = require("../../../models/index");
+const index_1 = require("@models/index");
 exports.tenthingsPlayersRoute = (0, express_1.Router)();
 exports.tenthingsPlayersRoute.get("/players/:id", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     if (!res.locals.isAdmin)

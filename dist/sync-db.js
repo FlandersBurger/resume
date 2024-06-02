@@ -9,7 +9,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-const index_1 = require("./models/index");
+const index_1 = require("@models/index");
 const _ = require("underscore");
 const moment = require("moment");
 const srcCategory = index_1.Category;
