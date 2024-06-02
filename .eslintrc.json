@@ -17,6 +17,7 @@
     // This rule is for if you have one function in a file, you should import as default,
     // but I think that it makes importing more inconsistent for styled-components.
     "import/prefer-default-export": "off",
+    "unused-imports/no-unused-imports": "error",
     "no-unused-expressions": [
       "error",
       {

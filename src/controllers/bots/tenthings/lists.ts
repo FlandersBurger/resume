@@ -8,7 +8,6 @@ import { IGame, IGameSettings } from "@models/tenthings/game";
 
 import some from "lodash/some";
 import { likeListKeyboard } from "./keyboards";
-import i18n from "@root/i18n";
 
 export const getRandomList = async (parameters: QueryOptions = {}): Promise<HydratedDocument<IList> | undefined> => {
   const count = await List.countDocuments(parameters).exec();
@@ -36,11 +35,7 @@ export const getListScore = (list: IList): number => {
 };
 
 export const rateList = (game: IGame) => {
-  bot.sendKeyboard(
-    game.chat_id,
-    `Did you like <b>${game.list!.name.replace("&", i18n(game.settings.language, "and"))}</b>?`,
-    likeListKeyboard(game)
-  );
+  bot.sendKeyboard(game.chat_id, `Did you like <b>${game.list!.name}</b>?`, likeListKeyboard(game));
 };
 
 const getAvailableLanguages = ({ settings }: { settings: IGameSettings }) =>

@@ -223,13 +223,15 @@ class TelegramBot {
                     ["creator", "administrator"].includes(response.data.result.status));
             }
             catch (error) {
-                this.notifyAdmin(`Check Admin in ${channel} Fail`);
-                console.error(error.response.data);
+                if (error.response.data.description !== "Bad Request: user not found") {
+                    this.notifyAdmin(`Check Admin in ${channel} Fail`);
+                    console.error(error.response.data);
+                }
             }
         });
         this.sendKeyboard = (channel, message, keyboard, topic) => __awaiter(this, void 0, void 0, function* () {
             let url = `${this.baseUrl}/sendMessage?chat_id=${channel}&disable_notification=true&parse_mode=html`;
-            url += `&text=${message}`;
+            url += `&text=${encodeURIComponent(message)}`;
             url += `&reply_markup=${JSON.stringify(keyboard)}`;
             if (topic)
                 url += `&message_thread_id=${topic}`;
@@ -252,7 +254,6 @@ class TelegramBot {
                 yield axios_1.default.get(encodeURI(url));
             }
             catch (error) {
-                this.notifyAdmin(`Send Photo to ${channel} Fail`);
                 console.error(error.response.data);
             }
         });
@@ -262,7 +263,6 @@ class TelegramBot {
                 yield axios_1.default.get(encodeURI(url));
             }
             catch (error) {
-                this.notifyAdmin(`Send Animation to ${channel} Fail`);
                 console.error(error.response.data);
             }
         });

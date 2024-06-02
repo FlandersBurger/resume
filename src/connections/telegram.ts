@@ -247,13 +247,16 @@ class TelegramBot {
         ["creator", "administrator"].includes(response.data.result.status)
       );
     } catch (error: AxiosError | any) {
-      this.notifyAdmin(`Check Admin in ${channel} Fail`);
-      console.error(error.response.data);
+      if (error.response.data.description !== "Bad Request: user not found") {
+        this.notifyAdmin(`Check Admin in ${channel} Fail`);
+        console.error(error.response.data);
+      }
     }
   };
+
   public sendKeyboard = async (channel: number, message: string, keyboard: IKeyboard, topic?: number) => {
     let url = `${this.baseUrl}/sendMessage?chat_id=${channel}&disable_notification=true&parse_mode=html`;
-    url += `&text=${message}`;
+    url += `&text=${encodeURIComponent(message)}`;
     url += `&reply_markup=${JSON.stringify(keyboard)}`;
     if (topic) url += `&message_thread_id=${topic}`;
     try {
@@ -273,7 +276,6 @@ class TelegramBot {
     try {
       await axios.get(encodeURI(url));
     } catch (error: AxiosError | any) {
-      this.notifyAdmin(`Send Photo to ${channel} Fail`);
       console.error(error.response.data);
     }
   };
@@ -282,7 +284,6 @@ class TelegramBot {
     try {
       await axios.get(encodeURI(url));
     } catch (error: AxiosError | any) {
-      this.notifyAdmin(`Send Animation to ${channel} Fail`);
       console.error(error.response.data);
     }
   };
