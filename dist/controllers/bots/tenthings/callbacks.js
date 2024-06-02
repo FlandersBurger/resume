@@ -13,21 +13,21 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.CallbackDataType = void 0;
-const index_1 = require("@models/index");
-const string_helpers_1 = require("@root/utils/string-helpers");
-const number_helpers_1 = require("@root/utils/number-helpers");
+const index_1 = require("../../../models/index");
+const string_helpers_1 = require("../../../utils/string-helpers");
+const number_helpers_1 = require("../../../utils/number-helpers");
 const find_1 = __importDefault(require("lodash/find"));
 const moment_1 = __importDefault(require("moment"));
 const messages_1 = require("./messages");
 const lists_1 = require("./lists");
-const i18n_1 = __importDefault(require("@root/i18n"));
+const i18n_1 = __importDefault(require("../../../i18n"));
 const categories_1 = __importDefault(require("./categories"));
 const emojis_1 = __importDefault(require("./emojis"));
 const bans_1 = require("./bans");
 const stats_1 = require("./stats");
 const cache_1 = require("./cache");
 const keyboards_1 = require("./keyboards");
-const telegram_1 = __importDefault(require("@root/connections/telegram"));
+const telegram_1 = __importDefault(require("../../../connections/telegram"));
 var CallbackDataType;
 (function (CallbackDataType) {
     CallbackDataType["Ban"] = "ban";

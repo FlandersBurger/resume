@@ -3,7 +3,7 @@ import axios, { AxiosError } from "axios";
 import Queue, { Job } from "bull";
 import i18n from "@root/i18n";
 import redis from "@root/queue";
-import { chatNotFound, botMuted, chatMigrated } from "@tenthings/errors";
+import { chatNotFound, botMuted } from "@tenthings/errors";
 import { checkSpam } from "@tenthings/spam";
 import { MessageType } from "@tenthings/main";
 import { IMessageType } from "@tenthings/messages";

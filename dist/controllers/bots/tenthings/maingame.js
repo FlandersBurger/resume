@@ -16,16 +16,16 @@ exports.sendMaingameMessage = exports.checkMaingame = exports.deactivate = expor
 const moment_1 = __importDefault(require("moment"));
 const sampleSize = require("lodash/sampleSize");
 const some = require("lodash/some");
-const index_1 = require("@models/index");
-const string_helpers_1 = require("@root/utils/string-helpers");
+const index_1 = require("../../../models/index");
+const string_helpers_1 = require("../../../utils/string-helpers");
 const guesses_1 = require("./guesses");
 const messages_1 = require("./messages");
 const hints_1 = require("./hints");
 const lists_1 = require("./lists");
 const stats_1 = require("./stats");
 const skips_1 = require("./skips");
-const i18n_1 = __importDefault(require("@root/i18n"));
-const telegram_1 = __importDefault(require("@root/connections/telegram"));
+const i18n_1 = __importDefault(require("../../../i18n"));
+const telegram_1 = __importDefault(require("../../../connections/telegram"));
 const createMaingame = (chat_id) => __awaiter(void 0, void 0, void 0, function* () {
     const game = new index_1.Game({
         chat_id,

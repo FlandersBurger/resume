@@ -4,7 +4,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const mongoose_1 = require("mongoose");
-const db_1 = __importDefault(require("@root/db"));
+const db_1 = __importDefault(require("../db"));
 const categorySchema = new mongoose_1.Schema({
     name: { type: String, required: true },
     date: { type: Date, required: true, default: Date.now },

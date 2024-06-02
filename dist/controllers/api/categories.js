@@ -11,7 +11,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.categoriesRoute = void 0;
 const express_1 = require("express");
-const index_1 = require("@models/index");
+const index_1 = require("../../models/index");
 exports.categoriesRoute = (0, express_1.Router)();
 exports.categoriesRoute.get("/", (_, res) => __awaiter(void 0, void 0, void 0, function* () {
     const categories = yield index_1.Category.find().sort("+name");

@@ -30,10 +30,10 @@ exports.getStreakMessage = exports.getPlayerStats = exports.getListStats = expor
 const moment_1 = __importDefault(require("moment"));
 const MAXHINTS = 6;
 const categories_1 = __importDefault(require("./categories"));
-const number_helpers_1 = require("@root/utils/number-helpers");
-const string_helpers_1 = require("@root/utils/string-helpers");
+const number_helpers_1 = require("../../../utils/number-helpers");
+const string_helpers_1 = require("../../../utils/string-helpers");
 const difference_1 = __importDefault(require("lodash/difference"));
-const i18n_1 = __importStar(require("@root/i18n"));
+const i18n_1 = __importStar(require("../../../i18n"));
 const emojis_1 = __importDefault(require("./emojis"));
 const getLogicMessage = (language) => {
     const rules = (0, i18n_1.t_list)(language, "rules", { maxHints: MAXHINTS, returnObjects: true });
