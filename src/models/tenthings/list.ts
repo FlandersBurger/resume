@@ -88,7 +88,7 @@ const listSchema = new Schema<IList>(
     timestamps: true,
     toObject: { virtuals: true, getters: true },
     toJSON: { virtuals: true, getters: true },
-  }
+  },
 );
 
 listSchema.virtual("answers").get(function (this: IList) {
@@ -99,6 +99,9 @@ listSchema.virtual("blurbs").get(function (this: IList) {
 });
 listSchema.virtual("playRatio").get(function (this: IList) {
   return this.plays ? (this.plays - this.skips) / this.plays : 0;
+});
+listSchema.virtual("actualPlays").get(function (this: IList) {
+  return this.plays ? this.plays - this.skips : 0;
 });
 
 listSchema.plugin(mongooseLeanVirtuals);

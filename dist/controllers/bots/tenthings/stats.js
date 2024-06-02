@@ -107,7 +107,7 @@ const getStats = (chat_id, data, requestor) => __awaiter(void 0, void 0, void 0,
     const game = yield index_1.Game.findOne({ chat_id }).exec();
     if (!game)
         return;
-    const players = yield index_1.Player.find({ game: game._id, present: true }).exec();
+    const players = yield index_1.Player.find({ game: game._id, present: true, score: { $gt: 0 } }).exec();
     switch (type) {
         case "global":
             index_1.Player.aggregate([
@@ -298,7 +298,7 @@ exports.getStats = getStats;
 const listStats = ({ chat_id }, field, divisor, ratio, title, description, sorter, requestor) => {
     let message = `<b>${title}</b>\n`;
     message += description ? `<i>${description}</i>\n` : "";
-    index_1.List.find({ plays: { $gt: 0 } })
+    index_1.List.find({ actualPlays: { $gt: 100 } })
         .select(`${field} ${divisor} name`)
         .exec((_, lists) => {
         lists

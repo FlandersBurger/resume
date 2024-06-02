@@ -43,7 +43,7 @@ export const getScores = async (game_id: number, type: string) => {
         .sort(
           (player1, player2) =>
             (player2.plays === 0 ? 0 : player2.wins / player2.plays) -
-            (player1.plays === 0 ? 0 : player1.wins / player1.plays)
+            (player1.plays === 0 ? 0 : player1.wins / player1.plays),
         )
         .slice(0, 10)
         .forEach(({ first_name, wins, plays }, index) => {
@@ -73,7 +73,7 @@ export const getScores = async (game_id: number, type: string) => {
         .sort(
           (player1, player2) =>
             (player2.plays === 0 ? 0 : player2.score / player2.plays) -
-            (player1.plays === 0 ? 0 : player1.score / player1.plays)
+            (player1.plays === 0 ? 0 : player1.score / player1.plays),
         )
         .slice(0, 10)
         .forEach(({ first_name, plays, score }, index) => {
@@ -92,10 +92,13 @@ export const getDailyScores = async ({ _id, settings }: IGame, limit = 0) => {
     .filter(({ scoreDaily }) => scoreDaily)
     .sort((player1, player2) => player2.scoreDaily - player1.scoreDaily)
     .slice(0, limit ? limit : players.length)
-    .reduce((str, { first_name, scoreDaily }, index) => {
-      str += `\t${index + 1}: ${first_name} - ${scoreDaily}\n`;
-      return str;
-    }, i18n(settings.language, `sentences.dailyScores${limit ? "WithLimit" : ""}`, { limit }) + `\n`);
+    .reduce(
+      (str, { first_name, scoreDaily }, index) => {
+        str += `\t${index + 1}: ${first_name} - ${scoreDaily}\n`;
+        return str;
+      },
+      i18n(settings.language, `sentences.dailyScores${limit ? "WithLimit" : ""}`, { limit }) + `\n`,
+    );
   return message;
 };
 
@@ -104,7 +107,7 @@ export const getStats = async (chat_id: number, data: string, requestor?: string
   const id = parseInt(stringId);
   const game = await Game.findOne({ chat_id }).exec();
   if (!game) return;
-  const players = await Player.find({ game: game._id, present: true }).exec();
+  const players = await Player.find({ game: game._id, present: true, score: { $gt: 0 } }).exec();
   switch (type) {
     case "global":
       Player.aggregate([
@@ -148,7 +151,7 @@ export const getStats = async (chat_id: number, data: string, requestor?: string
             searches: number;
             minigamePlays: number;
             tinygamePlays: number;
-          }[]
+          }[],
         ) => {
           const stats = result[0];
           let message = "<b>Global Stats</b>\n";
@@ -173,7 +176,7 @@ export const getStats = async (chat_id: number, data: string, requestor?: string
           message += "\n";
 
           bot.queueMessage(game.chat_id, message);
-        }
+        },
       );
       break;
     case "g":
@@ -183,24 +186,24 @@ export const getStats = async (chat_id: number, data: string, requestor?: string
       message += `Started ${moment(game.date).format("DD-MMM-YYYY")}\n`;
       message += `Highest Overall Score: ${players.reduce(
         (score, { highScore }) => (highScore ? (score > highScore ? score : highScore) : score),
-        0
+        0,
       )}\n`;
       message += `Highest Score Today: ${players.reduce(
         (score, { scoreDaily }) => (scoreDaily ? (score > scoreDaily ? score : scoreDaily) : score),
-        0
+        0,
       )}\n`;
       message += `Total Score: ${players.reduce((count, { score }) => count + (score ? score : 0), 0)}\n`;
       message += `Best Answer Streak: ${players.reduce(
         (score, { streak }) => (streak ? (score > streak ? score : streak) : score),
-        0
+        0,
       )}\n`;
       message += `Best Play Streak: ${players.reduce(
         (score, { maxPlayStreak }) => (maxPlayStreak ? (score > maxPlayStreak ? score : maxPlayStreak) : score),
-        0
+        0,
       )}\n`;
       message += `Best No Hint Streak: ${players.reduce(
         (score, { maxHintStreak }) => (maxHintStreak ? (score > maxHintStreak ? score : maxHintStreak) : score),
-        0
+        0,
       )}\n`;
       message += `Answers Given: ${players.reduce((count, { answers }) => count + answers, 0)}\n`;
       message += `Minigame Answers Given: ${players.reduce((count, { minigamePlays }) => count + minigamePlays, 0)}\n`;
@@ -209,7 +212,7 @@ export const getStats = async (chat_id: number, data: string, requestor?: string
       message += `Hints Asked: ${players.reduce((count, { hints }) => count + (hints ? hints : 0), 0)}\n`;
       message += `Suggestions given: ${players.reduce(
         (count, { suggestions }) => count + (suggestions ? suggestions : 0),
-        0
+        0,
       )}\n`;
       message += `Lists Skipped: ${players.reduce((count, { skips }) => count + skips, 0)}\n`;
       message += `Current Answer Streak: ${game.streak.count}\n`;
@@ -218,7 +221,7 @@ export const getStats = async (chat_id: number, data: string, requestor?: string
       } players played today\n`;
       message += game.cycles ? `Last cycled: ${moment(game.lastCycleDate).format("DD-MMM-YYYY")}\n` : "";
       message += `${game.playedLists.length} of ${count} lists played (${Math.round(
-        (game.playedLists.length / count) * 100
+        (game.playedLists.length / count) * 100,
       ).toFixed(0)}%)\n`;
       message += "\n";
       bot.queueMessage(game.chat_id, message);
@@ -263,7 +266,7 @@ export const getStats = async (chat_id: number, data: string, requestor?: string
         "Most Hinted Lists",
         "(Hint commands / 6) / Amount played",
         1,
-        requestor
+        requestor,
       );
       break;
     case "leasthinted":
@@ -275,7 +278,7 @@ export const getStats = async (chat_id: number, data: string, requestor?: string
         "Least Hinted Lists",
         "(Hint commands / 6) / Amount played",
         -1,
-        requestor
+        requestor,
       );
       break;
     case "mostvoted":
@@ -312,7 +315,7 @@ export const getStats = async (chat_id: number, data: string, requestor?: string
         "Most Skips Requested",
         "Skip commands / Lists played",
         1,
-        requestor
+        requestor,
       );
       break;
     case "unskippers":
@@ -325,7 +328,7 @@ export const getStats = async (chat_id: number, data: string, requestor?: string
         "Least Skips Requested",
         "Skip commands / Lists played",
         -1,
-        requestor
+        requestor,
       );
       break;
     case "answers":
@@ -338,7 +341,7 @@ export const getStats = async (chat_id: number, data: string, requestor?: string
         "Most Correct Answers",
         "(Correct answers given / 10) / Lists played",
         1,
-        requestor
+        requestor,
       );
       break;
     case "minigames":
@@ -351,7 +354,7 @@ export const getStats = async (chat_id: number, data: string, requestor?: string
         "Most Correct Minigame Answers",
         "Sum of correct answers",
         1,
-        requestor
+        requestor,
       );
       break;
     case "tinygames":
@@ -364,7 +367,7 @@ export const getStats = async (chat_id: number, data: string, requestor?: string
         "Most Correct Tinygame Answers",
         "Sum of correct answers",
         1,
-        requestor
+        requestor,
       );
       break;
     case "snubs":
@@ -377,7 +380,7 @@ export const getStats = async (chat_id: number, data: string, requestor?: string
         "Most Snubs",
         "Answers that were already answered / Total answers",
         1,
-        requestor
+        requestor,
       );
       break;
     case "unsnubs":
@@ -390,7 +393,7 @@ export const getStats = async (chat_id: number, data: string, requestor?: string
         "Least Snubs",
         "Answers that were already answered / Total answers",
         -1,
-        requestor
+        requestor,
       );
       break;
     case "hints":
@@ -403,7 +406,7 @@ export const getStats = async (chat_id: number, data: string, requestor?: string
         "Most Hints Asked",
         "(Hint commands / 6) / Lists played",
         1,
-        requestor
+        requestor,
       );
       break;
     case "unhints":
@@ -416,7 +419,7 @@ export const getStats = async (chat_id: number, data: string, requestor?: string
         "Least Hints Asked",
         "(Hint commands / 6) / Lists played",
         -1,
-        requestor
+        requestor,
       );
       break;
     case "plays":
@@ -438,7 +441,7 @@ export const getStats = async (chat_id: number, data: string, requestor?: string
         "Best Answer Streak",
         "Consecutive answers given",
         1,
-        requestor
+        requestor,
       );
       break;
     case "pstreak":
@@ -451,7 +454,7 @@ export const getStats = async (chat_id: number, data: string, requestor?: string
         "Best Play Streak",
         "Consecutive days played",
         1,
-        requestor
+        requestor,
       );
       break;
     case "hstreak":
@@ -464,7 +467,7 @@ export const getStats = async (chat_id: number, data: string, requestor?: string
         "No Hint Streak",
         "Consecutive answers given without asking hints",
         1,
-        requestor
+        requestor,
       );
       break;
     default:
@@ -480,11 +483,11 @@ const listStats = (
   title: string,
   description: string,
   sorter: number,
-  requestor?: string
+  requestor?: string,
 ) => {
   let message = `<b>${title}</b>\n`;
   message += description ? `<i>${description}</i>\n` : "";
-  List.find({ plays: { $gt: 0 } })
+  List.find({ actualPlays: { $gt: 100 } })
     .select(`${field} ${divisor} name`)
     .exec((_, lists: IList[]) => {
       lists
@@ -521,7 +524,7 @@ const playerStats = async (
   title: string,
   description: string,
   sorter: number,
-  requestor?: string
+  requestor?: string,
 ) => {
   let message = `<b>${title}</b>\n`;
   message += description ? `<i>${description}</i>\n` : "";
@@ -555,7 +558,7 @@ const voteStats = async (
   players: IPlayer[],
   sorter: SortOrder,
   title: string,
-  requestor?: string
+  requestor?: string,
 ) => {
   List.aggregate([{ $unwind: "$votes" }, { $group: { _id: "$votes.voter", votes: { $sum: 1 } } }])
     .sort({ votes: sorter })
@@ -628,7 +631,7 @@ const creatorStats = async () => {
         likeability: list.score.makePercentage(),
         //voteRatio: (list.positive / list.votes) * 100,
         //skipRatio: (list.skips / list.plays) * 100,
-      }))
+      })),
   );
   console.log(
     lists
@@ -639,7 +642,7 @@ const creatorStats = async () => {
         creator: list.creator.username,
         //likeability: (list.positive / list.votes) * 100,
         skipRatio: (list.skips / list.plays) * 100,
-      }))
+      })),
   );
 };
 
@@ -650,7 +653,7 @@ const voteSentimentStats = async (
   players: IPlayer[],
   sorter: SortOrder,
   title: string,
-  requestor?: string
+  requestor?: string,
 ) => {
   List.aggregate([
     { $match: { "votes.vote": sorter } },
@@ -678,7 +681,7 @@ const tenThingsStats = (
   game: IGame,
   sorter: { [key in keyof IPlayer]: SortOrder },
   field: keyof IPlayer,
-  title: string
+  title: string,
 ) => {
   Player.aggregate([
     { $match: { game: game._id } },

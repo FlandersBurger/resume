@@ -14,9 +14,9 @@ const string_helpers_1 = require("../../../utils/string-helpers");
 const i18n_1 = __importDefault(require("../../../i18n"));
 const emojis_1 = __importDefault(require("./emojis"));
 const callbacks_1 = require("./callbacks");
-const getButton = (text, callback_data) => ({
+const getButton = (text, callbackData) => ({
     text: text,
-    callback_data: JSON.stringify(callback_data),
+    callback_data: JSON.stringify(callbackData),
 });
 const statsKeyboard = () => {
     return {

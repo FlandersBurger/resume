@@ -56,6 +56,9 @@ listSchema.virtual("blurbs").get(function () {
 listSchema.virtual("playRatio").get(function () {
     return this.plays ? (this.plays - this.skips) / this.plays : 0;
 });
+listSchema.virtual("actualPlays").get(function () {
+    return this.plays ? this.plays - this.skips : 0;
+});
 listSchema.plugin(mongoose_lean_virtuals_1.default);
 for (const name in db_1.default) {
     List[name] = db_1.default[name].model("List", listSchema);
