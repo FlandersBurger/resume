@@ -167,7 +167,7 @@ exports.default = (callbackQuery) => __awaiter(void 0, void 0, void 0, function*
             break;
         case CallbackDataType.Setting:
             console.log(callbackQuery);
-            if (callbackQuery.chatId !== parseInt(process.env.MASTER_CHAT || "")) {
+            if (callbackQuery.chatId !== parseInt(process.env.ADMIN_CHAT || "")) {
                 if (yield telegram_1.default.checkAdmin(callbackQuery.chatId, callbackQuery.from.id)) {
                     game = yield index_1.Game.findOne({ chat_id: callbackQuery.chatId }).select("chat_id settings").exec();
                     if (!game || !callbackQuery.data)
