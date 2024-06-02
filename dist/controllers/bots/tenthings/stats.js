@@ -102,8 +102,7 @@ const getDailyScores = ({ _id, settings }, limit = 0) => __awaiter(void 0, void 
 });
 exports.getDailyScores = getDailyScores;
 const getStats = (chat_id, data, requestor) => __awaiter(void 0, void 0, void 0, function* () {
-    const [type, stringId] = data.split("_");
-    const id = parseInt(stringId);
+    const [type, _id] = data.split("_");
     const game = yield index_1.Game.findOne({ chat_id }).exec();
     if (!game)
         return;
@@ -185,7 +184,7 @@ const getStats = (chat_id, data, requestor) => __awaiter(void 0, void 0, void 0,
         case "p":
             index_1.Player.findOne({
                 game: game._id,
-                id: id,
+                id: _id,
             }).exec((err, player) => {
                 if (!player) {
                     telegram_1.default.queueMessage(game.chat_id, "Player not found");
@@ -197,7 +196,7 @@ const getStats = (chat_id, data, requestor) => __awaiter(void 0, void 0, void 0,
             break;
         case "l":
             index_1.List.findOne({
-                _id: id,
+                _id: _id,
             })
                 .populate("creator")
                 .exec((err, gameList) => {

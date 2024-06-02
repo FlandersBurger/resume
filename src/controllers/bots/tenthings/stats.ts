@@ -103,8 +103,7 @@ export const getDailyScores = async ({ _id, settings }: IGame, limit = 0) => {
 };
 
 export const getStats = async (chat_id: number, data: string, requestor?: string) => {
-  const [type, stringId] = data.split("_");
-  const id = parseInt(stringId);
+  const [type, _id] = data.split("_");
   const game = await Game.findOne({ chat_id }).exec();
   if (!game) return;
   const players = await Player.find({ game: game._id, present: true, score: { $gt: 0 } }).exec();
@@ -229,7 +228,7 @@ export const getStats = async (chat_id: number, data: string, requestor?: string
     case "p":
       Player.findOne({
         game: game._id,
-        id: id,
+        id: _id,
       }).exec((err, player) => {
         if (!player) {
           bot.queueMessage(game.chat_id, "Player not found");
@@ -240,7 +239,7 @@ export const getStats = async (chat_id: number, data: string, requestor?: string
       break;
     case "l":
       List.findOne({
-        _id: id,
+        _id: _id,
       })
         .populate("creator")
         .exec((err, gameList) => {
