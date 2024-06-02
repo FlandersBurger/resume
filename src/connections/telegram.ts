@@ -243,6 +243,7 @@ class TelegramBot {
 
   public checkAdmin = async (channel: number, userId: number) => {
     if (userId === parseInt(process.env.MASTER_CHAT || "")) return true;
+    if (channel > 0) return true;
     const url = `${this.baseUrl}/getChatMember?chat_id=${channel}&user_id=${userId}`;
     try {
       const response = await axios.get(url);

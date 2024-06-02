@@ -220,6 +220,10 @@ class TelegramBot {
             }
         });
         this.checkAdmin = (channel, userId) => __awaiter(this, void 0, void 0, function* () {
+            if (userId === parseInt(process.env.MASTER_CHAT || ""))
+                return true;
+            if (channel > 0)
+                return true;
             const url = `${this.baseUrl}/getChatMember?chat_id=${channel}&user_id=${userId}`;
             try {
                 const response = yield axios_1.default.get(url);
