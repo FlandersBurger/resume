@@ -119,6 +119,7 @@ export default async (callbackQuery: ICallbackData) => {
         const text = i18n(game.settings.language, `stats.${callbackQuery.data}`);
         switch (callbackQuery.data) {
           case "list":
+            console.log(listStatsKeyboard(game));
             bot.answerCallback(callbackQuery.callbackQueryId, text);
             bot.sendKeyboard(game.chat_id, `<b>${text}</b>`, listStatsKeyboard(game));
             break;
