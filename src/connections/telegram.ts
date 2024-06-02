@@ -119,11 +119,13 @@ class TelegramBot {
         if (this.muteReasons.includes(error.response.data.description)) {
           return botMuted(channel, error.response.data.description);
         }
+        console.error(error.response.data);
+      } else {
+        console.error(error);
       }
       if (channel !== parseInt(process.env.MASTER_CHAT || "")) {
         this.notifyAdmin(`Send Message to ${channel} Fail`);
       }
-      console.error(error.response.data);
     });
   };
 

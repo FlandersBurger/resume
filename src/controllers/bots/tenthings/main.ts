@@ -15,7 +15,7 @@ import jobs from "./jobs";
 console.log(
   `Scheduled Jobs:\n${jobs
     .map((j) => ` - ${j.name}: ${moment.duration(moment(new Date()).diff(j.nextInvocation())).humanize(true)}`)
-    .join("\n")}`
+    .join("\n")}`,
 );
 
 export enum MessageType {
@@ -126,7 +126,7 @@ tenthingsBotRoute.post("/", async (req: Request, res: Response) => {
     } else {
       if (!existingGame.enabled && msg.command) {
         if (["/list", "/start", "/minigame", "/tinygame"].includes(msg.command.toLowerCase())) {
-          activate(existingGame);
+          activate(existingGame, true);
         } else {
           bot.sendMessage(msg.chatId, i18n(existingGame.settings.language, "sentences.inactivity"));
           return res.sendStatus(200);

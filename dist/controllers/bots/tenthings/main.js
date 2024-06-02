@@ -134,7 +134,7 @@ exports.tenthingsBotRoute.post("/", (req, res) => __awaiter(void 0, void 0, void
         else {
             if (!existingGame.enabled && msg.command) {
                 if (["/list", "/start", "/minigame", "/tinygame"].includes(msg.command.toLowerCase())) {
-                    (0, maingame_1.activate)(existingGame);
+                    (0, maingame_1.activate)(existingGame, true);
                 }
                 else {
                     telegram_1.default.sendMessage(msg.chatId, (0, i18n_1.default)(existingGame.settings.language, "sentences.inactivity"));
