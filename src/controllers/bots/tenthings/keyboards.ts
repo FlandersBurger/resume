@@ -198,13 +198,10 @@ export const languagesKeyboard = ({ chat_id, settings }: IGame, availableLanguag
       }, []),
   };
 };
-export const languageKeyboard = ({ settings }: IGame, availableLanguages: string[]): IKeyboard => {
+export const languageKeyboard = ({ settings }: IGame): IKeyboard => {
   return {
     inline_keyboard: languages
       .filter((language) => ["EN", "NL", "ID", "PT", "TL"].includes(language.code))
-      .filter((language) =>
-        some(availableLanguages, (availableLanguage: string) => availableLanguage === language.code),
-      )
       .sort()
       .reduce((result: IKeyboardButton[][], language: ILanguage, i: number) => {
         const button = getButton(

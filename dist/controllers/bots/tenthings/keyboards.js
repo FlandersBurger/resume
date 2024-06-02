@@ -192,11 +192,10 @@ const languagesKeyboard = ({ chat_id, settings }, availableLanguages) => {
     };
 };
 exports.languagesKeyboard = languagesKeyboard;
-const languageKeyboard = ({ settings }, availableLanguages) => {
+const languageKeyboard = ({ settings }) => {
     return {
         inline_keyboard: languages_1.default
             .filter((language) => ["EN", "NL", "ID", "PT", "TL"].includes(language.code))
-            .filter((language) => (0, some_1.default)(availableLanguages, (availableLanguage) => availableLanguage === language.code))
             .sort()
             .reduce((result, language, i) => {
             const button = getButton(`${language.code} - ${language.native} ${settings.language === language.code ? emojis_1.default.green : ""}`, { type: callbacks_1.CallbackDataType.BotLanguage, id: language.code });

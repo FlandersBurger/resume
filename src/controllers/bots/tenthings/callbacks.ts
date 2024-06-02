@@ -192,11 +192,7 @@ export default async (callbackQuery: ICallbackData) => {
             ]).exec();
             bot.editKeyboard(callbackQuery.chatId, callbackQuery.id, languagesKeyboard(game, availableLanguages));
           } else if (callbackQuery.data === "lang") {
-            const availableLanguages = await List.aggregate([
-              { $group: { _id: "$language", count: { $sum: 1 } } },
-            ]).exec();
-            console.log(availableLanguages, languageKeyboard(game, availableLanguages));
-            bot.editKeyboard(callbackQuery.chatId, callbackQuery.id, languageKeyboard(game, availableLanguages));
+            bot.editKeyboard(callbackQuery.chatId, callbackQuery.id, languageKeyboard(game));
           } else {
             console.log(`${callbackQuery.data} toggled for ${game._id}`);
             game.settings[callbackQuery.data] = !game.settings[callbackQuery.data as keyof IGameSettings];
@@ -253,8 +249,7 @@ export default async (callbackQuery: ICallbackData) => {
         await game.save();
         bot.answerCallback(callbackQuery.callbackQueryId, `${callbackQuery.data} -> New bot language`);
         bot.setCommands(callbackQuery.chatId, callbackQuery.data);
-        const availableLanguages = await List.aggregate([{ $group: { _id: "$language", count: { $sum: 1 } } }]).exec();
-        bot.editKeyboard(callbackQuery.chatId, callbackQuery.id, languageKeyboard(game, availableLanguages));
+        bot.editKeyboard(callbackQuery.chatId, callbackQuery.id, languageKeyboard(game));
       }
       break;
     case CallbackDataType.Pick:

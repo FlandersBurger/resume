@@ -179,11 +179,7 @@ exports.default = (callbackQuery) => __awaiter(void 0, void 0, void 0, function*
                         telegram_1.default.editKeyboard(callbackQuery.chatId, callbackQuery.id, (0, keyboards_1.languagesKeyboard)(game, availableLanguages));
                     }
                     else if (callbackQuery.data === "lang") {
-                        const availableLanguages = yield index_1.List.aggregate([
-                            { $group: { _id: "$language", count: { $sum: 1 } } },
-                        ]).exec();
-                        console.log(availableLanguages, (0, keyboards_1.languageKeyboard)(game, availableLanguages));
-                        telegram_1.default.editKeyboard(callbackQuery.chatId, callbackQuery.id, (0, keyboards_1.languageKeyboard)(game, availableLanguages));
+                        telegram_1.default.editKeyboard(callbackQuery.chatId, callbackQuery.id, (0, keyboards_1.languageKeyboard)(game));
                     }
                     else {
                         console.log(`${callbackQuery.data} toggled for ${game._id}`);
@@ -233,8 +229,7 @@ exports.default = (callbackQuery) => __awaiter(void 0, void 0, void 0, function*
                 yield game.save();
                 telegram_1.default.answerCallback(callbackQuery.callbackQueryId, `${callbackQuery.data} -> New bot language`);
                 telegram_1.default.setCommands(callbackQuery.chatId, callbackQuery.data);
-                const availableLanguages = yield index_1.List.aggregate([{ $group: { _id: "$language", count: { $sum: 1 } } }]).exec();
-                telegram_1.default.editKeyboard(callbackQuery.chatId, callbackQuery.id, (0, keyboards_1.languageKeyboard)(game, availableLanguages));
+                telegram_1.default.editKeyboard(callbackQuery.chatId, callbackQuery.id, (0, keyboards_1.languageKeyboard)(game));
             }
             break;
         case CallbackDataType.Pick:
