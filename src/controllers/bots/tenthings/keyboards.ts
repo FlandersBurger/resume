@@ -13,21 +13,27 @@ import emojis from "./emojis";
 import { IKeyboard, IKeyboardButton, IKeyboardCallbackButton } from "@root/connections/telegram";
 import { CallbackDataType } from "./callbacks";
 
-const getButton = (text: string | string[], callback_data: object): IKeyboardCallbackButton => ({
+const getButton = (
+  text: string | string[],
+  callbackData: {
+    type: CallbackDataType;
+    id: string;
+  },
+): IKeyboardCallbackButton => ({
   text: text as string,
-  callback_data: JSON.stringify(callback_data),
+  callback_data: JSON.stringify(callbackData),
 });
 
 export const statsKeyboard = (): IKeyboard => {
   return {
     inline_keyboard: [
       [
-        getButton("List Stats", { type: CallbackDataType.StatOptions, data: "list" }),
-        getButton("Player Stats", { type: CallbackDataType.StatOptions, data: "player" }),
+        getButton("List Stats", { type: CallbackDataType.StatOptions, id: "list" }),
+        getButton("Player Stats", { type: CallbackDataType.StatOptions, id: "player" }),
       ],
       [
-        getButton("Global Stats", { type: CallbackDataType.StatOptions, data: "global" }),
-        getButton("Game Stats", { type: CallbackDataType.Stats, data: "g" }),
+        getButton("Global Stats", { type: CallbackDataType.StatOptions, id: "global" }),
+        getButton("Game Stats", { type: CallbackDataType.Stats, id: "g" }),
       ],
     ],
   };
@@ -121,7 +127,7 @@ export const suggestionKeyboard = (): IKeyboard => ({
     ],
   ],
 });
-export const categoriesKeyboard = ({ chat_id, settings, disabledCategories }: IGame): IKeyboard => {
+export const categoriesKeyboard = ({ settings, disabledCategories }: IGame): IKeyboard => {
   return {
     inline_keyboard: categories.sort().reduce((result: IKeyboardButton[][], category: string, i: number) => {
       const button = getButton(
@@ -139,7 +145,7 @@ export const categoriesKeyboard = ({ chat_id, settings, disabledCategories }: IG
     }, []),
   };
 };
-export const settingsKeyboard = ({ chat_id, settings }: IGame): IKeyboard => {
+export const settingsKeyboard = ({ settings }: IGame): IKeyboard => {
   return {
     inline_keyboard: [
       [
@@ -177,7 +183,7 @@ export const settingsKeyboard = ({ chat_id, settings }: IGame): IKeyboard => {
     ],
   };
 };
-export const languagesKeyboard = ({ chat_id, settings }: IGame, availableLanguages: ILanguageCount[]): IKeyboard => {
+export const languagesKeyboard = ({ settings }: IGame, availableLanguages: ILanguageCount[]): IKeyboard => {
   return {
     inline_keyboard: languages
       .filter((language) => some(availableLanguages, (availableLanguage) => availableLanguage._id === language.code))
@@ -220,14 +226,14 @@ export const languageKeyboard = ({ settings }: IGame): IKeyboard => {
 export const banListKeyboard = (language: string, list: IGameList): IKeyboard => {
   return {
     inline_keyboard: [
-      [getButton(i18n(language, "sentences.banListQuestion"), { type: CallbackDataType.Ban, id: list._id })],
+      [getButton(i18n(language, "sentences.banListQuestion"), { type: CallbackDataType.Ban, id: `${list._id}` })],
     ],
   };
 };
 export const confirmBanListKeyboard = (language: string, list: IList): IKeyboard => {
   return {
     inline_keyboard: [
-      [getButton(i18n(language, "sentences.banListCommand"), { type: CallbackDataType.ConfirmBan, id: list._id })],
+      [getButton(i18n(language, "sentences.banListCommand"), { type: CallbackDataType.ConfirmBan, id: `${list._id}` })],
     ],
   };
 };
@@ -249,7 +255,7 @@ export const listsKeyboard = (lists: IList[]): IKeyboard => ({
       result.push([
         getButton(list.name.replace("&", "and"), {
           type: CallbackDataType.Pick,
-          id: list._id,
+          id: `${list._id}`,
         }),
       ]);
       return result;
@@ -298,9 +304,9 @@ export const curateListKeyboard = (list: IList): IKeyboard => ({
       }),
     ],
     [
-      getButton("Values", { type: CallbackDataType.Values, id: list._id }),
+      getButton("Values", { type: CallbackDataType.Values, id: `${list._id}` }),
       getButton("Stats", { type: CallbackDataType.Stats, id: `l_${list._id}` }),
-      getButton("Desc", { type: CallbackDataType.Description, id: list._id }),
+      getButton("Desc", { type: CallbackDataType.Description, id: `${list._id}` }),
       {
         text: "Curate",
         url: `https://belgocanadian.com/tenthings?list=${list._id}`,

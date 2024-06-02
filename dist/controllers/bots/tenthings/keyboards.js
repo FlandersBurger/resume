@@ -22,12 +22,12 @@ const statsKeyboard = () => {
     return {
         inline_keyboard: [
             [
-                getButton("List Stats", { type: callbacks_1.CallbackDataType.StatOptions, data: "list" }),
-                getButton("Player Stats", { type: callbacks_1.CallbackDataType.StatOptions, data: "player" }),
+                getButton("List Stats", { type: callbacks_1.CallbackDataType.StatOptions, id: "list" }),
+                getButton("Player Stats", { type: callbacks_1.CallbackDataType.StatOptions, id: "player" }),
             ],
             [
-                getButton("Global Stats", { type: callbacks_1.CallbackDataType.StatOptions, data: "global" }),
-                getButton("Game Stats", { type: callbacks_1.CallbackDataType.Stats, data: "g" }),
+                getButton("Global Stats", { type: callbacks_1.CallbackDataType.StatOptions, id: "global" }),
+                getButton("Game Stats", { type: callbacks_1.CallbackDataType.Stats, id: "g" }),
             ],
         ],
     };
@@ -125,7 +125,7 @@ const suggestionKeyboard = () => ({
     ],
 });
 exports.suggestionKeyboard = suggestionKeyboard;
-const categoriesKeyboard = ({ chat_id, settings, disabledCategories }) => {
+const categoriesKeyboard = ({ settings, disabledCategories }) => {
     return {
         inline_keyboard: categories_1.default.sort().reduce((result, category, i) => {
             const button = getButton(`${(0, i18n_1.default)(settings.language, `categories.${category}`)}: ${disabledCategories.indexOf(category) < 0 ? emojis_1.default.on : emojis_1.default.off}`, { type: callbacks_1.CallbackDataType.Category, id: category });
@@ -140,7 +140,7 @@ const categoriesKeyboard = ({ chat_id, settings, disabledCategories }) => {
     };
 };
 exports.categoriesKeyboard = categoriesKeyboard;
-const settingsKeyboard = ({ chat_id, settings }) => {
+const settingsKeyboard = ({ settings }) => {
     return {
         inline_keyboard: [
             [
@@ -174,7 +174,7 @@ const settingsKeyboard = ({ chat_id, settings }) => {
     };
 };
 exports.settingsKeyboard = settingsKeyboard;
-const languagesKeyboard = ({ chat_id, settings }, availableLanguages) => {
+const languagesKeyboard = ({ settings }, availableLanguages) => {
     return {
         inline_keyboard: languages_1.default
             .filter((language) => (0, some_1.default)(availableLanguages, (availableLanguage) => availableLanguage._id === language.code))
@@ -213,7 +213,7 @@ exports.languageKeyboard = languageKeyboard;
 const banListKeyboard = (language, list) => {
     return {
         inline_keyboard: [
-            [getButton((0, i18n_1.default)(language, "sentences.banListQuestion"), { type: callbacks_1.CallbackDataType.Ban, id: list._id })],
+            [getButton((0, i18n_1.default)(language, "sentences.banListQuestion"), { type: callbacks_1.CallbackDataType.Ban, id: `${list._id}` })],
         ],
     };
 };
@@ -221,7 +221,7 @@ exports.banListKeyboard = banListKeyboard;
 const confirmBanListKeyboard = (language, list) => {
     return {
         inline_keyboard: [
-            [getButton((0, i18n_1.default)(language, "sentences.banListCommand"), { type: callbacks_1.CallbackDataType.ConfirmBan, id: list._id })],
+            [getButton((0, i18n_1.default)(language, "sentences.banListCommand"), { type: callbacks_1.CallbackDataType.ConfirmBan, id: `${list._id}` })],
         ],
     };
 };
@@ -245,7 +245,7 @@ const listsKeyboard = (lists) => ({
         result.push([
             getButton(list.name.replace("&", "and"), {
                 type: callbacks_1.CallbackDataType.Pick,
-                id: list._id,
+                id: `${list._id}`,
             }),
         ]);
         return result;
@@ -295,9 +295,9 @@ const curateListKeyboard = (list) => ({
             }),
         ],
         [
-            getButton("Values", { type: callbacks_1.CallbackDataType.Values, id: list._id }),
+            getButton("Values", { type: callbacks_1.CallbackDataType.Values, id: `${list._id}` }),
             getButton("Stats", { type: callbacks_1.CallbackDataType.Stats, id: `l_${list._id}` }),
-            getButton("Desc", { type: callbacks_1.CallbackDataType.Description, id: list._id }),
+            getButton("Desc", { type: callbacks_1.CallbackDataType.Description, id: `${list._id}` }),
             {
                 text: "Curate",
                 url: `https://belgocanadian.com/tenthings?list=${list._id}`,
