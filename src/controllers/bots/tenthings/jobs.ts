@@ -63,14 +63,14 @@ const resetDailyScore = () => {
                 game: game._id,
                 _id: { $in: winners.map((winner) => winner._id) },
               },
-              { $inc: { wins: 1 } }
+              { $inc: { wins: 1 } },
             ).exec();
             const savedPlayers = await Player.updateMany(
               { game: game._id, scoreDaily: { $gt: 0 } },
               {
                 $inc: { plays: 1, playStreak: 1 },
                 $set: { scoreDaily: 0 },
-              }
+              },
             ).exec();
             if (game.hints < 4) {
               game.hints = 4;
@@ -87,7 +87,7 @@ const resetDailyScore = () => {
         (err: Error) => {
           console.error(err);
           bot.notifyAdmin(`Update daily score error\n${err}`);
-        }
+        },
       );
   } else {
     bot.notifyAdmin(`Schedule incorrectly triggered: ${moment().format("DD-MMM-YYYY hh:mm")}`);
@@ -101,7 +101,7 @@ const backupDatabase = () => {
     },
     (err: Error) => {
       bot.notifyAdmin(`Database Backup Failed\n${err}`);
-    }
+    },
   );
 };
 
@@ -110,7 +110,7 @@ function getChatWithDelay(chat_id: number, delay: number) {
     setTimeout(() => {
       bot.getChat(chat_id).then(
         (result: string) => resolve(result),
-        (err: Error) => resolve(err)
+        (err: Error) => resolve(err),
       );
     }, delay);
   });
@@ -123,7 +123,7 @@ Stats.find()
   });*/
 const getYearlyStats = async (): Promise<{ min: any; max: any }> => {
   const yearStats = (await Stats.find({ base: false, uniquePlayers: { $gt: 0 } }).select("date uniquePlayers")).filter(
-    ({ date }: IStats) => moment(date) >= moment().subtract(1, "years")
+    ({ date }: IStats) => moment(date) >= moment().subtract(1, "years"),
   );
   return {
     min: minBy(yearStats, (stat) => stat.uniquePlayers),
@@ -296,7 +296,7 @@ const sendNewLists = () => {
           .then((games: IGame[]) => {
             bot.broadcast(
               games.map((game) => game.chat_id),
-              message
+              message,
             );
           });
       } else {
@@ -336,7 +336,7 @@ const sendUpdatedLists = () => {
           .then((games: IGame[]) => {
             bot.broadcast(
               games.map((game) => game.chat_id),
-              message
+              message,
             );
             bot.notifyAdmins(message);
           });
@@ -392,14 +392,14 @@ const deactivateInactiveChats = () => {
       Promise.all(
         games.map((game, i) => {
           return getChatWithDelay(game.chat_id, i * 50);
-        })
+        }),
       ).then(
         (chat_ids) => {
           bot.notifyAdmin(
-            `${chat_ids.filter((chat_id) => (chat_id as string).includes("not found"))} inactive chats deactivated`
+            `${chat_ids.filter((chat_id) => (chat_id as string).includes("not found"))} inactive chats deactivated`,
           );
         },
-        (err) => console.error(err)
+        (err) => console.error(err),
       );
     });
 };

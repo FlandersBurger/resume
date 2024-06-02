@@ -1,5 +1,6 @@
 export default [
   "Adult",
+  "Albums",
   "Animation",
   "Anime/Manga",
   "Art",
@@ -20,6 +21,7 @@ export default [
   "K-pop",
   "Language",
   "Literature",
+  "Lyrics",
   "Mathematics",
   "Medicine",
   "Misc",
