@@ -107,7 +107,7 @@ export default async (callbackQuery: ICallbackData) => {
               name: callbackQuery.from.name,
               list: foundList.name,
               score: makePercentage(foundList.score),
-            })
+            }),
           );
         }
       }
@@ -167,7 +167,7 @@ export default async (callbackQuery: ICallbackData) => {
             callbackQuery.callbackQueryId,
             `${callbackQuery.data} -> ${
               categoryIndex >= 0 ? i18n(game.settings.language, "on") : i18n(game.settings.language, "off")
-            }`
+            }`,
           );
           bot.editKeyboard(callbackQuery.chatId, callbackQuery.id, categoriesKeyboard(game));
         } else {
@@ -175,7 +175,7 @@ export default async (callbackQuery: ICallbackData) => {
           if (!game) return;
           bot.queueMessage(
             callbackQuery.chatId,
-            i18n(game.settings.language, "warnings.adminFunction", { name: callbackQuery.from.name })
+            i18n(game.settings.language, "warnings.adminFunction", { name: callbackQuery.from.name }),
           );
         }
       }
@@ -194,6 +194,7 @@ export default async (callbackQuery: ICallbackData) => {
             const availableLanguages = await List.aggregate([
               { $group: { _id: "$language", count: { $sum: 1 } } },
             ]).exec();
+            console.log(callbackQuery, languageKeyboard(game, availableLanguages));
             bot.editKeyboard(callbackQuery.chatId, callbackQuery.id, languageKeyboard(game, availableLanguages));
           } else {
             console.log(`${callbackQuery.data} toggled for ${game._id}`);
@@ -205,7 +206,7 @@ export default async (callbackQuery: ICallbackData) => {
                 game.settings[callbackQuery.data]
                   ? i18n(game.settings.language, "on")
                   : i18n(game.settings.language, "off")
-              }`
+              }`,
             );
             bot.editKeyboard(callbackQuery.chatId, callbackQuery.id, settingsKeyboard(game));
           }
@@ -214,7 +215,7 @@ export default async (callbackQuery: ICallbackData) => {
           if (!game) return;
           bot.queueMessage(
             callbackQuery.chatId,
-            i18n(game.settings.language, "warnings.adminFunction", { name: callbackQuery.from.name })
+            i18n(game.settings.language, "warnings.adminFunction", { name: callbackQuery.from.name }),
           );
         }
       }
@@ -237,7 +238,7 @@ export default async (callbackQuery: ICallbackData) => {
           callbackQuery.callbackQueryId,
           `${callbackQuery.data} -> ${
             isSelected ? i18n(game.settings.language, "off") : i18n(game.settings.language, "on")
-          }`
+          }`,
         );
         const availableLanguages = await List.aggregate([{ $group: { _id: "$language", count: { $sum: 1 } } }]).exec();
         bot.editKeyboard(callbackQuery.chatId, callbackQuery.id, languagesKeyboard(game, availableLanguages));
@@ -277,7 +278,7 @@ export default async (callbackQuery: ICallbackData) => {
         if (game.pickedLists.length >= 10)
           return bot.queueMessage(
             callbackQuery.chatId,
-            i18n(game.settings.language, "warnings.fullQueue", { name: callbackQuery.from.name })
+            i18n(game.settings.language, "warnings.fullQueue", { name: callbackQuery.from.name }),
           );
         const list = await List.findOne({ _id: callbackQuery.data }).exec();
         if (!list) return bot.queueMessage(callbackQuery.chatId, i18n(game.settings.language, "warnings.unfoundList"));
@@ -288,7 +289,7 @@ export default async (callbackQuery: ICallbackData) => {
             i18n(game.settings.language, "warnings.alreadyInQueue", {
               list: list.name,
               name: callbackQuery.from.name,
-            })
+            }),
           );
         } else {
           game.pickedLists.push(list._id);
@@ -297,14 +298,14 @@ export default async (callbackQuery: ICallbackData) => {
             callbackQuery.callbackQueryId,
             i18n(game.settings.language, "sentences.addedList", {
               list: list.name,
-            })
+            }),
           );
           bot.queueMessage(
             callbackQuery.chatId,
             i18n(game.settings.language, "sentences.addedListToQueue", {
               list: list.name,
               name: callbackQuery.from.name,
-            })
+            }),
           );
         }
       }
@@ -327,7 +328,7 @@ export default async (callbackQuery: ICallbackData) => {
       if (!game) return;
       const suggestion = callbackQuery.text.substring(
         callbackQuery.text.indexOf(' "') + 2,
-        callbackQuery.text.indexOf('",')
+        callbackQuery.text.indexOf('",'),
       );
 
       let message = `<b>${capitalize(callbackQuery.data as string)}</b>\n${suggestion}\n<i>By ${
@@ -350,7 +351,7 @@ export default async (callbackQuery: ICallbackData) => {
             callbackQuery.chatId,
             list.values
               .sort((a, b) => (a.value < b.value ? -1 : 1))
-              .reduce((message, item) => `${message}- ${item.value}\n`, `<b>${list.name}</b>\n`)
+              .reduce((message, item) => `${message}- ${item.value}\n`, `<b>${list.name}</b>\n`),
           );
         }
       });
@@ -362,7 +363,7 @@ export default async (callbackQuery: ICallbackData) => {
       if (!list) return;
       bot.queueMessage(
         callbackQuery.chatId,
-        `<b>${list.name}</b>\n${i18n(game.settings.language, "description")}:\n<i>${list.description || "N/A"}</i>`
+        `<b>${list.name}</b>\n${i18n(game.settings.language, "description")}:\n<i>${list.description || "N/A"}</i>`,
       );
       break;
     case CallbackDataType.Difficulty:
