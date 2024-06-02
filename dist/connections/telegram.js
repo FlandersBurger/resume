@@ -231,7 +231,7 @@ class TelegramBot {
         });
         this.sendKeyboard = (channel, message, keyboard, topic) => __awaiter(this, void 0, void 0, function* () {
             let url = `${this.baseUrl}/sendMessage?chat_id=${channel}&disable_notification=true&parse_mode=html`;
-            url += `&text=${encodeURIComponent(message)}`;
+            url += `&text=${message.replace("&", "and")}`;
             url += `&reply_markup=${JSON.stringify(keyboard)}`;
             if (topic)
                 url += `&message_thread_id=${topic}`;

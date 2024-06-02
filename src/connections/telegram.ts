@@ -256,7 +256,7 @@ class TelegramBot {
 
   public sendKeyboard = async (channel: number, message: string, keyboard: IKeyboard, topic?: number) => {
     let url = `${this.baseUrl}/sendMessage?chat_id=${channel}&disable_notification=true&parse_mode=html`;
-    url += `&text=${encodeURIComponent(message)}`;
+    url += `&text=${message.replace("&", "and")}`;
     url += `&reply_markup=${JSON.stringify(keyboard)}`;
     if (topic) url += `&message_thread_id=${topic}`;
     try {
@@ -320,7 +320,7 @@ class TelegramBot {
 
   private introduceYourself = () => {
     console.log(
-      `Hello, my name is ${this.getName()}. You can talk to me through my username: @${this.telegramBotUser!.username}`
+      `Hello, my name is ${this.getName()}. You can talk to me through my username: @${this.telegramBotUser!.username}`,
     );
   };
 
@@ -421,7 +421,7 @@ class TelegramBot {
       } else {
         let command = body.message.text.substring(
           0,
-          !body.message.text.includes(" ") ? body.message.text.length : body.message.text.indexOf(" ")
+          !body.message.text.includes(" ") ? body.message.text.length : body.message.text.indexOf(" "),
         );
         if (command.includes("@") && command.substring(command.indexOf("@") + 1) !== "TenThings_Bot") {
           return { messageType: MessageType.Ignore };
@@ -449,7 +449,7 @@ class TelegramBot {
 const bot = new TelegramBot(process.env.TELEGRAM_TOKEN!);
 
 messageQueue.process(({ data }: { data: { channel: number; message: string } }) =>
-  bot.sendMessage(data.channel, data.message)
+  bot.sendMessage(data.channel, data.message),
 );
 
 export default bot;
