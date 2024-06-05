@@ -122,12 +122,19 @@ class TelegramBot {
         if (this.muteReasons.includes(error.response.data.description)) {
           return botMuted(channel, error.response.data.description);
         }
-        console.error(error.response.data);
+        if (channel !== parseInt(process.env.MASTER_CHAT || "")) {
+          this.notifyAdmin(`Send Message to ${channel} Fail: ${error.response.data.description}`);
+        }
       } else {
-        console.error(error);
+        if (error.code === "ETIMEDOUT") {
+          console.error(error.errors);
+          if (channel !== parseInt(process.env.MASTER_CHAT || "")) {
+            return this.notifyAdmin(`Send Message to ${channel} Fail: Timeout`);
+          }
+        }
       }
       if (channel !== parseInt(process.env.MASTER_CHAT || "")) {
-        this.notifyAdmin(`Send Message to ${channel} Fail`);
+        this.notifyAdmin(`Send Message to ${channel} Fail: ${error.message ?? error.code}`);
       }
     });
   };

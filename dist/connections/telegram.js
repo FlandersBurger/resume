@@ -94,17 +94,25 @@ class TelegramBot {
             if (topic)
                 url += `&message_thread_id=${topic}`;
             axios_1.default.get(url).catch((error) => {
+                var _a;
                 if (error.response) {
                     if (this.muteReasons.includes(error.response.data.description)) {
                         return (0, errors_1.botMuted)(channel, error.response.data.description);
                     }
-                    console.error(error.response.data);
+                    if (channel !== parseInt(process.env.MASTER_CHAT || "")) {
+                        this.notifyAdmin(`Send Message to ${channel} Fail: ${error.response.data.description}`);
+                    }
                 }
                 else {
-                    console.error(error);
+                    if (error.code === "ETIMEDOUT") {
+                        console.error(error.errors);
+                        if (channel !== parseInt(process.env.MASTER_CHAT || "")) {
+                            return this.notifyAdmin(`Send Message to ${channel} Fail: Timeout`);
+                        }
+                    }
                 }
                 if (channel !== parseInt(process.env.MASTER_CHAT || "")) {
-                    this.notifyAdmin(`Send Message to ${channel} Fail`);
+                    this.notifyAdmin(`Send Message to ${channel} Fail: ${(_a = error.message) !== null && _a !== void 0 ? _a : error.code}`);
                 }
             });
         };
