@@ -117,11 +117,11 @@ exports.default = (callbackQuery) => __awaiter(void 0, void 0, void 0, function*
                         break;
                     case "global":
                         telegram_1.default.answerCallback(callbackQuery.callbackQueryId, text);
-                        telegram_1.default.queueMessage(game.chat_id, "Coming Soon");
+                        (0, stats_1.getStats)(game.chat_id, "global", callbackQuery.from.name);
                         break;
                     case "game":
                         telegram_1.default.answerCallback(callbackQuery.callbackQueryId, text);
-                        telegram_1.default.queueMessage(game.chat_id, "Coming Soon");
+                        (0, stats_1.getStats)(game.chat_id, "g", callbackQuery.from.name);
                         break;
                 }
             }

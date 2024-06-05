@@ -129,11 +129,11 @@ export default async (callbackQuery: ICallbackData) => {
             break;
           case "global":
             bot.answerCallback(callbackQuery.callbackQueryId, text);
-            bot.queueMessage(game.chat_id, "Coming Soon");
+            getStats(game.chat_id, "global", callbackQuery.from.name);
             break;
           case "game":
             bot.answerCallback(callbackQuery.callbackQueryId, text);
-            bot.queueMessage(game.chat_id, "Coming Soon");
+            getStats(game.chat_id, "g", callbackQuery.from.name);
             break;
         }
       }
