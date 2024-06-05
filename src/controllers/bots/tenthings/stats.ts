@@ -9,6 +9,7 @@ import { getListStats, getPlayerStats } from "./messages";
 
 import bot from "@root/connections/telegram";
 import i18n from "@root/i18n";
+import { makeReadable } from "@root/utils/number-helpers";
 
 export const getScores = async (game_id: number, type: string) => {
   /*
@@ -155,21 +156,21 @@ export const getStats = async (chat_id: number, data: string, requestor?: string
           const stats = result[0];
           let message = "<b>Global Stats</b>\n";
           message += requestor ? `<i>Requested by ${requestor}</i>\n` : "";
-          message += `Highest Overall Score: ${stats.overallHighScore}\n`;
-          message += `Highest Score Today: ${stats.dailyHighScore}\n`;
-          message += `Total Overall Score: ${stats.overallTotalScore}\n`;
-          message += `Total Score Today: ${stats.dailyTotalScore}\n`;
-          message += `Best Answer Streak: ${stats.answerStreak}\n`;
-          message += `Best Play Streak: ${stats.playStreak}\n`;
-          message += `Best No Hint Streak: ${stats.noHintStreak}\n`;
-          message += `Answers Given: ${stats.answers}\n`;
-          message += `Minigame Answers Given: ${stats.minigamePlays}\n`;
-          message += `Tinygame Answers Given: ${stats.tinygamePlays}\n`;
-          message += `Answer Snubs: ${stats.snubs}\n`;
-          message += `Hints Asked: ${stats.hints}\n`;
-          message += `Suggestions given: ${stats.suggestions}\n`;
-          message += `Lists searched: ${stats.searches}\n`;
-          message += `Lists Skipped: ${stats.skips}\n`;
+          message += `Highest Overall Score: ${makeReadable(stats.overallHighScore)}\n`;
+          message += `Highest Score Today: ${makeReadable(stats.dailyHighScore)}\n`;
+          message += `Total Overall Score: ${makeReadable(stats.overallTotalScore)}\n`;
+          message += `Total Score Today: ${makeReadable(stats.dailyTotalScore)}\n`;
+          message += `Best Answer Streak: ${makeReadable(stats.answerStreak)}\n`;
+          message += `Best Play Streak: ${makeReadable(stats.playStreak)}\n`;
+          message += `Best No Hint Streak: ${makeReadable(stats.noHintStreak)}\n`;
+          message += `Answers Given: ${makeReadable(stats.answers)}\n`;
+          message += `Minigame Answers Given: ${makeReadable(stats.minigamePlays)}\n`;
+          message += `Tinygame Answers Given: ${makeReadable(stats.tinygamePlays)}\n`;
+          message += `Answer Snubs: ${makeReadable(stats.snubs)}\n`;
+          message += `Hints Asked: ${makeReadable(stats.hints)}\n`;
+          message += `Suggestions given: ${makeReadable(stats.suggestions)}\n`;
+          message += `Lists searched: ${makeReadable(stats.searches)}\n`;
+          message += `Lists Skipped: ${makeReadable(stats.skips)}\n`;
           //message += `${allPlayers.filter(({scoreDaily}) => scoreDaily).length} out of ${allPlayers.filter(({present}) => present).length} players played today\n`;
           //message += `Cycled through all lists ${games.reduce((count, {cycles}) => count + (cycles ? cycles : 0), 0)} times\n`;
           message += "\n";

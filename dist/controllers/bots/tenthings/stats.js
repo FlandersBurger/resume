@@ -19,6 +19,7 @@ const index_1 = require("../../../models/index");
 const messages_1 = require("./messages");
 const telegram_1 = __importDefault(require("../../../connections/telegram"));
 const i18n_1 = __importDefault(require("../../../i18n"));
+const number_helpers_1 = require("../../../utils/number-helpers");
 const getScores = (game_id, type) => __awaiter(void 0, void 0, void 0, function* () {
     /*
     stats('score', game_id, scoreType)
@@ -135,21 +136,21 @@ const getStats = (chat_id, data, requestor) => __awaiter(void 0, void 0, void 0,
                 const stats = result[0];
                 let message = "<b>Global Stats</b>\n";
                 message += requestor ? `<i>Requested by ${requestor}</i>\n` : "";
-                message += `Highest Overall Score: ${stats.overallHighScore}\n`;
-                message += `Highest Score Today: ${stats.dailyHighScore}\n`;
-                message += `Total Overall Score: ${stats.overallTotalScore}\n`;
-                message += `Total Score Today: ${stats.dailyTotalScore}\n`;
-                message += `Best Answer Streak: ${stats.answerStreak}\n`;
-                message += `Best Play Streak: ${stats.playStreak}\n`;
-                message += `Best No Hint Streak: ${stats.noHintStreak}\n`;
-                message += `Answers Given: ${stats.answers}\n`;
-                message += `Minigame Answers Given: ${stats.minigamePlays}\n`;
-                message += `Tinygame Answers Given: ${stats.tinygamePlays}\n`;
-                message += `Answer Snubs: ${stats.snubs}\n`;
-                message += `Hints Asked: ${stats.hints}\n`;
-                message += `Suggestions given: ${stats.suggestions}\n`;
-                message += `Lists searched: ${stats.searches}\n`;
-                message += `Lists Skipped: ${stats.skips}\n`;
+                message += `Highest Overall Score: ${(0, number_helpers_1.makeReadable)(stats.overallHighScore)}\n`;
+                message += `Highest Score Today: ${(0, number_helpers_1.makeReadable)(stats.dailyHighScore)}\n`;
+                message += `Total Overall Score: ${(0, number_helpers_1.makeReadable)(stats.overallTotalScore)}\n`;
+                message += `Total Score Today: ${(0, number_helpers_1.makeReadable)(stats.dailyTotalScore)}\n`;
+                message += `Best Answer Streak: ${(0, number_helpers_1.makeReadable)(stats.answerStreak)}\n`;
+                message += `Best Play Streak: ${(0, number_helpers_1.makeReadable)(stats.playStreak)}\n`;
+                message += `Best No Hint Streak: ${(0, number_helpers_1.makeReadable)(stats.noHintStreak)}\n`;
+                message += `Answers Given: ${(0, number_helpers_1.makeReadable)(stats.answers)}\n`;
+                message += `Minigame Answers Given: ${(0, number_helpers_1.makeReadable)(stats.minigamePlays)}\n`;
+                message += `Tinygame Answers Given: ${(0, number_helpers_1.makeReadable)(stats.tinygamePlays)}\n`;
+                message += `Answer Snubs: ${(0, number_helpers_1.makeReadable)(stats.snubs)}\n`;
+                message += `Hints Asked: ${(0, number_helpers_1.makeReadable)(stats.hints)}\n`;
+                message += `Suggestions given: ${(0, number_helpers_1.makeReadable)(stats.suggestions)}\n`;
+                message += `Lists searched: ${(0, number_helpers_1.makeReadable)(stats.searches)}\n`;
+                message += `Lists Skipped: ${(0, number_helpers_1.makeReadable)(stats.skips)}\n`;
                 //message += `${allPlayers.filter(({scoreDaily}) => scoreDaily).length} out of ${allPlayers.filter(({present}) => present).length} players played today\n`;
                 //message += `Cycled through all lists ${games.reduce((count, {cycles}) => count + (cycles ? cycles : 0), 0)} times\n`;
                 message += "\n";
