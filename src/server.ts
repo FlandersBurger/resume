@@ -32,7 +32,7 @@ admin.initializeApp(
     credential: admin.credential.cert(serviceAccount),
     databaseURL: "https://resume-172205.firebaseio.com",
   },
-  "resume"
+  "resume",
 );
 
 const app = express();

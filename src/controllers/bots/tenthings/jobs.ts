@@ -7,7 +7,7 @@ import maxBy from "lodash/maxBy";
 import max from "lodash/max";
 import uniqBy from "lodash/uniqBy";
 import uniq from "lodash/uniq";
-import { sendMaingameMessage } from "./maingame";
+import { deactivate, sendMaingameMessage } from "./maingame";
 import { IGame } from "@models/tenthings/game";
 import { makeReadable } from "@root/utils/number-helpers";
 import { HydratedDocument } from "mongoose";
@@ -350,57 +350,25 @@ const sendUpdatedLists = () => {
 
 //var dailyScore = schedule.scheduleJob('*/10 * * * * *', function() {
 //resetDailyScore()
-/*
-  const deleteStaleGames = schedule.scheduleJob('0 0 4 * * *', () => {
-    //Delete stale games
-    Game.find({
-        lastPlayDate: {
-          $lt: moment().subtract(1, 'days')
-        }
-      })
-      .select('_id date')
-      .then(games => {
-        const ids = games.map(({
-          _id
-        }) => _id);
-        if (ids.length > 0) {
-          Game.find({
-              '_id': {
-                $nin: ids
-              },
-              'date': {
-                $lt: moment().subtract(30, 'days')
-              }
-            })
-            .then(staleGames => {
-              staleGames.forEach(game => {
-                game.remove();
-              });
-              if (staleGames.length > 0) bot.notifyAdmin(`${staleGames.length} stale games deleted`);
-            });
-        }
+
+const deleteStaleGames = () => {
+  Game.find({ lastPlayDate: { $lt: moment().subtract(12, "months") } })
+    .select("_id")
+    .then((staleGames: HydratedDocument<IGame>[]) => {
+      staleGames.forEach(async (game) => {
+        await Player.deleteMany({ game: game._id }).exec();
+        await game.remove();
       });
-  });
-*/
+      if (staleGames.length > 0) bot.notifyAdmin(`${staleGames.length} stale games deleted`);
+    });
+};
+
 const deactivateInactiveChats = () => {
-  Game.find({
-    lastPlayDate: { $lt: moment().subtract(30, "days") },
-    enabled: true,
-  })
+  Game.find({ lastPlayDate: { $lt: moment().subtract(30, "days") }, enabled: true })
     .select("chat_id")
-    .then((games: IGame[]) => {
-      Promise.all(
-        games.map((game, i) => {
-          return getChatWithDelay(game.chat_id, i * 50);
-        }),
-      ).then(
-        (chat_ids) => {
-          bot.notifyAdmin(
-            `${chat_ids.filter((chat_id) => (chat_id as string).includes("not found"))} inactive chats deactivated`,
-          );
-        },
-        (err) => console.error(err),
-      );
+    .then((games: HydratedDocument<IGame>[]) => {
+      games.forEach(deactivate);
+      if (games.length > 0) bot.notifyAdmin(`${games.length} inactive chats deactivated`);
     });
 };
 
@@ -444,6 +412,7 @@ if (process.env.NODE_ENV === "production") {
   jobs.push(schedule.scheduleJob("Create Mini Games", "0 0 3 * * *", createMinigames));
   jobs.push(schedule.scheduleJob("Deactivate Inactive Chats", "0 0 4 * * *", deactivateInactiveChats));
   jobs.push(schedule.scheduleJob("Delete Stale Players", "0 0 5 * * *", deleteStalePlayers));
+  jobs.push(schedule.scheduleJob("Delete Stale Games", "0 0 6 * * *", deleteStaleGames));
   jobs.push(schedule.scheduleJob("Send New List Notice", "0 0 12 * * *", sendNewLists));
   // jobs.push(schedule.scheduleJob('0 30 12 * * *', sendUpdatedLists))
 }
