@@ -62,6 +62,7 @@ class TelegramBot {
     "Bad Request: TOPIC_CLOSED",
     "Bad Request: CHAT_WRITE_FORBIDDEN",
     "Bad Request: group chat was upgraded to a supergroup chat",
+    "Forbidden: bot is not a member of the supergroup chat",
     "Forbidden: bot was kicked from the supergroup chat",
     "Forbidden: bot was kicked from the group chat",
     "Forbidden: bot was blocked by the user",
@@ -113,7 +114,7 @@ class TelegramBot {
     }
   };
 
-  public sendMessage = (channel: number, message: string, topic?: number) => {
+  public sendMessage = (channel: number, message: string, topic?: number, retry: boolean = false) => {
     message = encodeURIComponent(message);
     let url = `${this.baseUrl}/sendMessage?chat_id=${channel}&disable_notification=true&parse_mode=html&text=${message}`;
     if (topic) url += `&message_thread_id=${topic}`;
@@ -127,6 +128,10 @@ class TelegramBot {
         }
       } else {
         if (error.code === "ETIMEDOUT") {
+          if (!retry) {
+            setTimeout(() => this.sendMessage(channel, message, topic, true), 200);
+            return;
+          }
           console.error(error.errors);
           if (channel !== parseInt(process.env.MASTER_CHAT || "")) {
             return this.notifyAdmin(`Send Message to ${channel} Fail: Timeout`);
@@ -135,6 +140,7 @@ class TelegramBot {
       }
       if (channel !== parseInt(process.env.MASTER_CHAT || "")) {
         this.notifyAdmin(`Send Message to ${channel} Fail: ${error.message ?? error.code}`);
+        console.error(`${error.message} -> ${channel}: ${message}`);
       }
     });
   };
