@@ -100,6 +100,9 @@ class TelegramBot {
                     if (this.muteReasons.includes(error.response.data.description)) {
                         return (0, errors_1.botMuted)(channel, error.response.data.description);
                     }
+                    if (error.response.data.description.includes("can't parse")) {
+                        return this.notifyAdmin(`Send Message to ${channel} parse Fail: ${message}`);
+                    }
                     if (channel !== parseInt(process.env.MASTER_CHAT || "")) {
                         this.notifyAdmin(`Send Message to ${channel} Fail: ${error.response.data.description}`);
                     }
