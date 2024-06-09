@@ -3,6 +3,7 @@ import { IGame, IGameListValue } from "@models/tenthings/game";
 import { IList } from "@models/tenthings/list";
 import { IPlayer } from "@models/tenthings/player";
 import { IUser } from "@models/user";
+import { angleBrackets } from "@root/utils/string-helpers";
 
 import moment from "moment";
 const MAXHINTS = 6;
@@ -91,7 +92,7 @@ export const getSnubbedMessage = (match: string, loser: IPlayer, winner: IGameLi
 export const getListMessage = (list: HydratedDocument<IList>): string => {
   let msg = `<b>${list.name}</b> [${list.language}]\n`;
   msg += `<i>by ${(list.creator as IUser).username}</i>\n`;
-  msg += `${list.description ? `${list.description}\n` : ""}`;
+  msg += `${list.description ? `${angleBrackets(list.description)}\n` : ""}`;
   msg += ` - Categories: ${list.categories.join(", ")}\n`;
   msg += list.difficulty ? ` - Difficulty: ${getDifficultyMessage(list.difficulty)}\n` : "";
   msg += list.frequency ? ` - Frequency: ${capitalize(getFrequencyMessage(list.frequency))} changes\n` : "";
@@ -127,7 +128,7 @@ export const getListStats = (
   language: string,
   list: IList,
   requestor: string | undefined,
-  expanded = false
+  expanded = false,
 ): string => {
   var message = "";
   message += requestor ? `<i>${i18n(language, "sentences.requestedBy", { requestor })}</i>\n` : "";
