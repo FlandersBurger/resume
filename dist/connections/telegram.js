@@ -301,7 +301,10 @@ class TelegramBot {
                 yield axios_1.default.get(encodeURI(url));
             }
             catch (error) {
-                this.notifyAdmin(`Edit Keyboard in ${channel} Fail`);
+                if (error.response.data.description !==
+                    "Bad Request: message is not modified: specified new message content and reply markup are exactly the same as a current content and reply markup are exactly the same as a current content and reply markup of the message") {
+                    this.notifyAdmin(`Edit Keyboard in ${channel} Fail`);
+                }
                 console.error(error.response.data);
             }
         });
@@ -311,7 +314,10 @@ class TelegramBot {
                 yield axios_1.default.get(encodeURI(url));
             }
             catch (error) {
-                this.notifyAdmin(`Answer Callback of ${callback_query_id} Fail`);
+                if (error.response.data.description !==
+                    "Bad Request: query is too old and response timeout expired or query ID is invalid") {
+                    this.notifyAdmin(`Answer Callback of ${callback_query_id} Fail`);
+                }
                 console.error(error.response.data);
             }
         });
