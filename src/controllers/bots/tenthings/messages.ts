@@ -16,6 +16,7 @@ import i18n, { t_list } from "@root/i18n";
 import emojis from "./emojis";
 import { ICallbackData } from "./callbacks";
 import { ITelegramUser } from "@root/connections/telegram";
+import { getListScore } from "./lists";
 
 export type IMessageType = IMessage | ICallbackData;
 export interface IMessage {
@@ -133,7 +134,7 @@ export const getListStats = (
   var message = "";
   message += requestor ? `<i>${i18n(language, "sentences.requestedBy", { requestor })}</i>\n` : "";
   message += `${i18n(language, "stats.misc", { something: list.name })}\n`;
-  message += `\t${i18n(language, "score")}: ${makePercentage(list.score)}\n`;
+  message += `\t${i18n(language, "score")}: ${makePercentage(getListScore(list))}\n`;
   message += `\t${i18n(language, "votes")}: ${list.votes.filter(({ vote }) => vote > 0).length} ${emojis.thumbsUp} / ${
     list.votes.filter(({ vote }) => vote < 0).length
   } ${emojis.thumbsDown}\n`;

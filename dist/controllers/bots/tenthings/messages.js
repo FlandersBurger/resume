@@ -36,6 +36,7 @@ const string_helpers_2 = require("../../../utils/string-helpers");
 const difference_1 = __importDefault(require("lodash/difference"));
 const i18n_1 = __importStar(require("../../../i18n"));
 const emojis_1 = __importDefault(require("./emojis"));
+const lists_1 = require("./lists");
 const getLogicMessage = (language) => {
     const rules = (0, i18n_1.t_list)(language, "rules", { maxHints: MAXHINTS, returnObjects: true });
     return rules.reduce((message, rule, i) => `${message}${i + 1}: ${rule}\n`, "");
@@ -147,7 +148,7 @@ const getListStats = (language, list, requestor, expanded = false) => {
     var message = "";
     message += requestor ? `<i>${(0, i18n_1.default)(language, "sentences.requestedBy", { requestor })}</i>\n` : "";
     message += `${(0, i18n_1.default)(language, "stats.misc", { something: list.name })}\n`;
-    message += `\t${(0, i18n_1.default)(language, "score")}: ${(0, number_helpers_1.makePercentage)(list.score)}\n`;
+    message += `\t${(0, i18n_1.default)(language, "score")}: ${(0, number_helpers_1.makePercentage)((0, lists_1.getListScore)(list))}\n`;
     message += `\t${(0, i18n_1.default)(language, "votes")}: ${list.votes.filter(({ vote }) => vote > 0).length} ${emojis_1.default.thumbsUp} / ${list.votes.filter(({ vote }) => vote < 0).length} ${emojis_1.default.thumbsDown}\n`;
     message += `\t${(0, i18n_1.default)(language, "values")}: ${list.values.length}\n`;
     message += `\t${(0, i18n_1.default)(language, "plays")}: ${list.plays} (${list.plays ? (0, number_helpers_1.makePercentage)((list.plays - list.skips) / list.plays) : ""})\n`;
