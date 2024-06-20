@@ -2,7 +2,7 @@ import { Router, Request, Response } from "express";
 
 import bcrypt from "bcryptjs";
 import jwt from "jwt-simple";
-const admin = require("firebase-admin");
+import { firebase } from "@root/server";
 
 import { User } from "@models/index";
 
@@ -50,7 +50,7 @@ usersRoute.post("/", async (req: Request, res: Response) => {
 
 usersRoute.post("/authenticate", async (req: Request, res: Response) => {
   var user = req.body.user;
-  const decodedToken = await admin.auth().verifyIdToken(user.idToken);
+  const decodedToken = await firebase.auth().verifyIdToken(user.idToken);
   console.log(decodedToken);
   var uid = decodedToken.uid;
   console.log(uid);

@@ -12,6 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.websocketServer = exports.firebase = void 0;
 require("module-alias/register");
 require("./env");
 const express_1 = __importDefault(require("express"));
@@ -37,7 +38,7 @@ const main_1 = require("./controllers/bots/tenthings/main");
 const queue_1 = require("./queue");
 const telegram_1 = __importDefault(require("./connections/telegram"));
 const serviceAccount = require("../keys/resume-172205-firebase-adminsdk-r34t7-0028c702be.json");
-firebase_admin_1.default.initializeApp({
+exports.firebase = firebase_admin_1.default.initializeApp({
     credential: firebase_admin_1.default.credential.cert(serviceAccount),
     databaseURL: "https://resume-172205.firebaseio.com",
 }, "resume");
@@ -84,8 +85,7 @@ app.use((req, res) => {
 */
 const port = process.env.PORT || 3000;
 const server = http_1.default.createServer(app);
-const websocketServer = new websockets_1.WebSocketServer(server);
-exports.default = websocketServer;
+exports.websocketServer = new websockets_1.WebSocketServer(server);
 server.listen(port, () => __awaiter(void 0, void 0, void 0, function* () {
     console.log("Server ", process.pid, " listening on", port);
     (0, queue_1.redisConnect)();
@@ -93,7 +93,7 @@ server.listen(port, () => __awaiter(void 0, void 0, void 0, function* () {
         telegram_1.default.notifyAdmin("<b>Started Ten Things</b>");
     }
     yield (0, queue_1.subscribe)("new_post", (post) => {
-        websocketServer.broadcast("new_post", post);
+        exports.websocketServer.broadcast("new_post", post);
     });
     // Player.find({ id: { $type: "string" } })
     //   .select("_id id")

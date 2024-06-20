@@ -23,11 +23,10 @@ import { usersRoute } from "@api/users";
 import { tenthingsBotRoute } from "@tenthings/main";
 import { redisConnect, subscribe } from "@root/queue";
 import bot from "./connections/telegram";
-import { Game, Player } from "./models";
 
 const serviceAccount = require("../keys/resume-172205-firebase-adminsdk-r34t7-0028c702be.json");
 
-admin.initializeApp(
+export const firebase = admin.initializeApp(
   {
     credential: admin.credential.cert(serviceAccount),
     databaseURL: "https://resume-172205.firebaseio.com",
@@ -83,8 +82,7 @@ app.use((req, res) => {
 const port = process.env.PORT || 3000;
 const server = http.createServer(app);
 
-const websocketServer = new WebSocketServer(server);
-export default websocketServer;
+export const websocketServer = new WebSocketServer(server);
 
 server.listen(port, async () => {
   console.log("Server ", process.pid, " listening on", port);

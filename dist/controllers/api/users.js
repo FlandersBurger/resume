@@ -16,7 +16,7 @@ exports.usersRoute = void 0;
 const express_1 = require("express");
 const bcryptjs_1 = __importDefault(require("bcryptjs"));
 const jwt_simple_1 = __importDefault(require("jwt-simple"));
-const admin = require("firebase-admin");
+const server_1 = require("../../server");
 const index_1 = require("../../models/index");
 exports.usersRoute = (0, express_1.Router)();
 exports.usersRoute.get("/", function (_, res) {
@@ -61,7 +61,7 @@ exports.usersRoute.post("/", (req, res) => __awaiter(void 0, void 0, void 0, fun
 }));
 exports.usersRoute.post("/authenticate", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     var user = req.body.user;
-    const decodedToken = yield admin.auth().verifyIdToken(user.idToken);
+    const decodedToken = yield server_1.firebase.auth().verifyIdToken(user.idToken);
     console.log(decodedToken);
     var uid = decodedToken.uid;
     console.log(uid);
