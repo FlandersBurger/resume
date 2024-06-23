@@ -1,13 +1,4 @@
 "use strict";
-var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
-    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-};
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
@@ -38,7 +29,7 @@ guessQueue.on("completed", function (job) {
 });
 const getCount = () => guessQueue.count();
 exports.getCount = getCount;
-const queueGuess = (game, msg) => __awaiter(void 0, void 0, void 0, function* () {
+const queueGuess = async (game, msg) => {
     const values = game.list.values
         .filter(({ guesser }) => guesser)
         .map(({ value }) => ({ type: game_1.GameType.MAINGAME, value }));
@@ -53,8 +44,11 @@ const queueGuess = (game, msg) => __awaiter(void 0, void 0, void 0, function* ()
             msg,
             game: game.chat_id,
             list: game.list._id,
-            player: yield (0, players_1.getPlayer)(game, msg.from),
-            match: Object.assign(Object.assign({}, correctMatch), { distance: 1 }),
+            player: await (0, players_1.getPlayer)(game, msg.from),
+            match: {
+                ...correctMatch,
+                distance: 1,
+            },
         });
     }
     const lengths = values
@@ -77,24 +71,31 @@ const queueGuess = (game, msg) => __awaiter(void 0, void 0, void 0, function* ()
             match: matchedValue,
         };
         if (guess.match.distance >= 0.75) {
-            const match = Object.assign(Object.assign({}, guess.match), (0, find_1.default)(values, ({ value }) => (0, string_helpers_1.removeAllButLetters)(value) === guess.match.value));
+            const match = {
+                ...guess.match,
+                ...(0, find_1.default)(values, ({ value }) => (0, string_helpers_1.removeAllButLetters)(value) === guess.match.value),
+            };
             found = true;
-            setTimeout(() => __awaiter(void 0, void 0, void 0, function* () {
-                queueingGuess(Object.assign(Object.assign({}, guess), { match, player: yield (0, players_1.getPlayer)(game, msg.from) }));
-            }), (2000 / 0.25) * (1 - guess.match.distance));
+            setTimeout(async () => {
+                queueingGuess({
+                    ...guess,
+                    match,
+                    player: await (0, players_1.getPlayer)(game, msg.from),
+                });
+            }, (2000 / 0.25) * (1 - guess.match.distance));
         }
     }
     if (!found)
         (0, sass_1.default)(game, msg.text);
-});
+};
 exports.queueGuess = queueGuess;
 const queueingGuess = (guess) => guessQueue.add(guess);
-guessQueue.process(({ data }, done) => __awaiter(void 0, void 0, void 0, function* () {
-    yield processGuess(data);
+guessQueue.process(async ({ data }, done) => {
+    await processGuess(data);
     done();
-}));
-const processGuess = (guess) => __awaiter(void 0, void 0, void 0, function* () {
-    const game = yield index_1.Game.findOne({
+});
+const processGuess = async (guess) => {
+    const game = await index_1.Game.findOne({
         chat_id: guess.game,
     })
         .populate("list.creator")
@@ -105,7 +106,7 @@ const processGuess = (guess) => __awaiter(void 0, void 0, void 0, function* () {
     }
     let player;
     try {
-        player = yield (0, players_1.getPlayer)(game, guess.player);
+        player = await (0, players_1.getPlayer)(game, guess.player);
     }
     catch (err) {
         console.error(`Error with player in ProcessGuess`);
@@ -116,18 +117,18 @@ const processGuess = (guess) => __awaiter(void 0, void 0, void 0, function* () {
         return;
     }
     if (guess.match.type === game_1.GameType.MAINGAME) {
-        yield (0, maingame_1.checkMaingame)(game, player, guess, guess.msg);
+        await (0, maingame_1.checkMaingame)(game, player, guess, guess.msg);
         console.log(`${guess.game} (${game.settings.language}) - ${game.list.name} for ${guess.match.value}: "${guess.msg.text}" by ${player.first_name}`);
     }
     else if (guess.match.type === game_1.GameType.MINIGAME) {
-        yield (0, minigame_1.checkMinigame)(game, player, guess, guess.msg);
+        await (0, minigame_1.checkMinigame)(game, player, guess, guess.msg);
         console.log(`${guess.game} (${game.settings.language}) - Minigame guess for ${game.minigame.answer}: "${guess.msg.text}" by ${player.first_name}`);
     }
     else if (guess.match.type === game_1.GameType.TINYGAME) {
-        yield (0, tinygame_1.checkTinygame)(game, player, guess, guess.msg);
+        await (0, tinygame_1.checkTinygame)(game, player, guess, guess.msg);
         console.log(`${guess.game} (${game.settings.language}) - Tinygame guess for ${game.tinygame.answer}: "${guess.msg.text}" by ${player.first_name}`);
     }
-});
+};
 const getAnswerScore = (hintCount, accuracy, playerCount = 1) => Math.round(((hints_1.MAX_HINTS - hintCount + playerCount) / (hints_1.MAX_HINTS + playerCount)) * 10 * accuracy);
 exports.getAnswerScore = getAnswerScore;
 //# sourceMappingURL=guesses.js.map

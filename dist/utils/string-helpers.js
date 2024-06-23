@@ -17,11 +17,11 @@ const concealMiddle = (str, extra = "") => str.length < 3 ? str : str[0] + (0, e
 exports.concealMiddle = concealMiddle;
 const capitalize = (str) => str.charAt(0).toUpperCase() + str.slice(1);
 exports.capitalize = capitalize;
-const removeHTML = (str) => str.replace(">", "\u227B").replace("<", "\u227A");
+const removeHTML = (str) => str.replaceAll(">", "\u227B").replaceAll("<", "\u227A");
 exports.removeHTML = removeHTML;
-const angleBrackets = (str) => str.replace("<", "&lt;").replace(">", "&gt;");
+const angleBrackets = (str) => str.replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;");
 exports.angleBrackets = angleBrackets;
-const replaceArray = (str, sources, replacement) => sources.reduce((result, source) => result.replace(source, replacement), str);
+const replaceArray = (str, sources, replacement) => sources.reduce((result, source) => result.replaceAll(source, replacement), str);
 const maskUrls = (str) => replaceArray(replaceArray(str, ["https://", "http://"], "nope://"), domains_1.default, ".nope");
 exports.maskUrls = maskUrls;
 //# sourceMappingURL=string-helpers.js.map

@@ -1,13 +1,4 @@
 "use strict";
-var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
-    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-};
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
@@ -24,48 +15,48 @@ exports.usersRoute.get("/", function (_, res) {
         return res.sendStatus(401);
     res.json(res.locals.user);
 });
-exports.usersRoute.get("/all", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+exports.usersRoute.get("/all", async (req, res) => {
     if (!res.locals.isAdmin)
         return res.send(401);
-    const users = yield index_1.User.find({})
+    const users = await index_1.User.find({})
         .select("-gender -flags -highscore")
         .limit(parseInt(req.query.limit))
         .skip(parseInt(req.query.limit) * (parseInt(req.query.page) - 1));
     res.json(users);
-}));
-exports.usersRoute.get("/ban/:id", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+});
+exports.usersRoute.get("/ban/:id", async (req, res) => {
     if (!res.locals.isAdmin)
         return res.sendStatus(401);
-    const user = yield index_1.User.findOne({ _id: req.params.id });
+    const user = await index_1.User.findOne({ _id: req.params.id });
     if (user) {
         console.log(user);
         user.banned = !user.banned;
         try {
-            yield user.save();
+            await user.save();
         }
         catch (e) { }
         res.sendStatus(200);
     }
-}));
-exports.usersRoute.post("/", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+});
+exports.usersRoute.post("/", async (req, res) => {
     const user = new index_1.User({
         username: req.body.username,
         usernameLC: req.body.username.toLowerCase(),
     });
-    const salt = yield bcryptjs_1.default.genSalt(10);
-    const hash = yield bcryptjs_1.default.hash(req.body.password, salt);
+    const salt = await bcryptjs_1.default.genSalt(10);
+    const hash = await bcryptjs_1.default.hash(req.body.password, salt);
     user.password = hash;
     user.flags = [];
-    yield user.save();
+    await user.save();
     res.sendStatus(201);
-}));
-exports.usersRoute.post("/authenticate", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+});
+exports.usersRoute.post("/authenticate", async (req, res) => {
     var user = req.body.user;
-    const decodedToken = yield server_1.firebase.auth().verifyIdToken(user.idToken);
+    const decodedToken = await server_1.firebase.auth().verifyIdToken(user.idToken);
     console.log(decodedToken);
     var uid = decodedToken.uid;
     console.log(uid);
-    const foundUser = yield index_1.User.findOne({
+    const foundUser = await index_1.User.findOne({
         uid: uid,
         banned: false,
     });
@@ -78,7 +69,7 @@ exports.usersRoute.post("/authenticate", (req, res) => __awaiter(void 0, void 0,
             emailVerified: user.emailVerified,
             uid: uid,
         });
-        yield newUser.save();
+        await newUser.save();
         console.log(user.username + " created");
         const token = jwt_simple_1.default.encode({ userid: user.id }, process.env.SECRET);
         res.json(token);
@@ -88,9 +79,9 @@ exports.usersRoute.post("/authenticate", (req, res) => __awaiter(void 0, void 0,
         const token = jwt_simple_1.default.encode({ userid: foundUser.id }, process.env.SECRET);
         res.json(token);
     }
-}));
-exports.usersRoute.get("/:id/login", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const foundUser = yield index_1.User.findOne({ _id: req.params.id });
+});
+exports.usersRoute.get("/:id/login", async (req, res) => {
+    const foundUser = await index_1.User.findOne({ _id: req.params.id });
     if (!foundUser) {
         res.sendStatus(404);
     }
@@ -102,67 +93,63 @@ exports.usersRoute.get("/:id/login", (req, res) => __awaiter(void 0, void 0, voi
         const token = jwt_simple_1.default.encode({ userid: foundUser.id }, process.env.SECRET);
         res.json(token);
     }
-}));
-exports.usersRoute.post("/:id/verification", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    var _a;
+});
+exports.usersRoute.post("/:id/verification", async (req, res) => {
     if (checkUser(req.params.id, res)) {
-        const user = yield index_1.User.findOne({ _id: (_a = res.locals.user) === null || _a === void 0 ? void 0 : _a._id }).select("password");
+        const user = await index_1.User.findOne({ _id: res.locals.user?._id }).select("password");
         if (!user || user.banned)
             return res.sendStatus(401);
-        const valid = yield bcryptjs_1.default.compare(req.body.password, user.password);
+        const valid = await bcryptjs_1.default.compare(req.body.password, user.password);
         res.sendStatus(valid ? 200 : 401);
     }
     else {
         return res.sendStatus(401);
     }
-}));
-exports.usersRoute.post("/:id", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    var _b;
+});
+exports.usersRoute.post("/:id", async (req, res) => {
     if (checkUser(req.params.id, res)) {
-        if (!((_b = res.locals.user) === null || _b === void 0 ? void 0 : _b._id))
+        if (!res.locals.user?._id)
             return res.sendStatus(400);
-        const user = yield index_1.User.findOne({ _id: res.locals.user._id });
+        const user = await index_1.User.findOne({ _id: res.locals.user._id });
         if (!user || user.banned)
             return res.sendStatus(401);
         user.gender = req.body.user.gender;
         user.flags = req.body.user.flags;
-        yield user.save();
+        await user.save();
         console.log(user.username + " updated their profile");
         res.sendStatus(200);
     }
     else {
         return res.sendStatus(401);
     }
-}));
-exports.usersRoute.post("/:id/password", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    var _c;
+});
+exports.usersRoute.post("/:id/password", async (req, res) => {
     if (checkUser(req.params.id, res)) {
-        const user = yield index_1.User.findOne({ _id: (_c = res.locals.user) === null || _c === void 0 ? void 0 : _c._id }).select("username").select("password");
+        const user = await index_1.User.findOne({ _id: res.locals.user?._id }).select("username").select("password");
         if (!user || user.banned)
             return res.sendStatus(401);
-        const valid = yield bcryptjs_1.default.compare(req.body.oldPassword, user.password);
+        const valid = await bcryptjs_1.default.compare(req.body.oldPassword, user.password);
         if (!valid)
             return res.sendStatus(401);
-        const salt = yield bcryptjs_1.default.genSalt(10);
-        const hash = yield bcryptjs_1.default.hash(req.body.newPassword, salt);
+        const salt = await bcryptjs_1.default.genSalt(10);
+        const hash = await bcryptjs_1.default.hash(req.body.newPassword, salt);
         user.password = hash;
-        yield user.save();
+        await user.save();
         console.log(user.username + " changed their password");
         res.sendStatus(200);
     }
     else {
         return res.sendStatus(401);
     }
-}));
-exports.usersRoute.post("/:id/username", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    var _d, _e;
+});
+exports.usersRoute.post("/:id/username", async (req, res) => {
     if (checkUser(req.params.id, res)) {
-        const user = yield index_1.User.findOne({ _id: (_d = res.locals.user) === null || _d === void 0 ? void 0 : _d._id }).select("username").select("usernameLC");
+        const user = await index_1.User.findOne({ _id: res.locals.user?._id }).select("username").select("usernameLC");
         if (!user || user.banned)
             return res.sendStatus(401);
-        const user2 = yield index_1.User.findOne({ username_lower: req.body.newUsername.toLowerCase() });
+        const user2 = await index_1.User.findOne({ username_lower: req.body.newUsername.toLowerCase() });
         if (user2) {
-            if (user2._id !== ((_e = res.locals.user) === null || _e === void 0 ? void 0 : _e._id)) {
+            if (user2._id !== res.locals.user?._id) {
                 console.log(req.body.newUsername + " already taken");
                 return res.sendStatus(304);
             }
@@ -170,16 +157,15 @@ exports.usersRoute.post("/:id/username", (req, res) => __awaiter(void 0, void 0,
         console.log(user.username + " changed their name to " + req.body.newUsername);
         user.username = req.body.newUsername;
         user.usernameLC = req.body.newUsername.toLowerCase();
-        yield user.save();
+        await user.save();
         res.sendStatus(200);
     }
     else {
         return res.sendStatus(401);
     }
-}));
+});
 function checkUser(user, res) {
-    var _a;
-    if (!((_a = res.locals.user) === null || _a === void 0 ? void 0 : _a._id))
+    if (!res.locals.user?._id)
         return false;
     return user === res.locals.user._id.toString();
 }

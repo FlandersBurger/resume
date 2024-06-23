@@ -1,13 +1,4 @@
 "use strict";
-var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
-    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-};
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
@@ -82,13 +73,13 @@ bot.exportChatInviteLink('-1001394022777').then(function(chat) {
  ██      ██    ██      ██    ██
  ██       ██████  ███████    ██
 */
-exports.tenthingsBotRoute.post("/", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const domainMessage = yield telegram_1.default.toDomainMessage(req.body);
+exports.tenthingsBotRoute.post("/", async (req, res) => {
+    const domainMessage = await telegram_1.default.toDomainMessage(req.body);
     switch (domainMessage.messageType) {
         case MessageType.Ignore:
             return res.sendStatus(200);
         case MessageType.Callback:
-            yield (0, callbacks_1.default)(domainMessage.message);
+            await (0, callbacks_1.default)(domainMessage.message);
             return res.sendStatus(200);
         case MessageType.PlayerLeft:
             index_1.Game.findOne({ chat_id: domainMessage.message.chatId }).exec((err, game) => {
@@ -120,16 +111,16 @@ exports.tenthingsBotRoute.post("/", (req, res) => __awaiter(void 0, void 0, void
         telegram_1.default.notifyAdmin(`Can't send message:\n${JSON.stringify(msg)}`);
         return res.sendStatus(200);
     }
-    const existingGame = yield index_1.Game.findOne({ chat_id: msg.chatId })
+    const existingGame = await index_1.Game.findOne({ chat_id: msg.chatId })
         .populate("list.creator")
         .select("-playedLists")
         .exec();
     // if (msg.chatId !== parseInt(process.env.MASTER_CHAT || "")) return res.sendStatus(200);
     try {
         if (!existingGame) {
-            const newGame = yield (0, maingame_1.createMaingame)(msg.chatId);
+            const newGame = await (0, maingame_1.createMaingame)(msg.chatId);
             console.log(`New game created for ${msg.chatId}`);
-            yield (0, commands_1.evaluate)(msg, newGame, true);
+            await (0, commands_1.evaluate)(msg, newGame, true);
         }
         else {
             if (!existingGame.enabled && msg.command) {
@@ -141,7 +132,7 @@ exports.tenthingsBotRoute.post("/", (req, res) => __awaiter(void 0, void 0, void
                     return res.sendStatus(200);
                 }
             }
-            yield (0, commands_1.evaluate)(msg, existingGame, false);
+            await (0, commands_1.evaluate)(msg, existingGame, false);
         }
     }
     catch (e) {
@@ -153,7 +144,7 @@ exports.tenthingsBotRoute.post("/", (req, res) => __awaiter(void 0, void 0, void
         if (!res.headersSent)
             res.sendStatus(200);
     }
-}));
+});
 exports.tenthingsBotRoute.get("/", (req, res) => {
     if (req.query["hub.verify_token"] === process.env.FACEBOOK_TOKEN) {
         res.status(200).send(req.query["hub.challenge"]);
@@ -202,13 +193,13 @@ exports.tenthingsBotRoute.post("/webhook", (req, res) => {
 function countBytes(s) {
     console.log(encodeURI(s).split(/%..|./).length - 1);
 }
-exports.tenthingsBotRoute.get("/queue", (_, res) => __awaiter(void 0, void 0, void 0, function* () {
-    res.json(yield (0, queue_1.getQueue)());
-}));
-const floodChecker = () => __awaiter(void 0, void 0, void 0, function* () {
-    const webhook = yield telegram_1.default.getWebhook();
-    return webhook.pending_update_count > 500;
+exports.tenthingsBotRoute.get("/queue", async (_, res) => {
+    res.json(await (0, queue_1.getQueue)());
 });
+const floodChecker = async () => {
+    const webhook = await telegram_1.default.getWebhook();
+    return webhook.pending_update_count > 500;
+};
 const newPlayerError = (err) => {
     telegram_1.default.notifyAdmin("Can't add new player: " + JSON.stringify(err));
     console.error(err);

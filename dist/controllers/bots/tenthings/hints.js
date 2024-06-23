@@ -1,13 +1,4 @@
 "use strict";
-var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
-    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-};
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
@@ -37,7 +28,7 @@ const hintCooldown = (gameId) => {
     }
 };
 exports.hintCooldown = hintCooldown;
-const processHint = (game, player, type = game_1.GameType.MAINGAME) => __awaiter(void 0, void 0, void 0, function* () {
+const processHint = async (game, player, type = game_1.GameType.MAINGAME) => {
     if ((type === game_1.GameType.MAINGAME && game.hints >= exports.MAX_HINTS) ||
         (type !== game_1.GameType.MAINGAME && game[type].hints >= exports.MAX_HINTS)) {
         telegram_1.default.queueMessage(game.chat_id, "What? Another hint? I'm just gonna ignore that request");
@@ -52,7 +43,7 @@ const processHint = (game, player, type = game_1.GameType.MAINGAME) => __awaiter
             else
                 player.hints = 1;
             player.hintStreak = 0;
-            yield player.save();
+            await player.save();
         }
         switch (type) {
             case game_1.GameType.MINIGAME:
@@ -71,10 +62,10 @@ const processHint = (game, player, type = game_1.GameType.MAINGAME) => __awaiter
         }
         exports.hintCache[game._id.toString()] = 10;
         (0, exports.hintCooldown)(game._id.toString());
-        yield game.save();
+        await game.save();
     }
     return true;
-});
+};
 exports.processHint = processHint;
 const getHint = (hints, value) => {
     if (value === undefined)

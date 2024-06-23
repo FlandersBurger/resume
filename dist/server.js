@@ -1,13 +1,4 @@
 "use strict";
-var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
-    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-};
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
@@ -86,13 +77,13 @@ app.use((req, res) => {
 const port = process.env.PORT || 3000;
 const server = http_1.default.createServer(app);
 exports.websocketServer = new websockets_1.WebSocketServer(server);
-server.listen(port, () => __awaiter(void 0, void 0, void 0, function* () {
+server.listen(port, async () => {
     console.log("Server ", process.pid, " listening on", port);
     (0, queue_1.redisConnect)();
     if (process.env.NODE_ENV === "production") {
         telegram_1.default.notifyAdmin("<b>Started Ten Things</b>");
     }
-    yield (0, queue_1.subscribe)("new_post", (post) => {
+    await (0, queue_1.subscribe)("new_post", (post) => {
         exports.websocketServer.broadcast("new_post", post);
     });
     // Player.find({ id: { $type: "string" } })
@@ -123,7 +114,7 @@ server.listen(port, () => __awaiter(void 0, void 0, void 0, function* () {
     //     });
     //     console.log("done");
     //   });
-}));
+});
 process
     .on("unhandledRejection", (reason, p) => {
     console.error(reason, "Unhandled Rejection at Promise", p);

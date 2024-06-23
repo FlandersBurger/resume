@@ -1,13 +1,4 @@
 "use strict";
-var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
-    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-};
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
@@ -56,10 +47,10 @@ const commands = [
     "stop",
     "commands",
 ];
-const evaluate = (msg, game, isNew) => __awaiter(void 0, void 0, void 0, function* () {
+const evaluate = async (msg, game, isNew) => {
     //bot.notifyAdmin(tenthings);
     //bot.notifyAdmin(games[msg.chatId].list);
-    let player = yield (0, players_1.getPlayer)(game, msg.from);
+    let player = await (0, players_1.getPlayer)(game, msg.from);
     if (!player.first_name) {
         console.error("msg without a first_name?");
         console.error(msg);
@@ -81,7 +72,7 @@ const evaluate = (msg, game, isNew) => __awaiter(void 0, void 0, void 0, functio
     if (msg.command) {
         switch (msg.command) {
             case "/error":
-                const chatLink = yield telegram_1.default.exportChatInviteLink(msg.chatId);
+                const chatLink = await telegram_1.default.exportChatInviteLink(msg.chatId);
                 telegram_1.default.notifyAdmins(`Error reported in ${msg.chatId}: \n${msg.text}\n\n${chatLink}`);
                 break;
             case "/intro":
@@ -103,7 +94,7 @@ const evaluate = (msg, game, isNew) => __awaiter(void 0, void 0, void 0, functio
                 break;
             case "/parar":
             case "/stop":
-                if (yield telegram_1.default.checkAdmin(game.chat_id, msg.from.id)) {
+                if (await telegram_1.default.checkAdmin(game.chat_id, msg.from.id)) {
                     (0, maingame_1.deactivate)(game);
                 }
                 else {
@@ -127,13 +118,13 @@ const evaluate = (msg, game, isNew) => __awaiter(void 0, void 0, void 0, functio
                 break;
             case "/pule":
             case "/skip":
-                if (yield (0, skips_1.checkSkipper)(game, msg, player)) {
+                if (await (0, skips_1.checkSkipper)(game, msg, player)) {
                     (0, skips_1.processSkip)(game, player);
                 }
                 break;
             case "/minipule":
             case "/miniskip":
-                if (yield (0, skips_1.checkSkipper)(game, msg, player)) {
+                if (await (0, skips_1.checkSkipper)(game, msg, player)) {
                     telegram_1.default.queueMessage(msg.chatId, `The minigame answer was:\n<i>${game.minigame.answer}</i>`);
                     setTimeout(() => {
                         (0, minigame_1.createMinigame)(game);
@@ -142,7 +133,7 @@ const evaluate = (msg, game, isNew) => __awaiter(void 0, void 0, void 0, functio
                 break;
             case "/puleminusculo":
             case "/tinyskip":
-                if (yield (0, skips_1.checkSkipper)(game, msg, player)) {
+                if (await (0, skips_1.checkSkipper)(game, msg, player)) {
                     telegram_1.default.queueMessage(msg.chatId, `The tinygame answer was:\n<i>${game.tinygame.answer}</i>`);
                     setTimeout(() => {
                         (0, tinygame_1.createTinygame)(game);
@@ -173,9 +164,9 @@ const evaluate = (msg, game, isNew) => __awaiter(void 0, void 0, void 0, functio
                     return telegram_1.default.queueMessage(game.chat_id, `The queue already has the maximum of 10 lists, ${player.first_name}.\n -> /lists`);
                 if (search && search != "TenThings_Bot" && search != "@TenThings_Bot") {
                     player.searches++;
-                    yield player.save();
+                    await player.save();
                     console.log(`${game.chat_id} - Search for ${search}`);
-                    const foundLists = yield (0, lists_1.searchList)(search, game);
+                    const foundLists = await (0, lists_1.searchList)(search, game);
                     if (foundLists.length > 0) {
                         const keyboard = (0, keyboards_1.listsKeyboard)(foundLists);
                         telegram_1.default.sendKeyboard(game.chat_id, `<b>Which list would you like to ${msg.chatId === parseInt(process.env.ADMIN_CHAT || "") ? "curate" : "queue"}?</b>`, keyboard);
@@ -246,7 +237,7 @@ const evaluate = (msg, game, isNew) => __awaiter(void 0, void 0, void 0, functio
                 break;
             case "/pontuacao":
             case "/score":
-                telegram_1.default.queueMessage(game.chat_id, yield (0, stats_1.getDailyScores)(game));
+                telegram_1.default.queueMessage(game.chat_id, await (0, stats_1.getDailyScores)(game));
                 break;
             case "/minijogo":
             case "/minigame":
@@ -269,7 +260,7 @@ const evaluate = (msg, game, isNew) => __awaiter(void 0, void 0, void 0, functio
             case "/categorias":
             case "/categories":
                 if (game.chat_id != parseInt(process.env.GROUP_CHAT || "")) {
-                    if (yield telegram_1.default.checkAdmin(game.chat_id, msg.from.id)) {
+                    if (await telegram_1.default.checkAdmin(game.chat_id, msg.from.id)) {
                         telegram_1.default.sendKeyboard(game.chat_id, `<b>${(0, i18n_1.default)(game.settings.language, "category")}</b>`, (0, keyboards_1.categoriesKeyboard)(game));
                     }
                     else {
@@ -280,7 +271,7 @@ const evaluate = (msg, game, isNew) => __awaiter(void 0, void 0, void 0, functio
             case "/confi":
             case "/settings":
                 if (game.chat_id != parseInt(process.env.GROUP_CHAT || "")) {
-                    if (yield telegram_1.default.checkAdmin(game.chat_id, msg.from.id)) {
+                    if (await telegram_1.default.checkAdmin(game.chat_id, msg.from.id)) {
                         telegram_1.default.sendKeyboard(game.chat_id, `<b>${(0, i18n_1.default)(game.settings.language, "settings")}</b>`, (0, keyboards_1.settingsKeyboard)(game));
                     }
                     else {
@@ -296,7 +287,7 @@ const evaluate = (msg, game, isNew) => __awaiter(void 0, void 0, void 0, functio
                 break;
             case "/flush":
                 if (msg.from.id === parseInt(process.env.MASTER_CHAT || "")) {
-                    game.list = (yield (0, lists_1.getRandomList)());
+                    game.list = (await (0, lists_1.getRandomList)());
                     game.pickedLists = [];
                     //game.playedLists = [];
                     game.save();
@@ -350,6 +341,6 @@ const evaluate = (msg, game, isNew) => __awaiter(void 0, void 0, void 0, functio
             (0, guesses_1.queueGuess)(game, msg);
         }
     }
-});
+};
 exports.evaluate = evaluate;
 //# sourceMappingURL=commands.js.map

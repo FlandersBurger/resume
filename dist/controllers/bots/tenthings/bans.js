@@ -1,13 +1,4 @@
 "use strict";
-var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
-    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-};
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
@@ -18,10 +9,10 @@ const i18n_1 = __importDefault(require("../../../i18n"));
 const keyboards_1 = require("./keyboards");
 const telegram_1 = __importDefault(require("../../../connections/telegram"));
 const cache = {};
-const initiateBan = (game, callbackQuery) => __awaiter(void 0, void 0, void 0, function* () {
+const initiateBan = async (game, callbackQuery) => {
     if (game.chat_id !== parseInt(process.env.GROUP_CHAT || "") ||
-        (yield telegram_1.default.checkAdmin(game.chat_id, callbackQuery.from.id))) {
-        const foundList = yield index_1.List.findOne({ _id: callbackQuery.data }).exec();
+        (await telegram_1.default.checkAdmin(game.chat_id, callbackQuery.from.id))) {
+        const foundList = await index_1.List.findOne({ _id: callbackQuery.data }).exec();
         if (!foundList) {
             return telegram_1.default.queueMessage(game.chat_id, (0, i18n_1.default)(game.settings.language, "warnings.unfoundList"));
         }
@@ -41,7 +32,7 @@ const initiateBan = (game, callbackQuery) => __awaiter(void 0, void 0, void 0, f
     else {
         telegram_1.default.queueMessage(game.chat_id, (0, i18n_1.default)(game.settings.language, "warnings.adminFunction", { name: callbackQuery.from.name }));
     }
-});
+};
 exports.initiateBan = initiateBan;
 const processBan = (game, callbackQuery) => {
     if (!cache[`${game._id}-${callbackQuery.data}`]) {
@@ -58,17 +49,17 @@ const processBan = (game, callbackQuery) => {
     }
 };
 exports.processBan = processBan;
-const banList = (game, listId) => __awaiter(void 0, void 0, void 0, function* () {
-    const list = yield index_1.List.findOne({ _id: listId }).select("_id bans name").exec();
+const banList = async (game, listId) => {
+    const list = await index_1.List.findOne({ _id: listId }).select("_id bans name").exec();
     if (list) {
         if (game.bannedLists.some((bannedListId) => bannedListId.toString() == listId)) {
             telegram_1.default.queueMessage(game.chat_id, (0, i18n_1.default)(game.settings.language, "sentences.alreadyBannedList", { list: list.name }));
         }
         else {
             game.bannedLists.push(list._id);
-            yield game.save();
+            await game.save();
             list.bans++;
-            yield list.save();
+            await list.save();
             telegram_1.default.queueMessage(game.chat_id, (0, i18n_1.default)(game.settings.language, "sentences.listBanned", { list: list.name }));
             console.log(`${game.chat_id} (${game.settings.language}) banned ${list.name}`);
         }
@@ -76,5 +67,5 @@ const banList = (game, listId) => __awaiter(void 0, void 0, void 0, function* ()
     else {
         telegram_1.default.queueMessage(game.chat_id, (0, i18n_1.default)(game.settings.language, "warnings.unfoundList"));
     }
-});
+};
 //# sourceMappingURL=bans.js.map

@@ -1,30 +1,21 @@
 "use strict";
-var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
-    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.botMuted = exports.chatNotFound = void 0;
 const index_1 = require("../../../models/index");
-const chatNotFound = (chat_id) => __awaiter(void 0, void 0, void 0, function* () {
-    const inactiveGame = yield index_1.Game.findOneAndUpdate({ chat_id }, { $set: { enabled: false } });
+const chatNotFound = async (chat_id) => {
+    const inactiveGame = await index_1.Game.findOneAndUpdate({ chat_id }, { $set: { enabled: false } });
     if (inactiveGame) {
-        yield index_1.Player.updateMany({ game: inactiveGame._id }, { $set: { present: false } }, { multi: true });
+        await index_1.Player.updateMany({ game: inactiveGame._id }, { $set: { present: false } }, { multi: true });
     }
     console.error(`Inactive chat disabled: ${chat_id}`);
-});
+};
 exports.chatNotFound = chatNotFound;
-const botMuted = (chat_id, reason) => __awaiter(void 0, void 0, void 0, function* () {
-    const mutedGame = yield index_1.Game.findOneAndUpdate({ chat_id }, { $set: { enabled: false } });
+const botMuted = async (chat_id, reason) => {
+    const mutedGame = await index_1.Game.findOneAndUpdate({ chat_id }, { $set: { enabled: false } });
     if (mutedGame) {
-        yield index_1.Player.updateMany({ game: mutedGame._id }, { $set: { present: false } }, { multi: true });
+        await index_1.Player.updateMany({ game: mutedGame._id }, { $set: { present: false } }, { multi: true });
     }
     console.error(`Muted game disabled: ${chat_id}${reason ? `, Reason: ${reason}` : ""}`);
-});
+};
 exports.botMuted = botMuted;
 //# sourceMappingURL=errors.js.map

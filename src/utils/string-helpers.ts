@@ -19,12 +19,13 @@ export const concealMiddle = (str: string, extra = "") =>
 
 export const capitalize = (str: string): string => str.charAt(0).toUpperCase() + str.slice(1);
 
-export const removeHTML = (str: string): string => str.replace(">", "\u227B").replace("<", "\u227A");
+export const removeHTML = (str: string): string => str.replaceAll(">", "\u227B").replaceAll("<", "\u227A");
 
-export const angleBrackets = (str: string): string => str.replace("<", "&lt;").replace(">", "&gt;");
+export const angleBrackets = (str: string): string =>
+  str.replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;");
 
 const replaceArray = (str: string, sources: string[], replacement: string): string =>
-  sources.reduce((result, source) => result.replace(source, replacement), str);
+  sources.reduce((result, source) => result.replaceAll(source, replacement), str);
 
 export const maskUrls = (str: string): string =>
   replaceArray(replaceArray(str, ["https://", "http://"], "nope://"), domains, ".nope");

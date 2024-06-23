@@ -1,29 +1,20 @@
 "use strict";
-var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
-    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-};
 const { mongoDBs } = require("../../db");
 const fs = require("fs");
 const moment = require("moment");
 const exec = require("child_process").exec;
 const masterDB = mongoDBs.find((db) => db.name === "master");
 // Auto backup script
-const backup = () => __awaiter(void 0, void 0, void 0, function* () {
+const backup = async () => {
     const newBackupPath = `/var/database-backup/mongodump-${moment().format("DD-MMM-YYYY")}`;
     const oldBackupPath = `/var/database-backup/mongodump-${moment().subtract(7, "days").format("DD-MMM-YYYY")}`;
     const cmd = `mongodump --uri ${masterDB.url} --out ${newBackupPath}`;
     console.log(cmd);
-    yield exec(cmd);
+    await exec(cmd);
     if (fs.existsSync(oldBackupPath)) {
-        yield exec("rm -rf " + oldBackupPath);
+        await exec("rm -rf " + oldBackupPath);
     }
-});
+};
 module.exports = backup;
 /*
 const _ = require('underscore');

@@ -1,13 +1,4 @@
 "use strict";
-var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
-    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-};
 Object.defineProperty(exports, "__esModule", { value: true });
 const index_1 = require("./models/index");
 const _ = require("underscore");
@@ -28,44 +19,44 @@ const srcTenthingsPlayer = index_1.Player;
 const dstTenthingsPlayer = index_1.PlayerBackup;
 const srcTenthingsStats = index_1.Stats;
 const dstTenthingsStats = index_1.StatsBackup;
-const syncDB = () => __awaiter(void 0, void 0, void 0, function* () {
+const syncDB = async () => {
     let N = 0;
-    const categories = yield srcCategory.find({}).exec();
-    yield dstCategory.deleteMany({});
-    yield dstCategory.insertMany(categories);
+    const categories = await srcCategory.find({}).exec();
+    await dstCategory.deleteMany({});
+    await dstCategory.insertMany(categories);
     console.log(`${categories.length} categories synced`);
-    yield dstJoke.deleteMany({});
-    const jokes = yield srcJoke.find({}).exec();
-    yield dstJoke.insertMany(jokes);
+    await dstJoke.deleteMany({});
+    const jokes = await srcJoke.find({}).exec();
+    await dstJoke.insertMany(jokes);
     console.log(`${jokes.length} jokes synced`);
-    const users = yield srcUser.find({}).exec();
-    yield dstUser.deleteMany({});
-    yield dstUser.insertMany(users);
+    const users = await srcUser.find({}).exec();
+    await dstUser.deleteMany({});
+    await dstUser.insertMany(users);
     console.log(`${users.length} users synced`);
-    yield dstList.deleteMany({});
+    await dstList.deleteMany({});
     N = 0;
-    const listCursor = yield srcList.find().cursor();
-    yield listCursor.eachAsync((list) => __awaiter(void 0, void 0, void 0, function* () {
+    const listCursor = await srcList.find().cursor();
+    await listCursor.eachAsync(async (list) => {
         N++;
         if (N % 50 === 0)
             console.log(`${N} lists synced`);
         try {
-            yield list.validate();
+            await list.validate();
         }
         catch (error) {
             console.log(`invalid list ${list._id} skipped`);
             return;
         }
-        yield dstList.insertMany([list]);
-    }));
+        await dstList.insertMany([list]);
+    });
     console.log(`loop all ${N} lists success`);
-    const posts = yield srcPost.find({}).exec();
-    yield dstPost.deleteMany({});
-    yield dstPost.insertMany(posts);
+    const posts = await srcPost.find({}).exec();
+    await dstPost.deleteMany({});
+    await dstPost.insertMany(posts);
     console.log(`${posts.length} posts synced`);
-    const stats = yield srcTenthingsStats.find({}).exec();
-    yield dstTenthingsStats.deleteMany({});
-    yield dstTenthingsStats.insertMany(stats);
+    const stats = await srcTenthingsStats.find({}).exec();
+    await dstTenthingsStats.deleteMany({});
+    await dstTenthingsStats.insertMany(stats);
     console.log(`${stats.length} stats synced`);
     // await dstTenthingsGame.deleteMany({});
     // N = 0;
@@ -88,12 +79,12 @@ const syncDB = () => __awaiter(void 0, void 0, void 0, function* () {
     // });
     // console.log(`loop all ${N} players success`);
     process.exit(22);
-});
-const syncPlayers = () => __awaiter(void 0, void 0, void 0, function* () {
-    yield dstTenthingsPlayer.deleteMany({});
+};
+const syncPlayers = async () => {
+    await dstTenthingsPlayer.deleteMany({});
     let N = 0;
-    const tenthingsPlayerCursor = yield srcTenthingsPlayer.find().cursor();
-    yield tenthingsPlayerCursor.eachAsync((player) => {
+    const tenthingsPlayerCursor = await srcTenthingsPlayer.find().cursor();
+    await tenthingsPlayerCursor.eachAsync((player) => {
         N++;
         if (N % 1000 === 0)
             console.log(`${N} players synced`);
@@ -101,7 +92,7 @@ const syncPlayers = () => __awaiter(void 0, void 0, void 0, function* () {
         return dstTenthingsPlayer.insertMany([player]);
     });
     console.log(`loop all ${N} player success`);
-});
+};
 //syncPlayers();
 exports.default = syncDB;
 /*

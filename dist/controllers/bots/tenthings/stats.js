@@ -1,13 +1,4 @@
 "use strict";
-var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
-    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-};
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
@@ -20,17 +11,17 @@ const messages_1 = require("./messages");
 const telegram_1 = __importDefault(require("../../../connections/telegram"));
 const i18n_1 = __importDefault(require("../../../i18n"));
 const number_helpers_1 = require("../../../utils/number-helpers");
-const getScores = (game_id, type) => __awaiter(void 0, void 0, void 0, function* () {
+const getScores = async (game_id, type) => {
     /*
     stats('score', game_id, scoreType)
     .then(function(str) {
       bot.queueMessage(game_id, str);
     });
     */
-    const game = yield index_1.Game.findOne({ chat_id: game_id }).select("chat_id settings").exec();
+    const game = await index_1.Game.findOne({ chat_id: game_id }).select("chat_id settings").exec();
     if (!game)
         return;
-    const players = yield index_1.Player.find({ game: game._id }).exec();
+    const players = await index_1.Player.find({ game: game._id }).exec();
     let str = "";
     switch (type) {
         case "td":
@@ -87,10 +78,10 @@ const getScores = (game_id, type) => __awaiter(void 0, void 0, void 0, function*
         default:
             (0, exports.getDailyScores)(game).then((message) => telegram_1.default.queueMessage(game_id, message));
     }
-});
+};
 exports.getScores = getScores;
-const getDailyScores = ({ _id, settings }, limit = 0) => __awaiter(void 0, void 0, void 0, function* () {
-    const players = yield index_1.Player.find({ game: _id, scoreDaily: { $gt: 0 } }).exec();
+const getDailyScores = async ({ _id, settings }, limit = 0) => {
+    const players = await index_1.Player.find({ game: _id, scoreDaily: { $gt: 0 } }).exec();
     const message = players
         .filter(({ scoreDaily }) => scoreDaily)
         .sort((player1, player2) => player2.scoreDaily - player1.scoreDaily)
@@ -100,14 +91,14 @@ const getDailyScores = ({ _id, settings }, limit = 0) => __awaiter(void 0, void 
         return str;
     }, (0, i18n_1.default)(settings.language, `sentences.dailyScores${limit ? "WithLimit" : ""}`, { limit }) + `\n`);
     return message;
-});
+};
 exports.getDailyScores = getDailyScores;
-const getStats = (chat_id, data, requestor) => __awaiter(void 0, void 0, void 0, function* () {
+const getStats = async (chat_id, data, requestor) => {
     const [type, _id] = data.split("_");
-    const game = yield index_1.Game.findOne({ chat_id }).exec();
+    const game = await index_1.Game.findOne({ chat_id }).exec();
     if (!game)
         return;
-    const players = yield index_1.Player.find({ game: game._id, present: true, score: { $gt: 0 } }).exec();
+    const players = await index_1.Player.find({ game: game._id, present: true, score: { $gt: 0 } }).exec();
     switch (type) {
         case "global":
             index_1.Player.aggregate([
@@ -158,7 +149,7 @@ const getStats = (chat_id, data, requestor) => __awaiter(void 0, void 0, void 0,
             });
             break;
         case "g":
-            const count = yield index_1.List.countDocuments().exec();
+            const count = await index_1.List.countDocuments().exec();
             let message = "<b>Game Stats</b>\n";
             message += requestor ? `<i>Requested by ${requestor}</i>\n` : "";
             message += `Started ${(0, moment_1.default)(game.date).format("DD-MMM-YYYY")}\n`;
@@ -293,7 +284,7 @@ const getStats = (chat_id, data, requestor) => __awaiter(void 0, void 0, void 0,
         default:
             telegram_1.default.queueMessage(game.chat_id, "Something");
     }
-});
+};
 exports.getStats = getStats;
 const listStats = ({ chat_id }, field, divisor, ratio, title, description, sorter, requestor) => {
     let message = `<b>${title}</b>\n`;
@@ -324,7 +315,7 @@ const listStats = ({ chat_id }, field, divisor, ratio, title, description, sorte
         telegram_1.default.queueMessage(chat_id, message);
     });
 };
-const playerStats = ({ chat_id }, players, field, divisor, ratio, title, description, sorter, requestor) => __awaiter(void 0, void 0, void 0, function* () {
+const playerStats = async ({ chat_id }, players, field, divisor, ratio, title, description, sorter, requestor) => {
     let message = `<b>${title}</b>\n`;
     message += description ? `<i>${description}</i>\n` : "";
     players
@@ -349,8 +340,8 @@ const playerStats = ({ chat_id }, players, field, divisor, ratio, title, descrip
     });
     message += requestor ? `<i>Requested by ${requestor}</i>\n` : "";
     telegram_1.default.queueMessage(chat_id, message);
-});
-const voteStats = ({ chat_id }, players, sorter, title, requestor) => __awaiter(void 0, void 0, void 0, function* () {
+};
+const voteStats = async ({ chat_id }, players, sorter, title, requestor) => {
     index_1.List.aggregate([{ $unwind: "$votes" }, { $group: { _id: "$votes.voter", votes: { $sum: 1 } } }])
         .sort({ votes: sorter })
         .limit(10)
@@ -368,9 +359,9 @@ const voteStats = ({ chat_id }, players, sorter, title, requestor) => __awaiter(
         });
         telegram_1.default.queueMessage(chat_id, message);
     });
-});
-const creatorStats = () => __awaiter(void 0, void 0, void 0, function* () {
-    const lists = yield index_1.List.aggregate([
+};
+const creatorStats = async () => {
+    const lists = await index_1.List.aggregate([
         { $unwind: "$votes" },
         {
             $group: {
@@ -412,7 +403,7 @@ const creatorStats = () => __awaiter(void 0, void 0, void 0, function* () {
     //const listsWithCreators = await List.populate(lists, { path: '_id' });
     //const listCount = await List.countDocuments();
     for (const list of lists)
-        list.creator = yield index_1.User.findOne({ _id: list._id }).select("username displayName").lean();
+        list.creator = await index_1.User.findOne({ _id: list._id }).select("username displayName").lean();
     console.log(lists
         .filter((list) => list.lists >= 25)
         .sort((listA, listB) => listB.score - listA.score)
@@ -432,9 +423,9 @@ const creatorStats = () => __awaiter(void 0, void 0, void 0, function* () {
         //likeability: (list.positive / list.votes) * 100,
         skipRatio: (list.skips / list.plays) * 100,
     })));
-});
+};
 // creatorStats();
-const voteSentimentStats = ({ chat_id }, players, sorter, title, requestor) => __awaiter(void 0, void 0, void 0, function* () {
+const voteSentimentStats = async ({ chat_id }, players, sorter, title, requestor) => {
     index_1.List.aggregate([
         { $match: { "votes.vote": sorter } },
         { $unwind: "$votes" },
@@ -456,7 +447,7 @@ const voteSentimentStats = ({ chat_id }, players, sorter, title, requestor) => _
         });
         telegram_1.default.queueMessage(chat_id, message);
     });
-});
+};
 const tenThingsStats = (game, sorter, field, title) => {
     index_1.Player.aggregate([
         { $match: { game: game._id } },

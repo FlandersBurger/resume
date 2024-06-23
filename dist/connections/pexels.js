@@ -1,17 +1,8 @@
 "use strict";
-var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
-    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-};
 const axios = require("axios").default;
-exports.getPexelsImage = (query) => __awaiter(void 0, void 0, void 0, function* () {
+exports.getPexelsImage = async (query) => {
     try {
-        const result = yield axios.get(`https://api.pexels.com/v1/search?query=${encodeURIComponent(query)}&per_page=1}`, {
+        const result = await axios.get(`https://api.pexels.com/v1/search?query=${encodeURIComponent(query)}&per_page=1}`, {
             headers: {
                 Authorization: process.env.PEXELS_TOKEN,
             },
@@ -21,5 +12,5 @@ exports.getPexelsImage = (query) => __awaiter(void 0, void 0, void 0, function* 
     catch (e) {
         console.error(e);
     }
-});
+};
 //# sourceMappingURL=pexels.js.map

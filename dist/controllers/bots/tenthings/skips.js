@@ -1,13 +1,4 @@
 "use strict";
-var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
-    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-};
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
@@ -73,7 +64,7 @@ const skipList = (game, skipper) => {
     }, {
         $set: { hintStreak: 0 },
         $inc: { skips: 1 },
-    }).exec((err) => __awaiter(void 0, void 0, void 0, function* () {
+    }).exec(async (err) => {
         if (err)
             return telegram_1.default.notifyAdmin(`Skip List Error:\n${err}`);
         let message = `${(0, i18n_1.default)(game.settings.language, "sentences.skippedList", {
@@ -93,7 +84,7 @@ const skipList = (game, skipper) => {
         telegram_1.default.queueMessage(game.chat_id, message);
         telegram_1.default.sendKeyboard(game.chat_id, `Experimental feature to permanently ban list from game\nDo you want to ban "${game.list.name}"`, (0, keyboards_1.banListKeyboard)(game.settings.language, game.list));
         delete exports.skipCache[game.chat_id];
-        let foundList = yield index_1.List.findOne({
+        let foundList = await index_1.List.findOne({
             _id: game.list._id,
         })
             .select("_id plays skips votes score")
@@ -106,17 +97,17 @@ const skipList = (game, skipper) => {
         foundList.skips++;
         foundList.score = (0, lists_1.getListScore)(foundList);
         try {
-            yield foundList.validate();
-            yield foundList.save();
+            await foundList.validate();
+            await foundList.save();
         }
         catch (err) {
             return telegram_1.default.notifyAdmin(`Skip List Error:\n${err}`);
         }
-        telegram_1.default.queueMessage(game.chat_id, yield (0, stats_1.getDailyScores)(game, 5));
+        telegram_1.default.queueMessage(game.chat_id, await (0, stats_1.getDailyScores)(game, 5));
         (0, maingame_1.newRound)(game);
-    }));
+    });
 };
-const checkSkipper = (game, msg, player) => __awaiter(void 0, void 0, void 0, function* () {
+const checkSkipper = async (game, msg, player) => {
     if (game.chat_id > 0)
         return true;
     if (!exports.vetoCache[game.chat_id] || exports.vetoCache[game.chat_id] < (0, moment_1.default)().subtract(VETO_DELAY, "seconds")) {
@@ -168,11 +159,11 @@ const checkSkipper = (game, msg, player) => __awaiter(void 0, void 0, void 0, fu
         }
     }
     return true;
-});
+};
 exports.checkSkipper = checkSkipper;
-const vetoSkip = (game, player) => __awaiter(void 0, void 0, void 0, function* () {
+const vetoSkip = async (game, player) => {
     player.vetoes++;
-    yield player.save();
+    await player.save();
     if (exports.skipCache[game.chat_id]) {
         delete exports.skipCache[game.chat_id];
         exports.vetoCache[game.chat_id] = (0, moment_1.default)();
@@ -186,7 +177,7 @@ const vetoSkip = (game, player) => __awaiter(void 0, void 0, void 0, function* (
             name: player.first_name,
         }));
     }
-});
+};
 exports.vetoSkip = vetoSkip;
 const abortSkip = (game, player) => {
     delete exports.skipCache[game.chat_id];

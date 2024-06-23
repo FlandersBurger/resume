@@ -7,7 +7,7 @@ import { chatNotFound, botMuted } from "@tenthings/errors";
 import { checkSpam } from "@tenthings/spam";
 import { MessageType } from "@tenthings/main";
 import { IMessageType } from "@tenthings/messages";
-import { maskUrls } from "@root/utils/string-helpers";
+import { angleBrackets, maskUrls } from "@root/utils/string-helpers";
 
 const BANNED_TELEGRAM_USERS = [1726294650];
 
@@ -120,6 +120,7 @@ class TelegramBot {
     if (topic) url += `&message_thread_id=${topic}`;
     axios.get(url).catch((error) => {
       if (error.response) {
+        console.log(error.response.data);
         if (this.muteReasons.includes(error.response.data.description)) {
           return botMuted(channel, error.response.data.description);
         }

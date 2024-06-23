@@ -1,13 +1,4 @@
 "use strict";
-var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
-    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-};
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
@@ -40,15 +31,15 @@ const checkString = (text, str = "") => text
     .replace(/[^\w\s]/gi, "")
     .split(" ")
     .includes(str);
-const getJoke = () => __awaiter(void 0, void 0, void 0, function* () {
-    const response = yield axios_1.default.get("https://icanhazdadjoke.com/", {
+const getJoke = async () => {
+    const response = await axios_1.default.get("https://icanhazdadjoke.com/", {
         headers: {
             Accept: "application/json",
         },
     });
     return response.data.joke;
-});
-const sass = (text) => __awaiter(void 0, void 0, void 0, function* () {
+};
+const sass = async (text) => {
     let messages = [];
     if (checkString(text, "bot")) {
         if (checkString(text, "love") || checkString(text, "like")) {
@@ -248,7 +239,7 @@ const sass = (text) => __awaiter(void 0, void 0, void 0, function* () {
             ];
         }
         else if (checkString(text, "joke") || checkString(text, "funny")) {
-            return yield getJoke();
+            return await getJoke();
         }
         else if (checkString(text, "recursion")) {
             messages = [text];
@@ -425,7 +416,7 @@ const sass = (text) => __awaiter(void 0, void 0, void 0, function* () {
     if (messages.length > 0) {
         return messages[Math.floor(Math.random() * messages.length)];
     }
-});
+};
 const adjectives = [
     "able",
     "abnormal",
