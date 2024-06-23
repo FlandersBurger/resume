@@ -120,7 +120,6 @@ class TelegramBot {
     if (topic) url += `&message_thread_id=${topic}`;
     axios.get(url).catch((error) => {
       if (error.response) {
-        console.log(error.response.data);
         if (this.muteReasons.includes(error.response.data.description)) {
           return botMuted(channel, error.response.data.description);
         }
@@ -289,6 +288,12 @@ class TelegramBot {
       if (error.response) {
         if (this.muteReasons.includes(error.response.data.description)) {
           return botMuted(channel);
+        }
+        if (
+          error.response.data.description ===
+          "Bad Request: message is not modified: specified new message content and reply markup are exactly the same as a specified new message content and reply markup are exactly the same as a current content and reply markup of the message"
+        ) {
+          return;
         }
       }
       this.notifyAdmin(`Send Keyboard to ${channel} Fail`);
