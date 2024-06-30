@@ -14,7 +14,7 @@ angular.module("app").service("TenThingsSvc", function ($http) {
       (options.orderBy ? `&order_by=${options.orderBy}` : "") +
       (options.language ? `&language=${options.language}` : "") +
       (options.categories && options.categories.length > 0 ? `&categories=${options.categories.join(",")}` : "") +
-      `&search=${options.search}`;
+      (options.search ? `&search=${options.search}` : "");
     return $http.get(url);
   };
 

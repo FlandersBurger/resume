@@ -26,6 +26,7 @@ export const tenthingsListsRoute = Router();
 tenthingsListsRoute.get("/", async (req: QueryableRequest, res: Response) => {
   if (!res.locals.isAuthorized) return res.sendStatus(401);
   const page = parseInt(req.query.page ?? 1);
+  console.log(parseQuery(req.query));
   const lists: LeanDocument<IList>[] = await List.find(parseQuery(req.query))
     .select(
       "_id plays skips score values date modifyDate creator name description categories language isDynamic frequency difficulty",
