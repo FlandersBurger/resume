@@ -5,7 +5,7 @@ angular.module("app").service("TenThingsSvc", function ($http) {
     return $http.get(`/bots/tenthings/queue`);
   };
 
-  svc.getLists = function (options) {
+  svc.getLists = function (options = {}) {
     var url =
       `/api/tenthings/lists?` +
       (options.limit ? `&limit=${options.limit}` : "") +
