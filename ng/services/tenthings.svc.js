@@ -5,16 +5,16 @@ angular.module("app").service("TenThingsSvc", function ($http) {
     return $http.get(`/bots/tenthings/queue`);
   };
 
-  svc.getLists = function ({ page, sortBy, orderBy, limit, search, language, categories }) {
+  svc.getLists = function (options) {
     var url =
       `/api/tenthings/lists?` +
-      (limit ? `&limit=${limit}` : "") +
-      (page ? `&page=${page}` : "") +
-      (sortBy ? `&sort_by=${sortBy}` : "") +
-      (orderBy ? `&order_by=${orderBy}` : "") +
-      (language ? `&language=${language}` : "") +
-      (categories.length > 0 ? `&categories=${categories.join(",")}` : "") +
-      `&search=${search}`;
+      (options.limit ? `&limit=${options.limit}` : "") +
+      (options.page ? `&page=${options.page}` : "") +
+      (options.sortBy ? `&sort_by=${options.sortBy}` : "") +
+      (options.orderBy ? `&order_by=${options.orderBy}` : "") +
+      (options.language ? `&language=${options.language}` : "") +
+      (options.categories.length > 0 ? `&categories=${options.categories.join(",")}` : "") +
+      `&search=${options.search}`;
     return $http.get(url);
   };
 
