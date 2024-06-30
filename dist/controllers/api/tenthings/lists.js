@@ -24,7 +24,6 @@ exports.tenthingsListsRoute.get("/", async (req, res) => {
     if (!res.locals.isAuthorized)
         return res.sendStatus(401);
     const page = parseInt(req.query.page ?? 1);
-    console.log(parseQuery(req.query));
     const lists = await index_1.List.find(parseQuery(req.query))
         .select("_id plays skips score values date modifyDate creator name description categories language isDynamic frequency difficulty")
         .limit(parseInt(req.query.limit) || 0)
