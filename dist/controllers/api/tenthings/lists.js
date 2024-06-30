@@ -23,13 +23,15 @@ exports.tenthingsListsRoute = (0, express_1.Router)();
 exports.tenthingsListsRoute.get("/", async (req, res) => {
     if (!res.locals.isAuthorized)
         return res.sendStatus(401);
-    const lists = await index_1.List.find({})
+    const page = parseInt(req.query.page ?? 1);
+    const lists = await index_1.List.find(parseQuery(req.query))
         .select("_id plays skips score values date modifyDate creator name description categories language isDynamic frequency difficulty")
         .limit(parseInt(req.query.limit) || 0)
-        .skip(parseInt(req.query.limit) * (parseInt((req.query.page ?? 0)) - 1) || 0)
+        .skip(parseInt(req.query.limit) * (page - 1) || 0)
+        .sort({ [req.query.sort_by ?? "date"]: parseInt(req.query.order_by ?? -1) })
         .populate("creator", "username")
         .lean({ virtuals: true });
-    res.json(lists.map(formatList));
+    res.json({ result: lists.map(formatList), nextPage: page + 1 });
 });
 exports.tenthingsListsRoute.get("/:id/report/:user", async (req, res) => {
     if (!res.locals.isAuthorized)
@@ -208,4 +210,22 @@ const formatList = (list) => ({
     difficulty: list.difficulty,
     frequency: list.frequency,
 });
+const parseQuery = (query) => {
+    return Object.keys(query).reduce((params, key) => {
+        switch (key) {
+            case "search":
+                if (query[key])
+                    Object.assign(params, { $text: { $search: `"${query[key]}"` } });
+                break;
+            case "categories":
+            case "language":
+                const values = query[key].split(",");
+                Object.assign(params, { [key]: { $in: values } });
+                break;
+            default:
+                break;
+        }
+        return params;
+    }, {});
+};
 //# sourceMappingURL=lists.js.map

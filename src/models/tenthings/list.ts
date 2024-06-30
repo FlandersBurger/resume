@@ -64,7 +64,7 @@ const listSchema = new Schema<IList>(
         value: { type: String, default: "", required: true },
         blurb: { type: String, default: "", required: false },
         creator: { type: Schema.Types.ObjectId, ref: "User", required: false },
-        date: { type: String, required: false, default: Date.now },
+        date: { type: Date, required: false, default: Date.now },
       },
     ],
     date: { type: Date, required: true, default: Date.now },
@@ -105,6 +105,8 @@ listSchema.virtual("actualPlays").get(function (this: IList) {
 });
 
 listSchema.plugin(mongooseLeanVirtuals);
+
+listSchema.index({ name: "text", description: "text", "values.value": "text", "values.blurb": "text" });
 
 for (const name in db) {
   List[name] = db[name].model<IList>("List", listSchema);

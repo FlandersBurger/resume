@@ -4,7 +4,7 @@ const connect = require("gulp-connect");
 
 gulp.task("dev:server", () => {
   nodemon({
-    script: "src/server.ts",
+    script: "dist/server.js",
     ext: "js ts",
     ignore: ["ng/*", "gulp/*", "assets/*"],
   });

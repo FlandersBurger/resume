@@ -23,7 +23,7 @@ const listSchema = new mongoose_1.Schema({
             value: { type: String, default: "", required: true },
             blurb: { type: String, default: "", required: false },
             creator: { type: mongoose_1.Schema.Types.ObjectId, ref: "User", required: false },
-            date: { type: String, required: false, default: Date.now },
+            date: { type: Date, required: false, default: Date.now },
         },
     ],
     date: { type: Date, required: true, default: Date.now },
@@ -60,6 +60,7 @@ listSchema.virtual("actualPlays").get(function () {
     return this.plays ? this.plays - this.skips : 0;
 });
 listSchema.plugin(mongoose_lean_virtuals_1.default);
+listSchema.index({ name: "text", description: "text", "values.value": "text", "values.blurb": "text" });
 for (const name in db_1.default) {
     List[name] = db_1.default[name].model("List", listSchema);
 }

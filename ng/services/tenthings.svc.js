@@ -5,8 +5,17 @@ angular.module("app").service("TenThingsSvc", function ($http) {
     return $http.get(`/bots/tenthings/queue`);
   };
 
-  svc.getLists = function () {
-    return $http.get(`/api/tenthings/lists`);
+  svc.getLists = function ({ page, sortBy, orderBy, limit, search, language, categories }) {
+    var url =
+      `/api/tenthings/lists?` +
+      (limit ? `&limit=${limit}` : "") +
+      (page ? `&page=${page}` : "") +
+      (sortBy ? `&sort_by=${sortBy}` : "") +
+      (orderBy ? `&order_by=${orderBy}` : "") +
+      (language ? `&language=${language}` : "") +
+      (categories.length > 0 ? `&categories=${categories.join(",")}` : "") +
+      `&search=${search}`;
+    return $http.get(url);
   };
 
   svc.getCategories = () => {

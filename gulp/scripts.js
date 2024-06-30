@@ -13,17 +13,17 @@ gulp.task("js", () =>
     .src(["ng/prototypes.js", "ng/module.js", "ng/**/*.js"])
     .pipe(sourcemaps.init())
     .pipe(concat("app.js"))
-    .pipe(ngAnnotate())
+    // .pipe(ngAnnotate())
     .pipe(
       uglify({
         mangle: false,
         ecma: 10,
-      })
+      }),
     )
     .pipe(babel())
     .pipe(sourcemaps.write())
     .pipe(gulp.dest("assets"))
-    .on("error", onError)
+    .on("error", onError),
 );
 
 gulp.task("resources", () =>
@@ -35,19 +35,19 @@ gulp.task("resources", () =>
     .pipe(uglify())
     .pipe(sourcemaps.write())
     .pipe(gulp.dest("resources"))
-    .on("error", onError)
+    .on("error", onError),
 );
 
 gulp.task(
   "watch:js",
-  gulp.series(["js"], () => gulp.watch(["prototypes.js", "ng/**/*.js"], gulp.series(["js"])))
+  gulp.series(["js"], () => gulp.watch(["prototypes.js", "ng/**/*.js"], gulp.series(["js"]))),
 );
 
 gulp.task("json", () => gulp.src(["data/*.json"]).pipe(jsonminify()).pipe(gulp.dest("assets")));
 
 gulp.task(
   "watch:json",
-  gulp.series(["json"], () => gulp.watch("data/*.json", gulp.series(["json"])))
+  gulp.series(["json"], () => gulp.watch("data/*.json", gulp.series(["json"]))),
 );
 
 const onError = (err) => {

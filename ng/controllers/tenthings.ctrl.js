@@ -127,7 +127,7 @@ angular
           ($scope.categoryFilter === "All" || list.categories.includes($scope.categoryFilter)) &&
           (language.code === "all" || list.language === language.code) &&
           ($scope.userFilter === "All" || list.creator === $scope.userFilter) &&
-          ($scope.updateFilter === "all" || list.isDynamic === ($scope.updateFilter === "dynamic"))
+          ($scope.updateFilter === "all" || list.isDynamic === ($scope.updateFilter === "dynamic")),
       ).length;
       return `${count} - ${Math.round((count / $scope.lists.length) * 100)}%`;
     };
@@ -139,7 +139,7 @@ angular
           (category === "All" || list.categories.indexOf(category) >= 0) &&
           ($scope.languageFilter.code === "all" || list.language === $scope.languageFilter.code) &&
           ($scope.userFilter === "All" || list.creator === $scope.userFilter) &&
-          ($scope.updateFilter === "all" || list.isDynamic === ($scope.updateFilter === "dynamic"))
+          ($scope.updateFilter === "all" || list.isDynamic === ($scope.updateFilter === "dynamic")),
       ).length;
       return `${count} - ${Math.round((count / $scope.lists.length) * 100)}%`;
     };
@@ -147,7 +147,7 @@ angular
     $scope.getUpdateCount = (type) => {
       if (!$scope.lists) return 0;
       const count = $scope.lists.filter(
-        (list) => type === "all" || (list.isDynamic && type === "dynamic") || (!list.isDynamic && type === "static")
+        (list) => type === "all" || (list.isDynamic && type === "dynamic") || (!list.isDynamic && type === "static"),
       ).length;
       return `${count} - ${Math.round((count / $scope.lists.length) * 100)}%`;
     };
@@ -156,7 +156,7 @@ angular
       if (!$scope.loading) {
         $scope.loading = true;
         TenThingsSvc.getLists().then(({ data }) => {
-          $scope.lists = data;
+          $scope.lists = data.result;
           $scope.userFilters = {};
           $scope.userFilters.All = $scope.lists.length;
           $scope.userFilters = $scope.lists
@@ -234,7 +234,7 @@ angular
       $scope.newItem.value &&
       _.some(
         $scope.selectedList.values,
-        (answer) => answer.value.removeAllButLetters() == $scope.newItem.value.removeAllButLetters()
+        (answer) => answer.value.removeAllButLetters() == $scope.newItem.value.removeAllButLetters(),
       );
 
     $scope.addValue = () => {
@@ -242,7 +242,7 @@ angular
         if (
           _.some(
             $scope.selectedList.values,
-            (answer) => answer.value.removeAllButLetters() == $scope.newItem.value.removeAllButLetters()
+            (answer) => answer.value.removeAllButLetters() == $scope.newItem.value.removeAllButLetters(),
           )
         ) {
           alert(`${$scope.newItem.value} is already in the list`);
@@ -293,7 +293,7 @@ angular
             (err) => {
               console.error(err);
               $scope.saving = false;
-            }
+            },
           );
         } else if (list.values.length < 10) {
           alert("Lists must contain 10 or more values!");
@@ -317,9 +317,9 @@ angular
             {
               backgroundColor: color,
             },
-            100
+            100,
           );
-        }
+        },
       );
     }
 

@@ -1,5 +1,5 @@
-import { Request, Response, Router } from "express";
-import { Types, LeanDocument } from "mongoose";
+import { QueryableRequest, Request, Response, Router } from "express";
+import { Types, LeanDocument, SortOrder } from "mongoose";
 import moment from "moment";
 
 import bot from "@root/connections/telegram";
@@ -23,17 +23,19 @@ import { curateListKeyboard } from "@tenthings/keyboards";
 
 export const tenthingsListsRoute = Router();
 
-tenthingsListsRoute.get("/", async (req: Request, res: Response) => {
+tenthingsListsRoute.get("/", async (req: QueryableRequest, res: Response) => {
   if (!res.locals.isAuthorized) return res.sendStatus(401);
-  const lists: LeanDocument<IList>[] = await List.find({})
+  const page = parseInt(req.query.page ?? 1);
+  const lists: LeanDocument<IList>[] = await List.find(parseQuery(req.query))
     .select(
-      "_id plays skips score values date modifyDate creator name description categories language isDynamic frequency difficulty"
+      "_id plays skips score values date modifyDate creator name description categories language isDynamic frequency difficulty",
     )
-    .limit(parseInt(req.query.limit as string) || 0)
-    .skip(parseInt(req.query.limit as string) * (parseInt((req.query.page ?? 0) as string) - 1) || 0)
+    .limit(parseInt(req.query.limit) || 0)
+    .skip(parseInt(req.query.limit) * (page - 1) || 0)
+    .sort({ [req.query.sort_by ?? "date"]: parseInt(req.query.order_by ?? -1) as SortOrder })
     .populate("creator", "username")
     .lean({ virtuals: true });
-  res.json(lists.map(formatList));
+  res.json({ result: lists.map(formatList), nextPage: page + 1 });
 });
 
 tenthingsListsRoute.get("/:id/report/:user", async (req: Request, res: Response) => {
@@ -153,7 +155,7 @@ tenthingsListsRoute.put("/", async (req: Request, res: Response) => {
   const updatedList = await List.findByIdAndUpdate(
     req.body.list._id ? req.body.list._id : new Types.ObjectId(),
     req.body.list,
-    { new: true, upsert: true }
+    { new: true, upsert: true },
   );
 
   const list = await List.findOne({ _id: updatedList._id }).populate("creator");
@@ -164,7 +166,7 @@ tenthingsListsRoute.put("/", async (req: Request, res: Response) => {
   } else if (previousModifyDate < yesterday) {
     bot.notifyAdmins(
       `<u>List Updated</u>\nUpdated by <i>${req.body.user.username}</i>\n${getListMessage(list)}`,
-      curateListKeyboard(list)
+      curateListKeyboard(list),
     );
   }
   res.json(formatList(list));
@@ -181,15 +183,15 @@ tenthingsListsRoute.delete("/:id", async (req: Request, res: Response) => {
           .sort((a, b) => (a.value < b.value ? -1 : 1))
           .reduce(
             (message, item) => `${message}- ${item.value}\n`,
-            `<b>${list.name}</b>\ndeleted by ${res.locals.user!.username}\n`
-          )
+            `<b>${list.name}</b>\ndeleted by ${res.locals.user!.username}\n`,
+          ),
       );
       res.sendStatus(200);
     } else {
       bot.notifyAdmins(
         `Unauthorized deletion (not an admin nor the creator):\n<b>${list.name}</b> by ${res.locals.user!.username} (${
           res.locals.user!._id
-        })\nIf it persists -> Block them at https://belgocanadian.com/tenthings-admin`
+        })\nIf it persists -> Block them at https://belgocanadian.com/tenthings-admin`,
       );
       res.sendStatus(200);
     }
@@ -222,3 +224,21 @@ const formatList = (list: LeanDocument<IList>) => ({
   difficulty: list.difficulty,
   frequency: list.frequency,
 });
+
+const parseQuery = (query: { [key: string]: string }) => {
+  return Object.keys(query).reduce((params, key) => {
+    switch (key) {
+      case "search":
+        if (query[key]) Object.assign(params, { $text: { $search: `"${query[key]}"` } });
+        break;
+      case "categories":
+      case "language":
+        const values = query[key].split(",");
+        Object.assign(params, { [key]: { $in: values } });
+        break;
+      default:
+        break;
+    }
+    return params;
+  }, {});
+};
