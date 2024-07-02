@@ -69,8 +69,8 @@
         <th ng-click="orderBy('answers')"><i class="fas fa-list-ol"></i></th>
         <th ng-click="orderBy('language')"><i class="fas fa-language"></i></th>
         <th ng-click="orderBy('difficulty')">Difficulty</th>
-        <th ng-click="orderBy('date')">Created</th>
-        <th ng-click="orderBy('modifyDate')">Updated</th>
+        <th ng-click="orderBy('date')" class="hidden-sm">Created</th>
+        <th ng-click="orderBy('modifyDate')" class="hidden-sm">Updated</th>
       </tr>
     </thead>
     <tbody infinite-scroll="getMoreLists()" infinite-scroll-distance="1">
@@ -107,8 +107,8 @@
             </button>
           </div>
         </td>
-        <td>{{formatDate(list.date)}}</td>
-        <td>{{formatDate(list.modifyDate)}}</td>
+        <td class="hidden-sm">{{formatDate(list.date)}}</td>
+        <td class="hidden-sm">{{formatDate(list.modifyDate)}}</td>
       </tr>
     </tbody>
   </table>
@@ -163,82 +163,109 @@
     />
   </div>
   <div class="btn-group">
-    <button
-      class="btn btn-default dropdown-toggle"
-      type="button"
-      ng-disabled="!selectedList || (!currentUser.admin && selectedList.creator._id !== currentUser._id && selectedList._id)"
-      data-toggle="dropdown"
-    >
-      Language: {{selectedList ? selectedList.language : 'None'}}
-    </button>
-    <ul class="dropdown-menu">
-      <li ng-repeat="language in languages | orderBy: 'code'">
-        <a href="#" ng-click="selectLanguage(language)">{{language.code}} - {{language.native}}</a>
-      </li>
-    </ul>
-    <hr />
-    <div class="input-group" ng-if="loggedIn">
-      <input
-        class="form-control"
-        ng-model="newItem.value"
-        ng-disabled="!selectedList || !selectedList.name"
-        placeholder="Answer {{selectedList.values.length + 1}}"
-      />
-      <span class="input-group-addon"></span>
-      <input
-        class="form-control"
-        ng-model="newItem.blurb"
-        ng-disabled="!selectedList || !selectedList.name"
-        placeholder="Display after guessing {{newItem.value}}"
-      />
-      <div class="input-group-btn">
-        <button
-          class="btn"
-          ng-class="{'btn-danger': hasDuplicate(), 'btn-default': !hasDuplicate()}"
-          ng-click="addValue()"
-          ng-disabled="!selectedList || !selectedList.name || !newItem.value || hasDuplicate()"
-        >
-          {{hasDuplicate() ? 'Dupe!' : 'Add'}}
-        </button>
-      </div>
-    </div>
-    <hr />
-    <div class="input-group" ng-repeat="item in selectedList.values | orderBy: valueOrder.field:valueOrder.direction">
-      <input
-        id="value{{$index}}"
-        class="form-control"
-        ng-model="item.value"
-        ng-class="{'bg-info': selectedList.creator._id !== currentUser._id && item.creator !== currentUser._id, 'bg-success': selectedList.creator._id !== currentUser._id && item.creator === currentUser._id, }"
-        placeholder="Answer {{selectedList.values.length - $index}}"
-        ng-disabled="!loggedIn || !currentUser.admin && selectedList.creator._id !== currentUser._id && item.creator !== currentUser._id"
-      />
-      <span class="input-group-addon">
-        <img ng-src="{{item.blurb}}" ng-if="item.blurb.substring(0, 4) === 'http' && item.blurb.indexOf('youtu') < 0" />
-        <a
-          href="{{item.blurb}}"
-          target="_blank"
-          ng-if="item.blurb.substring(0, 4) === 'http' && item.blurb.indexOf('youtu') >= 0"
-        >
-          <i class="fab fa-youtube"></i>
-        </a>
-      </span>
-      <input
-        class="form-control"
-        ng-model="item.blurb"
-        ng-class="{'bg-info': selectedList.creator._id !== currentUser._id && item.creator !== currentUser._id, 'bg-success': selectedList.creator._id !== currentUser._id && item.creator === currentUser._id, }"
-        placeholder="Display after guessing {{item.value}} (Can be an image URL)"
-        ng-disabled="!loggedIn || !currentUser.admin && selectedList.creator._id !== currentUser._id && item.creator !== currentUser._id"
-      />
-      <span
-        class="input-group-addon"
-        uib-tooltip="{{item.creator.username}} - {{formatDate(item.date ? item.date : list.date)}}"
-        tooltip-placement="left"
-        ng-class="{'text-success': item.creator._id === currentUser._id, 'text-info': item.creator._id !== currentUser._id && item.creator._id !== selectedList.creator._id}"
+    <div class="dropdown btn-group">
+      <button
+        class="btn btn-default dropdown-toggle"
+        type="button"
+        ng-disabled="!selectedList || (!currentUser.admin && selectedList.creator._id !== currentUser._id && selectedList._id)"
+        data-toggle="dropdown"
       >
-        <i class="fas fa-user-tie" ng-if="item.creator._id === selectedList.creator._id"></i>
-        <i class="fas fa-user" ng-if="item.creator._id !== selectedList.creator._id"></i>
-      </span>
+        Language: {{selectedList ? selectedList.language : 'None'}}
+      </button>
+      <ul class="dropdown-menu">
+        <li ng-repeat="language in languages | orderBy: 'code'">
+          <a href="#" ng-click="selectLanguage(language)">{{language.code}} - {{language.native}}</a>
+        </li>
+      </ul>
     </div>
+    <div class="dropdown btn-group">
+      <button
+        class="btn btn-default dropdown-toggle"
+        type="button"
+        id="dropdownMenuButton"
+        data-toggle="dropdown"
+        aria-haspopup="true"
+        aria-expanded="false"
+      >
+        {{selectedList.categories.join(", ")}}
+      </button>
+      <ul class="dropdown-menu checkbox-menu allow-focus" aria-labelledby="dropdownMenuButton">
+        <li ng-repeat="category in categories | orderBy">
+          <label>
+            <input
+              class="form-check-input"
+              type="checkbox"
+              ng-checked="selectedList.categories.includes(category)"
+              ng-click="setCategory(selectedList, category)"
+            />
+            {{category}}
+          </label>
+        </li>
+      </ul>
+    </div>
+  </div>
+  <hr />
+  <div class="input-group" ng-if="loggedIn">
+    <input
+      class="form-control"
+      ng-model="newItem.value"
+      ng-disabled="!selectedList || !selectedList.name"
+      placeholder="Answer {{selectedList.values.length + 1}}"
+    />
+    <span class="input-group-addon"></span>
+    <input
+      class="form-control"
+      ng-model="newItem.blurb"
+      ng-disabled="!selectedList || !selectedList.name"
+      placeholder="Display after guessing {{newItem.value}}"
+    />
+    <div class="input-group-btn">
+      <button
+        class="btn"
+        ng-class="{'btn-danger': hasDuplicate(), 'btn-default': !hasDuplicate()}"
+        ng-click="addValue()"
+        ng-disabled="!selectedList || !selectedList.name || !newItem.value || hasDuplicate()"
+      >
+        {{hasDuplicate() ? 'Dupe!' : 'Add'}}
+      </button>
+    </div>
+  </div>
+  <hr />
+  <div class="input-group" ng-repeat="item in selectedList.values | orderBy: valueOrder.field:valueOrder.direction">
+    <input
+      id="value{{$index}}"
+      class="form-control"
+      ng-model="item.value"
+      ng-class="{'bg-info': selectedList.creator._id !== currentUser._id && item.creator !== currentUser._id, 'bg-success': selectedList.creator._id !== currentUser._id && item.creator === currentUser._id, }"
+      placeholder="Answer {{selectedList.values.length - $index}}"
+      ng-disabled="!loggedIn || !currentUser.admin && selectedList.creator._id !== currentUser._id && item.creator !== currentUser._id"
+    />
+    <span class="input-group-addon">
+      <img ng-src="{{item.blurb}}" ng-if="item.blurb.substring(0, 4) === 'http' && item.blurb.indexOf('youtu') < 0" />
+      <a
+        href="{{item.blurb}}"
+        target="_blank"
+        ng-if="item.blurb.substring(0, 4) === 'http' && item.blurb.indexOf('youtu') >= 0"
+      >
+        <i class="fab fa-youtube"></i>
+      </a>
+    </span>
+    <input
+      class="form-control"
+      ng-model="item.blurb"
+      ng-class="{'bg-info': selectedList.creator._id !== currentUser._id && item.creator !== currentUser._id, 'bg-success': selectedList.creator._id !== currentUser._id && item.creator === currentUser._id, }"
+      placeholder="Display after guessing {{item.value}} (Can be an image URL)"
+      ng-disabled="!loggedIn || !currentUser.admin && selectedList.creator._id !== currentUser._id && item.creator !== currentUser._id"
+    />
+    <span
+      class="input-group-addon"
+      uib-tooltip="{{item.creator.username}} - {{formatDate(item.date ? item.date : list.date)}}"
+      tooltip-placement="left"
+      ng-class="{'text-success': item.creator._id === currentUser._id, 'text-info': item.creator._id !== currentUser._id && item.creator._id !== selectedList.creator._id}"
+    >
+      <i class="fas fa-user-tie" ng-if="item.creator._id === selectedList.creator._id"></i>
+      <i class="fas fa-user" ng-if="item.creator._id !== selectedList.creator._id"></i>
+    </span>
   </div>
 </div>
 <div id="overlay" ng-style="{ display: selectedList ? 'block': 'none' }"></div>

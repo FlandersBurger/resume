@@ -47,6 +47,7 @@ angular
       if ($location.search().list) {
         $scope.setSelectedList({ _id: $location.search().list });
       }
+      $scope.getLists();
     });
 
     $scope.order = {
@@ -123,13 +124,24 @@ angular
       return data.result;
     };
 
-    $scope.getLists();
-
     $scope.setDifficulty = (list, difficulty) => {
       list.difficulty = difficulty;
       TenThingsSvc.updateList({
         _id: list._id,
         difficulty: difficulty,
+      });
+    };
+
+    $scope.setCategory = (list, category) => {
+      const categoryIndex = list.categories.indexOf(category);
+      if (categoryIndex >= 0) {
+        list.categories.splice(categoryIndex, 1);
+      } else {
+        list.categories.push(category);
+      }
+      TenThingsSvc.updateList({
+        _id: list._id,
+        categories: list.categories,
       });
     };
   });
