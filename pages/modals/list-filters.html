@@ -1,0 +1,43 @@
+<div id="modal-list-filters" class="modal fade" role="dialog">
+  <div class="modal-dialog">
+    <!-- Modal content-->
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal">&times;</button>
+        <h4 class="modal-title">List filters</h4>
+      </div>
+      <div class="modal-body">
+        <h3>Languages</h3>
+        <ul class="filter-list">
+          <li ng-repeat="language in languages | orderBy: 'code'">
+            <a
+              class="btn btn-sm"
+              ng-class="{'btn-default': !languageFilter[language.code],'btn-primary': languageFilter[language.code]}"
+              href="#"
+              ng-click="setLanguageFilter(language)"
+            >
+              {{language.code}} - {{language.native}}
+            </a>
+          </li>
+        </ul>
+        <hr />
+        <h3>Categories</h3>
+        <ul class="filter-list">
+          <li ng-repeat="category in categories | orderBy">
+            <a
+              class="btn btn-sm"
+              ng-class="{'btn-default': !categoryFilter[category],'btn-primary': categoryFilter[category]}"
+              href="#"
+              ng-click="setCategoryFilter(category)"
+            >
+              {{category}}
+            </a>
+          </li>
+        </ul>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>

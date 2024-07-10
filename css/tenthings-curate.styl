@@ -2,10 +2,26 @@
   position: relative;
 }
 
+.filter-list {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  list-style: none;
+  padding: 0;
+
+  > li {
+    flex: 1 1 0%;
+
+    > a {
+      width: 100%;
+    }
+  }
+}
+
 .edit-list-panel {
   top: 50px;
-  bottom: 50px;
   position: fixed;
+  height: calc(100% - 50px);
   overflow-y: scroll;
   overflow-x: hidden;
   right: -100%;
@@ -14,7 +30,7 @@
   background-color: white;
   z-index: 100;
   border-color: black;
-  border-left: solid;
+  border: solid;
   padding: 0px 20px 20px 20px;
 }
 
@@ -48,8 +64,19 @@
   cursor: pointer; /* Add a pointer on hover */
 }
 
-.dropdown-menu {
-  columns: 3;
-  -webkit-columns: 3;
-  -moz-columns: 3;
+.list-name:hover {
+  font-weight: bold;
+  cursor: pointer;
+}
+
+td {
+  overflow: hidden;
+  max-width: 250px;
+  text-overflow: ellipsis;
+  text-wrap: nowrap;
+}
+
+td:hover {
+  overflow: visible;
+  text-wrap: initial;
 }

@@ -190,9 +190,9 @@
                 </ul>
               </li>
               <li ng-hide="loggedIn">
-                <a class="nav-link" data-toggle="modal" data-target="#modal-login" ng-click="navCollapsed = true"
-                  >Login</a
-                >
+                <a class="nav-link" data-toggle="modal" data-target="#modal-login" ng-click="navCollapsed = true">
+                  Login
+                </a>
               </li>
               <!--li class="dropdown">
               <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">{{selectedLanguage.code}}</a>
@@ -208,48 +208,6 @@
       <div class="container">
         <div ui-view class="page"></div>
       </div>
-
-      <nav class="navbar navbar-default navbar-fixed-bottom" id="footer">
-        <div class="container">
-          <ul class="nav navbar-nav collapse navbar-collapse">
-            <li ng-repeat="profile in socialMedia" class="nav-item">
-              <a class="nav-link social-media" ng-href="{{profile.url}}" target="_blank">
-                <i class="fab fa-2x" ng-class="profile.icon" aria-hidden="true"></i>
-                <span> {{profile.name}}</span>
-              </a>
-            </li>
-          </ul>
-          <!--ul class="nav navbar-nav navbar-right">
-            <li class="nav-item">
-
-              <div style="font-size:16px;margin:0 auto;width:300px"
-                   class="blockchain-btn"
-                   data-address="17ZhRg1iQTqhwUgEYq4MnEYfENMftuurqs"
-                   data-shared="false">
-                <div class="blockchain stage-begin"
-                     style="max-width:150px">
-                  <img src="https://blockchain.info/Resources/buttons/donate_64.png" />
-                </div>
-                <div class="blockchain stage-loading"
-                     style="text-align:center">
-                  <img src="https://blockchain.info/Resources/loading-large.gif" />
-                </div>
-                <div class="blockchain stage-ready">
-                  <p align="center">Please Donate To Bitcoin Address: <b>[[address]]</b></p>
-                  <p align="center"
-                     class="qr-code"></p>
-                </div>
-                <div class="blockchain stage-paid">
-                  Donation of <b>[[value]] BTC</b> Received. Thank You.
-                </div>
-                <div class="blockchain stage-error">
-                  <font color="red">[[error]]</font>
-                </div>
-              </div>
-            </li>
-          </ul-->
-        </div>
-      </nav>
     </div>
 
     <div class="print" ng-include="'/print.html'"></div>
