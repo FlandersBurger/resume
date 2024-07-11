@@ -178,19 +178,11 @@ angular
     };
 
     $scope.addValue = () => {
-      console.log($scope.newItem);
       if ($scope.newItem.value) {
-        if (
-          _.some(
-            $scope.selectedList.values,
-            (answer) => answer.value.removeAllButLetters() == $scope.newItem.value.removeAllButLetters(),
-          )
-        ) {
+        if ($scope.hasDuplicate()        ) {
           alert(`${$scope.newItem.value} is already in the list`);
         } else {
           $scope.newItem.creator = $scope.currentUser._id;
-          $scope.newItem.value = "";
-          $scope.newItem.blurb = "";
           if (
             $scope.selectedList.values.length >= 10 &&
             $scope.selectedList.name &&
@@ -203,6 +195,7 @@ angular
                 if ($location.search().list === "new") {
                   $location.search("list", data._id);
                 }
+                $scope.saving = false;
               },
               (err) => {
                 console.error(err);
@@ -212,6 +205,8 @@ angular
             $scope.selectedList.values.unshift(JSON.parse(JSON.stringify($scope.newItem)));
             console.log($scope.selectedList.values);
             $scope.selectedList.answers++;
+            $scope.newItem.value = "";
+            $scope.newItem.blurb = "";
           }
         }
       }

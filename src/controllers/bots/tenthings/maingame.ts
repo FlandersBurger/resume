@@ -117,7 +117,7 @@ export const newRound = (currentGame: IGame) => {
         let message = `<b>${game.list.name}</b> (${game.list.answers}) ${i18n(
           game.settings.language,
           "sentences.createdBy",
-          { creator: (game.list.creator as IUser).username }
+          { creator: (game.list.creator as IUser).username },
         )}`;
         message += game.list.description ? `\n<i>${angleBrackets(game.list.description)}</i>` : "";
         bot.queueMessage(game.chat_id, message);
@@ -145,7 +145,7 @@ export const deactivate = (game: HydratedDocument<IGame>) => {
     game.save();
     bot.sendMessage(
       game.chat_id,
-      "I am now sleeping, type /list or /start to wake me up.\nThis triggers after 30 days of inactivity."
+      "I am now sleeping, type /list or /start to wake me up.\nThis triggers after 30 days of inactivity.",
     );
   }
 };
@@ -154,7 +154,7 @@ export const checkMaingame = async (
   game: HydratedDocument<IGame>,
   player: HydratedDocument<IPlayer>,
   guess: IGuess,
-  msg: IMessage
+  msg: IMessage,
 ) => {
   if (guess.list !== game.list._id) return;
   game.lastPlayDate = moment().toDate();
@@ -207,7 +207,7 @@ export const checkMaingame = async (
           ? `<a href="${match.blurb}">&#8204;</a>`
           : `\n<i>${angleBrackets(match.blurb)}</i>`,
         score,
-        accuracy
+        accuracy,
       );
     } else {
       guessed(game, player, msg, match.value, "", score, accuracy);
@@ -312,9 +312,9 @@ const guessed = async (
   value: string,
   blurb: string,
   score: number,
-  accuracy: string
+  accuracy: string,
 ) => {
-  let message = getGuessedMessage(game.settings.language, angleBrackets(value), first_name);
+  let message = getGuessedMessage(game.settings.language, angleBrackets(value), angleBrackets(first_name));
   message += getStreakMessage(game.streak.count);
   message += blurb;
   message += `\n<u>${scoreDaily - score} + ${i18n(game.settings.language, "point", {
@@ -323,7 +323,6 @@ const guessed = async (
   const answersLeft = game.list.values.filter(({ guesser }) => !guesser?.first_name);
   if (answersLeft.length > 0) {
     message += `\n<b>${game.list.name}</b>`;
-    //message += `\n${answersLeft} answer${answersLeft > 1 ? 's' : ''} left.`;
     message += game.list.values.reduce((str, { guesser, value }, index) => {
       if (!guesser?.first_name) {
         str += "\n\t";

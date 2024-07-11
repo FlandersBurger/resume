@@ -11,6 +11,7 @@ const messages_1 = require("./messages");
 const telegram_1 = __importDefault(require("../../../connections/telegram"));
 const i18n_1 = __importDefault(require("../../../i18n"));
 const number_helpers_1 = require("../../../utils/number-helpers");
+const string_helpers_1 = require("../../../utils/string-helpers");
 const getScores = async (game_id, type) => {
     /*
     stats('score', game_id, scoreType)
@@ -33,7 +34,7 @@ const getScores = async (game_id, type) => {
                 .sort((player1, player2) => player2.highScore - player1.highScore)
                 .slice(0, 10)
                 .forEach(({ first_name, highScore }, index) => {
-                str += `${index + 1}: ${first_name}: ${highScore}\n`;
+                str += `${index + 1}: ${(0, string_helpers_1.angleBrackets)(first_name)}: ${highScore}\n`;
             });
             telegram_1.default.queueMessage(game_id, str);
             break;
@@ -46,7 +47,7 @@ const getScores = async (game_id, type) => {
                 (player1.plays === 0 ? 0 : player1.wins / player1.plays))
                 .slice(0, 10)
                 .forEach(({ first_name, wins, plays }, index) => {
-                str += `${index + 1}: ${first_name}: ${wins}/${plays} (${Math.round(plays === 0 ? 0 : (wins / plays) * 10000) / 100}%)\n`;
+                str += `${index + 1}: ${(0, string_helpers_1.angleBrackets)(first_name)}: ${wins}/${plays} (${Math.round(plays === 0 ? 0 : (wins / plays) * 10000) / 100}%)\n`;
             });
             telegram_1.default.queueMessage(game_id, str);
             break;
@@ -58,7 +59,7 @@ const getScores = async (game_id, type) => {
                 .sort((player1, player2) => player2.score - player1.score)
                 .slice(0, 10)
                 .forEach(({ first_name, score }, index) => {
-                str += `${index + 1}: ${first_name}: ${score}\n`;
+                str += `${index + 1}: ${(0, string_helpers_1.angleBrackets)(first_name)}: ${score}\n`;
             });
             telegram_1.default.queueMessage(game_id, str);
             break;
@@ -71,7 +72,7 @@ const getScores = async (game_id, type) => {
                 (player1.plays === 0 ? 0 : player1.score / player1.plays))
                 .slice(0, 10)
                 .forEach(({ first_name, plays, score }, index) => {
-                str += `${index + 1}: ${first_name}: ${Math.round(plays === 0 ? 0 : score / plays)}\n`;
+                str += `${index + 1}: ${(0, string_helpers_1.angleBrackets)(first_name)}: ${Math.round(plays === 0 ? 0 : score / plays)}\n`;
             });
             telegram_1.default.queueMessage(game_id, str);
             break;
@@ -87,7 +88,7 @@ const getDailyScores = async ({ _id, settings }, limit = 0) => {
         .sort((player1, player2) => player2.scoreDaily - player1.scoreDaily)
         .slice(0, limit ? limit : players.length)
         .reduce((str, { first_name, scoreDaily }, index) => {
-        str += `\t${index + 1}: ${first_name} - ${scoreDaily}\n`;
+        str += `\t${index + 1}: ${(0, string_helpers_1.angleBrackets)(first_name)} - ${scoreDaily}\n`;
         return str;
     }, (0, i18n_1.default)(settings.language, `sentences.dailyScores${limit ? "WithLimit" : ""}`, { limit }) + `\n`);
     return message;

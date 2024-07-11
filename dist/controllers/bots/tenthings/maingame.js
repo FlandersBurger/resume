@@ -296,7 +296,7 @@ const sendMaingameMessage = async (game, long = true) => {
 };
 exports.sendMaingameMessage = sendMaingameMessage;
 const guessed = async (game, { scoreDaily, first_name }, { chatId }, value, blurb, score, accuracy) => {
-    let message = (0, messages_1.getGuessedMessage)(game.settings.language, (0, string_helpers_1.angleBrackets)(value), first_name);
+    let message = (0, messages_1.getGuessedMessage)(game.settings.language, (0, string_helpers_1.angleBrackets)(value), (0, string_helpers_1.angleBrackets)(first_name));
     message += (0, messages_1.getStreakMessage)(game.streak.count);
     message += blurb;
     message += `\n<u>${scoreDaily - score} + ${(0, i18n_1.default)(game.settings.language, "point", {
@@ -305,7 +305,6 @@ const guessed = async (game, { scoreDaily, first_name }, { chatId }, value, blur
     const answersLeft = game.list.values.filter(({ guesser }) => !guesser?.first_name);
     if (answersLeft.length > 0) {
         message += `\n<b>${game.list.name}</b>`;
-        //message += `\n${answersLeft} answer${answersLeft > 1 ? 's' : ''} left.`;
         message += game.list.values.reduce((str, { guesser, value }, index) => {
             if (!guesser?.first_name) {
                 str += "\n\t";
