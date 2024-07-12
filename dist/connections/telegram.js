@@ -90,6 +90,11 @@ class TelegramBot {
                     if (this.muteReasons.includes(error.response.data.description)) {
                         return (0, errors_1.botMuted)(channel, error.response.data.description);
                     }
+                    if (error.response.data.description.includes("too long")) {
+                        this.notifyAdmin(`Too long: ${message.substring(0, 500)}...`);
+                        setTimeout(() => this.sendMessage(channel, message.substring(0, 4000), topic, true), 200);
+                        return;
+                    }
                     if (error.response.data.description.includes("can't parse")) {
                         return this.notifyAdmin(`Send Message to ${channel} parse Fail: ${message}`);
                     }
