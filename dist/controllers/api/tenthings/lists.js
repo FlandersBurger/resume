@@ -49,23 +49,10 @@ exports.tenthingsListsRoute.get("/:id/report/:user", async (req, res) => {
 exports.tenthingsListsRoute.get("/:id", async (req, res) => {
     if (!res.locals.isAuthorized)
         return res.sendStatus(401);
-    const list = await index_1.List.findOne({ _id: req.params.id })
-        .populate("creator", "_id username displayName")
-        .populate("values.creator", "_id username displayName")
-        .lean({ virtuals: true });
+    const list = await (0, lists_1.getList)(req.params.id);
     if (!list)
         return res.sendStatus(404);
-    return res.json({
-        ...list,
-        values: list.values.map((value) => ({
-            ...value,
-            creator: value.creator ? value.creator : list.creator,
-        })),
-        upvotes: list.votes ? list.votes.filter(({ vote }) => vote > 0).length : 0,
-        downvotes: list.votes ? list.votes.filter(({ vote }) => vote < 0).length : 0,
-        playRatio: list.plays ? (list.plays - list.skips) / list.plays : 0,
-        calculatedDifficulty: list.plays ? list.hints / 6 / (list.plays - list.skips) : 0,
-    });
+    return res.json(list);
 });
 exports.tenthingsListsRoute.post("/:id/blurbs/:type", async (req, res) => {
     if (!res.locals.isAuthorized)
@@ -140,7 +127,10 @@ exports.tenthingsListsRoute.post("/:id", async (req, res) => {
     list.values.filter(({ creator }) => !creator).forEach((value) => (value.creator = list.creator));
     Object.assign(list, req.body);
     await list.save();
-    res.sendStatus(200);
+    const updatedList = await (0, lists_1.getList)(req.params.id);
+    if (!updatedList)
+        return res.sendStatus(404);
+    return res.json(updatedList);
 });
 exports.tenthingsListsRoute.put("/", async (req, res) => {
     if (!res.locals.isAuthorized)

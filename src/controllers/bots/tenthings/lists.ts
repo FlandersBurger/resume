@@ -180,3 +180,22 @@ export const logHint = async (listId: Types.ObjectId) => {
     }
   }
 };
+
+export const getList = async (listId: string) => {
+  const list = await List.findOne({ _id: listId })
+    .populate("creator", "_id username displayName")
+    .populate("values.creator", "_id username displayName")
+    .lean({ virtuals: true });
+  if (!list) return;
+  return {
+    ...list,
+    values: list.values.map((value) => ({
+      ...value,
+      creator: value.creator ? value.creator : list.creator,
+    })),
+    upvotes: list.votes ? list.votes.filter(({ vote }) => vote > 0).length : 0,
+    downvotes: list.votes ? list.votes.filter(({ vote }) => vote < 0).length : 0,
+    playRatio: list.plays ? (list.plays - list.skips) / list.plays : 0,
+    calculatedDifficulty: list.plays ? list.hints / 6 / (list.plays - list.skips) : 0,
+  };
+};

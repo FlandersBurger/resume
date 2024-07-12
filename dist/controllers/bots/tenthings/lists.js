@@ -3,7 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.logHint = exports.searchList = exports.selectList = exports.rateList = exports.getListScore = exports.getRandomList = void 0;
+exports.getList = exports.logHint = exports.searchList = exports.selectList = exports.rateList = exports.getListScore = exports.getRandomList = void 0;
 const moment_1 = __importDefault(require("moment"));
 const telegram_1 = __importDefault(require("../../../connections/telegram"));
 const index_1 = require("../../../models/index");
@@ -181,4 +181,24 @@ const logHint = async (listId) => {
     }
 };
 exports.logHint = logHint;
+const getList = async (listId) => {
+    const list = await index_1.List.findOne({ _id: listId })
+        .populate("creator", "_id username displayName")
+        .populate("values.creator", "_id username displayName")
+        .lean({ virtuals: true });
+    if (!list)
+        return;
+    return {
+        ...list,
+        values: list.values.map((value) => ({
+            ...value,
+            creator: value.creator ? value.creator : list.creator,
+        })),
+        upvotes: list.votes ? list.votes.filter(({ vote }) => vote > 0).length : 0,
+        downvotes: list.votes ? list.votes.filter(({ vote }) => vote < 0).length : 0,
+        playRatio: list.plays ? (list.plays - list.skips) / list.plays : 0,
+        calculatedDifficulty: list.plays ? list.hints / 6 / (list.plays - list.skips) : 0,
+    };
+};
+exports.getList = getList;
 //# sourceMappingURL=lists.js.map

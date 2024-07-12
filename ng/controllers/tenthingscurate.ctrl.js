@@ -202,23 +202,19 @@ angular
         if (list._id !== "new") {
           TenThingsSvc.updateList({
             _id: list._id,
-            ...updates,
-          }).then(() => {
+            ...(updates ? updates : list),
+          }).then(({ data }) => {
+            console.log(data);
             $scope.saving = false;
-          });
+          }, console.error);
         } else {
-          TenThingsSvc.saveList($scope.currentUser, $scope.selectedList).then(
-            ({ data }) => {
-              if ($location.search().list === "new") {
-                $location.search("list", data._id);
-              }
-              $scope.getLists();
-              $scope.saving = false;
-            },
-            (err) => {
-              console.error(err);
-            },
-          );
+          TenThingsSvc.saveList($scope.currentUser, $scope.selectedList).then(({ data }) => {
+            if ($location.search().list === "new") {
+              $location.search("list", data._id);
+            }
+            $scope.getLists();
+            $scope.saving = false;
+          }, console.error);
         }
       }
     };

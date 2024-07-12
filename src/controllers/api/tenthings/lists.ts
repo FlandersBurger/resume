@@ -18,7 +18,7 @@ import { IList, IListValue } from "@models/tenthings/list";
 import { List, User } from "@models/index";
 import { removeAllButLetters } from "@root/utils/string-helpers";
 import { getListMessage } from "@tenthings/messages";
-import { getListScore } from "@tenthings/lists";
+import { getList, getListScore } from "@tenthings/lists";
 import { curateListKeyboard } from "@tenthings/keyboards";
 
 export const tenthingsListsRoute = Router();
@@ -51,22 +51,9 @@ tenthingsListsRoute.get("/:id/report/:user", async (req: Request, res: Response)
 
 tenthingsListsRoute.get("/:id", async (req: Request, res: Response) => {
   if (!res.locals.isAuthorized) return res.sendStatus(401);
-  const list = await List.findOne({ _id: req.params.id })
-    .populate("creator", "_id username displayName")
-    .populate("values.creator", "_id username displayName")
-    .lean({ virtuals: true });
+  const list = await getList(req.params.id);
   if (!list) return res.sendStatus(404);
-  return res.json({
-    ...list,
-    values: list.values.map((value) => ({
-      ...value,
-      creator: value.creator ? value.creator : list.creator,
-    })),
-    upvotes: list.votes ? list.votes.filter(({ vote }) => vote > 0).length : 0,
-    downvotes: list.votes ? list.votes.filter(({ vote }) => vote < 0).length : 0,
-    playRatio: list.plays ? (list.plays - list.skips) / list.plays : 0,
-    calculatedDifficulty: list.plays ? list.hints / 6 / (list.plays - list.skips) : 0,
-  });
+  return res.json(list);
 });
 
 tenthingsListsRoute.post("/:id/blurbs/:type", async (req: Request, res: Response) => {
@@ -138,7 +125,9 @@ tenthingsListsRoute.post("/:id", async (req: Request, res: Response) => {
 
   Object.assign(list, req.body);
   await list.save();
-  res.sendStatus(200);
+  const updatedList = await getList(req.params.id);
+  if (!updatedList) return res.sendStatus(404);
+  return res.json(updatedList);
 });
 
 tenthingsListsRoute.put("/", async (req: Request, res: Response) => {

@@ -195,6 +195,7 @@
     ng-class="{'bg-info': selectedList.creator._id !== currentUser._id && item.creator !== currentUser._id, 'bg-success': selectedList.creator._id !== currentUser._id && item.creator === currentUser._id, }"
     placeholder="Answer {{selectedList.values.length - $index}}"
     ng-disabled="!loggedIn || !currentUser.admin && selectedList.creator._id !== currentUser._id && item.creator !== currentUser._id"
+    ng-blur="upsertList(selectedList)"
   />
   <span class="input-group-addon">
     <img ng-src="{{item.blurb}}" ng-if="item.blurb.substring(0, 4) === 'http' && item.blurb.indexOf('youtu') < 0" />
@@ -212,5 +213,6 @@
     ng-class="{'bg-info': selectedList.creator._id !== currentUser._id && item.creator !== currentUser._id, 'bg-success': selectedList.creator._id !== currentUser._id && item.creator === currentUser._id, }"
     placeholder="Display after guessing {{item.value}} (Can be an image URL)"
     ng-disabled="!loggedIn || !currentUser.admin && selectedList.creator._id !== currentUser._id && item.creator !== currentUser._id"
+    ng-blur="upsertList(selectedList)"
   />
 </div>
