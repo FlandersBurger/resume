@@ -5,12 +5,12 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.abortSkip = exports.vetoSkip = exports.checkSkipper = exports.processSkip = exports.vetoCache = exports.skipCache = void 0;
 const moment_1 = __importDefault(require("moment"));
-const index_1 = require("@models/index");
-const string_helpers_1 = require("@root/utils/string-helpers");
+const index_1 = require("../../../models/index");
+const string_helpers_1 = require("../../../utils/string-helpers");
 const maingame_1 = require("./maingame");
 const lists_1 = require("./lists");
-const telegram_1 = __importDefault(require("@root/connections/telegram"));
-const i18n_1 = __importDefault(require("@root/i18n"));
+const telegram_1 = __importDefault(require("../../../connections/telegram"));
+const i18n_1 = __importDefault(require("../../../i18n"));
 const stats_1 = require("./stats");
 const keyboards_1 = require("./keyboards");
 const SKIP_DELAY = 10;

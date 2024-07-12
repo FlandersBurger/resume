@@ -1,8 +1,8 @@
 "use strict";
 const _ = require("underscore");
 const moment = require("moment");
-const srcGame = require("@models/tenthings/game")("backup");
-const dstGame = require("@models/tenthings/game")("master");
+const srcGame = require("../../models/tenthings/game")("backup");
+const dstGame = require("../../models/tenthings/game")("master");
 const backup = async () => {
     const existingGames = await dstGame.find({}).select("_id").lean();
     //const missingGames = await srcGame.find({ _id: { $nin: existingGames } });

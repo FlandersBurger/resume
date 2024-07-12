@@ -2,7 +2,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.tenthingsGamesRoute = void 0;
 const express_1 = require("express");
-const index_1 = require("@models/index");
+const index_1 = require("../../../models/index");
 exports.tenthingsGamesRoute = (0, express_1.Router)();
 exports.tenthingsGamesRoute.get("/games", async (req, res) => {
     if (!res.locals.isAdmin)

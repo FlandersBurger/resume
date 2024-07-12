@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-const index_1 = require("@models/index");
+const index_1 = require("./models/index");
 const _ = require("underscore");
 const moment = require("moment");
 const srcCategory = index_1.Category;

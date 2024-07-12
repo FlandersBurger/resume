@@ -1,8 +1,8 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.getPlayer = void 0;
-const index_1 = require("@models/index");
-const string_helpers_1 = require("@root/utils/string-helpers");
+const index_1 = require("../../../models/index");
+const string_helpers_1 = require("../../../utils/string-helpers");
 const getPlayer = async (game, from) => {
     let player = await index_1.Player.findOne({
         game: game._id,

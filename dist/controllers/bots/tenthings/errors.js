@@ -1,7 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.botMuted = exports.chatNotFound = void 0;
-const index_1 = require("@models/index");
+const index_1 = require("../../../models/index");
 const chatNotFound = async (chat_id) => {
     const inactiveGame = await index_1.Game.findOneAndUpdate({ chat_id }, { $set: { enabled: false } });
     if (inactiveGame) {

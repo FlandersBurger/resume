@@ -5,7 +5,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const moment_1 = __importDefault(require("moment"));
 const axios_1 = __importDefault(require("axios"));
-const telegram_1 = __importDefault(require("@root/connections/telegram"));
+const telegram_1 = __importDefault(require("../../../connections/telegram"));
 exports.default = (game, text) => {
     if (game.settings.sass && game.enabled) {
         sass(text).then((sass) => {
