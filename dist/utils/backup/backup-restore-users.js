@@ -1,8 +1,8 @@
 "use strict";
 const _ = require("underscore");
 const moment = require("moment");
-const srcUser = require("../../models/user")("backup");
-const dstUser = require("../../models/user")("master");
+const srcUser = require("@models/user")("backup");
+const dstUser = require("@models/user")("master");
 const backup = async () => {
     const existingUsers = await dstUser.find({}).select("_id").lean();
     N = 0;

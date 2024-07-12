@@ -4,8 +4,8 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.getList = exports.saveGame = exports.getGame = exports.votersCache = void 0;
-const index_1 = require("../../../models/index");
-const queue_1 = __importDefault(require("../../../queue"));
+const index_1 = require("@models/index");
+const queue_1 = __importDefault(require("@root/queue"));
 exports.votersCache = {};
 const getGame = async (chat_id) => {
     const cachedGame = await queue_1.default.get(chat_id.toString());

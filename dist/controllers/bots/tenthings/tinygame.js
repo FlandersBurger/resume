@@ -10,8 +10,8 @@ const guesses_1 = require("./guesses");
 const messages_1 = require("./messages");
 const hints_1 = require("./hints");
 const lists_1 = require("./lists");
-const telegram_1 = __importDefault(require("../../../connections/telegram"));
-const i18n_1 = __importDefault(require("../../../i18n"));
+const telegram_1 = __importDefault(require("@root/connections/telegram"));
+const i18n_1 = __importDefault(require("@root/i18n"));
 const createTinygame = async (game) => {
     const availableLanguages = game.settings.languages && game.settings.languages.length > 0 ? game.settings.languages : ["EN"];
     let list = await (0, lists_1.getRandomList)({

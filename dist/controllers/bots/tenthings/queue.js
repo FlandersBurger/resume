@@ -4,7 +4,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.getQueue = void 0;
-const telegram_1 = __importDefault(require("../../../connections/telegram"));
+const telegram_1 = __importDefault(require("@root/connections/telegram"));
 const guesses_1 = require("./guesses");
 const getQueue = async () => {
     const guessCount = await (0, guesses_1.getCount)();

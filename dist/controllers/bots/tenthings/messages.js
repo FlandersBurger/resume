@@ -27,14 +27,14 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.getStreakMessage = exports.getPlayerStats = exports.getListStats = exports.getDifficultyMessage = exports.getFrequencyMessage = exports.getListMessage = exports.getSnubbedMessage = exports.getGuessedMessage = exports.getCategoriesMessage = exports.getLogicMessage = void 0;
-const string_helpers_1 = require("../../../utils/string-helpers");
+const string_helpers_1 = require("@root/utils/string-helpers");
 const moment_1 = __importDefault(require("moment"));
 const MAXHINTS = 6;
 const categories_1 = __importDefault(require("./categories"));
-const number_helpers_1 = require("../../../utils/number-helpers");
-const string_helpers_2 = require("../../../utils/string-helpers");
+const number_helpers_1 = require("@root/utils/number-helpers");
+const string_helpers_2 = require("@root/utils/string-helpers");
 const difference_1 = __importDefault(require("lodash/difference"));
-const i18n_1 = __importStar(require("../../../i18n"));
+const i18n_1 = __importStar(require("@root/i18n"));
 const emojis_1 = __importDefault(require("./emojis"));
 const lists_1 = require("./lists");
 const getLogicMessage = (language) => {

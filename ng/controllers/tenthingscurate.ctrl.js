@@ -36,7 +36,7 @@ angular
     $scope.addList = () => {
       const currentLanguage = $scope.selectedList ? $scope.selectedList.language : "EN";
       $location.search("list", "new");
-      $scope.setSelectedList({
+      $scope.selectedList = {
         name: "",
         creator: $scope.currentUser._id,
         date: new Date(),
@@ -46,12 +46,14 @@ angular
         category: "",
         categories: [],
         language: currentLanguage,
-      });
+      };
     };
 
     $scope.setSelectedList = (list) => {
       if (list) {
-        if (list._id !== $scope.selectedList?._id) {
+        if (list._id === "new") {
+          $scope.addList();
+        } else if (!$scope.selectedList || list._id !== $scope.selectedList._id) {
           TenThingsSvc.getList(list)
             .then(({ data }) => {
               $scope.selectedList = data;
@@ -59,9 +61,6 @@ angular
               console.log(data);
             })
             .catch((err) => console.error(err));
-        } else if (!list._id) {
-          $scope.selectedList = list;
-          $location.search("list", "new");
         }
       } else {
         {
@@ -91,6 +90,7 @@ angular
       if ($location.search().list) {
         $scope.setSelectedList({ _id: $location.search().list });
       }
+      $scope.search = $location.search().search || "";
       $scope.getLists();
     });
 
@@ -160,11 +160,14 @@ angular
     const getLists = async () => {
       if ($scope.loading || exhausted) return [];
       $scope.loading = true;
+      if ($location.search().search !== $scope.search) {
+        $location.search("search", $scope.search ? $scope.search : null);
+      }
       const { data } = await TenThingsSvc.getLists({
         page,
         sortBy: $scope.order.field,
         orderBy: $scope.order.reverse ? -1 : 1,
-        limit: 100,
+        limit: 200,
         search: $scope.search,
         languages: Object.keys($scope.languageFilter).filter((language) => $scope.languageFilter[language]),
         categories: Object.keys($scope.categoryFilter).filter((category) => $scope.categoryFilter[category]),
@@ -179,46 +182,44 @@ angular
 
     $scope.addValue = () => {
       if ($scope.newItem.value) {
-        if ($scope.hasDuplicate()        ) {
+        if ($scope.hasDuplicate()) {
           alert(`${$scope.newItem.value} is already in the list`);
         } else {
           $scope.newItem.creator = $scope.currentUser._id;
-          if (
-            $scope.selectedList.values.length >= 10 &&
-            $scope.selectedList.name &&
-            $scope.selectedList.categories.length > 0
-          ) {
-            $scope.saving = true;
-            TenThingsSvc.saveList($scope.currentUser, $scope.selectedList).then(
-              ({ data }) => {
-                $scope.setSelectedList(data);
-                if ($location.search().list === "new") {
-                  $location.search("list", data._id);
-                }
-                $scope.saving = false;
-              },
-              (err) => {
-                console.error(err);
-              },
-            );
-          } else {
-            $scope.selectedList.values.unshift(JSON.parse(JSON.stringify($scope.newItem)));
-            console.log($scope.selectedList.values);
-            $scope.selectedList.answers++;
-            $scope.newItem.value = "";
-            $scope.newItem.blurb = "";
-          }
+          $scope.selectedList.values.unshift(JSON.parse(JSON.stringify($scope.newItem)));
+          $scope.selectedList.answers++;
+          $scope.upsertList($scope.selectedList);
+          $scope.newItem.value = "";
+          $scope.newItem.blurb = "";
         }
       }
       $("#new-value").focus();
     };
 
-    $scope.updateList = (list, updates) => {
+    $scope.upsertList = (list, updates) => {
+      $scope.saving = true;
       if (list.values.length >= 10 && list.name && list.categories.length > 0) {
-        TenThingsSvc.updateList({
-          _id: list._id,
-          ...updates,
-        });
+        if (list._id !== "new") {
+          TenThingsSvc.updateList({
+            _id: list._id,
+            ...updates,
+          }).then(() => {
+            $scope.saving = false;
+          });
+        } else {
+          TenThingsSvc.saveList($scope.currentUser, $scope.selectedList).then(
+            ({ data }) => {
+              if ($location.search().list === "new") {
+                $location.search("list", data._id);
+              }
+              $scope.getLists();
+              $scope.saving = false;
+            },
+            (err) => {
+              console.error(err);
+            },
+          );
+        }
       }
     };
 
@@ -243,8 +244,7 @@ angular
       } else if (language.code === "EN" && nonEnglishIndex >= 0) {
         list.categories.splice(nonEnglishIndex, 1);
       }
-      TenThingsSvc.updateList({
-        _id: list._id,
+      $scope.upsertList(list, {
         categories: list.categories,
         language: language.code,
       });
@@ -252,9 +252,15 @@ angular
 
     $scope.setDifficulty = (list, difficulty) => {
       list.difficulty = difficulty;
-      TenThingsSvc.updateList({
-        _id: list._id,
+      $scope.upsertList(list, {
         difficulty: difficulty,
+      });
+    };
+
+    $scope.setFrequency = (list, frequency) => {
+      list.frequency = frequency;
+      $scope.upsertList(list, {
+        frequency: frequency,
       });
     };
 
@@ -265,8 +271,7 @@ angular
       } else {
         list.categories.push(category);
       }
-      TenThingsSvc.updateList({
-        _id: list._id,
+      $scope.upsertList(list, {
         categories: list.categories,
       });
     };

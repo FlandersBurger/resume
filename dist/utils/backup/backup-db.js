@@ -1,5 +1,5 @@
 "use strict";
-const { mongoDBs } = require("../../db");
+const { mongoDBs } = require("@root/db");
 const fs = require("fs");
 const moment = require("moment");
 const exec = require("child_process").exec;

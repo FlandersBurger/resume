@@ -5,8 +5,8 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.evaluate = void 0;
 const moment_1 = __importDefault(require("moment"));
-const game_1 = require("../../../models/tenthings/game");
-const index_1 = require("../../../models/index");
+const game_1 = require("@models/tenthings/game");
+const index_1 = require("@models/index");
 const messages_1 = require("./messages");
 const maingame_1 = require("./maingame");
 const minigame_1 = require("./minigame");
@@ -14,14 +14,14 @@ const tinygame_1 = require("./tinygame");
 const hints_1 = require("./hints");
 const guesses_1 = require("./guesses");
 const lists_1 = require("./lists");
-const i18n_1 = __importDefault(require("../../../i18n"));
+const i18n_1 = __importDefault(require("@root/i18n"));
 const players_1 = require("./players");
 const queue_1 = require("./queue");
 const skips_1 = require("./skips");
 const stats_1 = require("./stats");
 const suggestions_1 = require("./suggestions");
 const keyboards_1 = require("./keyboards");
-const telegram_1 = __importDefault(require("../../../connections/telegram"));
+const telegram_1 = __importDefault(require("@root/connections/telegram"));
 const commands = [
     "list",
     "hint",

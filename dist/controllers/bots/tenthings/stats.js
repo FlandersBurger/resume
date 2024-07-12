@@ -6,12 +6,12 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.getStats = exports.getDailyScores = exports.getScores = void 0;
 const moment_1 = __importDefault(require("moment"));
 const find_1 = __importDefault(require("lodash/find"));
-const index_1 = require("../../../models/index");
+const index_1 = require("@models/index");
 const messages_1 = require("./messages");
-const telegram_1 = __importDefault(require("../../../connections/telegram"));
-const i18n_1 = __importDefault(require("../../../i18n"));
-const number_helpers_1 = require("../../../utils/number-helpers");
-const string_helpers_1 = require("../../../utils/string-helpers");
+const telegram_1 = __importDefault(require("@root/connections/telegram"));
+const i18n_1 = __importDefault(require("@root/i18n"));
+const number_helpers_1 = require("@root/utils/number-helpers");
+const string_helpers_1 = require("@root/utils/string-helpers");
 const getScores = async (game_id, type) => {
     /*
     stats('score', game_id, scoreType)

@@ -7,8 +7,8 @@ exports.usersRoute = void 0;
 const express_1 = require("express");
 const bcryptjs_1 = __importDefault(require("bcryptjs"));
 const jwt_simple_1 = __importDefault(require("jwt-simple"));
-const server_1 = require("../../server");
-const index_1 = require("../../models/index");
+const server_1 = require("@root/server");
+const index_1 = require("@models/index");
 exports.usersRoute = (0, express_1.Router)();
 exports.usersRoute.get("/", function (_, res) {
     if (!res.locals.isAuthorized)

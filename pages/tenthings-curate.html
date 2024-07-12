@@ -87,8 +87,10 @@
     ng-include="'/components/update-list.html'"
     class="edit-list-panel"
     ng-class="{'active': selectedList}"
+    ng-keydown="keyDown($event)"
     click-outside
   ></div>
+  <div ng-include="'/modals/pick-categories.html'"></div>
   <div ng-include="'/modals/list-filters.html'"></div>
   <div id="overlay" ng-style="{ display: selectedList ? 'block': 'none' }" ng-click="setSelectedList()"></div>
 </div>

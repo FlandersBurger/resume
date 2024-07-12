@@ -5,8 +5,8 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.logHint = exports.searchList = exports.selectList = exports.rateList = exports.getListScore = exports.getRandomList = void 0;
 const moment_1 = __importDefault(require("moment"));
-const telegram_1 = __importDefault(require("../../../connections/telegram"));
-const index_1 = require("../../../models/index");
+const telegram_1 = __importDefault(require("@root/connections/telegram"));
+const index_1 = require("@models/index");
 const some_1 = __importDefault(require("lodash/some"));
 const keyboards_1 = require("./keyboards");
 const getRandomList = async (parameters = {}) => {

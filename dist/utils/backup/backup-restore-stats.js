@@ -1,8 +1,8 @@
 "use strict";
 const _ = require("underscore");
 const moment = require("moment");
-const srcStat = require("../../models/tenthings/stats")("backup");
-const dstStat = require("../../models/tenthings/stats")("master");
+const srcStat = require("@models/tenthings/stats")("backup");
+const dstStat = require("@models/tenthings/stats")("master");
 const backup = async () => {
     const existingStats = await dstStat.find({}).select("_id").lean();
     //const missingStats = await srcStat.find({ _id: { $nin: existingStats } });
