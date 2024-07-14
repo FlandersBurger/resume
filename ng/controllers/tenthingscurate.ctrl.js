@@ -14,6 +14,7 @@ angular
     $scope.keyDown = (e) => {
       e = e || window.event;
       switch (e.keyCode) {
+        // Tab
         case 9:
           if ($("#new-blurb").is(":focus")) {
             setTimeout(() => {
@@ -21,6 +22,7 @@ angular
             }, 100);
           }
           break;
+        // Enter
         case 13:
           if ($("#new-blurb").is(":focus")) {
             $scope.addValue();
@@ -53,12 +55,11 @@ angular
       if (list) {
         if (list._id === "new") {
           $scope.addList();
-        } else if (!$scope.selectedList || list._id !== $scope.selectedList._id) {
+        } else {
           TenThingsSvc.getList(list)
             .then(({ data }) => {
               $scope.selectedList = data;
               $location.search("list", data._id);
-              console.log(data);
             })
             .catch((err) => console.error(err));
         }
@@ -200,11 +201,12 @@ angular
       $scope.saving = true;
       if (list.values.length >= 10 && list.name && list.categories.length > 0) {
         if (list._id !== "new") {
+          let changes = updates ? updates : list;
+          delete changes._id;
           TenThingsSvc.updateList({
+            ...changes,
             _id: list._id,
-            ...(updates ? updates : list),
           }).then(({ data }) => {
-            console.log(data);
             $scope.saving = false;
           }, console.error);
         } else {
@@ -279,4 +281,17 @@ angular
         $scope.selectedList.values,
         (answer) => answer.value.removeAllButLetters() == $scope.newItem.value.removeAllButLetters(),
       );
+
+    $scope.getBlurbs = (type) => {
+      $scope.gettingBlurbs = true;
+      TenThingsSvc.getBlurbs($scope.selectedList, type)
+        .then(() => {
+          $scope.setSelectedList($scope.selectedList);
+          $scope.gettingBlurbs = false;
+        })
+        .catch((err) => {
+          console.error(err);
+          $scope.gettingBlurbs = false;
+        });
+    };
   });

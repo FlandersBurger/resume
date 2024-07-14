@@ -80,3 +80,36 @@ td:hover {
   overflow: visible;
   text-wrap: initial;
 }
+
+.input-cell {
+  padding: 0 5px 0 0 !important;
+}
+
+.image-cell {
+  padding: 0 !important;
+}
+
+.input-cell textarea {
+  height: 43px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.input-cell > * {
+  background-color: transparent;
+  border: none;
+  box-shadow: none;
+  text-wrap: nowrap;
+}
+
+.input-cell > *:focus {
+  border: none;
+  box-shadow: none;
+  text-wrap: wrap;
+}
+
+.image-cell img {
+  margin: 5px;
+  width: 40px;
+  max-height: 33px;
+}

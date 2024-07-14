@@ -126,6 +126,7 @@ exports.tenthingsListsRoute.post("/:id", async (req, res) => {
         return res.sendStatus(404);
     list.values.filter(({ creator }) => !creator).forEach((value) => (value.creator = list.creator));
     Object.assign(list, req.body);
+    await list.validate();
     await list.save();
     const updatedList = await (0, lists_1.getList)(req.params.id);
     if (!updatedList)
