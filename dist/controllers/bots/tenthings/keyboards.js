@@ -300,7 +300,7 @@ const curateListKeyboard = (list) => ({
             getButton("Desc", { type: callbacks_1.CallbackDataType.Description, id: `${list._id}` }),
             {
                 text: "Curate",
-                url: `https://belgocanadian.com/tenthings?list=${list._id}`,
+                url: `https://belgocanadian.com/tenthings-curate?list=${list._id}`,
             },
         ],
     ],
