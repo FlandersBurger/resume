@@ -12,6 +12,7 @@ const hints_1 = require("./hints");
 const lists_1 = require("./lists");
 const telegram_1 = __importDefault(require("../../../connections/telegram"));
 const i18n_1 = __importDefault(require("../../../i18n"));
+const string_helpers_1 = require("../../../utils/string-helpers");
 const createTinygame = async (game) => {
     const availableLanguages = game.settings.languages && game.settings.languages.length > 0 ? game.settings.languages : ["EN"];
     let list = await (0, lists_1.getRandomList)({
@@ -29,7 +30,7 @@ const createTinygame = async (game) => {
     }
     const tinygame = {
         answer: list.name,
-        clues: (0, sampleSize_1.default)(list.values.map((answer) => answer.value), 10),
+        clues: (0, sampleSize_1.default)(list.values.map((answer) => (0, string_helpers_1.angleBrackets)(answer.value)), 10),
     };
     game.tinygame.answer = tinygame.answer;
     game.tinygame.hints = 1;

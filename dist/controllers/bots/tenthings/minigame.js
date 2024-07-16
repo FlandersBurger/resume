@@ -13,6 +13,7 @@ const index_1 = require("../../../models/index");
 const guesses_1 = require("./guesses");
 const messages_1 = require("./messages");
 const hints_1 = require("./hints");
+const string_helpers_1 = require("../../../utils/string-helpers");
 const createMinigame = async (game) => {
     const availableLanguages = game.settings.languages && game.settings.languages.length > 0 ? game.settings.languages : ["EN"];
     let minigames = await getMinigames({
@@ -65,7 +66,7 @@ const getAllMinigames = async () => {
                 };
             }
             else {
-                answers[key].lists.push(list.name);
+                answers[key].lists.push((0, string_helpers_1.angleBrackets)(list.name));
                 answers[key].categories = (0, uniq_1.default)([...answers[key].categories, ...list.categories]);
             }
         }

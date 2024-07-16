@@ -16,6 +16,7 @@ import { IGuess, getAnswerScore } from "./guesses";
 import { IMinigame } from "@models/tenthings/minigame";
 import { getGuessedMessage } from "./messages";
 import { getHint } from "./hints";
+import { angleBrackets } from "@root/utils/string-helpers";
 
 export const createMinigame = async (game: HydratedDocument<IGame>) => {
   const availableLanguages =
@@ -32,7 +33,7 @@ export const createMinigame = async (game: HydratedDocument<IGame>) => {
     if (minigames.length > 0)
       bot.queueMessage(
         game.chat_id,
-        "Not enough lists available in your chosen languages to make a minigame work, defaulting to English"
+        "Not enough lists available in your chosen languages to make a minigame work, defaulting to English",
       );
   }
   if (minigames.length === 0) {
@@ -42,7 +43,7 @@ export const createMinigame = async (game: HydratedDocument<IGame>) => {
     if (minigames.length > 0)
       bot.queueMessage(
         game.chat_id,
-        "Not enough lists available in your chosen categories to make a minigame work, defaulting to all lists"
+        "Not enough lists available in your chosen categories to make a minigame work, defaulting to all lists",
       );
   }
   let minigame = minigames[Math.floor(Math.random() * minigames.length)];
@@ -76,7 +77,7 @@ const getAllMinigames = async () => {
       answers: {
         [key: string]: IAnswer;
       },
-      list: IList
+      list: IList,
     ) => {
       for (const value of list.values) {
         const key: string = `${list.language}-${value.value}`;
@@ -88,13 +89,13 @@ const getAllMinigames = async () => {
             categories: list.categories,
           };
         } else {
-          answers[key].lists.push(list.name);
+          answers[key].lists.push(angleBrackets(list.name));
           answers[key].categories = uniq([...answers[key].categories, ...list.categories]);
         }
       }
       return answers;
     },
-    {}
+    {},
   );
   return Object.keys(answers)
     .reduce((result: IAnswer[], key) => {
@@ -120,7 +121,7 @@ export const createMinigames = async () => {
         new: true,
         upsert: true,
       });
-    })
+    }),
   );
   bot.notifyAdmin(`${minigames.length} minigames created`);
 };
@@ -142,7 +143,7 @@ export const checkMinigame = async (
   game: HydratedDocument<IGame>,
   player: HydratedDocument<IPlayer>,
   guess: IGuess,
-  msg: IMessage
+  msg: IMessage,
 ) => {
   if (guess.match.value !== game.minigame.answer) return;
   const score: number = getAnswerScore(game.minigame.hints, guess.match.distance);
@@ -154,7 +155,7 @@ export const checkMinigame = async (
   game.minigame.plays++;
   await game.save();
   let message = `${i18n(game.settings.language, "sentences.minigameAnswered")} (${(guess.match.distance * 100).toFixed(
-    0
+    0,
   )}%)\n`;
   message += getGuessedMessage(game.settings.language, game.minigame.answer, msg.from.first_name);
   message += `\n<u>${player.scoreDaily - score} + ${i18n(game.settings.language, "point", {

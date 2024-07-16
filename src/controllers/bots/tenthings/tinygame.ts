@@ -10,6 +10,7 @@ import { getHint } from "./hints";
 import { getRandomList } from "./lists";
 import bot from "@root/connections/telegram";
 import i18n from "@root/i18n";
+import { angleBrackets } from "@root/utils/string-helpers";
 
 export const createTinygame = async (game: HydratedDocument<IGame>) => {
   const availableLanguages =
@@ -30,7 +31,7 @@ export const createTinygame = async (game: HydratedDocument<IGame>) => {
   const tinygame = {
     answer: list!.name,
     clues: sampleSize(
-      list!.values.map((answer: IListValue) => answer.value),
+      list!.values.map((answer: IListValue) => angleBrackets(answer.value)),
       10
     ),
   };
