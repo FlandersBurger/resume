@@ -250,27 +250,37 @@
 <table class="table table-striped">
   <thead>
     <tr>
-      <th ng-click="valueOrder = {field: 'value', direction: !valueOrder.direction}"><i class="fas fa-user"></i></th>
-      <th ng-click="valueOrder = {field: 'value', direction: !valueOrder.direction}">Answer</th>
-      <th ng-click="valueOrder = {field: 'blurb', direction: !valueOrder.direction}">Blurb</th>
-      <th><i class="fas fa-image"></i></th>
-      <th><i class="fas fa-trash-alt"></i></th>
+      <th class="col-1" ng-click="valueOrder = {field: 'creator.username', direction: !valueOrder.direction}">
+        <i class="fas fa-user" tooltip-placement="right" uib-tooltip="Black = creator, Purple = someone else"></i>
+      </th>
+      <th class="col-1" ng-click="valueOrder = {field: 'date', direction: !valueOrder.direction}">
+        <i class="fas fa-calendar" tooltip-placement="right" uib-tooltip="Black = creation date, Purple = later"></i>
+      </th>
+      <th class="col-4" ng-click="valueOrder = {field: 'value', direction: !valueOrder.direction}">Answer</th>
+      <th class="col-5" ng-click="valueOrder = {field: 'blurb', direction: !valueOrder.direction}">Blurb</th>
+      <th class="col-1"><i class="fas fa-link"></i></th>
+      <th class="col-1"><i class="fas fa-trash-alt"></i></th>
     </tr>
   </thead>
   <tbody>
     <tr ng-repeat="item in selectedList.values | orderBy: valueOrder.field:valueOrder.direction">
       <td
-        ng-class="{'text-success': item.creator._id === currentUser._id, 'text-info': item.creator._id !== currentUser._id && item.creator._id !== selectedList.creator._id}"
+        class="icon-column"
+        ng-class="{'text-info': item.creator._id !== currentUser._id && item.creator._id !== selectedList.creator._id}"
       >
-        <div
-          tooltip-placement="right"
-          uib-tooltip="{{item.creator.username}} - {{formatDate(item.date ? item.date : list.date)}}"
-        >
+        <div tooltip-placement="right" uib-tooltip="{{item.creator.username}}">
           <i class="fas fa-user-tie" ng-if="item.creator._id === selectedList.creator._id"></i>
           <i class="fas fa-user" ng-if="item.creator._id !== selectedList.creator._id"></i>
         </div>
       </td>
-      <td class="input-cell">
+      <td class="icon-column" ng-class="{'text-info': formatDate(item.date) !== formatDate(selectedList.date)}">
+        <i
+          tooltip-placement="right"
+          uib-tooltip="{{formatDate(item.date ? item.date : selectedList.date)}}"
+          class="fas fa-calendar"
+        ></i>
+      </td>
+      <td class="input-cell col-xs-5">
         <input
           id="value{{$index}}"
           class="form-control"
@@ -281,7 +291,7 @@
           ng-blur="upsertList(selectedList, {values: selectedList.values})"
         />
       </td>
-      <td class="input-cell">
+      <td class="input-cell col-xs-6">
         <textarea
           class="form-control"
           ng-model="item.blurb"
@@ -295,7 +305,7 @@
           onblur='this.style.height = "43px";'
         />
       </td>
-      <td class="image-cell">
+      <td class="image-cell icon-column">
         <img ng-src="{{item.blurb}}" ng-if="item.blurb.substring(0, 4) === 'http' && item.blurb.indexOf('youtu') < 0" />
         <a
           href="{{item.blurb}}"
@@ -305,7 +315,12 @@
           <i class="fab fa-youtube"></i>
         </a>
       </td>
-      <td><i class="fas fa-trash-alt"></i></td>
+      <td
+        class="icon-column"
+        ng-class="{ 'delete-column' : selectedList.values.length > 10 && selectedList._id !== 'new', 'disabled-column' : selectedList.values.length <= 10 || selectedList._id === 'new' }"
+      >
+        <i class="fas fa-trash-alt"></i>
+      </td>
     </tr>
   </tbody>
 </table>
