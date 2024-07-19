@@ -125,6 +125,7 @@ exports.tenthingsListsRoute.post("/:id", async (req, res) => {
     const list = await index_1.List.findOne({ _id: req.params.id });
     if (!list)
         return res.sendStatus(404);
+    const previousModifyDate = (0, moment_1.default)(list.modifyDate);
     list.values.filter(({ creator }) => !creator).forEach((value) => (value.creator = list.creator));
     Object.assign(list, req.body);
     await list.validate();
@@ -132,7 +133,6 @@ exports.tenthingsListsRoute.post("/:id", async (req, res) => {
     const updatedList = await (0, lists_1.getList)(new mongoose_1.Types.ObjectId(req.params.id));
     if (!updatedList)
         return res.sendStatus(404);
-    const previousModifyDate = (0, moment_1.default)(updatedList.modifyDate);
     if (previousModifyDate < yesterday) {
         telegram_1.default.notifyAdmins(`<u>List Updated</u>\nUpdated by <i>${req.body.user.username}</i>\n${(0, messages_1.getListMessage)(updatedList)}`, (0, keyboards_1.curateListKeyboard)(list));
     }

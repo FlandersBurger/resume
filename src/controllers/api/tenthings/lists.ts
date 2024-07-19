@@ -119,6 +119,7 @@ tenthingsListsRoute.post("/:id", async (req: Request, res: Response) => {
   const yesterday = moment().subtract(1, "days");
   const list = await List.findOne({ _id: req.params.id });
   if (!list) return res.sendStatus(404);
+  const previousModifyDate = moment(list.modifyDate);
   list.values.filter(({ creator }) => !creator).forEach((value) => (value.creator = list.creator));
 
   Object.assign(list, req.body);
@@ -126,7 +127,6 @@ tenthingsListsRoute.post("/:id", async (req: Request, res: Response) => {
   await list.save();
   const updatedList = await getList(new Types.ObjectId(req.params.id));
   if (!updatedList) return res.sendStatus(404);
-  const previousModifyDate = moment(updatedList.modifyDate);
   if (previousModifyDate < yesterday) {
     bot.notifyAdmins(
       `<u>List Updated</u>\nUpdated by <i>${req.body.user.username}</i>\n${getListMessage(updatedList)}`,
