@@ -309,7 +309,7 @@ export const curateListKeyboard = (list: IList): IKeyboard => ({
       getButton("Desc", { type: CallbackDataType.Description, id: `${list._id}` }),
       {
         text: "Curate",
-        url: `https://belgocanadian.com/tenthings-curate?list=${list._id}`,
+        url: `https://belgocanadian.com/tenthings?list=${list._id}`,
       },
     ],
   ],

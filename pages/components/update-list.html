@@ -263,21 +263,18 @@
     </tr>
   </thead>
   <tbody>
-    <tr ng-repeat="item in selectedList.values | orderBy: valueOrder.field:valueOrder.direction">
+    <tr ng-repeat="item in selectedList.values | orderBy: valueOrder.field:valueOrder.reverse">
       <td
         class="icon-column"
         ng-class="{'text-info': item.creator._id !== currentUser._id && item.creator._id !== selectedList.creator._id}"
       >
-        <div tooltip-placement="right" uib-tooltip="{{item.creator.username}}">
-          <i class="fas fa-user-tie" ng-if="item.creator._id === selectedList.creator._id"></i>
-          <i class="fas fa-user" ng-if="item.creator._id !== selectedList.creator._id"></i>
-        </div>
+        <i class="fas fa-user" tooltip-placement="right" uib-tooltip="{{item.creator.username}}"></i>
       </td>
       <td class="icon-column" ng-class="{'text-info': formatDate(item.date) !== formatDate(selectedList.date)}">
         <i
+          class="fas fa-calendar"
           tooltip-placement="right"
           uib-tooltip="{{formatDate(item.date ? item.date : selectedList.date)}}"
-          class="fas fa-calendar"
         ></i>
       </td>
       <td class="input-cell col-xs-5">
@@ -288,7 +285,7 @@
           ng-class="{'bg-info': selectedList.creator._id !== currentUser._id && item.creator !== currentUser._id, 'bg-success': selectedList.creator._id !== currentUser._id && item.creator === currentUser._id, }"
           placeholder="Answer {{selectedList.values.length - $index}}"
           ng-disabled="!loggedIn || !currentUser.admin && selectedList.creator._id !== currentUser._id && item.creator !== currentUser._id"
-          ng-blur="upsertList(selectedList, {values: selectedList.values})"
+          ng-blur="updateValues()"
         />
       </td>
       <td class="input-cell col-xs-6">
@@ -298,7 +295,7 @@
           ng-class="{'bg-info': selectedList.creator._id !== currentUser._id && item.creator !== currentUser._id, 'bg-success': selectedList.creator._id !== currentUser._id && item.creator === currentUser._id, }"
           placeholder="Display after guessing {{item.value}} (Can be an image URL)"
           ng-disabled="!loggedIn || !currentUser.admin && selectedList.creator._id !== currentUser._id && item.creator !== currentUser._id"
-          ng-blur="upsertList(selectedList, {values: selectedList.values})"
+          ng-blur="updateValues()"
           style="resize: vertical"
           oninput='this.style.height = "";this.style.height = this.scrollHeight + "px"'
           onfocus='this.style.height = this.scrollHeight + "px"'
@@ -318,6 +315,7 @@
       <td
         class="icon-column"
         ng-class="{ 'delete-column' : selectedList.values.length > 10 && selectedList._id !== 'new', 'disabled-column' : selectedList.values.length <= 10 || selectedList._id === 'new' }"
+        ng-click="deleteValue(item)"
       >
         <i class="fas fa-trash-alt"></i>
       </td>

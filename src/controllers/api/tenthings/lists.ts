@@ -13,12 +13,11 @@ const { getPexelsImage } = require("@root/connections/pexels");
 // const spotify = new Spotify();
 // spotify.init();
 
-import { IUser } from "@models/user";
 import { IList, IListValue } from "@models/tenthings/list";
 import { List, User } from "@models/index";
 import { removeAllButLetters } from "@root/utils/string-helpers";
 import { getListMessage } from "@tenthings/messages";
-import { getList, getListScore } from "@tenthings/lists";
+import { formatList, getList, getListScore } from "@tenthings/lists";
 import { curateListKeyboard } from "@tenthings/keyboards";
 
 export const tenthingsListsRoute = Router();
@@ -27,13 +26,11 @@ tenthingsListsRoute.get("/", async (req: QueryableRequest, res: Response) => {
   if (!res.locals.isAuthorized) return res.sendStatus(401);
   const page = parseInt(req.query.page ?? 1);
   const lists: LeanDocument<IList>[] = await List.find(parseQuery(req.query))
-    .select(
-      "_id plays skips score values date modifyDate creator name description categories language isDynamic frequency difficulty",
-    )
     .limit(parseInt(req.query.limit) || 0)
     .skip(parseInt(req.query.limit) * (page - 1) || 0)
     .sort({ [req.query.sort_by ?? "date"]: parseInt(req.query.order_by ?? -1) as SortOrder })
-    .populate("creator", "username")
+    .populate("creator", "_id username displayName")
+    .populate("values.creator", "_id username displayName")
     .lean({ virtuals: true });
   res.json({ result: lists.map(formatList), nextPage: page + 1 });
 });
@@ -51,7 +48,7 @@ tenthingsListsRoute.get("/:id/report/:user", async (req: Request, res: Response)
 
 tenthingsListsRoute.get("/:id", async (req: Request, res: Response) => {
   if (!res.locals.isAuthorized) return res.sendStatus(401);
-  const list = await getList(req.params.id);
+  const list = await getList(new Types.ObjectId(req.params.id));
   if (!list) return res.sendStatus(404);
   return res.json(list);
 });
@@ -119,6 +116,7 @@ tenthingsListsRoute.post("/:id/blurbs/:type", async (req: Request, res: Response
 
 tenthingsListsRoute.post("/:id", async (req: Request, res: Response) => {
   if (!res.locals.isAuthorized) return res.sendStatus(401);
+  const yesterday = moment().subtract(1, "days");
   const list = await List.findOne({ _id: req.params.id });
   if (!list) return res.sendStatus(404);
   list.values.filter(({ creator }) => !creator).forEach((value) => (value.creator = list.creator));
@@ -126,15 +124,22 @@ tenthingsListsRoute.post("/:id", async (req: Request, res: Response) => {
   Object.assign(list, req.body);
   await list.validate();
   await list.save();
-  const updatedList = await getList(req.params.id);
+  const updatedList = await getList(new Types.ObjectId(req.params.id));
   if (!updatedList) return res.sendStatus(404);
-  return res.json(updatedList);
+  const previousModifyDate = moment(updatedList.modifyDate);
+  if (previousModifyDate < yesterday) {
+    bot.notifyAdmins(
+      `<u>List Updated</u>\nUpdated by <i>${req.body.user.username}</i>\n${getListMessage(updatedList)}`,
+      curateListKeyboard(list),
+    );
+  }
+  return res.json(formatList(updatedList));
 });
 
 tenthingsListsRoute.put("/", async (req: Request, res: Response) => {
   if (!res.locals.isAuthorized) return res.sendStatus(401);
-  var yesterday = moment().subtract(1, "days");
-  var previousModifyDate = moment(req.body.list.modifyDate);
+  const yesterday = moment().subtract(1, "days");
+  const previousModifyDate = moment(req.body.list.modifyDate);
   req.body.list.modifyDate = new Date();
   req.body.list.search = removeAllButLetters(req.body.list.name);
   req.body.list.score = getListScore(req.body.list);
@@ -142,24 +147,25 @@ tenthingsListsRoute.put("/", async (req: Request, res: Response) => {
     .filter(({ creator }: { creator: Types.ObjectId }) => !creator)
     .forEach((value: IListValue) => (value.creator = req.body.list.creator));
 
-  const updatedList = await List.findByIdAndUpdate(
+  const list = await List.findByIdAndUpdate(
     req.body.list._id ? req.body.list._id : new Types.ObjectId(),
     req.body.list,
     { new: true, upsert: true },
   );
 
-  const list = await List.findOne({ _id: updatedList._id }).populate("creator");
+  const updatedList = await getList(list._id);
+  if (!updatedList) return res.sendStatus(404);
   if (!list) return res.sendStatus(500);
   if (!req.body.list._id) {
-    bot.notifyAdmins(`<u>List Created</u>\n${getListMessage(list)}`, curateListKeyboard(list));
-    bot.notifyCosmicForce(`<u>List Created</u>\n${getListMessage(list)}`, curateListKeyboard(list));
+    bot.notifyAdmins(`<u>List Created</u>\n${getListMessage(updatedList)}`, curateListKeyboard(updatedList));
+    bot.notifyCosmicForce(`<u>List Created</u>\n${getListMessage(updatedList)}`, curateListKeyboard(updatedList));
   } else if (previousModifyDate < yesterday) {
     bot.notifyAdmins(
-      `<u>List Updated</u>\nUpdated by <i>${req.body.user.username}</i>\n${getListMessage(list)}`,
+      `<u>List Updated</u>\nUpdated by <i>${req.body.user.username}</i>\n${getListMessage(updatedList)}`,
       curateListKeyboard(list),
     );
   }
-  res.json(formatList(list));
+  return res.json(formatList(updatedList));
 });
 
 tenthingsListsRoute.delete("/:id", async (req: Request, res: Response) => {
@@ -192,27 +198,6 @@ tenthingsListsRoute.get("/names", (_: Request, res: Response) => {
   if (!res.locals.isAuthorized) return res.sendStatus(401);
   const listNames = List.find({}).select("_id name");
   res.json(listNames);
-});
-
-const formatList = (list: LeanDocument<IList>) => ({
-  _id: list._id,
-  plays: list.plays,
-  skips: list.skips,
-  score: list.score,
-  playRatio: list.playRatio,
-  answers: list.answers,
-  values: list.values.map((item) => item.value),
-  blurbs: list.blurbs,
-  date: list.date,
-  modifyDate: list.modifyDate,
-  creator: (list.creator as IUser).username,
-  name: list.name,
-  description: list.description,
-  categories: list.categories,
-  isDynamic: list.isDynamic,
-  language: list.language,
-  difficulty: list.difficulty,
-  frequency: list.frequency,
 });
 
 const parseQuery = (query: { [key: string]: string }) => {

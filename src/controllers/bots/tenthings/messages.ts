@@ -90,7 +90,7 @@ export const getSnubbedMessage = (match: string, loser: IPlayer, winner: IGameLi
     }
   }
 };
-export const getListMessage = (list: HydratedDocument<IList>): string => {
+export const getListMessage = (list: HydratedDocument<IList> | IList): string => {
   let msg = `<b>${list.name}</b> [${list.language}]\n`;
   msg += `<i>by ${(list.creator as IUser).username}</i>\n`;
   msg += `${list.description ? `${angleBrackets(list.description)}\n` : ""}`;

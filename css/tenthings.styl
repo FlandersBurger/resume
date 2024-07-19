@@ -1,31 +1,136 @@
 #tenthings-page {
-  margin: 20px auto;
-  padding-bottom: 50px;
+  position: relative;
 }
 
-.input-group-addon {
-  padding: 5px;
+.filter-list {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  list-style: none;
+  padding: 0;
+
+  > li {
+    flex: 1 1 0%;
+
+    > a {
+      width: 100%;
+    }
+  }
 }
 
-.input-group-addon img {
+.edit-list-panel {
+  top: 50px;
+  position: fixed;
+  height: calc(100% - 50px);
+  overflow-y: scroll;
+  overflow-x: hidden;
+  right: -100%;
+  width: 95%;
+  transition: right 0.2s ease-out;
+  background-color: white;
+  z-index: 100;
+  border-color: black;
+  border: solid;
+  padding: 0px 20px 20px 20px;
+}
+
+.edit-list-panel.active {
+  right: 0;
+}
+
+.edit-list-panel-header {
+  display: flex;
+  flex-direction: row;
+  align-content: center;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.btn-difficulty {
+  padding: 1px 5px;
+}
+
+#overlay {
+  position: fixed; /* Sit on top of the page content */
+  display: none; /* Hidden by default */
+  width: 100%; /* Full width (cover the whole page) */
+  height: 100%; /* Full height (cover the whole page) */
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5); /* Black background with opacity */
+  z-index: 99; /* Specify a stack order in case you're using a different order for other elements */
+  cursor: pointer; /* Add a pointer on hover */
+}
+
+.list-name:hover {
+  font-weight: bold;
+  cursor: pointer;
+}
+
+td {
+  overflow: hidden;
+  max-width: 250px;
+  text-overflow: ellipsis;
+  text-wrap: nowrap;
+}
+
+td:hover {
+  overflow: visible;
+  text-wrap: initial;
+}
+
+.input-cell {
+  padding: 0 5px 0 0 !important;
+}
+
+.image-cell {
+  padding: 0 !important;
+}
+
+.input-cell textarea {
+  height: 43px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.input-cell > * {
+  background-color: transparent;
+  border: none;
+  box-shadow: none;
+  text-wrap: nowrap;
+}
+
+.input-cell > *:focus {
+  border: none;
+  box-shadow: none;
+  text-wrap: wrap;
+}
+
+.image-cell img {
+  margin: 5px;
   width: 40px;
-  max-height: 30px;
+  max-height: 33px;
 }
 
-#category-select {
-  display: none;
+td {
+  vertical-align: middle;
 }
 
-#category-select.ng-hide-add {
-  -webkit-animation: 0.5s fadeOutDown ease;
-  animation: 0.5s fadeOutDown ease;
+td.icon-column {
+  width: 30px;
 }
 
-#category-select.ng-hide-remove {
-  -webkit-animation: 1s bounceInDown ease;
-  animation: 1s bounceInDown ease;
+td.delete-column {
+  cursor: pointer;
 }
 
-#add-button {
-  height: 86px;
+td.delete-column:hover {
+  color: darkred;
+}
+
+td.disabled-column {
+  cursor: not-allowed;
+  color: lightgrey;
 }
