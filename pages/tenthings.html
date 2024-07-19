@@ -34,17 +34,45 @@
     <table class="table table-striped">
       <thead>
         <tr>
-          <th ng-click="orderBy('name')">Name</th>
+          <th ng-click="orderBy('name')">
+            Name
+            <i
+              ng-if="order.field === 'name'"
+              class="fas"
+              ng-class="{'fa-sort-alpha-down-alt' : order.direction, 'fa-sort-alpha-down': !order.direction}"
+            ></i>
+          </th>
           <th class="hidden-sm visible-md visible-lg">Categories</th>
-          <th ng-click="orderBy('answers')"><i class="fas fa-list-ol"></i></th>
-          <th ng-click="orderBy('language')"><i class="fas fa-language"></i></th>
+          <th><i class="fas fa-list-ol"></i></th>
+          <th ng-click="orderBy('language')">
+            <i class="fas fa-language"></i>
+            <i
+              ng-if="order.field === 'language'"
+              class="fas"
+              ng-class="{'fa-sort-alpha-down-alt' : order.direction, 'fa-sort-alpha-down': !order.direction}"
+            ></i>
+          </th>
           <th ng-click="orderBy('difficulty')" class="hidden-sm visible-md visible-lg">Difficulty</th>
-          <th ng-click="orderBy('date')" class="hidden-sm visible-md visible-lg">Created</th>
-          <th ng-click="orderBy('modifyDate')" class="hidden-sm visible-md visible-lg">Updated</th>
+          <th ng-click="orderBy('date')" class="hidden-sm visible-md visible-lg">
+            Created
+            <i
+              ng-if="order.field === 'date'"
+              class="fas"
+              ng-class="{'fa-sort-numeric-down-alt' : order.direction, 'fa-sort-numeric-down': !order.direction}"
+            ></i>
+          </th>
+          <th ng-click="orderBy('modifyDate')" class="hidden-sm visible-md visible-lg">
+            Updated
+            <i
+              ng-if="order.field === 'modifyDate'"
+              class="fas"
+              ng-class="{'fa-sort-numeric-down-alt' : order.direction, 'fa-sort-numeric-down': !order.direction}"
+            ></i>
+          </th>
         </tr>
       </thead>
       <tbody infinite-scroll="getMoreLists()" infinite-scroll-distance="1">
-        <tr ng-repeat="list in lists | orderBy:order.field:order.reverse">
+        <tr ng-repeat="list in lists | orderBy:order.field:order.direction">
           <td ng-click="setSelectedList(list)" class="list-name">{{list.name}}</td>
           <td class="hidden-sm visible-md visible-lg">{{list.categories.join(", ")}}</td>
           <td>{{list.answers}}</td>

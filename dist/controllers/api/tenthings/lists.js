@@ -25,13 +25,13 @@ exports.tenthingsListsRoute.get("/", async (req, res) => {
         return res.sendStatus(401);
     const page = parseInt(req.query.page ?? 1);
     const lists = await index_1.List.find(parseQuery(req.query))
-        .select("_id plays skips score values date modifyDate creator name description categories language isDynamic frequency difficulty")
         .limit(parseInt(req.query.limit) || 0)
         .skip(parseInt(req.query.limit) * (page - 1) || 0)
         .sort({ [req.query.sort_by ?? "date"]: parseInt(req.query.order_by ?? -1) })
-        .populate("creator", "username")
+        .populate("creator", "_id username displayName")
+        .populate("values.creator", "_id username displayName")
         .lean({ virtuals: true });
-    res.json({ result: lists.map(formatList), nextPage: page + 1 });
+    res.json({ result: lists.map(lists_1.formatList), nextPage: page + 1 });
 });
 exports.tenthingsListsRoute.get("/:id/report/:user", async (req, res) => {
     if (!res.locals.isAuthorized)
@@ -49,7 +49,7 @@ exports.tenthingsListsRoute.get("/:id/report/:user", async (req, res) => {
 exports.tenthingsListsRoute.get("/:id", async (req, res) => {
     if (!res.locals.isAuthorized)
         return res.sendStatus(401);
-    const list = await (0, lists_1.getList)(req.params.id);
+    const list = await (0, lists_1.getList)(new mongoose_1.Types.ObjectId(req.params.id));
     if (!list)
         return res.sendStatus(404);
     return res.json(list);
@@ -121,6 +121,7 @@ exports.tenthingsListsRoute.post("/:id/blurbs/:type", async (req, res) => {
 exports.tenthingsListsRoute.post("/:id", async (req, res) => {
     if (!res.locals.isAuthorized)
         return res.sendStatus(401);
+    const yesterday = (0, moment_1.default)().subtract(1, "days");
     const list = await index_1.List.findOne({ _id: req.params.id });
     if (!list)
         return res.sendStatus(404);
@@ -128,34 +129,40 @@ exports.tenthingsListsRoute.post("/:id", async (req, res) => {
     Object.assign(list, req.body);
     await list.validate();
     await list.save();
-    const updatedList = await (0, lists_1.getList)(req.params.id);
+    const updatedList = await (0, lists_1.getList)(new mongoose_1.Types.ObjectId(req.params.id));
     if (!updatedList)
         return res.sendStatus(404);
-    return res.json(updatedList);
+    const previousModifyDate = (0, moment_1.default)(updatedList.modifyDate);
+    if (previousModifyDate < yesterday) {
+        telegram_1.default.notifyAdmins(`<u>List Updated</u>\nUpdated by <i>${req.body.user.username}</i>\n${(0, messages_1.getListMessage)(updatedList)}`, (0, keyboards_1.curateListKeyboard)(list));
+    }
+    return res.json((0, lists_1.formatList)(updatedList));
 });
 exports.tenthingsListsRoute.put("/", async (req, res) => {
     if (!res.locals.isAuthorized)
         return res.sendStatus(401);
-    var yesterday = (0, moment_1.default)().subtract(1, "days");
-    var previousModifyDate = (0, moment_1.default)(req.body.list.modifyDate);
+    const yesterday = (0, moment_1.default)().subtract(1, "days");
+    const previousModifyDate = (0, moment_1.default)(req.body.list.modifyDate);
     req.body.list.modifyDate = new Date();
     req.body.list.search = (0, string_helpers_1.removeAllButLetters)(req.body.list.name);
     req.body.list.score = (0, lists_1.getListScore)(req.body.list);
     req.body.list.values
         .filter(({ creator }) => !creator)
         .forEach((value) => (value.creator = req.body.list.creator));
-    const updatedList = await index_1.List.findByIdAndUpdate(req.body.list._id ? req.body.list._id : new mongoose_1.Types.ObjectId(), req.body.list, { new: true, upsert: true });
-    const list = await index_1.List.findOne({ _id: updatedList._id }).populate("creator");
+    const list = await index_1.List.findByIdAndUpdate(req.body.list._id ? req.body.list._id : new mongoose_1.Types.ObjectId(), req.body.list, { new: true, upsert: true });
+    const updatedList = await (0, lists_1.getList)(list._id);
+    if (!updatedList)
+        return res.sendStatus(404);
     if (!list)
         return res.sendStatus(500);
     if (!req.body.list._id) {
-        telegram_1.default.notifyAdmins(`<u>List Created</u>\n${(0, messages_1.getListMessage)(list)}`, (0, keyboards_1.curateListKeyboard)(list));
-        telegram_1.default.notifyCosmicForce(`<u>List Created</u>\n${(0, messages_1.getListMessage)(list)}`, (0, keyboards_1.curateListKeyboard)(list));
+        telegram_1.default.notifyAdmins(`<u>List Created</u>\n${(0, messages_1.getListMessage)(updatedList)}`, (0, keyboards_1.curateListKeyboard)(updatedList));
+        telegram_1.default.notifyCosmicForce(`<u>List Created</u>\n${(0, messages_1.getListMessage)(updatedList)}`, (0, keyboards_1.curateListKeyboard)(updatedList));
     }
     else if (previousModifyDate < yesterday) {
-        telegram_1.default.notifyAdmins(`<u>List Updated</u>\nUpdated by <i>${req.body.user.username}</i>\n${(0, messages_1.getListMessage)(list)}`, (0, keyboards_1.curateListKeyboard)(list));
+        telegram_1.default.notifyAdmins(`<u>List Updated</u>\nUpdated by <i>${req.body.user.username}</i>\n${(0, messages_1.getListMessage)(updatedList)}`, (0, keyboards_1.curateListKeyboard)(list));
     }
-    res.json(formatList(list));
+    return res.json((0, lists_1.formatList)(updatedList));
 });
 exports.tenthingsListsRoute.delete("/:id", async (req, res) => {
     if (!res.locals.isAuthorized)
@@ -180,26 +187,6 @@ exports.tenthingsListsRoute.get("/names", (_, res) => {
         return res.sendStatus(401);
     const listNames = index_1.List.find({}).select("_id name");
     res.json(listNames);
-});
-const formatList = (list) => ({
-    _id: list._id,
-    plays: list.plays,
-    skips: list.skips,
-    score: list.score,
-    playRatio: list.playRatio,
-    answers: list.answers,
-    values: list.values.map((item) => item.value),
-    blurbs: list.blurbs,
-    date: list.date,
-    modifyDate: list.modifyDate,
-    creator: list.creator.username,
-    name: list.name,
-    description: list.description,
-    categories: list.categories,
-    isDynamic: list.isDynamic,
-    language: list.language,
-    difficulty: list.difficulty,
-    frequency: list.frequency,
 });
 const parseQuery = (query) => {
     return Object.keys(query).reduce((params, key) => {

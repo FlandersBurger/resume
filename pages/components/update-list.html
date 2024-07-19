@@ -1,10 +1,11 @@
 <div class="edit-list-panel-header">
-  <h1>{{selectedList.name}}</h1>
+  <h1>{{selectedList.name ? selectedList.name : "New list"}}</h1>
   <i class="fas fa-times fa-3x" ng-click="setSelectedList()"></i>
 </div>
 <h5 ng-show="selectedList.creator">
   <p>
-    <b>Created by</b> {{selectedList.creator.username}} / <b>Created on</b> {{formatDate(selectedList.date)}}
+    <b>Created by</b> {{list._id ? selectedList.creator.username : currentUser.username }} /
+    <b>Created on</b> {{formatDate(selectedList.date)}}
     <span ng-show="selectedList.modifyDate && selectedList.date !== selectedList.modifyDate">
       / <b>Last modified</b> on {{formatDate(selectedList.modifyDate)}}
     </span>
@@ -17,6 +18,12 @@
     {{selectedList.calculatedDifficulty.makePercentage()}}
   </span>
 </h5>
+<kbd ng-if="!selectedList._id">
+  Please search existing lists first and add answers to them. Subjective, niche and duplicate lists will be deleted.
+  <span ng-if="selectedList.categories.indexOf('Music') >= 0">
+    Music lists will be scrutinized by admins for global recognition.
+  </span>
+</kbd>
 <div class="btn-toolbar">
   <button
     class="btn btn-default"
@@ -84,6 +91,7 @@
   </button>
   <button
     class="btn btn-danger"
+    ng-if="selectedList._id"
     ng-click="deleteList(selectedList)"
     ng-disabled="!selectedList || (!currentUser.admin && selectedList.creator._id !== currentUser._id && selectedList._id)"
   >
@@ -139,7 +147,8 @@
   </div>
   <div class="dropdown btn-group">
     <button
-      class="btn btn-default dropdown-toggle"
+      class="btn dropdown-toggle"
+      ng-class="{ 'btn-danger': selectedList.categories.length === 0, 'btn-default': selectedList.categories.length > 0 }"
       type="button"
       aria-haspopup="true"
       aria-expanded="false"
@@ -147,6 +156,7 @@
       data-target="#modal-pick-categories"
       uib-tooltip="Categories"
     >
+      <i class="fas fa-tags" ng-if="selectedList.categories.length === 0"></i>
       {{selectedList.categories.join(", ")}}
     </button>
   </div>
@@ -219,51 +229,83 @@
   </div>
 </div>
 <hr />
-<div class="input-group" ng-if="loggedIn" tabindex="0">
-  <input
-    id="new-value"
-    class="form-control"
-    ng-model="newItem.value"
-    ng-disabled="!selectedList || !selectedList.name"
-    placeholder="Answer {{selectedList.values.length + 1}}"
-  />
-  <span class="input-group-addon"></span>
-  <input
-    id="new-blurb"
-    class="form-control"
-    ng-model="newItem.blurb"
-    ng-disabled="!selectedList || !selectedList.name"
-    placeholder="Display after guessing {{newItem.value}}"
-  />
-  <div class="input-group-btn">
-    <button
-      class="btn"
-      ng-class="{'btn-danger': hasDuplicate(), 'btn-default': !hasDuplicate()}"
-      ng-click="addValue()"
-      ng-disabled="!selectedList || !selectedList.name || !newItem.value || hasDuplicate()"
-    >
-      {{hasDuplicate() ? 'Dupe!' : 'Add'}}
-    </button>
-  </div>
-</div>
-<hr />
 <table class="table table-striped">
   <thead>
     <tr>
       <th class="col-1" ng-click="valueOrder = {field: 'creator.username', direction: !valueOrder.direction}">
         <i class="fas fa-user" tooltip-placement="right" uib-tooltip="Black = creator, Purple = someone else"></i>
+        <i
+          ng-if="valueOrder.field === 'creator.username'"
+          class="fas"
+          ng-class="{'fa-sort-alpha-down-alt' : valueOrder.direction, 'fa-sort-alpha-down': !valueOrder.direction}"
+        ></i>
       </th>
       <th class="col-1" ng-click="valueOrder = {field: 'date', direction: !valueOrder.direction}">
         <i class="fas fa-calendar" tooltip-placement="right" uib-tooltip="Black = creation date, Purple = later"></i>
+        <i
+          ng-if="valueOrder.field === 'date'"
+          class="fas"
+          ng-class="{'fa-sort-alpha-down-alt' : valueOrder.direction, 'fa-sort-alpha-down': !valueOrder.direction}"
+        ></i>
       </th>
-      <th class="col-4" ng-click="valueOrder = {field: 'value', direction: !valueOrder.direction}">Answer</th>
-      <th class="col-5" ng-click="valueOrder = {field: 'blurb', direction: !valueOrder.direction}">Blurb</th>
+      <th class="col-4" ng-click="valueOrder = {field: 'value', direction: !valueOrder.direction}">
+        Answer
+        <i
+          ng-if="valueOrder.field === 'value'"
+          class="fas"
+          ng-class="{'fa-sort-alpha-down-alt' : valueOrder.direction, 'fa-sort-alpha-down': !valueOrder.direction}"
+        ></i>
+      </th>
+      <th class="col-5" ng-click="valueOrder = {field: 'blurb', direction: !valueOrder.direction}">
+        Blurb
+        <i
+          ng-if="valueOrder.field === 'blurb'"
+          class="fas"
+          ng-class="{'fa-sort-alpha-down-alt' : valueOrder.direction, 'fa-sort-alpha-down': !valueOrder.direction}"
+        ></i>
+      </th>
       <th class="col-1"><i class="fas fa-link"></i></th>
       <th class="col-1"><i class="fas fa-trash-alt"></i></th>
     </tr>
   </thead>
   <tbody>
-    <tr ng-repeat="item in selectedList.values | orderBy: valueOrder.field:valueOrder.reverse">
+    <tr ng-if="loggedIn && selectedList.name && selectedList.categories.length > 0">
+      <td></td>
+      <td></td>
+      <td class="input-cell">
+        <input
+          id="new-value"
+          class="form-control"
+          ng-model="newItem.value"
+          ng-disabled="!selectedList || !selectedList.name"
+          placeholder="New answer ({{selectedList.values.length + 1}})"
+        />
+      </td>
+      <td class="input-cell">
+        <textarea
+          id="new-blurb"
+          class="form-control"
+          ng-model="newItem.blurb"
+          ng-disabled="!selectedList || !selectedList.name"
+          placeholder="Display after guessing {{newItem.value}}"
+          style="resize: vertical"
+          oninput='this.style.height = "";this.style.height = this.scrollHeight + "px"'
+          onfocus='this.style.height = this.scrollHeight + "px"'
+          onblur='this.style.height = "43px";'
+        />
+      </td>
+      <td colspan="2">
+        <button
+          class="btn"
+          ng-class="{'btn-danger': hasDuplicate(), 'btn-default': !hasDuplicate()}"
+          ng-click="addValue()"
+          ng-disabled="!selectedList || !selectedList.name || !newItem.value || hasDuplicate()"
+        >
+          {{hasDuplicate() ? 'Dupe' : 'Add'}}
+        </button>
+      </td>
+    </tr>
+    <tr ng-repeat="item in selectedList.values | orderBy: valueOrder.field:valueOrder.direction">
       <td
         class="icon-column"
         ng-class="{'text-info': item.creator._id !== currentUser._id && item.creator._id !== selectedList.creator._id}"
@@ -316,6 +358,7 @@
         class="icon-column"
         ng-class="{ 'delete-column' : selectedList.values.length > 10 && selectedList._id !== 'new', 'disabled-column' : selectedList.values.length <= 10 || selectedList._id === 'new' }"
         ng-click="deleteValue(item)"
+        uib-tooltip="{{ selectedList.values.length <= 10 ? 'Deleting is only possible if you have more than 10 values' : 'Delete' }}"
       >
         <i class="fas fa-trash-alt"></i>
       </td>

@@ -41,52 +41,54 @@ export const getGuessedMessage = (language: string, answer: string, guesser: str
 };
 export const getSnubbedMessage = (match: string, loser: IPlayer, winner: IGameListValue["guesser"]): string => {
   if (!winner) return "";
+  const loserName = angleBrackets(loser.first_name);
+  const winnerName = angleBrackets(winner.first_name);
   const random = Math.floor(Math.random() * 9);
   if (loser.id != winner.id) {
     switch (random) {
       case 0:
-        return "Too slow, " + loser.first_name + ". " + winner.first_name + " said " + match + " ages ago.";
+        return "Too slow, " + loserName + ". " + winnerName + " said " + match + " ages ago.";
       case 1:
-        return winner.first_name + " beat you to " + match + ", " + loser.first_name;
+        return winnerName + " beat you to " + match + ", " + loserName;
       case 2:
-        return match + " denied by " + winner.first_name + ", " + loser.first_name;
+        return match + " denied by " + winnerName + ", " + loserName;
       case 3:
-        return loser.first_name + " was pwned, " + winner.first_name + " guessed " + match;
+        return loserName + " was pwned, " + winnerName + " guessed " + match;
       case 4:
-        return loser.first_name + " got schooled by " + winner.first_name + "'s " + match + " answer";
+        return loserName + " got schooled by " + winnerName + "'s " + match + " answer";
       case 5:
-        return "You got majorly snubbed by " + winner.first_name + " for " + match + ", " + loser.first_name;
+        return "You got majorly snubbed by " + winnerName + " for " + match + ", " + loserName;
       case 6:
-        return winner.first_name + " showed " + loser.first_name + " who's the boss with " + match;
+        return winnerName + " showed " + loserName + " who's the boss with " + match;
       case 7:
-        return "Nobody puts " + winner.first_name + " in the corner " + loser.first_name + " (" + match + ")";
+        return "Nobody puts " + winnerName + " in the corner " + loserName + " (" + match + ")";
       case 8:
-        return "What if I told you that " + winner.first_name + " already said " + match + ", " + loser.first_name;
+        return "What if I told you that " + winnerName + " already said " + match + ", " + loserName;
       default:
-        return winner.first_name + " already got " + match + ", too bad " + loser.first_name;
+        return winnerName + " already got " + match + ", too bad " + loserName;
     }
   } else {
     switch (random) {
       case 0:
-        return loser.first_name + " losing it, they already answered " + match;
+        return loserName + " losing it, they already answered " + match;
       case 1:
-        return match + ", " + loser.first_name + "? I think I'm having a deja-vu";
+        return match + ", " + loserName + "? I think I'm having a deja-vu";
       case 2:
-        return "Are you doing ok " + loser.first_name + "? You already said " + match;
+        return "Are you doing ok " + loserName + "? You already said " + match;
       case 3:
-        return loser.first_name + " was pwned by themself with " + match;
+        return loserName + " was pwned by themself with " + match;
       case 4:
-        return loser.first_name + " suffers from short term memory loss, cough, " + match + "";
+        return loserName + " suffers from short term memory loss, cough, " + match + "";
       case 5:
-        return "Own goal delivered by " + loser.first_name + " for " + match;
+        return "Own goal delivered by " + loserName + " for " + match;
       case 6:
-        return "Great job " + loser.first_name + ", you just schooled yourself with " + match;
+        return "Great job " + loserName + ", you just schooled yourself with " + match;
       case 7:
-        return "Um, I already said you got " + match + ", " + loser.first_name;
+        return "Um, I already said you got " + match + ", " + loserName;
       case 8:
-        return loser.first_name + " tried to cheat with " + match + " and failed";
+        return loserName + " tried to cheat with " + match + " and failed";
       default:
-        return loser.first_name + " already got " + match + ", too bad, um..., " + loser.first_name;
+        return loserName + " already got " + match + ", too bad, um..., " + loserName;
     }
   }
 };

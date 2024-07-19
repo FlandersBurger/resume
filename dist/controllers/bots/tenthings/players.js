@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getPlayer = void 0;
+exports.getPlayerName = exports.getPlayer = void 0;
 const index_1 = require("../../../models/index");
 const string_helpers_1 = require("../../../utils/string-helpers");
 const getPlayer = async (game, from) => {
@@ -19,6 +19,10 @@ const getPlayer = async (game, from) => {
     return player;
 };
 exports.getPlayer = getPlayer;
+const getPlayerName = async (player) => {
+    return (0, string_helpers_1.angleBrackets)(player.first_name);
+};
+exports.getPlayerName = getPlayerName;
 const createPlayer = async (game, from) => {
     if (!from.first_name)
         console.trace();

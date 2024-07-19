@@ -60,7 +60,6 @@ angular
             .then(({ data }) => {
               $scope.selectedList = data;
               $location.search("list", data._id);
-              console.log(data);
             })
             .catch((err) => console.error(err));
         }
@@ -98,21 +97,21 @@ angular
 
     $scope.valueOrder = {
       field: "value",
-      reverse: false,
+      direction: false,
     };
 
     $scope.order = {
       field: "date",
-      reverse: true,
+      direction: true,
     };
 
     $scope.orderBy = (field) => {
       if ($scope.order.field === field) {
-        $scope.order.reverse = !$scope.order.reverse;
+        $scope.order.direction = !$scope.order.direction;
       } else {
         $scope.order = {
           field: field,
-          reverse: false,
+          direction: false,
         };
       }
       $scope.getLists();
@@ -173,8 +172,8 @@ angular
       const { data } = await TenThingsSvc.getLists({
         page,
         sortBy: $scope.order.field,
-        orderBy: $scope.order.reverse ? -1 : 1,
-        limit: 200,
+        orderBy: $scope.order.direction ? -1 : 1,
+        limit: 100,
         search: $scope.search,
         languages: Object.keys($scope.languageFilter).filter((language) => $scope.languageFilter[language]),
         categories: Object.keys($scope.categoryFilter).filter((category) => $scope.categoryFilter[category]),

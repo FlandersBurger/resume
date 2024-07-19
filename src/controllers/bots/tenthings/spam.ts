@@ -2,6 +2,7 @@ import moment from "moment";
 import { IMessage } from "./messages";
 
 import bot from "@root/connections/telegram";
+import { angleBrackets } from "@root/utils/string-helpers";
 
 const cache: {
   [key: string]: {
@@ -15,7 +16,7 @@ export const checkSpam = (body: {
   callback_query?: { from: IMessage["from"]; message: IMessage };
 }) => {
   const from = body.message ? body.message.from.id : body.callback_query!.from.id;
-  const name = body.message ? body.message.from.first_name : body.callback_query!.from.first_name;
+  const name = angleBrackets(body.message ? body.message.from.first_name : body.callback_query!.from.first_name);
   const chat = body.message ? body.message.chatId : body.callback_query!.message.chatId;
 
   if (cache[from]) {
@@ -33,7 +34,7 @@ export const checkSpam = (body: {
         cache[from].lastMessage = moment();
         bot.queueMessage(
           chat,
-          `Ok, ${name}, calm down, I can't keep up.  Please stay silent for 10 seconds so I can process your stuff`
+          `Ok, ${name}, calm down, I can't keep up.  Please stay silent for 10 seconds so I can process your stuff`,
         );
       }
     } else if (cache[from].count > 35) {
@@ -43,7 +44,7 @@ export const checkSpam = (body: {
           bot.notifyAdmin(
             `Possible spammer: ${name} (${from}) in chat ${chat} ${
               chat == parseInt(process.env.GROUP_CHAT || "") ? " - The main chat!" : ""
-            }\n\n${body.message}\n\nURL: ${url ? url : "N/A"}`
+            }\n\n${body.message}\n\nURL: ${url ? url : "N/A"}`,
           );
         });
         /*
