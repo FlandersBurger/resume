@@ -7,12 +7,7 @@
             <i class="fa fa-pencil"></i>
           </button>
         </span>
-        <input
-          ng-disabled="usernameToggle"
-          class="form-control"
-          type="text"
-          placeholder="{{currentUser.username}}"
-        />
+        <input ng-disabled="usernameToggle" class="form-control" type="text" placeholder="{{currentUser.username}}" />
       </div>
       <div class="input-group" ng-show="!usernameToggle">
         <span class="input-group-btn">
@@ -51,7 +46,7 @@
   <form ng-submit="updateUser()">
     <div class="form-group">
       <tags-input
-        ng-model="currentUser.flags"
+        ng-model="userFlags"
         ng-change="updateUser()"
         display-property="name"
         placeholder="Add a country"
