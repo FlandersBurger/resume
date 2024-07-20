@@ -31,6 +31,7 @@ angular.module("app").service("TenThingsSvc", function ($http) {
   };
 
   svc.updateList = function (list) {
+    console.log(list);
     return $http.post("/api/tenthings/lists/" + list._id, list);
   };
 

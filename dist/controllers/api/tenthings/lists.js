@@ -127,9 +127,11 @@ exports.tenthingsListsRoute.post("/:id", async (req, res) => {
         return res.sendStatus(404);
     const previousModifyDate = (0, moment_1.default)(list.modifyDate);
     list.values.filter(({ creator }) => !creator).forEach((value) => (value.creator = list.creator));
+    console.log(list.values);
     Object.assign(list, req.body);
     list.modifyDate = new Date();
-    await list.validate();
+    const error = await list.validate();
+    console.log(error);
     await list.save();
     const updatedList = await (0, lists_1.getList)(new mongoose_1.Types.ObjectId(req.params.id));
     if (!updatedList)

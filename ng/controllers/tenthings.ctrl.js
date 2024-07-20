@@ -192,9 +192,7 @@ angular
           alert(`${$scope.newItem.value} is already in the list`);
         } else {
           $scope.newItem.creator = $scope.currentUser._id;
-          $scope.selectedList.values.unshift(JSON.parse(JSON.stringify($scope.newItem)));
-          $scope.selectedList.answers++;
-          $scope.upsertList($scope.selectedList);
+          $scope.upsertList($scope.selectedList, { values: [...$scope.selectedList.values, { ...$scope.newItem }] });
           $scope.newItem.value = "";
           $scope.newItem.blurb = "";
         }
@@ -203,14 +201,13 @@ angular
     };
 
     $scope.updateValues = () => {
-      $scope.selectedList.values = $scope.selectedList.values.filter((value) => value.value);
-      $scope.selectedList.answers = $scope.selectedList.values.length;
-      $scope.upsertList($scope.selectedList, { values: $scope.selectedList.values });
+      $scope.upsertList($scope.selectedList, { values: $scope.selectedList.values.filter((value) => value.value) });
     };
 
     $scope.deleteValue = ({ _id }) => {
-      $scope.selectedList.values = $scope.selectedList.values.filter((value) => value._id !== _id);
-      $scope.updateValues();
+      $scope.upsertList($scope.selectedList, {
+        values: $scope.selectedList.values.filter((value) => value._id !== _id),
+      });
     };
 
     $scope.upsertList = (list, updates) => {
@@ -233,6 +230,7 @@ angular
             _id: list._id,
           }).then(({ data }) => {
             $scope.saving = false;
+            $scope.selectedList = data;
             $scope.lists = $scope.lists.map((list) => {
               if (list._id === data._id) {
                 return data;
@@ -249,6 +247,8 @@ angular
             $scope.saving = false;
           }, console.error);
         }
+      } else {
+        Object.assign($scope.selectedList, updates);
       }
     };
 

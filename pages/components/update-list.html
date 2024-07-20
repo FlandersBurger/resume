@@ -359,7 +359,7 @@
       </td>
       <td
         class="icon-column"
-        ng-class="{ 'delete-column' : selectedList.values.length > 10 && selectedList._id !== 'new', 'disabled-column' : selectedList.values.length <= 10 || selectedList._id === 'new' }"
+        ng-class="{ 'delete-column' : selectedList.values.length > 10 && selectedList._id, 'disabled-column' : selectedList.values.length <= 10 || !selectedList._id}"
         ng-click="deleteValue(item)"
         uib-tooltip="{{ selectedList.values.length <= 10 ? 'Deleting is only possible if you have more than 10 values' : 'Delete' }}"
       >
