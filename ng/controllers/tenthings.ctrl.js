@@ -214,6 +214,15 @@ angular
     };
 
     $scope.upsertList = (list, updates) => {
+      if (updates) {
+        const changes = Object.keys(updates).reduce((changes, key) => {
+          if (updates[key] !== list[key]) {
+            changes[key] = updates[key];
+          }
+          return changes;
+        }, {});
+        if (Object.keys(changes).length === 0) return;
+      }
       $scope.saving = true;
       if (list.values.length >= 10 && list.name && list.categories.length > 0) {
         if (list._id !== "new") {
