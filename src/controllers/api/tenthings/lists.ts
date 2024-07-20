@@ -129,7 +129,7 @@ tenthingsListsRoute.post("/:id", async (req: Request, res: Response) => {
   if (!updatedList) return res.sendStatus(404);
   if (previousModifyDate < yesterday) {
     bot.notifyAdmins(
-      `<u>List Updated</u>\nUpdated by <i>${req.body.user.username}</i>\n${getListMessage(updatedList)}`,
+      `<u>List Updated</u>\nUpdated by <i>${res.locals.user?.username}</i>\n${getListMessage(updatedList)}`,
       curateListKeyboard(list),
     );
   }
@@ -161,7 +161,7 @@ tenthingsListsRoute.put("/", async (req: Request, res: Response) => {
     bot.notifyCosmicForce(`<u>List Created</u>\n${getListMessage(updatedList)}`, curateListKeyboard(updatedList));
   } else if (previousModifyDate < yesterday) {
     bot.notifyAdmins(
-      `<u>List Updated</u>\nUpdated by <i>${req.body.user.username}</i>\n${getListMessage(updatedList)}`,
+      `<u>List Updated</u>\nUpdated by <i>${res.locals.user?.username}</i>\n${getListMessage(updatedList)}`,
       curateListKeyboard(list),
     );
   }

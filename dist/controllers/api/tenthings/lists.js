@@ -134,7 +134,7 @@ exports.tenthingsListsRoute.post("/:id", async (req, res) => {
     if (!updatedList)
         return res.sendStatus(404);
     if (previousModifyDate < yesterday) {
-        telegram_1.default.notifyAdmins(`<u>List Updated</u>\nUpdated by <i>${req.body.user.username}</i>\n${(0, messages_1.getListMessage)(updatedList)}`, (0, keyboards_1.curateListKeyboard)(list));
+        telegram_1.default.notifyAdmins(`<u>List Updated</u>\nUpdated by <i>${res.locals.user?.username}</i>\n${(0, messages_1.getListMessage)(updatedList)}`, (0, keyboards_1.curateListKeyboard)(list));
     }
     return res.json((0, lists_1.formatList)(updatedList));
 });
@@ -160,7 +160,7 @@ exports.tenthingsListsRoute.put("/", async (req, res) => {
         telegram_1.default.notifyCosmicForce(`<u>List Created</u>\n${(0, messages_1.getListMessage)(updatedList)}`, (0, keyboards_1.curateListKeyboard)(updatedList));
     }
     else if (previousModifyDate < yesterday) {
-        telegram_1.default.notifyAdmins(`<u>List Updated</u>\nUpdated by <i>${req.body.user.username}</i>\n${(0, messages_1.getListMessage)(updatedList)}`, (0, keyboards_1.curateListKeyboard)(list));
+        telegram_1.default.notifyAdmins(`<u>List Updated</u>\nUpdated by <i>${res.locals.user?.username}</i>\n${(0, messages_1.getListMessage)(updatedList)}`, (0, keyboards_1.curateListKeyboard)(list));
     }
     return res.json((0, lists_1.formatList)(updatedList));
 });
