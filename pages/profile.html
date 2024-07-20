@@ -1,5 +1,6 @@
 <div class="container" id="profile-page">
   <form>
+    <h1>Profile</h1>
     <div class="form-group">
       <div class="input-group" ng-show="usernameToggle">
         <span class="input-group-btn">
@@ -45,24 +46,31 @@
   </div>
   <form ng-submit="updateUser()">
     <div class="form-group">
-      <tags-input
-        ng-model="userFlags"
-        ng-change="updateUser()"
-        display-property="name"
-        placeholder="Add a country"
-        replace-spaces-with-dashes="false"
-        template="tag-flag"
-      >
-        <auto-complete
-          source="loadCountries($query)"
-          min-length="0"
-          load-on-focus="true"
-          load-on-empty="true"
-          max-results-to-show="32"
-          template="autocomplete-flag"
+      <div class="input-group">
+        <span class="input-group-btn">
+          <button type="button" class="btn btn-default">
+            <i class="fa fa-globe-stand"></i>
+          </button>
+        </span>
+        <tags-input
+          ng-model="userFlags"
+          ng-change="updateUser()"
+          display-property="name"
+          placeholder="Add a country"
+          replace-spaces-with-dashes="false"
+          template="tag-flag"
         >
-        </auto-complete>
-      </tags-input>
+          <auto-complete
+            source="loadCountries($query)"
+            min-length="0"
+            load-on-focus="true"
+            load-on-empty="true"
+            max-results-to-show="32"
+            template="autocomplete-flag"
+          >
+          </auto-complete>
+        </tags-input>
+      </div>
     </div>
   </form>
 </div>
