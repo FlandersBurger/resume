@@ -123,6 +123,7 @@ tenthingsListsRoute.post("/:id", async (req: Request, res: Response) => {
   list.values.filter(({ creator }) => !creator).forEach((value) => (value.creator = list.creator));
 
   Object.assign(list, req.body);
+  list.modifyDate = new Date();
   await list.validate();
   await list.save();
   const updatedList = await getList(new Types.ObjectId(req.params.id));
