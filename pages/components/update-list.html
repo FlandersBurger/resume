@@ -125,6 +125,7 @@
     onfocus='this.style.height = this.scrollHeight + "px"'
     onblur='this.style.height = "";'
     ng-blur="upsertList(selectedList, {description: selectedList.description})"
+    maxlength="3500"
   />
 </div>
 <br />
@@ -292,6 +293,7 @@
           oninput='this.style.height = "";this.style.height = this.scrollHeight + "px"'
           onfocus='this.style.height = this.scrollHeight + "px"'
           onblur='this.style.height = "43px";'
+          maxlength="3500"
         />
       </td>
       <td colspan="2">
@@ -342,6 +344,7 @@
           oninput='this.style.height = "";this.style.height = this.scrollHeight + "px"'
           onfocus='this.style.height = this.scrollHeight + "px"'
           onblur='this.style.height = "43px";'
+          maxlength="3500"
         />
       </td>
       <td class="image-cell icon-column">
