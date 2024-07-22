@@ -242,7 +242,6 @@ angular
             _id: list._id,
           }).then(({ data }) => {
             $scope.saving = false;
-            $scope.selectedList = data;
             $scope.lists = $scope.lists.map((list) => {
               if (list._id === data._id) {
                 return data;
