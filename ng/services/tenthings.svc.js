@@ -31,7 +31,6 @@ angular.module("app").service("TenThingsSvc", function ($http) {
   };
 
   svc.updateList = function (list) {
-    console.log(list);
     return $http.post("/api/tenthings/lists/" + list._id, list);
   };
 
@@ -48,6 +47,14 @@ angular.module("app").service("TenThingsSvc", function ($http) {
 
   svc.deleteList = function (list) {
     return $http.delete("/api/tenthings/lists/" + list._id);
+  };
+
+  svc.getListCategoryStats = function () {
+    return $http.get("/api/tenthings/stats/categories");
+  };
+
+  svc.getListLanguageStats = function () {
+    return $http.get("/api/tenthings/stats/languages");
   };
 
   svc.getBlurbs = function (list, type) {

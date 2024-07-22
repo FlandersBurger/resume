@@ -43,6 +43,14 @@
             ></i>
           </th>
           <th class="hidden-sm visible-md visible-lg">Categories</th>
+          <th ng-click="orderBy('creator.username')" class="hidden-sm visible-md visible-lg">
+            Creator
+            <i
+              ng-if="order.field === 'creator.username'"
+              class="fas"
+              ng-class="{'fa-sort-alpha-down-alt' : order.direction, 'fa-sort-alpha-down': !order.direction}"
+            ></i>
+          </th>
           <th ng-click="orderBy('date')" class="hidden-xs visible-sm visible-md visible-lg">
             Created
             <i
@@ -84,8 +92,16 @@
               ng-class="{'fa-sort-numeric-down-alt' : order.direction, 'fa-sort-numeric-down': !order.direction}"
             ></i>
           </th>
-          <th ng-click="orderBy('playRatio')" class="hidden-sm visible-md visible-lg">
+          <th ng-click="orderBy('plays')" class="hidden-sm visible-md visible-lg">
             <i class="fas fa-play"></i>
+            <i
+              ng-if="order.field === 'plays'"
+              class="fas"
+              ng-class="{'fa-sort-numeric-down-alt' : order.direction, 'fa-sort-numeric-down': !order.direction}"
+            ></i>
+          </th>
+          <th ng-click="orderBy('playRatio')" class="hidden-sm visible-md visible-lg">
+            <i class="fas fa-percentage"></i>
             <i
               ng-if="order.field === 'playRatio'"
               class="fas"
@@ -102,13 +118,15 @@
         >
           <td class="list-name">{{list.name}}</td>
           <td class="hidden-sm visible-md visible-lg">{{list.categories.join(", ")}}</td>
+          <td class="hidden-sm visible-md visible-lg">{{list.creator.username}}</td>
           <td class="hidden-xs visible-sm visible-md visible-lg">{{formatDate(list.date)}}</td>
           <td class="hidden-sm visible-md visible-lg">{{formatDate(list.modifyDate)}}</td>
           <td>{{list.answers}}</td>
           <td>{{list.language}}</td>
           <td class="hidden-sm visible-md visible-lg">{{list.upvotes}}</td>
           <td class="hidden-sm visible-md visible-lg">{{list.downvotes}}</td>
-          <td class="hidden-sm visible-md visible-lg">{{list.playRatio.makePercentage()}}</td>
+          <td class="hidden-sm visible-md visible-lg">{{list.plays}}</td>
+          <td class="hidden-sm visible-md visible-lg">{{list.playRatio.makePercentage(0)}}</td>
         </tr>
       </tbody>
     </table>

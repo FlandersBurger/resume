@@ -15,6 +15,7 @@
               ng-class="{'btn-default': !languageFilter[language.code],'btn-primary': languageFilter[language.code]}"
               href="#"
               ng-click="setLanguageFilter(language)"
+              uib-tooltip="{{languageStats[language.code] || 0}} lists"
             >
               {{language.code}} - {{language.native}}
             </a>
@@ -29,6 +30,7 @@
               ng-class="{'btn-default': !categoryFilter[category],'btn-primary': categoryFilter[category]}"
               href="#"
               ng-click="setCategoryFilter(category)"
+              uib-tooltip="{{categoryStats[category] || 0}} lists"
             >
               {{category}}
             </a>

@@ -19,6 +19,7 @@ import { tenthingsLanguagesRoute } from "@api/tenthings/languages";
 import { tenthingsListsRoute } from "@api/tenthings/lists";
 import { tenthingsPauseRoute } from "@api/tenthings/pause";
 import { tenthingsPlayersRoute } from "@api/tenthings/players";
+import { tenthingsStatsRoute } from "@api/tenthings/stats";
 import { usersRoute } from "@api/users";
 import { tenthingsBotRoute } from "@tenthings/main";
 import { redisConnect, subscribe } from "@root/queue";
@@ -51,6 +52,7 @@ app.use("/api/tenthings/languages", tenthingsLanguagesRoute);
 app.use("/api/tenthings/lists", tenthingsListsRoute);
 app.use("/api/tenthings/pause", tenthingsPauseRoute);
 app.use("/api/tenthings/players", tenthingsPlayersRoute);
+app.use("/api/tenthings/stats", tenthingsStatsRoute);
 /*
 app.use(logger('dev', {
   skip: (req, res) => {

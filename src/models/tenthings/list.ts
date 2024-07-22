@@ -33,6 +33,7 @@ export interface IList {
   values: IListValue[];
   date: Date;
   modifyDate: Date;
+  lastPlayDate: Date;
   plays: number;
   hints: number;
   skips: number;
@@ -69,6 +70,7 @@ const listSchema = new Schema<IList>(
     ],
     date: { type: Date, required: true, default: Date.now },
     modifyDate: { type: Date, required: true, default: Date.now },
+    lastPlayDate: { type: Date, required: false },
     plays: { type: Number, required: true, default: 0 },
     hints: { type: Number, required: true, default: 0 },
     skips: { type: Number, required: true, default: 0 },

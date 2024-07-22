@@ -46,6 +46,8 @@ export const checkRound = (game: IGame) => {
         let message = getListStats(game.settings.language, foundList, undefined);
         message += await getDailyScores(game, 5);
         bot.queueMessage(game.chat_id, message);
+        foundList.lastPlayDate = moment().toDate();
+        foundList.save();
       }
       setTimeout(() => {
         rateList(game);

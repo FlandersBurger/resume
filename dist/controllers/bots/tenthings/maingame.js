@@ -43,6 +43,8 @@ const checkRound = (game) => {
                 let message = (0, messages_1.getListStats)(game.settings.language, foundList, undefined);
                 message += await (0, stats_1.getDailyScores)(game, 5);
                 telegram_1.default.queueMessage(game.chat_id, message);
+                foundList.lastPlayDate = (0, moment_1.default)().toDate();
+                foundList.save();
             }
             setTimeout(() => {
                 (0, lists_1.rateList)(game);

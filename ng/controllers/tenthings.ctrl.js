@@ -88,6 +88,18 @@ angular
         $scope.categories = response.data;
         resetCategoryFilter();
       });
+      TenThingsSvc.getListLanguageStats().then(({ data }) => {
+        $scope.languageStats = data.reduce((result, { _id, count }) => {
+          result[_id] = count;
+          return result;
+        }, {});
+      });
+      TenThingsSvc.getListCategoryStats().then(({ data }) => {
+        $scope.categoryStats = data.reduce((result, { _id, count }) => {
+          result[_id] = count;
+          return result;
+        }, {});
+      });
       if ($location.search().list) {
         $scope.setSelectedList({ _id: $location.search().list });
       }
