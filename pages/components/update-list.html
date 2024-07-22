@@ -108,7 +108,8 @@
     placeholder="Name"
     ng-disabled="!selectedList || (!currentUser.admin && selectedList.creator._id !== currentUser._id && selectedList._id)"
     aria-describedby="name-addon"
-    ng-blur="upsertList(selectedList, {name: selectedList.name})"
+    ng-model-options="{updateOn: 'blur'}"
+    ng-change="upsertList(selectedList, {name: selectedList.name})"
   />
 </div>
 <div class="input-group">
@@ -124,7 +125,8 @@
     oninput='this.style.height = "";this.style.height = this.scrollHeight + "px"'
     onfocus='this.style.height = this.scrollHeight + "px"'
     onblur='this.style.height = "";'
-    ng-blur="upsertList(selectedList, {description: selectedList.description})"
+    ng-model-options="{updateOn: 'blur'}"
+    ng-change="upsertList(selectedList, {description: selectedList.description})"
     maxlength="3500"
   />
 </div>
@@ -329,7 +331,8 @@
           ng-class="{'bg-info': selectedList.creator._id !== currentUser._id && item.creator !== currentUser._id, 'bg-success': selectedList.creator._id !== currentUser._id && item.creator === currentUser._id, }"
           placeholder="Answer {{selectedList.values.length - $index}}"
           ng-disabled="!loggedIn || !currentUser.admin && selectedList.creator._id !== currentUser._id && item.creator !== currentUser._id"
-          ng-blur="updateValues()"
+          ng-model-options="{updateOn: 'blur'}"
+          ng-change="updateValues()"
         />
       </td>
       <td class="input-cell col-xs-6">
@@ -339,7 +342,8 @@
           ng-class="{'bg-info': selectedList.creator._id !== currentUser._id && item.creator !== currentUser._id, 'bg-success': selectedList.creator._id !== currentUser._id && item.creator === currentUser._id, }"
           placeholder="Display after guessing {{item.value}} (Can be an image URL)"
           ng-disabled="!loggedIn || !currentUser.admin && selectedList.creator._id !== currentUser._id && item.creator !== currentUser._id"
-          ng-blur="updateValues()"
+          ng-model-options="{updateOn: 'blur'}"
+          ng-change="updateValues()"
           style="resize: vertical"
           oninput='this.style.height = "";this.style.height = this.scrollHeight + "px"'
           onfocus='this.style.height = this.scrollHeight + "px"'
