@@ -118,7 +118,7 @@ exports.tenthingsListsRoute.post("/:id/blurbs/:type", async (req, res) => {
         res.sendStatus(404);
     }
 });
-exports.tenthingsListsRoute.post("/:id", async (req, res) => {
+exports.tenthingsListsRoute.put("/:id", async (req, res) => {
     if (!res.locals.isAuthorized)
         return res.sendStatus(401);
     const yesterday = (0, moment_1.default)().subtract(1, "days");
@@ -139,7 +139,7 @@ exports.tenthingsListsRoute.post("/:id", async (req, res) => {
     }
     return res.json((0, lists_1.formatList)(updatedList));
 });
-exports.tenthingsListsRoute.put("/", async (req, res) => {
+exports.tenthingsListsRoute.post("/", async (req, res) => {
     if (!res.locals.isAuthorized)
         return res.sendStatus(401);
     const yesterday = (0, moment_1.default)().subtract(1, "days");
@@ -182,6 +182,47 @@ exports.tenthingsListsRoute.delete("/:id", async (req, res) => {
             res.sendStatus(200);
         }
     }
+});
+exports.tenthingsListsRoute.post("/:id/values", async (req, res) => {
+    if (!res.locals.isAuthorized)
+        return res.sendStatus(401);
+    const list = await index_1.List.findOne({ _id: req.params.id });
+    if (!list)
+        return res.sendStatus(404);
+    if (list.values.some(({ value }) => value === req.body.value))
+        return res.sendStatus(400);
+    list.values.push({ ...req.body, creator: res.locals.user._id });
+    await list.save();
+    return res.json(list.values[list.values.length - 1]);
+});
+exports.tenthingsListsRoute.put("/:id/values/:valueId", async (req, res) => {
+    if (!res.locals.isAuthorized)
+        return res.sendStatus(401);
+    const list = await index_1.List.findOne({ _id: req.params.id });
+    if (!list)
+        return res.sendStatus(404);
+    const value = list.values.find(({ _id }) => _id.toString() === req.params.valueId);
+    if (!value)
+        return res.sendStatus(404);
+    if (value.creator !== res.locals.user?._id && !res.locals.isAdmin)
+        return res.sendStatus(401);
+    Object.assign(value, req.body);
+    await list.save();
+    return res.sendStatus(200);
+});
+exports.tenthingsListsRoute.delete("/:id/values/:valueId", async (req, res) => {
+    if (!res.locals.isAuthorized)
+        return res.sendStatus(401);
+    const list = await index_1.List.findOne({ _id: req.params.id });
+    if (!list)
+        return res.sendStatus(404);
+    const value = list.values.find(({ _id }) => _id.toString() === req.params.valueId);
+    if (!value)
+        return res.sendStatus(404);
+    if (value.creator !== res.locals.user?._id && !res.locals.isAdmin)
+        return res.sendStatus(401);
+    await index_1.List.findByIdAndUpdate(req.params.id, { $pull: { values: { _id: req.params.valueId } } }).exec();
+    return res.sendStatus(200);
 });
 exports.tenthingsListsRoute.get("/names", (_, res) => {
     if (!res.locals.isAuthorized)

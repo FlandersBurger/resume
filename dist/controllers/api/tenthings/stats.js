@@ -8,7 +8,7 @@ exports.tenthingsStatsRoute.get("/total", async (req, res) => {
     const total = await models_1.List.countDocuments({});
     res.json(total);
 });
-exports.tenthingsStatsRoute.post("/languages", async (_, res) => {
+exports.tenthingsStatsRoute.get("/languages", async (_, res) => {
     const languages = await models_1.List.aggregate([
         { $project: { language: 1 } },
         { $group: { _id: "$language", count: { $sum: 1 } } },

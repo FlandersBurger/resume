@@ -5,7 +5,6 @@ import { IUser } from "@models/user";
 import { AllowedLanguage } from "@tenthings/languages";
 
 export interface IVote {
-  _id: Types.ObjectId;
   voter: number;
   vote: number;
   date: Date;
