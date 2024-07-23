@@ -79,7 +79,7 @@ angular
       $scope.categoryFilter = {};
     };
 
-    $scope.$on("login", (_) => {
+    const getData = () => {
       TenThingsSvc.getLanguages().then((response) => {
         $scope.languages = response.data;
         resetLanguageFilter();
@@ -105,7 +105,7 @@ angular
       }
       $scope.search = $location.search().search || "";
       $scope.getLists();
-    });
+    };
 
     $scope.valueOrder = {
       field: "value",
@@ -326,4 +326,7 @@ angular
           $scope.gettingBlurbs = false;
         });
     };
+
+    $scope.$on("login", () => getData());
+    if ($scope.currentUser?._id) getData();
   });
