@@ -4,7 +4,7 @@
 </div>
 <h5 ng-show="selectedList.creator">
   <p>
-    <b>Created by</b> {{list._id ? selectedList.creator.username : currentUser.username }} /
+    <b>Created by</b> {{selectedList._id ? selectedList.creator.username : currentUser.username }} /
     <b>Created on</b> {{formatDate(selectedList.date)}}
     <span ng-show="selectedList.modifyDate && selectedList.date !== selectedList.modifyDate">
       / <b>Last modified</b> on {{formatDate(selectedList.modifyDate)}}
@@ -302,7 +302,7 @@
         <button
           class="btn"
           ng-class="{'btn-danger': hasDuplicate(), 'btn-default': !hasDuplicate()}"
-          ng-click="addValue()"
+          ng-click="createValue()"
           ng-disabled="!selectedList || !selectedList.name || !newItem.value || hasDuplicate()"
         >
           {{hasDuplicate() ? 'Dupe' : 'Add'}}
@@ -332,7 +332,7 @@
           placeholder="Answer {{selectedList.values.length - $index}}"
           ng-disabled="!loggedIn || !currentUser.admin && selectedList.creator._id !== currentUser._id && item.creator !== currentUser._id"
           ng-model-options="{updateOn: 'blur'}"
-          ng-change="updateValues()"
+          ng-change="updateValue(item)"
         />
       </td>
       <td class="input-cell col-xs-6">
@@ -343,7 +343,7 @@
           placeholder="Display after guessing {{item.value}} (Can be an image URL)"
           ng-disabled="!loggedIn || !currentUser.admin && selectedList.creator._id !== currentUser._id && item.creator !== currentUser._id"
           ng-model-options="{updateOn: 'blur'}"
-          ng-change="updateValues()"
+          ng-change="updateValue(item)"
           style="resize: vertical"
           oninput='this.style.height = "";this.style.height = this.scrollHeight + "px"'
           onfocus='this.style.height = this.scrollHeight + "px"'
@@ -352,13 +352,15 @@
         />
       </td>
       <td class="image-cell icon-column">
-        <img ng-src="{{item.blurb}}" ng-if="item.blurb.substring(0, 4) === 'http' && item.blurb.indexOf('youtu') < 0" />
-        <a
-          href="{{item.blurb}}"
-          target="_blank"
-          ng-if="item.blurb.substring(0, 4) === 'http' && item.blurb.indexOf('youtu') >= 0"
-        >
+        <img ng-src="{{item.blurb}}" ng-if="item.blurbType === 'image'" />
+        <a href="{{item.blurb}}" target="_blank" ng-if="item.blurbType === 'youtube'">
           <i class="fab fa-youtube"></i>
+        </a>
+        <a href="{{item.blurb}}" target="_blank" ng-if="item.blurbType === 'spotify'">
+          <i class="fab fa-spotify"></i>
+        </a>
+        <a href="{{item.blurb}}" target="_blank" ng-if="item.blurbType === 'link'">
+          <i class="fas fa-link"></i>
         </a>
       </td>
       <td

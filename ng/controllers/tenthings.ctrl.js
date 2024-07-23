@@ -18,14 +18,14 @@ angular
         case 9:
           if ($("#new-blurb").is(":focus")) {
             setTimeout(() => {
-              $scope.addValue();
+              $scope.createValue();
             }, 100);
           }
           break;
         // Enter
         case 13:
           if ($("#new-blurb").is(":focus")) {
-            $scope.addValue();
+            $scope.createValue();
           } else if ($("#new-value").is(":focus")) {
             $("#new-blurb").focus();
           }
@@ -198,40 +198,33 @@ angular
       return data.result;
     };
 
-    $scope.addValue = () => {
-      if ($scope.newItem.value) {
-        if ($scope.hasDuplicate()) {
-          alert(`${$scope.newItem.value} is already in the list`);
-        } else {
-          $scope.newItem.creator = $scope.currentUser._id;
-          $scope.upsertList($scope.selectedList, { values: [...$scope.selectedList.values, { ...$scope.newItem }] });
+    $scope.updateValue = (item) => {
+      if (!item.value) {
+        TenThingsSvc.deleteListValue($scope.selectedList, item);
+      } else {
+        TenThingsSvc.updateListValue($scope.selectedList, item);
+      }
+    };
+
+    $scope.createValue = () => {
+      if ($scope.hasDuplicate()) {
+        alert(`${$scope.newItem.value} is already in the list`);
+      } else {
+        TenThingsSvc.createListValue($scope.selectedList, $scope.newItem).then(() => {
+          $scope.selectedList.values.push({ ...$scope.newItem });
           $scope.newItem.value = "";
           $scope.newItem.blurb = "";
-        }
+        });
       }
-      $("#new-value").focus();
     };
 
-    $scope.updateValues = () => {
-      $scope.upsertList($scope.selectedList, { values: $scope.selectedList.values.filter((value) => value.value) });
-    };
-
-    $scope.deleteValue = ({ _id }) => {
-      $scope.upsertList($scope.selectedList, {
-        values: $scope.selectedList.values.filter((value) => value._id !== _id),
+    $scope.deleteValue = (item) => {
+      TenThingsSvc.deleteListValue($scope.selectedList, item).then(() => {
+        $scope.selectedList.values = $scope.selectedList.values.filter((value) => value._id !== item._id);
       });
     };
 
     $scope.upsertList = (list, updates) => {
-      if (updates) {
-        const changes = Object.keys(updates).reduce((changes, key) => {
-          if (updates[key] !== list[key]) {
-            changes[key] = updates[key];
-          }
-          return changes;
-        }, {});
-        if (Object.keys(changes).length === 0) return;
-      }
       $scope.saving = true;
       if (list.values.length >= 10 && list.name && list.categories.length > 0) {
         if (list._id !== "new") {
@@ -242,15 +235,12 @@ angular
             _id: list._id,
           }).then(({ data }) => {
             $scope.saving = false;
-            $scope.lists = $scope.lists.map((list) => {
-              if (list._id === data._id) {
-                return data;
-              }
-              return list;
-            });
+            const listIndex = $scope.lists.findIndex((list) => list._id === data._id);
+            $scope.lists[listIndex] = data;
+            $scope.selectedList = data;
           }, console.error);
         } else {
-          TenThingsSvc.saveList($scope.currentUser, $scope.selectedList).then(({ data }) => {
+          TenThingsSvc.createList($scope.currentUser, $scope.selectedList).then(({ data }) => {
             if ($location.search().list === "new") {
               $location.search("list", data._id);
             }

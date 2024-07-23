@@ -31,22 +31,34 @@ angular.module("app").service("TenThingsSvc", function ($http) {
   };
 
   svc.updateList = function (list) {
-    return $http.post("/api/tenthings/lists/" + list._id, list);
+    return $http.put("/api/tenthings/lists/" + list._id, list);
   };
 
-  svc.saveList = function (user, list) {
-    return $http.put("/api/tenthings/lists", {
+  svc.createList = function (user, list) {
+    return $http.post("/api/tenthings/lists", {
       user: user,
       list: list,
     });
   };
 
-  svc.reportList = function (user, list) {
-    $http.get("/api/tenthings/lists/" + list._id + "/report/" + user._id);
-  };
-
   svc.deleteList = function (list) {
     return $http.delete("/api/tenthings/lists/" + list._id);
+  };
+
+  svc.updateListValue = function (list, value) {
+    return $http.put("/api/tenthings/lists/" + list._id + "/values/" + value._id, value);
+  };
+
+  svc.createListValue = function (list, value) {
+    return $http.post("/api/tenthings/lists/" + list._id + "/values", value);
+  };
+
+  svc.deleteListValue = function (list, value) {
+    return $http.delete("/api/tenthings/lists/" + list._id + "/values/" + value._id);
+  };
+
+  svc.reportList = function (user, list) {
+    $http.get("/api/tenthings/lists/" + list._id + "/report/" + user._id);
   };
 
   svc.getListCategoryStats = function () {

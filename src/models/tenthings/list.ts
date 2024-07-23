@@ -5,6 +5,7 @@ import { IUser } from "@models/user";
 import { AllowedLanguage } from "@tenthings/languages";
 
 export interface IVote {
+  _id: Types.ObjectId;
   voter: number;
   vote: number;
   date: Date;
@@ -12,6 +13,7 @@ export interface IVote {
 }
 
 export interface IListValue {
+  _id: Types.ObjectId;
   value: string;
   blurb: string;
   creator: Types.ObjectId | IUser;
@@ -48,6 +50,26 @@ export interface IList {
 
 let List: { [key: string]: Model<IList> } = {};
 
+const listValueSchema = new Schema<IListValue>({
+  value: { type: String, default: "", required: true },
+  blurb: { type: String, default: "", required: false },
+  creator: { type: Schema.Types.ObjectId, ref: "User", required: false },
+  date: { type: String, default: "", required: false },
+});
+
+listValueSchema.virtual("blurbType").get(function (this: IListValue) {
+  if (
+    this.blurb.substring(0, 4) === "http" &&
+    this.blurb.indexOf("youtu") < 0 &&
+    this.blurb.match(/\.(jpeg|jpg|gif|png)$/) !== null
+  )
+    return "image";
+  else if (this.blurb.substring(0, 4) === "http" && this.blurb.indexOf("youtu") >= 0) return "youtube";
+  else if (this.blurb.substring(0, 4) === "http" && this.blurb.indexOf("spotify") >= 0) return "spotify";
+  else if (this.blurb.substring(0, 4) === "http") return "link";
+  else return "text";
+});
+
 const listSchema = new Schema<IList>(
   {
     name: String,
@@ -60,14 +82,7 @@ const listSchema = new Schema<IList>(
     difficulty: { type: Number, required: false },
     isDynamic: { type: Boolean, required: true, default: true },
     enabled: { type: Boolean, required: true, default: true },
-    values: [
-      {
-        value: { type: String, default: "", required: true },
-        blurb: { type: String, default: "", required: false },
-        creator: { type: Schema.Types.ObjectId, ref: "User", required: false },
-        date: { type: Date, required: false, default: Date.now },
-      },
-    ],
+    values: [listValueSchema],
     date: { type: Date, required: true, default: Date.now },
     modifyDate: { type: Date, required: true, default: Date.now },
     lastPlayDate: { type: Date, required: false },
