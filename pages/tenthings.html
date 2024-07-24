@@ -7,10 +7,21 @@
   </div>
   <div ng-show="loggedIn">
     <div class="btn-toolbar">
-      <div class="btn btn-default" ng-click="addList()" ng-disabled="selectedList && !selectedList._id">
+      <div
+        class="btn btn-default btn-block visible-xs hidden-sm hidden-md hidden-lg"
+        ng-click="addList()"
+        ng-disabled="selectedList && !selectedList._id"
+      >
         <i class="fas fa-plus" aria-hidden="true"></i> New list
       </div>
-      <div class="btn-group" style="display: flex">
+      <div class="btn-group btn-block" style="display: flex">
+        <div
+          class="btn btn-default hidden-xs visible-sm visible-md visible-lg"
+          ng-click="addList()"
+          ng-disabled="selectedList && !selectedList._id"
+        >
+          <i class="fas fa-plus" aria-hidden="true"></i> New list
+        </div>
         <div class="input-group-prepend">
           <div class="btn btn-default" data-toggle="modal" data-target="#modal-list-filters">
             <i class="fas fa-filter"></i>

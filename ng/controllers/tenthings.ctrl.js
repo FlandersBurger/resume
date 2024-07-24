@@ -80,6 +80,7 @@ angular
     };
 
     const getData = () => {
+      if (!$scope.currentUser) return;
       TenThingsSvc.getLanguages().then((response) => {
         $scope.languages = response.data;
         resetLanguageFilter();
