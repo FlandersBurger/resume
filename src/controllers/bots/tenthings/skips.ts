@@ -46,7 +46,7 @@ export const processSkip = (game: IGame, skipper: IPlayer) => {
         i18n(game.settings.language, "sentences.skipConfirm", {
           list: game.list.name,
           skipDelay: SKIP_DELAY,
-        })
+        }),
       );
       skipCache[game.chat_id] = {
         timer: SKIP_DELAY,
@@ -69,7 +69,7 @@ const skipList = (game: IGame, skipper: IPlayer) => {
     {
       $set: { hintStreak: 0 },
       $inc: { skips: 1 },
-    }
+    },
   ).exec(async (err) => {
     if (err) return bot.notifyAdmin(`Skip List Error:\n${err}`);
     let message = `${i18n(game.settings.language, "sentences.skippedList", {
@@ -89,7 +89,7 @@ const skipList = (game: IGame, skipper: IPlayer) => {
     bot.sendKeyboard(
       game.chat_id,
       `Experimental feature to permanently ban list from game\nDo you want to ban "${game.list.name}"`,
-      banListKeyboard(game.settings.language, game.list)
+      banListKeyboard(game.settings.language, game.list),
     );
     delete skipCache[game.chat_id];
     let foundList = await List.findOne({
@@ -133,9 +133,9 @@ export const checkSkipper = async (game: IGame, msg: IMessage, player: IPlayer) 
           bot.queueMessage(
             msg.chatId,
             i18n(game.settings.language, "sentences.skipShortBan", {
-              name: player.first_name,
+              name: angleBrackets(player.first_name),
               delay: skippers[player.id].delay,
-            })
+            }),
           );
           return false;
         } else if (skippers[player.id].delay < 60) {
@@ -144,15 +144,15 @@ export const checkSkipper = async (game: IGame, msg: IMessage, player: IPlayer) 
           bot.queueMessage(
             msg.chatId,
             i18n(game.settings.language, "sentences.skipBanThreat", {
-              name: player.first_name,
+              name: angleBrackets(player.first_name),
               delay: skippers[player.id].delay,
-            })
+            }),
           );
           return false;
         } else if (skippers[player.id].delay != 3600) {
           skippers[player.id].delay = 3600;
           i18n(game.settings.language, "sentences.skipLongBan", {
-            name: player.first_name,
+            name: angleBrackets(player.first_name),
           });
           return false;
         }
@@ -177,16 +177,16 @@ export const vetoSkip = async (game: IGame, player: HydratedDocument<IPlayer>) =
     bot.queueMessage(
       game.chat_id,
       i18n(game.settings.language, "sentences.skipVeto", {
-        name: player.first_name,
+        name: angleBrackets(player.first_name),
         vetoDelay: VETO_DELAY,
-      })
+      }),
     );
   } else {
     bot.queueMessage(
       game.chat_id,
       i18n(game.settings.language, "sentences.skipNotFound", {
-        name: player.first_name,
-      })
+        name: angleBrackets(player.first_name),
+      }),
     );
   }
 };
@@ -197,8 +197,8 @@ export const abortSkip = (game: IGame, player: IPlayer) => {
   bot.queueMessage(
     game.chat_id,
     i18n(game.settings.language, "sentences.skipAbort", {
-      name: player.first_name,
+      name: angleBrackets(player.first_name),
       vetoDelay: VETO_DELAY,
-    })
+    }),
   );
 };
