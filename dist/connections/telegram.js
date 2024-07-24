@@ -68,7 +68,7 @@ class TelegramBot {
             }
             else {
                 bot.notifyAdmin(`Error from "${source}" in channel ${channel}:\n${(0, string_helpers_1.angleBrackets)(error.message ?? error.code)}`);
-                console.error(error);
+                console.error(error.message, error.code);
             }
         };
         this.setWebhook = async (api) => {

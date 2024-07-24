@@ -99,7 +99,7 @@ class TelegramBot {
       }
     } else {
       bot.notifyAdmin(`Error from "${source}" in channel ${channel}:\n${angleBrackets(error.message ?? error.code)}`);
-      console.error(error);
+      console.error(error.message, error.code);
     }
   };
 
