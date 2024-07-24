@@ -61,13 +61,19 @@ class TelegramBot {
     "Bad Request: chat not found",
     "Bad Request: TOPIC_CLOSED",
     "Bad Request: CHAT_WRITE_FORBIDDEN",
-    "Bad Request: group chat was upgraded to a supergroup chat",
     "Forbidden: bot is not a member of the supergroup chat",
     "Forbidden: bot was kicked from the supergroup chat",
     "Forbidden: bot was kicked from the group chat",
     "Forbidden: bot was blocked by the user",
     "Forbidden: the group chat was deleted",
     "Forbidden: user is deactivated",
+  ];
+  private ignoreReasons: string[] = [
+    "Bad Request: group chat was upgraded to a supergroup chat",
+    "Bad Request: not enough rights to send animations to the chat",
+    "Bad Request: message to delete not found",
+    "Bad Request: query is too old and response timeout expired or query ID is invalid",
+    "Bad Request: message is not modified: specified new message content and reply markup are exactly the same as a specified new message content and reply markup are exactly the same as a current content and reply markup of the message",
   ];
 
   constructor(token: string) {
@@ -79,6 +85,22 @@ class TelegramBot {
     const { data } = await axios.get(`${this.baseUrl}/getMe`);
     this.telegramBotUser = data.result;
     this.introduceYourself();
+  };
+
+  private errorHandler = (channel: number, source: string, error: any) => {
+    const reason = error?.description;
+    if (reason) {
+      if (this.muteReasons.includes(reason)) {
+        botMuted(channel);
+      } else if (!this.ignoreReasons.includes(reason)) {
+        bot.notifyAdmin(`Error from "${source}" in channel ${channel}:\n${angleBrackets(reason)}`);
+      } else {
+        console.error(reason);
+      }
+    } else {
+      bot.notifyAdmin(`Error from "${source}" in channel ${channel}:\n${angleBrackets(error.message ?? error.code)}`);
+      console.error(error);
+    }
   };
 
   private setWebhook = async (api: string): Promise<any> => {
@@ -120,9 +142,6 @@ class TelegramBot {
     if (topic) url += `&message_thread_id=${topic}`;
     axios.get(url).catch((error) => {
       if (error.response) {
-        if (this.muteReasons.includes(error.response.data.description)) {
-          return botMuted(channel, error.response.data.description);
-        }
         if (error.response.data.description.includes("too long")) {
           this.notifyAdmin(`Too long: ${message.substring(0, 500)}...`);
           setTimeout(() => this.sendMessage(channel, message.substring(0, 4000), topic, true), 200);
@@ -131,9 +150,7 @@ class TelegramBot {
         if (error.response.data.description.includes("can't parse")) {
           return this.notifyAdmin(`Send Message to ${channel} parse Fail: ${message}`);
         }
-        if (channel !== parseInt(process.env.MASTER_CHAT || "")) {
-          this.notifyAdmin(`Send Message to ${channel} Fail: ${error.response.data.description}`);
-        }
+        this.errorHandler(channel, "Send message", error);
       } else {
         if (error.code === "ETIMEDOUT") {
           if (!retry) {
@@ -147,8 +164,7 @@ class TelegramBot {
         }
       }
       if (channel !== parseInt(process.env.MASTER_CHAT || "")) {
-        this.notifyAdmin(`Send Message to ${channel} Fail: ${error.message ?? error.code}`);
-        console.error(`${error.message} -> ${channel}: ${message}`);
+        this.errorHandler(channel, "Send message", error);
       }
     });
   };
@@ -158,8 +174,7 @@ class TelegramBot {
     try {
       await axios.get(url);
     } catch (error: AxiosError | any) {
-      this.notifyAdmin(`Delete Message in ${channel} Fail`);
-      console.error(error?.response.data);
+      this.errorHandler(channel, "Delete message", error);
     }
   };
 
@@ -179,8 +194,7 @@ class TelegramBot {
     try {
       await axios.get(url);
     } catch (error: AxiosError | any) {
-      bot.notifyAdmin(`Kick user ${userId} Fail in ${channel}`);
-      console.error(error.response.data);
+      this.errorHandler(channel, "Kick user", error);
     }
   };
 
@@ -220,8 +234,7 @@ class TelegramBot {
       const { data } = await axios.get(encodeURI(url));
       return data.result;
     } catch (error: AxiosError | any) {
-      this.notifyAdmin(`Get Invite Link to ${channel} Fail`);
-      console.error(error.response.data);
+      this.errorHandler(channel, "Export chat invite link", error);
     }
   };
 
@@ -238,8 +251,7 @@ class TelegramBot {
       if (error.response.data.error_code === 400) {
         chatNotFound(channel);
       } else {
-        this.notifyAdmin(`Get Chat ${channel} Fail`);
-        console.error(error.response.data);
+        this.errorHandler(channel, "Get chat", error);
       }
       return `Chat not found: ${channel} - ${error.response.data.error_code}`;
     }
@@ -257,8 +269,7 @@ class TelegramBot {
         !["restricted", "left", "kicked"].includes(response.data.result.status)
       );
     } catch (error: AxiosError | any) {
-      this.notifyAdmin(`Get Chat Member ${userId} of ${channel} Fail`);
-      console.error(error.response.data);
+      this.errorHandler(channel, "Get chat member", error);
     }
   };
 
@@ -275,10 +286,10 @@ class TelegramBot {
         ["creator", "administrator"].includes(response.data.result.status)
       );
     } catch (error: AxiosError | any) {
-      if (error.response.data.description !== "Bad Request: user not found") {
-        this.notifyAdmin(`Check Admin in ${channel} Fail`);
-        console.error(error.response.data);
+      if (error.response.data.description === "Bad Request: CHAT_ADMIN_REQUIRED") {
+        return true;
       }
+      this.errorHandler(channel, "Check admin", error);
     }
   };
 
@@ -290,19 +301,7 @@ class TelegramBot {
     try {
       await axios.get(encodeURI(url));
     } catch (error: AxiosError | any) {
-      if (error.response) {
-        if (this.muteReasons.includes(error.response.data.description)) {
-          return botMuted(channel);
-        }
-        if (
-          error.response.data.description ===
-          "Bad Request: message is not modified: specified new message content and reply markup are exactly the same as a specified new message content and reply markup are exactly the same as a current content and reply markup of the message"
-        ) {
-          return;
-        }
-      }
-      this.notifyAdmin(`Send Keyboard to ${channel} Fail`);
-      console.error(error.response.data);
+      this.errorHandler(channel, "Send keyboard", error);
     }
   };
   public sendPhoto = async (channel: number, photo: string) => {
@@ -310,7 +309,7 @@ class TelegramBot {
     try {
       await axios.get(encodeURI(url));
     } catch (error: AxiosError | any) {
-      console.error(error.response.data);
+      this.errorHandler(channel, "Send photo", error);
     }
   };
   public sendAnimation = async (channel: number, animation: string) => {
@@ -318,7 +317,7 @@ class TelegramBot {
     try {
       await axios.get(encodeURI(url));
     } catch (error: AxiosError | any) {
-      console.error(error.response.data);
+      this.errorHandler(channel, "Send animation", error);
     }
   };
   public editKeyboard = async (channel: number, message_id: string, keyboard: IKeyboard) => {
@@ -327,14 +326,7 @@ class TelegramBot {
     try {
       await axios.get(encodeURI(url));
     } catch (error: AxiosError | any) {
-      if (
-        error.response.data.description !==
-        "Bad Request: message is not modified: specified new message content and reply markup are exactly the same as a current content and reply markup are exactly the same as a current content and reply markup of the message"
-      ) {
-        // TODO: Check this out
-        console.error(`Edit Keyboard in ${channel} Fail`);
-      }
-      console.error(error.response.data);
+      this.errorHandler(channel, "Edit keyboard", error);
     }
   };
   public answerCallback = async (callback_query_id: string, text: string) => {
@@ -342,13 +334,7 @@ class TelegramBot {
     try {
       await axios.get(encodeURI(url));
     } catch (error: AxiosError | any) {
-      if (
-        error.response.data.description !==
-        "Bad Request: query is too old and response timeout expired or query ID is invalid"
-      ) {
-        this.notifyAdmin(`Answer Callback of ${callback_query_id} Fail`);
-      }
-      console.error(error.response.data);
+      this.errorHandler(0, "Answer callback", error);
     }
   };
 
@@ -401,8 +387,7 @@ class TelegramBot {
     try {
       await axios.get(encodeURI(url));
     } catch (error: AxiosError | any) {
-      this.notifyAdmin("Set Commands Fail");
-      console.error(error.response.data);
+      this.errorHandler(channel, "Set commands", error);
     }
   };
 
