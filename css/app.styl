@@ -57,45 +57,6 @@ body {
   top: 50%;
 }
 
-.page {
-  /* start 'enter' transition */
-  &.ng-enter {
-    /* transition on enter for .5s */
-    transition: 2s; /* start with opacity 0 (invisible) */
-    opacity: 0;
-
-    #home-page {
-      -webkit-animation: 2s fadeInDown ease;
-      animation: 2s fadeInDown ease;
-    }
-
-    #experience-page {
-      -webkit-animation: 2s slideInDown ease;
-      animation: 2s slideInDown ease;
-    }
-
-    #skills-page {
-      -webkit-animation: 1s slideInLeft ease;
-      animation: 1s slideInLeft ease;
-    }
-
-    #contact-page {
-      -webkit-animation: 1s bounceInUp ease;
-      animation: 1s bounceInUp ease;
-    }
-
-    #doodle-page {
-      -webkit-animation: 1s slideInRight ease;
-      animation: 1s slideInRight ease;
-    }
-  }
-
-  /* end 'enter' transition */
-  &.ng-enter-active {
-    /* end with opacity 1 (fade in) */
-    opacity: 1;
-  }
-}
 
 .social-media {
   display: inline-flex !important;

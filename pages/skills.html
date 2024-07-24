@@ -2,6 +2,7 @@
   <li role="presentation" ng-repeat="skill in skills"><a href="#" role="tab" data-toggle="tab"><img class="tab-image" ng-src="/{{skill.image}}"/></a></li>
 </ul-->
 <div id="skills-page" ng-cloak>
+  <h1>Skills</h1>
   <div class="skill-selector col-xs-3" ng-cloak>
     <div ng-repeat="(categoryName, categorySkills) in categories">
       <h3 class="hidden-xs">{{categoryName}}</h3>

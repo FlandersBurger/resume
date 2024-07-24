@@ -1,6 +1,9 @@
-<div id="charades-page" ng-cloak></div>
+<div id="charades-page" ng-cloak>
+  <h1>Charades Generator</h1>
   <div class="btn-group btn-group-lg">
-    <button type="button" class="btn btn-primary" ng-repeat="(key, value) in charades" ng-click="selectWord(key)">{{key.capitalize()}}</button>
+    <button type="button" class="btn btn-primary" ng-repeat="(key, value) in charades" ng-click="selectWord(key)">
+      {{key.capitalize()}}
+    </button>
   </div>
-  <h1>{{word}}</h1>
+  <h2>{{word}}</h2>
 </div>

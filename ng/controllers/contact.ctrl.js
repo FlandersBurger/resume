@@ -28,7 +28,6 @@ angular.module("app").controller("ContactCtrl", function ($scope, EmailSvc) {
 
   $scope.send = function () {
     $scope.sending = true;
-    console.log("here");
     EmailSvc.send({
       email: $scope.contact.email,
       name: $scope.contact.name,
@@ -44,7 +43,7 @@ angular.module("app").controller("ContactCtrl", function ($scope, EmailSvc) {
       function (err) {
         $scope.sending = false;
         console.log("FAILED. error=", err);
-      }
+      },
     );
   };
 });

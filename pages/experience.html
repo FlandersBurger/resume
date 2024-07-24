@@ -1,24 +1,28 @@
-
 <div id="experience-page" ng-cloak>
   <!--div class="col-sm-2" ng-repeat="job in jobs">
     <img class="job-selector" ng-src="/experience/{{job.image}}" style="float:left;"/>
   </div-->
+  <h1>Experience</h1>
   <div ng-repeat="job in jobs" class="job-section">
     <div class="col-md-2 col-sm-3 col-xs-4 job-header">
       <div class="job-image">
-        <img ng-src="/experience/{{job.image}}"/>
+        <img ng-src="/experience/{{job.image}}" />
       </div>
     </div>
     <div class="col-md-10 col-sm-9 col-xs-8 job-title">
       <h2>{{job.company}}</h2>
       <h4>{{job.title}} ~ {{getTimeSpan(job)}}</h4>
     </div>
-    <div class="col-md-10 col-sm-9 col-xs-12"><br></div>
+    <div class="col-md-10 col-sm-9 col-xs-12"><br /></div>
     <div class="col-md-10 col-sm-9 col-xs-12 job-body">
       <ul class="nav nav-pills" ng-show="job.projects || job.responsibilities || job.skills">
         <li class="active"><a data-toggle="pill" href="#{{job.code}}-story">Story</a></li>
         <li><a data-toggle="pill" href="#{{job.code}}-projects" ng-show="job.projects.length > 0">Projects</a></li>
-        <li><a data-toggle="pill" href="#{{job.code}}-responsibilities" ng-show="job.responsibilities.length > 0">Responsibilities</a></li>
+        <li>
+          <a data-toggle="pill" href="#{{job.code}}-responsibilities" ng-show="job.responsibilities.length > 0"
+            >Responsibilities</a
+          >
+        </li>
         <li><a data-toggle="pill" href="#{{job.code}}-skills" ng-show="job.skills.length > 0">Skills</a></li>
       </ul>
       <div class="tab-content">
@@ -35,7 +39,12 @@
             </p>
             <div class="col-xs-12">
               <div class="project-skill" ng-repeat="skill in project.skills | orderBy: 'name'">
-                <img class="project-skill-image" ng-mouseleave="hoverdiv($event, getSkill(skill).code + '-info')" ng-mouseenter="hoverdiv($event, getSkill(skill).code + '-info')" ng-src="/skills/{{getSkill(skill).image}}"/>
+                <img
+                  class="project-skill-image"
+                  ng-mouseleave="hoverdiv($event, getSkill(skill).code + '-info')"
+                  ng-mouseenter="hoverdiv($event, getSkill(skill).code + '-info')"
+                  ng-src="/skills/{{getSkill(skill).image}}"
+                />
                 <div class="hover-div" id="{{getSkill(skill).code}}-info">
                   <div class="panel panel-default">
                     <div class="panel-heading">
@@ -48,16 +57,20 @@
                 </div>
               </div>
             </div>
-            <div ng-if="$index < job.projects.length - 1"><br /><hr /></div>
+            <div ng-if="$index < job.projects.length - 1">
+              <br />
+              <hr />
+            </div>
           </div>
         </div>
         <div id="{{job.code}}-responsibilities" class="tab-pane fade">
           <ul class="list-group">
-            <li  class="list-group-item" ng-repeat="responsibility in job.responsibilities | orderBy: 'name'"><strong>{{responsibility.name}}:</strong> {{responsibility.description}}</li>
+            <li class="list-group-item" ng-repeat="responsibility in job.responsibilities | orderBy: 'name'">
+              <strong>{{responsibility.name}}:</strong> {{responsibility.description}}
+            </li>
           </ul>
         </div>
-        <div id="{{job.code}}-skills" class="tab-pane fade">
-        </div>
+        <div id="{{job.code}}-skills" class="tab-pane fade"></div>
       </div>
     </div>
     <div class="col-xs-12"></div>
