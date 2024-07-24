@@ -327,6 +327,5 @@ angular
         });
     };
 
-    $scope.$on("login", () => getData());
-    if ($scope.currentUser?._id) getData();
+    $scope.$watch("currentUser", getData);
   });

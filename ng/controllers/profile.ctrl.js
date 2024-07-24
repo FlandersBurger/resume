@@ -1,8 +1,4 @@
 angular.module("app").controller("ProfileCtrl", function ($scope, $location, UserSvc) {
-  if (!$scope.currentUser) {
-    $location.path("/");
-  }
-
   const countries = [
     { name: "Andorra", flag: "flag-ad", tidbit: "" },
     { name: "United Arab Emirates", flag: "flag-ae" },
@@ -256,16 +252,12 @@ angular.module("app").controller("ProfileCtrl", function ($scope, $location, Use
   ];
 
   const updateUserFlags = function () {
-    if ($scope.currentUser) {
-      $scope.userFlags = $scope.currentUser.flags
-        ? countries.filter(function (country) {
-            return $scope.currentUser.flags.includes(country.flag);
-          })
-        : [];
-    }
+    $scope.userFlags = $scope.currentUser?.flags
+      ? countries.filter(function (country) {
+          return $scope.currentUser.flags.includes(country.flag);
+        })
+      : [];
   };
-
-  updateUserFlags();
 
   $scope.dateOptions = {
     maxDate: new Date(),
@@ -292,7 +284,7 @@ angular.module("app").controller("ProfileCtrl", function ($scope, $location, Use
     if (password) {
       var user = $scope.currentUser._id;
       UserSvc.checkPassword(user, password).then(
-        function (response) {
+        function () {
           $scope.togglePassword();
         },
         function () {
@@ -308,7 +300,7 @@ angular.module("app").controller("ProfileCtrl", function ($scope, $location, Use
       if (newPassword == confirmPassword) {
         var user = $scope.currentUser._id;
         UserSvc.changePassword(user, oldPassword, newPassword).then(
-          function (response) {
+          function () {
             $scope.$emit("popup", {
               message: "Password Changed",
               type: "alert-success",
@@ -336,7 +328,7 @@ angular.module("app").controller("ProfileCtrl", function ($scope, $location, Use
       function (response) {
         $scope.$emit("update", response.data);
       },
-      function (response) {
+      function () {
         $scope.$emit("popup", {
           message: username + " already in use",
           type: "alert-danger",
@@ -346,24 +338,21 @@ angular.module("app").controller("ProfileCtrl", function ($scope, $location, Use
   };
 
   $scope.updateUser = function () {
-    if ($scope.currentUser) {
-      $scope.$emit("loading");
-      UserSvc.updateUser({ ...$scope.currentUser, flags: $scope.userFlags.map(({ flag }) => flag) }).then(
-        function (response) {
-          $scope.$emit("update", response.data);
-          updateUserFlags();
-        },
-      );
-    }
+    $scope.$emit("loading");
+    UserSvc.updateUser({ ...$scope.currentUser, flags: $scope.userFlags.map(({ flag }) => flag) }).then(
+      function (response) {
+        $scope.$emit("update", response.data);
+      },
+    );
   };
-
-  $scope.$watch("userFlags.length", function (length) {
-    $scope.updateUser();
-  });
 
   $scope.loadCountries = function ($query) {
     return countries.filter(function (country) {
       return country.name.toLowerCase().indexOf($query.toLowerCase()) != -1;
     });
   };
+
+  $scope.$watch("currentUser", () => {
+    updateUserFlags();
+  });
 });

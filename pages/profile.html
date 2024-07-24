@@ -1,5 +1,6 @@
 <div class="container" id="profile-page">
-  <form>
+  <h1 class="text-danger" ng-if="!currentUser">You are not logged in</h1>
+  <form ng-if="currentUser">
     <h1>Profile</h1>
     <div class="form-group">
       <div class="input-group" ng-show="usernameToggle">
@@ -22,29 +23,27 @@
         <input class="form-control" type="text" ng-model="newUsername" />
       </div>
     </div>
-  </form>
 
-  <div class="form-group">
-    <p class="input-group">
-      <span class="input-group-btn">
-        <button type="button" class="btn btn-default" ng-click="birthdateOpen = true">
-          <i class="fa fa-calendar"></i>
-        </button>
-      </span>
-      <input
-        type="text"
-        class="form-control"
-        uib-datepicker-popup="dd-MMM-yyyy"
-        ng-model="currentUser.birthDate"
-        ng-change="updateUser()"
-        is-open="birthdateOpen"
-        datepicker-options="dateOptions"
-        ng-required="true"
-        close-text="Close"
-      />
-    </p>
-  </div>
-  <form ng-submit="updateUser()">
+    <div class="form-group">
+      <p class="input-group">
+        <span class="input-group-btn">
+          <button type="button" class="btn btn-default" ng-click="birthdateOpen = true">
+            <i class="fa fa-calendar"></i>
+          </button>
+        </span>
+        <input
+          type="text"
+          class="form-control"
+          uib-datepicker-popup="dd-MMM-yyyy"
+          ng-model="currentUser.birthDate"
+          ng-change="updateUser()"
+          is-open="birthdateOpen"
+          datepicker-options="dateOptions"
+          ng-required="true"
+          close-text="Close"
+        />
+      </p>
+    </div>
     <div class="form-group">
       <div class="input-group">
         <span class="input-group-btn">

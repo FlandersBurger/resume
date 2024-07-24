@@ -108,6 +108,7 @@ angular.module("app").controller("AppCtrl", function ($scope, $location, Languag
       window.localStorage.user = user._id;
       $scope.loggedIn = true;
       $scope.currentUser = user;
+      $scope.currentUser.birthDate = new Date($scope.currentUser.birthDate);
       $scope.$broadcast("login");
     }
   }
