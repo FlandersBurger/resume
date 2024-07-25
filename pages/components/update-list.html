@@ -60,7 +60,7 @@
   <button
     class="btn btn-default"
     ng-click="getBlurbs('musicvideos')"
-    ng-if="false && selectedList.categories.indexOf('Music') >= 0"
+    ng-if="currentUser.admin && selectedList.categories.indexOf('Music') >= 0"
     ng-disabled="gettingBlurbs || !selectedList || (!currentUser.admin && selectedList.creator._id !== currentUser._id && selectedList._id)"
   >
     Get Music Videos
