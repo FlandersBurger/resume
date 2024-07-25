@@ -56,7 +56,6 @@ class TelegramBot {
         this.errorHandler = (channel, source, error) => {
             const reason = error?.response?.data?.description;
             if (reason) {
-                console.log(reason);
                 if (this.muteReasons.includes(reason)) {
                     (0, errors_1.botMuted)(channel);
                 }
