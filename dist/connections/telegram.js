@@ -54,7 +54,7 @@ class TelegramBot {
             this.introduceYourself();
         };
         this.errorHandler = (channel, source, error) => {
-            const reason = error?.description;
+            const reason = error?.response?.data?.description;
             if (reason) {
                 console.log(reason);
                 if (this.muteReasons.includes(reason)) {

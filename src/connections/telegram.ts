@@ -88,7 +88,7 @@ class TelegramBot {
   };
 
   private errorHandler = (channel: number, source: string, error: any) => {
-    const reason = error?.description;
+    const reason = error?.response?.data?.description;
 
     if (reason) {
       console.log(reason);
