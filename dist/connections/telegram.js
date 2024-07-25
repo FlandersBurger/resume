@@ -56,6 +56,7 @@ class TelegramBot {
         this.errorHandler = (channel, source, error) => {
             const reason = error?.description;
             if (reason) {
+                console.log(reason);
                 if (this.muteReasons.includes(reason)) {
                     (0, errors_1.botMuted)(channel);
                 }
@@ -67,7 +68,7 @@ class TelegramBot {
                 }
             }
             else {
-                bot.notifyAdmin(`Error from "${source}" in channel ${channel}:\n${(0, string_helpers_1.angleBrackets)(error.message ?? error.code)}`);
+                bot.notifyAdmin(`Unknown error from "${source}" in channel ${channel}:\n${(0, string_helpers_1.angleBrackets)(error.message ?? error.code)}`);
                 console.error(error.message, error.code);
             }
         };
