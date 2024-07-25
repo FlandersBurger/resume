@@ -166,7 +166,7 @@
   <div class="btn-group" role="group">
     <button
       type="button"
-      class="btn"
+      class="btn btn-icon"
       ng-class="{ 'btn-primary': selectedList.difficulty === 0, 'btn-default': selectedList.difficulty !== 0 }"
       ng-click="setDifficulty(selectedList, 0)"
       uib-tooltip="Easy"
@@ -175,7 +175,7 @@
     </button>
     <button
       type="button"
-      class="btn"
+      class="btn btn-icon"
       ng-class="{ 'btn-primary': selectedList.difficulty === 1, 'btn-default': selectedList.difficulty !== 1 }"
       ng-click="setDifficulty(selectedList, 1)"
       uib-tooltip="Medium"
@@ -184,7 +184,7 @@
     </button>
     <button
       type="button"
-      class="btn"
+      class="btn btn-icon"
       ng-class="{ 'btn-primary': selectedList.difficulty === 2, 'btn-default': selectedList.difficulty !== 2 }"
       ng-click="setDifficulty(selectedList, 2)"
       uib-tooltip="Hard"
@@ -195,7 +195,7 @@
   <div class="btn-group" role="group">
     <button
       type="button"
-      class="btn"
+      class="btn btn-icon"
       ng-class="{ 'btn-primary': selectedList.frequency === 0, 'btn-default': selectedList.frequency !== 0 }"
       ng-click="setFrequency(selectedList, 0)"
       uib-tooltip="Frequently changes"
@@ -204,7 +204,7 @@
     </button>
     <button
       type="button"
-      class="btn"
+      class="btn btn-icon"
       ng-class="{ 'btn-primary': selectedList.frequency === 1, 'btn-default': selectedList.frequency !== 1 }"
       ng-click="setFrequency(selectedList, 1)"
       uib-tooltip="Annually changes"
@@ -213,7 +213,7 @@
     </button>
     <button
       type="button"
-      class="btn"
+      class="btn btn-icon"
       ng-class="{ 'btn-primary': selectedList.frequency === 2, 'btn-default': selectedList.frequency !== 2 }"
       ng-click="setFrequency(selectedList, 2)"
       uib-tooltip="Rarely changes"
@@ -222,7 +222,7 @@
     </button>
     <button
       type="button"
-      class="btn"
+      class="btn btn-icon"
       ng-class="{ 'btn-primary': selectedList.frequency === 3, 'btn-default': selectedList.frequency !== 3 }"
       ng-click="setFrequency(selectedList, 3)"
       uib-tooltip="Never changes"
@@ -296,7 +296,7 @@
           class="form-control"
           ng-model="newItem.blurb"
           ng-disabled="!selectedList || !selectedList.name"
-          placeholder="Display after guessing {{newItem.value}}"
+          placeholder="Display after guessing {{newItem.value ? newItem.value : 'new answer'}} (Can be a URL)"
           style="resize: vertical"
           oninput='this.style.height = "";this.style.height = this.scrollHeight + "px"'
           onfocus='this.style.height = this.scrollHeight + "px"'
@@ -351,7 +351,7 @@
           class="form-control"
           ng-model="item.blurb"
           ng-class="{'bg-info': selectedList.creator._id !== currentUser._id && item.creator !== currentUser._id, 'bg-success': selectedList.creator._id !== currentUser._id && item.creator === currentUser._id, }"
-          placeholder="Display after guessing {{item.value}} (Can be an image URL)"
+          placeholder="Display after guessing {{item.value}} (Can be a URL)"
           ng-disabled="!loggedIn || !currentUser.admin && selectedList.creator._id !== currentUser._id && item.creator !== currentUser._id"
           ng-model-options="{updateOn: 'blur'}"
           ng-change="updateValue(item)"
