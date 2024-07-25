@@ -24,7 +24,7 @@ exports.usersRoute.get("/all", async (req, res) => {
         .skip(parseInt(req.query.limit) * (parseInt(req.query.page) - 1));
     res.json(users);
 });
-exports.usersRoute.get("/ban/:id", async (req, res) => {
+exports.usersRoute.post("/ban/:id", async (req, res) => {
     if (!res.locals.isAdmin)
         return res.sendStatus(401);
     const user = await index_1.User.findOne({ _id: req.params.id });

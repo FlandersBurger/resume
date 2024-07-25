@@ -235,7 +235,10 @@
 <table class="table table-striped">
   <thead>
     <tr>
-      <th class="col-1" ng-click="valueOrder = {field: 'creator.username', direction: !valueOrder.direction}">
+      <th
+        class="col-1 hidden-xs hidden-sm visible-md visible-lg"
+        ng-click="valueOrder = {field: 'creator.username', direction: !valueOrder.direction}"
+      >
         <i class="fas fa-user" tooltip-placement="right" uib-tooltip="Black = creator, Purple = someone else"></i>
         <i
           ng-if="valueOrder.field === 'creator.username'"
@@ -243,7 +246,10 @@
           ng-class="{'fa-sort-alpha-down-alt' : valueOrder.direction, 'fa-sort-alpha-down': !valueOrder.direction}"
         ></i>
       </th>
-      <th class="col-1" ng-click="valueOrder = {field: 'date', direction: !valueOrder.direction}">
+      <th
+        class="col-1 hidden-xs hidden-sm visible-md visible-lg"
+        ng-click="valueOrder = {field: 'date', direction: !valueOrder.direction}"
+      >
         <i class="fas fa-calendar" tooltip-placement="right" uib-tooltip="Black = creation date, Purple = later"></i>
         <i
           ng-if="valueOrder.field === 'date'"
@@ -267,14 +273,14 @@
           ng-class="{'fa-sort-alpha-down-alt' : valueOrder.direction, 'fa-sort-alpha-down': !valueOrder.direction}"
         ></i>
       </th>
-      <th class="col-1"><i class="fas fa-link"></i></th>
-      <th class="col-1"><i class="fas fa-trash-alt"></i></th>
+      <th class="col-1 hidden-xs hidden-sm visible-md visible-lg"><i class="fas fa-link"></i></th>
+      <th class="col-1"><i class="fas fa-toolbox"></i></th>
     </tr>
   </thead>
   <tbody>
     <tr ng-if="loggedIn && selectedList.name && selectedList.categories.length > 0">
-      <td></td>
-      <td></td>
+      <td class="hidden-xs hidden-sm visible-md visible-lg"></td>
+      <td class="hidden-xs hidden-sm visible-md visible-lg"></td>
       <td class="input-cell">
         <input
           id="new-value"
@@ -300,23 +306,28 @@
       </td>
       <td colspan="2">
         <button
-          class="btn"
+          class="btn btn-sm"
+          ng-if="!hasDuplicate()"
           ng-class="{'btn-danger': hasDuplicate(), 'btn-default': !hasDuplicate()}"
           ng-click="createValue()"
           ng-disabled="!selectedList || !selectedList.name || !newItem.value || hasDuplicate()"
         >
-          {{hasDuplicate() ? 'Dupe' : 'Add'}}
+          <i class="fas fa-plus"></i>
         </button>
+        <i class="fas fa-ban" style="color: Tomato" ng-if="hasDuplicate()" uib-tooltip="Duplicate!"></i>
       </td>
     </tr>
     <tr ng-repeat="item in selectedList.values | orderBy: valueOrder.field:valueOrder.direction">
       <td
-        class="icon-column"
+        class="icon-column hidden-xs hidden-sm visible-md visible-lg"
         ng-class="{'text-info': item.creator._id !== currentUser._id && item.creator._id !== selectedList.creator._id}"
       >
         <i class="fas fa-user" tooltip-placement="right" uib-tooltip="{{item.creator.username}}"></i>
       </td>
-      <td class="icon-column" ng-class="{'text-info': formatDate(item.date) !== formatDate(selectedList.date)}">
+      <td
+        class="icon-column hidden-xs hidden-sm visible-md visible-lg"
+        ng-class="{'text-info': formatDate(item.date) !== formatDate(selectedList.date)}"
+      >
         <i
           class="fas fa-calendar"
           tooltip-placement="right"
@@ -351,7 +362,7 @@
           maxlength="3500"
         />
       </td>
-      <td class="image-cell icon-column">
+      <td class="image-cell icon-column hidden-xs hidden-sm visible-md visible-lg">
         <img ng-src="{{item.blurb}}" ng-if="item.blurbType === 'image'" />
         <a href="{{item.blurb}}" target="_blank" ng-if="item.blurbType === 'youtube'">
           <i class="fab fa-youtube"></i>

@@ -10,7 +10,7 @@ angular.module("app").service("UserSvc", function ($http) {
   };
 
   svc.toggleBan = function (id) {
-    return $http.get(`/api/users/ban/${id}`);
+    return $http.post(`/api/users/ban/${id}`);
   };
 
   svc.setToken = function (token) {

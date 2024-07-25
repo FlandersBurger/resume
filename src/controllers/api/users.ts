@@ -22,7 +22,7 @@ usersRoute.get("/all", async (req: Request, res: Response) => {
   res.json(users);
 });
 
-usersRoute.get("/ban/:id", async (req: Request, res: Response) => {
+usersRoute.post("/ban/:id", async (req: Request, res: Response) => {
   if (!res.locals.isAdmin) return res.sendStatus(401);
   const user = await User.findOne({ _id: req.params.id });
   if (user) {
