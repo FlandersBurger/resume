@@ -207,16 +207,20 @@ angular
       }
     };
 
-    $scope.createValue = () => {
+    $scope.createValue = async () => {
       if ($scope.hasDuplicate()) {
-        alert(`${$scope.newItem.value} is already in the list`);
+        return alert(`${$scope.newItem.value} is already in the list`);
+      } else if (!$scope.selectedList._id) {
+        if ($scope.selectedList.values.length <= 10) {
+          await $scope.upsertList($scope.selectedList);
+        }
       } else {
-        TenThingsSvc.createListValue($scope.selectedList, $scope.newItem).then(() => {
-          $scope.selectedList.values.push({ ...$scope.newItem });
-          $scope.newItem.value = "";
-          $scope.newItem.blurb = "";
-        });
+        await TenThingsSvc.createListValue($scope.selectedList, $scope.newItem);
       }
+      $scope.selectedList.values.push({ ...$scope.newItem });
+      $scope.newItem.value = "";
+      $scope.newItem.blurb = "";
+      $("#new-blurb").focus();
     };
 
     $scope.deleteValue = (item) => {
@@ -228,7 +232,7 @@ angular
     $scope.upsertList = (list, updates) => {
       $scope.saving = true;
       if (list.values.length >= 10 && list.name && list.categories.length > 0) {
-        if (list._id !== "new") {
+        if (list._id && list._id !== "new") {
           let changes = updates ? updates : list;
           delete changes._id;
           TenThingsSvc.updateList({
