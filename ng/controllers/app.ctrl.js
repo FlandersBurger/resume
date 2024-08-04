@@ -18,7 +18,7 @@ angular.module("app").controller("AppCtrl", function ($scope, LanguageSvc, UserS
     });
     */
 
-  $(window).load("", "", function () {
+  $(window).load(function () {
     $(".loading").fadeOut("slow");
     $(".content").fadeIn("slow");
   });
