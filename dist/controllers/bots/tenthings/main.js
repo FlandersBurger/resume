@@ -53,7 +53,8 @@ exports.tenthingsBotRoute.post("/", async (req, res) => {
     }
     let msg = domainMessage.message;
     if (!msg?.from?.id) {
-        res.sendStatus(200);
+        if (!res.headersSent)
+            res.sendStatus(200);
     }
     else {
         const existingGame = await index_1.Game.findOne({ chat_id: msg.chatId })
@@ -73,7 +74,8 @@ exports.tenthingsBotRoute.post("/", async (req, res) => {
                 }
                 else {
                     telegram_1.default.sendMessage(msg.chatId, (0, i18n_1.default)(existingGame.settings.language, "sentences.inactivity"));
-                    res.sendStatus(200);
+                    if (!res.headersSent)
+                        res.sendStatus(200);
                 }
             }
             else

@@ -105,7 +105,7 @@ tenthingsBotRoute.post("/", async (req: Request, res: Response) => {
   }
   let msg: IMessage = domainMessage.message as IMessage;
   if (!msg?.from?.id) {
-    res.sendStatus(200);
+    if (!res.headersSent) res.sendStatus(200);
   } else {
     const existingGame = await Game.findOne({ chat_id: msg.chatId })
       .populate("list.creator")
@@ -123,7 +123,7 @@ tenthingsBotRoute.post("/", async (req: Request, res: Response) => {
           await evaluate(msg, existingGame, false);
         } else {
           bot.sendMessage(msg.chatId, i18n(existingGame.settings.language, "sentences.inactivity"));
-          res.sendStatus(200);
+          if (!res.headersSent) res.sendStatus(200);
         }
       } else await evaluate(msg, existingGame, false);
     }
