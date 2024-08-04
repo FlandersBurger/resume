@@ -14,7 +14,9 @@ const listValueSchema = new mongoose_1.Schema({
     date: { type: String, default: "", required: false },
 });
 listValueSchema.virtual("blurbType").get(function () {
-    if (this.blurb.substring(0, 4) === "http" &&
+    if (!this.blurb)
+        return "text";
+    else if (this.blurb.substring(0, 4) === "http" &&
         this.blurb.indexOf("youtu") < 0 &&
         this.blurb.match(/\.(jpeg|jpg|gif|png)$/) !== null)
         return "image";

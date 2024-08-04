@@ -5,8 +5,6 @@ const srcGame = require("../../models/tenthings/game")("backup");
 const dstGame = require("../../models/tenthings/game")("master");
 const backup = async () => {
     const existingGames = await dstGame.find({}).select("_id").lean();
-    //const missingGames = await srcGame.find({ _id: { $nin: existingGames } });
-    //console.log(missingGames.map(game => game.name));
     N = 0;
     const gameCursor = await srcGame.find({ _id: { $nin: existingGames } }).cursor();
     await gameCursor.eachAsync(async (game) => {
@@ -24,5 +22,4 @@ const backup = async () => {
     console.log(`loop all ${N} games success`);
 };
 backup();
-//module.exports = backup;
 //# sourceMappingURL=backup-restore-games.js.map

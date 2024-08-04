@@ -20,7 +20,7 @@ const sendSuggestion = async (type, msg, player, extraText = "") => {
         telegram_1.default.queueMessage(msg.chatId, message);
     }
     else {
-        telegram_1.default.queueMessage(msg.chatId, `You didn't add a feature ${player.first_name}. Add your message after /feature`);
+        telegram_1.default.queueMessage(msg.chatId, `You didn't add a message, ${player.first_name}. Add your message after /${type}`);
     }
 };
 exports.sendSuggestion = sendSuggestion;

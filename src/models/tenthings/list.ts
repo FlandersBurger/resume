@@ -57,7 +57,8 @@ const listValueSchema = new Schema<IListValue>({
 });
 
 listValueSchema.virtual("blurbType").get(function (this: IListValue) {
-  if (
+  if (!this.blurb) return "text";
+  else if (
     this.blurb.substring(0, 4) === "http" &&
     this.blurb.indexOf("youtu") < 0 &&
     this.blurb.match(/\.(jpeg|jpg|gif|png)$/) !== null

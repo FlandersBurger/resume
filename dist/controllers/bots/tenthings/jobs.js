@@ -3,7 +3,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-/*jslint esversion: 10*/
 const node_schedule_1 = __importDefault(require("node-schedule"));
 const moment_1 = __importDefault(require("moment"));
 const telegram_1 = __importDefault(require("../../../connections/telegram"));
@@ -53,14 +52,13 @@ const resetDailyScore = () => {
                 message += `Your gratitude won\'t go unnoticed :)\n\n`;
                 message += `\t - <a href="https://paypal.me/Game">Paypal</a>\n`;
                 message += `\t - Bitcoin Address: bc1qnr4y95d3w5rwahcypazpjdv33g8wupewmw6rpa3s2927qvgmduqsvcpgfs`;
-                //'\n\nCome join us in the <a href="https://t.me/tenthings">Ten Things Supergroup</a>!'
                 telegram_1.default.queueMessage(game.chat_id, message);
-                const savedIdlers = await Player.updateMany({ game: game._id, scoreDaily: 0 }, { $set: { playStreak: 0 } });
-                const savedWinners = await Player.updateMany({
+                await Player.updateMany({ game: game._id, scoreDaily: 0 }, { $set: { playStreak: 0 } });
+                await Player.updateMany({
                     game: game._id,
                     _id: { $in: winners.map((winner) => winner._id) },
                 }, { $inc: { wins: 1 } }).exec();
-                const savedPlayers = await Player.updateMany({ game: game._id, scoreDaily: { $gt: 0 } }, {
+                await Player.updateMany({ game: game._id, scoreDaily: { $gt: 0 } }, {
                     $inc: { plays: 1, playStreak: 1 },
                     $set: { scoreDaily: 0 },
                 }).exec();
@@ -93,19 +91,6 @@ const backupDatabase = () => {
         telegram_1.default.notifyAdmin(`Database Backup Failed\n${err}`);
     });
 };
-function getChatWithDelay(chat_id, delay) {
-    return new Promise((resolve, reject) => {
-        setTimeout(() => {
-            telegram_1.default.getChat(chat_id).then((result) => resolve(result), (err) => resolve(err));
-        }, delay);
-    });
-}
-/*
-Stats.find()
-  .lean()
-  .then(stats => {
-    console.log(stats.forEach(stat => console.log(stat.date)));
-  });*/
 const getYearlyStats = async () => {
     const yearStats = (await Stats.find({ base: false, uniquePlayers: { $gt: 0 } }).select("date uniquePlayers")).filter(({ date }) => (0, moment_1.default)(date) >= (0, moment_1.default)().subtract(1, "years"));
     return {
@@ -191,71 +176,29 @@ const updateDailyStats = async (games, totalPlayers, uniquePlayers) => {
     });
     dailyStats.save((err) => {
         if (err)
-            return telegram_1.default.notifyAdmin(`Daily stat save issue\n${err}`);
-        telegram_1.default.notifyAdmin("Daily Stats Updated!");
-        base.listsPlayed = listStats[0].plays;
-        base.hints = playerStats[0].hints;
-        base.score = playerStats[0].score;
-        base.answers = playerStats[0].answers;
-        base.snubs = playerStats[0].snubs;
-        base.skips = playerStats[0].skips;
-        base.suggestions = playerStats[0].suggestions;
-        base.searches = playerStats[0].searches;
-        base.votes = listStats[0].votes;
-        base.minigamePlays = playerStats[0].minigamePlays;
-        base.tinygamePlays = playerStats[0].tinygamePlays;
-        base.save((err) => {
-            if (err)
-                return telegram_1.default.notifyAdmin(`Base stat update issue\n${err}`);
-            telegram_1.default.notifyAdmin("Base Stats Updated!");
-        });
+            telegram_1.default.notifyAdmin(`Daily stat save issue\n${err}`);
+        else {
+            telegram_1.default.notifyAdmin("Daily Stats Updated!");
+            base.listsPlayed = listStats[0].plays;
+            base.hints = playerStats[0].hints;
+            base.score = playerStats[0].score;
+            base.answers = playerStats[0].answers;
+            base.snubs = playerStats[0].snubs;
+            base.skips = playerStats[0].skips;
+            base.suggestions = playerStats[0].suggestions;
+            base.searches = playerStats[0].searches;
+            base.votes = listStats[0].votes;
+            base.minigamePlays = playerStats[0].minigamePlays;
+            base.tinygamePlays = playerStats[0].tinygamePlays;
+            base.save((err) => {
+                if (err)
+                    telegram_1.default.notifyAdmin(`Base stat update issue\n${err}`);
+                else
+                    telegram_1.default.notifyAdmin("Base Stats Updated!");
+            });
+        }
     });
 };
-/*
-  const game = new Stats({
-    base: true,
-    hints: 154486,
-    cycles: 34,
-    chats: 31,
-    totalPlayers: 186,
-    uniquePlayers: 158,
-    score: 2438628,
-    snubs: 51670,
-    skips: 50024,
-    suggestions: 719,
-  });
-  game.save(err => {
-    if (err) return console.error(err);
-    console.log('Game Saved!');
-  });
-*/
-/*
-  const getJoke = schedule.scheduleJob('0 0 0 * * *', () => {
-    request({
-      method: 'GET',
-      url: 'https://webknox-jokes.p.rapidapi.com/jokes/random',
-      qs: {minRating: '7'},
-      headers: {
-        'X-RapidAPI-Host': 'webknox-jokes.p.rapidapi.com' ,
-        'X-RapidAPI-Key': process.env.RAPID_API_TOKEN
-      }
-    }, (err, response, body) => {
-      const joke = JSON.parse(body);
-      Joke.findOne({
-        joke: joke.joke
-      }).exec((err, existingJoke) => {
-        bot.notifyAdmin(joke.joke);
-        if (!existingJoke) {
-          const newJoke = new Joke(joke);
-          newJoke.save(err => {
-            if (err) return console.error(err);
-            console.log('Joke saved!');
-          });
-        }
-      });
-    });
-  });
-  */
 const sendNewLists = () => {
     List.find({
         date: { $gte: (0, moment_1.default)().subtract(1, "days") },
@@ -322,9 +265,6 @@ const sendUpdatedLists = () => {
         }
     });
 };
-//bot.sendPhoto(parseInt(process.env.MASTER_CHAT || ""), 'https://m.media-amazon.com/images/M/MV5BNmE1OWI2ZGItMDUyOS00MmU5LWE0MzUtYTQ0YzA1YTE5MGYxXkEyXkFqcGdeQXVyMDM5ODIyNw@@._V1._SX40_CR0,0,40,54_.jpg')
-//var dailyScore = schedule.scheduleJob('*/10 * * * * *', function() {
-//resetDailyScore()
 const deleteStaleGames = () => {
     Game.find({ lastPlayDate: { $lt: (0, moment_1.default)().subtract(12, "months") } })
         .select("_id")
@@ -347,7 +287,6 @@ const deactivateInactiveChats = () => {
     });
 };
 const updatePlayStreak = () => {
-    //Update play streaks
     Player.find({ playStreak: { $gt: 0 } })
         .select("game playStreak maxPlayStreak lastPlayDate")
         .then((players) => {
@@ -386,7 +325,6 @@ if (process.env.NODE_ENV === "production") {
     jobs.push(node_schedule_1.default.scheduleJob("Delete Stale Players", "0 0 5 * * *", deleteStalePlayers));
     jobs.push(node_schedule_1.default.scheduleJob("Delete Stale Games", "0 0 6 * * *", deleteStaleGames));
     jobs.push(node_schedule_1.default.scheduleJob("Send New List Notice", "0 0 12 * * *", sendNewLists));
-    // jobs.push(schedule.scheduleJob('0 30 12 * * *', sendUpdatedLists))
 }
 jobs.push(node_schedule_1.default.scheduleJob("Backup Database", "0 0 21 * * *", backupDatabase));
 exports.default = jobs;

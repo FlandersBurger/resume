@@ -22,5 +22,4 @@ const backup = async () => {
     console.log(`loop all ${N} users success`);
 };
 backup();
-//module.exports = backup;
 //# sourceMappingURL=backup-restore-users.js.map

@@ -266,15 +266,15 @@ const curateListKeyboard = (list) => ({
             getButton(emojis_1.default.difficulty0 + (list.difficulty === 0 ? emojis_1.default.green : ""), {
                 type: callbacks_1.CallbackDataType.Difficulty,
                 id: `0_${list._id}`,
-            }), //Easy
+            }),
             getButton(emojis_1.default.difficulty1 + (list.difficulty === 1 ? emojis_1.default.green : ""), {
                 type: callbacks_1.CallbackDataType.Difficulty,
                 id: `1_${list._id}`,
-            }), //Medium
+            }),
             getButton(emojis_1.default.difficulty2 + (list.difficulty === 2 ? emojis_1.default.green : ""), {
                 type: callbacks_1.CallbackDataType.Difficulty,
                 id: `2_${list._id}`,
-            }), //Hard
+            }),
         ],
         [
             getButton((0, string_helpers_1.capitalize)((0, messages_1.getFrequencyMessage)(0)) + (list.frequency === 0 ? emojis_1.default.green : ""), {

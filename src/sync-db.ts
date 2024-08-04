@@ -1,14 +1,14 @@
 import {
   Category,
   CategoryBackup,
-  Game,
-  GameBackup,
+  // Game,
+  // GameBackup,
   Joke,
   JokeBackup,
   List,
   ListBackup,
-  Player,
-  PlayerBackup,
+  // Player,
+  // PlayerBackup,
   Post,
   PostBackup,
   Stats,
@@ -16,9 +16,6 @@ import {
   User,
   UserBackup,
 } from "@models/index";
-
-const _ = require("underscore");
-const moment = require("moment");
 
 const srcCategory = Category;
 const dstCategory = CategoryBackup;
@@ -35,11 +32,11 @@ const dstPost = PostBackup;
 const srcUser = User;
 const dstUser = UserBackup;
 
-const srcTenthingsGame = Game;
-const dstTenthingsGame = GameBackup;
+// const srcTenthingsGame = Game;
+// const dstTenthingsGame = GameBackup;
 
-const srcTenthingsPlayer = Player;
-const dstTenthingsPlayer = PlayerBackup;
+// const srcTenthingsPlayer = Player;
+// const dstTenthingsPlayer = PlayerBackup;
 
 const srcTenthingsStats = Stats;
 const dstTenthingsStats = StatsBackup;
@@ -113,18 +110,18 @@ const syncDB = async () => {
   process.exit(22);
 };
 
-const syncPlayers = async () => {
-  await dstTenthingsPlayer.deleteMany({});
-  let N = 0;
-  const tenthingsPlayerCursor = await srcTenthingsPlayer.find().cursor();
-  await tenthingsPlayerCursor.eachAsync((player) => {
-    N++;
-    if (N % 1000 === 0) console.log(`${N} players synced`);
-    //console.log(`id of the ${N}th game: ${game.chat_id}`);
-    return dstTenthingsPlayer.insertMany([player]);
-  });
-  console.log(`loop all ${N} player success`);
-};
+// const syncPlayers = async () => {
+//   await dstTenthingsPlayer.deleteMany({});
+//   let N = 0;
+//   const tenthingsPlayerCursor = await srcTenthingsPlayer.find().cursor();
+//   await tenthingsPlayerCursor.eachAsync((player) => {
+//     N++;
+//     if (N % 1000 === 0) console.log(`${N} players synced`);
+//     //console.log(`id of the ${N}th game: ${game.chat_id}`);
+//     return dstTenthingsPlayer.insertMany([player]);
+//   });
+//   console.log(`loop all ${N} player success`);
+// };
 //syncPlayers();
 
 export default syncDB;

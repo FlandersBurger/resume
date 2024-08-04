@@ -50,32 +50,12 @@ app.use("/api/tenthings/lists", lists_1.tenthingsListsRoute);
 app.use("/api/tenthings/pause", pause_1.tenthingsPauseRoute);
 app.use("/api/tenthings/players", players_1.tenthingsPlayersRoute);
 app.use("/api/tenthings/stats", stats_1.tenthingsStatsRoute);
-/*
-app.use(logger('dev', {
-  skip: (req, res) => {
-    console.log(req.method, req.url);
-    return req.method.indexOf('/bots/tenthings') > -1;
-  }
-}));
-*/
 app.use("/bots/tenthings", main_1.tenthingsBotRoute);
 app.use(static_1.staticRoute);
 app.use((err, _req, res, _next) => {
     console.error(err.stack);
     res.status(500).send("Something broke!");
 });
-/*
-app.use((req, res) => {
-  let buffs = [];
-  req.on('data', (chunk) => {
-    buffs.push(chunk);
-  });
-  req.on('end', () => {
-    res.write(Buffer.concat(buffs));
-    res.end();
-  });
-});
-*/
 const port = process.env.PORT || 3000;
 const server = http_1.default.createServer(app);
 exports.websocketServer = new websockets_1.WebSocketServer(server);
@@ -88,34 +68,6 @@ server.listen(port, async () => {
     await (0, queue_1.subscribe)("new_post", (post) => {
         exports.websocketServer.broadcast("new_post", post);
     });
-    // Player.find({ id: { $type: "string" } })
-    //   .select("_id id")
-    //   .then((players) => {
-    //     console.log("players", players.length);
-    //     players.forEach(async (player, i) => {
-    //       if (i % 1000 === 0) console.log(`${i + 1}/${players.length}`);
-    //       const result = await Player.findOneAndUpdate(
-    //         { _id: player._id },
-    //         { $set: { id: parseInt(player.id) } },
-    //         { returnOriginal: false }
-    //       );
-    //     });
-    //     console.log("done");
-    //   });
-    // Game.find({ chat_id: { $type: "string" } })
-    //   .select("_id id")
-    //   .then((games) => {
-    //     console.log("games", games.length);
-    //     games.forEach(async (game, i) => {
-    //       if (i % 1000 === 0) console.log(`${i + 1}/${games.length}`);
-    //       const result = await Game.findOneAndUpdate(
-    //         { _id: game._id },
-    //         { $set: { chat_id: parseInt(game.chat_id as any) } },
-    //         { returnOriginal: false }
-    //       );
-    //     });
-    //     console.log("done");
-    //   });
 });
 process
     .on("unhandledRejection", (reason, p) => {

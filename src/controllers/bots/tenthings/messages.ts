@@ -127,12 +127,7 @@ export const getDifficultyMessage = (difficulty: number): string => {
       return "";
   }
 };
-export const getListStats = (
-  language: string,
-  list: IList,
-  requestor: string | undefined,
-  expanded = false,
-): string => {
+export const getListStats = (language: string, list: IList, requestor: string | undefined): string => {
   var message = "";
   message += requestor ? `<i>${i18n(language, "sentences.requestedBy", { requestor })}</i>\n` : "";
   message += `${i18n(language, "stats.misc", { something: list.name })}\n`;

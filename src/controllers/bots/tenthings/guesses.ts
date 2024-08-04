@@ -51,7 +51,7 @@ export const queueGuess = async (game: IGame, msg: IMessage) => {
   const text = removeAllButLetters(msg.text);
   const correctMatch = find(values, ({ value }) => removeAllButLetters(value) === text);
   if (correctMatch) {
-    return queueingGuess({
+    queueingGuess({
       msg,
       game: game.chat_id,
       list: game.list._id,
@@ -61,45 +61,49 @@ export const queueGuess = async (game: IGame, msg: IMessage) => {
         distance: 1,
       },
     });
-  }
-  const lengths = values
-    .map(({ value }) => removeAllButLetters(value))
-    .reduce(
-      (lengths, value) => ({
-        longest: lengths.longest < value.length ? value.length : lengths.longest,
-        shortest: lengths.shortest > value.length ? value.length : lengths.shortest,
-      }),
-      {
-        longest: 1,
-        shortest: 1000,
-      }
-    );
-  let found = false;
-  if (text.length / lengths.shortest > 0.75 && text.length / lengths.longest < 1.25) {
-    const fuzzyMatch = new FuzzyMatching(values.map(({ value }) => removeAllButLetters(value)));
-    const matchedValue = fuzzyMatch.get(text, { min: 0.75 });
-    const guess = {
-      msg,
-      game: game.chat_id,
-      list: game.list._id,
-      match: matchedValue,
-    };
-    if (guess.match.distance >= 0.75) {
-      const match = {
-        ...guess.match,
-        ...find(values, ({ value }) => removeAllButLetters(value) === guess.match.value),
+  } else {
+    const lengths = values
+      .map(({ value }) => removeAllButLetters(value))
+      .reduce(
+        (lengths, value) => ({
+          longest: lengths.longest < value.length ? value.length : lengths.longest,
+          shortest: lengths.shortest > value.length ? value.length : lengths.shortest,
+        }),
+        {
+          longest: 1,
+          shortest: 1000,
+        },
+      );
+    let found = false;
+    if (text.length / lengths.shortest > 0.75 && text.length / lengths.longest < 1.25) {
+      const fuzzyMatch = new FuzzyMatching(values.map(({ value }) => removeAllButLetters(value)));
+      const matchedValue = fuzzyMatch.get(text, { min: 0.75 });
+      const guess = {
+        msg,
+        game: game.chat_id,
+        list: game.list._id,
+        match: matchedValue,
       };
-      found = true;
-      setTimeout(async () => {
-        queueingGuess({
-          ...guess,
-          match,
-          player: await getPlayer(game, msg.from),
-        });
-      }, (2000 / 0.25) * (1 - guess.match.distance));
+      if (guess.match.distance >= 0.75) {
+        const match = {
+          ...guess.match,
+          ...find(values, ({ value }) => removeAllButLetters(value) === guess.match.value),
+        };
+        found = true;
+        setTimeout(
+          async () => {
+            queueingGuess({
+              ...guess,
+              match,
+              player: await getPlayer(game, msg.from),
+            });
+          },
+          (2000 / 0.25) * (1 - guess.match.distance),
+        );
+      }
     }
+    if (!found) sass(game, msg.text);
   }
-  if (!found) sass(game, msg.text);
 };
 
 const queueingGuess = (guess: IGuess) => guessQueue.add(guess);
@@ -133,17 +137,17 @@ const processGuess = async (guess: IGuess) => {
   if (guess.match.type === GameType.MAINGAME) {
     await checkMaingame(game, player, guess, guess.msg);
     console.log(
-      `${guess.game} (${game.settings.language}) - ${game.list.name} for ${guess.match.value}: "${guess.msg.text}" by ${player.first_name}`
+      `${guess.game} (${game.settings.language}) - ${game.list.name} for ${guess.match.value}: "${guess.msg.text}" by ${player.first_name}`,
     );
   } else if (guess.match.type === GameType.MINIGAME) {
     await checkMinigame(game, player, guess, guess.msg);
     console.log(
-      `${guess.game} (${game.settings.language}) - Minigame guess for ${game.minigame.answer}: "${guess.msg.text}" by ${player.first_name}`
+      `${guess.game} (${game.settings.language}) - Minigame guess for ${game.minigame.answer}: "${guess.msg.text}" by ${player.first_name}`,
     );
   } else if (guess.match.type === GameType.TINYGAME) {
     await checkTinygame(game, player, guess, guess.msg);
     console.log(
-      `${guess.game} (${game.settings.language}) - Tinygame guess for ${game.tinygame.answer}: "${guess.msg.text}" by ${player.first_name}`
+      `${guess.game} (${game.settings.language}) - Tinygame guess for ${game.tinygame.answer}: "${guess.msg.text}" by ${player.first_name}`,
     );
   }
 };

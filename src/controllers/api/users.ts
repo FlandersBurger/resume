@@ -8,30 +8,36 @@ import { User } from "@models/index";
 
 export const usersRoute = Router();
 
-usersRoute.get("/", function (_: Request, res: Response) {
-  if (!res.locals.isAuthorized) return res.sendStatus(401);
-  res.json(res.locals.user);
+usersRoute.get("/", (_: Request, res: Response) => {
+  if (!res.locals.isAuthorized) res.sendStatus(401);
+  else res.json(res.locals.user);
 });
 
 usersRoute.get("/all", async (req: Request, res: Response) => {
-  if (!res.locals.isAdmin) return res.send(401);
-  const users = await User.find({})
-    .select("-gender -flags -highscore")
-    .limit(parseInt(req.query.limit as string))
-    .skip(parseInt(req.query.limit as string) * (parseInt(req.query.page as string) - 1));
-  res.json(users);
+  if (!res.locals.isAdmin) res.sendStatus(401);
+  else {
+    const users = await User.find({})
+      .select("-gender -flags -highscore")
+      .limit(parseInt(req.query.limit as string))
+      .skip(parseInt(req.query.limit as string) * (parseInt(req.query.page as string) - 1));
+    res.json(users);
+  }
 });
 
 usersRoute.post("/ban/:id", async (req: Request, res: Response) => {
-  if (!res.locals.isAdmin) return res.sendStatus(401);
-  const user = await User.findOne({ _id: req.params.id });
-  if (user) {
-    console.log(user);
-    user.banned = !user.banned;
-    try {
-      await user.save();
-    } catch (e) {}
-    res.sendStatus(200);
+  if (!res.locals.isAdmin) res.sendStatus(401);
+  else {
+    const user = await User.findOne({ _id: req.params.id });
+    if (user) {
+      console.log(user);
+      user.banned = !user.banned;
+      try {
+        await user.save();
+      } catch (e) {}
+      res.sendStatus(200);
+    } else {
+      res.sendStatus(404);
+    }
   }
 });
 
@@ -94,64 +100,77 @@ usersRoute.get("/:id/login", async (req: Request, res: Response) => {
 usersRoute.post("/:id/verification", async (req: Request, res: Response) => {
   if (checkUser(req.params.id, res)) {
     const user = await User.findOne({ _id: res.locals.user?._id }).select("password");
-    if (!user || user.banned) return res.sendStatus(401);
-    const valid = await bcrypt.compare(req.body.password, user.password);
-    res.sendStatus(valid ? 200 : 401);
+    if (!user || user.banned) res.sendStatus(401);
+    else {
+      const valid = await bcrypt.compare(req.body.password, user.password);
+      res.sendStatus(valid ? 200 : 401);
+    }
   } else {
-    return res.sendStatus(401);
+    res.sendStatus(401);
   }
 });
 
 usersRoute.post("/:id", async (req: Request, res: Response) => {
   if (checkUser(req.params.id, res)) {
-    if (!res.locals.user?._id) return res.sendStatus(400);
-    const user = await User.findOne({ _id: res.locals.user._id });
-    if (!user || user.banned) return res.sendStatus(401);
-    user.gender = req.body.user.gender;
-    user.flags = req.body.user.flags;
-    await user.save();
-    console.log(user.username + " updated their profile");
-    res.sendStatus(200);
+    if (!res.locals.user?._id) res.sendStatus(400);
+    else {
+      const user = await User.findOne({ _id: res.locals.user._id });
+      if (!user || user.banned) res.sendStatus(401);
+      else {
+        user.gender = req.body.user.gender;
+        user.flags = req.body.user.flags;
+        await user.save();
+        console.log(user.username + " updated their profile");
+        res.sendStatus(200);
+      }
+    }
   } else {
-    return res.sendStatus(401);
+    res.sendStatus(401);
   }
 });
 
 usersRoute.post("/:id/password", async (req: Request, res: Response) => {
   if (checkUser(req.params.id, res)) {
     const user = await User.findOne({ _id: res.locals.user?._id }).select("username").select("password");
-    if (!user || user.banned) return res.sendStatus(401);
-    const valid = await bcrypt.compare(req.body.oldPassword, user.password);
-    if (!valid) return res.sendStatus(401);
-    const salt = await bcrypt.genSalt(10);
-    const hash = await bcrypt.hash(req.body.newPassword, salt);
-    user.password = hash;
-    await user.save();
-    console.log(user.username + " changed their password");
-    res.sendStatus(200);
+    if (!user || user.banned) res.sendStatus(401);
+    else {
+      const valid = await bcrypt.compare(req.body.oldPassword, user.password);
+      if (!valid) res.sendStatus(401);
+      else {
+        const salt = await bcrypt.genSalt(10);
+        const hash = await bcrypt.hash(req.body.newPassword, salt);
+        user.password = hash;
+        await user.save();
+        console.log(user.username + " changed their password");
+        res.sendStatus(200);
+      }
+    }
   } else {
-    return res.sendStatus(401);
+    res.sendStatus(401);
   }
 });
 
 usersRoute.post("/:id/username", async (req: Request, res: Response) => {
   if (checkUser(req.params.id, res)) {
     const user = await User.findOne({ _id: res.locals.user?._id }).select("username").select("usernameLC");
-    if (!user || user.banned) return res.sendStatus(401);
-    const user2 = await User.findOne({ username_lower: req.body.newUsername.toLowerCase() });
-    if (user2) {
-      if (user2._id !== res.locals.user?._id) {
-        console.log(req.body.newUsername + " already taken");
-        return res.sendStatus(304);
+    if (!user || user.banned) res.sendStatus(401);
+    else {
+      const user2 = await User.findOne({ username_lower: req.body.newUsername.toLowerCase() });
+      if (user2) {
+        if (user2._id !== res.locals.user?._id) {
+          console.log(req.body.newUsername + " already taken");
+          res.sendStatus(304);
+        }
+      } else {
+        console.log(user.username + " changed their name to " + req.body.newUsername);
+        user.username = req.body.newUsername;
+        user.usernameLC = req.body.newUsername.toLowerCase();
+        await user.save();
+        res.sendStatus(200);
       }
     }
-    console.log(user.username + " changed their name to " + req.body.newUsername);
-    user.username = req.body.newUsername;
-    user.usernameLC = req.body.newUsername.toLowerCase();
-    await user.save();
-    res.sendStatus(200);
   } else {
-    return res.sendStatus(401);
+    res.sendStatus(401);
   }
 });
 

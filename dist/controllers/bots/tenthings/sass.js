@@ -6,24 +6,23 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const moment_1 = __importDefault(require("moment"));
 const axios_1 = __importDefault(require("axios"));
 const telegram_1 = __importDefault(require("../../../connections/telegram"));
-exports.default = (game, text) => {
+exports.default = async (game, text) => {
     if (game.settings.sass && game.enabled) {
-        sass(text).then((sass) => {
-            if (sass) {
-                console.log(`SASS: ${text} => ${sass}`);
-                if (sass.includes("http")) {
-                    if (sass.includes(".gif")) {
-                        telegram_1.default.sendAnimation(game.chat_id, sass);
-                    }
-                    else {
-                        telegram_1.default.sendPhoto(game.chat_id, sass);
-                    }
+        const sassText = await sass(text);
+        if (sassText) {
+            console.log(`SASS: ${text} => ${sassText}`);
+            if (sassText.includes("http")) {
+                if (sassText.includes(".gif")) {
+                    telegram_1.default.sendAnimation(game.chat_id, sassText);
                 }
                 else {
-                    telegram_1.default.queueMessage(game.chat_id, sass);
+                    telegram_1.default.sendPhoto(game.chat_id, sassText);
                 }
             }
-        }, (err) => null);
+            else {
+                telegram_1.default.queueMessage(game.chat_id, sassText);
+            }
+        }
     }
 };
 const checkString = (text, str = "") => text
@@ -249,6 +248,7 @@ const sass = async (text) => {
         }
         else {
             messages = [
+                "If you want me to shut up, switch off sass in /settings",
                 "You talkin' to me?",
                 "I heard that",
                 "Nothing goes by me",
@@ -326,7 +326,7 @@ const sass = async (text) => {
                 "You might be on to something",
                 "Say it isn't so!",
                 "I liked your previous statement better",
-                "I was going to listen to that, but then I just carried on linving my life",
+                "I was going to listen to that, but then I just carried on living my life",
                 "https://i.imgur.com/X71TdXK.gif",
                 "https://i.imgur.com/TEsdXvh.gif",
                 "https://i.imgur.com/ZZx2f2d.gif",
@@ -416,6 +416,8 @@ const sass = async (text) => {
     if (messages.length > 0) {
         return messages[Math.floor(Math.random() * messages.length)];
     }
+    else
+        return;
 };
 const adjectives = [
     "able",

@@ -339,7 +339,7 @@ export default async (callbackQuery: ICallbackData) => {
       bot.queueMessage(callbackQuery.chatId, message);
       break;
     case CallbackDataType.Values:
-      List.findOne({ _id: callbackQuery.data }).exec((err, list) => {
+      List.findOne({ _id: callbackQuery.data }).exec((_, list) => {
         if (!list) {
           bot.queueMessage(callbackQuery.chatId, "List not found");
         } else {

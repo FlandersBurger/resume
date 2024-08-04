@@ -3,25 +3,21 @@ import axios from "axios";
 import { IGame } from "@models/tenthings/game";
 import bot from "@root/connections/telegram";
 
-export default (game: IGame, text: string) => {
+export default async (game: IGame, text: string) => {
   if (game.settings.sass && game.enabled) {
-    sass(text).then(
-      (sass) => {
-        if (sass) {
-          console.log(`SASS: ${text} => ${sass}`);
-          if (sass.includes("http")) {
-            if (sass.includes(".gif")) {
-              bot.sendAnimation(game.chat_id, sass);
-            } else {
-              bot.sendPhoto(game.chat_id, sass);
-            }
-          } else {
-            bot.queueMessage(game.chat_id, sass);
-          }
+    const sassText = await sass(text);
+    if (sassText) {
+      console.log(`SASS: ${text} => ${sassText}`);
+      if (sassText.includes("http")) {
+        if (sassText.includes(".gif")) {
+          bot.sendAnimation(game.chat_id, sassText);
+        } else {
+          bot.sendPhoto(game.chat_id, sassText);
         }
-      },
-      (err) => null
-    );
+      } else {
+        bot.queueMessage(game.chat_id, sassText);
+      }
+    }
   }
 };
 
@@ -245,6 +241,7 @@ const sass = async (text: string): Promise<string | undefined> => {
       messages = ["Try /commands"];
     } else {
       messages = [
+        "If you want me to shut up, switch off sass in /settings",
         "You talkin' to me?",
         "I heard that",
         "Nothing goes by me",
@@ -322,7 +319,7 @@ const sass = async (text: string): Promise<string | undefined> => {
         "You might be on to something",
         "Say it isn't so!",
         "I liked your previous statement better",
-        "I was going to listen to that, but then I just carried on linving my life",
+        "I was going to listen to that, but then I just carried on living my life",
         "https://i.imgur.com/X71TdXK.gif",
         "https://i.imgur.com/TEsdXvh.gif",
         "https://i.imgur.com/ZZx2f2d.gif",
@@ -394,7 +391,7 @@ const sass = async (text: string): Promise<string | undefined> => {
   }
   if (messages.length > 0) {
     return messages[Math.floor(Math.random() * messages.length)];
-  }
+  } else return;
 };
 
 const adjectives = [

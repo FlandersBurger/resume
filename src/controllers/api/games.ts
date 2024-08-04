@@ -8,13 +8,15 @@ export const gamesRoute = Router();
 
 gamesRoute.post("/:game/:userId/highscore", async (req: Request, res: Response) => {
   const user = await User.findOne({ _id: req.params.userId });
-  if (!user) return res.sendStatus(404);
-  user.highscore[req.params.game as keyof IUser["highscore"]] = req.body.score;
-  await user.save();
-  res.sendStatus(200);
+  if (!user) res.sendStatus(404);
+  else {
+    user.highscore[req.params.game as keyof IUser["highscore"]] = req.body.score;
+    await user.save();
+    res.sendStatus(200);
+  }
 });
 
-gamesRoute.post("/fuzzy_match", function ({ body }, res, next) {
+gamesRoute.post("/fuzzy_match", function ({ body }, res) {
   const fuzzyMatch = new FuzzyMatching(body.values);
   const match = fuzzyMatch.get(body.guess, { min: 0.75 });
   res.json(match);

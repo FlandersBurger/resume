@@ -24,7 +24,6 @@ const messageQueue = new bull_1.default("sendMessage", {
     },
 });
 messageQueue.on("completed", function (job) {
-    //Job finished we remove it]
     job.remove();
 });
 class TelegramBot {
@@ -72,7 +71,6 @@ class TelegramBot {
             }
         };
         this.setWebhook = async (api) => {
-            //var url = 'https://api.telegram.org/beta/bot' + bot.token + '/setWebhook?url=https://belgocanadian.com/bots/' + api;
             const allowed_updates = JSON.stringify(["message", "callback_query"]);
             const url = `${this.baseUrl}/setWebhook?url=https://belgocanadian.com/bots/${api}&allowed_updates=${allowed_updates}`;
             try {
@@ -93,11 +91,12 @@ class TelegramBot {
                 this.notifyAdmin("Get Webhook Fail");
                 console.error(error.response.data);
             }
+            return;
         };
         this.deleteWebhook = async () => {
             const url = `${this.baseUrl}/deleteWebhook`;
             try {
-                return await axios_1.default.get(url);
+                await axios_1.default.get(url);
             }
             catch (error) {
                 this.notifyAdmin("Delete Webhook Fail");
@@ -114,22 +113,23 @@ class TelegramBot {
                     if (error.response.data.description.includes("too long")) {
                         this.notifyAdmin(`Too long: ${message.substring(0, 500)}...`);
                         setTimeout(() => this.sendMessage(channel, message.substring(0, 4000), topic, true), 200);
-                        return;
                     }
-                    if (error.response.data.description.includes("can't parse")) {
-                        return this.notifyAdmin(`Send Message to ${channel} parse Fail: ${message}`);
+                    else if (error.response.data.description.includes("can't parse")) {
+                        this.notifyAdmin(`Send Message to ${channel} parse Fail: ${message}`);
                     }
-                    this.errorHandler(channel, "Send message", error);
+                    else
+                        this.errorHandler(channel, "Send message", error);
                 }
                 else {
                     if (error.code === "ETIMEDOUT") {
                         if (!retry) {
                             setTimeout(() => this.sendMessage(channel, message, topic, true), 200);
-                            return;
                         }
-                        console.error(error.errors);
-                        if (channel !== parseInt(process.env.MASTER_CHAT || "")) {
-                            return this.notifyAdmin(`Send Message to ${channel} Fail: Timeout`);
+                        else {
+                            console.error(error.errors);
+                            if (channel !== parseInt(process.env.MASTER_CHAT || "")) {
+                                this.notifyAdmin(`Send Message to ${channel} Fail: Timeout`);
+                            }
                         }
                     }
                 }

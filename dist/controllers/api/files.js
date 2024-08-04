@@ -9,10 +9,16 @@ const path_1 = __importDefault(require("path"));
 const fs_1 = __importDefault(require("fs"));
 exports.filesRoute = (0, express_1.Router)();
 exports.filesRoute.get("/:type/:folder", (req, res) => {
-    fs_1.default.readdir(path_1.default.resolve(`${req.params.type}/${req.params.folder}`), (err, files) => {
-        if (err || !files || files.length === 0)
-            return res.sendStatus(404);
-        res.json(files.sort((file1, file2) => file1.substring(file1.indexOf(".") - 2) < file2.substring(file2.indexOf(".") - 2) ? 1 : -1));
-    });
+    if (["images", "sounds"].includes(req.params.type)) {
+        fs_1.default.readdir(path_1.default.resolve(`${req.params.type}/${req.params.folder}`), (err, files) => {
+            if (err || !files || files.length === 0)
+                res.sendStatus(404);
+            else {
+                res.json(files.sort((file1, file2) => file1.substring(file1.indexOf(".") - 2) < file2.substring(file2.indexOf(".") - 2) ? 1 : -1));
+            }
+        });
+    }
+    else
+        res.sendStatus(401);
 });
 //# sourceMappingURL=files.js.map

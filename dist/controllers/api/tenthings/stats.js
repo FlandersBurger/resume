@@ -4,7 +4,7 @@ exports.tenthingsStatsRoute = void 0;
 const express_1 = require("express");
 exports.tenthingsStatsRoute = (0, express_1.Router)();
 const models_1 = require("../../../models");
-exports.tenthingsStatsRoute.get("/total", async (req, res) => {
+exports.tenthingsStatsRoute.get("/total", async (_, res) => {
     const total = await models_1.List.countDocuments({});
     res.json(total);
 });

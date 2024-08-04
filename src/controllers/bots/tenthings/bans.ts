@@ -1,4 +1,4 @@
-import { HydratedDocument, Types } from "mongoose";
+import { HydratedDocument } from "mongoose";
 import { List } from "@models/index";
 import { IGame } from "@models/tenthings/game";
 import { ICallbackData } from "./callbacks";
@@ -21,7 +21,7 @@ export const initiateBan = async (game: IGame, callbackQuery: ICallbackData) => 
     if (game.bannedLists.some((bannedListId) => bannedListId.toString() == callbackQuery.data)) {
       bot.queueMessage(
         game.chat_id,
-        i18n(game.settings.language, "sentences.alreadyBannedList", { list: foundList.name })
+        i18n(game.settings.language, "sentences.alreadyBannedList", { list: foundList.name }),
       );
       bot.deleteMessage(callbackQuery.chatId, callbackQuery.id);
     } else {
@@ -32,14 +32,14 @@ export const initiateBan = async (game: IGame, callbackQuery: ICallbackData) => 
           i18n(game.settings.language, `sentences.${game.chat_id > 0 ? "confirmBan" : "corroborateBan"}`, {
             list: foundList.name,
           }),
-          confirmBanListKeyboard(game.settings.language, foundList)
+          confirmBanListKeyboard(game.settings.language, foundList),
         );
       }
     }
   } else {
     bot.queueMessage(
       game.chat_id,
-      i18n(game.settings.language, "warnings.adminFunction", { name: callbackQuery.from.name })
+      i18n(game.settings.language, "warnings.adminFunction", { name: callbackQuery.from.name }),
     );
   }
 };
@@ -48,7 +48,7 @@ export const processBan = (game: HydratedDocument<IGame>, callbackQuery: ICallba
   if (!cache[`${game._id}-${callbackQuery.data}`]) {
     bot.queueMessage(
       game.chat_id,
-      i18n(game.settings.language, "sentences.banNotFound", { name: callbackQuery.from.name })
+      i18n(game.settings.language, "sentences.banNotFound", { name: callbackQuery.from.name }),
     );
     bot.deleteMessage(callbackQuery.chatId, callbackQuery.id);
   } else if (cache[`${game._id}-${callbackQuery.data}`] !== callbackQuery.from.id || game.chat_id > 0) {
@@ -58,7 +58,7 @@ export const processBan = (game: HydratedDocument<IGame>, callbackQuery: ICallba
   } else {
     bot.queueMessage(
       game.chat_id,
-      i18n(game.settings.language, "warnings.corroborateBanBySamePlayer", { name: callbackQuery.from.name })
+      i18n(game.settings.language, "warnings.corroborateBanBySamePlayer", { name: callbackQuery.from.name }),
     );
   }
 };

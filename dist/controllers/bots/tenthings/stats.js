@@ -13,12 +13,6 @@ const i18n_1 = __importDefault(require("../../../i18n"));
 const number_helpers_1 = require("../../../utils/number-helpers");
 const string_helpers_1 = require("../../../utils/string-helpers");
 const getScores = async (game_id, type) => {
-    /*
-    stats('score', game_id, scoreType)
-    .then(function(str) {
-      bot.queueMessage(game_id, str);
-    });
-    */
     const game = await index_1.Game.findOne({ chat_id: game_id }).select("chat_id settings").exec();
     if (!game)
         return;
@@ -143,8 +137,6 @@ const getStats = async (chat_id, data, requestor) => {
                 message += `Suggestions given: ${(0, number_helpers_1.makeReadable)(stats.suggestions)}\n`;
                 message += `Lists searched: ${(0, number_helpers_1.makeReadable)(stats.searches)}\n`;
                 message += `Lists Skipped: ${(0, number_helpers_1.makeReadable)(stats.skips)}\n`;
-                //message += `${allPlayers.filter(({scoreDaily}) => scoreDaily).length} out of ${allPlayers.filter(({present}) => present).length} players played today\n`;
-                //message += `Cycled through all lists ${games.reduce((count, {cycles}) => count + (cycles ? cycles : 0), 0)} times\n`;
                 message += "\n";
                 telegram_1.default.queueMessage(game.chat_id, message);
             });
@@ -178,7 +170,7 @@ const getStats = async (chat_id, data, requestor) => {
             index_1.Player.findOne({
                 game: game._id,
                 id: _id,
-            }).exec((err, player) => {
+            }).exec((_, player) => {
                 if (!player) {
                     telegram_1.default.queueMessage(game.chat_id, "Player not found");
                 }
@@ -192,7 +184,7 @@ const getStats = async (chat_id, data, requestor) => {
                 _id: _id,
             })
                 .populate("creator")
-                .exec((err, gameList) => {
+                .exec((_, gameList) => {
                 if (!gameList) {
                     telegram_1.default.queueMessage(game.chat_id, "List not found");
                 }
@@ -395,37 +387,31 @@ const creatorStats = async () => {
                 votes: { $sum: "$votes" },
                 positive: { $sum: "$positive" },
                 negative: { $sum: "$negative" },
-                score: { $avg: "$_id.score" },
                 plays: { $sum: "$plays" },
                 skips: { $sum: "$skips" },
             },
         },
     ]);
-    //const listsWithCreators = await List.populate(lists, { path: '_id' });
-    //const listCount = await List.countDocuments();
     for (const list of lists)
         list.creator = await index_1.User.findOne({ _id: list._id }).select("username displayName").lean();
     console.log(lists
-        .filter((list) => list.lists >= 25)
-        .sort((listA, listB) => listB.score - listA.score)
-        //.slice(0, 20)
+        .filter((list) => list.lists > 20)
+        .sort((listA, listB) => listA.skips / listA.plays - listB.skips / listB.plays)
+        .slice(0, 20)
         .map((list) => ({
         creator: list.creator.username,
-        likeability: list.score.makePercentage(),
-        //voteRatio: (list.positive / list.votes) * 100,
-        //skipRatio: (list.skips / list.plays) * 100,
+        skipRatio: (0, number_helpers_1.makePercentage)(list.skips / list.plays),
     })));
     console.log(lists
         .filter((list) => list.lists > 20)
-        .sort((listA, listB) => listA.skips / listA.plays - listB.skips / listB.plays)
-        //.slice(0, 20)
+        .sort((listA, listB) => listA.positive / listA.votes - listB.positive / listB.votes)
+        .slice(0, 20)
         .map((list) => ({
         creator: list.creator.username,
-        //likeability: (list.positive / list.votes) * 100,
-        skipRatio: (list.skips / list.plays) * 100,
+        likeRatio: (0, number_helpers_1.makePercentage)(list.positive / list.votes),
     })));
 };
-// creatorStats();
+creatorStats();
 const voteSentimentStats = async ({ chat_id }, players, sorter, title, requestor) => {
     index_1.List.aggregate([
         { $match: { "votes.vote": sorter } },

@@ -106,6 +106,7 @@ class TelegramBot {
     }
   };
 
+  // @ts-ignore
   private setWebhook = async (api: string): Promise<any> => {
     //var url = 'https://api.telegram.org/beta/bot' + bot.token + '/setWebhook?url=https://belgocanadian.com/bots/' + api;
     const allowed_updates = JSON.stringify(["message", "callback_query"]);
@@ -127,12 +128,13 @@ class TelegramBot {
       this.notifyAdmin("Get Webhook Fail");
       console.error(error.response.data);
     }
+    return;
   };
 
   public deleteWebhook = async () => {
     const url = `${this.baseUrl}/deleteWebhook`;
     try {
-      return await axios.get(url);
+      await axios.get(url);
     } catch (error: AxiosError | any) {
       this.notifyAdmin("Delete Webhook Fail");
       console.error(error.response.data);
@@ -148,21 +150,18 @@ class TelegramBot {
         if (error.response.data.description.includes("too long")) {
           this.notifyAdmin(`Too long: ${message.substring(0, 500)}...`);
           setTimeout(() => this.sendMessage(channel, message.substring(0, 4000), topic, true), 200);
-          return;
-        }
-        if (error.response.data.description.includes("can't parse")) {
-          return this.notifyAdmin(`Send Message to ${channel} parse Fail: ${message}`);
-        }
-        this.errorHandler(channel, "Send message", error);
+        } else if (error.response.data.description.includes("can't parse")) {
+          this.notifyAdmin(`Send Message to ${channel} parse Fail: ${message}`);
+        } else this.errorHandler(channel, "Send message", error);
       } else {
         if (error.code === "ETIMEDOUT") {
           if (!retry) {
             setTimeout(() => this.sendMessage(channel, message, topic, true), 200);
-            return;
-          }
-          console.error(error.errors);
-          if (channel !== parseInt(process.env.MASTER_CHAT || "")) {
-            return this.notifyAdmin(`Send Message to ${channel} Fail: Timeout`);
+          } else {
+            console.error(error.errors);
+            if (channel !== parseInt(process.env.MASTER_CHAT || "")) {
+              this.notifyAdmin(`Send Message to ${channel} Fail: Timeout`);
+            }
           }
         }
       }

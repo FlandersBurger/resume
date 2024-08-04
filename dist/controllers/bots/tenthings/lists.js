@@ -24,8 +24,6 @@ const getRandomList = async (parameters = {}) => {
 };
 exports.getRandomList = getRandomList;
 const getListScore = (list) => {
-    //((upvotes / (upvotes + downvotes)) + (skips / plays)) / 2
-    //(upvote ratio in regards to total votes + skip ratio in regards to plays) / 2
     if (list.votes && list.plays) {
         const upvotes = list.votes.filter((vote) => vote.vote > 0);
         const voteRatio = list.votes.length > 0 ? upvotes.length / list.votes.length : 0;
@@ -151,19 +149,6 @@ const searchList = async (search, game) => {
     return foundLists;
 };
 exports.searchList = searchList;
-/*
-const curateList = async () => {
-    const list = await lists.getRandomList();
-    let msg = listInfo(list);
-    msg += ` - Values: ${list.values.length}\n`;
-    msg += ` - Plays: ${list.plays}\n`;
-    msg += ` - Skips: ${list.skips}\n`;
-    msg += ` - Hints: ${list.hints}\n\n`;
-    msg += `Rate Difficulty and Update Frequency`;
-    bot.notifyAdmins(msg, keyboards.curate(list));
-};
-curateList();
-*/
 const logHint = async (listId) => {
     let list = await index_1.List.findOne({ _id: listId }).select("_id name hints").exec();
     if (list) {

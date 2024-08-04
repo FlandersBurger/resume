@@ -52,7 +52,6 @@ const processSkip = (game, skipper) => {
         }
     }
     else {
-        //No need to have a delay in a personal chat
         skipList(game, skipper);
     }
 };
@@ -113,7 +112,6 @@ const checkSkipper = async (game, msg, player) => {
     if (!exports.vetoCache[game.chat_id] || exports.vetoCache[game.chat_id] < (0, moment_1.default)().subtract(VETO_DELAY, "seconds")) {
         delete exports.vetoCache[game.chat_id];
         if (skippers[player.id]) {
-            //Check for spamming if it's the same player
             if (skippers[player.id].lastSkipped < (0, moment_1.default)().subtract(skippers[player.id].delay, "seconds")) {
                 delete skippers[player.id];
             }
@@ -151,7 +149,6 @@ const checkSkipper = async (game, msg, player) => {
             }
         }
         else {
-            //Start skip spam timer
             skippers[player.id] = {
                 lastSkipped: (0, moment_1.default)(),
                 delay: 15,

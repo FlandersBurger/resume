@@ -77,7 +77,6 @@ exports.default = async (callbackQuery) => {
                 delete foundList.voters;
                 await foundList.save();
                 telegram_1.default.answerCallback(callbackQuery.callbackQueryId, vote > 0 ? emojis_1.default.thumbsUp : emojis_1.default.thumbsDown);
-                //bot.notifyAdmin(`"<b>${foundList.name}</b>" ${data.vote > 0 ? 'up' : 'down'}voted by <i>${body.callback_query.from.first_name}</i>!`);
                 if ((0, moment_1.default)(callbackQuery.date) > (0, moment_1.default)().subtract(1, "days")) {
                     game = await index_1.Game.findOne({ chat_id: callbackQuery.chatId }).select("settings").exec();
                     if (!game)
@@ -301,7 +300,7 @@ exports.default = async (callbackQuery) => {
             telegram_1.default.queueMessage(callbackQuery.chatId, message);
             break;
         case CallbackDataType.Values:
-            index_1.List.findOne({ _id: callbackQuery.data }).exec((err, list) => {
+            index_1.List.findOne({ _id: callbackQuery.data }).exec((_, list) => {
                 if (!list) {
                     telegram_1.default.queueMessage(callbackQuery.chatId, "List not found");
                 }

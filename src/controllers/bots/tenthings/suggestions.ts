@@ -8,7 +8,7 @@ export const sendSuggestion = async (
   type: string,
   msg: IMessage,
   player: HydratedDocument<IPlayer>,
-  extraText = ""
+  extraText = "",
 ) => {
   const suggestion = msg.text.substring(msg.command!.length + 1, msg.text.length);
   if (suggestion && suggestion != "TenThings_Bot" && suggestion != "@TenThings_Bot") {
@@ -26,6 +26,6 @@ export const sendSuggestion = async (
     }`;
     bot.queueMessage(msg.chatId, message);
   } else {
-    bot.queueMessage(msg.chatId, `You didn't add a feature ${player.first_name}. Add your message after /feature`);
+    bot.queueMessage(msg.chatId, `You didn't add a message, ${player.first_name}. Add your message after /${type}`);
   }
 };

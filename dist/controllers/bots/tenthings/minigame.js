@@ -98,8 +98,6 @@ const createMinigames = async () => {
     telegram_1.default.notifyAdmin(`${minigames.length} minigames created`);
 };
 exports.createMinigames = createMinigames;
-// Count the possible minigames
-// getMinigames({}).then((minigames) => console.log(minigames.length));
 const sendMinigameMessage = (game) => {
     let message = `<b>${(0, i18n_1.default)(game.settings.language, "sentences.findTheConnection")}</b>\n`;
     message += game.minigame.lists.reduce((msg, list) => {

@@ -7,11 +7,6 @@ const client = (0, redis_1.createClient)({ url, password: process.env.REDIS_PASS
 const publisher = (0, redis_1.createClient)({ url, password: process.env.REDIS_PASSWORD });
 const subscriber = (0, redis_1.createClient)({ url, password: process.env.REDIS_PASSWORD });
 const redisConnect = async () => {
-    /*
-    const client = process.env.NODE_ENV === 'development' ? redis.createClient({url}) : redis.createClient({
-      path: '/var/run/redis/redis.sock'
-    });
-    */
     client.on("error", (error) => {
         console.error(error);
     });

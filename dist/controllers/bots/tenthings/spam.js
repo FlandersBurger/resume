@@ -37,9 +37,6 @@ const checkSpam = (body) => {
                 telegram_1.default.exportChatInviteLink(chat).then((url) => {
                     telegram_1.default.notifyAdmin(`Possible spammer: ${name} (${from}) in chat ${chat} ${chat == parseInt(process.env.GROUP_CHAT || "") ? " - The main chat!" : ""}\n\n${body.message}\n\nURL: ${url ? url : "N/A"}`);
                 });
-                /*
-                        } else if (cache[from].count % 10 === 0) {
-                          bot.notifyAdmin(`Possible spammer: ${name} (${from}) -> ${cache[from].count} messages`);*/
             }
             cache[from].lastMessage = (0, moment_1.default)();
             return true;

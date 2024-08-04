@@ -4,7 +4,7 @@ export const tenthingsStatsRoute = Router();
 
 import { List } from "@root/models";
 
-tenthingsStatsRoute.get("/total", async (req: Request, res: Response) => {
+tenthingsStatsRoute.get("/total", async (_: Request, res: Response) => {
   const total = await List.countDocuments({});
   res.json(total);
 });

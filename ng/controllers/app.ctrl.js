@@ -1,4 +1,4 @@
-angular.module("app").controller("AppCtrl", function ($scope, $location, LanguageSvc, UserSvc) {
+angular.module("app").controller("AppCtrl", function ($scope, LanguageSvc, UserSvc) {
   console.log(
     "%cYou sneaky bugger!",
     "font: 2em sans-serif; color: DodgerBlue; text-shadow: 2px 0 0 #444, -2px 0 0 #444, 0 2px 0 #444, 0 -2px 0 #444, 1px 1px #444, -1px -1px 0 #444, 1px -1px 0 #444, -1px 1px 0 #444;",
@@ -18,7 +18,7 @@ angular.module("app").controller("AppCtrl", function ($scope, $location, Languag
     });
     */
 
-  $(window).load(function () {
+  $(window).load("", "", function () {
     $(".loading").fadeOut("slow");
     $(".content").fadeIn("slow");
   });
@@ -36,10 +36,10 @@ angular.module("app").controller("AppCtrl", function ($scope, $location, Languag
   $scope.year = $scope.today.getFullYear();
   $scope.random = Math.floor(Math.random() * 1000000);
 
-  $scope.flipTheme = function () {
+  $scope.flipTheme = () => {
     $(".loading").show();
     $(".content").hide();
-    setTimeout(function () {
+    setTimeout(() => {
       $(".loading").fadeOut("slow");
       $(".content").fadeIn("slow");
     }, 800);
@@ -58,7 +58,7 @@ angular.module("app").controller("AppCtrl", function ($scope, $location, Languag
 
   $.getJSON("/experience.json", function (data) {
     $scope.jobs = data;
-    $scope.jobs.forEach(function (job) {
+    $scope.jobs.forEach((job) => {
       job.startDate = new Date(job.startDate);
       if (job.endDate) job.endDate = new Date(job.endDate);
     });
@@ -68,7 +68,7 @@ angular.module("app").controller("AppCtrl", function ($scope, $location, Languag
     $scope.charades = data;
   });
 
-  $scope.getTimeSpan = function (job) {
+  $scope.getTimeSpan = (job) => {
     return job.startDate.getFullYear() + (job.endDate ? " - " + job.endDate.getFullYear() : " - Today");
   };
 
@@ -76,11 +76,11 @@ angular.module("app").controller("AppCtrl", function ($scope, $location, Languag
 
   $scope.selectedLanguage = LanguageSvc.getLanguage();
 
-  $scope.selectLanguage = function (language) {
+  $scope.selectLanguage = (language) => {
     $scope.selectedLanguage = LanguageSvc.setLanguage(language);
   };
 
-  $scope.hoverdiv = function (e, divid) {
+  $scope.hoverdiv = (e, divid) => {
     var left = e.clientX + "px";
     var top = e.clientY + 20 + "px";
 
@@ -94,16 +94,16 @@ angular.module("app").controller("AppCtrl", function ($scope, $location, Languag
   };
 
   if (window.localStorage.user) {
-    UserSvc.login(window.localStorage.user).then(function (response) {
+    UserSvc.login(window.localStorage.user).then((response) => {
       login(response.data);
     });
   }
 
-  $scope.$on("login", function (_, user) {
+  $scope.$on("login", (_, user) => {
     login(user);
   });
 
-  function login(user) {
+  const login = (user) => {
     if (!$scope.loggedIn) {
       window.localStorage.user = user._id;
       $scope.loggedIn = true;
@@ -111,51 +111,48 @@ angular.module("app").controller("AppCtrl", function ($scope, $location, Languag
       $scope.currentUser.birthDate = new Date($scope.currentUser.birthDate);
       $scope.$broadcast("login");
     }
-  }
+  };
 
-  $scope.$on("update", function (_, user) {
+  $scope.$on("update", (_, user) => {
     $scope.currentUser = user;
     $scope.currentUser.birthDate = new Date($scope.currentUser.birthDate);
     $scope.loading = false;
-    setTimeout(function () {
+    setTimeout(() => {
       $("#loading-icon").fadeOut("slow");
     }, 1000);
   });
 
-  $scope.$on("loading", function (_, user) {
+  $scope.$on("loading", (_, user) => {
     $scope.loading = true;
     $("#loading-icon").show();
   });
 
-  $scope.$on("loaded", function (_, user) {
+  $scope.$on("loaded", (_, user) => {
     $scope.loading = false;
     setTimeout(function () {
       $("#loading-icon").fadeOut("slow");
     }, 1000);
   });
 
-  $scope.logout = function () {
+  $scope.logout = () => {
     firebase
       .auth()
       .signOut()
-      .then(function () {
+      .then(() => {
         // Sign-out successful.
         $scope.loggedIn = false;
         window.localStorage.clear();
         $scope.$broadcast("logout");
       })
-      .catch(function (error) {
+      .catch((error) => {
         // An error happened.
+        console.error(error);
       });
   };
 
-  $scope.formatDate = function (date) {
-    var months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+  $scope.formatDate = (date) => {
+    const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
     date = new Date(date);
     return date.getDate() + "-" + months[date.getMonth()] + "-" + date.getFullYear();
-  };
-
-  String.prototype.capitalize = function () {
-    return this.charAt(0).toUpperCase() + this.slice(1);
   };
 });

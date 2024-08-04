@@ -146,7 +146,7 @@ const getDifficultyMessage = (difficulty) => {
     }
 };
 exports.getDifficultyMessage = getDifficultyMessage;
-const getListStats = (language, list, requestor, expanded = false) => {
+const getListStats = (language, list, requestor) => {
     var message = "";
     message += requestor ? `<i>${(0, i18n_1.default)(language, "sentences.requestedBy", { requestor })}</i>\n` : "";
     message += `${(0, i18n_1.default)(language, "stats.misc", { something: list.name })}\n`;

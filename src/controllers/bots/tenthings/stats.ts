@@ -9,7 +9,7 @@ import { getListStats, getPlayerStats } from "./messages";
 
 import bot from "@root/connections/telegram";
 import i18n from "@root/i18n";
-import { makeReadable } from "@root/utils/number-helpers";
+import { makePercentage, makeReadable } from "@root/utils/number-helpers";
 import { angleBrackets } from "@root/utils/string-helpers";
 
 export const getScores = async (game_id: number, type: string) => {
@@ -231,7 +231,7 @@ export const getStats = async (chat_id: number, data: string, requestor?: string
       Player.findOne({
         game: game._id,
         id: _id,
-      }).exec((err, player) => {
+      }).exec((_, player) => {
         if (!player) {
           bot.queueMessage(game.chat_id, "Player not found");
         } else {
@@ -244,7 +244,7 @@ export const getStats = async (chat_id: number, data: string, requestor?: string
         _id: _id,
       })
         .populate("creator")
-        .exec((err, gameList) => {
+        .exec((_, gameList) => {
           if (!gameList) {
             bot.queueMessage(game.chat_id, "List not found");
           } else {
@@ -613,7 +613,6 @@ const creatorStats = async () => {
         votes: { $sum: "$votes" },
         positive: { $sum: "$positive" },
         negative: { $sum: "$negative" },
-        score: { $avg: "$_id.score" },
         plays: { $sum: "$plays" },
         skips: { $sum: "$skips" },
       },
@@ -624,30 +623,27 @@ const creatorStats = async () => {
   for (const list of lists) list.creator = await User.findOne({ _id: list._id }).select("username displayName").lean();
   console.log(
     lists
-      .filter((list) => list.lists >= 25)
-      .sort((listA, listB) => listB.score - listA.score)
-      //.slice(0, 20)
+      .filter((list) => list.lists > 20)
+      .sort((listA, listB) => listA.skips / listA.plays - listB.skips / listB.plays)
+      .slice(0, 20)
       .map((list) => ({
         creator: list.creator.username,
-        likeability: list.score.makePercentage(),
-        //voteRatio: (list.positive / list.votes) * 100,
-        //skipRatio: (list.skips / list.plays) * 100,
+        skipRatio: makePercentage(list.skips / list.plays),
       })),
   );
   console.log(
     lists
       .filter((list) => list.lists > 20)
-      .sort((listA, listB) => listA.skips / listA.plays - listB.skips / listB.plays)
-      //.slice(0, 20)
+      .sort((listA, listB) => listA.positive / listA.votes - listB.positive / listB.votes)
+      .slice(0, 20)
       .map((list) => ({
         creator: list.creator.username,
-        //likeability: (list.positive / list.votes) * 100,
-        skipRatio: (list.skips / list.plays) * 100,
+        likeRatio: makePercentage(list.positive / list.votes),
       })),
   );
 };
 
-// creatorStats();
+creatorStats();
 
 const voteSentimentStats = async (
   { chat_id }: IGame,
@@ -678,6 +674,7 @@ const voteSentimentStats = async (
     });
 };
 
+// @ts-ignore
 const tenThingsStats = (
   game: IGame,
   sorter: { [key in keyof IPlayer]: SortOrder },

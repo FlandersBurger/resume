@@ -8,11 +8,10 @@ const i18next_1 = __importDefault(require("i18next"));
 const i18next_fs_backend_1 = __importDefault(require("i18next-fs-backend"));
 const path_1 = require("path");
 const fs_1 = require("fs");
-// if no language parameter is passed, let's try to use the node.js system's locale
 const systemLocale = Intl.DateTimeFormat().resolvedOptions().locale;
 const localesFolder = (0, path_1.join)(__dirname, "../data/locales");
 i18next_1.default.use(i18next_fs_backend_1.default).init({
-    initImmediate: false, // setting initImediate to false, will load the resources synchronously
+    initImmediate: false,
     fallbackLng: "en",
     preload: (0, fs_1.readdirSync)(localesFolder).filter((fileName) => {
         const joinedPath = (0, path_1.join)(localesFolder, fileName);

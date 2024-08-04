@@ -79,7 +79,7 @@ export const evaluate = async (msg: IMessage, game: HydratedDocument<IGame>, isN
           msg.chatId,
           i18n(game.settings.language, "sentences.introduction", {
             name: player.first_name,
-          })
+          }),
         );
         break;
       case "/logica":
@@ -89,7 +89,7 @@ export const evaluate = async (msg: IMessage, game: HydratedDocument<IGame>, isN
       case "/comandos":
         bot.queueMessage(
           msg.chatId,
-          commands.map((command) => `/${command} - ${i18n("PT", `commands.${command}.description`)}`).join("\n")
+          commands.map((command) => `/${command} - ${i18n("PT", `commands.${command}.description`)}`).join("\n"),
         );
         break;
       case "/commands":
@@ -97,7 +97,7 @@ export const evaluate = async (msg: IMessage, game: HydratedDocument<IGame>, isN
           msg.chatId,
           commands
             .map((command) => `/${command} - ${i18n(game.settings.language, `commands.${command}.description`)}`)
-            .join("\n")
+            .join("\n"),
         );
         break;
       case "/parar":
@@ -107,7 +107,7 @@ export const evaluate = async (msg: IMessage, game: HydratedDocument<IGame>, isN
         } else {
           bot.queueMessage(
             game.chat_id,
-            i18n(game.settings.language, "warnings.adminFunction", { name: player.first_name })
+            i18n(game.settings.language, "warnings.adminFunction", { name: player.first_name }),
           );
         }
         break;
@@ -172,7 +172,7 @@ export const evaluate = async (msg: IMessage, game: HydratedDocument<IGame>, isN
         if (game.pickedLists.length >= 10)
           return bot.queueMessage(
             game.chat_id,
-            `The queue already has the maximum of 10 lists, ${player.first_name}.\n -> /lists`
+            `The queue already has the maximum of 10 lists, ${player.first_name}.\n -> /lists`,
           );
         if (search && search != "TenThings_Bot" && search != "@TenThings_Bot") {
           player.searches++;
@@ -186,18 +186,18 @@ export const evaluate = async (msg: IMessage, game: HydratedDocument<IGame>, isN
               `<b>Which list would you like to ${
                 msg.chatId === parseInt(process.env.ADMIN_CHAT || "") ? "curate" : "queue"
               }?</b>`,
-              keyboard
+              keyboard,
             );
           } else {
             bot.queueMessage(
               game.chat_id,
-              `I didn't find any corresponding lists for <b>"${search}"</b>, ${player.first_name}.\nSimpler queries return better results.`
+              `I didn't find any corresponding lists for <b>"${search}"</b>, ${player.first_name}.\nSimpler queries return better results.`,
             );
           }
         } else {
           bot.queueMessage(
             msg.chatId,
-            `You didn't search anything ${player.first_name}. Add your message after /search`
+            `You didn't search anything ${player.first_name}. Add your message after /search`,
           );
         }
         break;
@@ -239,7 +239,7 @@ export const evaluate = async (msg: IMessage, game: HydratedDocument<IGame>, isN
             .then((games) => {
               bot.broadcast(
                 games.map(({ chat_id }) => chat_id),
-                msg.text.replace("/notify ", "")
+                msg.text.replace("/notify ", ""),
               );
             });
         }
@@ -286,7 +286,7 @@ export const evaluate = async (msg: IMessage, game: HydratedDocument<IGame>, isN
             bot.sendKeyboard(
               game.chat_id,
               `<b>${i18n(game.settings.language, "category")}</b>`,
-              categoriesKeyboard(game)
+              categoriesKeyboard(game),
             );
           } else {
             bot.queueMessage(game.chat_id, getCategoriesMessage(game));
@@ -300,12 +300,12 @@ export const evaluate = async (msg: IMessage, game: HydratedDocument<IGame>, isN
             bot.sendKeyboard(
               game.chat_id,
               `<b>${i18n(game.settings.language, "settings")}</b>`,
-              settingsKeyboard(game)
+              settingsKeyboard(game),
             );
           } else {
             bot.queueMessage(
               game.chat_id,
-              i18n(game.settings.language, "warnings.adminFunction", { name: player.first_name })
+              i18n(game.settings.language, "warnings.adminFunction", { name: player.first_name }),
             );
           }
         }
@@ -318,7 +318,7 @@ export const evaluate = async (msg: IMessage, game: HydratedDocument<IGame>, isN
               game.list.name
             }\nMinigame: ${game.minigame.answer}\nTinygame: ${
               game.tinygame.answer
-            }\nhttps://belgocanadian.com/tenthings/${game.chat_id}`
+            }\nhttps://belgocanadian.com/tenthings/${game.chat_id}`,
           );
         }
         break;
@@ -354,7 +354,7 @@ export const evaluate = async (msg: IMessage, game: HydratedDocument<IGame>, isN
             _id: {
               $in: game.pickedLists,
             },
-          }).exec((err, upcomingLists) => {
+          }).exec((_, upcomingLists) => {
             let message = "<b>Upcoming lists</b>\n";
             for (const list of upcomingLists.slice(0, 10)) {
               message += `- ${list.name}\n`;

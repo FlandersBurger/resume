@@ -27,13 +27,6 @@ const createMaingame = async (chat_id) => {
     return newGame;
 };
 exports.createMaingame = createMaingame;
-/*
-  ██████ ██   ██ ███████  ██████ ██   ██     ██████   ██████  ██    ██ ███    ██ ██████
- ██      ██   ██ ██      ██      ██  ██      ██   ██ ██    ██ ██    ██ ████   ██ ██   ██
- ██      ███████ █████   ██      █████       ██████  ██    ██ ██    ██ ██ ██  ██ ██   ██
- ██      ██   ██ ██      ██      ██  ██      ██   ██ ██    ██ ██    ██ ██  ██ ██ ██   ██
-  ██████ ██   ██ ███████  ██████ ██   ██     ██   ██  ██████   ██████  ██   ████ ██████
-*/
 const checkRound = (game) => {
     if (game.list.values.filter(({ guesser }) => !guesser?.first_name).length === 0) {
         setTimeout(async () => {
@@ -56,13 +49,6 @@ const checkRound = (game) => {
     }
 };
 exports.checkRound = checkRound;
-/*
- ███    ██ ███████ ██     ██     ██████   ██████  ██    ██ ███    ██ ██████
- ████   ██ ██      ██     ██     ██   ██ ██    ██ ██    ██ ████   ██ ██   ██
- ██ ██  ██ █████   ██  █  ██     ██████  ██    ██ ██    ██ ██ ██  ██ ██   ██
- ██  ██ ██ ██      ██ ███ ██     ██   ██ ██    ██ ██    ██ ██  ██ ██ ██   ██
- ██   ████ ███████  ███ ███      ██   ██  ██████   ██████  ██   ████ ██████
-*/
 const newRound = (currentGame) => {
     index_1.Game.findOne({
         _id: currentGame._id,
@@ -123,19 +109,20 @@ const newRound = (currentGame) => {
         game.playedLists.push(game.list._id);
         game.save((err) => {
             if (err)
-                return telegram_1.default.notifyAdmin("newRound: " + JSON.stringify(err) + "\n" + JSON.stringify(game));
-            console.log(`${game.chat_id} - New round started -> "${list.name}"`);
+                telegram_1.default.notifyAdmin("newRound: " + JSON.stringify(err) + "\n" + JSON.stringify(game));
+            else
+                console.log(`${game.chat_id} - New round started -> "${list.name}"`);
         });
     });
 };
 exports.newRound = newRound;
-const activate = (game, save = false) => {
+const activate = async (game, save = false) => {
     if (!game.enabled) {
         game.lastPlayDate = (0, moment_1.default)().toDate();
         game.enabled = true;
         telegram_1.default.sendMessage(game.chat_id, "Ten Things started");
         if (save)
-            game.save();
+            await game.save();
     }
 };
 exports.activate = activate;
@@ -198,29 +185,6 @@ const checkMaingame = async (game, player, guess, msg) => {
         }
         else {
             guessed(game, player, msg, match.value, "", score, accuracy);
-            /*
-            request(`https://en.wikipedia.org/w/api.php?action=query&format=json&prop=extracts&titles=Earth&generator=prefixsearch&exintro=1&explaintext=1&gpssearch=${encodeURIComponent(match.value)}`, (err, response, body) => {
-              if (err) {
-                guessed(game, player, msg, match.value, '', score, accuracy);
-              } else {
-                try {
-                  const pages = JSON.parse(body).query.pages;
-                  let result = pages[Object.keys(pages)[0]].extract;
-                  if (result.length > 200) {
-                    result = result.substring(0, 200) + '...';
-                  }
-                  if (result && !result.includes('refer to:') && !result.includes('refers to:')) {
-                    guessed(game, player, msg, match.value, `\nRandom Wiki:\n<i>${result}</i>`, score, accuracy);
-                  } else {
-                    guessed(game, player, msg, match.value, '', score, accuracy);
-                  }
-                } catch (e) {
-                  console.error(e);
-                  guessed(game, player, msg, match.value, '', score, accuracy);
-                }
-              }
-            });
-            */
         }
         setTimeout(() => {
             (0, exports.checkRound)(game);

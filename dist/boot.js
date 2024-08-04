@@ -6,8 +6,6 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const cluster_1 = __importDefault(require("cluster"));
 const os_1 = require("os");
 if (cluster_1.default.isPrimary === true) {
-    // .isPrimary with node v16.0.0 or above
-    // .isMaster (depreciated) with older version
     const CPUS = (0, os_1.cpus)();
     CPUS.forEach(() => cluster_1.default.fork());
 }

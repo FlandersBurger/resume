@@ -1,121 +1,131 @@
-angular.module('app')
-.controller('AsteroidsCtrl', function ($scope, GameSvc) {
-
+angular.module("app").controller("AsteroidsCtrl", function ($location, $scope, GameSvc) {
   $scope.announce = false;
-  var canvas = document.getElementById('asteroids-page');
-  var ctx = canvas.getContext('2d');
+  const canvas = document.getElementById("asteroids-page");
+  if (!canvas) {
+    $location.path("/home");
+    return alert("");
+  }
+  const ctx = canvas.getContext("2d");
   ctx.font = "30px Comic Sans MS";
   ctx.fillStyle = "red";
   ctx.textAlign = "center";
-  var shots = {};
-  var asteroids = {};
-  var powerups = {};
-  var explosions = {};
-  var map = {};
-  var spacepics = 10;
-  var space = Math.floor(Math.random() * spacepics);
-  var powerupTypes = [
+  const shots = {};
+  const asteroids = {};
+  const powerups = {};
+  const explosions = {};
+  const map = {};
+  const spacepics = 10;
+  const space = Math.floor(Math.random() * spacepics);
+  const powerupTypes = [
     {
-      name: 'speed',
-      announcement: 'Max Speed ⇧',
+      name: "speed",
+      announcement: "Max Speed ⇧",
       cycle: {
         rows: 1,
         columns: 4,
         size: [14, 35],
         i: 0,
-        direction: true
+        direction: true,
       },
       img: new Image(),
-      activate: function(spaceship) {
+      activate: function (spaceship) {
         spaceship.maxSpeed += 100;
-      }
+      },
     },
     {
-      name: 'cooldown',
-      announcement: 'Cooldown ⇩',
+      name: "cooldown",
+      announcement: "Cooldown ⇩",
       cycle: {
         rows: 1,
         columns: 3,
         size: [17, 17],
         i: 0,
-        direction: true
+        direction: true,
       },
       img: new Image(),
-      activate: function(spaceship) {
+      activate: function (spaceship) {
         if (spaceship.cooldown > 0) {
           spaceship.cooldownTime -= 1;
         }
-      }
+      },
     },
     {
-      name: 'range',
-      announcement: 'Firing Range ⇧',
+      name: "range",
+      announcement: "Firing Range ⇧",
       cycle: {
         rows: 4,
         columns: 1,
         size: [30, 8],
         i: 0,
-        direction: true
+        direction: true,
       },
       img: new Image(),
-      activate: function(spaceship) {
+      activate: function (spaceship) {
         spaceship.range += 5;
-      }
+      },
     },
     {
-      name: 'shield',
-      announcement: 'Shield',
+      name: "shield",
+      announcement: "Shield",
       cycle: {
         rows: 5,
         columns: 1,
         size: [19, 19],
         i: 0,
-        direction: true
+        direction: true,
       },
       img: new Image(),
-      activate: function(spaceship) {
+      activate: function (spaceship) {
         spaceship.shield = true;
-      }
+      },
     },
     {
-      name: 'nuke',
-      announcement: 'Nuke',
+      name: "nuke",
+      announcement: "Nuke",
       cycle: {
         rows: 1,
         columns: 8,
         size: [15, 15],
         i: 0,
-        direction: true
+        direction: true,
       },
       img: new Image(),
-      activate: function(spaceship) {
+      activate: function (spaceship) {
         for (var i in asteroids) {
           asteroids[i].explode();
         }
         spawnAsteroids(5);
-      }
-    },/*
+      },
+    } /*
     'side_cannons',
     'laser',
     'shield',
     'life',
     'missiles',
     'nuke'
-    */
+    */,
   ];
-  powerupTypes.forEach(function(powerup, i, array) {
-    array[i].img.src = 'asteroids/' + powerup.name + '.png';
+  powerupTypes.forEach(function (powerup, i, array) {
+    array[i].img.src = "asteroids/" + powerup.name + ".png";
   });
 
   var explosionImage = new Image();
-  explosionImage.src = 'asteroids/explosion.png';
+  explosionImage.src = "asteroids/explosion.png";
 
-  window.addEventListener('keydown', function(e) {
+  window.addEventListener(
+    "keydown",
+    function (e) {
       map[e.keyCode || e.which] = true;
-  },true);
-  window.addEventListener('keyup', function(e) {
+    },
+    true,
+  );
+  window.addEventListener(
+    "keyup",
+    function (e) {
       map[e.keyCode || e.which] = false;
-  },true);
+    },
+    true,
+  );
 
   $scope.highscore = 0;
 
@@ -173,28 +183,25 @@ angular.module('app')
     this.range = 80;
     this.cannon = {
       x: this.width / 2 - 4.5,
-      y: this.height / 2 - this.height * 0.078125
+      y: this.height / 2 - this.height * 0.078125,
     };
     this.cooldown = 0;
     this.cooldownTime = 20;
-    this.position = [
-      canvas.width / 2 - this.width / 2,
-      canvas.height / 2 - this.height / 2
-    ];
+    this.position = [canvas.width / 2 - this.width / 2, canvas.height / 2 - this.height / 2];
     this.img = new Image();
-    this.img.src = 'asteroids/spaceship.png';
+    this.img.src = "asteroids/spaceship.png";
     this.speed = 0;
     this.maxSpeed = 1000;
     this.angle = 0;
     this.rotation = 0;
 
-    this.shoot = function() {
+    this.shoot = function () {
       this.cooldown = this.cooldownTime;
       var id = Math.round(Math.random() * 100000000);
       shots[id] = new Shot(id, this);
     };
 
-    this.move = function() {
+    this.move = function () {
       if (this.shield) {
         ctx.beginPath();
         ctx.arc(this.position[0] + this.width / 2, this.position[1] + this.height / 2, 30, 0, 2 * Math.PI);
@@ -226,8 +233,12 @@ angular.module('app')
   function Shot(id, spaceship) {
     this.id = id;
     this.position = [
-      spaceship.position[0] + spaceship.cannon.x + spaceship.cannon.x * Math.cos((spaceship.rotation - 90) * Math.PI / 180),
-      spaceship.position[1] + spaceship.cannon.y + spaceship.cannon.y * Math.sin((spaceship.rotation - 90) * Math.PI / 180)
+      spaceship.position[0] +
+        spaceship.cannon.x +
+        spaceship.cannon.x * Math.cos(((spaceship.rotation - 90) * Math.PI) / 180),
+      spaceship.position[1] +
+        spaceship.cannon.y +
+        spaceship.cannon.y * Math.sin(((spaceship.rotation - 90) * Math.PI) / 180),
     ];
     this.width = 9;
     this.height = 15;
@@ -236,9 +247,9 @@ angular.module('app')
     this.speed = spaceship.speed + 500;
     this.lifespan = spaceship.range;
     this.img = new Image();
-    this.img.src = 'asteroids/shot.png';
+    this.img.src = "asteroids/shot.png";
 
-    this.move = function() {
+    this.move = function () {
       this.lifespan--;
       move(this);
     };
@@ -254,14 +265,14 @@ angular.module('app')
     this.rotationSpeed = Math.random() * 6 - 3;
     this.speed = Math.random() * 300 + 2;
     this.img = new Image();
-    this.img.src = 'asteroids/asteroid' + (Math.round(Math.random() * 6) + 1) + '.png';
+    this.img.src = "asteroids/asteroid" + (Math.round(Math.random() * 6) + 1) + ".png";
 
-    this.explode = function() {
+    this.explode = function () {
       explosions[this.id] = new Explosion(this);
       return delete asteroids[this.id];
     };
 
-    this.move = function() {
+    this.move = function () {
       this.rotation += this.rotationSpeed;
       if (this.rotation > 360) {
         this.rotation = this.rotation - 360;
@@ -296,12 +307,12 @@ angular.module('app')
       columns: 8,
       size: [256, 256],
       i: 0,
-      direction: true
+      direction: true,
     };
     this.lifespan = 47;
     this.img = explosionImage;
 
-    this.move = function() {
+    this.move = function () {
       this.lifespan--;
       move(this);
       if (this.cycle.direction) {
@@ -319,17 +330,17 @@ angular.module('app')
     this.lifespan = 1000;
     if (this.cycle.size[1] > this.cycle.size[0]) {
       this.height = 40;
-      this.width = Math.round(this.height / this.cycle.size[1] * this.cycle.size[0]);
+      this.width = Math.round((this.height / this.cycle.size[1]) * this.cycle.size[0]);
     } else {
       this.width = 40;
-      this.height = Math.round(this.width / this.cycle.size[0] * this.cycle.size[1]);
+      this.height = Math.round((this.width / this.cycle.size[0]) * this.cycle.size[1]);
     }
     this.position = getEntryPosition(this.width, this.height);
     this.img = this.powerup.img;
     this.angle = Math.random() * 360;
     this.speed = Math.random() * 150 + 50;
     var delay = 5;
-    this.move = function() {
+    this.move = () => {
       if (this.lifespan <= 0) {
         return delete powerups[this.id];
       }
@@ -337,7 +348,7 @@ angular.module('app')
         $scope.announce = true;
         $scope.announcement = this.powerup.announcement;
         $scope.$apply();
-        setTimeout(function() {
+        setTimeout(() => {
           $scope.announce = false;
           $scope.$apply();
         }, 1000);
@@ -360,38 +371,48 @@ angular.module('app')
   }
 
   function move(object) {
-     object.position[0] += object.speed / 100 * Math.cos((object.angle - 90) * Math.PI / 180);
-     object.position[1] += object.speed / 100 * Math.sin((object.angle - 90) * Math.PI / 180);
-     if (object.position[0] > canvas.width) {
-       object.position[0] = -object.width;
-     } else if (object.position[0] < -object.width) {
-       object.position[0] = canvas.width;
-     }
-     if (object.position[1] > canvas.height) {
-       object.position[1] = -object.height;
-     } else if (object.position[1] < -object.height) {
-       object.position[1] = canvas.height;
-     }
-     ctx.save();
-     ctx.translate(object.position[0], object.position[1]);
-     ctx.translate(object.width / 2, object.height / 2);
-     ctx.rotate(object.rotation * Math.PI / 180);
-     if (object.cycle) {
-       var column = object.cycle.i % object.cycle.columns;
-       var row = Math.floor(object.cycle.i / object.cycle.columns);
-       ctx.drawImage(object.img, object.cycle.size[0] * column, object.cycle.size[1] * row, object.cycle.size[0], object.cycle.size[1], -object.width / 2, -object.height / 2, object.width, object.height);
+    object.position[0] += (object.speed / 100) * Math.cos(((object.angle - 90) * Math.PI) / 180);
+    object.position[1] += (object.speed / 100) * Math.sin(((object.angle - 90) * Math.PI) / 180);
+    if (object.position[0] > canvas.width) {
+      object.position[0] = -object.width;
+    } else if (object.position[0] < -object.width) {
+      object.position[0] = canvas.width;
+    }
+    if (object.position[1] > canvas.height) {
+      object.position[1] = -object.height;
+    } else if (object.position[1] < -object.height) {
+      object.position[1] = canvas.height;
+    }
+    ctx.save();
+    ctx.translate(object.position[0], object.position[1]);
+    ctx.translate(object.width / 2, object.height / 2);
+    ctx.rotate((object.rotation * Math.PI) / 180);
+    if (object.cycle) {
+      var column = object.cycle.i % object.cycle.columns;
+      var row = Math.floor(object.cycle.i / object.cycle.columns);
+      ctx.drawImage(
+        object.img,
+        object.cycle.size[0] * column,
+        object.cycle.size[1] * row,
+        object.cycle.size[0],
+        object.cycle.size[1],
+        -object.width / 2,
+        -object.height / 2,
+        object.width,
+        object.height,
+      );
 
-       if (object.cycle.i <= 0) {
-         object.cycle.i = 0;
-         object.cycle.direction = true;
-       } else if (object.cycle.i >= object.cycle.columns * object.cycle.rows) {
-         object.cycle.i = object.cycle.columns * object.cycle.rows - 1;
-         object.cycle.direction = false;
-       }
-     } else {
-       ctx.drawImage(object.img, -object.width / 2, -object.height / 2, object.width, object.height);
-     }
-     ctx.restore();
+      if (object.cycle.i <= 0) {
+        object.cycle.i = 0;
+        object.cycle.direction = true;
+      } else if (object.cycle.i >= object.cycle.columns * object.cycle.rows) {
+        object.cycle.i = object.cycle.columns * object.cycle.rows - 1;
+        object.cycle.direction = false;
+      }
+    } else {
+      ctx.drawImage(object.img, -object.width / 2, -object.height / 2, object.width, object.height);
+    }
+    ctx.restore();
   }
 
   var spaceship;
@@ -410,7 +431,8 @@ angular.module('app')
   function getEntryPosition(width, height) {
     var gridX = Math.random() * 2;
     var gridY = Math.random() * 2;
-    var x, y = 0;
+    var x,
+      y = 0;
     if (gridX >= 1) {
       x = Math.random() * canvas.width;
       if (y >= 1) {
@@ -430,10 +452,12 @@ angular.module('app')
   }
 
   function hit(object1, object2) {
-    return (object1.position[0] < object2.position[0] + object2.width) &&
-           (object2.position[0] < object1.position[0] + object1.width) &&
-           (object1.position[1] < object2.position[1] + object2.height) &&
-           (object2.position[1] < object1.position[1] + object1.height);
+    return (
+      object1.position[0] < object2.position[0] + object2.width &&
+      object2.position[0] < object1.position[0] + object1.width &&
+      object1.position[1] < object2.position[1] + object2.height &&
+      object2.position[1] < object1.position[1] + object1.height
+    );
   }
 
   function autoSpawn() {
@@ -442,7 +466,7 @@ angular.module('app')
       asteroids[id] = new Asteroid(id);
     }
     if ($scope.playing) {
-      setTimeout(function() {
+      setTimeout(function () {
         autoSpawn();
       }, spawnInterval());
     }
@@ -494,7 +518,7 @@ angular.module('app')
     if ($scope.loggedIn) {
       if ($scope.currentUser.highscore.asteroids < $scope.score) {
         $scope.currentUser.highscore.asteroids = $scope.score;
-        GameSvc.setHighscore('asteroids', $scope.currentUser._id, $scope.score);
+        GameSvc.setHighscore("asteroids", $scope.currentUser._id, $scope.score);
       }
     } else {
       if ($scope.highscore < $scope.score) {
@@ -503,29 +527,28 @@ angular.module('app')
     }
   }
 
-	// Start listening to resize events and
-	// draw canvas.
+  // Start listening to resize events and
+  // draw canvas.
 
-	function initialize() {
-		// Register an event listener to
-		// call the resizeCanvas() function each time
-		// the window is resized.
-		window.addEventListener('resize', resizeCanvas, false);
+  function initialize() {
+    // Register an event listener to
+    // call the resizeCanvas() function each time
+    // the window is resized.
+    window.addEventListener("resize", resizeCanvas, false);
 
-
-		// Draw canvas border for the first time.
-		resizeCanvas();
-	}
-	// Runs each time the DOM window resize event fires.
-	// Resets the canvas dimensions to match window,
-	// then draws the new borders accordingly.
-	function resizeCanvas() {
+    // Draw canvas border for the first time.
+    resizeCanvas();
+  }
+  // Runs each time the DOM window resize event fires.
+  // Resets the canvas dimensions to match window,
+  // then draws the new borders accordingly.
+  function resizeCanvas() {
     console.log(window.innerWidth);
-		canvas.width = window.innerWidth;
-		canvas.height = window.innerHeight - (canvas.width <= 768 ? 50 : 105);
-	}
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight - (canvas.width <= 768 ? 50 : 105);
+  }
 
-	initialize();
+  initialize();
   requestAnimationFrame(draw);
 
   var tally = 0;
@@ -558,17 +581,70 @@ angular.module('app')
       spaceship.move();
     } else {
       var gradient = ctx.createLinearGradient(0, 0, canvas.width, 0);
-      gradient.addColorStop('0', 'rgb(' + Math.floor(256 - 256 * tally / 100) + ',' + Math.floor(0 + 256 * tally / 100) + ',' + Math.floor(0 + 256 * tally / 100) + ')');
-      gradient.addColorStop('0.25', 'rgb(' + Math.floor(0 + 256 * tally / 100) + ',' + Math.floor(256 - 256 * tally / 100) + ',' + Math.floor(0 + 256 * tally / 100) + ')');
-      gradient.addColorStop('0.5', 'rgb(' + Math.floor(0 + 256 * tally / 100) + ',' + Math.floor(0 + 256 * tally / 100) + ',' + Math.floor(256 - 256 * tally / 100) + ')');
-      gradient.addColorStop('0.75', 'rgb(' + Math.floor(0 + 256 * tally / 100) + ',' + Math.floor(256 - 256 * tally / 100) + ',' + Math.floor(0 + 256 * tally / 100) + ')');
-      gradient.addColorStop('1.0', 'rgb(' + Math.floor(256 - 256 * tally / 100) + ',' + Math.floor(0 + 256 * tally / 100) + ',' + Math.floor(0 + 256 * tally / 100) + ')');
+      gradient.addColorStop(
+        "0",
+        "rgb(" +
+          Math.floor(256 - (256 * tally) / 100) +
+          "," +
+          Math.floor(0 + (256 * tally) / 100) +
+          "," +
+          Math.floor(0 + (256 * tally) / 100) +
+          ")",
+      );
+      gradient.addColorStop(
+        "0.25",
+        "rgb(" +
+          Math.floor(0 + (256 * tally) / 100) +
+          "," +
+          Math.floor(256 - (256 * tally) / 100) +
+          "," +
+          Math.floor(0 + (256 * tally) / 100) +
+          ")",
+      );
+      gradient.addColorStop(
+        "0.5",
+        "rgb(" +
+          Math.floor(0 + (256 * tally) / 100) +
+          "," +
+          Math.floor(0 + (256 * tally) / 100) +
+          "," +
+          Math.floor(256 - (256 * tally) / 100) +
+          ")",
+      );
+      gradient.addColorStop(
+        "0.75",
+        "rgb(" +
+          Math.floor(0 + (256 * tally) / 100) +
+          "," +
+          Math.floor(256 - (256 * tally) / 100) +
+          "," +
+          Math.floor(0 + (256 * tally) / 100) +
+          ")",
+      );
+      gradient.addColorStop(
+        "1.0",
+        "rgb(" +
+          Math.floor(256 - (256 * tally) / 100) +
+          "," +
+          Math.floor(0 + (256 * tally) / 100) +
+          "," +
+          Math.floor(0 + (256 * tally) / 100) +
+          ")",
+      );
       ctx.fillStyle = gradient;
-      ctx.font='60px Monoton';
-      ctx.fillText('Asteroids', canvas.width / 2 - ctx.measureText('Asteroids').width / 2, canvas.height / 2);
-      ctx.font='20px Aldrich';
-      ctx.fillText('Press space to start', canvas.width / 2 - ctx.measureText('Press space to start').width / 2, canvas.height / 2 + 20);
-      ctx.fillText('Designed and developed by Laurent Debacker', canvas.width / 2 - ctx.measureText('Designed and developed by Laurent Debacker').width / 2, canvas.height - 30);
+      ctx.font = "60px Monoton";
+      ctx.fillText("Asteroids", canvas.width / 2 - ctx.measureText("Asteroids").width / 2, canvas.height / 2);
+      ctx.font = "20px Aldrich";
+      ctx.fillText(
+        "Press space to start",
+        canvas.width / 2 - ctx.measureText("Press space to start").width / 2,
+        canvas.height / 2 + 20,
+      );
+      ctx.fillText(
+        "Designed and developed by Laurent Debacker",
+        canvas.width / 2 - ctx.measureText("Designed and developed by Laurent Debacker").width / 2,
+        canvas.height - 30,
+      );
     }
     tally += direction ? 1 : -1;
     if (tally > 100) {
@@ -581,12 +657,9 @@ angular.module('app')
     requestAnimationFrame(draw);
   }
 
-  $scope.space = function() {
+  $scope.space = function () {
     return {
-      backgroundImage: 'url("asteroids/space' + space + '.jpg")'
+      backgroundImage: 'url("asteroids/space' + space + '.jpg")',
     };
   };
-
-
-
 });

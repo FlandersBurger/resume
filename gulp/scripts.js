@@ -1,4 +1,3 @@
-/*jslint esversion: 8*/
 const gulp = require("gulp");
 
 const concat = require("gulp-concat");

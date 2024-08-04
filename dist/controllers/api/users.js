@@ -10,32 +10,40 @@ const jwt_simple_1 = __importDefault(require("jwt-simple"));
 const server_1 = require("../../server");
 const index_1 = require("../../models/index");
 exports.usersRoute = (0, express_1.Router)();
-exports.usersRoute.get("/", function (_, res) {
+exports.usersRoute.get("/", (_, res) => {
     if (!res.locals.isAuthorized)
-        return res.sendStatus(401);
-    res.json(res.locals.user);
+        res.sendStatus(401);
+    else
+        res.json(res.locals.user);
 });
 exports.usersRoute.get("/all", async (req, res) => {
     if (!res.locals.isAdmin)
-        return res.send(401);
-    const users = await index_1.User.find({})
-        .select("-gender -flags -highscore")
-        .limit(parseInt(req.query.limit))
-        .skip(parseInt(req.query.limit) * (parseInt(req.query.page) - 1));
-    res.json(users);
+        res.sendStatus(401);
+    else {
+        const users = await index_1.User.find({})
+            .select("-gender -flags -highscore")
+            .limit(parseInt(req.query.limit))
+            .skip(parseInt(req.query.limit) * (parseInt(req.query.page) - 1));
+        res.json(users);
+    }
 });
 exports.usersRoute.post("/ban/:id", async (req, res) => {
     if (!res.locals.isAdmin)
-        return res.sendStatus(401);
-    const user = await index_1.User.findOne({ _id: req.params.id });
-    if (user) {
-        console.log(user);
-        user.banned = !user.banned;
-        try {
-            await user.save();
+        res.sendStatus(401);
+    else {
+        const user = await index_1.User.findOne({ _id: req.params.id });
+        if (user) {
+            console.log(user);
+            user.banned = !user.banned;
+            try {
+                await user.save();
+            }
+            catch (e) { }
+            res.sendStatus(200);
         }
-        catch (e) { }
-        res.sendStatus(200);
+        else {
+            res.sendStatus(404);
+        }
     }
 });
 exports.usersRoute.post("/", async (req, res) => {
@@ -98,70 +106,84 @@ exports.usersRoute.post("/:id/verification", async (req, res) => {
     if (checkUser(req.params.id, res)) {
         const user = await index_1.User.findOne({ _id: res.locals.user?._id }).select("password");
         if (!user || user.banned)
-            return res.sendStatus(401);
-        const valid = await bcryptjs_1.default.compare(req.body.password, user.password);
-        res.sendStatus(valid ? 200 : 401);
+            res.sendStatus(401);
+        else {
+            const valid = await bcryptjs_1.default.compare(req.body.password, user.password);
+            res.sendStatus(valid ? 200 : 401);
+        }
     }
     else {
-        return res.sendStatus(401);
+        res.sendStatus(401);
     }
 });
 exports.usersRoute.post("/:id", async (req, res) => {
     if (checkUser(req.params.id, res)) {
         if (!res.locals.user?._id)
-            return res.sendStatus(400);
-        const user = await index_1.User.findOne({ _id: res.locals.user._id });
-        if (!user || user.banned)
-            return res.sendStatus(401);
-        user.gender = req.body.user.gender;
-        user.flags = req.body.user.flags;
-        await user.save();
-        console.log(user.username + " updated their profile");
-        res.sendStatus(200);
+            res.sendStatus(400);
+        else {
+            const user = await index_1.User.findOne({ _id: res.locals.user._id });
+            if (!user || user.banned)
+                res.sendStatus(401);
+            else {
+                user.gender = req.body.user.gender;
+                user.flags = req.body.user.flags;
+                await user.save();
+                console.log(user.username + " updated their profile");
+                res.sendStatus(200);
+            }
+        }
     }
     else {
-        return res.sendStatus(401);
+        res.sendStatus(401);
     }
 });
 exports.usersRoute.post("/:id/password", async (req, res) => {
     if (checkUser(req.params.id, res)) {
         const user = await index_1.User.findOne({ _id: res.locals.user?._id }).select("username").select("password");
         if (!user || user.banned)
-            return res.sendStatus(401);
-        const valid = await bcryptjs_1.default.compare(req.body.oldPassword, user.password);
-        if (!valid)
-            return res.sendStatus(401);
-        const salt = await bcryptjs_1.default.genSalt(10);
-        const hash = await bcryptjs_1.default.hash(req.body.newPassword, salt);
-        user.password = hash;
-        await user.save();
-        console.log(user.username + " changed their password");
-        res.sendStatus(200);
+            res.sendStatus(401);
+        else {
+            const valid = await bcryptjs_1.default.compare(req.body.oldPassword, user.password);
+            if (!valid)
+                res.sendStatus(401);
+            else {
+                const salt = await bcryptjs_1.default.genSalt(10);
+                const hash = await bcryptjs_1.default.hash(req.body.newPassword, salt);
+                user.password = hash;
+                await user.save();
+                console.log(user.username + " changed their password");
+                res.sendStatus(200);
+            }
+        }
     }
     else {
-        return res.sendStatus(401);
+        res.sendStatus(401);
     }
 });
 exports.usersRoute.post("/:id/username", async (req, res) => {
     if (checkUser(req.params.id, res)) {
         const user = await index_1.User.findOne({ _id: res.locals.user?._id }).select("username").select("usernameLC");
         if (!user || user.banned)
-            return res.sendStatus(401);
-        const user2 = await index_1.User.findOne({ username_lower: req.body.newUsername.toLowerCase() });
-        if (user2) {
-            if (user2._id !== res.locals.user?._id) {
-                console.log(req.body.newUsername + " already taken");
-                return res.sendStatus(304);
+            res.sendStatus(401);
+        else {
+            const user2 = await index_1.User.findOne({ username_lower: req.body.newUsername.toLowerCase() });
+            if (user2) {
+                if (user2._id !== res.locals.user?._id) {
+                    console.log(req.body.newUsername + " already taken");
+                    res.sendStatus(304);
+                }
+            }
+            else {
+                console.log(user.username + " changed their name to " + req.body.newUsername);
+                user.username = req.body.newUsername;
+                user.usernameLC = req.body.newUsername.toLowerCase();
+                await user.save();
+                res.sendStatus(200);
             }
         }
-        console.log(user.username + " changed their name to " + req.body.newUsername);
-        user.username = req.body.newUsername;
-        user.usernameLC = req.body.newUsername.toLowerCase();
-        await user.save();
-        res.sendStatus(200);
     }
     else {
-        return res.sendStatus(401);
+        res.sendStatus(401);
     }
 });
 function checkUser(user, res) {

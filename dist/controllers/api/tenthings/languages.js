@@ -9,7 +9,8 @@ const languages_1 = __importDefault(require("../../bots/tenthings/languages"));
 exports.tenthingsLanguagesRoute = (0, express_1.Router)();
 exports.tenthingsLanguagesRoute.get("/", (_, res) => {
     if (!res.locals.isAuthorized)
-        return res.sendStatus(401);
-    res.json(languages_1.default);
+        res.sendStatus(401);
+    else
+        res.json(languages_1.default);
 });
 //# sourceMappingURL=languages.js.map

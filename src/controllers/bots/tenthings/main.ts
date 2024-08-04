@@ -83,42 +83,35 @@ tenthingsBotRoute.post("/", async (req: Request, res: Response) => {
   const domainMessage = await bot.toDomainMessage(req.body);
   switch (domainMessage.messageType) {
     case MessageType.Ignore:
-      return res.sendStatus(200);
+      res.sendStatus(200);
+      break;
     case MessageType.Callback:
       await callbacks(domainMessage.message as ICallbackData);
-      return res.sendStatus(200);
+      res.sendStatus(200);
+      break;
     case MessageType.PlayerLeft:
-      Game.findOne({ chat_id: domainMessage.message!.chatId }).exec((err, game) => {
-        if (err) return console.error(err);
-        if (!game) return;
-        Player.findOne({ game: game._id, id: `${domainMessage.message!.from.id}` }).exec((err, player) => {
-          if (err || !player) return;
-          if (player) {
-            player.present = false;
-            player.save();
-          }
-        });
-      });
-      return res.sendStatus(200);
+      const game = await Game.findOne({ chat_id: domainMessage.message!.chatId });
+      if (game) {
+        const player = await Player.findOne({ game: game._id, id: `${domainMessage.message!.from.id}` });
+        if (player) {
+          player.present = false;
+          player.save();
+        }
+      }
+      res.sendStatus(200);
+      break;
     default:
       break;
   }
   let msg: IMessage = domainMessage.message as IMessage;
-  try {
-    if (!msg.from.id) {
-      return res.sendStatus(200);
-    }
-  } catch (e) {
-    console.error(e);
-    bot.notifyAdmin(`Can't send message:\n${JSON.stringify(msg)}`);
-    return res.sendStatus(200);
-  }
-  const existingGame = await Game.findOne({ chat_id: msg.chatId })
-    .populate("list.creator")
-    .select("-playedLists")
-    .exec();
-  // if (msg.chatId !== parseInt(process.env.MASTER_CHAT || "")) return res.sendStatus(200);
-  try {
+  if (!msg.from.id) {
+    res.sendStatus(200);
+  } else {
+    const existingGame = await Game.findOne({ chat_id: msg.chatId })
+      .populate("list.creator")
+      .select("-playedLists")
+      .exec();
+
     if (!existingGame) {
       const newGame = await createMaingame(msg.chatId);
       console.log(`New game created for ${msg.chatId}`);
@@ -126,19 +119,14 @@ tenthingsBotRoute.post("/", async (req: Request, res: Response) => {
     } else {
       if (!existingGame.enabled && msg.command) {
         if (["/list", "/start", "/minigame", "/tinygame"].includes(msg.command.toLowerCase())) {
-          activate(existingGame, true);
+          await activate(existingGame, true);
+          await evaluate(msg, existingGame, false);
         } else {
           bot.sendMessage(msg.chatId, i18n(existingGame.settings.language, "sentences.inactivity"));
-          return res.sendStatus(200);
+          res.sendStatus(200);
         }
-      }
-      await evaluate(msg, existingGame, false);
+      } else await evaluate(msg, existingGame, false);
     }
-  } catch (e) {
-    console.error(e);
-    bot.sendMessage(msg.chatId, "<b>Error</b>\nUse the /error command to explain to the admins what didn't work");
-    bot.notifyAdmin(`Error in game ${msg.chatId}:\n${e}`);
-  } finally {
     if (!res.headersSent) res.sendStatus(200);
   }
 });
@@ -187,29 +175,6 @@ tenthingsBotRoute.post("/webhook", (req: Request, res: Response) => {
   }
 });
 
-function countBytes(s: string) {
-  console.log(encodeURI(s).split(/%..|./).length - 1);
-}
-
 tenthingsBotRoute.get("/queue", async (_: Request, res: Response) => {
   res.json(await getQueue());
 });
-
-const floodChecker = async () => {
-  const webhook = await bot.getWebhook();
-  return webhook.pending_update_count > 500;
-};
-
-const newPlayerError = (err: Error) => {
-  bot.notifyAdmin("Can't add new player: " + JSON.stringify(err));
-  console.error(err);
-};
-
-/*
-request(`https://api.themoviedb.org/3/search/movie?api_key=${moviedbAPIKey}&query=${encodeURIComponent('good will hunting')}`, (err, response, body) => {
-  if (err) {
-    console.error(err);
-  } else {
-    console.log(JSON.parse(response.body).results[0]);
-  }
-});*/

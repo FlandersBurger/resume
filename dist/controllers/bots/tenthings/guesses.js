@@ -24,7 +24,6 @@ const guessQueue = new bull_1.default("processGuess", {
     },
 });
 guessQueue.on("completed", function (job) {
-    //Job finished we remove it
     job.remove();
 });
 const getCount = () => guessQueue.count();
@@ -40,7 +39,7 @@ const queueGuess = async (game, msg) => {
     const text = (0, string_helpers_1.removeAllButLetters)(msg.text);
     const correctMatch = (0, find_1.default)(values, ({ value }) => (0, string_helpers_1.removeAllButLetters)(value) === text);
     if (correctMatch) {
-        return queueingGuess({
+        queueingGuess({
             msg,
             game: game.chat_id,
             list: game.list._id,
@@ -51,42 +50,44 @@ const queueGuess = async (game, msg) => {
             },
         });
     }
-    const lengths = values
-        .map(({ value }) => (0, string_helpers_1.removeAllButLetters)(value))
-        .reduce((lengths, value) => ({
-        longest: lengths.longest < value.length ? value.length : lengths.longest,
-        shortest: lengths.shortest > value.length ? value.length : lengths.shortest,
-    }), {
-        longest: 1,
-        shortest: 1000,
-    });
-    let found = false;
-    if (text.length / lengths.shortest > 0.75 && text.length / lengths.longest < 1.25) {
-        const fuzzyMatch = new FuzzyMatching(values.map(({ value }) => (0, string_helpers_1.removeAllButLetters)(value)));
-        const matchedValue = fuzzyMatch.get(text, { min: 0.75 });
-        const guess = {
-            msg,
-            game: game.chat_id,
-            list: game.list._id,
-            match: matchedValue,
-        };
-        if (guess.match.distance >= 0.75) {
-            const match = {
-                ...guess.match,
-                ...(0, find_1.default)(values, ({ value }) => (0, string_helpers_1.removeAllButLetters)(value) === guess.match.value),
+    else {
+        const lengths = values
+            .map(({ value }) => (0, string_helpers_1.removeAllButLetters)(value))
+            .reduce((lengths, value) => ({
+            longest: lengths.longest < value.length ? value.length : lengths.longest,
+            shortest: lengths.shortest > value.length ? value.length : lengths.shortest,
+        }), {
+            longest: 1,
+            shortest: 1000,
+        });
+        let found = false;
+        if (text.length / lengths.shortest > 0.75 && text.length / lengths.longest < 1.25) {
+            const fuzzyMatch = new FuzzyMatching(values.map(({ value }) => (0, string_helpers_1.removeAllButLetters)(value)));
+            const matchedValue = fuzzyMatch.get(text, { min: 0.75 });
+            const guess = {
+                msg,
+                game: game.chat_id,
+                list: game.list._id,
+                match: matchedValue,
             };
-            found = true;
-            setTimeout(async () => {
-                queueingGuess({
-                    ...guess,
-                    match,
-                    player: await (0, players_1.getPlayer)(game, msg.from),
-                });
-            }, (2000 / 0.25) * (1 - guess.match.distance));
+            if (guess.match.distance >= 0.75) {
+                const match = {
+                    ...guess.match,
+                    ...(0, find_1.default)(values, ({ value }) => (0, string_helpers_1.removeAllButLetters)(value) === guess.match.value),
+                };
+                found = true;
+                setTimeout(async () => {
+                    queueingGuess({
+                        ...guess,
+                        match,
+                        player: await (0, players_1.getPlayer)(game, msg.from),
+                    });
+                }, (2000 / 0.25) * (1 - guess.match.distance));
+            }
         }
+        if (!found)
+            (0, sass_1.default)(game, msg.text);
     }
-    if (!found)
-        (0, sass_1.default)(game, msg.text);
 };
 exports.queueGuess = queueGuess;
 const queueingGuess = (guess) => guessQueue.add(guess);

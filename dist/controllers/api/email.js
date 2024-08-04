@@ -11,9 +11,8 @@ const transporter = (0, nodemailer_1.createTransport)({
     },
 });
 exports.emailRoute = (0, express_1.Router)();
-//https://www.google.com/recaptcha/api/siteverify
 exports.emailRoute.post("/", async (req, res) => {
-    var email = req.body;
+    const email = req.body;
     try {
         const info = await transporter.sendMail({
             from: email.email,
@@ -22,11 +21,11 @@ exports.emailRoute.post("/", async (req, res) => {
             text: JSON.stringify(email),
         });
         console.log("Email sent: " + info.response);
-        return res.sendStatus(200);
+        res.sendStatus(200);
     }
     catch (error) {
         console.log(error);
-        return res.sendStatus(500);
+        res.sendStatus(500);
     }
 });
 //# sourceMappingURL=email.js.map

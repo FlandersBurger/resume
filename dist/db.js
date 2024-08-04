@@ -12,18 +12,6 @@ const connect = (db) => {
 };
 exports.mongoDBs = [
     {
-        name: "backup",
-        url: process.env.MONGO_BACKUP_URL,
-        ...(process.env.MONGO_BACKUP_TUNNEL_HOST && {
-            tunnel: {
-                username: process.env.MONGO_BACKUP_TUNNEL_USER,
-                host: process.env.MONGO_BACKUP_TUNNEL_HOST,
-                privateKey: require("fs").readFileSync(process.env.MONGO_BACKUP_TUNNEL_KEY_PATH),
-                port: parseInt(process.env.MONGO_BACKUP_TUNNEL_PORT || "22"),
-            },
-        }),
-    },
-    {
         name: "master",
         url: process.env.MONGO_URL,
         ...(process.env.MONGO_TUNNEL_HOST && {

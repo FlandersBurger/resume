@@ -48,8 +48,6 @@ const commands = [
     "commands",
 ];
 const evaluate = async (msg, game, isNew) => {
-    //bot.notifyAdmin(tenthings);
-    //bot.notifyAdmin(games[msg.chatId].list);
     let player = await (0, players_1.getPlayer)(game, msg.from);
     if (!player.first_name) {
         console.error("msg without a first_name?");
@@ -57,15 +55,10 @@ const evaluate = async (msg, game, isNew) => {
         return;
     }
     else if (msg.chatId === parseInt(process.env.ADMIN_CHAT || "") && msg.command) {
-        //Admin group chat
         if (!["/search", "/stats", "/typo", "/bug", "/feature", "/suggest"].includes(msg.command)) {
             return;
         }
     }
-    /*
-    const flood = await floodChecker();
-    if (flood) res.sendStatus(200);
-    */
     if (game.list.values.length === 0) {
         (0, maingame_1.newRound)(game);
     }
@@ -220,17 +213,6 @@ const evaluate = async (msg, game, isNew) => {
                     });
                 }
                 break;
-            /*
-          case '/pause':
-            if (msg.chatId === parseInt(process.env.MASTER_CHAT || "")) {
-              redis.get('pause').then(value => {
-                const pause = value === 'true';
-                bot.notifyAdmin(`Pause = ${!pause}`);
-                redis.set('pause', !pause);
-              });
-            }
-            break;
-            */
             case "/eu":
             case "/me":
                 (0, stats_1.getStats)(msg.chatId, `p_${msg.from.id}`, msg.from.first_name);
@@ -289,7 +271,6 @@ const evaluate = async (msg, game, isNew) => {
                 if (msg.from.id === parseInt(process.env.MASTER_CHAT || "")) {
                     game.list = (await (0, lists_1.getRandomList)());
                     game.pickedLists = [];
-                    //game.playedLists = [];
                     game.save();
                     telegram_1.default.queueMessage(msg.chatId, "Flushed this chat");
                 }
@@ -317,7 +298,7 @@ const evaluate = async (msg, game, isNew) => {
                         _id: {
                             $in: game.pickedLists,
                         },
-                    }).exec((err, upcomingLists) => {
+                    }).exec((_, upcomingLists) => {
                         let message = "<b>Upcoming lists</b>\n";
                         for (const list of upcomingLists.slice(0, 10)) {
                             message += `- ${list.name}\n`;

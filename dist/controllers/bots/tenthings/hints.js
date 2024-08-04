@@ -74,7 +74,6 @@ const getHint = (hints, value) => {
     let tester = "";
     if (hints > exports.MAX_HINTS)
         hints = exports.MAX_HINTS;
-    //3 -> the 3 first hints reveal other stuff
     if (hints > 3) {
         let croppedValue = "";
         for (i = 1; i < value.length - 1; i++) {
@@ -130,7 +129,6 @@ exports.getMaxHints = getMaxHints;
 const getSpecialCharacters = () => SPECIAL_CHARACTERS;
 exports.getSpecialCharacters = getSpecialCharacters;
 function countLetters(str) {
-    //Vowels get revealed all at once
     str = str.replace(/[^bcdfghjklmnpqrstvwxyz0123456789]/gi, "");
     return (0, uniq_1.default)(str)
         .map((letter) => ({
@@ -140,15 +138,4 @@ function countLetters(str) {
         .filter(({ count }) => count)
         .sort((letter1, letter2) => letter1.count - letter2.count);
 }
-/*
-var string = "AC/DC";
-//string = 'TERA';
-console.log(getHint(0, string));
-console.log(getHint(1, string));
-console.log(getHint(2, string));
-console.log(getHint(3, string));
-console.log(getHint(4, string));
-console.log(getHint(5, string));
-console.log(getHint(6, string));
-*/
 //# sourceMappingURL=hints.js.map

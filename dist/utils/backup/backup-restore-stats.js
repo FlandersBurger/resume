@@ -5,8 +5,6 @@ const srcStat = require("../../models/tenthings/stats")("backup");
 const dstStat = require("../../models/tenthings/stats")("master");
 const backup = async () => {
     const existingStats = await dstStat.find({}).select("_id").lean();
-    //const missingStats = await srcStat.find({ _id: { $nin: existingStats } });
-    //console.log(missingStats.map(stat => stat.name));
     N = 0;
     const statCursor = await srcStat.find({ _id: { $nin: existingStats } }).cursor();
     await statCursor.eachAsync(async (stat) => {
@@ -24,5 +22,4 @@ const backup = async () => {
     console.log(`loop all ${N} stats success`);
 };
 backup();
-//module.exports = backup;
 //# sourceMappingURL=backup-restore-stats.js.map

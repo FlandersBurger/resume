@@ -11,8 +11,9 @@ exports.categoriesRoute.get("/", async (_, res) => {
 exports.categoriesRoute.get("/:category", async (req, res) => {
     const category = await index_1.Category.findOne({ name: req.params.category });
     if (!category)
-        return res.sendStatus(404);
-    res.json(category.tasks);
+        res.sendStatus(404);
+    else
+        res.json(category.tasks);
 });
 exports.categoriesRoute.post("/", async (req, res) => {
     const category = new index_1.Category({
@@ -20,27 +21,31 @@ exports.categoriesRoute.post("/", async (req, res) => {
         creator: res.locals.user?._id,
     });
     if (!category)
-        return res.sendStatus(404);
-    await category.save();
-    res.json(category);
+        res.sendStatus(404);
+    else {
+        await category.save();
+        res.json(category);
+    }
 });
 exports.categoriesRoute.post("/:name/tasks", async (req, res) => {
     const category = await index_1.Category.findOne({ name: req.params.name });
     if (!category)
-        return res.sendStatus(404);
-    let found = false;
-    for (var i = 0; i < category.tasks.length; i++) {
-        if (req.body.task === category.tasks[i].name) {
-            found = true;
-            break;
+        res.sendStatus(404);
+    else {
+        let found = false;
+        for (var i = 0; i < category.tasks.length; i++) {
+            if (req.body.task === category.tasks[i].name) {
+                found = true;
+                break;
+            }
         }
-    }
-    if (!found) {
-        category.tasks.push({
-            name: req.body.task,
-        });
-        await category.save();
-        res.sendStatus(201);
+        if (!found) {
+            category.tasks.push({
+                name: req.body.task,
+            });
+            await category.save();
+            res.sendStatus(201);
+        }
     }
 });
 //# sourceMappingURL=categories.js.map

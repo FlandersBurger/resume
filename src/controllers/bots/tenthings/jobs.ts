@@ -57,15 +57,15 @@ const resetDailyScore = () => {
             message += `\t - Bitcoin Address: bc1qnr4y95d3w5rwahcypazpjdv33g8wupewmw6rpa3s2927qvgmduqsvcpgfs`;
             //'\n\nCome join us in the <a href="https://t.me/tenthings">Ten Things Supergroup</a>!'
             bot.queueMessage(game.chat_id, message);
-            const savedIdlers = await Player.updateMany({ game: game._id, scoreDaily: 0 }, { $set: { playStreak: 0 } });
-            const savedWinners = await Player.updateMany(
+            await Player.updateMany({ game: game._id, scoreDaily: 0 }, { $set: { playStreak: 0 } });
+            await Player.updateMany(
               {
                 game: game._id,
                 _id: { $in: winners.map((winner) => winner._id) },
               },
               { $inc: { wins: 1 } },
             ).exec();
-            const savedPlayers = await Player.updateMany(
+            await Player.updateMany(
               { game: game._id, scoreDaily: { $gt: 0 } },
               {
                 $inc: { plays: 1, playStreak: 1 },
@@ -105,16 +105,6 @@ const backupDatabase = () => {
   );
 };
 
-function getChatWithDelay(chat_id: number, delay: number) {
-  return new Promise((resolve, reject) => {
-    setTimeout(() => {
-      bot.getChat(chat_id).then(
-        (result: string) => resolve(result),
-        (err: Error) => resolve(err),
-      );
-    }, delay);
-  });
-}
 /*
 Stats.find()
   .lean()
@@ -207,23 +197,25 @@ const updateDailyStats = async (games: IGame[], totalPlayers: number, uniquePlay
     tinygamePlays: playerStats[0].tinygamePlays - base.tinygamePlays,
   });
   dailyStats.save((err: Error) => {
-    if (err) return bot.notifyAdmin(`Daily stat save issue\n${err}`);
-    bot.notifyAdmin("Daily Stats Updated!");
-    base.listsPlayed = listStats[0].plays;
-    base.hints = playerStats[0].hints;
-    base.score = playerStats[0].score;
-    base.answers = playerStats[0].answers;
-    base.snubs = playerStats[0].snubs;
-    base.skips = playerStats[0].skips;
-    base.suggestions = playerStats[0].suggestions;
-    base.searches = playerStats[0].searches;
-    base.votes = listStats[0].votes;
-    base.minigamePlays = playerStats[0].minigamePlays;
-    base.tinygamePlays = playerStats[0].tinygamePlays;
-    base.save((err: Error) => {
-      if (err) return bot.notifyAdmin(`Base stat update issue\n${err}`);
-      bot.notifyAdmin("Base Stats Updated!");
-    });
+    if (err) bot.notifyAdmin(`Daily stat save issue\n${err}`);
+    else {
+      bot.notifyAdmin("Daily Stats Updated!");
+      base.listsPlayed = listStats[0].plays;
+      base.hints = playerStats[0].hints;
+      base.score = playerStats[0].score;
+      base.answers = playerStats[0].answers;
+      base.snubs = playerStats[0].snubs;
+      base.skips = playerStats[0].skips;
+      base.suggestions = playerStats[0].suggestions;
+      base.searches = playerStats[0].searches;
+      base.votes = listStats[0].votes;
+      base.minigamePlays = playerStats[0].minigamePlays;
+      base.tinygamePlays = playerStats[0].tinygamePlays;
+      base.save((err: Error) => {
+        if (err) bot.notifyAdmin(`Base stat update issue\n${err}`);
+        else bot.notifyAdmin("Base Stats Updated!");
+      });
+    }
   });
 };
 
@@ -305,6 +297,7 @@ const sendNewLists = () => {
     });
 };
 
+// @ts-ignore
 const sendUpdatedLists = () => {
   List.find({
     $or: [

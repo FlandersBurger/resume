@@ -126,18 +126,18 @@ export const newRound = (currentGame: IGame) => {
       }, 2000);
       game.playedLists.push(game.list._id);
       game.save((err) => {
-        if (err) return bot.notifyAdmin("newRound: " + JSON.stringify(err) + "\n" + JSON.stringify(game));
-        console.log(`${game.chat_id} - New round started -> "${list.name}"`);
+        if (err) bot.notifyAdmin("newRound: " + JSON.stringify(err) + "\n" + JSON.stringify(game));
+        else console.log(`${game.chat_id} - New round started -> "${list.name}"`);
       });
     });
 };
 
-export const activate = (game: HydratedDocument<IGame>, save = false) => {
+export const activate = async (game: HydratedDocument<IGame>, save = false) => {
   if (!game.enabled) {
     game.lastPlayDate = moment().toDate();
     game.enabled = true;
     bot.sendMessage(game.chat_id, "Ten Things started");
-    if (save) game.save();
+    if (save) await game.save();
   }
 };
 

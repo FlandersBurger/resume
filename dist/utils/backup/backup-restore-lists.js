@@ -5,8 +5,6 @@ const srcList = require("../../models/tenthings/list")("backup");
 const dstList = require("../../models/tenthings/list")("master");
 const backup = async () => {
     const existingLists = await dstList.find({}).select("_id").lean();
-    //const missingLists = await srcList.find({ _id: { $nin: existingLists } });
-    //console.log(missingLists.map(list => list.name));
     N = 0;
     const listCursor = await srcList.find({ _id: { $nin: existingLists } }).cursor();
     await listCursor.eachAsync(async (list) => {
@@ -24,5 +22,4 @@ const backup = async () => {
     console.log(`loop all ${N} lists success`);
 };
 backup();
-//module.exports = backup;
 //# sourceMappingURL=backup-restore-lists.js.map

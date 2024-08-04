@@ -13,7 +13,7 @@ export const emailRoute = Router();
 
 //https://www.google.com/recaptcha/api/siteverify
 emailRoute.post("/", async (req: Request, res: Response) => {
-  var email = req.body;
+  const email = req.body;
   try {
     const info = await transporter.sendMail({
       from: email.email,
@@ -22,9 +22,9 @@ emailRoute.post("/", async (req: Request, res: Response) => {
       text: JSON.stringify(email),
     });
     console.log("Email sent: " + info.response);
-    return res.sendStatus(200);
+    res.sendStatus(200);
   } catch (error) {
     console.log(error);
-    return res.sendStatus(500);
+    res.sendStatus(500);
   }
 });
