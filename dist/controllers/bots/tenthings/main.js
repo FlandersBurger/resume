@@ -52,7 +52,7 @@ exports.tenthingsBotRoute.post("/", async (req, res) => {
             break;
     }
     let msg = domainMessage.message;
-    if (!msg.from.id) {
+    if (!msg?.from?.id) {
         res.sendStatus(200);
     }
     else {

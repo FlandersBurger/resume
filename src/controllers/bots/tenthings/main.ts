@@ -104,7 +104,7 @@ tenthingsBotRoute.post("/", async (req: Request, res: Response) => {
       break;
   }
   let msg: IMessage = domainMessage.message as IMessage;
-  if (!msg.from.id) {
+  if (!msg?.from?.id) {
     res.sendStatus(200);
   } else {
     const existingGame = await Game.findOne({ chat_id: msg.chatId })
