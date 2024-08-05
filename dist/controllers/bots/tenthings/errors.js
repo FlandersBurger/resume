@@ -11,11 +11,11 @@ const chatNotFound = async (chat_id) => {
 };
 exports.chatNotFound = chatNotFound;
 const botMuted = async (chat_id, reason) => {
-    const mutedGame = await index_1.Game.findOneAndUpdate({ chat_id }, { $set: { enabled: false } });
+    const mutedGame = await index_1.Game.findOneAndUpdate({ chat_id, enabled: true }, { $set: { enabled: false } });
     if (mutedGame) {
         await index_1.Player.updateMany({ game: mutedGame._id }, { $set: { present: false } }, { multi: true });
+        console.error(`Muted game disabled: ${chat_id}${reason ? `, Reason: ${reason}` : ""}`);
     }
-    console.error(`Muted game disabled: ${chat_id}${reason ? `, Reason: ${reason}` : ""}`);
 };
 exports.botMuted = botMuted;
 //# sourceMappingURL=errors.js.map

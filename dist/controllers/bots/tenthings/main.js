@@ -9,7 +9,6 @@ const moment_1 = __importDefault(require("moment"));
 const index_1 = require("../../../models/index");
 const maingame_1 = require("./maingame");
 const telegram_1 = __importDefault(require("../../../connections/telegram"));
-const i18n_1 = __importDefault(require("../../../i18n"));
 const queue_1 = require("./queue");
 const callbacks_1 = __importDefault(require("./callbacks"));
 const commands_1 = require("./commands");
@@ -67,19 +66,15 @@ exports.tenthingsBotRoute.post("/", async (req, res) => {
             await (0, commands_1.evaluate)(msg, newGame, true);
         }
         else {
-            if (!existingGame.enabled && msg.command) {
-                if (["/list", "/start", "/minigame", "/tinygame"].includes(msg.command.toLowerCase())) {
+            if (!existingGame.enabled) {
+                if (msg.command && ["/list", "/start", "/minigame", "/tinygame"].includes(msg.command.toLowerCase())) {
                     await (0, maingame_1.activate)(existingGame, true);
                     await (0, commands_1.evaluate)(msg, existingGame, false);
                 }
-                else {
-                    telegram_1.default.sendMessage(msg.chatId, (0, i18n_1.default)(existingGame.settings.language, "sentences.inactivity"));
-                    if (!res.headersSent)
-                        res.sendStatus(200);
-                }
             }
-            else
+            else {
                 await (0, commands_1.evaluate)(msg, existingGame, false);
+            }
         }
         if (!res.headersSent)
             res.sendStatus(200);

@@ -145,10 +145,7 @@ export const deactivate = (game: HydratedDocument<IGame>) => {
   if (game.enabled) {
     game.enabled = false;
     game.save();
-    bot.sendMessage(
-      game.chat_id,
-      "I am now sleeping, type /list or /start to wake me up.\nThis triggers after 30 days of inactivity.",
-    );
+    bot.sendMessage(game.chat_id, i18n(game.settings.language, "sentences.inactivity"));
   }
 };
 

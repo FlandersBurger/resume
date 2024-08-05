@@ -31,8 +31,8 @@ export const createTinygame = async (game: HydratedDocument<IGame>) => {
   const tinygame = {
     answer: list!.name,
     clues: sampleSize(
-      list!.values.map((answer: IListValue) => angleBrackets(answer.value)),
-      10
+      list!.values.map((answer: IListValue) => answer.value),
+      10,
     ),
   };
   game.tinygame.answer = tinygame.answer;
@@ -52,7 +52,7 @@ export const createTinygame = async (game: HydratedDocument<IGame>) => {
 export const sendTinygameMessage = (game: IGame) => {
   let message = `<b>${i18n(game.settings.language, "sentences.findTheTitle")}</b>\n`;
   message += game.tinygame.clues.reduce((msg, clue) => {
-    msg += `- ${clue}\n`;
+    msg += `- ${angleBrackets(clue)}\n`;
     return msg;
   }, "");
   message += `\n<b>${getHint(game.tinygame.hints, game.tinygame.answer)}</b>`;
@@ -63,7 +63,7 @@ export const checkTinygame = async (
   game: HydratedDocument<IGame>,
   player: HydratedDocument<IPlayer>,
   guess: IGuess,
-  msg: IMessage
+  msg: IMessage,
 ) => {
   if (guess.match.value !== game.tinygame.answer) return;
   const score = getAnswerScore(game.minigame.hints, guess.match.distance);
@@ -75,7 +75,7 @@ export const checkTinygame = async (
   game.tinygame.plays++;
   await game.save();
   let message = `${i18n(game.settings.language, "sentences.tinygameAnswered")} (${(guess.match.distance * 100).toFixed(
-    0
+    0,
   )}%)\n`;
   message += getGuessedMessage(game.settings.language, game.tinygame.answer, msg.from.first_name);
   message += `\n<u>${player.scoreDaily - score} + ${i18n(game.settings.language, "point", {

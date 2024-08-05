@@ -17,7 +17,7 @@ angular.module("app").controller("AppCtrl", function ($scope, LanguageSvc, UserS
       }
     });
     */
-
+  // @ts-ignore
   $(window).load(function () {
     $(".loading").fadeOut("slow");
     $(".content").fadeIn("slow");

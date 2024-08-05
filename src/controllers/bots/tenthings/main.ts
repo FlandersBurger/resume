@@ -4,7 +4,6 @@ import { Game, Player } from "@models/index";
 import { activate, createMaingame } from "./maingame";
 
 import bot from "@root/connections/telegram";
-import i18n from "@root/i18n";
 import { getQueue } from "./queue";
 import callbacks, { ICallbackData } from "./callbacks";
 import { evaluate } from "./commands";
@@ -117,15 +116,14 @@ tenthingsBotRoute.post("/", async (req: Request, res: Response) => {
       console.log(`New game created for ${msg.chatId}`);
       await evaluate(msg, newGame, true);
     } else {
-      if (!existingGame.enabled && msg.command) {
-        if (["/list", "/start", "/minigame", "/tinygame"].includes(msg.command.toLowerCase())) {
+      if (!existingGame.enabled) {
+        if (msg.command && ["/list", "/start", "/minigame", "/tinygame"].includes(msg.command.toLowerCase())) {
           await activate(existingGame, true);
           await evaluate(msg, existingGame, false);
-        } else {
-          bot.sendMessage(msg.chatId, i18n(existingGame.settings.language, "sentences.inactivity"));
-          if (!res.headersSent) res.sendStatus(200);
         }
-      } else await evaluate(msg, existingGame, false);
+      } else {
+        await evaluate(msg, existingGame, false);
+      }
     }
     if (!res.headersSent) res.sendStatus(200);
   }

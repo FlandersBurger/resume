@@ -30,7 +30,7 @@ const createTinygame = async (game) => {
     }
     const tinygame = {
         answer: list.name,
-        clues: (0, sampleSize_1.default)(list.values.map((answer) => (0, string_helpers_1.angleBrackets)(answer.value)), 10),
+        clues: (0, sampleSize_1.default)(list.values.map((answer) => answer.value), 10),
     };
     game.tinygame.answer = tinygame.answer;
     game.tinygame.hints = 1;
@@ -50,7 +50,7 @@ exports.createTinygame = createTinygame;
 const sendTinygameMessage = (game) => {
     let message = `<b>${(0, i18n_1.default)(game.settings.language, "sentences.findTheTitle")}</b>\n`;
     message += game.tinygame.clues.reduce((msg, clue) => {
-        msg += `- ${clue}\n`;
+        msg += `- ${(0, string_helpers_1.angleBrackets)(clue)}\n`;
         return msg;
     }, "");
     message += `\n<b>${(0, hints_1.getHint)(game.tinygame.hints, game.tinygame.answer)}</b>`;

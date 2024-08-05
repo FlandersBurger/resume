@@ -130,7 +130,7 @@ const deactivate = (game) => {
     if (game.enabled) {
         game.enabled = false;
         game.save();
-        telegram_1.default.sendMessage(game.chat_id, "I am now sleeping, type /list or /start to wake me up.\nThis triggers after 30 days of inactivity.");
+        telegram_1.default.sendMessage(game.chat_id, (0, i18n_1.default)(game.settings.language, "sentences.inactivity"));
     }
 };
 exports.deactivate = deactivate;
