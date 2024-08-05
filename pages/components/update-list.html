@@ -362,16 +362,17 @@
           maxlength="3500"
         />
       </td>
-      <td class="image-cell icon-column hidden-xs hidden-sm visible-md visible-lg">
-        <img ng-src="{{item.blurb}}" ng-if="item.blurbType === 'image'" />
-        <a href="{{item.blurb}}" target="_blank" ng-if="item.blurbType === 'youtube'">
-          <i class="fab fa-youtube"></i>
-        </a>
-        <a href="{{item.blurb}}" target="_blank" ng-if="item.blurbType === 'spotify'">
-          <i class="fab fa-spotify"></i>
-        </a>
-        <a href="{{item.blurb}}" target="_blank" ng-if="item.blurbType === 'link'">
-          <i class="fas fa-link"></i>
+      <td
+        class="image-cell icon-column hidden-xs hidden-sm visible-md visible-lg"
+        ng-click="setSelectedItem(item)"
+        data-toggle="modal"
+        data-target="#modal-blurb"
+      >
+        <a href="">
+          <img ng-src="{{item.blurb}}" ng-if="item.blurbType === 'image'" />
+          <i class="fab fa-youtube" ng-if="item.blurbType === 'youtube'"></i>
+          <i class="fab fa-spotify" ng-if="item.blurbType === 'spotify'"></i>
+          <i class="fas fa-link" ng-if="item.blurbType === 'link'"></i>
         </a>
       </td>
       <td

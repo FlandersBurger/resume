@@ -1,13 +1,14 @@
 angular
   .module("app")
   //AngularJs can't have an arrow function here
-  .controller("TenThingsCtrl", function ($scope, $location, TenThingsSvc) {
+  .controller("TenThingsCtrl", function ($scope, $sce, $location, TenThingsSvc) {
     let page = 1;
     $scope.lists = [];
     $scope.search = "";
     $scope.newItem = {};
     $scope.languageFilter = {};
     $scope.categoryFilter = {};
+    $scope.selectedList = undefined;
     $scope.selectedList = undefined;
     let exhausted = false;
 
@@ -49,6 +50,10 @@ angular
         categories: [],
         language: currentLanguage,
       };
+    };
+
+    $scope.setSelectedItem = (item) => {
+      $scope.selectedItem = item;
     };
 
     $scope.setSelectedList = (list) => {
@@ -330,6 +335,25 @@ angular
           console.error(err);
           $scope.gettingBlurbs = false;
         });
+    };
+
+    $scope.getEmbedUrl = (url) => {
+      if (url.includes("youtube.com")) {
+        const videoId = url.match(/[?&]v=([^&]+)/)[1].trim();
+        return $sce.trustAsResourceUrl(`https://www.youtube.com/embed/${videoId}`);
+      } else if (url.includes("youtu.be")) {
+        const videoId = url.match(/youtu\.be\/([^&?]+)/)[1].trim();
+        return $sce.trustAsResourceUrl(`https://www.youtube.com/embed/${videoId}`);
+      } else if (url.includes("vimeo.com")) {
+        const videoId = url.match(/vimeo\.com\/(\d+)/)[1].trim();
+        return $sce.trustAsResourceUrl(`https://player.vimeo.com/video/${videoId}`);
+      } else if (url.includes("open.spotify")) {
+        const videoId = url.match(/track\/([^&?]+)/)[1].trim();
+        return $sce.trustAsResourceUrl(`https://open.spotify.com/embed/track/${videoId}`);
+      } else {
+        return $sce.trustAsResourceUrl(url);
+      }
+      // return `https://www.youtube.com/embed/${videoId}?autoplay=1`;
     };
 
     $scope.$watch("currentUser", getData);
