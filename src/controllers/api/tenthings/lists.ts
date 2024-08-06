@@ -223,7 +223,9 @@ tenthingsListsRoute.post("/:id/values", async (req: Request, res: Response) => {
     else {
       list.values.push({ ...req.body, creator: res.locals.user!._id });
       await list.save();
-      res.json(list.values[list.values.length - 1]);
+      const updatedList = await List.findOne({ _id: req.params.id }).lean({ virtuals: true });
+      if (!updatedList) res.sendStatus(500);
+      else res.json(updatedList.values.find(({ _id }) => _id.toString() === req.params.valueId));
     }
   }
 });
@@ -240,7 +242,9 @@ tenthingsListsRoute.put("/:id/values/:valueId", async (req: Request, res: Respon
       else {
         Object.assign(value, req.body);
         await list.save();
-        res.sendStatus(200);
+        const updatedList = await List.findOne({ _id: req.params.id }).lean({ virtuals: true });
+        if (!updatedList) res.sendStatus(500);
+        else res.json(updatedList.values.find(({ _id }) => _id.toString() === req.params.valueId));
       }
     }
   }

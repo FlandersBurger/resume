@@ -18,11 +18,12 @@ listValueSchema.virtual("blurbType").get(function () {
         return "text";
     else if (this.blurb.substring(0, 4) === "http" &&
         this.blurb.indexOf("youtu") < 0 &&
+        this.blurb.indexOf("spotify") < 0 &&
         this.blurb.match(/\.(jpeg|jpg|gif|png)$/) !== null)
         return "image";
     else if (this.blurb.substring(0, 4) === "http" && this.blurb.indexOf("youtu") >= 0)
         return "youtube";
-    else if (this.blurb.substring(0, 4) === "http" && this.blurb.indexOf("spotify") >= 0)
+    else if (this.blurb.substring(0, 4) === "http" && this.blurb.indexOf("spotify.com") >= 0)
         return "spotify";
     else if (this.blurb.substring(0, 4) === "http")
         return "link";

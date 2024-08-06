@@ -204,11 +204,13 @@ angular
       return data.result;
     };
 
-    $scope.updateValue = (item) => {
+    $scope.updateValue = async (item) => {
       if (!item.value) {
-        TenThingsSvc.deleteListValue($scope.selectedList, item);
+        await TenThingsSvc.deleteListValue($scope.selectedList, item);
       } else {
-        TenThingsSvc.updateListValue($scope.selectedList, item);
+        const updatedItemResponse = await TenThingsSvc.updateListValue($scope.selectedList, item);
+        item.blurbType = updatedItemResponse.data.blurbType;
+        $scope.$apply();
       }
     };
 
@@ -219,10 +221,11 @@ angular
         if ($scope.selectedList.values.length <= 10) {
           await $scope.upsertList($scope.selectedList);
         }
+        $scope.selectedList.values.push({ ...$scope.newItem });
       } else {
-        await TenThingsSvc.createListValue($scope.selectedList, $scope.newItem);
+        const createdItemResponse = await TenThingsSvc.createListValue($scope.selectedList, $scope.newItem);
+        $scope.selectedList.values.push(createdItemResponse.data);
       }
-      $scope.selectedList.values.push({ ...$scope.newItem });
       $scope.newItem.value = "";
       $scope.newItem.blurb = "";
       $("#new-blurb").focus();
