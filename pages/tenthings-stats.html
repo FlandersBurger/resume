@@ -1,0 +1,29 @@
+<div id="tenthingsstats-page" class="col-md-12" ng-if="currentUser">
+  <h1>Ten Things Stats</h1>
+  <div>
+    <canvas
+      class="chart chart-line"
+      chart-data="playStats.data"
+      chart-labels="playStats.labels"
+      chart-series="playStats.series"
+      chart-options="playStats.options"
+    ></canvas>
+  </div>
+  <div>
+    <canvas
+      id="bar"
+      class="chart chart-horizontal-bar"
+      chart-data="categoryStats.data"
+      chart-labels="categoryStats.labels"
+      chart-series="['Category']"
+    ></canvas>
+  </div>
+  <div>
+    <canvas
+      class="chart chart-bar"
+      chart-data="languageStats.data"
+      chart-labels="languageStats.labels"
+      chart-series="languageStats.series"
+    ></canvas>
+  </div>
+</div>

@@ -90,15 +90,15 @@ angular.module("app").config(function ($stateProvider, $urlRouterProvider, $urlS
       controller: "TenThingsAdminCtrl",
       templateUrl: "tenthings-admin.html",
     })
-    .state("tenthings-old", {
-      url: "/tenthings-old",
-      controller: "TenThingsOldCtrl",
-      templateUrl: "tenthings-old.html",
-    })
     .state("tenthings-game", {
       url: "/tenthings/:game",
       controller: "TenThingsGameCtrl",
       templateUrl: "tenthings-game.html",
+    })
+    .state("tenthings-stats", {
+      url: "/tenthings-stats",
+      controller: "TenThingsStatsCtrl",
+      templateUrl: "tenthings-stats.html",
     })
     .state("quiz-google", {
       url: "/google",

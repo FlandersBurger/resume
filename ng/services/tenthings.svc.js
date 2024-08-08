@@ -69,6 +69,10 @@ angular.module("app").service("TenThingsSvc", function ($http) {
     return $http.get("/api/tenthings/stats/languages");
   };
 
+  svc.getPlayStats = function () {
+    return $http.get("/api/tenthings/stats/play");
+  };
+
   svc.getBlurbs = function (list, type) {
     return $http.post(`/api/tenthings/lists/${list._id}/blurbs/${type}`);
   };

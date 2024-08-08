@@ -41,6 +41,7 @@ export interface IGameList {
 export interface IGame {
   _id: Types.ObjectId;
   chat_id: number;
+  topicId?: number;
   enabled: boolean;
   hints: number;
   cycles: number;
@@ -80,6 +81,7 @@ let Game: { [key: string]: Model<IGame> } = {};
 const gameSchema = new Schema<IGame>(
   {
     chat_id: { type: Number, required: true, unique: true },
+    topicId: { type: Number, required: false },
     enabled: { type: Boolean, required: true, default: true },
     hints: { type: Number, required: true, default: 0 },
     cycles: { type: Number, required: true, default: 0 },
@@ -139,7 +141,7 @@ const gameSchema = new Schema<IGame>(
       language: { type: String, required: true, default: "EN" },
     },
   },
-  { timestamps: true }
+  { timestamps: true },
 );
 
 gameSchema.index({ chat_id: 1 });

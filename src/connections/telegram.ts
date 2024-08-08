@@ -469,6 +469,7 @@ class TelegramBot {
             from,
             command,
             chatId: body.message.chat.id,
+            topicId: body.message.message_thread_id,
             text: body.message.text,
           },
         };

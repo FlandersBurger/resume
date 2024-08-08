@@ -17,9 +17,10 @@ const stats_1 = require("./stats");
 const skips_1 = require("./skips");
 const i18n_1 = __importDefault(require("../../../i18n"));
 const telegram_1 = __importDefault(require("../../../connections/telegram"));
-const createMaingame = async (chat_id) => {
+const createMaingame = async (chat_id, topicId) => {
     const game = new index_1.Game({
         chat_id,
+        topicId,
         settings: { languages: ["EN"] },
     });
     const savedGame = await game.save();

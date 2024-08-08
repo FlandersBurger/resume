@@ -25,6 +25,7 @@ export interface IMessage {
   command?: string;
   text: string;
   chatId: number;
+  topicId?: number;
 }
 
 export const getLogicMessage = (language: string): string => {

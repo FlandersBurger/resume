@@ -8,6 +8,7 @@ const moment_1 = __importDefault(require("moment"));
 const telegram_1 = __importDefault(require("../../../connections/telegram"));
 const index_1 = require("../../../models/index");
 const some_1 = __importDefault(require("lodash/some"));
+const sampleSize_1 = __importDefault(require("lodash/sampleSize"));
 const keyboards_1 = require("./keyboards");
 const getRandomList = async (parameters = {}) => {
     const count = await index_1.List.countDocuments(parameters).exec();
@@ -88,65 +89,14 @@ const selectList = async (game) => {
 exports.selectList = selectList;
 const searchList = async (search, game) => {
     const availableLanguages = getAvailableLanguages(game);
-    const regex = search
-        .replace(new RegExp("[^a-zA-Z0-9 ]+", "g"), ".*")
-        .split(" ")
-        .reduce((result, word) => `${result}(?=.*${word}.*)`, "");
-    let foundLists = await index_1.List.find({
+    const foundLists = await index_1.List.find({
         categories: { $nin: game.disabledCategories },
         language: { $in: availableLanguages },
-        name: {
-            $regex: `.*${regex}.*`,
-            $options: "i",
-        },
+        $text: { $search: `"${search}"` },
     })
         .select("name")
         .lean();
-    if (foundLists.length < 10) {
-        const count = await index_1.List.countDocuments({
-            categories: { $nin: game.disabledCategories },
-            language: { $in: availableLanguages },
-            "values.value": {
-                $regex: `.*${regex}.*`,
-                $options: "i",
-            },
-        });
-        const valueLists = await index_1.List.find({
-            categories: { $nin: game.disabledCategories },
-            language: { $in: availableLanguages },
-            "values.value": {
-                $regex: `.*${regex}.*`,
-                $options: "i",
-            },
-        })
-            .select("name")
-            .skip(count > 10 ? Math.floor(Math.random() * (count - 10)) : 0)
-            .limit(10 - foundLists.length)
-            .lean();
-        foundLists.push(...valueLists);
-    }
-    if (foundLists.length < 10) {
-        const count = await index_1.List.countDocuments({
-            language: { $in: availableLanguages },
-            categories: {
-                $regex: `.*${regex}.*`,
-                $options: "i",
-            },
-        });
-        const categoryLists = await index_1.List.find({
-            language: { $in: availableLanguages },
-            categories: {
-                $regex: `.*${regex}.*`,
-                $options: "i",
-            },
-        })
-            .select("name")
-            .skip(count > 10 ? Math.floor(Math.random() * (count - 10)) : 0)
-            .limit(10 - foundLists.length)
-            .lean();
-        foundLists.push(...categoryLists);
-    }
-    return foundLists;
+    return (0, sampleSize_1.default)(foundLists, 10);
 };
 exports.searchList = searchList;
 const logHint = async (listId) => {

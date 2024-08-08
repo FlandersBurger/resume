@@ -7,6 +7,7 @@ import { IList } from "@models/tenthings/list";
 import { IGame, IGameSettings } from "@models/tenthings/game";
 
 import some from "lodash/some";
+import sampleSize from "lodash/sampleSize";
 import { likeListKeyboard } from "./keyboards";
 
 export const getRandomList = async (parameters: QueryOptions = {}): Promise<HydratedDocument<IList> | undefined> => {
@@ -89,66 +90,14 @@ export const selectList = async (game: IGame): Promise<HydratedDocument<IList>> 
 
 export const searchList = async (search: string, game: IGame): Promise<IList[]> => {
   const availableLanguages = getAvailableLanguages(game);
-  const regex = search
-    .replace(new RegExp("[^a-zA-Z0-9 ]+", "g"), ".*")
-    .split(" ")
-    .reduce((result, word) => `${result}(?=.*${word}.*)`, "");
-  let foundLists = await List.find({
+  const foundLists = await List.find({
     categories: { $nin: game.disabledCategories },
     language: { $in: availableLanguages },
-    name: {
-      $regex: `.*${regex}.*`,
-      $options: "i",
-    },
+    $text: { $search: `"${search}"` },
   })
     .select("name")
     .lean();
-
-  if (foundLists.length < 10) {
-    const count = await List.countDocuments({
-      categories: { $nin: game.disabledCategories },
-      language: { $in: availableLanguages },
-      "values.value": {
-        $regex: `.*${regex}.*`,
-        $options: "i",
-      },
-    });
-    const valueLists = await List.find({
-      categories: { $nin: game.disabledCategories },
-      language: { $in: availableLanguages },
-      "values.value": {
-        $regex: `.*${regex}.*`,
-        $options: "i",
-      },
-    })
-      .select("name")
-      .skip(count > 10 ? Math.floor(Math.random() * (count - 10)) : 0)
-      .limit(10 - foundLists.length)
-      .lean();
-    foundLists.push(...valueLists);
-  }
-  if (foundLists.length < 10) {
-    const count = await List.countDocuments({
-      language: { $in: availableLanguages },
-      categories: {
-        $regex: `.*${regex}.*`,
-        $options: "i",
-      },
-    });
-    const categoryLists = await List.find({
-      language: { $in: availableLanguages },
-      categories: {
-        $regex: `.*${regex}.*`,
-        $options: "i",
-      },
-    })
-      .select("name")
-      .skip(count > 10 ? Math.floor(Math.random() * (count - 10)) : 0)
-      .limit(10 - foundLists.length)
-      .lean();
-    foundLists.push(...categoryLists);
-  }
-  return foundLists;
+  return sampleSize(foundLists, 10);
 };
 
 /*

@@ -15,6 +15,7 @@ var GameType;
 let Game = {};
 const gameSchema = new mongoose_1.Schema({
     chat_id: { type: Number, required: true, unique: true },
+    topicId: { type: Number, required: false },
     enabled: { type: Boolean, required: true, default: true },
     hints: { type: Number, required: true, default: 0 },
     cycles: { type: Number, required: true, default: 0 },

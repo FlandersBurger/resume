@@ -19,9 +19,10 @@ import i18n from "@root/i18n";
 
 import bot from "@root/connections/telegram";
 
-export const createMaingame = async (chat_id: number): Promise<HydratedDocument<IGame>> => {
+export const createMaingame = async (chat_id: number, topicId?: number): Promise<HydratedDocument<IGame>> => {
   const game = new Game({
     chat_id,
+    topicId,
     settings: { languages: ["EN"] },
   });
   const savedGame = await game.save();
