@@ -252,6 +252,7 @@ angular
             if ($location.search().list === "new") {
               $location.search("list", data._id);
             }
+            $scope.selectedList._id = data._id;
             $scope.getLists();
             $scope.saving = false;
           }, console.error);
