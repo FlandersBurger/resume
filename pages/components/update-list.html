@@ -159,7 +159,7 @@
       data-target="#modal-pick-categories"
       uib-tooltip="Categories"
     >
-      <i class="fas fa-tags" ng-if="selectedList.categories.length === 0"></i>
+      <span ng-if="selectedList.categories.length === 0"><i class="fas fa-tags"></i> Select...</span>
       {{selectedList.categories.join(", ")}}
     </button>
   </div>
@@ -307,7 +307,6 @@
       <td colspan="2">
         <button
           class="btn btn-sm"
-          ng-if="!hasDuplicate()"
           ng-class="{'btn-danger': hasDuplicate(), 'btn-default': !hasDuplicate()}"
           ng-click="createValue()"
           ng-disabled="!selectedList || !selectedList.name || !newItem.value || hasDuplicate()"

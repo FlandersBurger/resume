@@ -18,15 +18,8 @@ angular
         // Tab
         case 9:
           if ($("#new-blurb").is(":focus")) {
-            setTimeout(() => {
-              $scope.createValue();
-            }, 100);
-          }
-          break;
-        // Enter
-        case 13:
-          if ($("#new-blurb").is(":focus")) {
             $scope.createValue();
+            $("#new-value").focus();
           } else if ($("#new-value").is(":focus")) {
             $("#new-blurb").focus();
           }
@@ -215,20 +208,22 @@ angular
     };
 
     $scope.createValue = async () => {
+      if (!$scope.newItem.value) return;
       if ($scope.hasDuplicate()) {
         return alert(`${$scope.newItem.value} is already in the list`);
       } else if (!$scope.selectedList._id) {
+        $scope.selectedList.values.push({ ...$scope.newItem });
         if ($scope.selectedList.values.length <= 10) {
           await $scope.upsertList($scope.selectedList);
         }
-        $scope.selectedList.values.push({ ...$scope.newItem });
       } else {
         const createdItemResponse = await TenThingsSvc.createListValue($scope.selectedList, $scope.newItem);
         $scope.selectedList.values.push(createdItemResponse.data);
       }
       $scope.newItem.value = "";
       $scope.newItem.blurb = "";
-      $("#new-blurb").focus();
+      $("#new-value").focus();
+      $scope.$apply();
     };
 
     $scope.deleteValue = (item) => {
