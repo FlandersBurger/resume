@@ -243,7 +243,7 @@ const listsKeyboard = (lists) => ({
         .sort()
         .reduce((result, list) => {
         result.push([
-            getButton(list.name.replace("&", "and"), {
+            getButton((0, string_helpers_1.angleBrackets)(list.name.replace("&", "and")), {
                 type: callbacks_1.CallbackDataType.Pick,
                 id: `${list._id}`,
             }),

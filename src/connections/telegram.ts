@@ -24,7 +24,7 @@ const messageQueue = new Queue("sendMessage", {
 });
 
 messageQueue.on("completed", function (job: Job) {
-  //Job finished we remove it]
+  //Job finished we remove it
   job.remove();
 });
 
@@ -74,6 +74,7 @@ class TelegramBot {
     "Bad Request: message to delete not found",
     "Bad Request: query is too old and response timeout expired or query ID is invalid",
     "Bad Request: message is not modified: specified new message content and reply markup are exactly the same as a specified new message content and reply markup are exactly the same as a current content and reply markup of the message",
+    "Bad Request: message is not modified: specified new message content and reply markup are exactly the same as a current content and reply markup of the message",
   ];
 
   constructor(token: string) {
@@ -100,9 +101,9 @@ class TelegramBot {
       }
     } else {
       bot.notifyAdmin(
-        `Unknown error from "${source}" in channel ${channel}:\n${angleBrackets(error.message ?? error.code)}`,
+        `Unknown error from "${source}" in channel ${channel}:\n${angleBrackets(error.code ?? error.message)}`,
       );
-      console.error(error.message, error.code);
+      console.error(`${source} error: `, error.message, error.code);
     }
   };
 
@@ -156,7 +157,7 @@ class TelegramBot {
       } else {
         if (error.code === "ETIMEDOUT") {
           if (!retry) {
-            setTimeout(() => this.sendMessage(channel, message, topic, true), 200);
+            setTimeout(() => this.sendMessage(channel, message, topic, true), 500);
           } else {
             console.error(error.errors);
             if (channel !== parseInt(process.env.MASTER_CHAT || "")) {
@@ -303,9 +304,15 @@ class TelegramBot {
     try {
       await axios.get(encodeURI(url));
     } catch (error: AxiosError | any) {
-      this.errorHandler(channel, "Send keyboard", error);
+      if (
+        error.response?.data?.description ===
+        `Bad Request: can't parse entities: Can't find end tag corresponding to start tag "b"`
+      ) {
+        this.notifyAdmin(`Parse error with keyboard in ${channel}: ${message}`);
+      } else this.errorHandler(channel, "Send keyboard", error);
     }
   };
+
   public sendPhoto = async (channel: number, photo: string) => {
     const url = `${this.baseUrl}/sendPhoto?chat_id=${channel}&photo=${photo}`;
     try {
@@ -481,8 +488,13 @@ class TelegramBot {
 
 const bot = new TelegramBot(process.env.TELEGRAM_TOKEN!);
 
-messageQueue.process(({ data }: { data: { channel: number; message: string } }) =>
-  bot.sendMessage(data.channel, data.message),
-);
+const sleep = (ms: number) => {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+};
+
+messageQueue.process(async ({ data }: { data: { channel: number; message: string } }) => {
+  await sleep(1000 / 30);
+  bot.sendMessage(data.channel, data.message);
+});
 
 export default bot;

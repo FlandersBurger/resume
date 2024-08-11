@@ -46,6 +46,7 @@ class TelegramBot {
             "Bad Request: message to delete not found",
             "Bad Request: query is too old and response timeout expired or query ID is invalid",
             "Bad Request: message is not modified: specified new message content and reply markup are exactly the same as a specified new message content and reply markup are exactly the same as a current content and reply markup of the message",
+            "Bad Request: message is not modified: specified new message content and reply markup are exactly the same as a current content and reply markup of the message",
         ];
         this.init = async () => {
             const { data } = await axios_1.default.get(`${this.baseUrl}/getMe`);
@@ -66,8 +67,8 @@ class TelegramBot {
                 }
             }
             else {
-                bot.notifyAdmin(`Unknown error from "${source}" in channel ${channel}:\n${(0, string_helpers_1.angleBrackets)(error.message ?? error.code)}`);
-                console.error(error.message, error.code);
+                bot.notifyAdmin(`Unknown error from "${source}" in channel ${channel}:\n${(0, string_helpers_1.angleBrackets)(error.code ?? error.message)}`);
+                console.error(`${source} error: `, error.message, error.code);
             }
         };
         this.setWebhook = async (api) => {
@@ -123,7 +124,7 @@ class TelegramBot {
                 else {
                     if (error.code === "ETIMEDOUT") {
                         if (!retry) {
-                            setTimeout(() => this.sendMessage(channel, message, topic, true), 200);
+                            setTimeout(() => this.sendMessage(channel, message, topic, true), 500);
                         }
                         else {
                             console.error(error.errors);
@@ -274,7 +275,12 @@ class TelegramBot {
                 await axios_1.default.get(encodeURI(url));
             }
             catch (error) {
-                this.errorHandler(channel, "Send keyboard", error);
+                if (error.response?.data?.description ===
+                    `Bad Request: can't parse entities: Can't find end tag corresponding to start tag "b"`) {
+                    this.notifyAdmin(`Parse error with keyboard in ${channel}: ${message}`);
+                }
+                else
+                    this.errorHandler(channel, "Send keyboard", error);
             }
         };
         this.sendPhoto = async (channel, photo) => {
@@ -452,6 +458,12 @@ class TelegramBot {
     }
 }
 const bot = new TelegramBot(process.env.TELEGRAM_TOKEN);
-messageQueue.process(({ data }) => bot.sendMessage(data.channel, data.message));
+const sleep = (ms) => {
+    return new Promise((resolve) => setTimeout(resolve, ms));
+};
+messageQueue.process(async ({ data }) => {
+    await sleep(1000 / 30);
+    bot.sendMessage(data.channel, data.message);
+});
 exports.default = bot;
 //# sourceMappingURL=telegram.js.map
