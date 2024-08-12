@@ -197,14 +197,17 @@ exports.tenthingsListsRoute.post("/merge", async (req, res) => {
         for (let i = 1; i < lists.length; i++) {
             mergedList = await (0, lists_1.mergeLists)(mergedList, lists[i]);
         }
-        console.log(mergedList);
         await index_1.List.findOneAndUpdate({ _id: mergedList._id }, mergedList, { overwrite: true });
         await index_1.List.deleteMany({ _id: { $in: req.body.lists.filter((id) => id !== mergedList._id.toString()) } });
         const updatedList = await (0, lists_1.getList)(mergedList._id);
         if (!updatedList)
             res.sendStatus(500);
-        else
+        else {
             res.json((0, lists_1.formatList)(updatedList));
+            if (process.env.NODE_ENV === "production") {
+                telegram_1.default.notifyAdmins(`<u>Lists Merged</u>\nUpdated by <i>${res.locals.user?.username}</i>\n${lists.reduce((result, list) => `${result} - ${(0, string_helpers_1.angleBrackets)(list.name)}\n`, "")}<b>into</b>${(0, messages_1.getListMessage)(updatedList)}`, (0, keyboards_1.curateListKeyboard)(updatedList));
+            }
+        }
     }
 });
 exports.tenthingsListsRoute.delete("/:id", async (req, res) => {

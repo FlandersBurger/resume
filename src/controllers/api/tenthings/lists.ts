@@ -15,7 +15,7 @@ import Unsplash from "@root/connections/unsplash";
 
 import { IList, IListValue } from "@models/tenthings/list";
 import { List, User } from "@models/index";
-import { removeAllButLetters } from "@root/utils/string-helpers";
+import { angleBrackets, removeAllButLetters } from "@root/utils/string-helpers";
 import { getListMessage } from "@tenthings/messages";
 import { formatList, getList, getListScore, mergeLists } from "@tenthings/lists";
 import { curateListKeyboard } from "@tenthings/keyboards";
@@ -191,19 +191,26 @@ tenthingsListsRoute.post("/", async (req: Request, res: Response) => {
 tenthingsListsRoute.post("/merge", async (req: Request, res: Response) => {
   if (!res.locals.isAdmin) res.sendStatus(401);
   else {
-    const lists = await List.find({ _id: { $in: req.body.lists } })
+    const lists: Array<IList> = await List.find({ _id: { $in: req.body.lists } })
       .sort({ date: 1 })
       .lean();
     let mergedList: IList = lists[0];
     for (let i = 1; i < lists.length; i++) {
       mergedList = await mergeLists(mergedList, lists[i]);
     }
-    console.log(mergedList);
     await List.findOneAndUpdate({ _id: mergedList._id }, mergedList, { overwrite: true });
     await List.deleteMany({ _id: { $in: req.body.lists.filter((id: string) => id !== mergedList._id.toString()) } });
     const updatedList = await getList(mergedList._id);
     if (!updatedList) res.sendStatus(500);
-    else res.json(formatList(updatedList));
+    else {
+      res.json(formatList(updatedList));
+      if (process.env.NODE_ENV === "production") {
+        bot.notifyAdmins(
+          `<u>Lists Merged</u>\nUpdated by <i>${res.locals.user?.username}</i>\n${lists.reduce((result, list) => `${result} - ${angleBrackets(list.name)}\n`, "")}<b>into</b>${getListMessage(updatedList)}`,
+          curateListKeyboard(updatedList),
+        );
+      }
+    }
   }
 });
 
