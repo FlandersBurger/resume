@@ -19,6 +19,7 @@ import { angleBrackets, removeAllButLetters } from "@root/utils/string-helpers";
 import { getListMessage } from "@tenthings/messages";
 import { formatList, getList, getListScore, mergeLists } from "@tenthings/lists";
 import { curateListKeyboard } from "@tenthings/keyboards";
+import { every } from "lodash";
 
 export const tenthingsListsRoute = Router();
 
@@ -194,6 +195,10 @@ tenthingsListsRoute.post("/merge", async (req: Request, res: Response) => {
     const lists: Array<IList> = await List.find({ _id: { $in: req.body.lists } })
       .sort({ date: 1 })
       .lean();
+    if (!every(lists, (list) => lists[0].language === list.language)) {
+      res.sendStatus(400);
+      return;
+    }
     let mergedList: IList = lists[0];
     for (let i = 1; i < lists.length; i++) {
       mergedList = await mergeLists(mergedList, lists[i]);

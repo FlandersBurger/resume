@@ -19,6 +19,7 @@ const string_helpers_1 = require("../../../utils/string-helpers");
 const messages_1 = require("../../bots/tenthings/messages");
 const lists_1 = require("../../bots/tenthings/lists");
 const keyboards_1 = require("../../bots/tenthings/keyboards");
+const lodash_1 = require("lodash");
 exports.tenthingsListsRoute = (0, express_1.Router)();
 exports.tenthingsListsRoute.get("/", async (req, res) => {
     if (!res.locals.isAuthorized)
@@ -193,6 +194,10 @@ exports.tenthingsListsRoute.post("/merge", async (req, res) => {
         const lists = await index_1.List.find({ _id: { $in: req.body.lists } })
             .sort({ date: 1 })
             .lean();
+        if (!(0, lodash_1.every)(lists, (list) => lists[0].language === list.language)) {
+            res.sendStatus(400);
+            return;
+        }
         let mergedList = lists[0];
         for (let i = 1; i < lists.length; i++) {
             mergedList = await (0, lists_1.mergeLists)(mergedList, lists[i]);
