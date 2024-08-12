@@ -211,7 +211,7 @@ tenthingsListsRoute.post("/merge", async (req: Request, res: Response) => {
       res.json(formatList(updatedList));
       if (process.env.NODE_ENV === "production") {
         bot.notifyAdmins(
-          `<u>Lists Merged</u>\nUpdated by <i>${res.locals.user?.username}</i>\n${lists.reduce((result, list) => `${result} - ${angleBrackets(list.name)}\n`, "")}<b>into</b>${getListMessage(updatedList)}`,
+          `<u>Lists Merged</u>\nUpdated by <i>${res.locals.user?.username}</i>\n${lists.reduce((result, list) => `${result} - ${angleBrackets(list.name)}\n`, "")}<b>→</b> ${getListMessage(updatedList)}`,
           curateListKeyboard(updatedList),
         );
       }
