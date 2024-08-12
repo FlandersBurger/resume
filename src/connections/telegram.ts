@@ -146,7 +146,7 @@ class TelegramBot {
     message = encodeURIComponent(message);
     let url = `${this.baseUrl}/sendMessage?chat_id=${channel}&disable_notification=true&parse_mode=html&text=${message}`;
     if (topic) url += `&message_thread_id=${topic}`;
-    axios.get(url).catch((error) => {
+    axios.get(url, { timeout: 5000 }).catch((error) => {
       if (error.response) {
         if (error.response.data.description.includes("too long")) {
           this.notifyAdmin(`Too long: ${message.substring(0, 500)}...`);
@@ -488,12 +488,7 @@ class TelegramBot {
 
 const bot = new TelegramBot(process.env.TELEGRAM_TOKEN!);
 
-const sleep = (ms: number) => {
-  return new Promise((resolve) => setTimeout(resolve, ms));
-};
-
 messageQueue.process(async ({ data }: { data: { channel: number; message: string } }) => {
-  await sleep(1000 / 30);
   bot.sendMessage(data.channel, data.message);
 });
 
