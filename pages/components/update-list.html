@@ -7,7 +7,7 @@
     <b>Created by</b> {{selectedList._id ? selectedList.creator.username : currentUser.username }} /
     <b>Created on</b> {{formatDate(selectedList.date)}}
     <span ng-show="selectedList.modifyDate && selectedList.date !== selectedList.modifyDate">
-      / <b>Last modified</b> on {{formatDate(selectedList.modifyDate)}}
+      / <b>Last modified on</b> {{formatDate(selectedList.modifyDate)}}
     </span>
   </p>
   <span ng-show="selectedList.plays">

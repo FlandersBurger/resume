@@ -1,0 +1,31 @@
+<div id="modal-delete-lists" class="modal fade" role="dialog">
+  <div class="modal-dialog">
+    <!-- Modal content-->
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal">&times;</button>
+        <h3 class="modal-title">Delete list{{listIdsToDelete.length > 1 ? "s" : ""}}</h3>
+      </div>
+      <div class="modal-body">
+        <ul class="list-group">
+          <li class="list-group-item" ng-repeat="listId in listIdsToDelete">{{getListName(listId)}}</li>
+        </ul>
+        <h4 class="confirm-message" ng-click="$parent.confirmed = !$parent.confirmed">
+          <i
+            ng-class="{'fas fa-check-square': $parent.confirmed, 'fal fa-square': !$parent.confirmed }"
+            style="vertical-align: middle"
+          ></i>
+          I understand this action is irreversible
+        </h4>
+      </div>
+      <div class="modal-footer">
+        <div class="btn-group">
+          <button type="button" class="btn btn-danger" ng-click="confirmDeleteLists()" ng-disabled="!$parent.confirmed">
+            Delete {{listIdsToDelete.length}} list{{listIdsToDelete.length > 1 ? "s" : ""}}
+          </button>
+          <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

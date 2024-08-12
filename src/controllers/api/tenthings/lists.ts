@@ -17,7 +17,7 @@ import { IList, IListValue } from "@models/tenthings/list";
 import { List, User } from "@models/index";
 import { removeAllButLetters } from "@root/utils/string-helpers";
 import { getListMessage } from "@tenthings/messages";
-import { formatList, getList, getListScore } from "@tenthings/lists";
+import { formatList, getList, getListScore, mergeLists } from "@tenthings/lists";
 import { curateListKeyboard } from "@tenthings/keyboards";
 
 export const tenthingsListsRoute = Router();
@@ -173,16 +173,37 @@ tenthingsListsRoute.post("/", async (req: Request, res: Response) => {
     if (!updatedList) res.sendStatus(404);
     else if (!list) res.sendStatus(500);
     else {
-      if (!req.body.list._id) {
-        bot.notifyAdmins(`<u>List Created</u>\n${getListMessage(updatedList)}`, curateListKeyboard(updatedList));
-      } else if (previousModifyDate < yesterday) {
-        bot.notifyAdmins(
-          `<u>List Updated</u>\nUpdated by <i>${res.locals.user?.username}</i>\n${getListMessage(updatedList)}`,
-          curateListKeyboard(list),
-        );
+      if (process.env.NODE_ENV === "production") {
+        if (!req.body.list._id) {
+          bot.notifyAdmins(`<u>List Created</u>\n${getListMessage(updatedList)}`, curateListKeyboard(updatedList));
+        } else if (previousModifyDate < yesterday) {
+          bot.notifyAdmins(
+            `<u>List Updated</u>\nUpdated by <i>${res.locals.user?.username}</i>\n${getListMessage(updatedList)}`,
+            curateListKeyboard(list),
+          );
+        }
       }
       res.json(formatList(updatedList));
     }
+  }
+});
+
+tenthingsListsRoute.post("/merge", async (req: Request, res: Response) => {
+  if (!res.locals.isAdmin) res.sendStatus(401);
+  else {
+    const lists = await List.find({ _id: { $in: req.body.lists } })
+      .sort({ date: 1 })
+      .lean();
+    let mergedList: IList = lists[0];
+    for (let i = 1; i < lists.length; i++) {
+      mergedList = await mergeLists(mergedList, lists[i]);
+    }
+    console.log(mergedList);
+    await List.findOneAndUpdate({ _id: mergedList._id }, mergedList, { overwrite: true });
+    await List.deleteMany({ _id: { $in: req.body.lists.filter((id: string) => id !== mergedList._id.toString()) } });
+    const updatedList = await getList(mergedList._id);
+    if (!updatedList) res.sendStatus(500);
+    else res.json(formatList(updatedList));
   }
 });
 
@@ -193,14 +214,16 @@ tenthingsListsRoute.delete("/:id", async (req: Request, res: Response) => {
     if (list) {
       if (res.locals.isAdmin || res.locals.user?._id === list.creator) {
         await List.findByIdAndRemove({ _id: req.params.id });
-        bot.notifyAdmins(
-          list.values
-            .sort((a, b) => (a.value < b.value ? -1 : 1))
-            .reduce(
-              (message, item) => `${message}- ${item.value}\n`,
-              `<b>${list.name}</b>\ndeleted by ${res.locals.user!.username}\n`,
-            ),
-        );
+        if (process.env.NODE_ENV === "production") {
+          bot.notifyAdmins(
+            list.values
+              .sort((a, b) => (a.value < b.value ? -1 : 1))
+              .reduce(
+                (message, item) => `${message}- ${item.value}\n`,
+                `<b>${list.name}</b>\ndeleted by ${res.locals.user!.username}\n`,
+              ),
+          );
+        }
         res.sendStatus(200);
       } else {
         bot.notifyAdmins(

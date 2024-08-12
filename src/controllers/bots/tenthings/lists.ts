@@ -8,6 +8,8 @@ import { IGame, IGameSettings } from "@models/tenthings/game";
 
 import some from "lodash/some";
 import sampleSize from "lodash/sampleSize";
+import orderBy from "lodash/orderBy";
+import uniqBy from "lodash/uniqBy";
 import { likeListKeyboard } from "./keyboards";
 
 export const getRandomList = async (parameters: QueryOptions = {}): Promise<HydratedDocument<IList> | undefined> => {
@@ -150,3 +152,35 @@ export const formatList = (list: IList) => ({
   playRatio: list.plays ? (list.plays - list.skips) / list.plays : 0,
   calculatedDifficulty: list.plays ? list.hints / 6 / (list.plays - list.skips) : 0,
 });
+
+export const mergeLists = (originalList: IList, mergeList: IList): IList => {
+  const valuesToMerge = mergeList.values.filter(
+    (value) => !some(originalList.values, (listValue) => listValue.value == value.value),
+  );
+  const newValues = [
+    ...originalList.values.map((originalListValue) => {
+      const mergeListValue = mergeList.values.find((valueToMerge) => valueToMerge.value == originalListValue.value);
+      return mergeListValue
+        ? {
+            ...mergeListValue,
+            ...originalListValue,
+            blurb: originalListValue.blurb || mergeListValue.blurb,
+          }
+        : originalListValue;
+    }),
+    ...valuesToMerge,
+  ];
+  const newVotes = uniqBy(orderBy([...originalList.votes, ...mergeList.votes], ["modifyDate"], ["desc"]), "voter");
+  const mergedList = {
+    ...originalList,
+    description: originalList.description || mergeList.description,
+    values: newValues,
+    plays: (originalList.plays ?? 0) + (mergeList.plays ?? 0),
+    skips: (originalList.skips ?? 0) + (mergeList.skips ?? 0),
+    hints: (originalList.hints ?? 0) + (mergeList.hints ?? 0),
+    bans: (originalList.bans ?? 0) + (mergeList.bans ?? 0),
+    modifyDate: new Date(),
+    votes: newVotes,
+  };
+  return mergedList;
+};

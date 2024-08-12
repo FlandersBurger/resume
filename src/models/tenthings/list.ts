@@ -110,7 +110,7 @@ const listSchema = new Schema<IList>(
 );
 
 listSchema.virtual("answers").get(function (this: IList) {
-  return this.values.length as number;
+  return this.values?.length ?? 0;
 });
 listSchema.virtual("blurbs").get(function (this: IList) {
   return this.values ? this.values.filter((item) => item.blurb).length : 0;

@@ -41,8 +41,12 @@ angular.module("app").service("TenThingsSvc", function ($http) {
     });
   };
 
-  svc.deleteList = function (list) {
-    return $http.delete("/api/tenthings/lists/" + list._id);
+  svc.mergeLists = function (lists) {
+    return $http.post("/api/tenthings/lists/merge", { lists: lists });
+  };
+
+  svc.deleteList = function (listId) {
+    return $http.delete("/api/tenthings/lists/" + listId);
   };
 
   svc.updateListValue = function (list, value) {

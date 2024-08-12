@@ -65,7 +65,7 @@ const listSchema = new mongoose_1.Schema({
     toJSON: { virtuals: true, getters: true },
 });
 listSchema.virtual("answers").get(function () {
-    return this.values.length;
+    return this.values?.length ?? 0;
 });
 listSchema.virtual("blurbs").get(function () {
     return this.values ? this.values.filter((item) => item.blurb).length : 0;

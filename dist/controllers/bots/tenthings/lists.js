@@ -3,12 +3,14 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.formatList = exports.getList = exports.logHint = exports.searchList = exports.selectList = exports.rateList = exports.getListScore = exports.getRandomList = void 0;
+exports.mergeLists = exports.formatList = exports.getList = exports.logHint = exports.searchList = exports.selectList = exports.rateList = exports.getListScore = exports.getRandomList = void 0;
 const moment_1 = __importDefault(require("moment"));
 const telegram_1 = __importDefault(require("../../../connections/telegram"));
 const index_1 = require("../../../models/index");
 const some_1 = __importDefault(require("lodash/some"));
 const sampleSize_1 = __importDefault(require("lodash/sampleSize"));
+const orderBy_1 = __importDefault(require("lodash/orderBy"));
+const uniqBy_1 = __importDefault(require("lodash/uniqBy"));
 const keyboards_1 = require("./keyboards");
 const getRandomList = async (parameters = {}) => {
     const count = await index_1.List.countDocuments(parameters).exec();
@@ -138,4 +140,34 @@ const formatList = (list) => ({
     calculatedDifficulty: list.plays ? list.hints / 6 / (list.plays - list.skips) : 0,
 });
 exports.formatList = formatList;
+const mergeLists = (originalList, mergeList) => {
+    const valuesToMerge = mergeList.values.filter((value) => !(0, some_1.default)(originalList.values, (listValue) => listValue.value == value.value));
+    const newValues = [
+        ...originalList.values.map((originalListValue) => {
+            const mergeListValue = mergeList.values.find((valueToMerge) => valueToMerge.value == originalListValue.value);
+            return mergeListValue
+                ? {
+                    ...mergeListValue,
+                    ...originalListValue,
+                    blurb: originalListValue.blurb || mergeListValue.blurb,
+                }
+                : originalListValue;
+        }),
+        ...valuesToMerge,
+    ];
+    const newVotes = (0, uniqBy_1.default)((0, orderBy_1.default)([...originalList.votes, ...mergeList.votes], ["modifyDate"], ["desc"]), "voter");
+    const mergedList = {
+        ...originalList,
+        description: originalList.description || mergeList.description,
+        values: newValues,
+        plays: (originalList.plays ?? 0) + (mergeList.plays ?? 0),
+        skips: (originalList.skips ?? 0) + (mergeList.skips ?? 0),
+        hints: (originalList.hints ?? 0) + (mergeList.hints ?? 0),
+        bans: (originalList.bans ?? 0) + (mergeList.bans ?? 0),
+        modifyDate: new Date(),
+        votes: newVotes,
+    };
+    return mergedList;
+};
+exports.mergeLists = mergeLists;
 //# sourceMappingURL=lists.js.map

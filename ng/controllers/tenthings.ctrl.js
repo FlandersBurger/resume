@@ -9,7 +9,9 @@ angular
     $scope.languageFilter = {};
     $scope.categoryFilter = {};
     $scope.selectedList = undefined;
-    $scope.selectedList = undefined;
+    $scope.highlightedListIds = [];
+    $scope.listIdsToDelete = [];
+    $scope.confirmed = false;
     let exhausted = false;
 
     $scope.keyDown = (e) => {
@@ -197,6 +199,8 @@ angular
       return data.result;
     };
 
+    $scope.getListName = (listId) => $scope.lists.find(({ _id }) => _id === listId).name;
+
     $scope.updateValue = async (item) => {
       if (!item.value) {
         await TenThingsSvc.deleteListValue($scope.selectedList, item);
@@ -266,12 +270,50 @@ angular
       if (!list._id) {
         $scope.selectedList = null;
       } else {
-        if (confirm("Are you sure you want to delete this list?")) {
-          TenThingsSvc.deleteList(list).then(() => {
-            $scope.getLists();
-            $scope.selectedList = null;
-          });
+        $scope.confirmed = false;
+        if ($scope.highlightedListIds.includes(list._id)) {
+          $scope.listIdsToDelete = $scope.highlightedListIds;
+        } else {
+          $scope.listIdsToDelete = [list._id];
         }
+        $("#modal-delete-lists").modal("show");
+      }
+    };
+
+    $scope.deleteLists = () => {
+      $scope.listIdsToDelete = $scope.highlightedListIds;
+      $scope.confirmed = false;
+      $("#modal-delete-lists").modal("show");
+    };
+
+    $scope.confirmMergeLists = async () => {
+      const response = await TenThingsSvc.mergeLists($scope.highlightedListIds);
+      $scope.getLists();
+      $scope.setSelectedList(response.data);
+      $scope.highlightedListIds = [];
+      $scope.confirmed = false;
+      $("#modal-merge-lists").modal("hide");
+    };
+
+    $scope.confirmDeleteLists = async () => {
+      for (const listId of $scope.listIdsToDelete) {
+        await TenThingsSvc.deleteList(listId);
+      }
+      $scope.getLists();
+      $scope.selectedList = null;
+      $scope.listIdsToDelete = [];
+      $scope.highlightedListIds = [];
+      $scope.confirmed = false;
+      $("#modal-delete-lists").modal("hide");
+    };
+
+    $scope.toggleHighlightedList = (list) => {
+      if ($scope.highlightedListIds.includes(list._id)) {
+        $scope.highlightedListIds = $scope.highlightedListIds.filter(
+          (highlightedListId) => highlightedListId !== list._id,
+        );
+      } else {
+        $scope.highlightedListIds.push(list._id);
       }
     };
 

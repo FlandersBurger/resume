@@ -174,14 +174,37 @@ exports.tenthingsListsRoute.post("/", async (req, res) => {
         else if (!list)
             res.sendStatus(500);
         else {
-            if (!req.body.list._id) {
-                telegram_1.default.notifyAdmins(`<u>List Created</u>\n${(0, messages_1.getListMessage)(updatedList)}`, (0, keyboards_1.curateListKeyboard)(updatedList));
-            }
-            else if (previousModifyDate < yesterday) {
-                telegram_1.default.notifyAdmins(`<u>List Updated</u>\nUpdated by <i>${res.locals.user?.username}</i>\n${(0, messages_1.getListMessage)(updatedList)}`, (0, keyboards_1.curateListKeyboard)(list));
+            if (process.env.NODE_ENV === "production") {
+                if (!req.body.list._id) {
+                    telegram_1.default.notifyAdmins(`<u>List Created</u>\n${(0, messages_1.getListMessage)(updatedList)}`, (0, keyboards_1.curateListKeyboard)(updatedList));
+                }
+                else if (previousModifyDate < yesterday) {
+                    telegram_1.default.notifyAdmins(`<u>List Updated</u>\nUpdated by <i>${res.locals.user?.username}</i>\n${(0, messages_1.getListMessage)(updatedList)}`, (0, keyboards_1.curateListKeyboard)(list));
+                }
             }
             res.json((0, lists_1.formatList)(updatedList));
         }
+    }
+});
+exports.tenthingsListsRoute.post("/merge", async (req, res) => {
+    if (!res.locals.isAdmin)
+        res.sendStatus(401);
+    else {
+        const lists = await index_1.List.find({ _id: { $in: req.body.lists } })
+            .sort({ date: 1 })
+            .lean();
+        let mergedList = lists[0];
+        for (let i = 1; i < lists.length; i++) {
+            mergedList = await (0, lists_1.mergeLists)(mergedList, lists[i]);
+        }
+        console.log(mergedList);
+        await index_1.List.findOneAndUpdate({ _id: mergedList._id }, mergedList, { overwrite: true });
+        await index_1.List.deleteMany({ _id: { $in: req.body.lists.filter((id) => id !== mergedList._id.toString()) } });
+        const updatedList = await (0, lists_1.getList)(mergedList._id);
+        if (!updatedList)
+            res.sendStatus(500);
+        else
+            res.json((0, lists_1.formatList)(updatedList));
     }
 });
 exports.tenthingsListsRoute.delete("/:id", async (req, res) => {
@@ -192,9 +215,11 @@ exports.tenthingsListsRoute.delete("/:id", async (req, res) => {
         if (list) {
             if (res.locals.isAdmin || res.locals.user?._id === list.creator) {
                 await index_1.List.findByIdAndRemove({ _id: req.params.id });
-                telegram_1.default.notifyAdmins(list.values
-                    .sort((a, b) => (a.value < b.value ? -1 : 1))
-                    .reduce((message, item) => `${message}- ${item.value}\n`, `<b>${list.name}</b>\ndeleted by ${res.locals.user.username}\n`));
+                if (process.env.NODE_ENV === "production") {
+                    telegram_1.default.notifyAdmins(list.values
+                        .sort((a, b) => (a.value < b.value ? -1 : 1))
+                        .reduce((message, item) => `${message}- ${item.value}\n`, `<b>${list.name}</b>\ndeleted by ${res.locals.user.username}\n`));
+                }
                 res.sendStatus(200);
             }
             else {

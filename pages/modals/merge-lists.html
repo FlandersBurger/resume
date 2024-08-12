@@ -1,0 +1,30 @@
+<div id="modal-merge-lists" class="modal fade" role="dialog">
+  <div class="modal-dialog">
+    <!-- Modal content-->
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" ng-click="confirmed = false">&times;</button>
+        <h3 class="modal-title">Merge lists</h3>
+      </div>
+      <div class="modal-body">
+        <ul class="list-group">
+          <li class="list-group-item" ng-repeat="listId in highlightedListIds">{{getListName(listId)}}</li>
+        </ul>
+        <h4 class="confirm-message" ng-click="$parent.confirmed = !$parent.confirmed">
+          <i ng-class="{'fas fa-check-square': $parent.confirmed, 'far fa-square': !$parent.confirmed }"></i>
+          I understand this action is irreversible
+        </h4>
+      </div>
+      <div class="modal-footer">
+        <div class="btn-group">
+          <button type="button" class="btn btn-danger" ng-click="confirmMergeLists()" ng-disabled="!$parent.confirmed">
+            Merge {{highlightedListIds.length}} lists
+          </button>
+          <button type="button" class="btn btn-default" data-dismiss="modal" ng-click="$parent.confirmed = false">
+            Cancel
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
