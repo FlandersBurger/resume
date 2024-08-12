@@ -127,7 +127,11 @@ const suggestionKeyboard = () => ({
 exports.suggestionKeyboard = suggestionKeyboard;
 const categoriesKeyboard = ({ settings, disabledCategories }) => {
     return {
-        inline_keyboard: categories_1.default.sort().reduce((result, category, i) => {
+        inline_keyboard: categories_1.default
+            .sort((category1, category2) => (0, i18n_1.default)(settings.language, `categories.${category1}`) > (0, i18n_1.default)(settings.language, `categories.${category2}`)
+            ? 1
+            : -1)
+            .reduce((result, category, i) => {
             const button = getButton(`${(0, i18n_1.default)(settings.language, `categories.${category}`)}: ${disabledCategories.indexOf(category) < 0 ? emojis_1.default.on : emojis_1.default.off}`, { type: callbacks_1.CallbackDataType.Category, id: category });
             if (i % 2 === 0) {
                 result.push([button]);

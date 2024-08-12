@@ -129,20 +129,26 @@ export const suggestionKeyboard = (): IKeyboard => ({
 });
 export const categoriesKeyboard = ({ settings, disabledCategories }: IGame): IKeyboard => {
   return {
-    inline_keyboard: categories.sort().reduce((result: IKeyboardButton[][], category: string, i: number) => {
-      const button = getButton(
-        `${i18n(settings.language, `categories.${category}`)}: ${
-          disabledCategories.indexOf(category) < 0 ? emojis.on : emojis.off
-        }`,
-        { type: CallbackDataType.Category, id: category },
-      );
-      if (i % 2 === 0) {
-        result.push([button]);
-      } else {
-        result[result.length - 1].push(button);
-      }
-      return result;
-    }, []),
+    inline_keyboard: categories
+      .sort((category1, category2) =>
+        i18n(settings.language, `categories.${category1}`) > i18n(settings.language, `categories.${category2}`)
+          ? 1
+          : -1,
+      )
+      .reduce((result: IKeyboardButton[][], category: string, i: number) => {
+        const button = getButton(
+          `${i18n(settings.language, `categories.${category}`)}: ${
+            disabledCategories.indexOf(category) < 0 ? emojis.on : emojis.off
+          }`,
+          { type: CallbackDataType.Category, id: category },
+        );
+        if (i % 2 === 0) {
+          result.push([button]);
+        } else {
+          result[result.length - 1].push(button);
+        }
+        return result;
+      }, []),
   };
 };
 export const settingsKeyboard = ({ settings }: IGame): IKeyboard => {
