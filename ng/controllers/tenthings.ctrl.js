@@ -246,7 +246,7 @@ angular
         return alert(`${$scope.newItem.value} is already in the list`);
       } else if (!$scope.selectedList._id) {
         $scope.selectedList.values.push({ ...$scope.newItem });
-        if ($scope.selectedList.values.length <= 10) {
+        if ($scope.selectedList.values.length >= 10) {
           await $scope.upsertList($scope.selectedList);
         }
       } else {

@@ -260,7 +260,7 @@ tenthingsListsRoute.post("/:id/values", async (req: Request, res: Response) => {
       await list.save();
       const updatedList = await List.findOne({ _id: req.params.id }).lean({ virtuals: true });
       if (!updatedList) res.sendStatus(500);
-      else res.json(updatedList.values.find(({ _id }) => _id.toString() === req.params.valueId));
+      else res.json(updatedList.values[updatedList.values.length - 1]);
     }
   }
 });
