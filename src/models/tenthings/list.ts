@@ -62,7 +62,9 @@ listValueSchema.virtual("blurbType").get(function () {
     this.blurb.substring(0, 4) === "http" &&
     this.blurb.indexOf("youtu") < 0 &&
     this.blurb.indexOf("spotify") < 0 &&
-    this.blurb.match(/\.(jpeg|jpg|gif|png)$/) !== null
+    (this.blurb.match(/\.(jpeg|jpg|gif|png|webp)(\?.*|$)/) ||
+      this.blurb.indexOf("unsplash") >= 0 ||
+      this.blurb.indexOf("pexels") >= 0)
   )
     return "image";
   else if (this.blurb.substring(0, 4) === "http" && this.blurb.indexOf("youtu") >= 0) return "youtube";
@@ -120,6 +122,15 @@ listSchema.virtual("playRatio").get(function (this: IList) {
 });
 listSchema.virtual("actualPlays").get(function (this: IList) {
   return this.plays ? this.plays - this.skips : 0;
+});
+listSchema.virtual("upvotes").get(function (this: IList) {
+  return this.votes ? this.votes.filter(({ vote }) => vote > 0).length : 0;
+});
+listSchema.virtual("downvotes").get(function (this: IList) {
+  return this.votes ? this.votes.filter(({ vote }) => vote < 0).length : 0;
+});
+listSchema.virtual("calculatedDifficulty").get(function (this: IList) {
+  return this.plays ? this.hints / 6 / (this.plays - this.skips) : 0;
 });
 
 listSchema.plugin(mongooseLeanVirtuals);

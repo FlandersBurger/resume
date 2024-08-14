@@ -9,7 +9,7 @@ class Unsplash {
         this.getImage = async (query) => {
             try {
                 const { data } = await (0, http_client_1.default)().get(`https://api.unsplash.com/search/photos?client_id=${this.token}&query=${encodeURIComponent(query.replace(" ", "+"))}`);
-                return data.results[0].urls.regular;
+                return data.results[0]?.urls.regular;
             }
             catch (e) {
                 console.error(e);

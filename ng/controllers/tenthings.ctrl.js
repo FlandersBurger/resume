@@ -9,10 +9,37 @@ angular
     $scope.languageFilter = {};
     $scope.categoryFilter = {};
     $scope.selectedList = undefined;
+    $scope.selectedLanguage = "EN";
     $scope.highlightedListIds = [];
     $scope.listIdsToDelete = [];
     $scope.confirmed = false;
     let exhausted = false;
+
+    const objectCategories = [
+      "Art",
+      "Culture",
+      "Food and Drink",
+      "Nature",
+      "Objects",
+      "Religion",
+      "Society",
+      "Sports",
+      "Transportation",
+    ];
+    $scope.blurbTypes = [
+      { api: "movies", categories: ["Movies"], text: "Get movie posters", adminOnly: false },
+      { api: "tv", categories: ["Television"], text: "Get tv posters", adminOnly: false },
+      { api: "actors", categories: ["Movies", "Television"], text: "Get actor pics", adminOnly: false },
+      { api: "books", categories: ["Literature"], text: "Get book covers", adminOnly: false },
+      { api: "musicvideos", categories: ["Music"], text: "Get music videos", adminOnly: true },
+      { api: "unsplash", categories: objectCategories, text: "Get Unsplash pics", adminOnly: false },
+      { api: "pexels", categories: objectCategories, text: "Get Pexels pics", adminOnly: false },
+      { api: "wiki", categories: objectCategories, text: "Get Wiki pics", adminOnly: false },
+    ];
+
+    $scope.haveCommonItems = (arr1, arr2) => {
+      return arr1?.some((item) => arr2.includes(item));
+    };
 
     $scope.keyDown = (e) => {
       e = e || window.event;
@@ -32,7 +59,6 @@ angular
     };
 
     $scope.addList = () => {
-      const currentLanguage = $scope.selectedList ? $scope.selectedList.language : "EN";
       $location.search("list", "new");
       $scope.selectedList = {
         name: "",
@@ -43,7 +69,7 @@ angular
         isDynamic: true,
         category: "",
         categories: [],
-        language: currentLanguage,
+        language: $scope.selectedLanguage,
       };
     };
 
@@ -60,6 +86,7 @@ angular
             .then(({ data }) => {
               $scope.selectedList = data;
               $location.search("list", data._id);
+              $scope.selectedLanguage = $scope.selectedList.language;
             })
             .catch((err) => console.error(err));
         }
@@ -319,6 +346,7 @@ angular
 
     $scope.setLanguage = (list, language) => {
       list.language = language.code;
+      $scope.selectedLanguage = language.code;
       const nonEnglishIndex = list.categories.indexOf("Non-English");
       if (language.code !== "EN" && nonEnglishIndex < 0) {
         list.categories.push("Non-English");

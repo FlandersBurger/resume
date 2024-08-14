@@ -33,23 +33,7 @@ exports.tenthingsListsRoute.get("/", async (req, res) => {
             .populate("creator", "_id username displayName")
             .populate("values.creator", "_id username displayName")
             .lean({ virtuals: true });
-        res.json({ result: lists.map(lists_1.formatList), nextPage: page + 1 });
-    }
-});
-exports.tenthingsListsRoute.get("/:id/report/:user", async (req, res) => {
-    if (!res.locals.isAuthorized)
-        res.sendStatus(401);
-    else {
-        const list = await index_1.List.findOne({ _id: req.params.id });
-        if (!list)
-            res.sendStatus(404);
-        else {
-            const user = await index_1.User.findOne({ _id: req.params.user });
-            if (!user)
-                res.sendStatus(400);
-            else
-                telegram_1.default.notifyAdmins("Check: " + list.name + " reported by " + user.username);
-        }
+        res.json({ result: lists, nextPage: page + 1 });
     }
 });
 exports.tenthingsListsRoute.get("/:id", async (req, res) => {
@@ -129,6 +113,22 @@ exports.tenthingsListsRoute.post("/:id/blurbs/:type", async (req, res) => {
         }
     }
 });
+exports.tenthingsListsRoute.get("/:id/report/:user", async (req, res) => {
+    if (!res.locals.isAuthorized)
+        res.sendStatus(401);
+    else {
+        const list = await index_1.List.findOne({ _id: req.params.id });
+        if (!list)
+            res.sendStatus(404);
+        else {
+            const user = await index_1.User.findOne({ _id: req.params.user });
+            if (!user)
+                res.sendStatus(400);
+            else
+                telegram_1.default.notifyAdmins("Check: " + list.name + " reported by " + user.username);
+        }
+    }
+});
 exports.tenthingsListsRoute.put("/:id", async (req, res) => {
     if (!res.locals.isAuthorized)
         res.sendStatus(401);
@@ -151,7 +151,7 @@ exports.tenthingsListsRoute.put("/:id", async (req, res) => {
                 if (previousModifyDate < yesterday) {
                     telegram_1.default.notifyAdmins(`<u>List Updated</u>\nUpdated by <i>${res.locals.user?.username}</i>\n${(0, messages_1.getListMessage)(updatedList)}`, (0, keyboards_1.curateListKeyboard)(list));
                 }
-                res.json((0, lists_1.formatList)(updatedList));
+                res.json(updatedList);
             }
         }
     }
@@ -183,7 +183,7 @@ exports.tenthingsListsRoute.post("/", async (req, res) => {
                     telegram_1.default.notifyAdmins(`<u>List Updated</u>\nUpdated by <i>${res.locals.user?.username}</i>\n${(0, messages_1.getListMessage)(updatedList)}`, (0, keyboards_1.curateListKeyboard)(list));
                 }
             }
-            res.json((0, lists_1.formatList)(updatedList));
+            res.json(updatedList);
         }
     }
 });
@@ -208,7 +208,7 @@ exports.tenthingsListsRoute.post("/merge", async (req, res) => {
         if (!updatedList)
             res.sendStatus(500);
         else {
-            res.json((0, lists_1.formatList)(updatedList));
+            res.json(updatedList);
             if (process.env.NODE_ENV === "production") {
                 telegram_1.default.notifyAdmins(`<u>Lists Merged</u>\nUpdated by <i>${res.locals.user?.username}</i>\n${lists.reduce((result, list) => `${result} - ${(0, string_helpers_1.angleBrackets)(list.name)}\n`, "")}<b>→</b> ${(0, messages_1.getListMessage)(updatedList)}`, (0, keyboards_1.curateListKeyboard)(updatedList));
             }

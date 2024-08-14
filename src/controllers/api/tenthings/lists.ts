@@ -17,7 +17,7 @@ import { IList, IListValue } from "@models/tenthings/list";
 import { List, User } from "@models/index";
 import { angleBrackets, removeAllButLetters } from "@root/utils/string-helpers";
 import { getListMessage } from "@tenthings/messages";
-import { formatList, getList, getListScore, mergeLists } from "@tenthings/lists";
+import { getList, getListScore, mergeLists } from "@tenthings/lists";
 import { curateListKeyboard } from "@tenthings/keyboards";
 import { every } from "lodash";
 
@@ -34,20 +34,7 @@ tenthingsListsRoute.get("/", async (req: QueryableRequest, res: Response) => {
       .populate("creator", "_id username displayName")
       .populate("values.creator", "_id username displayName")
       .lean({ virtuals: true });
-    res.json({ result: lists.map(formatList), nextPage: page + 1 });
-  }
-});
-
-tenthingsListsRoute.get("/:id/report/:user", async (req: Request, res: Response) => {
-  if (!res.locals.isAuthorized) res.sendStatus(401);
-  else {
-    const list = await List.findOne({ _id: req.params.id });
-    if (!list) res.sendStatus(404);
-    else {
-      const user = await User.findOne({ _id: req.params.user });
-      if (!user) res.sendStatus(400);
-      else bot.notifyAdmins("Check: " + list.name + " reported by " + user.username);
-    }
+    res.json({ result: lists, nextPage: page + 1 });
   }
 });
 
@@ -123,6 +110,19 @@ tenthingsListsRoute.post("/:id/blurbs/:type", async (req: Request, res: Response
   }
 });
 
+tenthingsListsRoute.get("/:id/report/:user", async (req: Request, res: Response) => {
+  if (!res.locals.isAuthorized) res.sendStatus(401);
+  else {
+    const list = await List.findOne({ _id: req.params.id });
+    if (!list) res.sendStatus(404);
+    else {
+      const user = await User.findOne({ _id: req.params.user });
+      if (!user) res.sendStatus(400);
+      else bot.notifyAdmins("Check: " + list.name + " reported by " + user.username);
+    }
+  }
+});
+
 tenthingsListsRoute.put("/:id", async (req: Request, res: Response) => {
   if (!res.locals.isAuthorized) res.sendStatus(401);
   else {
@@ -146,7 +146,7 @@ tenthingsListsRoute.put("/:id", async (req: Request, res: Response) => {
             curateListKeyboard(list),
           );
         }
-        res.json(formatList(updatedList));
+        res.json(updatedList);
       }
     }
   }
@@ -184,7 +184,7 @@ tenthingsListsRoute.post("/", async (req: Request, res: Response) => {
           );
         }
       }
-      res.json(formatList(updatedList));
+      res.json(updatedList);
     }
   }
 });
@@ -208,7 +208,7 @@ tenthingsListsRoute.post("/merge", async (req: Request, res: Response) => {
     const updatedList = await getList(mergedList._id);
     if (!updatedList) res.sendStatus(500);
     else {
-      res.json(formatList(updatedList));
+      res.json(updatedList);
       if (process.env.NODE_ENV === "production") {
         bot.notifyAdmins(
           `<u>Lists Merged</u>\nUpdated by <i>${res.locals.user?.username}</i>\n${lists.reduce((result, list) => `${result} - ${angleBrackets(list.name)}\n`, "")}<b>→</b> ${getListMessage(updatedList)}`,

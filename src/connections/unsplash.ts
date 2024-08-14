@@ -14,7 +14,7 @@ class Unsplash {
           query.replace(" ", "+"),
         )}`,
       );
-      return data.results[0].urls.regular;
+      return data.results[0]?.urls.regular;
     } catch (e) {
       console.error(e);
     }

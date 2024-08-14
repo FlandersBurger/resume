@@ -3,7 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.mergeLists = exports.formatList = exports.getList = exports.logHint = exports.searchList = exports.selectList = exports.rateList = exports.getListScore = exports.getRandomList = void 0;
+exports.mergeLists = exports.getList = exports.logHint = exports.searchList = exports.selectList = exports.rateList = exports.getListScore = exports.getRandomList = void 0;
 const moment_1 = __importDefault(require("moment"));
 const telegram_1 = __importDefault(require("../../../connections/telegram"));
 const index_1 = require("../../../models/index");
@@ -128,18 +128,6 @@ const getList = async (listId) => {
     return list;
 };
 exports.getList = getList;
-const formatList = (list) => ({
-    ...list,
-    values: list.values.map((value) => ({
-        ...value,
-        creator: value.creator ? value.creator : list.creator,
-    })),
-    upvotes: list.votes ? list.votes.filter(({ vote }) => vote > 0).length : 0,
-    downvotes: list.votes ? list.votes.filter(({ vote }) => vote < 0).length : 0,
-    playRatio: list.plays ? (list.plays - list.skips) / list.plays : 0,
-    calculatedDifficulty: list.plays ? list.hints / 6 / (list.plays - list.skips) : 0,
-});
-exports.formatList = formatList;
 const mergeLists = (originalList, mergeList) => {
     const valuesToMerge = mergeList.values.filter((value) => !(0, some_1.default)(originalList.values, (listValue) => listValue.value == value.value));
     const newValues = [

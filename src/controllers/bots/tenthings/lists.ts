@@ -141,18 +141,6 @@ export const getList = async (listId: Types.ObjectId): Promise<IList | undefined
   return list;
 };
 
-export const formatList = (list: IList) => ({
-  ...list,
-  values: list.values.map((value) => ({
-    ...value,
-    creator: value.creator ? value.creator : list.creator,
-  })),
-  upvotes: list.votes ? list.votes.filter(({ vote }) => vote > 0).length : 0,
-  downvotes: list.votes ? list.votes.filter(({ vote }) => vote < 0).length : 0,
-  playRatio: list.plays ? (list.plays - list.skips) / list.plays : 0,
-  calculatedDifficulty: list.plays ? list.hints / 6 / (list.plays - list.skips) : 0,
-});
-
 export const mergeLists = (originalList: IList, mergeList: IList): IList => {
   const valuesToMerge = mergeList.values.filter(
     (value) => !some(originalList.values, (listValue) => listValue.value == value.value),

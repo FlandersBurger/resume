@@ -13,8 +13,11 @@
   <span ng-show="selectedList.plays">
     <b>Plays</b> {{selectedList.plays}} / <b>Skips</b> {{selectedList.skips}} /
     <b>Play Ratio</b> {{selectedList.playRatio.makePercentage()}} / <b>Score</b> {{selectedList.score.makePercentage()}}
-    / <b>Upvotes</b> {{selectedList.upvotes}} / <b>Downvotes</b> {{selectedList.downvotes}} /
-    <b>Hints</b> {{selectedList.hints}} / <b>Difficulty</b>
+    / <b>Hints</b> {{selectedList.hints}} /
+    <span ng-show="selectedList.upvotes || selectedList.downvotes">
+      <b>Upvotes</b> {{selectedList.upvotes || 0}} / <b>Downvotes</b> {{selectedList.downvotes || 0}} /
+    </span>
+    <b>Difficulty</b>
     {{selectedList.calculatedDifficulty.makePercentage()}}
   </span>
 </h5>
@@ -24,80 +27,6 @@
     Music lists will be scrutinized by admins for global recognition.
   </span>
 </kbd>
-<div class="btn-toolbar">
-  <button
-    class="btn btn-default"
-    ng-click="getBlurbs('movies')"
-    ng-if="selectedList.categories.indexOf('Movies') >= 0"
-    ng-disabled="gettingBlurbs || !selectedList || (!currentUser.admin && selectedList.creator._id !== currentUser._id && selectedList._id)"
-  >
-    Get Movie Posters
-  </button>
-  <button
-    class="btn btn-default"
-    ng-click="getBlurbs('tv')"
-    ng-if="selectedList.categories.indexOf('Television') >= 0"
-    ng-disabled="gettingBlurbs || !selectedList || (!currentUser.admin && selectedList.creator._id !== currentUser._id && selectedList._id)"
-  >
-    Get TV Posters
-  </button>
-  <button
-    class="btn btn-default"
-    ng-click="getBlurbs('actors')"
-    ng-if="selectedList.categories.indexOf('Movies') >= 0 || selectedList.categories.indexOf('Television') >= 0"
-    ng-disabled="gettingBlurbs || !selectedList || (!currentUser.admin && selectedList.creator._id !== currentUser._id && selectedList._id)"
-  >
-    Get Actor Pics
-  </button>
-  <button
-    class="btn btn-default"
-    ng-click="getBlurbs('books')"
-    ng-if="selectedList.categories.indexOf('Literature') >= 0"
-    ng-disabled="gettingBlurbs || !selectedList || (!currentUser.admin && selectedList.creator._id !== currentUser._id && selectedList._id)"
-  >
-    Get Book Covers
-  </button>
-  <button
-    class="btn btn-default"
-    ng-click="getBlurbs('musicvideos')"
-    ng-if="currentUser.admin && selectedList.categories.indexOf('Music') >= 0"
-    ng-disabled="gettingBlurbs || !selectedList || (!currentUser.admin && selectedList.creator._id !== currentUser._id && selectedList._id)"
-  >
-    Get Music Videos
-  </button>
-  <button
-    class="btn btn-default"
-    ng-click="getBlurbs('unsplash')"
-    ng-if="selectedList.categories.indexOf('Nature') >= 0"
-    ng-disabled="gettingBlurbs || !selectedList || (!currentUser.admin && selectedList.creator._id !== currentUser._id && selectedList._id)"
-  >
-    Get Unsplash Pics
-  </button>
-  <button
-    class="btn btn-default"
-    ng-click="getBlurbs('pexels')"
-    ng-if="selectedList.categories.indexOf('Nature') >= 0"
-    ng-disabled="gettingBlurbs || !selectedList || (!currentUser.admin && selectedList.creator._id !== currentUser._id && selectedList._id)"
-  >
-    Get Pexels Pics
-  </button>
-  <button
-    class="btn btn-default"
-    ng-click="getBlurbs('wiki')"
-    ng-if="selectedList.categories.indexOf('Nature') >= 0"
-    ng-disabled="gettingBlurbs || !selectedList || (!currentUser.admin && selectedList.creator._id !== currentUser._id && selectedList._id)"
-  >
-    Get Wiki Pics
-  </button>
-  <button
-    class="btn btn-danger"
-    ng-if="selectedList._id"
-    ng-click="deleteList(selectedList)"
-    ng-disabled="!selectedList || (!currentUser.admin && selectedList.creator._id !== currentUser._id && selectedList._id)"
-  >
-    <i class="fas fa-trash" aria-hidden="true"></i> Delete
-  </button>
-</div>
 <br />
 <div class="input-group">
   <span class="input-group-addon" id="name-addon">Name</span>
@@ -171,7 +100,7 @@
       ng-click="setDifficulty(selectedList, 0)"
       uib-tooltip="Easy"
     >
-      &#128524;
+      <i class="fas fa-smile-beam"></i>
     </button>
     <button
       type="button"
@@ -180,7 +109,7 @@
       ng-click="setDifficulty(selectedList, 1)"
       uib-tooltip="Medium"
     >
-      &#129300;
+      <i class="fas fa-grin-beam-sweat"></i>
     </button>
     <button
       type="button"
@@ -189,7 +118,7 @@
       ng-click="setDifficulty(selectedList, 2)"
       uib-tooltip="Hard"
     >
-      &#128565;
+      <i class="fas fa-dizzy"></i>
     </button>
   </div>
   <div class="btn-group" role="group">
@@ -200,7 +129,7 @@
       ng-click="setFrequency(selectedList, 0)"
       uib-tooltip="Frequently changes"
     >
-      🔴
+      <i class="fas fa-rabbit-fast"></i>
     </button>
     <button
       type="button"
@@ -209,7 +138,7 @@
       ng-click="setFrequency(selectedList, 1)"
       uib-tooltip="Annually changes"
     >
-      🟠
+      <i class="fas fa-turtle"></i>
     </button>
     <button
       type="button"
@@ -218,7 +147,7 @@
       ng-click="setFrequency(selectedList, 2)"
       uib-tooltip="Rarely changes"
     >
-      🟡
+      <i class="fas fa-snowflake"></i>
     </button>
     <button
       type="button"
@@ -227,7 +156,28 @@
       ng-click="setFrequency(selectedList, 3)"
       uib-tooltip="Never changes"
     >
-      ⚪
+      <i class="fas fa-chimney"></i>
+    </button>
+  </div>
+  <div class="btn-group" role="group">
+    <button
+      ng-repeat="blurbType in blurbTypes"
+      class="btn btn-default"
+      ng-click="getBlurbs(blurbType.api)"
+      ng-if="(currentUser.admin || !blurbType.adminOnly) && haveCommonItems(selectedList.categories, blurbType.categories)"
+      ng-disabled="gettingBlurbs || !selectedList || (!currentUser.admin && selectedList.creator._id !== currentUser._id && selectedList._id)"
+    >
+      {{blurbType.text}}
+    </button>
+  </div>
+  <div class="btn-group" role="group">
+    <button
+      class="btn btn-danger"
+      ng-if="selectedList._id"
+      ng-click="deleteList(selectedList)"
+      ng-disabled="!selectedList || (!currentUser.admin && selectedList.creator._id !== currentUser._id && selectedList._id)"
+    >
+      <i class="fas fa-trash" aria-hidden="true"></i>
     </button>
   </div>
 </div>
