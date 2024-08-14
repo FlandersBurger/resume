@@ -1,8 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 const index_1 = require("./models/index");
-const srcCategory = index_1.Category;
-const dstCategory = index_1.CategoryBackup;
 const srcJoke = index_1.Joke;
 const dstJoke = index_1.JokeBackup;
 const srcList = index_1.List;
@@ -15,10 +13,6 @@ const srcTenthingsStats = index_1.Stats;
 const dstTenthingsStats = index_1.StatsBackup;
 const syncDB = async () => {
     let N = 0;
-    const categories = await srcCategory.find({}).exec();
-    await dstCategory.deleteMany({});
-    await dstCategory.insertMany(categories);
-    console.log(`${categories.length} categories synced`);
     await dstJoke.deleteMany({});
     const jokes = await srcJoke.find({}).exec();
     await dstJoke.insertMany(jokes);

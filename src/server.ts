@@ -7,7 +7,6 @@ import { WebSocketServer } from "@root/websockets";
 import auth from "@root/auth";
 import http from "http";
 
-import { categoriesRoute } from "@api/categories";
 import { emailRoute } from "@api/email";
 import { filesRoute } from "@api/files";
 import { gamesRoute } from "@api/games";
@@ -39,7 +38,6 @@ const app = express();
 app.use(json({ limit: "5mb" }));
 
 app.use(auth);
-app.use("/api/categories", categoriesRoute);
 app.use("/api/email", emailRoute);
 app.use("/api/files", filesRoute);
 app.use("/api/games", gamesRoute);

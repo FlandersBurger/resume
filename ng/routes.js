@@ -55,11 +55,6 @@ angular.module("app").config(function ($stateProvider, $urlRouterProvider, $urlS
       controller: "ListsCtrl",
       templateUrl: "lists.html",
     })
-    .state("prioritize", {
-      url: "/prioritize",
-      controller: "PrioritizeCtrl",
-      templateUrl: "prioritize.html",
-    })
     .state("bubbles", {
       url: "/bubbles",
       controller: "BubblesCtrl",

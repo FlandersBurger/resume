@@ -1,6 +1,4 @@
 import {
-  Category,
-  CategoryBackup,
   // Game,
   // GameBackup,
   Joke,
@@ -16,9 +14,6 @@ import {
   User,
   UserBackup,
 } from "@models/index";
-
-const srcCategory = Category;
-const dstCategory = CategoryBackup;
 
 const srcJoke = Joke;
 const dstJoke = JokeBackup;
@@ -43,11 +38,6 @@ const dstTenthingsStats = StatsBackup;
 
 const syncDB = async () => {
   let N = 0;
-
-  const categories = await srcCategory.find({}).exec();
-  await dstCategory.deleteMany({});
-  await dstCategory.insertMany(categories);
-  console.log(`${categories.length} categories synced`);
 
   await dstJoke.deleteMany({});
   const jokes = await srcJoke.find({}).exec();
