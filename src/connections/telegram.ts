@@ -1,8 +1,9 @@
-import axios, { AxiosError } from "axios";
+import { AxiosError } from "axios";
 
 import Queue, { Job } from "bull";
 import i18n from "@root/i18n";
 import redis from "@root/queue";
+import httpClient from "@root/http-client";
 import { chatNotFound, botMuted } from "@tenthings/errors";
 import { checkSpam } from "@tenthings/spam";
 import { MessageType } from "@tenthings/main";
@@ -83,7 +84,7 @@ class TelegramBot {
   }
 
   private init = async () => {
-    const { data } = await axios.get(`${this.baseUrl}/getMe`);
+    const { data } = await httpClient().get(`${this.baseUrl}/getMe`);
     this.telegramBotUser = data.result;
     this.introduceYourself();
   };
@@ -113,7 +114,7 @@ class TelegramBot {
     const allowed_updates = JSON.stringify(["message", "callback_query"]);
     const url = `${this.baseUrl}/setWebhook?url=https://belgocanadian.com/bots/${api}&allowed_updates=${allowed_updates}`;
     try {
-      return await axios.get(url);
+      return await httpClient().get(url);
     } catch (error: AxiosError | any) {
       this.notifyAdmin("Set Webhook Fail");
       console.error(error.response.data);
@@ -123,7 +124,7 @@ class TelegramBot {
   public getWebhook = async () => {
     const url = `${this.baseUrl}/getWebhookInfo`;
     try {
-      const { data } = await axios.get(url);
+      const { data } = await httpClient().get(url);
       return data.result;
     } catch (error: AxiosError | any) {
       this.notifyAdmin("Get Webhook Fail");
@@ -135,7 +136,7 @@ class TelegramBot {
   public deleteWebhook = async () => {
     const url = `${this.baseUrl}/deleteWebhook`;
     try {
-      await axios.get(url);
+      await httpClient().get(url);
     } catch (error: AxiosError | any) {
       this.notifyAdmin("Delete Webhook Fail");
       console.error(error.response.data);
@@ -146,36 +147,35 @@ class TelegramBot {
     message = encodeURIComponent(message);
     let url = `${this.baseUrl}/sendMessage?chat_id=${channel}&disable_notification=true&parse_mode=html&text=${message}`;
     if (topic) url += `&message_thread_id=${topic}`;
-    axios.get(url, { timeout: 5000 }).catch((error) => {
-      if (error.response) {
-        if (error.response.data.description.includes("too long")) {
-          this.notifyAdmin(`Too long: ${message.substring(0, 500)}...`);
-          setTimeout(() => this.sendMessage(channel, message.substring(0, 4000), topic, true), 200);
-        } else if (error.response.data.description.includes("can't parse")) {
-          this.notifyAdmin(`Send Message to ${channel} parse Fail: ${message}`);
-        } else this.errorHandler(channel, "Send message", error);
-      } else {
-        if (error.code === "ETIMEDOUT") {
-          if (!retry) {
-            setTimeout(() => this.sendMessage(channel, message, topic, true), 500);
-          } else {
-            console.error(error.errors);
-            if (channel !== parseInt(process.env.MASTER_CHAT || "")) {
+    httpClient()
+      .get(url)
+      .catch((error) => {
+        if (error.response) {
+          if (error.response.data.description.includes("too long")) {
+            this.notifyAdmin(`Too long: ${message.substring(0, 500)}...`);
+            setTimeout(() => this.sendMessage(channel, message.substring(0, 4000), topic, true), 200);
+          } else if (error.response.data.description.includes("can't parse")) {
+            this.notifyAdmin(`Send Message to ${channel} parse Fail: ${message}`);
+          } else this.errorHandler(channel, "Send message", error);
+        } else {
+          if (error.code === "ETIMEDOUT") {
+            if (!retry) {
+              setTimeout(() => this.sendMessage(channel, message, topic, true), 500);
+            } else if (channel !== parseInt(process.env.MASTER_CHAT || "")) {
+              console.error(error.errors);
               this.notifyAdmin(`Send Message to ${channel} Fail: Timeout`);
             }
+          } else if (channel !== parseInt(process.env.MASTER_CHAT || "")) {
+            this.errorHandler(channel, "Send message", error);
           }
         }
-      }
-      if (channel !== parseInt(process.env.MASTER_CHAT || "")) {
-        this.errorHandler(channel, "Send message", error);
-      }
-    });
+      });
   };
 
   public deleteMessage = async (channel: number, message_id: string) => {
     const url = `${this.baseUrl}/deleteMessage?chat_id=${channel}&message_id=${message_id}`;
     try {
-      await axios.get(url);
+      await httpClient().get(url);
     } catch (error: AxiosError | any) {
       this.errorHandler(channel, "Delete message", error);
     }
@@ -195,7 +195,7 @@ class TelegramBot {
     const untilDate = Math.floor(date.setTime(date.getTime() + minutes * 60 * 1000) / 1000);
     const url = `${this.baseUrl}/kickChatMember?chat_id=${channel}&user_id=${userId}&until_date=${untilDate}`;
     try {
-      await axios.get(url);
+      await httpClient().get(url);
     } catch (error: AxiosError | any) {
       this.errorHandler(channel, "Kick user", error);
     }
@@ -234,7 +234,7 @@ class TelegramBot {
   public exportChatInviteLink = async (channel: number) => {
     const url = `${this.baseUrl}/exportChatInviteLink?chat_id=${channel}`;
     try {
-      const { data } = await axios.get(encodeURI(url));
+      const { data } = await httpClient().get(encodeURI(url));
       return data.result;
     } catch (error: AxiosError | any) {
       this.errorHandler(channel, "Export chat invite link", error);
@@ -244,7 +244,7 @@ class TelegramBot {
   public getChat = async (channel: number): Promise<string> => {
     const url = `${bot.baseUrl}/getChat?chat_id=${channel}`;
     try {
-      const { data } = await axios.get(encodeURI(url));
+      const { data } = await httpClient().get(encodeURI(url));
       if (data.result.invite_link) return `Group Chat: ${data.result.invite_link}`;
       else if (data.result.title) return `Group Chat: ${data.result.title}`;
       else if (data.result.username) return `Private Chat: @${data.result.username}`;
@@ -264,7 +264,7 @@ class TelegramBot {
   public getChatMember = async (channel: number, userId: number) => {
     const url = `${this.baseUrl}/getChatMember?chat_id=${channel}&user_id=${userId}`;
     try {
-      const response = await axios.get(url);
+      const response = await httpClient().get(url);
       return (
         response &&
         response.data &&
@@ -281,7 +281,7 @@ class TelegramBot {
     if (channel > 0) return true;
     const url = `${this.baseUrl}/getChatMember?chat_id=${channel}&user_id=${userId}`;
     try {
-      const response = await axios.get(url);
+      const response = await httpClient().get(url);
       return (
         response &&
         response.data &&
@@ -302,7 +302,7 @@ class TelegramBot {
     url += `&reply_markup=${JSON.stringify(keyboard)}`;
     if (topic) url += `&message_thread_id=${topic}`;
     try {
-      await axios.get(encodeURI(url));
+      await httpClient().get(encodeURI(url));
     } catch (error: AxiosError | any) {
       if (
         error.response?.data?.description ===
@@ -316,7 +316,7 @@ class TelegramBot {
   public sendPhoto = async (channel: number, photo: string) => {
     const url = `${this.baseUrl}/sendPhoto?chat_id=${channel}&photo=${photo}`;
     try {
-      await axios.get(encodeURI(url));
+      await httpClient().get(encodeURI(url));
     } catch (error: AxiosError | any) {
       this.errorHandler(channel, "Send photo", error);
     }
@@ -324,7 +324,7 @@ class TelegramBot {
   public sendAnimation = async (channel: number, animation: string) => {
     const url = `${this.baseUrl}/sendAnimation?chat_id=${channel}&animation=${animation}`;
     try {
-      await axios.get(encodeURI(url));
+      await httpClient().get(encodeURI(url));
     } catch (error: AxiosError | any) {
       this.errorHandler(channel, "Send animation", error);
     }
@@ -333,7 +333,7 @@ class TelegramBot {
     let url = `${this.baseUrl}/editMessageReplyMarkup?chat_id=${channel}&message_id=${message_id}`;
     if (keyboard) url += `&reply_markup=${JSON.stringify(keyboard)}`;
     try {
-      await axios.get(encodeURI(url));
+      await httpClient().get(encodeURI(url));
     } catch (error: AxiosError | any) {
       this.errorHandler(channel, "Edit keyboard", error);
     }
@@ -341,7 +341,7 @@ class TelegramBot {
   public answerCallback = async (callback_query_id: string, text: string) => {
     const url = `${this.baseUrl}/answerCallbackQuery?callback_query_id=${callback_query_id}&text=${text}`;
     try {
-      await axios.get(encodeURI(url));
+      await httpClient().get(encodeURI(url));
     } catch (error: AxiosError | any) {
       this.errorHandler(0, "Answer callback", error);
     }
@@ -365,8 +365,8 @@ class TelegramBot {
   };
 
   public reset = async () => {
-    await axios.get(`${this.baseUrl}/setWebhook?url=`);
-    await axios.get(`${this.baseUrl}/getUpdates?offset=-5`);
+    await httpClient().get(`${this.baseUrl}/setWebhook?url=`);
+    await httpClient().get(`${this.baseUrl}/getUpdates?offset=-5`);
     await this.init();
   };
 
@@ -394,7 +394,7 @@ class TelegramBot {
     };
     const url = `${this.baseUrl}/setMyCommands?commands=${JSON.stringify(commands)}&scope=${JSON.stringify(scope)}`;
     try {
-      await axios.get(encodeURI(url));
+      await httpClient().get(encodeURI(url));
     } catch (error: AxiosError | any) {
       this.errorHandler(channel, "Set commands", error);
     }

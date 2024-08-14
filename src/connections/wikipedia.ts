@@ -1,4 +1,4 @@
-const axios = require("axios").default;
+import httpClient from "@root/http-client";
 
 class Wikipedia {
   public getImage = async (query: string) => {
@@ -17,7 +17,7 @@ class Wikipedia {
     });
 
     try {
-      const { data } = await axios.get(url);
+      const { data } = await httpClient().get(url);
       const pages = data.query.pages;
       for (const page in pages) {
         if (pages[page].images) {
@@ -27,7 +27,7 @@ class Wikipedia {
               0,
           );
           if (images.length === 0) return;
-          const image = await axios.get(
+          const image = await httpClient().get(
             encodeURI(
               `https://commons.wikipedia.org/w/api.php?action=query&titles=${images[0].title}&prop=imageinfo&iiprop=url&format=json`,
             ),

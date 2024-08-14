@@ -1,6 +1,9 @@
 "use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
-const axios = require("axios").default;
+const http_client_1 = __importDefault(require("../http-client"));
 class Wikipedia {
     constructor() {
         this.getImage = async (query) => {
@@ -16,7 +19,7 @@ class Wikipedia {
                 url += "&" + key + "=" + params[key];
             });
             try {
-                const { data } = await axios.get(url);
+                const { data } = await (0, http_client_1.default)().get(url);
                 const pages = data.query.pages;
                 for (const page in pages) {
                     if (pages[page].images) {
@@ -24,7 +27,7 @@ class Wikipedia {
                             0);
                         if (images.length === 0)
                             return;
-                        const image = await axios.get(encodeURI(`https://commons.wikipedia.org/w/api.php?action=query&titles=${images[0].title}&prop=imageinfo&iiprop=url&format=json`));
+                        const image = await (0, http_client_1.default)().get(encodeURI(`https://commons.wikipedia.org/w/api.php?action=query&titles=${images[0].title}&prop=imageinfo&iiprop=url&format=json`));
                         const imagePages = Object.values(image.data.query.pages);
                         if (imagePages.length === 0)
                             return;

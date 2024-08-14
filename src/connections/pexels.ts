@@ -1,9 +1,9 @@
-const axios = require("axios").default;
+import httpClient from "@root/http-client";
 
 class Pexels {
   public getImage = async (query: string) => {
     try {
-      const result = await axios.get(
+      const result = await httpClient().get(
         `https://api.pexels.com/v1/search?query=${encodeURIComponent(query)}&per_page=1}`,
         {
           headers: {

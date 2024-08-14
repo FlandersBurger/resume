@@ -1,4 +1,4 @@
-const axios = require("axios").default;
+import httpClient from "@root/http-client";
 
 class YouTube {
   private token: string;
@@ -8,7 +8,7 @@ class YouTube {
   }
 
   public getMusicVideo = async (query: string, artist: string) => {
-    const { data } = await axios.get(
+    const { data } = await httpClient().get(
       `https://www.googleapis.com/youtube/v3/search?key=${
         this.token
       }&order=relevance&videoDefinition=high&type=video&maxResults=1&part=snippet&q=${artist}+VEVO+${encodeURIComponent(

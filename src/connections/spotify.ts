@@ -1,6 +1,5 @@
+import httpClient from "@root/http-client";
 import uniqBy from "lodash/uniqBy";
-
-const axios = require("axios").default;
 
 class Spotify {
   private token: string;
@@ -15,12 +14,16 @@ class Spotify {
   private init = async () => {
     const token = Buffer.from(this.token);
 
-    const { data } = await axios.post("https://accounts.spotify.com/api/token", "grant_type=client_credentials", {
-      headers: {
-        "Content-Type": "application/x-www-form-urlencoded",
-        Authorization: `Basic ${token.toString("base64")}`,
+    const { data } = await httpClient().post(
+      "https://accounts.spotify.com/api/token",
+      "grant_type=client_credentials",
+      {
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded",
+          Authorization: `Basic ${token.toString("base64")}`,
+        },
       },
-    });
+    );
 
     this.accessToken = data.access_token;
   };
@@ -33,12 +36,12 @@ class Spotify {
   });
 
   public getArtist = async (search: string) => {
-    const { data } = await axios.get(
+    const { data } = await httpClient().get(
       `https://api.spotify.com/v1/search?q=${encodeURI(search)}&type=artist`,
       this.getHeaders(),
     );
     let artist = data.artists.items.filter((artist: any) => artist.followers.total > 500)[0];
-    const { data: trackData } = await axios.get(
+    const { data: trackData } = await httpClient().get(
       `https://api.spotify.com/v1/artists/${artist.id}/top-tracks?market=US`,
       this.getHeaders(),
     );
@@ -47,7 +50,7 @@ class Spotify {
       name: track.name,
       url: track.preview_url,
     }));
-    const { data: albumData } = await axios.get(
+    const { data: albumData } = await httpClient().get(
       `https://api.spotify.com/v1/artists/${artist.id}/albums?include_groups=album&limit=50`,
       this.getHeaders(),
     );

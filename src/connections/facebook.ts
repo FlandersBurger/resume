@@ -1,4 +1,4 @@
-import axios from "axios";
+import httpClient from "@root/http-client";
 
 class Facebook {
   private token: string;
@@ -14,7 +14,7 @@ class Facebook {
       },
       message: message,
     };
-    const { data } = await axios.post("https://graph.facebook.com/v2.6/me/messages", request_body, {
+    const { data } = await httpClient().post("https://graph.facebook.com/v2.6/me/messages", request_body, {
       headers: { access_token: this.token },
     });
     console.log(data);

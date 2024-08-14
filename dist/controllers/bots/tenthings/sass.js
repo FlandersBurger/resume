@@ -4,8 +4,8 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const moment_1 = __importDefault(require("moment"));
-const axios_1 = __importDefault(require("axios"));
 const telegram_1 = __importDefault(require("../../../connections/telegram"));
+const http_client_1 = __importDefault(require("../../../http-client"));
 exports.default = async (game, text) => {
     if (game.settings.sass && game.enabled) {
         const sassText = await sass(text);
@@ -31,7 +31,7 @@ const checkString = (text, str = "") => text
     .split(" ")
     .includes(str);
 const getJoke = async () => {
-    const response = await axios_1.default.get("https://icanhazdadjoke.com/", {
+    const response = await (0, http_client_1.default)().get("https://icanhazdadjoke.com/", {
         headers: {
             Accept: "application/json",
         },

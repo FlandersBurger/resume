@@ -1,7 +1,7 @@
 import moment from "moment";
-import axios from "axios";
 import { IGame } from "@models/tenthings/game";
 import bot from "@root/connections/telegram";
+import httpClient from "@root/http-client";
 
 export default async (game: IGame, text: string) => {
   if (game.settings.sass && game.enabled) {
@@ -29,7 +29,7 @@ const checkString = (text: string, str: string = ""): boolean =>
     .includes(str);
 
 const getJoke = async () => {
-  const response = await axios.get("https://icanhazdadjoke.com/", {
+  const response = await httpClient().get("https://icanhazdadjoke.com/", {
     headers: {
       Accept: "application/json",
     },

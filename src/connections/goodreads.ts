@@ -1,4 +1,5 @@
-const axios = require("axios").default;
+import httpClient from "@root/http-client";
+
 const parseString = require("xml2js").parseStringPromise;
 
 class GoodReads {
@@ -8,13 +9,15 @@ class GoodReads {
   }
 
   public getAuthor = async (author: string) => {
-    const goodreadsAuthor = await axios.get(`https://www.goodreads.com/api/author_url/${author}?key=${this.token}`);
+    const goodreadsAuthor = await httpClient().get(
+      `https://www.goodreads.com/api/author_url/${author}?key=${this.token}`,
+    );
     const parsedAuthorXML = await parseString(goodreadsAuthor.data);
     return parsedAuthorXML.GoodreadsResponse.author[0].$.id;
   };
 
   public getBook = async (query: string, author: string) => {
-    const goodreadsDB = await axios.get(
+    const goodreadsDB = await httpClient().get(
       `https://www.goodreads.com/search.xml?key=${this.token}&q=${encodeURIComponent(query)}&search[field]=title`,
     );
     try {

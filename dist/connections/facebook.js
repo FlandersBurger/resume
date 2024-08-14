@@ -3,7 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-const axios_1 = __importDefault(require("axios"));
+const http_client_1 = __importDefault(require("../http-client"));
 class Facebook {
     constructor(token) {
         this.queueMessage = async (chat_id, message) => {
@@ -13,7 +13,7 @@ class Facebook {
                 },
                 message: message,
             };
-            const { data } = await axios_1.default.post("https://graph.facebook.com/v2.6/me/messages", request_body, {
+            const { data } = await (0, http_client_1.default)().post("https://graph.facebook.com/v2.6/me/messages", request_body, {
                 headers: { access_token: this.token },
             });
             console.log(data);

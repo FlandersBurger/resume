@@ -1,4 +1,4 @@
-const axios = require("axios").default;
+import httpClient from "@root/http-client";
 
 class MovieDb {
   private token: string;
@@ -8,7 +8,7 @@ class MovieDb {
   }
 
   public getImage = async (query: any, type: string) => {
-    const { data } = await axios.get(
+    const { data } = await httpClient().get(
       `https://api.themoviedb.org/3/search/${type}?api_key=${this.token}&query=${encodeURIComponent(query)}`,
     );
     try {
@@ -28,7 +28,7 @@ const api = new MovieDb(process.env.TMDB_TOKEN!);
 export default api;
 
 /*
-axios.get(`https://api.themoviedb.org/3/search/movie?api_key=${moviedbAPIKey}&query=${encodeURIComponent('good will hunting')}`).then((response) => {
+httpClient().get(`https://api.themoviedb.org/3/search/movie?api_key=${moviedbAPIKey}&query=${encodeURIComponent('good will hunting')}`).then((response) => {
   if (err) {
     console.error(err);
   } else {

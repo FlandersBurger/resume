@@ -1,11 +1,14 @@
 "use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
-const axios = require("axios").default;
+const http_client_1 = __importDefault(require("../http-client"));
 class Pexels {
     constructor() {
         this.getImage = async (query) => {
             try {
-                const result = await axios.get(`https://api.pexels.com/v1/search?query=${encodeURIComponent(query)}&per_page=1}`, {
+                const result = await (0, http_client_1.default)().get(`https://api.pexels.com/v1/search?query=${encodeURIComponent(query)}&per_page=1}`, {
                     headers: {
                         Authorization: process.env.PEXELS_TOKEN,
                     },

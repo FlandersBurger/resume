@@ -1,4 +1,4 @@
-const axios = require("axios").default;
+import httpClient from "@root/http-client";
 
 class Unsplash {
   private token: string;
@@ -9,7 +9,7 @@ class Unsplash {
 
   public getImage = async (query: string) => {
     try {
-      const { data } = await axios.get(
+      const { data } = await httpClient().get(
         `https://api.unsplash.com/search/photos?client_id=${this.token}&query=${encodeURIComponent(
           query.replace(" ", "+"),
         )}`,
