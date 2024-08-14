@@ -141,8 +141,8 @@ angular
     };
 
     $scope.order = {
-      field: "date",
-      direction: true,
+      field: $location.search().sort || "date",
+      direction: $location.search().order ? $location.search().order === "desc" : true,
     };
 
     $scope.orderBy = (field) => {
@@ -154,6 +154,8 @@ angular
           direction: false,
         };
       }
+      $location.search("sort", field);
+      $location.search("order", $scope.order.direction ? "desc" : "asc");
       $scope.getLists();
     };
 
