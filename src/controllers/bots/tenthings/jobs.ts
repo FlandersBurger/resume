@@ -357,7 +357,11 @@ const deleteStaleGames = () => {
 };
 
 const deactivateInactiveChats = () => {
-  Game.find({ lastPlayDate: { $lt: moment().subtract(30, "days") }, enabled: true })
+  Game.find({
+    _id: { $nin: [process.env.MASTER_CHAT, process.env.ADMIN_CHAT, process.env.GROUP_CHAT] },
+    lastPlayDate: { $lt: moment().subtract(30, "days") },
+    enabled: true,
+  })
     .select("chat_id")
     .then((games: HydratedDocument<IGame>[]) => {
       games.forEach(deactivate);
