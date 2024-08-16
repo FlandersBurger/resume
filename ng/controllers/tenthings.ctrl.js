@@ -47,9 +47,6 @@ angular
         case 9:
           if ($("#new-blurb").is(":focus")) {
             $scope.createValue();
-            setTimeout(() => {
-              $("#new-value").trigger("focus");
-            });
           } else if ($("#new-value").is(":focus")) {
             setTimeout(() => {
               $("#new-blurb").trigger("focus");
@@ -258,7 +255,9 @@ angular
       }
       $scope.newItem.value = "";
       $scope.newItem.blurb = "";
-      $("#new-value").trigger("focus");
+      setTimeout(() => {
+        $("#new-value").trigger("focus");
+      });
       $scope.$apply();
     };
 
