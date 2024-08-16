@@ -5,10 +5,11 @@
 <h5 ng-show="selectedList.creator">
   <p>
     <b>Created by</b> {{selectedList._id ? selectedList.creator.username : currentUser.username }} /
-    <b>Created on</b> {{formatDate(selectedList.date)}}
+    <b>Created on</b> {{formatDate(selectedList.date)}} /
     <span ng-show="selectedList.modifyDate && selectedList.date !== selectedList.modifyDate">
-      / <b>Last modified on</b> {{formatDate(selectedList.modifyDate)}}
+      <b>Last modified on</b> {{formatDate(selectedList.modifyDate)}} /
     </span>
+    <b>Values</b> {{selectedList.values.length}}
   </p>
   <span ng-show="selectedList.plays">
     <b>Plays</b> {{selectedList.plays}} / <b>Skips</b> {{selectedList.skips}} /
@@ -232,12 +233,17 @@
       <td class="hidden-xs hidden-sm visible-md visible-lg"></td>
       <td class="hidden-xs hidden-sm visible-md visible-lg"></td>
       <td class="input-cell">
-        <input
+        <textarea
           id="new-value"
           class="form-control"
           ng-model="newItem.value"
           ng-disabled="!selectedList || !selectedList.name"
           placeholder="New answer ({{selectedList.values.length + 1}})"
+          style="resize: none"
+          oninput='this.style.height = "";this.style.height = this.scrollHeight + "px"'
+          onfocus='this.style.height = this.scrollHeight + "px"'
+          onblur='this.style.height = "43px";'
+          maxlength="3500"
         />
       </td>
       <td class="input-cell">
@@ -247,7 +253,7 @@
           ng-model="newItem.blurb"
           ng-disabled="!selectedList || !selectedList.name"
           placeholder="Display after guessing {{newItem.value ? newItem.value : 'new answer'}} (Can be a URL)"
-          style="resize: vertical"
+          style="resize: none"
           oninput='this.style.height = "";this.style.height = this.scrollHeight + "px"'
           onfocus='this.style.height = this.scrollHeight + "px"'
           onblur='this.style.height = "43px";'
@@ -284,7 +290,7 @@
         ></i>
       </td>
       <td class="input-cell col-xs-5">
-        <input
+        <textarea
           id="value{{$index}}"
           class="form-control"
           ng-model="item.value"
@@ -293,6 +299,11 @@
           ng-disabled="!loggedIn || !currentUser.admin && selectedList.creator._id !== currentUser._id && item.creator !== currentUser._id"
           ng-model-options="{updateOn: 'blur'}"
           ng-change="updateValue(item)"
+          style="resize: none"
+          oninput='this.style.height = "";this.style.height = this.scrollHeight + "px"'
+          onfocus='this.style.height = this.scrollHeight + "px"'
+          onblur='this.style.height = "43px";'
+          maxlength="3500"
         />
       </td>
       <td class="input-cell col-xs-6">
@@ -304,7 +315,7 @@
           ng-disabled="!loggedIn || !currentUser.admin && selectedList.creator._id !== currentUser._id && item.creator !== currentUser._id"
           ng-model-options="{updateOn: 'blur'}"
           ng-change="updateValue(item)"
-          style="resize: vertical"
+          style="resize: none"
           oninput='this.style.height = "";this.style.height = this.scrollHeight + "px"'
           onfocus='this.style.height = this.scrollHeight + "px"'
           onblur='this.style.height = "43px";'

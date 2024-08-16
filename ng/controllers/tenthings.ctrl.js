@@ -42,15 +42,18 @@ angular
     };
 
     $scope.keyDown = (e) => {
-      e = e || window.event;
       switch (e.keyCode) {
         // Tab
         case 9:
           if ($("#new-blurb").is(":focus")) {
             $scope.createValue();
-            $("#new-value").focus();
+            setTimeout(() => {
+              $("#new-value").trigger("focus");
+            });
           } else if ($("#new-value").is(":focus")) {
-            $("#new-blurb").focus();
+            setTimeout(() => {
+              $("#new-blurb").trigger("focus");
+            });
           }
           break;
         default:
@@ -232,7 +235,7 @@ angular
 
     $scope.updateValue = async (item) => {
       if (!item.value) {
-        await TenThingsSvc.deleteListValue($scope.selectedList, item);
+        $scope.deleteValue(item);
       } else {
         const updatedItemResponse = await TenThingsSvc.updateListValue($scope.selectedList, item);
         item.blurbType = updatedItemResponse.data.blurbType;
@@ -255,12 +258,12 @@ angular
       }
       $scope.newItem.value = "";
       $scope.newItem.blurb = "";
-      $("#new-value").focus();
+      $("#new-value").trigger("focus");
       $scope.$apply();
     };
 
     $scope.deleteValue = (item) => {
-      TenThingsSvc.deleteListValue($scope.selectedList, item).then(() => {
+      TenThingsSvc.deleteListValue($scope.selectedList, item).then((response) => {
         $scope.selectedList.values = $scope.selectedList.values.filter((value) => value._id !== item._id);
       });
     };
