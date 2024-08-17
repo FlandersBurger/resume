@@ -141,7 +141,7 @@ const categoriesKeyboard = ({ settings, disabledCategories }) => {
                 result[result.length - 1].push(button);
             }
             return result;
-        }, []), [getButton(`${(0, i18n_1.default)(settings.language, "settings")}`, { type: callbacks_1.CallbackDataType.Setting, id: "settings" })]),
+        }, []), [[getButton(`${(0, i18n_1.default)(settings.language, "settings")}`, { type: callbacks_1.CallbackDataType.Setting, id: "settings" })]]),
     };
 };
 exports.categoriesKeyboard = categoriesKeyboard;
@@ -176,7 +176,7 @@ const settingsKeyboard = ({ settings }) => {
                 }),
             ],
             [
-                getButton(`${(0, i18n_1.default)(settings.language, "category", { count: 0 })}: ${settings.updates ? emojis_1.default.on : emojis_1.default.off}`, {
+                getButton(`${(0, i18n_1.default)(settings.language, "category", { count: 0 })}`, {
                     type: callbacks_1.CallbackDataType.Setting,
                     id: "cats",
                 }),
@@ -199,7 +199,7 @@ const languagesKeyboard = ({ settings }, availableLanguages) => {
                 result[result.length - 1].push(button);
             }
             return result;
-        }, []), [getButton(`${(0, i18n_1.default)(settings.language, "settings")}`, { type: callbacks_1.CallbackDataType.Setting, id: "settings" })]),
+        }, []), [[getButton(`${(0, i18n_1.default)(settings.language, "settings")}`, { type: callbacks_1.CallbackDataType.Setting, id: "settings" })]]),
     };
 };
 exports.languagesKeyboard = languagesKeyboard;
@@ -217,7 +217,7 @@ const languageKeyboard = ({ settings }) => {
                 result[result.length - 1].push(button);
             }
             return result;
-        }, []), [getButton(`${(0, i18n_1.default)(settings.language, "settings")}`, { type: callbacks_1.CallbackDataType.Setting, id: "settings" })]),
+        }, []), [[getButton(`${(0, i18n_1.default)(settings.language, "settings")}`, { type: callbacks_1.CallbackDataType.Setting, id: "settings" })]]),
     };
 };
 exports.languageKeyboard = languageKeyboard;

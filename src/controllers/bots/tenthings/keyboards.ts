@@ -151,7 +151,7 @@ export const categoriesKeyboard = ({ settings, disabledCategories }: IGame): IKe
           }
           return result;
         }, []),
-      [getButton(`${i18n(settings.language, "settings")}`, { type: CallbackDataType.Setting, id: "settings" })],
+      [[getButton(`${i18n(settings.language, "settings")}`, { type: CallbackDataType.Setting, id: "settings" })]],
     ),
   };
 };
@@ -191,13 +191,10 @@ export const settingsKeyboard = ({ settings }: IGame): IKeyboard => {
         }),
       ],
       [
-        getButton(
-          `${i18n(settings.language, "category", { count: 0 })}: ${settings.updates ? emojis.on : emojis.off}`,
-          {
-            type: CallbackDataType.Setting,
-            id: "cats",
-          },
-        ),
+        getButton(`${i18n(settings.language, "category", { count: 0 })}`, {
+          type: CallbackDataType.Setting,
+          id: "cats",
+        }),
       ],
     ],
   };
@@ -222,7 +219,7 @@ export const languagesKeyboard = ({ settings }: IGame, availableLanguages: ILang
           }
           return result;
         }, []),
-      [getButton(`${i18n(settings.language, "settings")}`, { type: CallbackDataType.Setting, id: "settings" })],
+      [[getButton(`${i18n(settings.language, "settings")}`, { type: CallbackDataType.Setting, id: "settings" })]],
     ),
   };
 };
@@ -244,7 +241,7 @@ export const languageKeyboard = ({ settings }: IGame): IKeyboard => {
           }
           return result;
         }, []),
-      [getButton(`${i18n(settings.language, "settings")}`, { type: CallbackDataType.Setting, id: "settings" })],
+      [[getButton(`${i18n(settings.language, "settings")}`, { type: CallbackDataType.Setting, id: "settings" })]],
     ),
   };
 };
