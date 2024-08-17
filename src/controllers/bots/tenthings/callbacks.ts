@@ -184,7 +184,9 @@ export default async (callbackQuery: ICallbackData) => {
     case CallbackDataType.Setting:
       if (callbackQuery.chatId !== parseInt(process.env.ADMIN_CHAT || "")) {
         if (await bot.checkAdmin(callbackQuery.chatId, callbackQuery.from.id)) {
-          game = await Game.findOne({ chat_id: callbackQuery.chatId }).select("chat_id settings").exec();
+          game = await Game.findOne({ chat_id: callbackQuery.chatId })
+            .select("chat_id settings disabledCategories")
+            .exec();
           if (!game || !callbackQuery.data) return;
           if (callbackQuery.data === "langs") {
             const availableLanguages = await List.aggregate([

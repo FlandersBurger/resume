@@ -159,7 +159,9 @@ exports.default = async (callbackQuery) => {
         case CallbackDataType.Setting:
             if (callbackQuery.chatId !== parseInt(process.env.ADMIN_CHAT || "")) {
                 if (await telegram_1.default.checkAdmin(callbackQuery.chatId, callbackQuery.from.id)) {
-                    game = await index_1.Game.findOne({ chat_id: callbackQuery.chatId }).select("chat_id settings").exec();
+                    game = await index_1.Game.findOne({ chat_id: callbackQuery.chatId })
+                        .select("chat_id settings disabledCategories")
+                        .exec();
                     if (!game || !callbackQuery.data)
                         return;
                     if (callbackQuery.data === "langs") {
