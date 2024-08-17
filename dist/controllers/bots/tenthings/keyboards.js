@@ -6,6 +6,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.curateListKeyboard = exports.listsKeyboard = exports.likeListKeyboard = exports.confirmBanListKeyboard = exports.banListKeyboard = exports.languageKeyboard = exports.languagesKeyboard = exports.settingsKeyboard = exports.categoriesKeyboard = exports.suggestionKeyboard = exports.playerStatsKeyboard = exports.listStatsKeyboard = exports.statsKeyboard = void 0;
 const some_1 = __importDefault(require("lodash/some"));
 const find_1 = __importDefault(require("lodash/find"));
+const concat_1 = __importDefault(require("lodash/concat"));
 const shuffle_1 = __importDefault(require("lodash/shuffle"));
 const categories_1 = __importDefault(require("./categories"));
 const languages_1 = __importDefault(require("./languages"));
@@ -127,7 +128,7 @@ const suggestionKeyboard = () => ({
 exports.suggestionKeyboard = suggestionKeyboard;
 const categoriesKeyboard = ({ settings, disabledCategories }) => {
     return {
-        inline_keyboard: categories_1.default
+        inline_keyboard: (0, concat_1.default)(categories_1.default
             .sort((category1, category2) => (0, i18n_1.default)(settings.language, `categories.${category1}`) > (0, i18n_1.default)(settings.language, `categories.${category2}`)
             ? 1
             : -1)
@@ -140,7 +141,7 @@ const categoriesKeyboard = ({ settings, disabledCategories }) => {
                 result[result.length - 1].push(button);
             }
             return result;
-        }, []),
+        }, []), [getButton(`${(0, i18n_1.default)(settings.language, "settings")}`, { type: callbacks_1.CallbackDataType.Setting, id: "settings" })]),
     };
 };
 exports.categoriesKeyboard = categoriesKeyboard;
@@ -174,13 +175,19 @@ const settingsKeyboard = ({ settings }) => {
                     id: "snubs",
                 }),
             ],
+            [
+                getButton(`${(0, i18n_1.default)(settings.language, "category", { count: 0 })}: ${settings.updates ? emojis_1.default.on : emojis_1.default.off}`, {
+                    type: callbacks_1.CallbackDataType.Setting,
+                    id: "cats",
+                }),
+            ],
         ],
     };
 };
 exports.settingsKeyboard = settingsKeyboard;
 const languagesKeyboard = ({ settings }, availableLanguages) => {
     return {
-        inline_keyboard: languages_1.default
+        inline_keyboard: (0, concat_1.default)(languages_1.default
             .filter((language) => (0, some_1.default)(availableLanguages, (availableLanguage) => availableLanguage._id === language.code))
             .sort()
             .reduce((result, language, i) => {
@@ -192,13 +199,13 @@ const languagesKeyboard = ({ settings }, availableLanguages) => {
                 result[result.length - 1].push(button);
             }
             return result;
-        }, []),
+        }, []), [getButton(`${(0, i18n_1.default)(settings.language, "settings")}`, { type: callbacks_1.CallbackDataType.Setting, id: "settings" })]),
     };
 };
 exports.languagesKeyboard = languagesKeyboard;
 const languageKeyboard = ({ settings }) => {
     return {
-        inline_keyboard: languages_1.default
+        inline_keyboard: (0, concat_1.default)(languages_1.default
             .filter((language) => ["EN", "NL", "ID", "PT", "TL"].includes(language.code))
             .sort()
             .reduce((result, language, i) => {
@@ -210,7 +217,7 @@ const languageKeyboard = ({ settings }) => {
                 result[result.length - 1].push(button);
             }
             return result;
-        }, []),
+        }, []), [getButton(`${(0, i18n_1.default)(settings.language, "settings")}`, { type: callbacks_1.CallbackDataType.Setting, id: "settings" })]),
     };
 };
 exports.languageKeyboard = languageKeyboard;

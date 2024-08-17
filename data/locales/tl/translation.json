@@ -95,6 +95,7 @@
     "stop": { "name": "itigil", "description": "Patayin ako" }
   },
   "sentences": {
+    "likeList": "Nagustuhan mo ba si {{list}}?",
     "likesList": " \ud83d\udc4d Si {{name}} ay gusto ng <b>{{list}}</b> ({{score}})",
     "dislikesList": " \ud83d\udc4e Si {{name}} ay hindi gusto ang <b>{{list}}</b> ({{score}})",
     "skippedList": "<b>{{list}}</b> na-skip!",
@@ -125,6 +126,7 @@
     "tinygameAnswered": "Tinygame sagot natantiya!",
     "roundOver": "Tapos na ang putukan",
     "newRound": "Ang bagong putukan ay magsisimula sa loob ng 2 segundo",
+    "allListsPlayed": "Lahat ng listahan ay na-play na, magsisimula na ang bagong ikot.",
     "createdBy": "ni {{creator}}",
     "requestedBy": "Inirequest ni {{requestor}}",
     "guessedBy": "{{guesser}} nakakuha ng {{answer}}",

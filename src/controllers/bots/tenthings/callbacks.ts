@@ -193,6 +193,10 @@ export default async (callbackQuery: ICallbackData) => {
             bot.editKeyboard(callbackQuery.chatId, callbackQuery.id, languagesKeyboard(game, availableLanguages));
           } else if (callbackQuery.data === "lang") {
             bot.editKeyboard(callbackQuery.chatId, callbackQuery.id, languageKeyboard(game));
+          } else if (callbackQuery.data === "cats") {
+            bot.editKeyboard(callbackQuery.chatId, callbackQuery.id, categoriesKeyboard(game));
+          } else if (callbackQuery.data === "settings") {
+            bot.editKeyboard(callbackQuery.chatId, callbackQuery.id, settingsKeyboard(game));
           } else {
             console.log(`${callbackQuery.data} toggled for ${game._id}`);
             game.settings[callbackQuery.data] = !game.settings[callbackQuery.data as keyof IGameSettings];

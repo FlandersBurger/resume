@@ -104,6 +104,7 @@
     "stop": { "name": "berhenti", "description": "Matikan saya" }
   },
   "sentences": {
+    "likeList": "Apakah kamu suka {{list}}?",
     "likesList": " \ud83d\udc4d {{name}} suka <b>{{list}}</b> ({{score}})",
     "dislikesList": " \ud83d\udc4e {{name}} tidak suka <b>{{list}}</b> ({{score}})",
     "skippedList": "<b>{{list}}</b> dilewati!",
@@ -134,6 +135,7 @@
     "tinygameAnswered": "Jawaban tinygame berhasil ditebak!",
     "roundOver": "Putaran berakhir",
     "newRound": "Ronde baru akan dimulai dalam 2 detik",
+    "allListsPlayed": "Semua daftar telah dimainkan, siklus baru akan dimulai sekarang.",
     "createdBy": "oleh {{creator}}",
     "requestedBy": "Diminta oleh {{requestor}}",
     "guessedBy": "{{guesser}} menebak {{answer}}",

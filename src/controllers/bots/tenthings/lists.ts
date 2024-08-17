@@ -11,6 +11,8 @@ import sampleSize from "lodash/sampleSize";
 import orderBy from "lodash/orderBy";
 import uniqBy from "lodash/uniqBy";
 import { likeListKeyboard } from "./keyboards";
+import i18n from "@root/i18n";
+import { angleBrackets } from "@root/utils/string-helpers";
 
 export const getRandomList = async (parameters: QueryOptions = {}): Promise<HydratedDocument<IList> | undefined> => {
   const count = await List.countDocuments(parameters).exec();
@@ -38,7 +40,11 @@ export const getListScore = (list: IList): number => {
 };
 
 export const rateList = (game: IGame) => {
-  bot.sendKeyboard(game.chat_id, `Did you like <b>${game.list!.name}</b>?`, likeListKeyboard(game));
+  bot.sendKeyboard(
+    game.chat_id,
+    i18n(game.settings.language, "sentences.likeList", { list: angleBrackets(game.list!.name) }),
+    likeListKeyboard(game),
+  );
 };
 
 const getAvailableLanguages = ({ settings }: { settings: IGameSettings }) =>
@@ -72,7 +78,7 @@ export const selectList = async (game: IGame): Promise<HydratedDocument<IList>> 
       game.playedLists = [];
       game.cycles++;
       game.lastCycleDate = moment().toDate();
-      bot.queueMessage(game.chat_id, "All lists have been played, a new cycle will now start.");
+      bot.queueMessage(game.chat_id, i18n(game.settings.language, "sentences.allListsPlayed"));
       list = await getRandomList({
         _id: { $nin: game.bannedLists },
         categories: { $nin: game.disabledCategories },

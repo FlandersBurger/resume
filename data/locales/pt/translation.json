@@ -98,6 +98,7 @@
     "stop": { "name": "parar", "description": "Desligue-me" }
   },
   "sentences": {
+    "likeList": "Você gostou de {{list}}?",
     "likesList": " \ud83d\udc4d {{name}} gosta de <b>{{list}}</b> ({{score}})",
     "dislikesList": " \ud83d\udc4e {{name}} não gosta de <b>{{list}}</b> ({{score}})",
     "skippedList": "<b>{{list}}</b> pulada!",
@@ -128,6 +129,7 @@
     "tinygameAnswered": "Resposta do jogominusculo adivinhada!",
     "roundOver": "Fim da rodada",
     "newRound": "Uma nova rodada começará em 2 segundos",
+    "allListsPlayed": "Todas as listas foram jogadas, um novo ciclo começará agora.",
     "createdBy": "por {{creator}}",
     "requestedBy": "Solicitado por {{requestor}}",
     "guessedBy": "{{guesser}} acertou {{answer}}",

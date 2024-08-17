@@ -95,6 +95,7 @@
     "stop": { "name": "stop", "description": "Switch me off" }
   },
   "sentences": {
+    "likeList": "Did you like <b>{{list}}</b>?",
     "likesList": " \ud83d\udc4d {{name}} likes <b>{{list}}</b> ({{score}})",
     "dislikesList": " \ud83d\udc4e {{name}} dislikes <b>{{list}}</b> ({{score}})",
     "skippedList": "<b>{{list}}</b> skipped!",
@@ -125,6 +126,7 @@
     "tinygameAnswered": "Tinygame answer guessed!",
     "roundOver": "Round over",
     "newRound": "A new round will start in 2 seconds",
+    "allListsPlayed": "All lists have been played, a new cycle will now start.",
     "createdBy": "by {{creator}}",
     "requestedBy": "Requested by {{requestor}}",
     "guessedBy": "{{guesser}} got {{answer}}",

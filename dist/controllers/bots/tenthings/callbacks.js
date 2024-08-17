@@ -171,6 +171,12 @@ exports.default = async (callbackQuery) => {
                     else if (callbackQuery.data === "lang") {
                         telegram_1.default.editKeyboard(callbackQuery.chatId, callbackQuery.id, (0, keyboards_1.languageKeyboard)(game));
                     }
+                    else if (callbackQuery.data === "cats") {
+                        telegram_1.default.editKeyboard(callbackQuery.chatId, callbackQuery.id, (0, keyboards_1.categoriesKeyboard)(game));
+                    }
+                    else if (callbackQuery.data === "settings") {
+                        telegram_1.default.editKeyboard(callbackQuery.chatId, callbackQuery.id, (0, keyboards_1.settingsKeyboard)(game));
+                    }
                     else {
                         console.log(`${callbackQuery.data} toggled for ${game._id}`);
                         game.settings[callbackQuery.data] = !game.settings[callbackQuery.data];

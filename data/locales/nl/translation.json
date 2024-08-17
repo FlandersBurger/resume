@@ -98,6 +98,7 @@
     "stop": { "name": "stop", "description": "Zet me uit" }
   },
   "sentences": {
+    "likeList": "Vind je <b>{{list}}</b> leuk?",
     "likesList": " \ud83d\udc4d {{name}} vindt <b>{{list}}</b> leuk ({{score}})",
     "dislikesList": " \ud83d\udc4e {{name}} vindt <b>{{list}}</b> niet leuk ({{score}})",
     "skippedList": "<b>{{list}}</b> overgeslagen!",
@@ -127,6 +128,7 @@
     "findTheTitle": "Vind de lijsttitel",
     "tinygameAnswered": "Tinygame antwoord geraden!",
     "roundOver": "Ronde voorbij",
+    "allListsPlayed": "Alle lijsten zijn gespeeld, een nieuwe cyclus begint nu.",
     "newRound": "Een nieuwe ronde begint over 2 seconden",
     "createdBy": "door {{creator}}",
     "requestedBy": "Aangevraagd door {{requestor}}",

@@ -3,6 +3,7 @@ import { IList } from "@models/tenthings/list";
 
 import some from "lodash/some";
 import find from "lodash/find";
+import concat from "lodash/concat";
 import shuffle from "lodash/shuffle";
 import categories from "./categories";
 import languages, { ILanguage, ILanguageCount } from "./languages";
@@ -129,26 +130,29 @@ export const suggestionKeyboard = (): IKeyboard => ({
 });
 export const categoriesKeyboard = ({ settings, disabledCategories }: IGame): IKeyboard => {
   return {
-    inline_keyboard: categories
-      .sort((category1, category2) =>
-        i18n(settings.language, `categories.${category1}`) > i18n(settings.language, `categories.${category2}`)
-          ? 1
-          : -1,
-      )
-      .reduce((result: IKeyboardButton[][], category: string, i: number) => {
-        const button = getButton(
-          `${i18n(settings.language, `categories.${category}`)}: ${
-            disabledCategories.indexOf(category) < 0 ? emojis.on : emojis.off
-          }`,
-          { type: CallbackDataType.Category, id: category },
-        );
-        if (i % 2 === 0) {
-          result.push([button]);
-        } else {
-          result[result.length - 1].push(button);
-        }
-        return result;
-      }, []),
+    inline_keyboard: concat(
+      categories
+        .sort((category1, category2) =>
+          i18n(settings.language, `categories.${category1}`) > i18n(settings.language, `categories.${category2}`)
+            ? 1
+            : -1,
+        )
+        .reduce((result: IKeyboardButton[][], category: string, i: number) => {
+          const button = getButton(
+            `${i18n(settings.language, `categories.${category}`)}: ${
+              disabledCategories.indexOf(category) < 0 ? emojis.on : emojis.off
+            }`,
+            { type: CallbackDataType.Category, id: category },
+          );
+          if (i % 2 === 0) {
+            result.push([button]);
+          } else {
+            result[result.length - 1].push(button);
+          }
+          return result;
+        }, []),
+      [getButton(`${i18n(settings.language, "settings")}`, { type: CallbackDataType.Setting, id: "settings" })],
+    ),
   };
 };
 export const settingsKeyboard = ({ settings }: IGame): IKeyboard => {
@@ -186,47 +190,62 @@ export const settingsKeyboard = ({ settings }: IGame): IKeyboard => {
           id: "snubs",
         }),
       ],
+      [
+        getButton(
+          `${i18n(settings.language, "category", { count: 0 })}: ${settings.updates ? emojis.on : emojis.off}`,
+          {
+            type: CallbackDataType.Setting,
+            id: "cats",
+          },
+        ),
+      ],
     ],
   };
 };
 export const languagesKeyboard = ({ settings }: IGame, availableLanguages: ILanguageCount[]): IKeyboard => {
   return {
-    inline_keyboard: languages
-      .filter((language) => some(availableLanguages, (availableLanguage) => availableLanguage._id === language.code))
-      .sort()
-      .reduce((result: IKeyboardButton[][], language: ILanguage, i: number) => {
-        const button = getButton(
-          `${settings.languages.includes(language.code) ? emojis.on : emojis.off} ${language.code} - ${
-            language.native
-          } (${find(availableLanguages, (availableLanguage) => availableLanguage._id === language.code)!.count})`,
-          { type: CallbackDataType.TriviaLanguages, id: language.code },
-        );
-        if (i % 2 === 0) {
-          result.push([button]);
-        } else {
-          result[result.length - 1].push(button);
-        }
-        return result;
-      }, []),
+    inline_keyboard: concat(
+      languages
+        .filter((language) => some(availableLanguages, (availableLanguage) => availableLanguage._id === language.code))
+        .sort()
+        .reduce((result: IKeyboardButton[][], language: ILanguage, i: number) => {
+          const button = getButton(
+            `${settings.languages.includes(language.code) ? emojis.on : emojis.off} ${language.code} - ${
+              language.native
+            } (${find(availableLanguages, (availableLanguage) => availableLanguage._id === language.code)!.count})`,
+            { type: CallbackDataType.TriviaLanguages, id: language.code },
+          );
+          if (i % 2 === 0) {
+            result.push([button]);
+          } else {
+            result[result.length - 1].push(button);
+          }
+          return result;
+        }, []),
+      [getButton(`${i18n(settings.language, "settings")}`, { type: CallbackDataType.Setting, id: "settings" })],
+    ),
   };
 };
 export const languageKeyboard = ({ settings }: IGame): IKeyboard => {
   return {
-    inline_keyboard: languages
-      .filter((language) => ["EN", "NL", "ID", "PT", "TL"].includes(language.code))
-      .sort()
-      .reduce((result: IKeyboardButton[][], language: ILanguage, i: number) => {
-        const button = getButton(
-          `${language.code} - ${language.native} ${settings.language === language.code ? emojis.green : ""}`,
-          { type: CallbackDataType.BotLanguage, id: language.code },
-        );
-        if (i % 2 === 0) {
-          result.push([button]);
-        } else {
-          result[result.length - 1].push(button);
-        }
-        return result;
-      }, []),
+    inline_keyboard: concat(
+      languages
+        .filter((language) => ["EN", "NL", "ID", "PT", "TL"].includes(language.code))
+        .sort()
+        .reduce((result: IKeyboardButton[][], language: ILanguage, i: number) => {
+          const button = getButton(
+            `${language.code} - ${language.native} ${settings.language === language.code ? emojis.green : ""}`,
+            { type: CallbackDataType.BotLanguage, id: language.code },
+          );
+          if (i % 2 === 0) {
+            result.push([button]);
+          } else {
+            result[result.length - 1].push(button);
+          }
+          return result;
+        }, []),
+      [getButton(`${i18n(settings.language, "settings")}`, { type: CallbackDataType.Setting, id: "settings" })],
+    ),
   };
 };
 export const banListKeyboard = (language: string, list: IGameList): IKeyboard => {

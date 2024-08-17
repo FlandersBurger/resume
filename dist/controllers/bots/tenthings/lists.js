@@ -12,6 +12,8 @@ const sampleSize_1 = __importDefault(require("lodash/sampleSize"));
 const orderBy_1 = __importDefault(require("lodash/orderBy"));
 const uniqBy_1 = __importDefault(require("lodash/uniqBy"));
 const keyboards_1 = require("./keyboards");
+const i18n_1 = __importDefault(require("../../../i18n"));
+const string_helpers_1 = require("../../../utils/string-helpers");
 const getRandomList = async (parameters = {}) => {
     const count = await index_1.List.countDocuments(parameters).exec();
     if (count === 0)
@@ -37,7 +39,7 @@ const getListScore = (list) => {
 };
 exports.getListScore = getListScore;
 const rateList = (game) => {
-    telegram_1.default.sendKeyboard(game.chat_id, `Did you like <b>${game.list.name}</b>?`, (0, keyboards_1.likeListKeyboard)(game));
+    telegram_1.default.sendKeyboard(game.chat_id, (0, i18n_1.default)(game.settings.language, "sentences.likeList", { list: (0, string_helpers_1.angleBrackets)(game.list.name) }), (0, keyboards_1.likeListKeyboard)(game));
 };
 exports.rateList = rateList;
 const getAvailableLanguages = ({ settings }) => settings.languages && settings.languages.length > 0 ? settings.languages : ["EN"];
@@ -71,7 +73,7 @@ const selectList = async (game) => {
             game.playedLists = [];
             game.cycles++;
             game.lastCycleDate = (0, moment_1.default)().toDate();
-            telegram_1.default.queueMessage(game.chat_id, "All lists have been played, a new cycle will now start.");
+            telegram_1.default.queueMessage(game.chat_id, (0, i18n_1.default)(game.settings.language, "sentences.allListsPlayed"));
             list = await (0, exports.getRandomList)({
                 _id: { $nin: game.bannedLists },
                 categories: { $nin: game.disabledCategories },
