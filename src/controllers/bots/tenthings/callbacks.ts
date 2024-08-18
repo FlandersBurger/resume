@@ -2,7 +2,7 @@ import { HydratedDocument, Types } from "mongoose";
 import { Game, List } from "@models/index";
 import { IGame, IGameSettings } from "@models/tenthings/game";
 import { IList, IVote } from "@models/tenthings/list";
-import { angleBrackets, capitalize } from "@root/utils/string-helpers";
+import { parseSymbols, capitalize } from "@root/utils/string-helpers";
 import { makePercentage } from "@root/utils/number-helpers";
 import find from "lodash/find";
 
@@ -388,7 +388,7 @@ export default async (callbackQuery: ICallbackData) => {
         case "typo":
           bot.sendMessage(
             callbackQuery.chatId,
-            `<b>TYPO</b>\nPlease specify the list with the typo if it is not within "${angleBrackets(game.list.name)}"`,
+            `<b>TYPO</b>\nPlease specify the list with the typo if it is not within "${parseSymbols(game.list.name)}"`,
             undefined,
             callbackQuery.id,
           );

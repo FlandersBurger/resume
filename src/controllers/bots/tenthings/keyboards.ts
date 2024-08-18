@@ -8,7 +8,7 @@ import shuffle from "lodash/shuffle";
 import categories from "./categories";
 import languages, { ILanguage, ILanguageCount } from "./languages";
 import { getFrequencyMessage } from "./messages";
-import { angleBrackets, capitalize } from "@root/utils/string-helpers";
+import { parseSymbols, capitalize } from "@root/utils/string-helpers";
 import i18n from "@root/i18n";
 import emojis from "./emojis";
 import { IKeyboard, IKeyboardButton, IKeyboardCallbackButton } from "@root/connections/telegram";
@@ -275,7 +275,7 @@ export const listsKeyboard = (lists: IList[]): IKeyboard => ({
     .sort()
     .reduce((result: IKeyboardButton[][], list: IList) => {
       result.push([
-        getButton(angleBrackets(list.name.replace("&", "and")), {
+        getButton(parseSymbols(list.name.replace("&", "and")), {
           type: CallbackDataType.Pick,
           id: `${list._id}`,
         }),

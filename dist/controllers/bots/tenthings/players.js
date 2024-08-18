@@ -20,7 +20,7 @@ const getPlayer = async (game, from) => {
 };
 exports.getPlayer = getPlayer;
 const getPlayerName = async (player) => {
-    return (0, string_helpers_1.angleBrackets)(player.first_name);
+    return (0, string_helpers_1.parseSymbols)(player.first_name);
 };
 exports.getPlayerName = getPlayerName;
 const createPlayer = async (game, from) => {

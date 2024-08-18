@@ -3,7 +3,7 @@ import { IGame, IGameListValue } from "@models/tenthings/game";
 import { IList } from "@models/tenthings/list";
 import { IPlayer } from "@models/tenthings/player";
 import { IUser } from "@models/user";
-import { angleBrackets } from "@root/utils/string-helpers";
+import { parseSymbols } from "@root/utils/string-helpers";
 
 import moment from "moment";
 const MAXHINTS = 6;
@@ -43,8 +43,8 @@ export const getGuessedMessage = (language: string, answer: string, guesser: str
 };
 export const getSnubbedMessage = (match: string, loser: IPlayer, winner: IGameListValue["guesser"]): string => {
   if (!winner) return "";
-  const loserName = angleBrackets(loser.first_name);
-  const winnerName = angleBrackets(winner.first_name);
+  const loserName = parseSymbols(loser.first_name);
+  const winnerName = parseSymbols(winner.first_name);
   const random = Math.floor(Math.random() * 9);
   if (loser.id != winner.id) {
     switch (random) {
@@ -97,7 +97,7 @@ export const getSnubbedMessage = (match: string, loser: IPlayer, winner: IGameLi
 export const getListMessage = (list: HydratedDocument<IList> | IList): string => {
   let msg = `<b>${list.name}</b> [${list.language}]\n`;
   msg += `<i>by ${(list.creator as IUser).username}</i>\n`;
-  msg += `${list.description ? `${angleBrackets(list.description)}\n` : ""}`;
+  msg += `${list.description ? `${parseSymbols(list.description)}\n` : ""}`;
   msg += ` - Categories: ${list.categories.join(", ")}\n`;
   msg += list.difficulty ? ` - Difficulty: ${getDifficultyMessage(list.difficulty)}\n` : "";
   msg += list.frequency ? ` - Frequency: ${capitalize(getFrequencyMessage(list.frequency))} changes\n` : "";

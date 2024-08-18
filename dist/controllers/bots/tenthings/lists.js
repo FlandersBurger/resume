@@ -39,7 +39,7 @@ const getListScore = (list) => {
 };
 exports.getListScore = getListScore;
 const rateList = (game) => {
-    telegram_1.default.sendKeyboard(game.chat_id, (0, i18n_1.default)(game.settings.language, "sentences.likeList", { list: (0, string_helpers_1.angleBrackets)(game.list.name) }), (0, keyboards_1.likeListKeyboard)(game));
+    telegram_1.default.sendKeyboard(game.chat_id, (0, i18n_1.default)(game.settings.language, "sentences.likeList", { list: (0, string_helpers_1.parseSymbols)(game.list.name) }), (0, keyboards_1.likeListKeyboard)(game));
 };
 exports.rateList = rateList;
 const getAvailableLanguages = ({ settings }) => settings.languages && settings.languages.length > 0 ? settings.languages : ["EN"];

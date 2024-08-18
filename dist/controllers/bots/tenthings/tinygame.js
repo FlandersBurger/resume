@@ -50,7 +50,7 @@ exports.createTinygame = createTinygame;
 const sendTinygameMessage = (game) => {
     let message = `<b>${(0, i18n_1.default)(game.settings.language, "sentences.findTheTitle")}</b>\n`;
     message += game.tinygame.clues.reduce((msg, clue) => {
-        msg += `- ${(0, string_helpers_1.angleBrackets)(clue)}\n`;
+        msg += `- ${(0, string_helpers_1.parseSymbols)(clue)}\n`;
         return msg;
     }, "");
     message += `\n<b>${(0, hints_1.getHint)(game.tinygame.hints, game.tinygame.answer)}</b>`;

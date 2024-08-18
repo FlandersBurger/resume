@@ -15,7 +15,7 @@ import Unsplash from "@root/connections/unsplash";
 
 import { IList, IListValue } from "@models/tenthings/list";
 import { List, User } from "@models/index";
-import { angleBrackets, removeAllButLetters } from "@root/utils/string-helpers";
+import { parseSymbols, removeAllButLetters } from "@root/utils/string-helpers";
 import { getListMessage } from "@tenthings/messages";
 import { getList, getListScore, mergeLists } from "@tenthings/lists";
 import { curateListKeyboard } from "@tenthings/keyboards";
@@ -211,7 +211,7 @@ tenthingsListsRoute.post("/merge", async (req: Request, res: Response) => {
       res.json(updatedList);
       if (process.env.NODE_ENV === "production") {
         bot.notifyAdmins(
-          `<u>Lists Merged</u>\nUpdated by <i>${res.locals.user?.username}</i>\n${lists.reduce((result, list) => `${result} - ${angleBrackets(list.name)}\n`, "")}<b>→</b> ${getListMessage(updatedList)}`,
+          `<u>Lists Merged</u>\nUpdated by <i>${res.locals.user?.username}</i>\n${lists.reduce((result, list) => `${result} - ${parseSymbols(list.name)}\n`, "")}<b>→</b> ${getListMessage(updatedList)}`,
           curateListKeyboard(updatedList),
         );
       }

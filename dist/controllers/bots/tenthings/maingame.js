@@ -104,7 +104,7 @@ const newRound = (currentGame) => {
         telegram_1.default.queueMessage(game.chat_id, message);
         setTimeout(() => {
             let message = `<b>${game.list.name}</b> (${game.list.answers}) ${(0, i18n_1.default)(game.settings.language, "sentences.createdBy", { creator: game.list.creator.username })}`;
-            message += game.list.description ? `\n<i>${(0, string_helpers_1.angleBrackets)(game.list.description)}</i>` : "";
+            message += game.list.description ? `\n<i>${(0, string_helpers_1.parseSymbols)(game.list.description)}</i>` : "";
             telegram_1.default.queueMessage(game.chat_id, message);
         }, 2000);
         game.playedLists.push(game.list._id);
@@ -182,7 +182,7 @@ const checkMaingame = async (game, player, guess, msg) => {
         if (match.blurb) {
             guessed(game, player, msg, match.value, match.blurb.substring(0, 4) === "http"
                 ? `<a href="${match.blurb}">&#8204;</a>`
-                : `\n<i>${(0, string_helpers_1.angleBrackets)(match.blurb)}</i>`, score, accuracy);
+                : `\n<i>${(0, string_helpers_1.parseSymbols)(match.blurb)}</i>`, score, accuracy);
         }
         else {
             guessed(game, player, msg, match.value, "", score, accuracy);
@@ -229,7 +229,7 @@ const sendMaingameMessage = async (game, long = true) => {
         message += game.list.description
             ? game.list.description.includes("href")
                 ? game.list.description
-                : `<i>${(0, string_helpers_1.angleBrackets)(game.list.description)}</i>\n`
+                : `<i>${(0, string_helpers_1.parseSymbols)(game.list.description)}</i>\n`
             : "";
     }
     else {
@@ -244,7 +244,7 @@ const sendMaingameMessage = async (game, long = true) => {
             }
             else {
                 str += `\t${index + 1}: `;
-                str += `${(0, string_helpers_1.angleBrackets)(value)} - <i>${(0, string_helpers_1.maskUrls)((0, string_helpers_1.removeHTML)(guesser.first_name))}</i>`;
+                str += `${(0, string_helpers_1.parseSymbols)(value)} - <i>${(0, string_helpers_1.maskUrls)((0, string_helpers_1.removeHTML)(guesser.first_name))}</i>`;
                 str += "\n";
             }
         }
@@ -263,7 +263,7 @@ const sendMaingameMessage = async (game, long = true) => {
 };
 exports.sendMaingameMessage = sendMaingameMessage;
 const guessed = async (game, { scoreDaily, first_name }, { chatId }, value, blurb, score, accuracy) => {
-    let message = (0, messages_1.getGuessedMessage)(game.settings.language, (0, string_helpers_1.angleBrackets)(value), (0, string_helpers_1.angleBrackets)(first_name));
+    let message = (0, messages_1.getGuessedMessage)(game.settings.language, (0, string_helpers_1.parseSymbols)(value), (0, string_helpers_1.parseSymbols)(first_name));
     message += (0, messages_1.getStreakMessage)(game.streak.count);
     message += blurb;
     message += `\n<u>${scoreDaily - score} + ${(0, i18n_1.default)(game.settings.language, "point", {

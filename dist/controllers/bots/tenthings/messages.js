@@ -55,8 +55,8 @@ exports.getGuessedMessage = getGuessedMessage;
 const getSnubbedMessage = (match, loser, winner) => {
     if (!winner)
         return "";
-    const loserName = (0, string_helpers_1.angleBrackets)(loser.first_name);
-    const winnerName = (0, string_helpers_1.angleBrackets)(winner.first_name);
+    const loserName = (0, string_helpers_1.parseSymbols)(loser.first_name);
+    const winnerName = (0, string_helpers_1.parseSymbols)(winner.first_name);
     const random = Math.floor(Math.random() * 9);
     if (loser.id != winner.id) {
         switch (random) {
@@ -111,7 +111,7 @@ exports.getSnubbedMessage = getSnubbedMessage;
 const getListMessage = (list) => {
     let msg = `<b>${list.name}</b> [${list.language}]\n`;
     msg += `<i>by ${list.creator.username}</i>\n`;
-    msg += `${list.description ? `${(0, string_helpers_1.angleBrackets)(list.description)}\n` : ""}`;
+    msg += `${list.description ? `${(0, string_helpers_1.parseSymbols)(list.description)}\n` : ""}`;
     msg += ` - Categories: ${list.categories.join(", ")}\n`;
     msg += list.difficulty ? ` - Difficulty: ${(0, exports.getDifficultyMessage)(list.difficulty)}\n` : "";
     msg += list.frequency ? ` - Frequency: ${(0, string_helpers_2.capitalize)((0, exports.getFrequencyMessage)(list.frequency))} changes\n` : "";

@@ -646,9 +646,9 @@ Object.defineProperty(String.prototype, "removeHTML", {
   },
 });
 
-Object.defineProperty(String.prototype, "angleBrackets", {
+Object.defineProperty(String.prototype, "parseSymbols", {
   value: function () {
-    return this.replace("<", "&lt;").replace(">", "&gt;");
+    return this.replaceAll("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;").replaceAll("#", "&num;");
   },
 });
 

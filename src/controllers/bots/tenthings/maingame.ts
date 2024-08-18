@@ -6,7 +6,7 @@ const some = require("lodash/some");
 import { Game, List, Player } from "@models/index";
 import { IGame } from "@models/tenthings/game";
 import { IList } from "@models/tenthings/list";
-import { angleBrackets, maskUrls, removeHTML } from "@root/utils/string-helpers";
+import { parseSymbols, maskUrls, removeHTML } from "@root/utils/string-helpers";
 import { IUser } from "@models/user";
 import { IPlayer } from "@models/tenthings/player";
 import { IGuess, getAnswerScore } from "./guesses";
@@ -122,7 +122,7 @@ export const newRound = (currentGame: IGame) => {
           "sentences.createdBy",
           { creator: (game.list.creator as IUser).username },
         )}`;
-        message += game.list.description ? `\n<i>${angleBrackets(game.list.description)}</i>` : "";
+        message += game.list.description ? `\n<i>${parseSymbols(game.list.description)}</i>` : "";
         bot.queueMessage(game.chat_id, message);
       }, 2000);
       game.playedLists.push(game.list._id);
@@ -205,7 +205,7 @@ export const checkMaingame = async (
         match.value,
         match.blurb.substring(0, 4) === "http"
           ? `<a href="${match.blurb}">&#8204;</a>`
-          : `\n<i>${angleBrackets(match.blurb)}</i>`,
+          : `\n<i>${parseSymbols(match.blurb)}</i>`,
         score,
         accuracy,
       );
@@ -275,7 +275,7 @@ export const sendMaingameMessage = async (game: IGame, long = true) => {
     message += game.list.description
       ? game.list.description.includes("href")
         ? game.list.description
-        : `<i>${angleBrackets(game.list.description)}</i>\n`
+        : `<i>${parseSymbols(game.list.description)}</i>\n`
       : "";
   } else {
     message = `<b>${game.list.name}</b>\n`;
@@ -288,7 +288,7 @@ export const sendMaingameMessage = async (game: IGame, long = true) => {
         str += "\n";
       } else {
         str += `\t${index + 1}: `;
-        str += `${angleBrackets(value)} - <i>${maskUrls(removeHTML(guesser.first_name))}</i>`;
+        str += `${parseSymbols(value)} - <i>${maskUrls(removeHTML(guesser.first_name))}</i>`;
         str += "\n";
       }
     } else {
@@ -314,7 +314,7 @@ const guessed = async (
   score: number,
   accuracy: string,
 ) => {
-  let message = getGuessedMessage(game.settings.language, angleBrackets(value), angleBrackets(first_name));
+  let message = getGuessedMessage(game.settings.language, parseSymbols(value), parseSymbols(first_name));
   message += getStreakMessage(game.streak.count);
   message += blurb;
   message += `\n<u>${scoreDaily - score} + ${i18n(game.settings.language, "point", {

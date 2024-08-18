@@ -10,7 +10,7 @@ import { getListStats, getPlayerStats } from "./messages";
 import bot from "@root/connections/telegram";
 import i18n from "@root/i18n";
 import { makePercentage, makeReadable } from "@root/utils/number-helpers";
-import { angleBrackets } from "@root/utils/string-helpers";
+import { parseSymbols } from "@root/utils/string-helpers";
 
 export const getScores = async (game_id: number, type: string) => {
   /*
@@ -33,7 +33,7 @@ export const getScores = async (game_id: number, type: string) => {
         .sort((player1, player2) => player2.highScore - player1.highScore)
         .slice(0, 10)
         .forEach(({ first_name, highScore }, index) => {
-          str += `${index + 1}: ${angleBrackets(first_name)}: ${highScore}\n`;
+          str += `${index + 1}: ${parseSymbols(first_name)}: ${highScore}\n`;
         });
       bot.queueMessage(game_id, str);
       break;
@@ -49,7 +49,7 @@ export const getScores = async (game_id: number, type: string) => {
         )
         .slice(0, 10)
         .forEach(({ first_name, wins, plays }, index) => {
-          str += `${index + 1}: ${angleBrackets(first_name)}: ${wins}/${plays} (${
+          str += `${index + 1}: ${parseSymbols(first_name)}: ${wins}/${plays} (${
             Math.round(plays === 0 ? 0 : (wins / plays) * 10000) / 100
           }%)\n`;
         });
@@ -63,7 +63,7 @@ export const getScores = async (game_id: number, type: string) => {
         .sort((player1, player2) => player2.score - player1.score)
         .slice(0, 10)
         .forEach(({ first_name, score }, index) => {
-          str += `${index + 1}: ${angleBrackets(first_name)}: ${score}\n`;
+          str += `${index + 1}: ${parseSymbols(first_name)}: ${score}\n`;
         });
       bot.queueMessage(game_id, str);
       break;
@@ -79,7 +79,7 @@ export const getScores = async (game_id: number, type: string) => {
         )
         .slice(0, 10)
         .forEach(({ first_name, plays, score }, index) => {
-          str += `${index + 1}: ${angleBrackets(first_name)}: ${Math.round(plays === 0 ? 0 : score / plays)}\n`;
+          str += `${index + 1}: ${parseSymbols(first_name)}: ${Math.round(plays === 0 ? 0 : score / plays)}\n`;
         });
       bot.queueMessage(game_id, str);
       break;
@@ -96,7 +96,7 @@ export const getDailyScores = async ({ _id, settings }: IGame, limit = 0) => {
     .slice(0, limit ? limit : players.length)
     .reduce(
       (str, { first_name, scoreDaily }, index) => {
-        str += `\t${index + 1}: ${angleBrackets(first_name)} - ${scoreDaily}\n`;
+        str += `\t${index + 1}: ${parseSymbols(first_name)} - ${scoreDaily}\n`;
         return str;
       },
       i18n(settings.language, `sentences.dailyScores${limit ? "WithLimit" : ""}`, { limit }) + `\n`,

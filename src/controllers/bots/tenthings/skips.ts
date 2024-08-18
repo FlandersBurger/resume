@@ -3,7 +3,7 @@ import { List, Player } from "@models/index";
 import { IGame } from "@models/tenthings/game";
 import { IPlayer } from "@models/tenthings/player";
 import { HydratedDocument, Types } from "mongoose";
-import { angleBrackets, maskUrls, removeHTML } from "@root/utils/string-helpers";
+import { parseSymbols, maskUrls, removeHTML } from "@root/utils/string-helpers";
 import { newRound } from "./maingame";
 import { getListScore } from "./lists";
 
@@ -76,7 +76,7 @@ const skipList = (game: IGame, skipper: IPlayer) => {
       list: game.list.name,
     })}\n`;
     message += game.list.values.reduce((str, { guesser, value }, index) => {
-      str += `\t${index + 1}: ${angleBrackets(value)} - <i>`;
+      str += `\t${index + 1}: ${parseSymbols(value)} - <i>`;
       if (!guesser || !guesser.first_name) {
         str += i18n(game.settings.language, "sentences.notGuessed");
       } else {
@@ -133,7 +133,7 @@ export const checkSkipper = async (game: IGame, msg: IMessage, player: IPlayer) 
           bot.queueMessage(
             msg.chatId,
             i18n(game.settings.language, "sentences.skipShortBan", {
-              name: angleBrackets(player.first_name),
+              name: parseSymbols(player.first_name),
               delay: skippers[player.id].delay,
             }),
           );
@@ -144,7 +144,7 @@ export const checkSkipper = async (game: IGame, msg: IMessage, player: IPlayer) 
           bot.queueMessage(
             msg.chatId,
             i18n(game.settings.language, "sentences.skipBanThreat", {
-              name: angleBrackets(player.first_name),
+              name: parseSymbols(player.first_name),
               delay: skippers[player.id].delay,
             }),
           );
@@ -152,7 +152,7 @@ export const checkSkipper = async (game: IGame, msg: IMessage, player: IPlayer) 
         } else if (skippers[player.id].delay != 3600) {
           skippers[player.id].delay = 3600;
           i18n(game.settings.language, "sentences.skipLongBan", {
-            name: angleBrackets(player.first_name),
+            name: parseSymbols(player.first_name),
           });
           return false;
         }
@@ -177,7 +177,7 @@ export const vetoSkip = async (game: IGame, player: HydratedDocument<IPlayer>) =
     bot.queueMessage(
       game.chat_id,
       i18n(game.settings.language, "sentences.skipVeto", {
-        name: angleBrackets(player.first_name),
+        name: parseSymbols(player.first_name),
         vetoDelay: VETO_DELAY,
       }),
     );
@@ -185,7 +185,7 @@ export const vetoSkip = async (game: IGame, player: HydratedDocument<IPlayer>) =
     bot.queueMessage(
       game.chat_id,
       i18n(game.settings.language, "sentences.skipNotFound", {
-        name: angleBrackets(player.first_name),
+        name: parseSymbols(player.first_name),
       }),
     );
   }
@@ -197,7 +197,7 @@ export const abortSkip = (game: IGame, player: IPlayer) => {
   bot.queueMessage(
     game.chat_id,
     i18n(game.settings.language, "sentences.skipAbort", {
-      name: angleBrackets(player.first_name),
+      name: parseSymbols(player.first_name),
       vetoDelay: VETO_DELAY,
     }),
   );

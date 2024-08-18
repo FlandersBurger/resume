@@ -21,8 +21,8 @@ export const capitalize = (str: string): string => str.charAt(0).toUpperCase() +
 
 export const removeHTML = (str: string): string => str.replaceAll(">", "\u227B").replaceAll("<", "\u227A");
 
-export const angleBrackets = (str: string): string =>
-  str.replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;");
+export const parseSymbols = (str: string): string =>
+  str.replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;").replaceAll("#", "&num;");
 
 const replaceArray = (str: string, sources: string[], replacement: string): string =>
   sources.reduce((result, source) => result.replaceAll(source, replacement), str);

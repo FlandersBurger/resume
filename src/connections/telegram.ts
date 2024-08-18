@@ -8,7 +8,7 @@ import { chatNotFound, botMuted } from "@tenthings/errors";
 import { checkSpam } from "@tenthings/spam";
 import { MessageType } from "@tenthings/main";
 import { IMessageType } from "@tenthings/messages";
-import { angleBrackets, maskUrls } from "@root/utils/string-helpers";
+import { parseSymbols, maskUrls } from "@root/utils/string-helpers";
 import { getSuggestionType } from "@tenthings/suggestions";
 
 const BANNED_TELEGRAM_USERS = [1726294650];
@@ -97,13 +97,13 @@ class TelegramBot {
       if (this.muteReasons.includes(reason)) {
         botMuted(channel);
       } else if (!this.ignoreReasons.includes(reason)) {
-        bot.notifyAdmin(`Error from "${source}" in channel ${channel}:\n${angleBrackets(reason)}`);
+        bot.notifyAdmin(`Error from "${source}" in channel ${channel}:\n${parseSymbols(reason)}`);
       } else {
         console.error(reason);
       }
     } else {
       bot.notifyAdmin(
-        `Unknown error from "${source}" in channel ${channel}:\n${angleBrackets(error.code ?? error.message)}`,
+        `Unknown error from "${source}" in channel ${channel}:\n${parseSymbols(error.code ?? error.message)}`,
       );
       console.error(`${source} error: `, error.message, error.code);
     }

@@ -61,14 +61,14 @@ class TelegramBot {
                     (0, errors_1.botMuted)(channel);
                 }
                 else if (!this.ignoreReasons.includes(reason)) {
-                    bot.notifyAdmin(`Error from "${source}" in channel ${channel}:\n${(0, string_helpers_1.angleBrackets)(reason)}`);
+                    bot.notifyAdmin(`Error from "${source}" in channel ${channel}:\n${(0, string_helpers_1.parseSymbols)(reason)}`);
                 }
                 else {
                     console.error(reason);
                 }
             }
             else {
-                bot.notifyAdmin(`Unknown error from "${source}" in channel ${channel}:\n${(0, string_helpers_1.angleBrackets)(error.code ?? error.message)}`);
+                bot.notifyAdmin(`Unknown error from "${source}" in channel ${channel}:\n${(0, string_helpers_1.parseSymbols)(error.code ?? error.message)}`);
                 console.error(`${source} error: `, error.message, error.code);
             }
         };

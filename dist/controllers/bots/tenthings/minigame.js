@@ -66,7 +66,7 @@ const getAllMinigames = async () => {
                 };
             }
             else {
-                answers[key].lists.push((0, string_helpers_1.angleBrackets)(list.name));
+                answers[key].lists.push((0, string_helpers_1.parseSymbols)(list.name));
                 answers[key].categories = (0, uniq_1.default)([...answers[key].categories, ...list.categories]);
             }
         }

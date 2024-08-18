@@ -10,7 +10,7 @@ import { getHint } from "./hints";
 import { getRandomList } from "./lists";
 import bot from "@root/connections/telegram";
 import i18n from "@root/i18n";
-import { angleBrackets } from "@root/utils/string-helpers";
+import { parseSymbols } from "@root/utils/string-helpers";
 
 export const createTinygame = async (game: HydratedDocument<IGame>) => {
   const availableLanguages =
@@ -52,7 +52,7 @@ export const createTinygame = async (game: HydratedDocument<IGame>) => {
 export const sendTinygameMessage = (game: IGame) => {
   let message = `<b>${i18n(game.settings.language, "sentences.findTheTitle")}</b>\n`;
   message += game.tinygame.clues.reduce((msg, clue) => {
-    msg += `- ${angleBrackets(clue)}\n`;
+    msg += `- ${parseSymbols(clue)}\n`;
     return msg;
   }, "");
   message += `\n<b>${getHint(game.tinygame.hints, game.tinygame.answer)}</b>`;

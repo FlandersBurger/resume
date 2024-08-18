@@ -12,7 +12,7 @@ import orderBy from "lodash/orderBy";
 import uniqBy from "lodash/uniqBy";
 import { likeListKeyboard } from "./keyboards";
 import i18n from "@root/i18n";
-import { angleBrackets } from "@root/utils/string-helpers";
+import { parseSymbols } from "@root/utils/string-helpers";
 
 export const getRandomList = async (parameters: QueryOptions = {}): Promise<HydratedDocument<IList> | undefined> => {
   const count = await List.countDocuments(parameters).exec();
@@ -42,7 +42,7 @@ export const getListScore = (list: IList): number => {
 export const rateList = (game: IGame) => {
   bot.sendKeyboard(
     game.chat_id,
-    i18n(game.settings.language, "sentences.likeList", { list: angleBrackets(game.list!.name) }),
+    i18n(game.settings.language, "sentences.likeList", { list: parseSymbols(game.list!.name) }),
     likeListKeyboard(game),
   );
 };

@@ -1,7 +1,7 @@
 import { HydratedDocument } from "mongoose";
 import { GameType, IGame } from "@models/tenthings/game";
 import { IPlayer } from "@models/tenthings/player";
-import { angleBrackets, conceal, concealMiddle } from "@root/utils/string-helpers";
+import { parseSymbols, conceal, concealMiddle } from "@root/utils/string-helpers";
 import uniq from "lodash/uniq";
 import { sendMaingameMessage } from "./maingame";
 import { sendMinigameMessage } from "./minigame";
@@ -28,7 +28,7 @@ export const hintCooldown = (gameId: string) => {
 export const processHint = async (
   game: HydratedDocument<IGame>,
   player: HydratedDocument<IPlayer>,
-  type: GameType = GameType.MAINGAME
+  type: GameType = GameType.MAINGAME,
 ) => {
   if (
     (type === GameType.MAINGAME && game.hints >= MAX_HINTS) ||
@@ -121,7 +121,7 @@ export const getHint = (hints: number, value: string): string => {
         break;
     }
   }
-  return angleBrackets(str);
+  return parseSymbols(str);
 };
 
 export const getMaxHints = () => MAX_HINTS;

@@ -16,7 +16,7 @@ import { IGuess, getAnswerScore } from "./guesses";
 import { IMinigame } from "@models/tenthings/minigame";
 import { getGuessedMessage } from "./messages";
 import { getHint } from "./hints";
-import { angleBrackets } from "@root/utils/string-helpers";
+import { parseSymbols } from "@root/utils/string-helpers";
 
 export const createMinigame = async (game: HydratedDocument<IGame>) => {
   const availableLanguages =
@@ -89,7 +89,7 @@ const getAllMinigames = async () => {
             categories: list.categories,
           };
         } else {
-          answers[key].lists.push(angleBrackets(list.name));
+          answers[key].lists.push(parseSymbols(list.name));
           answers[key].categories = uniq([...answers[key].categories, ...list.categories]);
         }
       }

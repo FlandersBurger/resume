@@ -30,7 +30,7 @@ const sendSuggestion = async (msg) => {
             await player.save();
             let message = `<b>${(0, string_helpers_1.capitalize)(msg.type)}</b>\n${msg.text}\n`;
             if (msg.type == SuggestionType.Typo) {
-                message += `Current list: ${(0, string_helpers_1.angleBrackets)(game.list.name)}\n`;
+                message += `Current list: ${(0, string_helpers_1.parseSymbols)(game.list.name)}\n`;
             }
             message += `<i>${player.username ? `@${player.username}` : player.first_name}</i>`;
             telegram_1.default.notify(message);

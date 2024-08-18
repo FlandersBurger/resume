@@ -2,7 +2,7 @@ import { ITelegramUser } from "@root/connections/telegram";
 import { Player } from "@models/index";
 import { IGame } from "@models/tenthings/game";
 import { IPlayer } from "@models/tenthings/player";
-import { angleBrackets, maskUrls } from "@root/utils/string-helpers";
+import { parseSymbols, maskUrls } from "@root/utils/string-helpers";
 import { IMessage } from "./messages";
 
 export const getPlayer = async (game: IGame, from: ITelegramUser | IPlayer) => {
@@ -21,7 +21,7 @@ export const getPlayer = async (game: IGame, from: ITelegramUser | IPlayer) => {
 };
 
 export const getPlayerName = async (player: ITelegramUser | IPlayer) => {
-  return angleBrackets(player.first_name);
+  return parseSymbols(player.first_name);
 };
 
 const createPlayer = async (game: IGame, from: IMessage["from"]) => {

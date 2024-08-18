@@ -210,7 +210,7 @@ exports.tenthingsListsRoute.post("/merge", async (req, res) => {
         else {
             res.json(updatedList);
             if (process.env.NODE_ENV === "production") {
-                telegram_1.default.notifyAdmins(`<u>Lists Merged</u>\nUpdated by <i>${res.locals.user?.username}</i>\n${lists.reduce((result, list) => `${result} - ${(0, string_helpers_1.angleBrackets)(list.name)}\n`, "")}<b>→</b> ${(0, messages_1.getListMessage)(updatedList)}`, (0, keyboards_1.curateListKeyboard)(updatedList));
+                telegram_1.default.notifyAdmins(`<u>Lists Merged</u>\nUpdated by <i>${res.locals.user?.username}</i>\n${lists.reduce((result, list) => `${result} - ${(0, string_helpers_1.parseSymbols)(list.name)}\n`, "")}<b>→</b> ${(0, messages_1.getListMessage)(updatedList)}`, (0, keyboards_1.curateListKeyboard)(updatedList));
             }
         }
     }
