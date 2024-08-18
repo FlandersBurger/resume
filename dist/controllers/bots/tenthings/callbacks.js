@@ -293,20 +293,6 @@ exports.default = async (callbackQuery) => {
             (0, bans_1.processBan)(game, callbackQuery);
             telegram_1.default.answerCallback(callbackQuery.callbackQueryId, "");
             break;
-        case CallbackDataType.Suggestion:
-            game = await index_1.Game.findOne({ chat_id: callbackQuery.chatId }).select("chat_id list settings").exec();
-            if (!game)
-                return;
-            const suggestion = callbackQuery.text.substring(callbackQuery.text.indexOf(' "') + 2, callbackQuery.text.indexOf('",'));
-            let message = `<b>${(0, string_helpers_1.capitalize)(callbackQuery.data)}</b>\n${suggestion}\n<i>By ${callbackQuery.from.name}</i>`;
-            message += callbackQuery.data === "typo" ? `\nList: ${game.list.name}` : "";
-            telegram_1.default.notify(message);
-            telegram_1.default.notifyAdmins(message);
-            message += callbackQuery.data === "list" ? `\n${(0, i18n_1.default)(game.settings.language, "sentences.addOwnList")}}` : "";
-            telegram_1.default.answerCallback(callbackQuery.callbackQueryId, (0, i18n_1.default)(game.settings.language, "sentences.suggestionNoted"));
-            telegram_1.default.deleteMessage(callbackQuery.chatId, callbackQuery.id);
-            telegram_1.default.queueMessage(callbackQuery.chatId, message);
-            break;
         case CallbackDataType.Values:
             index_1.List.findOne({ _id: callbackQuery.data }).exec((_, list) => {
                 if (!list) {

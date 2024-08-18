@@ -325,25 +325,25 @@ export default async (callbackQuery: ICallbackData) => {
       processBan(game, callbackQuery);
       bot.answerCallback(callbackQuery.callbackQueryId, "");
       break;
-    case CallbackDataType.Suggestion:
-      game = await Game.findOne({ chat_id: callbackQuery.chatId }).select("chat_id list settings").exec();
-      if (!game) return;
-      const suggestion = callbackQuery.text.substring(
-        callbackQuery.text.indexOf(' "') + 2,
-        callbackQuery.text.indexOf('",'),
-      );
+    // case CallbackDataType.Suggestion:
+    //   game = await Game.findOne({ chat_id: callbackQuery.chatId }).select("chat_id list settings").exec();
+    //   if (!game) return;
+    //   const suggestion = callbackQuery.text.substring(
+    //     callbackQuery.text.indexOf(' "') + 2,
+    //     callbackQuery.text.indexOf('",'),
+    //   );
 
-      let message = `<b>${capitalize(callbackQuery.data as string)}</b>\n${suggestion}\n<i>By ${
-        callbackQuery.from.name
-      }</i>`;
-      message += callbackQuery.data === "typo" ? `\nList: ${game.list.name}` : "";
-      bot.notify(message);
-      bot.notifyAdmins(message);
-      message += callbackQuery.data === "list" ? `\n${i18n(game.settings.language, "sentences.addOwnList")}}` : "";
-      bot.answerCallback(callbackQuery.callbackQueryId, i18n(game.settings.language, "sentences.suggestionNoted"));
-      bot.deleteMessage(callbackQuery.chatId, callbackQuery.id);
-      bot.queueMessage(callbackQuery.chatId, message);
-      break;
+    //   let message = `<b>${capitalize(callbackQuery.data as string)}</b>\n${suggestion}\n<i>By ${
+    //     callbackQuery.from.name
+    //   }</i>`;
+    //   message += callbackQuery.data === "typo" ? `\nList: ${game.list.name}` : "";
+    //   bot.notify(message);
+    //   bot.notifyAdmins(message);
+    //   message += callbackQuery.data === "list" ? `\n${i18n(game.settings.language, "sentences.addOwnList")}` : "";
+    //   bot.answerCallback(callbackQuery.callbackQueryId, i18n(game.settings.language, "sentences.suggestionNoted"));
+    //   bot.deleteMessage(callbackQuery.chatId, callbackQuery.id);
+    //   bot.queueMessage(callbackQuery.chatId, message);
+    //   break;
     case CallbackDataType.Values:
       List.findOne({ _id: callbackQuery.data }).exec((_, list) => {
         if (!list) {
