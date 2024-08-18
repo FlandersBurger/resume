@@ -11,7 +11,6 @@ enum SuggestionType {
 export interface ISuggestion {
   id: string;
   type: SuggestionType;
-  date: Date;
   from: ITelegramUser;
   chatId: number;
   text: string;
@@ -51,14 +50,15 @@ export const sendSuggestion = async (msg: ISuggestion) => {
 
 export const checkSuggestionProvided = (msg: IMessage): boolean => {
   const suggestion = msg.text.substring(msg.text.indexOf(" ") + 1, msg.text.length);
+  const suggestionType = msg.command?.replace("/", "").replace("erro", "bug").replace("suggest", "feature");
   if (
     suggestion &&
-    [SuggestionType.Bug, SuggestionType.Feature, SuggestionType.Typo].includes(msg.command as SuggestionType)
+    suggestionType &&
+    [SuggestionType.Bug, SuggestionType.Feature, SuggestionType.Typo].includes(suggestionType as SuggestionType)
   ) {
     sendSuggestion({
       id: msg.id,
-      type: msg.command as SuggestionType,
-      date: new Date(),
+      type: suggestionType as SuggestionType,
       from: msg.from,
       chatId: msg.chatId,
       text: suggestion,

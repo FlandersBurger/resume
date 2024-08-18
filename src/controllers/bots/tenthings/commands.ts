@@ -157,10 +157,10 @@ export const evaluate = async (msg: IMessage, game: HydratedDocument<IGame>, isN
         bot.sendKeyboard(game.chat_id, `<b>${i18n(game.settings.language, "stats.stats")}</b>`, statsKeyboard());
         break;
       case "/erro":
+      case "/suggest":
       case "/typo":
       case "/bug":
       case "/feature":
-      case "/suggest":
         if (!checkSuggestionProvided(msg)) {
           let message = "What is this in regards?\n";
           message += "<b>Note:</b>\n";

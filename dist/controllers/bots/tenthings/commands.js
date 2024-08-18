@@ -141,10 +141,10 @@ const evaluate = async (msg, game, isNew) => {
                 telegram_1.default.sendKeyboard(game.chat_id, `<b>${(0, i18n_1.default)(game.settings.language, "stats.stats")}</b>`, (0, keyboards_1.statsKeyboard)());
                 break;
             case "/erro":
+            case "/suggest":
             case "/typo":
             case "/bug":
             case "/feature":
-            case "/suggest":
                 if (!(0, suggestions_1.checkSuggestionProvided)(msg)) {
                     let message = "What is this in regards?\n";
                     message += "<b>Note:</b>\n";

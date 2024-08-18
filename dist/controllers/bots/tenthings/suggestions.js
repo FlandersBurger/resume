@@ -45,12 +45,13 @@ const sendSuggestion = async (msg) => {
 exports.sendSuggestion = sendSuggestion;
 const checkSuggestionProvided = (msg) => {
     const suggestion = msg.text.substring(msg.text.indexOf(" ") + 1, msg.text.length);
+    const suggestionType = msg.command?.replace("/", "").replace("erro", "bug").replace("suggest", "feature");
     if (suggestion &&
-        [SuggestionType.Bug, SuggestionType.Feature, SuggestionType.Typo].includes(msg.command)) {
+        suggestionType &&
+        [SuggestionType.Bug, SuggestionType.Feature, SuggestionType.Typo].includes(suggestionType)) {
         (0, exports.sendSuggestion)({
             id: msg.id,
-            type: msg.command,
-            date: new Date(),
+            type: suggestionType,
             from: msg.from,
             chatId: msg.chatId,
             text: suggestion,
