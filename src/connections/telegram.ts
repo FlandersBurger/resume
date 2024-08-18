@@ -404,6 +404,10 @@ class TelegramBot {
       return { messageType: MessageType.Ignore };
     }
     if (body.message || body.callback_query || body.reply_to_message) {
+      if (process.env.MASTER_CHAT == body.message.chat.id) {
+        console.log(body.message);
+        return { messageType: MessageType.Ignore };
+      }
       const from = this.toDomainUser(body.message ? body.message.from : body.callback_query.from);
       if (from.id != parseInt(process.env.MASTER_CHAT || "") && (await redis.get("pause")) === "true")
         return { messageType: MessageType.Ignore };
