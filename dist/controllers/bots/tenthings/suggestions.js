@@ -46,8 +46,9 @@ exports.sendSuggestion = sendSuggestion;
 const checkSuggestionProvided = (msg) => {
     const suggestion = msg.text.substring(msg.text.indexOf(" ") + 1, msg.text.length);
     const suggestionType = msg.command?.replace("/", "").replace("erro", "bug").replace("suggest", "feature");
-    if (suggestion &&
+    if (suggestion.length > 0 &&
         suggestionType &&
+        suggestion !== msg.command &&
         [SuggestionType.Bug, SuggestionType.Feature, SuggestionType.Typo].includes(suggestionType)) {
         (0, exports.sendSuggestion)({
             id: msg.id,

@@ -52,8 +52,9 @@ export const checkSuggestionProvided = (msg: IMessage): boolean => {
   const suggestion = msg.text.substring(msg.text.indexOf(" ") + 1, msg.text.length);
   const suggestionType = msg.command?.replace("/", "").replace("erro", "bug").replace("suggest", "feature");
   if (
-    suggestion &&
+    suggestion.length > 0 &&
     suggestionType &&
+    suggestion !== msg.command &&
     [SuggestionType.Bug, SuggestionType.Feature, SuggestionType.Typo].includes(suggestionType as SuggestionType)
   ) {
     sendSuggestion({
