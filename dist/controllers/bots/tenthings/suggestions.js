@@ -3,7 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.sendSuggestion = exports.getSuggestionType = void 0;
+exports.checkSuggestionProvided = exports.sendSuggestion = exports.getSuggestionType = void 0;
 const string_helpers_1 = require("../../../utils/string-helpers");
 const telegram_1 = __importDefault(require("../../../connections/telegram"));
 const models_1 = require("../../../models");
@@ -43,4 +43,21 @@ const sendSuggestion = async (msg) => {
     }
 };
 exports.sendSuggestion = sendSuggestion;
+const checkSuggestionProvided = (msg) => {
+    const suggestion = msg.text.substring(msg.text.indexOf(" ") + 1, msg.text.length);
+    if (suggestion &&
+        [SuggestionType.Bug, SuggestionType.Feature, SuggestionType.Typo].includes(msg.command)) {
+        (0, exports.sendSuggestion)({
+            id: msg.id,
+            type: msg.command,
+            date: new Date(),
+            from: msg.from,
+            chatId: msg.chatId,
+            text: suggestion,
+        });
+        return true;
+    }
+    return false;
+};
+exports.checkSuggestionProvided = checkSuggestionProvided;
 //# sourceMappingURL=suggestions.js.map

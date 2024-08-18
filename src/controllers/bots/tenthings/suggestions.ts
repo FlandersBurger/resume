@@ -1,6 +1,7 @@
 import { angleBrackets, capitalize } from "@root/utils/string-helpers";
 import bot, { ITelegramUser } from "@root/connections/telegram";
 import { Game, Player } from "@root/models";
+import { IMessage } from "./messages";
 
 enum SuggestionType {
   Bug = "bug",
@@ -46,4 +47,23 @@ export const sendSuggestion = async (msg: ISuggestion) => {
       bot.queueMessage(msg.chatId, message);
     }
   }
+};
+
+export const checkSuggestionProvided = (msg: IMessage): boolean => {
+  const suggestion = msg.text.substring(msg.text.indexOf(" ") + 1, msg.text.length);
+  if (
+    suggestion &&
+    [SuggestionType.Bug, SuggestionType.Feature, SuggestionType.Typo].includes(msg.command as SuggestionType)
+  ) {
+    sendSuggestion({
+      id: msg.id,
+      type: msg.command as SuggestionType,
+      date: new Date(),
+      from: msg.from,
+      chatId: msg.chatId,
+      text: suggestion,
+    });
+    return true;
+  }
+  return false;
 };

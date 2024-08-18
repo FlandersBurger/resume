@@ -21,6 +21,7 @@ const skips_1 = require("./skips");
 const stats_1 = require("./stats");
 const keyboards_1 = require("./keyboards");
 const telegram_1 = __importDefault(require("../../../connections/telegram"));
+const suggestions_1 = require("./suggestions");
 const commands = [
     "list",
     "hint",
@@ -144,11 +145,13 @@ const evaluate = async (msg, game, isNew) => {
             case "/bug":
             case "/feature":
             case "/suggest":
-                let message = "What is this in regards?\n";
-                message += "<b>Note:</b>\n";
-                message += " - <i>Lists can be searched by typing /search followed by the search term</i>\n";
-                message += " - <i>Lists can be added and enhanced by anyone at https://belgocanadian.com/tenthings</i>";
-                telegram_1.default.sendKeyboard(game.chat_id, message, (0, keyboards_1.suggestionKeyboard)());
+                if (!(0, suggestions_1.checkSuggestionProvided)(msg)) {
+                    let message = "What is this in regards?\n";
+                    message += "<b>Note:</b>\n";
+                    message += " - <i>Lists can be searched by typing /search followed by the search term</i>\n";
+                    message += " - <i>Lists can be added and enhanced by anyone at https://belgocanadian.com/tenthings</i>";
+                    telegram_1.default.sendKeyboard(game.chat_id, message, (0, keyboards_1.suggestionKeyboard)());
+                }
                 break;
             case "/pesquisar":
             case "/search":
