@@ -403,7 +403,7 @@ class TelegramBot {
     if (body.object === "page") {
       return { messageType: MessageType.Ignore };
     }
-    if (body.message || body.callback_query) {
+    if (body.message || body.callback_query || body.reply_to_message) {
       const from = this.toDomainUser(body.message ? body.message.from : body.callback_query.from);
       if (from.id != parseInt(process.env.MASTER_CHAT || "") && (await redis.get("pause")) === "true")
         return { messageType: MessageType.Ignore };

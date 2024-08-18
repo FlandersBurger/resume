@@ -371,7 +371,7 @@ class TelegramBot {
             if (body.object === "page") {
                 return { messageType: main_1.MessageType.Ignore };
             }
-            if (body.message || body.callback_query) {
+            if (body.message || body.callback_query || body.reply_to_message) {
                 const from = this.toDomainUser(body.message ? body.message.from : body.callback_query.from);
                 if (from.id != parseInt(process.env.MASTER_CHAT || "") && (await queue_1.default.get("pause")) === "true")
                     return { messageType: main_1.MessageType.Ignore };
