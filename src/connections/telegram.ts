@@ -144,11 +144,14 @@ class TelegramBot {
     }
   };
 
-  public sendMessage = (channel: number, message: string, topic?: number, forceReply?: boolean) => {
+  public sendMessage = (channel: number, message: string, topic?: number, replyMessageId?: string) => {
     message = encodeURIComponent(message);
     let url = `${this.baseUrl}/sendMessage?chat_id=${channel}&disable_notification=true&parse_mode=html&text=${message}`;
     if (topic) url += `&message_thread_id=${topic}`;
-    if (forceReply) url += `&reply_markup=${JSON.stringify({ force_reply: true, selective: true })}`;
+    if (replyMessageId) {
+      url += `&reply_markup=${JSON.stringify({ force_reply: true, selective: true })}`;
+      url += `&reply_parameters=${JSON.stringify({ message_id: replyMessageId })}`;
+    }
     httpClient()
       .get(url)
       .catch((error) => {

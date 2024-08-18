@@ -105,13 +105,15 @@ class TelegramBot {
                 console.error(error.response.data);
             }
         };
-        this.sendMessage = (channel, message, topic, forceReply) => {
+        this.sendMessage = (channel, message, topic, replyMessageId) => {
             message = encodeURIComponent(message);
             let url = `${this.baseUrl}/sendMessage?chat_id=${channel}&disable_notification=true&parse_mode=html&text=${message}`;
             if (topic)
                 url += `&message_thread_id=${topic}`;
-            if (forceReply)
+            if (replyMessageId) {
                 url += `&reply_markup=${JSON.stringify({ force_reply: true, selective: true })}`;
+                url += `&reply_parameters=${JSON.stringify({ message_id: replyMessageId })}`;
+            }
             (0, http_client_1.default)()
                 .get(url)
                 .catch((error) => {
