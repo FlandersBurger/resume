@@ -7,7 +7,7 @@ exports.sendSuggestion = exports.checkSuggestion = void 0;
 const string_helpers_1 = require("../../../utils/string-helpers");
 const telegram_1 = __importDefault(require("../../../connections/telegram"));
 const checkSuggestion = (text) => {
-    const suggestionType = text.split("\n")[0].replaceAll("<[^>]*>", "").toLowerCase();
+    const suggestionType = text.split("\n")[0].toLowerCase();
     console.log(suggestionType);
     if (["feature", "typo", "bug"].includes(suggestionType)) {
         console.log(text);

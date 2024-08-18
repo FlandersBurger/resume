@@ -404,9 +404,9 @@ class TelegramBot {
     if (body.object === "page") {
       return { messageType: MessageType.Ignore };
     }
-    if (body.message || body.callback_query || body.reply_to_message) {
+    if (body.message || body.callback_query) {
       const from = this.toDomainUser(body.message ? body.message.from : body.callback_query.from);
-      if (from.id != parseInt(process.env.MASTER_CHAT || "") && (await redis.get("pause")) === "true")
+      if (from.id !== parseInt(process.env.MASTER_CHAT || "") && (await redis.get("pause")) === "true")
         return { messageType: MessageType.Ignore };
       if (BANNED_TELEGRAM_USERS.indexOf(from.id) >= 0) {
         return { messageType: MessageType.Ignore };
@@ -429,8 +429,8 @@ class TelegramBot {
           },
         };
       }
-      if (body.reply_to_message) {
-        checkSuggestion(body.reply_to_message.text);
+      if (body.message.reply_to_message) {
+        checkSuggestion(body.message.reply_to_message.text);
         return {
           messageType: MessageType.Reply,
           message: {
