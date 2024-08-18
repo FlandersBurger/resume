@@ -3,9 +3,19 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.sendSuggestion = void 0;
+exports.sendSuggestion = exports.checkSuggestion = void 0;
 const string_helpers_1 = require("../../../utils/string-helpers");
 const telegram_1 = __importDefault(require("../../../connections/telegram"));
+const checkSuggestion = (text) => {
+    const suggestionType = text.split("\n")[0].replaceAll("<[^>]*>", "").toLowerCase();
+    console.log(suggestionType);
+    if (["feature", "typo", "bug"].includes(suggestionType)) {
+        console.log(text);
+        return true;
+    }
+    return false;
+};
+exports.checkSuggestion = checkSuggestion;
 const sendSuggestion = async (type, msg, player, extraText = "") => {
     const suggestion = msg.text.substring(msg.command.length + 1, msg.text.length);
     if (suggestion && suggestion != "TenThings_Bot" && suggestion != "@TenThings_Bot") {

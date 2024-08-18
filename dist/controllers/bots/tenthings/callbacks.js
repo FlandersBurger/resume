@@ -344,13 +344,13 @@ exports.default = async (callbackQuery) => {
                     telegram_1.default.sendMessage(callbackQuery.chatId, "You can add your own lists over here: https://belgocanadian.com/tenthings");
                     break;
                 case "feature":
-                    telegram_1.default.sendMessage(callbackQuery.chatId, `What would you like to see added?`, undefined, true);
+                    telegram_1.default.sendMessage(callbackQuery.chatId, `<b>FEATURE</b>\nWhat would you like to see added?`, undefined, true);
                     break;
                 case "typo":
-                    telegram_1.default.sendMessage(callbackQuery.chatId, `What is the typo?\nPlease specify the list too if the typo is not in ${(0, string_helpers_1.angleBrackets)(game.list.name)}`, undefined, true);
+                    telegram_1.default.sendMessage(callbackQuery.chatId, `<b>TYPO</b>\nPlease specify the list with the typo if it is not within "${(0, string_helpers_1.angleBrackets)(game.list.name)}"`, undefined, true);
                     break;
                 case "bug":
-                    telegram_1.default.sendMessage(callbackQuery.chatId, "Please provide some details as to what went wrong.", undefined, true);
+                    telegram_1.default.sendMessage(callbackQuery.chatId, "<b>BUG</b>\nPlease provide some details as to what went wrong.", undefined, true);
                     break;
                 default:
                     break;

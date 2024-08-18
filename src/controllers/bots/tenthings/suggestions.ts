@@ -4,6 +4,16 @@ import { capitalize } from "@root/utils/string-helpers";
 import bot from "@root/connections/telegram";
 import { IMessage } from "./messages";
 
+export const checkSuggestion = (text: string): boolean => {
+  const suggestionType = text.split("\n")[0].replaceAll("<[^>]*>", "").toLowerCase();
+  console.log(suggestionType);
+  if (["feature", "typo", "bug"].includes(suggestionType)) {
+    console.log(text);
+    return true;
+  }
+  return false;
+};
+
 export const sendSuggestion = async (
   type: string,
   msg: IMessage,

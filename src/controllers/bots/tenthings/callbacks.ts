@@ -398,18 +398,23 @@ export default async (callbackQuery: ICallbackData) => {
           );
           break;
         case "feature":
-          bot.sendMessage(callbackQuery.chatId, `What would you like to see added?`, undefined, true);
+          bot.sendMessage(callbackQuery.chatId, `<b>FEATURE</b>\nWhat would you like to see added?`, undefined, true);
           break;
         case "typo":
           bot.sendMessage(
             callbackQuery.chatId,
-            `What is the typo?\nPlease specify the list too if the typo is not in ${angleBrackets(game.list.name)}`,
+            `<b>TYPO</b>\nPlease specify the list with the typo if it is not within "${angleBrackets(game.list.name)}"`,
             undefined,
             true,
           );
           break;
         case "bug":
-          bot.sendMessage(callbackQuery.chatId, "Please provide some details as to what went wrong.", undefined, true);
+          bot.sendMessage(
+            callbackQuery.chatId,
+            "<b>BUG</b>\nPlease provide some details as to what went wrong.",
+            undefined,
+            true,
+          );
           break;
         default:
           break;
