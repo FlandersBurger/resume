@@ -398,14 +398,16 @@ class TelegramBot {
                     };
                 }
                 if (body.message.reply_to_message && body.message.reply_to_message.text) {
-                    if ((0, suggestions_1.checkSuggestion)(body.message.reply_to_message.text))
+                    const suggestionType = (0, suggestions_1.getSuggestionType)(body.message.reply_to_message.text);
+                    if (suggestionType)
                         return {
-                            messageType: main_1.MessageType.Reply,
+                            messageType: main_1.MessageType.Suggestion,
                             message: {
                                 from,
                                 chatId: body.message.chat.id,
                                 id: body.message.message_id,
                                 text: body.message.text,
+                                type: suggestionType,
                             },
                         };
                 }

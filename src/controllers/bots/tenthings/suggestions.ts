@@ -1,41 +1,47 @@
-import { HydratedDocument } from "mongoose";
-import { IPlayer } from "@models/tenthings/player";
 import { capitalize } from "@root/utils/string-helpers";
-import bot from "@root/connections/telegram";
-import { IMessage } from "./messages";
+import bot, { ITelegramUser } from "@root/connections/telegram";
+import { Game, Player } from "@root/models";
 
-export const checkSuggestion = (text: string): boolean => {
+enum SuggestionType {
+  Bug = "bug",
+  Feature = "feature",
+  Typo = "typo",
+}
+export interface ISuggestion {
+  id: string;
+  type: SuggestionType;
+  date: Date;
+  from: ITelegramUser;
+  chatId: number;
+  text: string;
+}
+
+export const getSuggestionType = (text: string): SuggestionType | undefined => {
   const suggestionType = text.split("\n")[0]?.toLowerCase();
-  console.log(suggestionType);
   if (["feature", "typo", "bug"].includes(suggestionType)) {
-    console.log(text);
-    return true;
+    return suggestionType as SuggestionType;
   }
-  return false;
+  return;
 };
 
-export const sendSuggestion = async (
-  type: string,
-  msg: IMessage,
-  player: HydratedDocument<IPlayer>,
-  extraText = "",
-) => {
-  const suggestion = msg.text.substring(msg.command!.length + 1, msg.text.length);
-  if (suggestion && suggestion != "TenThings_Bot" && suggestion != "@TenThings_Bot") {
-    player.suggestions++;
-    await player.save();
-    let message = `<b>${capitalize(type)}</b>\n${suggestion}${extraText}\n<i>${
-      player.username ? `@${player.username}` : player.first_name
-    }</i>`;
-    bot.notify(message);
-    const chatLink = await bot.getChat(msg.chatId);
-    message += chatLink ? `\n${chatLink}` : "";
-    bot.notifyAdmins(message);
-    message = `<b>${capitalize(type)}</b>\n<i>${suggestion}</i>\nThank you, ${
-      player.username ? `@${player.username}` : player.first_name
-    }`;
-    bot.queueMessage(msg.chatId, message);
-  } else {
-    bot.queueMessage(msg.chatId, `You didn't add a message, ${player.first_name}. Add your message after /${type}`);
+export const sendSuggestion = async (msg: ISuggestion) => {
+  const game = await Game.findOne({ chat_id: msg.chatId });
+  if (game) {
+    const player = await Player.findOne({ game: game._id, id: `${msg.from.id}` });
+    if (player) {
+      player.suggestions++;
+      await player.save();
+      let message = `<b>${capitalize(msg.type)}</b>\n${msg.text}\n<i>${
+        player.username ? `@${player.username}` : player.first_name
+      }</i>`;
+      bot.notify(message);
+      const chatLink = await bot.getChat(msg.chatId);
+      message += chatLink ? `\n${chatLink}` : "";
+      bot.notifyAdmins(message);
+      message = `<b>${capitalize(msg.type)}</b>\n<i>${msg.text}</i>\nThank you, ${
+        player.username ? `@${player.username}` : player.first_name
+      }`;
+      bot.queueMessage(msg.chatId, message);
+    }
   }
 };

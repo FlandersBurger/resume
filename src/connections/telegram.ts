@@ -9,7 +9,7 @@ import { checkSpam } from "@tenthings/spam";
 import { MessageType } from "@tenthings/main";
 import { IMessageType } from "@tenthings/messages";
 import { angleBrackets, maskUrls } from "@root/utils/string-helpers";
-import { checkSuggestion } from "@root/controllers/bots/tenthings/suggestions";
+import { getSuggestionType } from "@tenthings/suggestions";
 
 const BANNED_TELEGRAM_USERS = [1726294650];
 
@@ -430,14 +430,16 @@ class TelegramBot {
         };
       }
       if (body.message.reply_to_message && body.message.reply_to_message.text) {
-        if (checkSuggestion(body.message.reply_to_message.text))
+        const suggestionType = getSuggestionType(body.message.reply_to_message.text);
+        if (suggestionType)
           return {
-            messageType: MessageType.Reply,
+            messageType: MessageType.Suggestion,
             message: {
               from,
               chatId: body.message.chat.id,
               id: body.message.message_id,
               text: body.message.text,
+              type: suggestionType,
             },
           };
       }

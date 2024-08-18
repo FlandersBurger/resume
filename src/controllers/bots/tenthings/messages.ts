@@ -17,8 +17,9 @@ import emojis from "./emojis";
 import { ICallbackData } from "./callbacks";
 import { ITelegramUser } from "@root/connections/telegram";
 import { getListScore } from "./lists";
+import { ISuggestion } from "./suggestions";
 
-export type IMessageType = IMessage | ICallbackData;
+export type IMessageType = IMessage | ICallbackData | ISuggestion;
 export interface IMessage {
   id: string;
   from: ITelegramUser;

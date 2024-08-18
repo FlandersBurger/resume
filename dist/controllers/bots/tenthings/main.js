@@ -12,6 +12,7 @@ const telegram_1 = __importDefault(require("../../../connections/telegram"));
 const queue_1 = require("./queue");
 const callbacks_1 = __importDefault(require("./callbacks"));
 const commands_1 = require("./commands");
+const suggestions_1 = require("./suggestions");
 const jobs_1 = __importDefault(require("./jobs"));
 console.log(`Scheduled Jobs:\n${jobs_1.default
     .map((j) => ` - ${j.name}: ${moment_1.default.duration((0, moment_1.default)(new Date()).diff(j.nextInvocation())).humanize(true)}`)
@@ -24,7 +25,7 @@ var MessageType;
     MessageType["PlayerLeft"] = "playerLeft";
     MessageType["Message"] = "message";
     MessageType["Ignore"] = "ignore";
-    MessageType["Reply"] = "reply";
+    MessageType["Suggestion"] = "suggestion";
 })(MessageType || (exports.MessageType = MessageType = {}));
 exports.tenthingsBotRoute = (0, express_1.Router)();
 exports.tenthingsBotRoute.post("/", async (req, res) => {
@@ -35,11 +36,11 @@ exports.tenthingsBotRoute.post("/", async (req, res) => {
     switch (domainMessage.messageType) {
         case MessageType.Ignore:
             res.sendStatus(200);
-            break;
+            return;
         case MessageType.Callback:
             await (0, callbacks_1.default)(domainMessage.message);
             res.sendStatus(200);
-            break;
+            return;
         case MessageType.PlayerLeft:
             const game = await index_1.Game.findOne({ chat_id: domainMessage.message.chatId });
             if (game) {
@@ -50,9 +51,11 @@ exports.tenthingsBotRoute.post("/", async (req, res) => {
                 }
             }
             res.sendStatus(200);
-            break;
-        case MessageType.Reply:
-            console.log(domainMessage);
+            return;
+        case MessageType.Suggestion:
+            (0, suggestions_1.sendSuggestion)(domainMessage.message);
+            res.sendStatus(200);
+            return;
         default:
             break;
     }

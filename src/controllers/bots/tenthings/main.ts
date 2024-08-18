@@ -8,6 +8,7 @@ import { getQueue } from "./queue";
 import callbacks, { ICallbackData } from "./callbacks";
 import { evaluate } from "./commands";
 import { IMessage } from "./messages";
+import { ISuggestion, sendSuggestion } from "./suggestions";
 
 // DO NOT REMOVE jobs
 import jobs from "./jobs";
@@ -24,7 +25,7 @@ export enum MessageType {
   PlayerLeft = "playerLeft",
   Message = "message",
   Ignore = "ignore",
-  Reply = "reply",
+  Suggestion = "suggestion",
 }
 
 //-------------//
@@ -87,11 +88,11 @@ tenthingsBotRoute.post("/", async (req: Request, res: Response) => {
   switch (domainMessage.messageType) {
     case MessageType.Ignore:
       res.sendStatus(200);
-      break;
+      return;
     case MessageType.Callback:
       await callbacks(domainMessage.message as ICallbackData);
       res.sendStatus(200);
-      break;
+      return;
     case MessageType.PlayerLeft:
       const game = await Game.findOne({ chat_id: domainMessage.message!.chatId });
       if (game) {
@@ -102,9 +103,11 @@ tenthingsBotRoute.post("/", async (req: Request, res: Response) => {
         }
       }
       res.sendStatus(200);
-      break;
-    case MessageType.Reply:
-      console.log(domainMessage);
+      return;
+    case MessageType.Suggestion:
+      sendSuggestion(domainMessage.message as ISuggestion);
+      res.sendStatus(200);
+      return;
     default:
       break;
   }
