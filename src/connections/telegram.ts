@@ -143,29 +143,23 @@ class TelegramBot {
     }
   };
 
-  public sendMessage = (channel: number, message: string, topic?: number, retry: boolean = false) => {
+  public sendMessage = (channel: number, message: string, topic?: number, forceReply?: boolean) => {
     message = encodeURIComponent(message);
     let url = `${this.baseUrl}/sendMessage?chat_id=${channel}&disable_notification=true&parse_mode=html&text=${message}`;
     if (topic) url += `&message_thread_id=${topic}`;
+    if (forceReply) url += `&reply_markup=${JSON.stringify({ force_reply: true, selective: true })}`;
     httpClient()
       .get(url)
       .catch((error) => {
         if (error.response) {
           if (error.response.data.description.includes("too long")) {
             this.notifyAdmin(`Too long: ${message.substring(0, 500)}...`);
-            setTimeout(() => this.sendMessage(channel, message.substring(0, 4000), topic, true), 200);
+            setTimeout(() => this.sendMessage(channel, message.substring(0, 4000), topic), 200);
           } else if (error.response.data.description.includes("can't parse")) {
             this.notifyAdmin(`Send Message to ${channel} parse Fail: ${message}`);
           } else this.errorHandler(channel, "Send message", error);
         } else {
-          if (error.code === "ETIMEDOUT") {
-            if (!retry) {
-              setTimeout(() => this.sendMessage(channel, message, topic, true), 500);
-            } else if (channel !== parseInt(process.env.MASTER_CHAT || "")) {
-              console.error(error.errors);
-              this.notifyAdmin(`Send Message to ${channel} Fail: Timeout`);
-            }
-          } else if (channel !== parseInt(process.env.MASTER_CHAT || "")) {
+          if (channel !== parseInt(process.env.MASTER_CHAT || "")) {
             this.errorHandler(channel, "Send message", error);
           }
         }
