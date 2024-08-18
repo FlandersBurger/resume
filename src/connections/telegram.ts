@@ -150,7 +150,7 @@ class TelegramBot {
     if (topic) url += `&message_thread_id=${topic}`;
     if (replyMessageId) {
       url += `&reply_markup=${JSON.stringify({ force_reply: true, selective: true })}`;
-      url += `&reply_parameters=${JSON.stringify({ message_id: replyMessageId })}`;
+      url += `&reply_parameters=${JSON.stringify({ message_id: replyMessageId, allow_sending_without_reply: true })}`;
     }
     httpClient()
       .get(url)

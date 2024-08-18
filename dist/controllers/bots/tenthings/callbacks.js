@@ -335,7 +335,6 @@ exports.default = async (callbackQuery) => {
             telegram_1.default.editKeyboard(callbackQuery.chatId, callbackQuery.id, (0, keyboards_1.curateListKeyboard)(list));
             break;
         case CallbackDataType.Suggestion:
-            telegram_1.default.deleteMessage(callbackQuery.chatId, callbackQuery.id);
             game = await index_1.Game.findOne({ chat_id: callbackQuery.chatId }).select("list").exec();
             if (!game)
                 return;
@@ -355,6 +354,7 @@ exports.default = async (callbackQuery) => {
                 default:
                     break;
             }
+            telegram_1.default.deleteMessage(callbackQuery.chatId, callbackQuery.id);
     }
 };
 //# sourceMappingURL=callbacks.js.map

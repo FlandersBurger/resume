@@ -368,7 +368,6 @@ export default async (callbackQuery: ICallbackData) => {
       bot.editKeyboard(callbackQuery.chatId, callbackQuery.id, curateListKeyboard(list));
       break;
     case CallbackDataType.Suggestion:
-      bot.deleteMessage(callbackQuery.chatId, callbackQuery.id);
       game = await Game.findOne({ chat_id: callbackQuery.chatId }).select("list").exec();
       if (!game) return;
       switch (callbackQuery.data) {
@@ -405,5 +404,6 @@ export default async (callbackQuery: ICallbackData) => {
         default:
           break;
       }
+      bot.deleteMessage(callbackQuery.chatId, callbackQuery.id);
   }
 };
