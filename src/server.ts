@@ -23,7 +23,6 @@ import { usersRoute } from "@api/users";
 import { tenthingsBotRoute } from "@tenthings/main";
 import { redisConnect, subscribe } from "@root/queue";
 import bot from "./connections/telegram";
-import { suggestionKeyboard } from "./controllers/bots/tenthings/keyboards";
 
 const serviceAccount = require("../keys/resume-172205-firebase-adminsdk-r34t7-0028c702be.json");
 
@@ -91,7 +90,6 @@ server.listen(port, async () => {
   if (process.env.NODE_ENV === "production") {
     bot.notifyAdmin("<b>Started Ten Things</b>");
   }
-  bot.sendKeyboard(parseInt(process.env.MASTER_CHAT!), "test", suggestionKeyboard());
   await subscribe("new_post", (post: any) => {
     websocketServer.broadcast("new_post", post);
   });
