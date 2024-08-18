@@ -429,7 +429,7 @@ class TelegramBot {
           },
         };
       }
-      if (body.message.reply_to_message) {
+      if (body.message.reply_to_message && body.message.reply_to_message.text) {
         checkSuggestion(body.message.reply_to_message.text);
         return {
           messageType: MessageType.Reply,
