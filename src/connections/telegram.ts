@@ -428,6 +428,18 @@ class TelegramBot {
           },
         };
       }
+      if (body.reply_to_message) {
+        console.log("reply_to_message", body.reply_to_message);
+        return {
+          messageType: MessageType.Reply,
+          message: {
+            from,
+            chatId: body.reply_to_message.chat.id,
+            id: body.reply_to_message.message_id,
+            text: body.reply_to_message.text,
+          },
+        };
+      }
       if (!body.message.text) {
         if (body.message.group_chat_created) {
           return {

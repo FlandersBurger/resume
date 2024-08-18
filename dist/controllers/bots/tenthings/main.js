@@ -24,6 +24,7 @@ var MessageType;
     MessageType["PlayerLeft"] = "playerLeft";
     MessageType["Message"] = "message";
     MessageType["Ignore"] = "ignore";
+    MessageType["Reply"] = "reply";
 })(MessageType || (exports.MessageType = MessageType = {}));
 exports.tenthingsBotRoute = (0, express_1.Router)();
 exports.tenthingsBotRoute.post("/", async (req, res) => {
@@ -47,6 +48,8 @@ exports.tenthingsBotRoute.post("/", async (req, res) => {
             }
             res.sendStatus(200);
             break;
+        case MessageType.Reply:
+            console.log(domainMessage);
         default:
             break;
     }

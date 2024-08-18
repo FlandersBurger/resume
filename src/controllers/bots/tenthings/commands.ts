@@ -17,8 +17,7 @@ import { getPlayer } from "./players";
 import { getQueue } from "./queue";
 import { checkSkipper, processSkip, vetoSkip } from "./skips";
 import { getDailyScores, getStats } from "./stats";
-import { sendSuggestion } from "./suggestions";
-import { categoriesKeyboard, listsKeyboard, settingsKeyboard, statsKeyboard } from "./keyboards";
+import { categoriesKeyboard, listsKeyboard, settingsKeyboard, statsKeyboard, suggestionKeyboard } from "./keyboards";
 import bot from "@root/connections/telegram";
 
 const commands = [
@@ -158,13 +157,14 @@ export const evaluate = async (msg: IMessage, game: HydratedDocument<IGame>, isN
         break;
       case "/erro":
       case "/typo":
-        sendSuggestion("typo", msg, player, `\nin "${game.list.name}"`);
-        break;
       case "/bug":
-        sendSuggestion("bug", msg, player);
-        break;
       case "/feature":
-        sendSuggestion("feature", msg, player);
+      case "/suggest":
+        let message = "What is this in regards?\n";
+        message += "<b>Note:</b>\n";
+        message += " - <i>Lists can be searched by typing /search followed by the search term</i>\n";
+        message += " - <i>Lists can be added and enhanced by anyone at https://belgocanadian.com/tenthings</i>";
+        bot.sendKeyboard(game.chat_id, message, suggestionKeyboard());
         break;
       case "/pesquisar":
       case "/search":
@@ -200,19 +200,6 @@ export const evaluate = async (msg: IMessage, game: HydratedDocument<IGame>, isN
             `You didn't search anything ${player.first_name}. Add your message after /search`,
           );
         }
-        break;
-      case "/suggest":
-        const suggestion = msg.text.substring(msg.command.length + 1, msg.text.length);
-        if (suggestion && suggestion != "TenThings_Bot" && suggestion != "@TenThings_Bot") {
-          bot.notify(suggestion);
-        }
-        let message = "Please use one of the following commands:\n";
-        message += "/search -> Search lists to queue\n";
-        message += "/typo -> Report a typo in the current list\n";
-        message += "/bug -> Report a bug with the bot\n";
-        message += "/feature -> Suggest an enhancement feature\n";
-        message += "<i>Note that lists can be added and enhanced by anyone at https://belgocanadian.com/tenthings</i>";
-        bot.queueMessage(game.chat_id, message);
         break;
       case "/dica":
       case "/hint":

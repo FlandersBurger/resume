@@ -24,6 +24,7 @@ export enum MessageType {
   PlayerLeft = "playerLeft",
   Message = "message",
   Ignore = "ignore",
+  Reply = "reply",
 }
 
 //-------------//
@@ -99,6 +100,8 @@ tenthingsBotRoute.post("/", async (req: Request, res: Response) => {
       }
       res.sendStatus(200);
       break;
+    case MessageType.Reply:
+      console.log(domainMessage);
     default:
       break;
   }

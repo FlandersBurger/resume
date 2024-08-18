@@ -19,7 +19,6 @@ const players_1 = require("./players");
 const queue_1 = require("./queue");
 const skips_1 = require("./skips");
 const stats_1 = require("./stats");
-const suggestions_1 = require("./suggestions");
 const keyboards_1 = require("./keyboards");
 const telegram_1 = __importDefault(require("../../../connections/telegram"));
 const commands = [
@@ -142,13 +141,14 @@ const evaluate = async (msg, game, isNew) => {
                 break;
             case "/erro":
             case "/typo":
-                (0, suggestions_1.sendSuggestion)("typo", msg, player, `\nin "${game.list.name}"`);
-                break;
             case "/bug":
-                (0, suggestions_1.sendSuggestion)("bug", msg, player);
-                break;
             case "/feature":
-                (0, suggestions_1.sendSuggestion)("feature", msg, player);
+            case "/suggest":
+                let message = "What is this in regards?\n";
+                message += "<b>Note:</b>\n";
+                message += " - <i>Lists can be searched by typing /search followed by the search term</i>\n";
+                message += " - <i>Lists can be added and enhanced by anyone at https://belgocanadian.com/tenthings</i>";
+                telegram_1.default.sendKeyboard(game.chat_id, message, (0, keyboards_1.suggestionKeyboard)());
                 break;
             case "/pesquisar":
             case "/search":
@@ -171,19 +171,6 @@ const evaluate = async (msg, game, isNew) => {
                 else {
                     telegram_1.default.queueMessage(msg.chatId, `You didn't search anything ${player.first_name}. Add your message after /search`);
                 }
-                break;
-            case "/suggest":
-                const suggestion = msg.text.substring(msg.command.length + 1, msg.text.length);
-                if (suggestion && suggestion != "TenThings_Bot" && suggestion != "@TenThings_Bot") {
-                    telegram_1.default.notify(suggestion);
-                }
-                let message = "Please use one of the following commands:\n";
-                message += "/search -> Search lists to queue\n";
-                message += "/typo -> Report a typo in the current list\n";
-                message += "/bug -> Report a bug with the bot\n";
-                message += "/feature -> Suggest an enhancement feature\n";
-                message += "<i>Note that lists can be added and enhanced by anyone at https://belgocanadian.com/tenthings</i>";
-                telegram_1.default.queueMessage(game.chat_id, message);
                 break;
             case "/dica":
             case "/hint":

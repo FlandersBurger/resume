@@ -2,7 +2,7 @@ import { HydratedDocument, Types } from "mongoose";
 import { Game, List } from "@models/index";
 import { IGame, IGameSettings } from "@models/tenthings/game";
 import { IList, IVote } from "@models/tenthings/list";
-import { capitalize } from "@root/utils/string-helpers";
+import { angleBrackets, capitalize } from "@root/utils/string-helpers";
 import { makePercentage } from "@root/utils/number-helpers";
 import find from "lodash/find";
 
@@ -386,5 +386,33 @@ export default async (callbackQuery: ICallbackData) => {
       if (!list) return;
       bot.editKeyboard(callbackQuery.chatId, callbackQuery.id, curateListKeyboard(list));
       break;
+    case CallbackDataType.Suggestion:
+      bot.deleteMessage(callbackQuery.chatId, callbackQuery.id);
+      game = await Game.findOne({ chat_id: callbackQuery.chatId }).select("list").exec();
+      if (!game) return;
+      switch (callbackQuery.data) {
+        case "list":
+          bot.sendMessage(
+            callbackQuery.chatId,
+            "You can add your own lists over here: https://belgocanadian.com/tenthings",
+          );
+          break;
+        case "feature":
+          bot.sendMessage(callbackQuery.chatId, `What would you like to see added?`, undefined, true);
+          break;
+        case "typo":
+          bot.sendMessage(
+            callbackQuery.chatId,
+            `What is the typo?\nPlease specify the list too if the typo is not in ${angleBrackets(game.list.name)}`,
+            undefined,
+            true,
+          );
+          break;
+        case "bug":
+          bot.sendMessage(callbackQuery.chatId, "Please provide some details as to what went wrong.", undefined, true);
+          break;
+        default:
+          break;
+      }
   }
 };
