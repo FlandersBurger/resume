@@ -435,9 +435,9 @@ class TelegramBot {
           messageType: MessageType.Reply,
           message: {
             from,
-            chatId: body.reply_to_message.chat.id,
-            id: body.reply_to_message.message_id,
-            text: body.reply_to_message.text,
+            chatId: body.message.chat.id,
+            id: body.message.message_id,
+            text: body.message.text,
           },
         };
       }
