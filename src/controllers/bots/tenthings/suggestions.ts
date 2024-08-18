@@ -5,7 +5,7 @@ import bot from "@root/connections/telegram";
 import { IMessage } from "./messages";
 
 export const checkSuggestion = (text: string): boolean => {
-  const suggestionType = text.split("\n")[0].toLowerCase();
+  const suggestionType = text.split("\n")[0]?.toLowerCase();
   console.log(suggestionType);
   if (["feature", "typo", "bug"].includes(suggestionType)) {
     console.log(text);

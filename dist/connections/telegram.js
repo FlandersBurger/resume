@@ -398,16 +398,16 @@ class TelegramBot {
                     };
                 }
                 if (body.message.reply_to_message && body.message.reply_to_message.text) {
-                    (0, suggestions_1.checkSuggestion)(body.message.reply_to_message.text);
-                    return {
-                        messageType: main_1.MessageType.Reply,
-                        message: {
-                            from,
-                            chatId: body.message.chat.id,
-                            id: body.message.message_id,
-                            text: body.message.text,
-                        },
-                    };
+                    if ((0, suggestions_1.checkSuggestion)(body.message.reply_to_message.text))
+                        return {
+                            messageType: main_1.MessageType.Reply,
+                            message: {
+                                from,
+                                chatId: body.message.chat.id,
+                                id: body.message.message_id,
+                                text: body.message.text,
+                            },
+                        };
                 }
                 if (!body.message.text) {
                     if (body.message.group_chat_created) {

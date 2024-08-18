@@ -430,16 +430,16 @@ class TelegramBot {
         };
       }
       if (body.message.reply_to_message && body.message.reply_to_message.text) {
-        checkSuggestion(body.message.reply_to_message.text);
-        return {
-          messageType: MessageType.Reply,
-          message: {
-            from,
-            chatId: body.message.chat.id,
-            id: body.message.message_id,
-            text: body.message.text,
-          },
-        };
+        if (checkSuggestion(body.message.reply_to_message.text))
+          return {
+            messageType: MessageType.Reply,
+            message: {
+              from,
+              chatId: body.message.chat.id,
+              id: body.message.message_id,
+              text: body.message.text,
+            },
+          };
       }
       if (!body.message.text) {
         if (body.message.group_chat_created) {
