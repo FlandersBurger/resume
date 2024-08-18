@@ -354,7 +354,6 @@ exports.default = async (callbackQuery) => {
                 default:
                     break;
             }
-            telegram_1.default.deleteMessage(callbackQuery.chatId, callbackQuery.id);
     }
 };
 //# sourceMappingURL=callbacks.js.map

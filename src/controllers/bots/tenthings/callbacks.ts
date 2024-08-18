@@ -404,6 +404,5 @@ export default async (callbackQuery: ICallbackData) => {
         default:
           break;
       }
-      bot.deleteMessage(callbackQuery.chatId, callbackQuery.id);
   }
 };
