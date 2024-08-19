@@ -51,9 +51,17 @@ export interface IKeyboardUrlButton {
 
 export type IKeyboardButton = IKeyboardCallbackButton | IKeyboardUrlButton;
 
-export interface IKeyboard {
-  inline_keyboard: Array<Array<IKeyboardButton>>;
-}
+export type IKeyboard =
+  | {
+      inline_keyboard: Array<Array<IKeyboardButton>>;
+    }
+  | {
+      keyboard: Array<Array<IKeyboardButton>>;
+      one_time_keyboard?: boolean;
+      input_field_placeholder?: string;
+      resize_keyboard?: boolean;
+      selective?: boolean;
+    };
 
 class TelegramBot {
   private baseUrl: string;
