@@ -150,11 +150,7 @@ const evaluate = async (msg, game, isNew) => {
             case "/bug":
             case "/feature":
                 if (!(0, suggestions_1.checkSuggestionProvided)(msg, game, player)) {
-                    let message = "What is this in regards?\n";
-                    message += "<b>Note:</b>\n";
-                    message += " - <i>Lists can be searched by typing /search followed by the search term</i>\n";
-                    message += " - <i>Lists can be added and enhanced by anyone at https://belgocanadian.com/tenthings</i>";
-                    telegram_1.default.sendKeyboard(game.chat_id, message, (0, keyboards_1.suggestionKeyboard)());
+                    (0, suggestions_1.sendSuggestionMessage)(game, player, (0, suggestions_1.getSuggestionType)(msg));
                 }
                 break;
             case "/pesquisar":

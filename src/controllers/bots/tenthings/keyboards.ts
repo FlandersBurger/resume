@@ -39,6 +39,7 @@ export const statsKeyboard = (): Keyboard => {
     ],
   };
 };
+
 export const listStatsKeyboard = (game: IGame): Keyboard => {
   return {
     inline_keyboard: [
@@ -62,6 +63,7 @@ export const listStatsKeyboard = (game: IGame): Keyboard => {
     ],
   };
 };
+
 export const playerStatsKeyboard = (): Keyboard => {
   return {
     inline_keyboard: [
@@ -116,18 +118,7 @@ export const playerStatsKeyboard = (): Keyboard => {
     ],
   };
 };
-export const suggestionKeyboard = (): Keyboard => ({
-  inline_keyboard: [
-    [
-      getButton("🆕 List", { type: CallbackDataType.Suggestion, id: "list" }),
-      getButton("☑ Feature", { type: CallbackDataType.Suggestion, id: "feature" }),
-    ],
-    [
-      getButton(`⚠ Typo`, { type: CallbackDataType.Suggestion, id: "typo" }),
-      getButton(`⛔ Bug`, { type: CallbackDataType.Suggestion, id: "bug" }),
-    ],
-  ],
-});
+
 export const categoriesKeyboard = ({ settings, disabledCategories }: IGame): Keyboard => {
   return {
     inline_keyboard: concat(
@@ -155,6 +146,7 @@ export const categoriesKeyboard = ({ settings, disabledCategories }: IGame): Key
     ),
   };
 };
+
 export const settingsKeyboard = ({ settings }: IGame): Keyboard => {
   return {
     inline_keyboard: [
@@ -199,6 +191,7 @@ export const settingsKeyboard = ({ settings }: IGame): Keyboard => {
     ],
   };
 };
+
 export const languagesKeyboard = ({ settings }: IGame, availableLanguages: LanguageCount[]): Keyboard => {
   return {
     inline_keyboard: concat(
@@ -223,6 +216,7 @@ export const languagesKeyboard = ({ settings }: IGame, availableLanguages: Langu
     ),
   };
 };
+
 export const languageKeyboard = ({ settings }: IGame): Keyboard => {
   return {
     inline_keyboard: concat(
@@ -245,6 +239,7 @@ export const languageKeyboard = ({ settings }: IGame): Keyboard => {
     ),
   };
 };
+
 export const banListKeyboard = (language: string, list: IGameList): Keyboard => {
   return {
     inline_keyboard: [
@@ -252,6 +247,7 @@ export const banListKeyboard = (language: string, list: IGameList): Keyboard => 
     ],
   };
 };
+
 export const confirmBanListKeyboard = (language: string, list: IList): Keyboard => {
   return {
     inline_keyboard: [
@@ -259,6 +255,7 @@ export const confirmBanListKeyboard = (language: string, list: IList): Keyboard 
     ],
   };
 };
+
 export const likeListKeyboard = (game: IGame): Keyboard => {
   return {
     inline_keyboard: [
@@ -269,6 +266,7 @@ export const likeListKeyboard = (game: IGame): Keyboard => {
     ],
   };
 };
+
 export const listsKeyboard = (lists: IList[]): Keyboard => ({
   inline_keyboard: shuffle(lists)
     .slice(0, 10)
@@ -283,6 +281,7 @@ export const listsKeyboard = (lists: IList[]): Keyboard => ({
       return result;
     }, []),
 });
+
 export const curateListKeyboard = (list: IList): Keyboard => ({
   inline_keyboard: [
     [

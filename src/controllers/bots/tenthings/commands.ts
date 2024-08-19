@@ -17,9 +17,15 @@ import { getPlayer } from "./players";
 import { getQueue } from "./queue";
 import { checkSkipper, processSkip, vetoSkip } from "./skips";
 import { getDailyScores, getStats } from "./stats";
-import { categoriesKeyboard, listsKeyboard, settingsKeyboard, statsKeyboard, suggestionKeyboard } from "./keyboards";
+import { categoriesKeyboard, listsKeyboard, settingsKeyboard, statsKeyboard } from "./keyboards";
 import bot from "@root/connections/telegram";
-import { checkSuggestionProvided, sendSuggestion, SuggestionType } from "./suggestions";
+import {
+  checkSuggestionProvided,
+  getSuggestionType,
+  sendSuggestion,
+  sendSuggestionMessage,
+  SuggestionType,
+} from "./suggestions";
 
 const commands = [
   "list",
@@ -166,11 +172,7 @@ export const evaluate = async (msg: Message, game: HydratedDocument<IGame>, isNe
       case "/bug":
       case "/feature":
         if (!checkSuggestionProvided(msg, game, player)) {
-          let message = "What is this in regards?\n";
-          message += "<b>Note:</b>\n";
-          message += " - <i>Lists can be searched by typing /search followed by the search term</i>\n";
-          message += " - <i>Lists can be added and enhanced by anyone at https://belgocanadian.com/tenthings</i>";
-          bot.sendKeyboard(game.chat_id, message, suggestionKeyboard());
+          sendSuggestionMessage(game, player, getSuggestionType(msg)!);
         }
         break;
       case "/pesquisar":

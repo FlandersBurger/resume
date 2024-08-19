@@ -3,7 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.curateListKeyboard = exports.listsKeyboard = exports.likeListKeyboard = exports.confirmBanListKeyboard = exports.banListKeyboard = exports.languageKeyboard = exports.languagesKeyboard = exports.settingsKeyboard = exports.categoriesKeyboard = exports.suggestionKeyboard = exports.playerStatsKeyboard = exports.listStatsKeyboard = exports.statsKeyboard = void 0;
+exports.curateListKeyboard = exports.listsKeyboard = exports.likeListKeyboard = exports.confirmBanListKeyboard = exports.banListKeyboard = exports.languageKeyboard = exports.languagesKeyboard = exports.settingsKeyboard = exports.categoriesKeyboard = exports.playerStatsKeyboard = exports.listStatsKeyboard = exports.statsKeyboard = void 0;
 const some_1 = __importDefault(require("lodash/some"));
 const find_1 = __importDefault(require("lodash/find"));
 const concat_1 = __importDefault(require("lodash/concat"));
@@ -113,19 +113,6 @@ const playerStatsKeyboard = () => {
     };
 };
 exports.playerStatsKeyboard = playerStatsKeyboard;
-const suggestionKeyboard = () => ({
-    inline_keyboard: [
-        [
-            getButton("🆕 List", { type: callbacks_1.CallbackDataType.Suggestion, id: "list" }),
-            getButton("☑ Feature", { type: callbacks_1.CallbackDataType.Suggestion, id: "feature" }),
-        ],
-        [
-            getButton(`⚠ Typo`, { type: callbacks_1.CallbackDataType.Suggestion, id: "typo" }),
-            getButton(`⛔ Bug`, { type: callbacks_1.CallbackDataType.Suggestion, id: "bug" }),
-        ],
-    ],
-});
-exports.suggestionKeyboard = suggestionKeyboard;
 const categoriesKeyboard = ({ settings, disabledCategories }) => {
     return {
         inline_keyboard: (0, concat_1.default)(categories_1.default

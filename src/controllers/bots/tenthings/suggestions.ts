@@ -7,7 +7,6 @@ import { IPlayer, PlayerState } from "@root/models/tenthings/player";
 import { getPlayerName } from "./players";
 
 export enum SuggestionType {
-  List = "list",
   Bug = "bug",
   Feature = "feature",
   Typo = "typo",
@@ -20,6 +19,7 @@ export const sendSuggestion = async (
   suggestionType: SuggestionType,
 ) => {
   if (game && player) {
+    const playerName = getPlayerName(player);
     player.suggestions++;
     player.state = PlayerState.None;
     await player.save();
@@ -27,24 +27,30 @@ export const sendSuggestion = async (
     if (suggestionType == SuggestionType.Typo) {
       message += `Current list: ${parseSymbols(game.list.name)}\n`;
     }
-    message += `<i>${player.username ? `@${player.username}` : player.first_name}</i>`;
+    message = `${message}\nThank you, ${playerName}`;
+    bot.queueMessage(msg.chatId, message);
+    message += `<i>${playerName}</i>`;
     bot.notify(message);
     const chatLink = await bot.getChat(msg.chatId);
     message += chatLink ? `\n${chatLink}` : "";
     bot.notifyAdmins(message);
-    message = `<b>${capitalize(suggestionType)}</b>\n<i>${msg.text}</i>\nThank you, ${
-      player.username ? `@${player.username}` : player.first_name
-    }`;
-    bot.queueMessage(msg.chatId, message);
   }
 };
 
-export const checkSuggestionProvided = (msg: Message, game: IGame, player: HydratedDocument<IPlayer>): boolean => {
-  const suggestion = msg.text.substring(msg.text.indexOf(" ") + 1, msg.text.length);
+export const getSuggestionType = (msg: Message): SuggestionType | undefined => {
   const suggestionType = msg.command
     ?.replace("/", "")
     .replace("erro", "bug")
     .replace("suggest", "feature") as SuggestionType;
+  if (Object.values(SuggestionType).includes(suggestionType)) {
+    return suggestionType;
+  }
+  return undefined;
+};
+
+export const checkSuggestionProvided = (msg: Message, game: IGame, player: HydratedDocument<IPlayer>): boolean => {
+  const suggestion = msg.text.substring(msg.text.indexOf(" ") + 1, msg.text.length);
+  const suggestionType = getSuggestionType(msg);
   if (
     suggestion.length > 0 &&
     suggestionType &&
@@ -65,9 +71,6 @@ export const sendSuggestionMessage = async (
 ) => {
   const playerName = getPlayerName(player);
   switch (suggestionType) {
-    case "list":
-      bot.sendMessage(game.chat_id, "You can add your own lists over here: https://belgocanadian.com/tenthings");
-      break;
     case "feature":
       player.state = PlayerState.Feature;
       await player.save();
