@@ -80,9 +80,6 @@ bot.exportChatInviteLink('-1001394022777').then(function(chat) {
 */
 tenthingsBotRoute.post("/", async (req: Request, res: Response) => {
   const domainMessage = await bot.toDomainMessage(req.body);
-  if (parseInt(process.env.MASTER_CHAT!) == domainMessage.message?.chatId) {
-    console.log(req.body);
-  }
   switch (domainMessage.messageType) {
     case MessageType.Ignore:
       res.sendStatus(200);

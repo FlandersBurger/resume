@@ -28,9 +28,6 @@ var MessageType;
 exports.tenthingsBotRoute = (0, express_1.Router)();
 exports.tenthingsBotRoute.post("/", async (req, res) => {
     const domainMessage = await telegram_1.default.toDomainMessage(req.body);
-    if (parseInt(process.env.MASTER_CHAT) == domainMessage.message?.chatId) {
-        console.log(req.body);
-    }
     switch (domainMessage.messageType) {
         case MessageType.Ignore:
             res.sendStatus(200);
