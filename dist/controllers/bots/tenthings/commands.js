@@ -59,12 +59,7 @@ const evaluate = async (msg, game, isNew) => {
             return;
         }
     }
-    if (parseInt(process.env.MASTER_CHAT) == game.chat_id) {
-        console.log(player);
-        console.log(Object.values(suggestions_1.SuggestionType).includes(player.state));
-    }
     if (Object.values(suggestions_1.SuggestionType).includes(player.state)) {
-        console.log("player has a suggestion, sending it");
         (0, suggestions_1.sendSuggestion)(msg, game, player, player.state);
         return;
     }

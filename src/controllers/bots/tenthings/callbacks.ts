@@ -2,7 +2,7 @@ import { HydratedDocument, Types } from "mongoose";
 import { Game, List } from "@models/index";
 import { IGame, IGameSettings } from "@models/tenthings/game";
 import { IList, IVote } from "@models/tenthings/list";
-import { parseSymbols, capitalize } from "@root/utils/string-helpers";
+import { capitalize } from "@root/utils/string-helpers";
 import { makePercentage } from "@root/utils/number-helpers";
 import find from "lodash/find";
 
@@ -28,7 +28,7 @@ import {
 } from "./keyboards";
 import bot, { TelegramUser } from "@root/connections/telegram";
 import { getPlayer } from "./players";
-import { PlayerState } from "@root/models/tenthings/player";
+import { sendSuggestionMessage, SuggestionType } from "./suggestions";
 
 export type CallbackData = {
   id: string;
@@ -373,40 +373,7 @@ export default async (callbackQuery: CallbackData) => {
       game = await Game.findOne({ chat_id: callbackQuery.chatId }).select("list").exec();
       if (!game) return;
       const player = await getPlayer(game, callbackQuery.from);
-      switch (callbackQuery.data) {
-        case "list":
-          bot.sendMessage(
-            callbackQuery.chatId,
-            "You can add your own lists over here: https://belgocanadian.com/tenthings",
-          );
-          break;
-        case "feature":
-          player.state = PlayerState.Feature;
-          await player.save();
-          bot.sendMessage(
-            callbackQuery.chatId,
-            `<b>FEATURE</b>\nPlease suggest your feature in your next message, ${player.username || player.first_name}!`,
-          );
-          break;
-        case "typo":
-          player.state = PlayerState.Typo;
-          await player.save();
-          bot.sendMessage(
-            callbackQuery.chatId,
-            `<b>TYPO</b>\nPlease let me know what the typo is in your next message, ${player.username || player.first_name}!\nMention the list name too if the typo is not part of: <i>"${parseSymbols(game.list.name)}"</i>`,
-          );
-          break;
-        case "bug":
-          player.state = PlayerState.Bug;
-          await player.save();
-          bot.sendMessage(
-            callbackQuery.chatId,
-            `<b>BUG</b>\nPlease provide some details as to what went wrong in your next message, ${player.username || player.first_name}!`,
-          );
-          break;
-        default:
-          break;
-      }
+      await sendSuggestionMessage(game, player, callbackQuery.data as SuggestionType);
       bot.deleteMessage(callbackQuery.chatId, callbackQuery.id);
   }
 };
