@@ -27,8 +27,7 @@ export const sendSuggestion = async (
     if (suggestionType == SuggestionType.Typo) {
       message += `Current list: ${parseSymbols(game.list.name)}\n`;
     }
-    message = `${message}\nThank you, ${playerName}`;
-    bot.queueMessage(msg.chatId, message);
+    bot.queueMessage(msg.chatId, `${message}Thank you, ${playerName}`);
     message += `<i>${playerName}</i>`;
     bot.notify(message);
     const chatLink = await bot.getChat(msg.chatId);

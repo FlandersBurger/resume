@@ -24,8 +24,7 @@ const sendSuggestion = async (msg, game, player, suggestionType) => {
         if (suggestionType == SuggestionType.Typo) {
             message += `Current list: ${(0, string_helpers_1.parseSymbols)(game.list.name)}\n`;
         }
-        message = `${message}\nThank you, ${playerName}`;
-        telegram_1.default.queueMessage(msg.chatId, message);
+        telegram_1.default.queueMessage(msg.chatId, `${message}Thank you, ${playerName}`);
         message += `<i>${playerName}</i>`;
         telegram_1.default.notify(message);
         const chatLink = await telegram_1.default.getChat(msg.chatId);
