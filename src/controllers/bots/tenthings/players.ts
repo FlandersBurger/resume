@@ -20,7 +20,7 @@ export const getPlayer = async (game: IGame, from: TelegramUser | IPlayer) => {
   return player;
 };
 
-export const getPlayerName = async (player: TelegramUser | IPlayer) => {
+export const getPlayerName = (player: TelegramUser | IPlayer) => {
   return player.username ? `@${player.username}` : parseSymbols(player.first_name);
 };
 

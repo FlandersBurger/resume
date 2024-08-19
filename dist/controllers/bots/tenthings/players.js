@@ -19,7 +19,7 @@ const getPlayer = async (game, from) => {
     return player;
 };
 exports.getPlayer = getPlayer;
-const getPlayerName = async (player) => {
+const getPlayerName = (player) => {
     return player.username ? `@${player.username}` : (0, string_helpers_1.parseSymbols)(player.first_name);
 };
 exports.getPlayerName = getPlayerName;
