@@ -44,6 +44,7 @@ const checkSuggestionProvided = (msg, game, player) => {
         suggestionType &&
         suggestion !== msg.command &&
         Object.values(SuggestionType).includes(suggestionType)) {
+        msg.text = suggestion;
         (0, exports.sendSuggestion)(msg, game, player, suggestionType);
         return true;
     }

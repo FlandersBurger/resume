@@ -51,6 +51,7 @@ export const checkSuggestionProvided = (msg: Message, game: IGame, player: Hydra
     suggestion !== msg.command &&
     Object.values(SuggestionType).includes(suggestionType)
   ) {
+    msg.text = suggestion;
     sendSuggestion(msg, game, player, suggestionType);
     return true;
   }
