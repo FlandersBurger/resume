@@ -117,7 +117,7 @@ export const playerStatsKeyboard = (): IKeyboard => {
   };
 };
 export const suggestionKeyboard = (): IKeyboard => ({
-  keyboard: [
+  inline_keyboard: [
     [
       getButton("🆕 List", { type: CallbackDataType.Suggestion, id: "list" }),
       getButton("☑ Feature", { type: CallbackDataType.Suggestion, id: "feature" }),
@@ -127,9 +127,6 @@ export const suggestionKeyboard = (): IKeyboard => ({
       getButton(`⛔ Bug`, { type: CallbackDataType.Suggestion, id: "bug" }),
     ],
   ],
-  one_time_keyboard: true,
-  input_field_placeholder: "Type your suggestion here",
-  selective: true,
 });
 export const categoriesKeyboard = ({ settings, disabledCategories }: IGame): IKeyboard => {
   return {

@@ -114,7 +114,7 @@ const playerStatsKeyboard = () => {
 };
 exports.playerStatsKeyboard = playerStatsKeyboard;
 const suggestionKeyboard = () => ({
-    keyboard: [
+    inline_keyboard: [
         [
             getButton("🆕 List", { type: callbacks_1.CallbackDataType.Suggestion, id: "list" }),
             getButton("☑ Feature", { type: callbacks_1.CallbackDataType.Suggestion, id: "feature" }),
@@ -124,9 +124,6 @@ const suggestionKeyboard = () => ({
             getButton(`⛔ Bug`, { type: callbacks_1.CallbackDataType.Suggestion, id: "bug" }),
         ],
     ],
-    one_time_keyboard: true,
-    input_field_placeholder: "Type your suggestion here",
-    selective: true,
 });
 exports.suggestionKeyboard = suggestionKeyboard;
 const categoriesKeyboard = ({ settings, disabledCategories }) => {
