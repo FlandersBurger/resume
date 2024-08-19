@@ -3,7 +3,7 @@ import { createTunnel } from "tunnel-ssh";
 
 const connections: { [key: string]: Connection } = {};
 
-export interface IDb {
+export type Db = {
   name: string;
   url: string;
   tunnel?: {
@@ -12,16 +12,16 @@ export interface IDb {
     privateKey: string;
     port: number;
   };
-}
+};
 
-const connect = (db: IDb) => {
+const connect = (db: Db) => {
   connections[db.name] = createConnection(db.url, {});
   connections[db.name].on("open", () => {
     console.log(`DB ${db.name} connected`);
   });
 };
 
-export const mongoDBs: IDb[] = [
+export const mongoDBs: Db[] = [
   {
     name: "backup",
     url: process.env.MONGO_BACKUP_URL!,
@@ -48,7 +48,7 @@ export const mongoDBs: IDb[] = [
   },
 ];
 
-mongoDBs.forEach(async (db: IDb) => {
+mongoDBs.forEach(async (db: Db) => {
   connect(db);
   if (db.tunnel) {
     await createTunnel({ autoClose: true }, { host: "127.0.0.1", port: 27017 }, db.tunnel, { dstPort: 27017 });

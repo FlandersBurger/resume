@@ -4,8 +4,8 @@ import { HydratedDocument } from "mongoose";
 import { IGame } from "@models/tenthings/game";
 import { IListValue } from "@models/tenthings/list";
 import { IPlayer } from "@models/tenthings/player";
-import { IGuess, getAnswerScore } from "./guesses";
-import { IMessage, getGuessedMessage } from "./messages";
+import { Guess, getAnswerScore } from "./guesses";
+import { Message, getGuessedMessage } from "./messages";
 import { getHint } from "./hints";
 import { getRandomList } from "./lists";
 import bot from "@root/connections/telegram";
@@ -62,8 +62,8 @@ export const sendTinygameMessage = (game: IGame) => {
 export const checkTinygame = async (
   game: HydratedDocument<IGame>,
   player: HydratedDocument<IPlayer>,
-  guess: IGuess,
-  msg: IMessage,
+  guess: Guess,
+  msg: Message,
 ) => {
   if (guess.match.value !== game.tinygame.answer) return;
   const score = getAnswerScore(game.minigame.hints, guess.match.distance);

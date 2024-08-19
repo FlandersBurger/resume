@@ -1,7 +1,7 @@
 import { HydratedDocument } from "mongoose";
 import { List } from "@models/index";
 import { IGame } from "@models/tenthings/game";
-import { ICallbackData } from "./callbacks";
+import { CallbackData } from "./callbacks";
 
 import i18n from "@root/i18n";
 import { confirmBanListKeyboard } from "./keyboards";
@@ -9,7 +9,7 @@ import bot from "@root/connections/telegram";
 
 const cache: { [key: string]: number } = {};
 
-export const initiateBan = async (game: IGame, callbackQuery: ICallbackData) => {
+export const initiateBan = async (game: IGame, callbackQuery: CallbackData) => {
   if (
     game.chat_id !== parseInt(process.env.GROUP_CHAT || "") ||
     (await bot.checkAdmin(game.chat_id, callbackQuery.from.id))
@@ -44,7 +44,7 @@ export const initiateBan = async (game: IGame, callbackQuery: ICallbackData) => 
   }
 };
 
-export const processBan = (game: HydratedDocument<IGame>, callbackQuery: ICallbackData) => {
+export const processBan = (game: HydratedDocument<IGame>, callbackQuery: CallbackData) => {
   if (!cache[`${game._id}-${callbackQuery.data}`]) {
     bot.queueMessage(
       game.chat_id,

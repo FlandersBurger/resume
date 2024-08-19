@@ -19,6 +19,8 @@ const stats_1 = require("./stats");
 const cache_1 = require("./cache");
 const keyboards_1 = require("./keyboards");
 const telegram_1 = __importDefault(require("../../../connections/telegram"));
+const players_1 = require("./players");
+const player_1 = require("../../../models/tenthings/player");
 var CallbackDataType;
 (function (CallbackDataType) {
     CallbackDataType["Ban"] = "ban";
@@ -338,18 +340,25 @@ exports.default = async (callbackQuery) => {
             game = await index_1.Game.findOne({ chat_id: callbackQuery.chatId }).select("list").exec();
             if (!game)
                 return;
+            const player = await (0, players_1.getPlayer)(game, callbackQuery.from);
             switch (callbackQuery.data) {
                 case "list":
                     telegram_1.default.sendMessage(callbackQuery.chatId, "You can add your own lists over here: https://belgocanadian.com/tenthings");
                     break;
                 case "feature":
-                    telegram_1.default.sendMessage(callbackQuery.chatId, `<b>FEATURE</b>\nWhat would you like to see added?`, undefined, callbackQuery.id);
+                    player.state = player_1.PlayerState.Feature;
+                    await player.save();
+                    telegram_1.default.sendMessage(callbackQuery.chatId, `<b>FEATURE</b>\nPlease suggest your feature in your next message, ${player.username || player.first_name}!`);
                     break;
                 case "typo":
-                    telegram_1.default.sendMessage(callbackQuery.chatId, `<b>TYPO</b>\nPlease specify the list with the typo if it is not within "${(0, string_helpers_1.parseSymbols)(game.list.name)}"`, undefined, callbackQuery.id);
+                    player.state = player_1.PlayerState.Typo;
+                    await player.save();
+                    telegram_1.default.sendMessage(callbackQuery.chatId, `<b>TYPO</b>\nPlease let me know what the typo is in your next message, ${player.username || player.first_name}!\nmention the list name too if the typois not part of: <i>"${(0, string_helpers_1.parseSymbols)(game.list.name)}"</i>`);
                     break;
                 case "bug":
-                    telegram_1.default.sendMessage(callbackQuery.chatId, "<b>BUG</b>\nPlease provide some details as to what went wrong.", undefined, callbackQuery.id);
+                    player.state = player_1.PlayerState.Bug;
+                    await player.save();
+                    telegram_1.default.sendMessage(callbackQuery.chatId, `<b>BUG</b>\nPlease provide some details as to what went wrong in your next message, ${player.username || player.first_name}!`);
                     break;
                 default:
                     break;

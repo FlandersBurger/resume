@@ -1,13 +1,13 @@
-export interface ILanguage {
+export type Language = {
   code: AllowedLanguage;
   name: string;
   native: string;
-}
+};
 
-export interface ILanguageCount {
+export type LanguageCount = {
   _id: string;
   count: number;
-}
+};
 
 export type SupportedLanguage = "EN" | "ID" | "NL" | "PT" | "TL";
 
@@ -33,7 +33,7 @@ export type AllowedLanguage =
   | "TR"
   | "ZH";
 
-const languages: Array<ILanguage> = [
+const languages: Array<Language> = [
   // { code: "AA", name: "Afar", native: "Qafaraf; ’Afar Af; Afaraf; Qafar af" },
   // { code: "AB", name: "Abkhazian", native: "Аҧсуа бызшәа; Аҧсшәа" },
   // { code: "AF", name: "Afrikaans", native: "Afrikaans" },

@@ -9,8 +9,8 @@ import { IList } from "@models/tenthings/list";
 import { parseSymbols, maskUrls, removeHTML } from "@root/utils/string-helpers";
 import { IUser } from "@models/user";
 import { IPlayer } from "@models/tenthings/player";
-import { IGuess, getAnswerScore } from "./guesses";
-import { IMessage, getGuessedMessage, getListStats, getSnubbedMessage, getStreakMessage } from "./messages";
+import { Guess, getAnswerScore } from "./guesses";
+import { Message, getGuessedMessage, getListStats, getSnubbedMessage, getStreakMessage } from "./messages";
 import { getHint, hintCache, hintCooldown } from "./hints";
 import { getListScore, rateList, selectList } from "./lists";
 import { getDailyScores } from "./stats";
@@ -153,8 +153,8 @@ export const deactivate = (game: HydratedDocument<IGame>) => {
 export const checkMaingame = async (
   game: HydratedDocument<IGame>,
   player: HydratedDocument<IPlayer>,
-  guess: IGuess,
-  msg: IMessage,
+  guess: Guess,
+  msg: Message,
 ) => {
   if (guess.list !== game.list._id) return;
   game.lastPlayDate = moment().toDate();
@@ -308,7 +308,7 @@ export const sendMaingameMessage = async (game: IGame, long = true) => {
 const guessed = async (
   game: IGame,
   { scoreDaily, first_name }: IPlayer,
-  { chatId }: IMessage,
+  { chatId }: Message,
   value: string,
   blurb: string,
   score: number,

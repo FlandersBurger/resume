@@ -1,8 +1,8 @@
-import diacritics, { IDiacritic } from "./diacritics";
+import diacritics, { Diacritic } from "./diacritics";
 import domains from "./domains";
 
 const removeDiacritics = (str: string): string =>
-  diacritics.reduce((result, diacritic: IDiacritic) => result.replace(diacritic.letters, diacritic.base), str);
+  diacritics.reduce((result, diacritic: Diacritic) => result.replace(diacritic.letters, diacritic.base), str);
 
 const SPECIAL_CHARACTERS = "\\\\/ !?@#$%^&*()_+:.{},;\\-'``’‘\"";
 

@@ -3,7 +3,7 @@ import { IUser } from "@models/user";
 import { SortOrder } from "mongoose";
 
 declare module "express" {
-  export interface QueryableRequest {
+  export type QueryableRequest = {
     query: {
       page: string;
       limit: string;
@@ -11,13 +11,13 @@ declare module "express" {
       order_by: string;
       search: string;
     };
-  }
-  export interface Response {
+  };
+  export type Response = {
     locals: {
       isAuthorized?: boolean;
       isAdmin?: boolean;
       auth?: { userid: string };
       user?: IUser;
     };
-  }
+  };
 }

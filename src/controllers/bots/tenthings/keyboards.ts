@@ -6,12 +6,12 @@ import find from "lodash/find";
 import concat from "lodash/concat";
 import shuffle from "lodash/shuffle";
 import categories from "./categories";
-import languages, { ILanguage, ILanguageCount } from "./languages";
+import languages, { Language, LanguageCount } from "./languages";
 import { getFrequencyMessage } from "./messages";
 import { parseSymbols, capitalize } from "@root/utils/string-helpers";
 import i18n from "@root/i18n";
 import emojis from "./emojis";
-import { IKeyboard, IKeyboardButton, IKeyboardCallbackButton } from "@root/connections/telegram";
+import { Keyboard, KeyboardButton, KeyboardCallbackButton } from "@root/connections/telegram";
 import { CallbackDataType } from "./callbacks";
 
 const getButton = (
@@ -20,12 +20,12 @@ const getButton = (
     type: CallbackDataType;
     id: string;
   },
-): IKeyboardCallbackButton => ({
+): KeyboardCallbackButton => ({
   text: text as string,
   callback_data: JSON.stringify(callbackData),
 });
 
-export const statsKeyboard = (): IKeyboard => {
+export const statsKeyboard = (): Keyboard => {
   return {
     inline_keyboard: [
       [
@@ -39,7 +39,7 @@ export const statsKeyboard = (): IKeyboard => {
     ],
   };
 };
-export const listStatsKeyboard = (game: IGame): IKeyboard => {
+export const listStatsKeyboard = (game: IGame): Keyboard => {
   return {
     inline_keyboard: [
       [getButton(`"${game.list.name}"`, { type: CallbackDataType.Stats, id: `l_${game.list._id}` })],
@@ -62,7 +62,7 @@ export const listStatsKeyboard = (game: IGame): IKeyboard => {
     ],
   };
 };
-export const playerStatsKeyboard = (): IKeyboard => {
+export const playerStatsKeyboard = (): Keyboard => {
   return {
     inline_keyboard: [
       [
@@ -116,7 +116,7 @@ export const playerStatsKeyboard = (): IKeyboard => {
     ],
   };
 };
-export const suggestionKeyboard = (): IKeyboard => ({
+export const suggestionKeyboard = (): Keyboard => ({
   inline_keyboard: [
     [
       getButton("🆕 List", { type: CallbackDataType.Suggestion, id: "list" }),
@@ -128,7 +128,7 @@ export const suggestionKeyboard = (): IKeyboard => ({
     ],
   ],
 });
-export const categoriesKeyboard = ({ settings, disabledCategories }: IGame): IKeyboard => {
+export const categoriesKeyboard = ({ settings, disabledCategories }: IGame): Keyboard => {
   return {
     inline_keyboard: concat(
       categories
@@ -137,7 +137,7 @@ export const categoriesKeyboard = ({ settings, disabledCategories }: IGame): IKe
             ? 1
             : -1,
         )
-        .reduce((result: IKeyboardButton[][], category: string, i: number) => {
+        .reduce((result: KeyboardButton[][], category: string, i: number) => {
           const button = getButton(
             `${i18n(settings.language, `categories.${category}`)}: ${
               disabledCategories.indexOf(category) < 0 ? emojis.on : emojis.off
@@ -155,7 +155,7 @@ export const categoriesKeyboard = ({ settings, disabledCategories }: IGame): IKe
     ),
   };
 };
-export const settingsKeyboard = ({ settings }: IGame): IKeyboard => {
+export const settingsKeyboard = ({ settings }: IGame): Keyboard => {
   return {
     inline_keyboard: [
       [
@@ -199,13 +199,13 @@ export const settingsKeyboard = ({ settings }: IGame): IKeyboard => {
     ],
   };
 };
-export const languagesKeyboard = ({ settings }: IGame, availableLanguages: ILanguageCount[]): IKeyboard => {
+export const languagesKeyboard = ({ settings }: IGame, availableLanguages: LanguageCount[]): Keyboard => {
   return {
     inline_keyboard: concat(
       languages
         .filter((language) => some(availableLanguages, (availableLanguage) => availableLanguage._id === language.code))
         .sort()
-        .reduce((result: IKeyboardButton[][], language: ILanguage, i: number) => {
+        .reduce((result: KeyboardButton[][], language: Language, i: number) => {
           const button = getButton(
             `${settings.languages.includes(language.code) ? emojis.on : emojis.off} ${language.code} - ${
               language.native
@@ -223,13 +223,13 @@ export const languagesKeyboard = ({ settings }: IGame, availableLanguages: ILang
     ),
   };
 };
-export const languageKeyboard = ({ settings }: IGame): IKeyboard => {
+export const languageKeyboard = ({ settings }: IGame): Keyboard => {
   return {
     inline_keyboard: concat(
       languages
         .filter((language) => ["EN", "NL", "ID", "PT", "TL"].includes(language.code))
         .sort()
-        .reduce((result: IKeyboardButton[][], language: ILanguage, i: number) => {
+        .reduce((result: KeyboardButton[][], language: Language, i: number) => {
           const button = getButton(
             `${language.code} - ${language.native} ${settings.language === language.code ? emojis.green : ""}`,
             { type: CallbackDataType.BotLanguage, id: language.code },
@@ -245,21 +245,21 @@ export const languageKeyboard = ({ settings }: IGame): IKeyboard => {
     ),
   };
 };
-export const banListKeyboard = (language: string, list: IGameList): IKeyboard => {
+export const banListKeyboard = (language: string, list: IGameList): Keyboard => {
   return {
     inline_keyboard: [
       [getButton(i18n(language, "sentences.banListQuestion"), { type: CallbackDataType.Ban, id: `${list._id}` })],
     ],
   };
 };
-export const confirmBanListKeyboard = (language: string, list: IList): IKeyboard => {
+export const confirmBanListKeyboard = (language: string, list: IList): Keyboard => {
   return {
     inline_keyboard: [
       [getButton(i18n(language, "sentences.banListCommand"), { type: CallbackDataType.ConfirmBan, id: `${list._id}` })],
     ],
   };
 };
-export const likeListKeyboard = (game: IGame): IKeyboard => {
+export const likeListKeyboard = (game: IGame): Keyboard => {
   return {
     inline_keyboard: [
       [
@@ -269,11 +269,11 @@ export const likeListKeyboard = (game: IGame): IKeyboard => {
     ],
   };
 };
-export const listsKeyboard = (lists: IList[]): IKeyboard => ({
+export const listsKeyboard = (lists: IList[]): Keyboard => ({
   inline_keyboard: shuffle(lists)
     .slice(0, 10)
     .sort()
-    .reduce((result: IKeyboardButton[][], list: IList) => {
+    .reduce((result: KeyboardButton[][], list: IList) => {
       result.push([
         getButton(parseSymbols(list.name.replace("&", "and")), {
           type: CallbackDataType.Pick,
@@ -283,7 +283,7 @@ export const listsKeyboard = (lists: IList[]): IKeyboard => ({
       return result;
     }, []),
 });
-export const curateListKeyboard = (list: IList): IKeyboard => ({
+export const curateListKeyboard = (list: IList): Keyboard => ({
   inline_keyboard: [
     [
       getButton(`${emojis.thumbsUp} (${list.votes ? list.votes.filter(({ vote }) => vote > 0).length : 0})`, {

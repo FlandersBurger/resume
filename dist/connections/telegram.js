@@ -11,7 +11,6 @@ const errors_1 = require("../controllers/bots/tenthings/errors");
 const spam_1 = require("../controllers/bots/tenthings/spam");
 const main_1 = require("../controllers/bots/tenthings/main");
 const string_helpers_1 = require("../utils/string-helpers");
-const suggestions_1 = require("../controllers/bots/tenthings/suggestions");
 const BANNED_TELEGRAM_USERS = [1726294650];
 const messageQueue = new bull_1.default("sendMessage", {
     redis: {
@@ -398,20 +397,6 @@ class TelegramBot {
                             data: data.id,
                         },
                     };
-                }
-                if (body.message.reply_to_message && body.message.reply_to_message.text) {
-                    const suggestionType = (0, suggestions_1.getSuggestionType)(body.message.reply_to_message.text);
-                    if (suggestionType)
-                        return {
-                            messageType: main_1.MessageType.Suggestion,
-                            message: {
-                                from,
-                                chatId: body.message.chat.id,
-                                id: body.message.message_id,
-                                text: body.message.text,
-                                type: suggestionType,
-                            },
-                        };
                 }
                 if (!body.message.text) {
                     if (body.message.group_chat_created) {

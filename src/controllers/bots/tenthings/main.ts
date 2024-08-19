@@ -5,10 +5,9 @@ import { activate, createMaingame } from "./maingame";
 
 import bot from "@root/connections/telegram";
 import { getQueue } from "./queue";
-import callbacks, { ICallbackData } from "./callbacks";
+import callbacks, { CallbackData } from "./callbacks";
 import { evaluate } from "./commands";
-import { IMessage } from "./messages";
-import { ISuggestion, sendSuggestion } from "./suggestions";
+import { Message } from "./messages";
 
 // DO NOT REMOVE jobs
 import jobs from "./jobs";
@@ -25,7 +24,6 @@ export enum MessageType {
   PlayerLeft = "playerLeft",
   Message = "message",
   Ignore = "ignore",
-  Suggestion = "suggestion",
 }
 
 //-------------//
@@ -90,7 +88,7 @@ tenthingsBotRoute.post("/", async (req: Request, res: Response) => {
       res.sendStatus(200);
       return;
     case MessageType.Callback:
-      await callbacks(domainMessage.message as ICallbackData);
+      await callbacks(domainMessage.message as CallbackData);
       res.sendStatus(200);
       return;
     case MessageType.PlayerLeft:
@@ -104,14 +102,10 @@ tenthingsBotRoute.post("/", async (req: Request, res: Response) => {
       }
       res.sendStatus(200);
       return;
-    case MessageType.Suggestion:
-      sendSuggestion(domainMessage.message as ISuggestion);
-      res.sendStatus(200);
-      return;
     default:
       break;
   }
-  let msg: IMessage = domainMessage.message as IMessage;
+  let msg: Message = domainMessage.message as Message;
   if (!msg?.from?.id) {
     if (!res.headersSent) res.sendStatus(200);
   } else {

@@ -7,9 +7,8 @@ import httpClient from "@root/http-client";
 import { chatNotFound, botMuted } from "@tenthings/errors";
 import { checkSpam } from "@tenthings/spam";
 import { MessageType } from "@tenthings/main";
-import { IMessageType } from "@tenthings/messages";
 import { parseSymbols, maskUrls } from "@root/utils/string-helpers";
-import { getSuggestionType } from "@tenthings/suggestions";
+import { UserInput } from "@tenthings/messages";
 
 const BANNED_TELEGRAM_USERS = [1726294650];
 
@@ -30,7 +29,7 @@ messageQueue.on("completed", function (job: Job) {
   job.remove();
 });
 
-export interface ITelegramUser {
+export type TelegramUser = {
   id: number;
   is_bot: boolean;
   first_name: string;
@@ -38,25 +37,25 @@ export interface ITelegramUser {
   username?: string;
   name?: string;
   language_code?: string;
-}
+};
 
-export interface IKeyboardCallbackButton {
+export type KeyboardCallbackButton = {
   text: string;
   callback_data: string;
-}
-export interface IKeyboardUrlButton {
+};
+export type KeyboardUrlButton = {
   text: string;
   url: string;
-}
+};
 
-export type IKeyboardButton = IKeyboardCallbackButton | IKeyboardUrlButton;
+export type KeyboardButton = KeyboardCallbackButton | KeyboardUrlButton;
 
-export type IKeyboard =
+export type Keyboard =
   | {
-      inline_keyboard: Array<Array<IKeyboardButton>>;
+      inline_keyboard: Array<Array<KeyboardButton>>;
     }
   | {
-      keyboard: Array<Array<IKeyboardButton>>;
+      keyboard: Array<Array<KeyboardButton>>;
       one_time_keyboard?: boolean;
       input_field_placeholder?: string;
       resize_keyboard?: boolean;
@@ -65,7 +64,7 @@ export type IKeyboard =
 
 class TelegramBot {
   private baseUrl: string;
-  private telegramBotUser: ITelegramUser | undefined;
+  private telegramBotUser: TelegramUser | undefined;
   private muteReasons: string[] = [
     "Bad Request: not enough rights to send text messages to the chat",
     "Bad Request: chat not found",
@@ -207,7 +206,7 @@ class TelegramBot {
     }
   };
 
-  public notifyCosmicForce = async (msg: string, keyboard?: IKeyboard) => {
+  public notifyCosmicForce = async (msg: string, keyboard?: Keyboard) => {
     if (keyboard) await this.sendKeyboard(parseInt(process.env.COSMIC_FORCE_CHAT || ""), msg, keyboard, 17);
     else await this.sendMessage(parseInt(process.env.COSMIC_FORCE_CHAT || ""), msg, 17);
   };
@@ -220,7 +219,7 @@ class TelegramBot {
     await this.queueMessage(parseInt(process.env.NOTICE_CHAT || ""), msg);
   };
 
-  public notifyAdmins = async (msg: string, keyboard?: IKeyboard) => {
+  public notifyAdmins = async (msg: string, keyboard?: Keyboard) => {
     if (keyboard) await this.sendKeyboard(parseInt(process.env.ADMIN_CHAT || ""), msg, keyboard);
     else await this.queueMessage(parseInt(process.env.ADMIN_CHAT || ""), msg);
   };
@@ -302,7 +301,7 @@ class TelegramBot {
     }
   };
 
-  public sendKeyboard = async (channel: number, message: string, keyboard: IKeyboard, topic?: number) => {
+  public sendKeyboard = async (channel: number, message: string, keyboard: Keyboard, topic?: number) => {
     let url = `${this.baseUrl}/sendMessage?chat_id=${channel}&disable_notification=true&parse_mode=html`;
     url += `&text=${message.replace("&", "and")}`;
     url += `&reply_markup=${JSON.stringify(keyboard)}`;
@@ -335,7 +334,7 @@ class TelegramBot {
       this.errorHandler(channel, "Send animation", error);
     }
   };
-  public editKeyboard = async (channel: number, message_id: string, keyboard: IKeyboard) => {
+  public editKeyboard = async (channel: number, message_id: string, keyboard: Keyboard) => {
     let url = `${this.baseUrl}/editMessageReplyMarkup?chat_id=${channel}&message_id=${message_id}`;
     if (keyboard) url += `&reply_markup=${JSON.stringify(keyboard)}`;
     try {
@@ -406,12 +405,12 @@ class TelegramBot {
     }
   };
 
-  private toDomainUser = (from: ITelegramUser) => ({
+  private toDomainUser = (from: TelegramUser) => ({
     ...from,
     name: maskUrls(from.username ? `@${from.username}` : `${from.first_name} ${from.last_name ? from.last_name : ""}`),
   });
 
-  public toDomainMessage = async (body: any): Promise<{ messageType: MessageType; message?: IMessageType }> => {
+  public toDomainMessage = async (body: any): Promise<{ messageType: MessageType; message?: UserInput }> => {
     if (body.object === "page") {
       return { messageType: MessageType.Ignore };
     }
@@ -439,20 +438,6 @@ class TelegramBot {
             data: data.id,
           },
         };
-      }
-      if (body.message.reply_to_message && body.message.reply_to_message.text) {
-        const suggestionType = getSuggestionType(body.message.reply_to_message.text);
-        if (suggestionType)
-          return {
-            messageType: MessageType.Suggestion,
-            message: {
-              from,
-              chatId: body.message.chat.id,
-              id: body.message.message_id,
-              text: body.message.text,
-              type: suggestionType,
-            },
-          };
       }
       if (!body.message.text) {
         if (body.message.group_chat_created) {

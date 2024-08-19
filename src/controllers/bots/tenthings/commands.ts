@@ -2,7 +2,7 @@ import moment from "moment";
 import { GameType, IGame } from "@models/tenthings/game";
 import { Game, List } from "@models/index";
 import { HydratedDocument, LeanDocument } from "mongoose";
-import { IMessage, getCategoriesMessage, getLogicMessage } from "./messages";
+import { Message, getCategoriesMessage, getLogicMessage } from "./messages";
 import { deactivate, newRound, sendMaingameMessage } from "./maingame";
 import { createMinigame, createMinigames, sendMinigameMessage } from "./minigame";
 import { createTinygame, sendTinygameMessage } from "./tinygame";
@@ -19,7 +19,7 @@ import { checkSkipper, processSkip, vetoSkip } from "./skips";
 import { getDailyScores, getStats } from "./stats";
 import { categoriesKeyboard, listsKeyboard, settingsKeyboard, statsKeyboard, suggestionKeyboard } from "./keyboards";
 import bot from "@root/connections/telegram";
-import { checkSuggestionProvided } from "./suggestions";
+import { checkSuggestionProvided, sendSuggestion, SuggestionType } from "./suggestions";
 
 const commands = [
   "list",
@@ -47,7 +47,7 @@ const commands = [
   "commands",
 ];
 
-export const evaluate = async (msg: IMessage, game: HydratedDocument<IGame>, isNew: boolean) => {
+export const evaluate = async (msg: Message, game: HydratedDocument<IGame>, isNew: boolean) => {
   //bot.notifyAdmin(tenthings);
   //bot.notifyAdmin(games[msg.chatId].list);
   let player = await getPlayer(game, msg.from);
@@ -60,6 +60,10 @@ export const evaluate = async (msg: IMessage, game: HydratedDocument<IGame>, isN
     if (!["/search", "/stats", "/typo", "/bug", "/feature", "/suggest"].includes(msg.command)) {
       return;
     }
+  }
+  if (player.state in SuggestionType) {
+    sendSuggestion(msg, game, player, player.state as SuggestionType);
+    return;
   }
   /*
   const flood = await floodChecker();
@@ -161,7 +165,7 @@ export const evaluate = async (msg: IMessage, game: HydratedDocument<IGame>, isN
       case "/typo":
       case "/bug":
       case "/feature":
-        if (!checkSuggestionProvided(msg)) {
+        if (!checkSuggestionProvided(msg, game, player)) {
           let message = "What is this in regards?\n";
           message += "<b>Note:</b>\n";
           message += " - <i>Lists can be searched by typing /search followed by the search term</i>\n";

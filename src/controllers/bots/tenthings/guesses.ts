@@ -13,10 +13,10 @@ import { checkMaingame } from "./maingame";
 import { checkMinigame } from "./minigame";
 import { checkTinygame } from "./tinygame";
 import { getPlayer } from "./players";
-import { IMessage } from "./messages";
+import { Message } from "./messages";
 
-export interface IGuess {
-  msg: IMessage;
+export type Guess = {
+  msg: Message;
   game: number;
   list: Types.ObjectId;
   player: IPlayer;
@@ -25,7 +25,7 @@ export interface IGuess {
     value: string;
     distance: number;
   };
-}
+};
 
 const guessQueue = new Queue("processGuess", {
   redis: {
@@ -42,7 +42,7 @@ guessQueue.on("completed", function (job: Job) {
 
 export const getCount = () => guessQueue.count();
 
-export const queueGuess = async (game: IGame, msg: IMessage) => {
+export const queueGuess = async (game: IGame, msg: Message) => {
   const values = game.list.values
     .filter(({ guesser }) => guesser)
     .map(({ value }) => ({ type: GameType.MAINGAME, value }));
@@ -106,14 +106,14 @@ export const queueGuess = async (game: IGame, msg: IMessage) => {
   }
 };
 
-const queueingGuess = (guess: IGuess) => guessQueue.add(guess);
+const queueingGuess = (guess: Guess) => guessQueue.add(guess);
 
 guessQueue.process(async ({ data }, done) => {
   await processGuess(data);
   done();
 });
 
-const processGuess = async (guess: IGuess) => {
+const processGuess = async (guess: Guess) => {
   const game = await Game.findOne({
     chat_id: guess.game,
   })

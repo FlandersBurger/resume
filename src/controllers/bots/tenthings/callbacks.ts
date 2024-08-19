@@ -26,18 +26,20 @@ import {
   playerStatsKeyboard,
   settingsKeyboard,
 } from "./keyboards";
-import bot, { ITelegramUser } from "@root/connections/telegram";
+import bot, { TelegramUser } from "@root/connections/telegram";
+import { getPlayer } from "./players";
+import { PlayerState } from "@root/models/tenthings/player";
 
-export interface ICallbackData {
+export type CallbackData = {
   id: string;
   type: string;
   date: Date;
-  from: ITelegramUser;
+  from: TelegramUser;
   chatId: number;
   callbackQueryId: string;
   text: string;
   data: string;
-}
+};
 
 export enum CallbackDataType {
   Ban = "ban",
@@ -58,7 +60,7 @@ export enum CallbackDataType {
   Vote = "vote",
 }
 
-export default async (callbackQuery: ICallbackData) => {
+export default async (callbackQuery: CallbackData) => {
   let game: HydratedDocument<IGame> | null;
   let list: HydratedDocument<IList> | null;
   switch (callbackQuery.type) {
@@ -370,6 +372,7 @@ export default async (callbackQuery: ICallbackData) => {
     case CallbackDataType.Suggestion:
       game = await Game.findOne({ chat_id: callbackQuery.chatId }).select("list").exec();
       if (!game) return;
+      const player = await getPlayer(game, callbackQuery.from);
       switch (callbackQuery.data) {
         case "list":
           bot.sendMessage(
@@ -378,27 +381,27 @@ export default async (callbackQuery: ICallbackData) => {
           );
           break;
         case "feature":
+          player.state = PlayerState.Feature;
+          await player.save();
           bot.sendMessage(
             callbackQuery.chatId,
-            `<b>FEATURE</b>\nWhat would you like to see added?`,
-            undefined,
-            callbackQuery.id,
+            `<b>FEATURE</b>\nPlease suggest your feature in your next message, ${player.username || player.first_name}!`,
           );
           break;
         case "typo":
+          player.state = PlayerState.Typo;
+          await player.save();
           bot.sendMessage(
             callbackQuery.chatId,
-            `<b>TYPO</b>\nPlease specify the list with the typo if it is not within "${parseSymbols(game.list.name)}"`,
-            undefined,
-            callbackQuery.id,
+            `<b>TYPO</b>\nPlease let me know what the typo is in your next message, ${player.username || player.first_name}!\nmention the list name too if the typois not part of: <i>"${parseSymbols(game.list.name)}"</i>`,
           );
           break;
         case "bug":
+          player.state = PlayerState.Bug;
+          await player.save();
           bot.sendMessage(
             callbackQuery.chatId,
-            "<b>BUG</b>\nPlease provide some details as to what went wrong.",
-            undefined,
-            callbackQuery.id,
+            `<b>BUG</b>\nPlease provide some details as to what went wrong in your next message, ${player.username || player.first_name}!`,
           );
           break;
         default:

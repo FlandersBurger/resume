@@ -12,7 +12,7 @@ import i18n from "@root/i18n";
 
 import { getDailyScores } from "./stats";
 import { banListKeyboard } from "./keyboards";
-import { IMessage } from "./messages";
+import { Message } from "./messages";
 
 const SKIP_DELAY = 10;
 const VETO_DELAY = 15;
@@ -114,7 +114,7 @@ const skipList = (game: IGame, skipper: IPlayer) => {
   });
 };
 
-export const checkSkipper = async (game: IGame, msg: IMessage, player: IPlayer) => {
+export const checkSkipper = async (game: IGame, msg: Message, player: IPlayer) => {
   if (game.chat_id > 0) return true;
   if (!vetoCache[game.chat_id] || vetoCache[game.chat_id] < moment().subtract(VETO_DELAY, "seconds")) {
     delete vetoCache[game.chat_id];

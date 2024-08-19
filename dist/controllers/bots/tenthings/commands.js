@@ -59,6 +59,10 @@ const evaluate = async (msg, game, isNew) => {
             return;
         }
     }
+    if (player.state in suggestions_1.SuggestionType) {
+        (0, suggestions_1.sendSuggestion)(msg, game, player, player.state);
+        return;
+    }
     if (game.list.values.length === 0) {
         (0, maingame_1.newRound)(game);
     }
@@ -145,7 +149,7 @@ const evaluate = async (msg, game, isNew) => {
             case "/typo":
             case "/bug":
             case "/feature":
-                if (!(0, suggestions_1.checkSuggestionProvided)(msg)) {
+                if (!(0, suggestions_1.checkSuggestionProvided)(msg, game, player)) {
                     let message = "What is this in regards?\n";
                     message += "<b>Note:</b>\n";
                     message += " - <i>Lists can be searched by typing /search followed by the search term</i>\n";

@@ -1,38 +1,29 @@
 import { parseSymbols, capitalize } from "@root/utils/string-helpers";
-import bot, { ITelegramUser } from "@root/connections/telegram";
-import { Game, Player } from "@root/models";
-import { IMessage } from "./messages";
+import bot from "@root/connections/telegram";
+import { Message } from "./messages";
+import { IGame } from "@root/models/tenthings/game";
+import { HydratedDocument } from "mongoose";
+import { IPlayer, PlayerState } from "@root/models/tenthings/player";
 
-enum SuggestionType {
+export enum SuggestionType {
   Bug = "bug",
   Feature = "feature",
   Typo = "typo",
 }
-export interface ISuggestion {
-  id: string;
-  type: SuggestionType;
-  from: ITelegramUser;
-  chatId: number;
-  text: string;
-}
 
-export const getSuggestionType = (text: string): SuggestionType | undefined => {
-  const suggestionType = text.split("\n")[0]?.toLowerCase();
-  if (["feature", "typo", "bug"].includes(suggestionType)) {
-    return suggestionType as SuggestionType;
-  }
-  return;
-};
-
-export const sendSuggestion = async (msg: ISuggestion) => {
-  const game = await Game.findOne({ chat_id: msg.chatId });
+export const sendSuggestion = async (
+  msg: Message,
+  game: IGame,
+  player: HydratedDocument<IPlayer>,
+  suggestionType: SuggestionType,
+) => {
   if (game) {
-    const player = await Player.findOne({ game: game._id, id: `${msg.from.id}` });
     if (player) {
       player.suggestions++;
+      player.state = PlayerState.None;
       await player.save();
-      let message = `<b>${capitalize(msg.type)}</b>\n${msg.text}\n`;
-      if (msg.type == SuggestionType.Typo) {
+      let message = `<b>${capitalize(suggestionType)}</b>\n${msg.text}\n`;
+      if (suggestionType == SuggestionType.Typo) {
         message += `Current list: ${parseSymbols(game.list.name)}\n`;
       }
       message += `<i>${player.username ? `@${player.username}` : player.first_name}</i>`;
@@ -40,7 +31,7 @@ export const sendSuggestion = async (msg: ISuggestion) => {
       const chatLink = await bot.getChat(msg.chatId);
       message += chatLink ? `\n${chatLink}` : "";
       bot.notifyAdmins(message);
-      message = `<b>${capitalize(msg.type)}</b>\n<i>${msg.text}</i>\nThank you, ${
+      message = `<b>${capitalize(suggestionType)}</b>\n<i>${msg.text}</i>\nThank you, ${
         player.username ? `@${player.username}` : player.first_name
       }`;
       bot.queueMessage(msg.chatId, message);
@@ -48,22 +39,11 @@ export const sendSuggestion = async (msg: ISuggestion) => {
   }
 };
 
-export const checkSuggestionProvided = (msg: IMessage): boolean => {
+export const checkSuggestionProvided = (msg: Message, game: IGame, player: HydratedDocument<IPlayer>): boolean => {
   const suggestion = msg.text.substring(msg.text.indexOf(" ") + 1, msg.text.length);
   const suggestionType = msg.command?.replace("/", "").replace("erro", "bug").replace("suggest", "feature");
-  if (
-    suggestion.length > 0 &&
-    suggestionType &&
-    suggestion !== msg.command &&
-    [SuggestionType.Bug, SuggestionType.Feature, SuggestionType.Typo].includes(suggestionType as SuggestionType)
-  ) {
-    sendSuggestion({
-      id: msg.id,
-      type: suggestionType as SuggestionType,
-      from: msg.from,
-      chatId: msg.chatId,
-      text: suggestion,
-    });
+  if (suggestion.length > 0 && suggestionType && suggestion !== msg.command && suggestionType in SuggestionType) {
+    sendSuggestion(msg, game, player, suggestionType as SuggestionType);
     return true;
   }
   return false;

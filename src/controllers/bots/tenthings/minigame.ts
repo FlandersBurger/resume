@@ -8,11 +8,11 @@ import i18n from "@root/i18n";
 
 import { List, Minigame } from "@models/index";
 import { IGame } from "@models/tenthings/game";
-import { ILanguage } from "./languages";
+import { Language } from "./languages";
 import { IList } from "@models/tenthings/list";
 import { IPlayer } from "@models/tenthings/player";
-import { IMessage } from "./messages";
-import { IGuess, getAnswerScore } from "./guesses";
+import { Message } from "./messages";
+import { Guess, getAnswerScore } from "./guesses";
 import { IMinigame } from "@models/tenthings/minigame";
 import { getGuessedMessage } from "./messages";
 import { getHint } from "./hints";
@@ -62,12 +62,12 @@ export const createMinigame = async (game: HydratedDocument<IGame>) => {
   return true;
 };
 
-interface IAnswer {
+type Answer = {
   answer: string;
-  language: ILanguage["code"];
+  language: Language["code"];
   lists: string[];
   categories: string[];
-}
+};
 
 const getAllMinigames = async () => {
   const lists = await List.find({}).select("name language values categories").lean();
@@ -75,7 +75,7 @@ const getAllMinigames = async () => {
   let answers = lists.reduce(
     (
       answers: {
-        [key: string]: IAnswer;
+        [key: string]: Answer;
       },
       list: IList,
     ) => {
@@ -98,7 +98,7 @@ const getAllMinigames = async () => {
     {},
   );
   return Object.keys(answers)
-    .reduce((result: IAnswer[], key) => {
+    .reduce((result: Answer[], key) => {
       if (answers[key] && answers[key].lists.length > 2) {
         result.push(answers[key]);
       }
@@ -142,8 +142,8 @@ export const sendMinigameMessage = (game: IGame) => {
 export const checkMinigame = async (
   game: HydratedDocument<IGame>,
   player: HydratedDocument<IPlayer>,
-  guess: IGuess,
-  msg: IMessage,
+  guess: Guess,
+  msg: Message,
 ) => {
   if (guess.match.value !== game.minigame.answer) return;
   const score: number = getAnswerScore(game.minigame.hints, guess.match.distance);

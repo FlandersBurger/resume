@@ -14,20 +14,19 @@ import { capitalize } from "@root/utils/string-helpers";
 import difference from "lodash/difference";
 import i18n, { t_list } from "@root/i18n";
 import emojis from "./emojis";
-import { ICallbackData } from "./callbacks";
-import { ITelegramUser } from "@root/connections/telegram";
+import { CallbackData } from "./callbacks";
+import { TelegramUser } from "@root/connections/telegram";
 import { getListScore } from "./lists";
-import { ISuggestion } from "./suggestions";
 
-export type IMessageType = IMessage | ICallbackData | ISuggestion;
-export interface IMessage {
+export type UserInput = Message | CallbackData;
+export type Message = {
   id: string;
-  from: ITelegramUser;
+  from: TelegramUser;
   command?: string;
   text: string;
   chatId: number;
   topicId?: number;
-}
+};
 
 export const getLogicMessage = (language: string): string => {
   const rules = t_list(language, "rules", { maxHints: MAXHINTS, returnObjects: true });

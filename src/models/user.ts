@@ -53,7 +53,7 @@ const userSchema = new Schema<IUser>(
       asteroids: { type: Number, required: false, default: 0 },
     },
   },
-  { timestamps: true }
+  { timestamps: true },
 );
 
 for (const name in db) {

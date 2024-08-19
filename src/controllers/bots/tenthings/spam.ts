@@ -1,5 +1,5 @@
 import moment from "moment";
-import { IMessage } from "./messages";
+import { Message } from "./messages";
 
 import bot from "@root/connections/telegram";
 import { parseSymbols } from "@root/utils/string-helpers";
@@ -12,8 +12,8 @@ const cache: {
 } = {};
 
 export const checkSpam = (body: {
-  message?: IMessage;
-  callback_query?: { from: IMessage["from"]; message: IMessage };
+  message?: Message;
+  callback_query?: { from: Message["from"]; message: Message };
 }) => {
   const from = body.message ? body.message.from.id : body.callback_query!.from.id;
   const name = parseSymbols(body.message ? body.message.from.first_name : body.callback_query!.from.first_name);

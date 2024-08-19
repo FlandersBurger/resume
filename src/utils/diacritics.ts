@@ -1,9 +1,9 @@
-export interface IDiacritic {
+export type Diacritic = {
   base: string;
   letters: RegExp;
-}
+};
 
-const diacritics: Array<IDiacritic> = [
+const diacritics: Array<Diacritic> = [
   {
     base: "A",
     letters:

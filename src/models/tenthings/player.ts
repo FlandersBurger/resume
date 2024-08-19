@@ -1,5 +1,16 @@
 import { Model, Schema, Types } from "mongoose";
 import db from "@root/db";
+import { SuggestionType } from "@root/controllers/bots/tenthings/suggestions";
+
+enum NoState {
+  None = "none",
+}
+
+export const PlayerState = {
+  ...NoState,
+  ...SuggestionType,
+};
+export type PlayerState = NoState | SuggestionType;
 
 export interface IPlayer {
   _id: Types.ObjectId;
@@ -31,6 +42,7 @@ export interface IPlayer {
   present: boolean;
   minigamePlays: number;
   tinygamePlays: number;
+  state: PlayerState;
 }
 
 let Player: { [key: string]: Model<IPlayer> } = {};
@@ -65,8 +77,9 @@ const playerSchema = new Schema<IPlayer>(
     present: { type: Boolean, required: true, default: true },
     minigamePlays: { type: Number, required: false, default: 0 },
     tinygamePlays: { type: Number, required: false, default: 0 },
+    state: { type: String, required: false, default: PlayerState.None },
   },
-  { timestamps: true }
+  { timestamps: true },
 );
 
 playerSchema.index({ game: 1, id: 1 });
