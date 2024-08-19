@@ -62,6 +62,7 @@ export const evaluate = async (msg: Message, game: HydratedDocument<IGame>, isNe
     }
   }
   if (player.state in SuggestionType) {
+    console.log("player has a suggestion, sending it");
     sendSuggestion(msg, game, player, player.state as SuggestionType);
     return;
   }

@@ -393,7 +393,7 @@ export default async (callbackQuery: CallbackData) => {
           await player.save();
           bot.sendMessage(
             callbackQuery.chatId,
-            `<b>TYPO</b>\nPlease let me know what the typo is in your next message, ${player.username || player.first_name}!\nmention the list name too if the typois not part of: <i>"${parseSymbols(game.list.name)}"</i>`,
+            `<b>TYPO</b>\nPlease let me know what the typo is in your next message, ${player.username || player.first_name}!\nMention the list name too if the typo is not part of: <i>"${parseSymbols(game.list.name)}"</i>`,
           );
           break;
         case "bug":

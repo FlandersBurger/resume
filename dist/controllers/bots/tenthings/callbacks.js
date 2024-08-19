@@ -353,7 +353,7 @@ exports.default = async (callbackQuery) => {
                 case "typo":
                     player.state = player_1.PlayerState.Typo;
                     await player.save();
-                    telegram_1.default.sendMessage(callbackQuery.chatId, `<b>TYPO</b>\nPlease let me know what the typo is in your next message, ${player.username || player.first_name}!\nmention the list name too if the typois not part of: <i>"${(0, string_helpers_1.parseSymbols)(game.list.name)}"</i>`);
+                    telegram_1.default.sendMessage(callbackQuery.chatId, `<b>TYPO</b>\nPlease let me know what the typo is in your next message, ${player.username || player.first_name}!\nMention the list name too if the typo is not part of: <i>"${(0, string_helpers_1.parseSymbols)(game.list.name)}"</i>`);
                     break;
                 case "bug":
                     player.state = player_1.PlayerState.Bug;

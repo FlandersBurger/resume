@@ -17,25 +17,23 @@ export const sendSuggestion = async (
   player: HydratedDocument<IPlayer>,
   suggestionType: SuggestionType,
 ) => {
-  if (game) {
-    if (player) {
-      player.suggestions++;
-      player.state = PlayerState.None;
-      await player.save();
-      let message = `<b>${capitalize(suggestionType)}</b>\n${msg.text}\n`;
-      if (suggestionType == SuggestionType.Typo) {
-        message += `Current list: ${parseSymbols(game.list.name)}\n`;
-      }
-      message += `<i>${player.username ? `@${player.username}` : player.first_name}</i>`;
-      bot.notify(message);
-      const chatLink = await bot.getChat(msg.chatId);
-      message += chatLink ? `\n${chatLink}` : "";
-      bot.notifyAdmins(message);
-      message = `<b>${capitalize(suggestionType)}</b>\n<i>${msg.text}</i>\nThank you, ${
-        player.username ? `@${player.username}` : player.first_name
-      }`;
-      bot.queueMessage(msg.chatId, message);
+  if (game && player) {
+    player.suggestions++;
+    player.state = PlayerState.None;
+    await player.save();
+    let message = `<b>${capitalize(suggestionType)}</b>\n${msg.text}\n`;
+    if (suggestionType == SuggestionType.Typo) {
+      message += `Current list: ${parseSymbols(game.list.name)}\n`;
     }
+    message += `<i>${player.username ? `@${player.username}` : player.first_name}</i>`;
+    bot.notify(message);
+    const chatLink = await bot.getChat(msg.chatId);
+    message += chatLink ? `\n${chatLink}` : "";
+    bot.notifyAdmins(message);
+    message = `<b>${capitalize(suggestionType)}</b>\n<i>${msg.text}</i>\nThank you, ${
+      player.username ? `@${player.username}` : player.first_name
+    }`;
+    bot.queueMessage(msg.chatId, message);
   }
 };
 
