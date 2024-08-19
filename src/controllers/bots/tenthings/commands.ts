@@ -63,9 +63,9 @@ export const evaluate = async (msg: Message, game: HydratedDocument<IGame>, isNe
   }
   if (parseInt(process.env.MASTER_CHAT!) == game.chat_id) {
     console.log(player);
-    console.log(player.state in SuggestionType);
+    console.log(Object.values(SuggestionType).includes(player.state as SuggestionType));
   }
-  if (player.state in SuggestionType) {
+  if (Object.values(SuggestionType).includes(player.state as SuggestionType)) {
     console.log("player has a suggestion, sending it");
     sendSuggestion(msg, game, player, player.state as SuggestionType);
     return;
