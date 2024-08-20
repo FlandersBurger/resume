@@ -298,6 +298,8 @@ export default async (callbackQuery: CallbackData) => {
         } else {
           game.pickedLists.push(list._id);
           game.save();
+          list.picks++;
+          list.save();
           bot.answerCallback(
             callbackQuery.callbackQueryId,
             i18n(game.settings.language, "sentences.addedList", {

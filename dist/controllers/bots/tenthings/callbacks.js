@@ -269,6 +269,8 @@ exports.default = async (callbackQuery) => {
                 else {
                     game.pickedLists.push(list._id);
                     game.save();
+                    list.picks++;
+                    list.save();
                     telegram_1.default.answerCallback(callbackQuery.callbackQueryId, (0, i18n_1.default)(game.settings.language, "sentences.addedList", {
                         list: list.name,
                     }));

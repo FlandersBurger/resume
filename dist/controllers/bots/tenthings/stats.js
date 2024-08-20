@@ -396,7 +396,7 @@ const creatorStats = async ({ chat_id }, requestor) => {
     let message = `<b>Creator Stats</b>\n`;
     message += requestor ? `<i>Requested by ${requestor}</i>\n` : "";
     message += "<code>Creators with more than 50 lists</code>\n";
-    message += "<u>Least Skippped Creators</u>\n";
+    message += "<u>Least Skipped Creators</u>\n";
     message += lists
         .filter((list) => list.lists > 50)
         .sort((listA, listB) => listA.skips / listA.plays - listB.skips / listB.plays)

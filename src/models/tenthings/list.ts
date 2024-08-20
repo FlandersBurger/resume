@@ -39,6 +39,7 @@ export interface IList {
   hints: number;
   skips: number;
   bans: number;
+  picks: number;
   score: number;
   voters?: string[];
   votes: IVote[];
@@ -93,6 +94,7 @@ const listSchema = new Schema<IList>(
     hints: { type: Number, required: true, default: 0 },
     skips: { type: Number, required: true, default: 0 },
     bans: { type: Number, required: true, default: 0 },
+    picks: { type: Number, required: true, default: 0 },
     score: { type: Number, required: true, default: 0 },
     voters: [{ type: String }],
     votes: [
