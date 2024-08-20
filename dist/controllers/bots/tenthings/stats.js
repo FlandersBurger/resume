@@ -395,7 +395,7 @@ const creatorStats = async ({ chat_id }, requestor) => {
         list.creator = await index_1.User.findOne({ _id: list._id }).select("username displayName").lean();
     let message = `<b>Creator Stats</b>\n`;
     message += requestor ? `<i>Requested by ${requestor}</i>\n` : "";
-    message += "<code>Least Skippped Creators</code>\n";
+    message += "<u>Least Skippped Creators</u>\n";
     message += lists
         .filter((list) => list.lists > 20)
         .sort((listA, listB) => listA.skips / listA.plays - listB.skips / listB.plays)
@@ -408,17 +408,17 @@ const creatorStats = async ({ chat_id }, requestor) => {
         result += ` - ${stat.creator} - ${stat.skipRatio}\n`;
         return result;
     }, "");
-    message += "<code>Most Upvoted Creators</code>\n";
+    message += "<u>Most Upvoted Creators</u>\n";
     message += lists
         .filter((list) => list.lists > 20)
-        .sort((listA, listB) => listA.positive / listA.votes - listB.positive / listB.votes)
+        .sort((listA, listB) => listB.positive / listB.votes - listA.positive / listA.votes)
         .slice(0, 10)
         .map((list) => ({
         creator: list.creator.username,
         likeRatio: (0, number_helpers_1.makePercentage)(list.positive / list.votes),
     }))
         .reduce((result, stat) => {
-        result += `${stat.creator} - ${stat.likeRatio}\n`;
+        result += ` - ${stat.creator} - ${stat.likeRatio}\n`;
         return result;
     }, "");
     telegram_1.default.queueMessage(chat_id, message);
