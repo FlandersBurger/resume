@@ -622,9 +622,10 @@ const creatorStats = async ({ chat_id }: IGame, requestor?: string) => {
   for (const list of lists) list.creator = await User.findOne({ _id: list._id }).select("username displayName").lean();
   let message = `<b>Creator Stats</b>\n`;
   message += requestor ? `<i>Requested by ${requestor}</i>\n` : "";
+  message += "<code>Creators with more than 50 lists</code>\n";
   message += "<u>Least Skippped Creators</u>\n";
   message += lists
-    .filter((list) => list.lists > 20)
+    .filter((list) => list.lists > 50)
     .sort((listA, listB) => listA.skips / listA.plays - listB.skips / listB.plays)
     .slice(0, 10)
     .map((list) => ({
@@ -637,7 +638,7 @@ const creatorStats = async ({ chat_id }: IGame, requestor?: string) => {
     }, "");
   message += "<u>Most Upvoted Creators</u>\n";
   message += lists
-    .filter((list) => list.lists > 20)
+    .filter((list) => list.lists > 50)
     .sort((listA, listB) => listB.positive / listB.votes - listA.positive / listA.votes)
     .slice(0, 10)
     .map((list) => ({
