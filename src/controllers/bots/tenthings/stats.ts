@@ -627,7 +627,7 @@ const creatorStats = async ({ chat_id }: IGame, requestor?: string) => {
   message += lists
     .filter((list) => list.lists > 50)
     .sort((listA, listB) => listA.skips / listA.plays - listB.skips / listB.plays)
-    .slice(0, 10)
+    .slice(0, 20)
     .map((list) => ({
       creator: list.creator.username,
       skipRatio: makePercentage(list.skips / list.plays),
@@ -640,7 +640,7 @@ const creatorStats = async ({ chat_id }: IGame, requestor?: string) => {
   message += lists
     .filter((list) => list.lists > 50)
     .sort((listA, listB) => listB.positive / listB.votes - listA.positive / listA.votes)
-    .slice(0, 10)
+    .slice(0, 20)
     .map((list) => ({
       creator: list.creator.username,
       likeRatio: makePercentage(list.positive / list.votes),
