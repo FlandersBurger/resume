@@ -467,6 +467,7 @@ class TelegramBot {
           0,
           !body.message.text.includes(" ") ? body.message.text.length : body.message.text.indexOf(" "),
         );
+        let text;
         if (command.includes("@") && command.substring(command.indexOf("@") + 1) !== "TenThings_Bot") {
           return { messageType: MessageType.Ignore };
         } else if (command.includes("@") && command.substring(command.indexOf("@") + 1) === "TenThings_Bot") {
@@ -474,6 +475,11 @@ class TelegramBot {
         }
         command = command.toLowerCase();
         command = command.startsWith("/") ? command : undefined;
+        if (command) {
+          text = body.message.text.substring(body.message.text.indexOf(" ") + 1);
+        } else {
+          text = body.message.text;
+        }
         return {
           messageType: MessageType.Message,
           message: {
@@ -482,7 +488,7 @@ class TelegramBot {
             command,
             chatId: body.message.chat.id,
             topicId: body.message.message_thread_id,
-            text: body.message.text,
+            text,
           },
         };
       }
