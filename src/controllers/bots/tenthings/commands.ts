@@ -177,13 +177,13 @@ export const evaluate = async (msg: Message, game: HydratedDocument<IGame>, isNe
         break;
       case "/pesquisar":
       case "/search":
-        const search = msg.text.substring(msg.command.length + 1, msg.text.length);
+        const search = msg.text;
         if (game.pickedLists.length >= 10)
           return bot.queueMessage(
             game.chat_id,
             `The queue already has the maximum of 10 lists, ${player.first_name}.\n -> /lists`,
           );
-        if (search && search != "TenThings_Bot" && search != "@TenThings_Bot") {
+        if (search) {
           player.searches++;
           await player.save();
           console.log(`${game.chat_id} - Search for ${search}`);

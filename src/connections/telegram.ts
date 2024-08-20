@@ -476,7 +476,8 @@ class TelegramBot {
         command = command.toLowerCase();
         command = command.startsWith("/") ? command : undefined;
         if (command) {
-          text = body.message.text.substring(body.message.text.indexOf(" ") + 1);
+          text = body.message.text.substring(command.length + 1, body.message.text.length);
+          console.log(command, text);
         } else {
           text = body.message.text;
         }
