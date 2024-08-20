@@ -12,9 +12,11 @@
     <b>Values</b> {{selectedList.values.length}}
   </p>
   <span ng-show="selectedList.plays">
-    <b>Plays</b> {{selectedList.plays}} / <b>Skips</b> {{selectedList.skips}} / <b>Bans</b> {{selectedList.bans}} /
-    <b>Picks</b> {{selectedList.picks}} / <b>Play Ratio</b> {{selectedList.playRatio.makePercentage()}} /
-    <b>Score</b> {{selectedList.score.makePercentage()}} / <b>Hints</b> {{selectedList.hints}} /
+    <b>Plays</b> {{selectedList.plays}} / <b>Skips</b> {{selectedList.skips}} /
+    <span ng-show="selectedList.bans"><b>Bans</b> {{selectedList.bans}} /</span>
+    <span ng-show="selectedList.picks"><b>Picks</b> {{selectedList.picks}} /</span>
+    <b>Hints</b> {{selectedList.hints || 0}} / <b>Play Ratio</b> {{selectedList.playRatio.makePercentage()}} /
+    <b>Score</b> {{selectedList.score.makePercentage()}} /
     <span ng-show="selectedList.upvotes || selectedList.downvotes">
       <b>Upvotes</b> {{selectedList.upvotes || 0}} / <b>Downvotes</b> {{selectedList.downvotes || 0}} /
     </span>
