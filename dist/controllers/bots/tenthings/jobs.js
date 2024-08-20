@@ -16,17 +16,17 @@ const number_helpers_1 = require("../../../utils/number-helpers");
 const minigame_1 = require("./minigame");
 const stats_1 = require("./stats");
 const backup = require("../../../utils/backup/backup-db");
-const { Game, Player, Stats, List } = require("../../../models/index");
+const index_1 = require("../../../models/index");
 const resetDailyScore = () => {
     if ((0, moment_1.default)().utc().hour() === 1) {
         telegram_1.default.notifyAdmin(`Score Reset Triggered; ${(0, moment_1.default)().format("DD-MMM-YYYY hh:mm")}`);
-        Game.find({
+        index_1.Game.find({
             lastPlayDate: { $gte: (0, moment_1.default)().subtract(1, "days") },
         })
             .select("chat_id list date hints")
             .populate("list.creator")
             .then(async (games) => {
-            const dailyPlayers = await Player.find({
+            const dailyPlayers = await index_1.Player.find({
                 scoreDaily: { $gt: 0 },
                 lastPlayDate: { $gte: (0, moment_1.default)().subtract(1, "days") },
             })
@@ -35,7 +35,7 @@ const resetDailyScore = () => {
                 .exec();
             for (let game of games) {
                 telegram_1.default.queueMessage(game.chat_id, await (0, stats_1.getDailyScores)(game));
-                const players = await Player.find({
+                const players = await index_1.Player.find({
                     game: game._id,
                     scoreDaily: { $gt: 0 },
                     lastPlayDate: { $gte: (0, moment_1.default)().subtract(1, "days") },
@@ -53,12 +53,12 @@ const resetDailyScore = () => {
                 message += `\t - <a href="https://paypal.me/Game">Paypal</a>\n`;
                 message += `\t - Bitcoin Address: bc1qnr4y95d3w5rwahcypazpjdv33g8wupewmw6rpa3s2927qvgmduqsvcpgfs`;
                 telegram_1.default.queueMessage(game.chat_id, message);
-                await Player.updateMany({ game: game._id, scoreDaily: 0 }, { $set: { playStreak: 0 } });
-                await Player.updateMany({
+                await index_1.Player.updateMany({ game: game._id, scoreDaily: 0 }, { $set: { playStreak: 0 } });
+                await index_1.Player.updateMany({
                     game: game._id,
                     _id: { $in: winners.map((winner) => winner._id) },
                 }, { $inc: { wins: 1 } }).exec();
-                await Player.updateMany({ game: game._id, scoreDaily: { $gt: 0 } }, {
+                await index_1.Player.updateMany({ game: game._id, scoreDaily: { $gt: 0 } }, {
                     $inc: { plays: 1, playStreak: 1 },
                     $set: { scoreDaily: 0 },
                 }).exec();
@@ -92,18 +92,18 @@ const backupDatabase = () => {
     });
 };
 const getYearlyStats = async () => {
-    const yearStats = (await Stats.find({ base: false, uniquePlayers: { $gt: 0 } }).select("date uniquePlayers")).filter(({ date }) => (0, moment_1.default)(date) >= (0, moment_1.default)().subtract(1, "years"));
+    const yearStats = (await index_1.Stats.find({ base: false, uniquePlayers: { $gt: 0 } }).select("date uniquePlayers")).filter(({ date }) => (0, moment_1.default)(date) >= (0, moment_1.default)().subtract(1, "years"));
     return {
         min: (0, minBy_1.default)(yearStats, (stat) => stat.uniquePlayers),
         max: (0, maxBy_1.default)(yearStats, (stat) => stat.uniquePlayers),
     };
 };
 const updateDailyStats = async (games, totalPlayers, uniquePlayers) => {
-    let base = await Stats.findOne({ base: true }).exec();
+    let base = await index_1.Stats.findOne({ base: true }).exec();
     if (!base)
         return telegram_1.default.notifyAdmin(`Daily stat update failed: base not found`);
     const yearStats = await getYearlyStats();
-    const listStats = await List.aggregate([
+    const listStats = await index_1.List.aggregate([
         {
             $project: {
                 _id: 1,
@@ -119,7 +119,7 @@ const updateDailyStats = async (games, totalPlayers, uniquePlayers) => {
             },
         },
     ]).exec();
-    const playerStats = await Player.aggregate([
+    const playerStats = await index_1.Player.aggregate([
         {
             $group: {
                 _id: "total",
@@ -157,7 +157,7 @@ const updateDailyStats = async (games, totalPlayers, uniquePlayers) => {
     telegram_1.default.notifyAdmins(message);
     telegram_1.default.notifyAdmin(message);
     telegram_1.default.notifyCosmicForce(message);
-    const dailyStats = new Stats({
+    const dailyStats = new index_1.Stats({
         hints: playerStats[0].hints - base.hints,
         chats: games.length,
         listsPlayed: listStats[0].plays - base.listsPlayed,
@@ -174,33 +174,29 @@ const updateDailyStats = async (games, totalPlayers, uniquePlayers) => {
         minigamePlays: playerStats[0].minigamePlays - base.minigamePlays,
         tinygamePlays: playerStats[0].tinygamePlays - base.tinygamePlays,
     });
-    dailyStats.save((err) => {
-        if (err)
-            telegram_1.default.notifyAdmin(`Daily stat save issue\n${err}`);
-        else {
-            telegram_1.default.notifyAdmin("Daily Stats Updated!");
-            base.listsPlayed = listStats[0].plays;
-            base.hints = playerStats[0].hints;
-            base.score = playerStats[0].score;
-            base.answers = playerStats[0].answers;
-            base.snubs = playerStats[0].snubs;
-            base.skips = playerStats[0].skips;
-            base.suggestions = playerStats[0].suggestions;
-            base.searches = playerStats[0].searches;
-            base.votes = listStats[0].votes;
-            base.minigamePlays = playerStats[0].minigamePlays;
-            base.tinygamePlays = playerStats[0].tinygamePlays;
-            base.save((err) => {
-                if (err)
-                    telegram_1.default.notifyAdmin(`Base stat update issue\n${err}`);
-                else
-                    telegram_1.default.notifyAdmin("Base Stats Updated!");
-            });
-        }
-    });
+    try {
+        await dailyStats.save();
+        telegram_1.default.notifyAdmin("Daily Stats Updated!");
+        base.listsPlayed = listStats[0].plays;
+        base.hints = playerStats[0].hints;
+        base.score = playerStats[0].score;
+        base.answers = playerStats[0].answers;
+        base.snubs = playerStats[0].snubs;
+        base.skips = playerStats[0].skips;
+        base.suggestions = playerStats[0].suggestions;
+        base.searches = playerStats[0].searches;
+        base.votes = listStats[0].votes;
+        base.minigamePlays = playerStats[0].minigamePlays;
+        base.tinygamePlays = playerStats[0].tinygamePlays;
+        await base.save();
+        telegram_1.default.notifyAdmin("Base Stats Updated!");
+    }
+    catch (error) {
+        telegram_1.default.notifyAdmin(`Daily stat save issue\n${error}`);
+    }
 };
 const sendNewLists = () => {
-    List.find({
+    index_1.List.find({
         date: { $gte: (0, moment_1.default)().subtract(1, "days") },
     })
         .select("name")
@@ -212,7 +208,7 @@ const sendNewLists = () => {
                 message += `\n- ${name}`;
             });
             message += "\n<i>Switch off daily updates through /settings</i>";
-            Game.find({
+            index_1.Game.find({
                 "settings.updates": true,
                 enabled: true,
                 listsPlayed: { $gt: 0 },
@@ -228,7 +224,7 @@ const sendNewLists = () => {
     });
 };
 const sendUpdatedLists = () => {
-    List.find({
+    index_1.List.find({
         $or: [
             {
                 modifyDate: {
@@ -249,7 +245,7 @@ const sendUpdatedLists = () => {
                 message += `\n- ${name}`;
             });
             message += "\n<i>Switch off daily updates through /settings</i>";
-            Game.find({
+            index_1.Game.find({
                 "settings.updates": true,
                 enabled: true,
                 listsPlayed: { $gt: 0 },
@@ -266,11 +262,11 @@ const sendUpdatedLists = () => {
     });
 };
 const deleteStaleGames = () => {
-    Game.find({ lastPlayDate: { $lt: (0, moment_1.default)().subtract(12, "months") } })
+    index_1.Game.find({ lastPlayDate: { $lt: (0, moment_1.default)().subtract(12, "months") } })
         .select("_id")
         .then((staleGames) => {
         staleGames.forEach(async (game) => {
-            await Player.deleteMany({ game: game._id }).exec();
+            await index_1.Player.deleteMany({ game: game._id }).exec();
             await game.remove();
         });
         if (staleGames.length > 0)
@@ -278,7 +274,7 @@ const deleteStaleGames = () => {
     });
 };
 const deactivateInactiveChats = () => {
-    Game.find({
+    index_1.Game.find({
         _id: { $nin: [process.env.MASTER_CHAT, process.env.ADMIN_CHAT, process.env.GROUP_CHAT] },
         lastPlayDate: { $lt: (0, moment_1.default)().subtract(30, "days") },
         enabled: true,
@@ -291,7 +287,7 @@ const deactivateInactiveChats = () => {
     });
 };
 const updatePlayStreak = () => {
-    Player.find({ playStreak: { $gt: 0 } })
+    index_1.Player.find({ playStreak: { $gt: 0 } })
         .select("game playStreak maxPlayStreak lastPlayDate")
         .then((players) => {
         const uniqueGames = (0, uniq_1.default)(players.map((player) => player.game));
@@ -311,7 +307,7 @@ const updatePlayStreak = () => {
     });
 };
 const deleteStalePlayers = async () => {
-    const results = await Player.deleteMany({
+    const results = await index_1.Player.deleteMany({
         date: { $lt: (0, moment_1.default)().subtract(30, "days") },
         lastPlayDate: { $lt: (0, moment_1.default)().subtract(30, "days") },
         answers: 0,

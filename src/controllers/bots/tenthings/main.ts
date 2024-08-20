@@ -171,7 +171,7 @@ tenthingsBotRoute.post("/webhook", (req: Request, res: Response) => {
     // Returns a '200 OK' response to all requests
     res.status(200).send("EVENT_RECEIVED");
   } else {
-    // Returns a '404 Not Found' if event is not = require(a page subscription
+    // Returns a '404 Not Found' if event is not a page subscription
     res.sendStatus(404);
   }
 });

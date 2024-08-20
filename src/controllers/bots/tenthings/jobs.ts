@@ -17,7 +17,7 @@ import { IList } from "@models/tenthings/list";
 import { createMinigames } from "./minigame";
 import { getDailyScores } from "./stats";
 const backup = require("@root/utils/backup/backup-db");
-const { Game, Player, Stats, List } = require("@models/index");
+import { Game, Player, Stats, List } from "@models/index";
 
 const resetDailyScore = () => {
   if (moment().utc().hour() === 1) {
@@ -196,27 +196,25 @@ const updateDailyStats = async (games: IGame[], totalPlayers: number, uniquePlay
     minigamePlays: playerStats[0].minigamePlays - base.minigamePlays,
     tinygamePlays: playerStats[0].tinygamePlays - base.tinygamePlays,
   });
-  dailyStats.save((err: Error) => {
-    if (err) bot.notifyAdmin(`Daily stat save issue\n${err}`);
-    else {
-      bot.notifyAdmin("Daily Stats Updated!");
-      base.listsPlayed = listStats[0].plays;
-      base.hints = playerStats[0].hints;
-      base.score = playerStats[0].score;
-      base.answers = playerStats[0].answers;
-      base.snubs = playerStats[0].snubs;
-      base.skips = playerStats[0].skips;
-      base.suggestions = playerStats[0].suggestions;
-      base.searches = playerStats[0].searches;
-      base.votes = listStats[0].votes;
-      base.minigamePlays = playerStats[0].minigamePlays;
-      base.tinygamePlays = playerStats[0].tinygamePlays;
-      base.save((err: Error) => {
-        if (err) bot.notifyAdmin(`Base stat update issue\n${err}`);
-        else bot.notifyAdmin("Base Stats Updated!");
-      });
-    }
-  });
+  try {
+    await dailyStats.save();
+    bot.notifyAdmin("Daily Stats Updated!");
+    base.listsPlayed = listStats[0].plays;
+    base.hints = playerStats[0].hints;
+    base.score = playerStats[0].score;
+    base.answers = playerStats[0].answers;
+    base.snubs = playerStats[0].snubs;
+    base.skips = playerStats[0].skips;
+    base.suggestions = playerStats[0].suggestions;
+    base.searches = playerStats[0].searches;
+    base.votes = listStats[0].votes;
+    base.minigamePlays = playerStats[0].minigamePlays;
+    base.tinygamePlays = playerStats[0].tinygamePlays;
+    await base.save();
+    bot.notifyAdmin("Base Stats Updated!");
+  } catch (error) {
+    bot.notifyAdmin(`Daily stat save issue\n${error}`);
+  }
 };
 
 /*

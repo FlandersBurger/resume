@@ -5,8 +5,8 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.sendMaingameMessage = exports.checkMaingame = exports.deactivate = exports.activate = exports.newRound = exports.checkRound = exports.createMaingame = void 0;
 const moment_1 = __importDefault(require("moment"));
-const sampleSize = require("lodash/sampleSize");
-const some = require("lodash/some");
+const sampleSize_1 = __importDefault(require("lodash/sampleSize"));
+const some_1 = __importDefault(require("lodash/some"));
 const index_1 = require("../../../models/index");
 const string_helpers_1 = require("../../../utils/string-helpers");
 const guesses_1 = require("./guesses");
@@ -88,7 +88,7 @@ const newRound = (currentGame) => {
             console.log("saved players");
         game.list = JSON.parse(JSON.stringify(list));
         game.list.answers = game.list.values.length;
-        game.list.values = sampleSize(game.list.values, 10);
+        game.list.values = (0, sampleSize_1.default)(game.list.values, 10);
         game.listsPlayed++;
         game.hints = 0;
         hints_1.hintCache[game.id] = 3;
@@ -143,7 +143,7 @@ const checkMaingame = async (game, player, guess, msg) => {
     if (skips_1.skipCache[game.chat_id]) {
         (0, skips_1.abortSkip)(game, player);
     }
-    if (!some(game.guessers, (guesser) => guesser == msg.from.id)) {
+    if (!(0, some_1.default)(game.guessers, (guesser) => guesser == msg.from.id)) {
         game.guessers.push(`${msg.from.id}`);
     }
     const match = game.list.values.find(({ value }) => value === guess.match.value);

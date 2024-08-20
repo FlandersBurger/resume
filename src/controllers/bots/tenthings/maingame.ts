@@ -1,7 +1,7 @@
 import moment from "moment";
 import { HydratedDocument } from "mongoose";
-const sampleSize = require("lodash/sampleSize");
-const some = require("lodash/some");
+import sampleSize from "lodash/sampleSize";
+import some from "lodash/some";
 
 import { Game, List, Player } from "@models/index";
 import { IGame } from "@models/tenthings/game";
