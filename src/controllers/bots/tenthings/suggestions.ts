@@ -48,15 +48,9 @@ export const getSuggestionType = (msg: Message): SuggestionType | undefined => {
 };
 
 export const checkSuggestionProvided = (msg: Message, game: IGame, player: HydratedDocument<IPlayer>): boolean => {
-  const suggestion = msg.text.substring(msg.text.indexOf(" ") + 1, msg.text.length);
+  const suggestion = msg.text;
   const suggestionType = getSuggestionType(msg);
-  if (
-    suggestion.length > 0 &&
-    suggestionType &&
-    suggestion !== msg.command &&
-    Object.values(SuggestionType).includes(suggestionType)
-  ) {
-    msg.text = suggestion;
+  if (suggestion && suggestionType && Object.values(SuggestionType).includes(suggestionType)) {
     sendSuggestion(msg, game, player, suggestionType);
     return true;
   }
