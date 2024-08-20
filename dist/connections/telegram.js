@@ -437,7 +437,7 @@ class TelegramBot {
                     if (command) {
                         text = body.message.text.substring(command.length + 1, body.message.text.length);
                         if (text === "TenThings_Bot")
-                            text = undefined;
+                            text = "";
                     }
                     else {
                         text = body.message.text;

@@ -166,18 +166,17 @@ const getStats = async (chat_id, data, requestor) => {
             message += "\n";
             telegram_1.default.queueMessage(game.chat_id, message);
             break;
+        case "c":
+            creatorStats(game, requestor);
+            break;
         case "p":
-            index_1.Player.findOne({
-                game: game._id,
-                id: _id,
-            }).exec((_, player) => {
-                if (!player) {
-                    telegram_1.default.queueMessage(game.chat_id, "Player not found");
-                }
-                else {
-                    telegram_1.default.queueMessage(game.chat_id, (0, messages_1.getPlayerStats)(player, requestor));
-                }
-            });
+            const player = await index_1.Player.findOne({ game: game._id, id: _id });
+            if (!player) {
+                telegram_1.default.queueMessage(game.chat_id, "Player not found");
+            }
+            else {
+                telegram_1.default.queueMessage(game.chat_id, (0, messages_1.getPlayerStats)(player, requestor));
+            }
             break;
         case "l":
             index_1.List.findOne({
@@ -353,7 +352,7 @@ const voteStats = async ({ chat_id }, players, sorter, title, requestor) => {
         telegram_1.default.queueMessage(chat_id, message);
     });
 };
-const creatorStats = async () => {
+const creatorStats = async ({ chat_id }, requestor) => {
     const lists = await index_1.List.aggregate([
         { $unwind: "$votes" },
         {
@@ -394,24 +393,36 @@ const creatorStats = async () => {
     ]);
     for (const list of lists)
         list.creator = await index_1.User.findOne({ _id: list._id }).select("username displayName").lean();
-    console.log(lists
+    let message = `<b>Creator Stats</b>\n`;
+    message += requestor ? `<i>Requested by ${requestor}</i>\n` : "";
+    message += "<kbd>Least Skippped Creators</kbd>\n";
+    message += lists
         .filter((list) => list.lists > 20)
         .sort((listA, listB) => listA.skips / listA.plays - listB.skips / listB.plays)
-        .slice(0, 20)
+        .slice(0, 10)
         .map((list) => ({
         creator: list.creator.username,
         skipRatio: (0, number_helpers_1.makePercentage)(list.skips / list.plays),
-    })));
-    console.log(lists
+    }))
+        .reduce((result, stat) => {
+        result += ` - ${stat.creator} - ${stat.skipRatio}\n`;
+        return result;
+    }, "");
+    message += "<kbd>Most Upvoted Creators</kbd>\n";
+    message += lists
         .filter((list) => list.lists > 20)
         .sort((listA, listB) => listA.positive / listA.votes - listB.positive / listB.votes)
-        .slice(0, 20)
+        .slice(0, 10)
         .map((list) => ({
         creator: list.creator.username,
         likeRatio: (0, number_helpers_1.makePercentage)(list.positive / list.votes),
-    })));
+    }))
+        .reduce((result, stat) => {
+        result += `${stat.creator} - ${stat.likeRatio}\n`;
+        return result;
+    }, "");
+    telegram_1.default.queueMessage(chat_id, message);
 };
-creatorStats();
 const voteSentimentStats = async ({ chat_id }, players, sorter, title, requestor) => {
     index_1.List.aggregate([
         { $match: { "votes.vote": sorter } },

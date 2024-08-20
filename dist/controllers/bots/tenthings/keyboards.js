@@ -30,6 +30,7 @@ const statsKeyboard = () => {
                 getButton("Global Stats", { type: callbacks_1.CallbackDataType.StatOptions, id: "global" }),
                 getButton("Game Stats", { type: callbacks_1.CallbackDataType.Stats, id: "g" }),
             ],
+            [getButton("Creator Stats", { type: callbacks_1.CallbackDataType.Stats, id: "c" })],
         ],
     };
 };

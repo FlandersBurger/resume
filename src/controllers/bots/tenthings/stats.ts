@@ -227,17 +227,16 @@ export const getStats = async (chat_id: number, data: string, requestor?: string
       message += "\n";
       bot.queueMessage(game.chat_id, message);
       break;
+    case "c":
+      creatorStats(game, requestor);
+      break;
     case "p":
-      Player.findOne({
-        game: game._id,
-        id: _id,
-      }).exec((_, player) => {
-        if (!player) {
-          bot.queueMessage(game.chat_id, "Player not found");
-        } else {
-          bot.queueMessage(game.chat_id, getPlayerStats(player, requestor));
-        }
-      });
+      const player = await Player.findOne({ game: game._id, id: _id });
+      if (!player) {
+        bot.queueMessage(game.chat_id, "Player not found");
+      } else {
+        bot.queueMessage(game.chat_id, getPlayerStats(player, requestor));
+      }
       break;
     case "l":
       List.findOne({
@@ -579,7 +578,7 @@ const voteStats = async (
     });
 };
 
-const creatorStats = async () => {
+const creatorStats = async ({ chat_id }: IGame, requestor?: string) => {
   const lists = await List.aggregate([
     { $unwind: "$votes" },
     {
@@ -621,29 +620,36 @@ const creatorStats = async () => {
   //const listsWithCreators = await List.populate(lists, { path: '_id' });
   //const listCount = await List.countDocuments();
   for (const list of lists) list.creator = await User.findOne({ _id: list._id }).select("username displayName").lean();
-  console.log(
-    lists
-      .filter((list) => list.lists > 20)
-      .sort((listA, listB) => listA.skips / listA.plays - listB.skips / listB.plays)
-      .slice(0, 20)
-      .map((list) => ({
-        creator: list.creator.username,
-        skipRatio: makePercentage(list.skips / list.plays),
-      })),
-  );
-  console.log(
-    lists
-      .filter((list) => list.lists > 20)
-      .sort((listA, listB) => listA.positive / listA.votes - listB.positive / listB.votes)
-      .slice(0, 20)
-      .map((list) => ({
-        creator: list.creator.username,
-        likeRatio: makePercentage(list.positive / list.votes),
-      })),
-  );
+  let message = `<b>Creator Stats</b>\n`;
+  message += requestor ? `<i>Requested by ${requestor}</i>\n` : "";
+  message += "<kbd>Least Skippped Creators</kbd>\n";
+  message += lists
+    .filter((list) => list.lists > 20)
+    .sort((listA, listB) => listA.skips / listA.plays - listB.skips / listB.plays)
+    .slice(0, 10)
+    .map((list) => ({
+      creator: list.creator.username,
+      skipRatio: makePercentage(list.skips / list.plays),
+    }))
+    .reduce((result, stat) => {
+      result += ` - ${stat.creator} - ${stat.skipRatio}\n`;
+      return result;
+    }, "");
+  message += "<kbd>Most Upvoted Creators</kbd>\n";
+  message += lists
+    .filter((list) => list.lists > 20)
+    .sort((listA, listB) => listA.positive / listA.votes - listB.positive / listB.votes)
+    .slice(0, 10)
+    .map((list) => ({
+      creator: list.creator.username,
+      likeRatio: makePercentage(list.positive / list.votes),
+    }))
+    .reduce((result, stat) => {
+      result += `${stat.creator} - ${stat.likeRatio}\n`;
+      return result;
+    }, "");
+  bot.queueMessage(chat_id, message);
 };
-
-creatorStats();
 
 const voteSentimentStats = async (
   { chat_id }: IGame,
