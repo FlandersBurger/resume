@@ -60,7 +60,7 @@
     "request-promise": "^4.2.6",
     "tunnel-ssh": "^5.1.2",
     "underscore": "^1.12.1",
-    "ws": "^7.5.9",
+    "ws": "^7.5.10",
     "xml2js": "^0.6.2"
   },
   "devDependencies": {
