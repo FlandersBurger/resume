@@ -33,6 +33,7 @@ class TelegramBot {
             "Bad Request: chat not found",
             "Bad Request: TOPIC_CLOSED",
             "Bad Request: CHAT_WRITE_FORBIDDEN",
+            "Bad Request: CHAT_SEND_PLAIN_FORBIDDEN",
             "Forbidden: bot is not a member of the supergroup chat",
             "Forbidden: bot was kicked from the supergroup chat",
             "Forbidden: bot was kicked from the group chat",
@@ -284,7 +285,12 @@ class TelegramBot {
                 await (0, http_client_1.default)().get(encodeURI(url));
             }
             catch (error) {
-                this.errorHandler(channel, "Send photo", error);
+                if (error.response?.data?.description ===
+                    `Bad Request: invalid file HTTP URL specified: Wrong port number specified in the URL`) {
+                    this.notifyAdmin(`Invalid photo URL in ${channel}: ${photo}`);
+                }
+                else
+                    this.errorHandler(channel, "Send photo", error);
             }
         };
         this.sendAnimation = async (channel, animation) => {
@@ -293,7 +299,12 @@ class TelegramBot {
                 await (0, http_client_1.default)().get(encodeURI(url));
             }
             catch (error) {
-                this.errorHandler(channel, "Send animation", error);
+                if (error.response?.data?.description ===
+                    `Bad Request: invalid file HTTP URL specified: Wrong port number specified in the URL`) {
+                    this.notifyAdmin(`Invalid animation URL in ${channel}: ${animation}`);
+                }
+                else
+                    this.errorHandler(channel, "Send animation", error);
             }
         };
         this.editKeyboard = async (channel, message_id, keyboard) => {
