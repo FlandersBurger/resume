@@ -278,9 +278,11 @@ const getStats = async (chat_id, data, requestor) => {
     }
 };
 exports.getStats = getStats;
+const addRequestor = (msg, requestor) => msg + (requestor ? `<i>Requested by ${(0, string_helpers_1.parseSymbols)(requestor)}</i>\n` : "");
 const listStats = ({ chat_id }, field, divisor, ratio, title, description, sorter, requestor) => {
     let message = `<b>${title}</b>\n`;
-    message += description ? `<i>${description}</i>\n` : "";
+    message += description ? `<code>${description}</code>\n` : "";
+    message = addRequestor(message, requestor);
     index_1.List.find({ actualPlays: { $gt: 100 } })
         .select(`${field} ${divisor} name`)
         .exec((_, lists) => {
@@ -303,13 +305,13 @@ const listStats = ({ chat_id }, field, divisor, ratio, title, description, sorte
             const listDivisor = (divisor ? (list[divisor] ? list[divisor] : 1) : 1);
             message += `${index + 1}. ${list.name} (${Math.round(((listField * ratio) / listDivisor) * 100) / 100}${divisor ? "%" : ""})\n`;
         });
-        message += requestor ? `<i>Requested by ${requestor}</i>\n` : "";
         telegram_1.default.queueMessage(chat_id, message);
     });
 };
 const playerStats = async ({ chat_id }, players, field, divisor, ratio, title, description, sorter, requestor) => {
     let message = `<b>${title}</b>\n`;
-    message += description ? `<i>${description}</i>\n` : "";
+    message += description ? `<code>${description}</code>\n` : "";
+    message = addRequestor(message, requestor);
     players
         .filter((player) => player.present && +player[field] > 0)
         .sort((a, b) => {
@@ -328,9 +330,8 @@ const playerStats = async ({ chat_id }, players, field, divisor, ratio, title, d
         .forEach((player, index) => {
         const playerField = player[field];
         const playerDivisor = (divisor ? (player[divisor] ? player[divisor] : 1) : 1);
-        message += `${index + 1}. ${player.first_name} (${Math.round(((playerField * ratio) / playerDivisor) * 100) / 100}${divisor ? "%" : ""})\n`;
+        message += `${index + 1}. ${(0, string_helpers_1.parseSymbols)(player.first_name)} (${Math.round(((playerField * ratio) / playerDivisor) * 100) / 100}${divisor ? "%" : ""})\n`;
     });
-    message += requestor ? `<i>Requested by ${requestor}</i>\n` : "";
     telegram_1.default.queueMessage(chat_id, message);
 };
 const voteStats = async ({ chat_id }, players, sorter, title, requestor) => {
@@ -341,7 +342,7 @@ const voteStats = async ({ chat_id }, players, sorter, title, requestor) => {
         if (err)
             console.error(err);
         let message = `<b>${title}</b>\n`;
-        message += requestor ? `<i>Requested by ${requestor}</i>\n` : "";
+        message = addRequestor(message, requestor);
         let i = 1;
         voters.forEach((voter) => {
             const player = (0, find_1.default)(players, (player) => voter._id == player.id);
@@ -394,7 +395,7 @@ const creatorStats = async ({ chat_id }, requestor) => {
     for (const list of lists)
         list.creator = await index_1.User.findOne({ _id: list._id }).select("username displayName").lean();
     let message = `<b>Creator Stats</b>\n`;
-    message += requestor ? `<i>Requested by ${requestor}</i>\n` : "";
+    message = addRequestor(message, requestor);
     message += "<code>Creators with more than 50 lists</code>\n";
     message += "<u>Least Skipped Creators</u>\n";
     message += lists

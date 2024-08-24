@@ -475,6 +475,9 @@ export const getStats = async (chat_id: number, data: string, requestor?: string
   }
 };
 
+const addRequestor = (msg: string, requestor?: string) =>
+  msg + (requestor ? `<i>Requested by ${parseSymbols(requestor)}</i>\n` : "");
+
 const listStats = (
   { chat_id }: IGame,
   field: keyof IList,
@@ -486,7 +489,8 @@ const listStats = (
   requestor?: string,
 ) => {
   let message = `<b>${title}</b>\n`;
-  message += description ? `<i>${description}</i>\n` : "";
+  message += description ? `<code>${description}</code>\n` : "";
+  message = addRequestor(message, requestor);
   List.find({ actualPlays: { $gt: 100 } })
     .select(`${field} ${divisor} name`)
     .exec((_, lists: IList[]) => {
@@ -510,7 +514,6 @@ const listStats = (
             divisor ? "%" : ""
           })\n`;
         });
-      message += requestor ? `<i>Requested by ${requestor}</i>\n` : "";
       bot.queueMessage(chat_id, message);
     });
 };
@@ -527,7 +530,8 @@ const playerStats = async (
   requestor?: string,
 ) => {
   let message = `<b>${title}</b>\n`;
-  message += description ? `<i>${description}</i>\n` : "";
+  message += description ? `<code>${description}</code>\n` : "";
+  message = addRequestor(message, requestor);
   players
     .filter((player) => player.present && +player[field]! > 0)
     .sort((a: IPlayer, b: IPlayer) => {
@@ -545,11 +549,10 @@ const playerStats = async (
     .forEach((player, index) => {
       const playerField: number = player[field] as number;
       const playerDivisor: number = (divisor ? (player[divisor] ? player[divisor] : 1) : 1) as number;
-      message += `${index + 1}. ${player.first_name} (${
+      message += `${index + 1}. ${parseSymbols(player.first_name)} (${
         Math.round(((playerField * ratio) / playerDivisor) * 100) / 100
       }${divisor ? "%" : ""})\n`;
     });
-  message += requestor ? `<i>Requested by ${requestor}</i>\n` : "";
   bot.queueMessage(chat_id, message);
 };
 
@@ -566,7 +569,7 @@ const voteStats = async (
     .exec((err, voters) => {
       if (err) console.error(err);
       let message = `<b>${title}</b>\n`;
-      message += requestor ? `<i>Requested by ${requestor}</i>\n` : "";
+      message = addRequestor(message, requestor);
       let i = 1;
       voters.forEach((voter) => {
         const player = find(players, (player: IPlayer) => voter._id == player.id);
@@ -621,7 +624,7 @@ const creatorStats = async ({ chat_id }: IGame, requestor?: string) => {
   //const listCount = await List.countDocuments();
   for (const list of lists) list.creator = await User.findOne({ _id: list._id }).select("username displayName").lean();
   let message = `<b>Creator Stats</b>\n`;
-  message += requestor ? `<i>Requested by ${requestor}</i>\n` : "";
+  message = addRequestor(message, requestor);
   message += "<code>Creators with more than 50 lists</code>\n";
   message += "<u>Least Skipped Creators</u>\n";
   message += lists
