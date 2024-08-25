@@ -8,7 +8,7 @@ export default async (game: IGame, text: string) => {
     const sassText = await sass(text);
     if (sassText) {
       console.log(`SASS: ${text} => ${sassText}`);
-      if (sassText.includes("http")) {
+      if (sassText.includes("http") && !sassText.includes("paypal")) {
         if (sassText.includes(".gif")) {
           bot.sendAnimation(game.chat_id, sassText);
         } else {

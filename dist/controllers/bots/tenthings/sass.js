@@ -11,7 +11,7 @@ exports.default = async (game, text) => {
         const sassText = await sass(text);
         if (sassText) {
             console.log(`SASS: ${text} => ${sassText}`);
-            if (sassText.includes("http")) {
+            if (sassText.includes("http") && !sassText.includes("paypal")) {
                 if (sassText.includes(".gif")) {
                     telegram_1.default.sendAnimation(game.chat_id, sassText);
                 }
