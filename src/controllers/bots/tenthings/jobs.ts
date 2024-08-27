@@ -14,7 +14,7 @@ import { HydratedDocument } from "mongoose";
 import { IPlayer } from "@models/tenthings/player";
 import { IStats } from "@models/tenthings/stats";
 import { IList } from "@models/tenthings/list";
-import { createMinigames } from "./minigame";
+import { updateMinigames } from "./minigame";
 import { getDailyScores } from "./stats";
 const backup = require("@root/utils/backup/backup-db");
 import { Game, Player, Stats, List } from "@models/index";
@@ -404,7 +404,7 @@ let jobs: Job[] = [];
 if (process.env.NODE_ENV === "production") {
   jobs.push(schedule.scheduleJob("Reset Daily Scores", "0 2 1 * * *", resetDailyScore));
   jobs.push(schedule.scheduleJob("Update Play Streaks", "0 0 2 * * *", updatePlayStreak));
-  jobs.push(schedule.scheduleJob("Create Mini Games", "0 0 3 * * *", createMinigames));
+  jobs.push(schedule.scheduleJob("Update Mini Games", "0 0 3 * * *", updateMinigames));
   jobs.push(schedule.scheduleJob("Deactivate Inactive Chats", "0 0 4 * * *", deactivateInactiveChats));
   jobs.push(schedule.scheduleJob("Delete Stale Players", "0 0 5 * * *", deleteStalePlayers));
   jobs.push(schedule.scheduleJob("Delete Stale Games", "0 0 6 * * *", deleteStaleGames));

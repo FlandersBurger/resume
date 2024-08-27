@@ -3,7 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.checkMinigame = exports.sendMinigameMessage = exports.createMinigames = exports.createMinigame = void 0;
+exports.checkMinigame = exports.sendMinigameMessage = exports.updateMinigames = exports.createMinigame = void 0;
 const moment_1 = __importDefault(require("moment"));
 const uniq_1 = __importDefault(require("lodash/uniq"));
 const sampleSize_1 = __importDefault(require("lodash/sampleSize"));
@@ -51,8 +51,22 @@ const createMinigame = async (game) => {
     return true;
 };
 exports.createMinigame = createMinigame;
-const getAllMinigames = async () => {
-    const lists = await index_1.List.find({}).select("name language values categories").lean();
+const updateMinigames = async () => {
+    const newValues = await index_1.List.aggregate([
+        {
+            $match: {
+                $or: [
+                    { modifyDate: { $gte: new Date((0, moment_1.default)().subtract(1, "days").toISOString()) } },
+                    { date: { $gte: new Date((0, moment_1.default)().subtract(1, "days").toISOString()) } },
+                ],
+            },
+        },
+        { $unwind: "$values" },
+        { $group: { _id: "$values.value" } },
+    ]);
+    const lists = await index_1.List.find({ "values.value": { $in: newValues } })
+        .select("name language values categories")
+        .lean();
     telegram_1.default.notifyAdmin(`Vetting ${lists.length} lists for minigames`);
     let answers = lists.reduce((answers, list) => {
         for (const value of list.values) {
@@ -72,7 +86,7 @@ const getAllMinigames = async () => {
         }
         return answers;
     }, {});
-    return Object.keys(answers)
+    const newMinigames = Object.keys(answers)
         .reduce((result, key) => {
         if (answers[key] && answers[key].lists.length > 2) {
             result.push(answers[key]);
@@ -80,24 +94,36 @@ const getAllMinigames = async () => {
         return result;
     }, [])
         .filter((minigame) => minigame.lists && minigame.lists.length > 0);
+    const count = {
+        new: 0,
+        updated: 0,
+    };
+    await Promise.all(newMinigames.map(async (minigame) => {
+        const existingMinigame = await index_1.Minigame.findOne({ language: minigame.language, answer: minigame.answer });
+        if (existingMinigame) {
+            const combinedLists = (0, uniq_1.default)([...existingMinigame.lists, ...minigame.lists]);
+            if (combinedLists.length !== existingMinigame.lists.length) {
+                existingMinigame.lists = combinedLists;
+                existingMinigame.categories = (0, uniq_1.default)([...existingMinigame.categories, ...minigame.categories]);
+                await existingMinigame.save();
+                count.updated++;
+            }
+        }
+        else {
+            await index_1.Minigame.create(minigame);
+            count.new++;
+        }
+        return count;
+    }));
+    telegram_1.default.notifyAdmin(`Minigames updated: ${count.updated} new: ${count.new}`);
 };
+exports.updateMinigames = updateMinigames;
 const getMinigames = async (parameters) => {
     let minigames = await index_1.Minigame.find(parameters).lean();
     if (minigames.length === 0)
         minigames = await index_1.Minigame.find({}).lean();
     return minigames;
 };
-const createMinigames = async () => {
-    const minigames = await getAllMinigames();
-    await Promise.all(minigames.map(async (game) => {
-        await index_1.Minigame.findOneAndUpdate({ language: game.language, answer: game.answer }, game, {
-            new: true,
-            upsert: true,
-        });
-    }));
-    telegram_1.default.notifyAdmin(`${minigames.length} minigames created`);
-};
-exports.createMinigames = createMinigames;
 const sendMinigameMessage = (game) => {
     let message = `<b>${(0, i18n_1.default)(game.settings.language, "sentences.findTheConnection")}</b>\n`;
     message += game.minigame.lists.reduce((msg, list) => {

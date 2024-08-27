@@ -69,8 +69,22 @@ type Answer = {
   categories: string[];
 };
 
-const getAllMinigames = async () => {
-  const lists = await List.find({}).select("name language values categories").lean();
+export const updateMinigames = async () => {
+  const newValues = await List.aggregate([
+    {
+      $match: {
+        $or: [
+          { modifyDate: { $gte: new Date(moment().subtract(1, "days").toISOString()) } },
+          { date: { $gte: new Date(moment().subtract(1, "days").toISOString()) } },
+        ],
+      },
+    },
+    { $unwind: "$values" },
+    { $group: { _id: "$values.value" } },
+  ]);
+  const lists = await List.find({ "values.value": { $in: newValues } })
+    .select("name language values categories")
+    .lean();
   bot.notifyAdmin(`Vetting ${lists.length} lists for minigames`);
   let answers = lists.reduce(
     (
@@ -97,7 +111,7 @@ const getAllMinigames = async () => {
     },
     {},
   );
-  return Object.keys(answers)
+  const newMinigames = Object.keys(answers)
     .reduce((result: Answer[], key) => {
       if (answers[key] && answers[key].lists.length > 2) {
         result.push(answers[key]);
@@ -105,25 +119,35 @@ const getAllMinigames = async () => {
       return result;
     }, [])
     .filter((minigame) => minigame.lists && minigame.lists.length > 0);
+  const count = {
+    new: 0,
+    updated: 0,
+  };
+  await Promise.all(
+    newMinigames.map(async (minigame) => {
+      const existingMinigame = await Minigame.findOne({ language: minigame.language, answer: minigame.answer });
+      if (existingMinigame) {
+        const combinedLists = uniq([...existingMinigame.lists, ...minigame.lists]);
+        if (combinedLists.length !== existingMinigame.lists.length) {
+          existingMinigame.lists = combinedLists;
+          existingMinigame.categories = uniq([...existingMinigame.categories, ...minigame.categories]);
+          await existingMinigame.save();
+          count.updated++;
+        }
+      } else {
+        await Minigame.create(minigame);
+        count.new++;
+      }
+      return count;
+    }),
+  );
+  bot.notifyAdmin(`Minigames updated: ${count.updated} new: ${count.new}`);
 };
 
 const getMinigames = async (parameters: QueryOptions): Promise<IMinigame[]> => {
   let minigames = await Minigame.find(parameters).lean();
   if (minigames.length === 0) minigames = await Minigame.find({}).lean();
   return minigames;
-};
-
-export const createMinigames = async () => {
-  const minigames = await getAllMinigames();
-  await Promise.all(
-    minigames.map(async (game) => {
-      await Minigame.findOneAndUpdate({ language: game.language, answer: game.answer }, game, {
-        new: true,
-        upsert: true,
-      });
-    }),
-  );
-  bot.notifyAdmin(`${minigames.length} minigames created`);
 };
 
 // Count the possible minigames

@@ -267,7 +267,7 @@ const evaluate = async (msg, game, isNew) => {
                 break;
             case "/minigames":
                 if (msg.from.id === parseInt(process.env.MASTER_CHAT || "")) {
-                    (0, minigame_1.createMinigames)();
+                    (0, minigame_1.updateMinigames)();
                 }
                 break;
             case "/ping":

@@ -4,7 +4,7 @@ import { Game, List } from "@models/index";
 import { HydratedDocument, LeanDocument } from "mongoose";
 import { Message, getCategoriesMessage, getLogicMessage } from "./messages";
 import { deactivate, newRound, sendMaingameMessage } from "./maingame";
-import { createMinigame, createMinigames, sendMinigameMessage } from "./minigame";
+import { createMinigame, sendMinigameMessage, updateMinigames } from "./minigame";
 import { createTinygame, sendTinygameMessage } from "./tinygame";
 import { processHint } from "./hints";
 import { queueGuess } from "./guesses";
@@ -329,7 +329,7 @@ export const evaluate = async (msg: Message, game: HydratedDocument<IGame>, isNe
         break;
       case "/minigames":
         if (msg.from.id === parseInt(process.env.MASTER_CHAT || "")) {
-          createMinigames();
+          updateMinigames();
         }
         break;
       case "/ping":

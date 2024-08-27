@@ -93,7 +93,6 @@ server.listen(port, async () => {
   await subscribe("new_post", (post: any) => {
     websocketServer.broadcast("new_post", post);
   });
-
   // Player.find({ id: { $type: "string" } })
   //   .select("_id id")
   //   .then((players) => {

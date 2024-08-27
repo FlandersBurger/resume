@@ -320,7 +320,7 @@ let jobs = [];
 if (process.env.NODE_ENV === "production") {
     jobs.push(node_schedule_1.default.scheduleJob("Reset Daily Scores", "0 2 1 * * *", resetDailyScore));
     jobs.push(node_schedule_1.default.scheduleJob("Update Play Streaks", "0 0 2 * * *", updatePlayStreak));
-    jobs.push(node_schedule_1.default.scheduleJob("Create Mini Games", "0 0 3 * * *", minigame_1.createMinigames));
+    jobs.push(node_schedule_1.default.scheduleJob("Update Mini Games", "0 0 3 * * *", minigame_1.updateMinigames));
     jobs.push(node_schedule_1.default.scheduleJob("Deactivate Inactive Chats", "0 0 4 * * *", deactivateInactiveChats));
     jobs.push(node_schedule_1.default.scheduleJob("Delete Stale Players", "0 0 5 * * *", deleteStalePlayers));
     jobs.push(node_schedule_1.default.scheduleJob("Delete Stale Games", "0 0 6 * * *", deleteStaleGames));
