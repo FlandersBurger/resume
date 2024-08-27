@@ -68,8 +68,8 @@ class TelegramBot {
                 }
             }
             else {
-                bot.notifyAdmin(`Unknown error from "${source}" in channel ${channel}:\n${(0, string_helpers_1.parseSymbols)(error.code ?? error.message)}`);
-                console.error(`${source} error: `, error.message, error.code);
+                bot.notifyAdmin(`Unknown error from "${source}" in channel ${channel}\nCode:${(0, string_helpers_1.parseSymbols)(error.code)}\nMessage:${(0, string_helpers_1.parseSymbols)(error.message)}`);
+                console.error(`${source} error`, error);
             }
         };
         this.setWebhook = async (api) => {

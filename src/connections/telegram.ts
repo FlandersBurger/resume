@@ -113,9 +113,9 @@ class TelegramBot {
       }
     } else {
       bot.notifyAdmin(
-        `Unknown error from "${source}" in channel ${channel}:\n${parseSymbols(error.code ?? error.message)}`,
+        `Unknown error from "${source}" in channel ${channel}\nCode:${parseSymbols(error.code)}\nMessage:${parseSymbols(error.message)}`,
       );
-      console.error(`${source} error: `, error.message, error.code);
+      console.error(`${source} error`, error);
     }
   };
 
