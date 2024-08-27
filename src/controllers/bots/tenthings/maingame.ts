@@ -241,7 +241,7 @@ export const checkMaingame = async (
   } else if (match) {
     player.snubs++;
     if (game.settings.snubs) {
-      bot.queueMessage(msg.chatId, getSnubbedMessage(match.value, player, match.guesser));
+      bot.queueMessage(msg.chatId, getSnubbedMessage(parseSymbols(match.value), player, match.guesser));
     }
   }
   try {

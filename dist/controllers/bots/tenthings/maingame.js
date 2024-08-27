@@ -194,7 +194,7 @@ const checkMaingame = async (game, player, guess, msg) => {
     else if (match) {
         player.snubs++;
         if (game.settings.snubs) {
-            telegram_1.default.queueMessage(msg.chatId, (0, messages_1.getSnubbedMessage)(match.value, player, match.guesser));
+            telegram_1.default.queueMessage(msg.chatId, (0, messages_1.getSnubbedMessage)((0, string_helpers_1.parseSymbols)(match.value), player, match.guesser));
         }
     }
     try {
