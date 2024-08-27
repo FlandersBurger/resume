@@ -148,7 +148,7 @@ exports.default = async (callbackQuery) => {
                     }
                     await game.save();
                     telegram_1.default.answerCallback(callbackQuery.callbackQueryId, `${callbackQuery.data} -> ${categoryIndex >= 0 ? (0, i18n_1.default)(game.settings.language, "on") : (0, i18n_1.default)(game.settings.language, "off")}`);
-                    telegram_1.default.editKeyboard(callbackQuery.chatId, callbackQuery.id, (0, keyboards_1.categoriesKeyboard)(game));
+                    telegram_1.default.queueEditKeyboard(callbackQuery.chatId, callbackQuery.id, (0, keyboards_1.categoriesKeyboard)(game));
                 }
                 else {
                     game = await index_1.Game.findOne({ chat_id: callbackQuery.chatId }).select("settings").exec();
@@ -170,16 +170,16 @@ exports.default = async (callbackQuery) => {
                         const availableLanguages = await index_1.List.aggregate([
                             { $group: { _id: "$language", count: { $sum: 1 } } },
                         ]).exec();
-                        telegram_1.default.editKeyboard(callbackQuery.chatId, callbackQuery.id, (0, keyboards_1.languagesKeyboard)(game, availableLanguages));
+                        telegram_1.default.queueEditKeyboard(callbackQuery.chatId, callbackQuery.id, (0, keyboards_1.languagesKeyboard)(game, availableLanguages));
                     }
                     else if (callbackQuery.data === "lang") {
-                        telegram_1.default.editKeyboard(callbackQuery.chatId, callbackQuery.id, (0, keyboards_1.languageKeyboard)(game));
+                        telegram_1.default.queueEditKeyboard(callbackQuery.chatId, callbackQuery.id, (0, keyboards_1.languageKeyboard)(game));
                     }
                     else if (callbackQuery.data === "cats") {
-                        telegram_1.default.editKeyboard(callbackQuery.chatId, callbackQuery.id, (0, keyboards_1.categoriesKeyboard)(game));
+                        telegram_1.default.queueEditKeyboard(callbackQuery.chatId, callbackQuery.id, (0, keyboards_1.categoriesKeyboard)(game));
                     }
                     else if (callbackQuery.data === "settings") {
-                        telegram_1.default.editKeyboard(callbackQuery.chatId, callbackQuery.id, (0, keyboards_1.settingsKeyboard)(game));
+                        telegram_1.default.queueEditKeyboard(callbackQuery.chatId, callbackQuery.id, (0, keyboards_1.settingsKeyboard)(game));
                     }
                     else {
                         console.log(`${callbackQuery.data} toggled for ${game._id}`);
@@ -188,7 +188,7 @@ exports.default = async (callbackQuery) => {
                         telegram_1.default.answerCallback(callbackQuery.callbackQueryId, `${callbackQuery.data} -> ${game.settings[callbackQuery.data]
                             ? (0, i18n_1.default)(game.settings.language, "on")
                             : (0, i18n_1.default)(game.settings.language, "off")}`);
-                        telegram_1.default.editKeyboard(callbackQuery.chatId, callbackQuery.id, (0, keyboards_1.settingsKeyboard)(game));
+                        telegram_1.default.queueEditKeyboard(callbackQuery.chatId, callbackQuery.id, (0, keyboards_1.settingsKeyboard)(game));
                     }
                 }
                 else {
@@ -217,7 +217,7 @@ exports.default = async (callbackQuery) => {
                 game.save();
                 telegram_1.default.answerCallback(callbackQuery.callbackQueryId, `${callbackQuery.data} -> ${isSelected ? (0, i18n_1.default)(game.settings.language, "off") : (0, i18n_1.default)(game.settings.language, "on")}`);
                 const availableLanguages = await index_1.List.aggregate([{ $group: { _id: "$language", count: { $sum: 1 } } }]).exec();
-                telegram_1.default.editKeyboard(callbackQuery.chatId, callbackQuery.id, (0, keyboards_1.languagesKeyboard)(game, availableLanguages));
+                telegram_1.default.queueEditKeyboard(callbackQuery.chatId, callbackQuery.id, (0, keyboards_1.languagesKeyboard)(game, availableLanguages));
             }
             break;
         case CallbackDataType.BotLanguage:
@@ -229,7 +229,7 @@ exports.default = async (callbackQuery) => {
                 await game.save();
                 telegram_1.default.answerCallback(callbackQuery.callbackQueryId, `${callbackQuery.data} -> New bot language`);
                 telegram_1.default.setCommands(callbackQuery.chatId, callbackQuery.data);
-                telegram_1.default.editKeyboard(callbackQuery.chatId, callbackQuery.id, (0, keyboards_1.languageKeyboard)(game));
+                telegram_1.default.queueEditKeyboard(callbackQuery.chatId, callbackQuery.id, (0, keyboards_1.languageKeyboard)(game));
             }
             break;
         case CallbackDataType.Pick:
@@ -326,7 +326,7 @@ exports.default = async (callbackQuery) => {
             list = await index_1.List.findOne({ _id: difficultyListId }).exec();
             if (!list)
                 return;
-            telegram_1.default.editKeyboard(callbackQuery.chatId, callbackQuery.id, (0, keyboards_1.curateListKeyboard)(list));
+            telegram_1.default.queueEditKeyboard(callbackQuery.chatId, callbackQuery.id, (0, keyboards_1.curateListKeyboard)(list));
             break;
         case CallbackDataType.Frequency:
             const [frequencyString, frequencyListId] = callbackQuery.data.split("_");
@@ -336,7 +336,7 @@ exports.default = async (callbackQuery) => {
             list = await index_1.List.findOne({ _id: frequencyListId }).exec();
             if (!list)
                 return;
-            telegram_1.default.editKeyboard(callbackQuery.chatId, callbackQuery.id, (0, keyboards_1.curateListKeyboard)(list));
+            telegram_1.default.queueEditKeyboard(callbackQuery.chatId, callbackQuery.id, (0, keyboards_1.curateListKeyboard)(list));
             break;
         case CallbackDataType.Suggestion:
             game = await index_1.Game.findOne({ chat_id: callbackQuery.chatId }).select("list").exec();

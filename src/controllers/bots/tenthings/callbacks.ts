@@ -172,7 +172,7 @@ export default async (callbackQuery: CallbackData) => {
               categoryIndex >= 0 ? i18n(game.settings.language, "on") : i18n(game.settings.language, "off")
             }`,
           );
-          bot.editKeyboard(callbackQuery.chatId, callbackQuery.id, categoriesKeyboard(game));
+          bot.queueEditKeyboard(callbackQuery.chatId, callbackQuery.id, categoriesKeyboard(game));
         } else {
           game = await Game.findOne({ chat_id: callbackQuery.chatId }).select("settings").exec();
           if (!game) return;
@@ -194,13 +194,13 @@ export default async (callbackQuery: CallbackData) => {
             const availableLanguages = await List.aggregate([
               { $group: { _id: "$language", count: { $sum: 1 } } },
             ]).exec();
-            bot.editKeyboard(callbackQuery.chatId, callbackQuery.id, languagesKeyboard(game, availableLanguages));
+            bot.queueEditKeyboard(callbackQuery.chatId, callbackQuery.id, languagesKeyboard(game, availableLanguages));
           } else if (callbackQuery.data === "lang") {
-            bot.editKeyboard(callbackQuery.chatId, callbackQuery.id, languageKeyboard(game));
+            bot.queueEditKeyboard(callbackQuery.chatId, callbackQuery.id, languageKeyboard(game));
           } else if (callbackQuery.data === "cats") {
-            bot.editKeyboard(callbackQuery.chatId, callbackQuery.id, categoriesKeyboard(game));
+            bot.queueEditKeyboard(callbackQuery.chatId, callbackQuery.id, categoriesKeyboard(game));
           } else if (callbackQuery.data === "settings") {
-            bot.editKeyboard(callbackQuery.chatId, callbackQuery.id, settingsKeyboard(game));
+            bot.queueEditKeyboard(callbackQuery.chatId, callbackQuery.id, settingsKeyboard(game));
           } else {
             console.log(`${callbackQuery.data} toggled for ${game._id}`);
             game.settings[callbackQuery.data] = !game.settings[callbackQuery.data as keyof IGameSettings];
@@ -213,7 +213,7 @@ export default async (callbackQuery: CallbackData) => {
                   : i18n(game.settings.language, "off")
               }`,
             );
-            bot.editKeyboard(callbackQuery.chatId, callbackQuery.id, settingsKeyboard(game));
+            bot.queueEditKeyboard(callbackQuery.chatId, callbackQuery.id, settingsKeyboard(game));
           }
         } else {
           game = await Game.findOne({ chat_id: callbackQuery.chatId }).select("settings").exec();
@@ -246,7 +246,7 @@ export default async (callbackQuery: CallbackData) => {
           }`,
         );
         const availableLanguages = await List.aggregate([{ $group: { _id: "$language", count: { $sum: 1 } } }]).exec();
-        bot.editKeyboard(callbackQuery.chatId, callbackQuery.id, languagesKeyboard(game, availableLanguages));
+        bot.queueEditKeyboard(callbackQuery.chatId, callbackQuery.id, languagesKeyboard(game, availableLanguages));
       }
       break;
     case CallbackDataType.BotLanguage:
@@ -257,7 +257,7 @@ export default async (callbackQuery: CallbackData) => {
         await game.save();
         bot.answerCallback(callbackQuery.callbackQueryId, `${callbackQuery.data} -> New bot language`);
         bot.setCommands(callbackQuery.chatId, callbackQuery.data);
-        bot.editKeyboard(callbackQuery.chatId, callbackQuery.id, languageKeyboard(game));
+        bot.queueEditKeyboard(callbackQuery.chatId, callbackQuery.id, languageKeyboard(game));
       }
       break;
     case CallbackDataType.Pick:
@@ -360,7 +360,7 @@ export default async (callbackQuery: CallbackData) => {
       bot.answerCallback(callbackQuery.callbackQueryId, `List is ${getDifficultyMessage(difficulty)}`);
       list = await List.findOne({ _id: difficultyListId }).exec();
       if (!list) return;
-      bot.editKeyboard(callbackQuery.chatId, callbackQuery.id, curateListKeyboard(list));
+      bot.queueEditKeyboard(callbackQuery.chatId, callbackQuery.id, curateListKeyboard(list));
       break;
     case CallbackDataType.Frequency:
       const [frequencyString, frequencyListId] = callbackQuery.data.split("_");
@@ -369,7 +369,7 @@ export default async (callbackQuery: CallbackData) => {
       bot.answerCallback(callbackQuery.callbackQueryId, `${capitalize(getFrequencyMessage(frequency))} changes`);
       list = await List.findOne({ _id: frequencyListId }).exec();
       if (!list) return;
-      bot.editKeyboard(callbackQuery.chatId, callbackQuery.id, curateListKeyboard(list));
+      bot.queueEditKeyboard(callbackQuery.chatId, callbackQuery.id, curateListKeyboard(list));
       break;
     case CallbackDataType.Suggestion:
       game = await Game.findOne({ chat_id: callbackQuery.chatId }).select("list").exec();

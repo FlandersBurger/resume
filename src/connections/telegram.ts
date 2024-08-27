@@ -62,6 +62,8 @@ export type Keyboard =
       selective?: boolean;
     };
 
+type ReplyMarkup = Keyboard;
+
 class TelegramBot {
   private baseUrl: string;
   private telegramBotUser: TelegramUser | undefined;
@@ -152,7 +154,12 @@ class TelegramBot {
     }
   };
 
-  public sendMessage = (channel: number, message: string, topic?: number, replyMessageId?: string) => {
+  public sendMessage = (
+    channel: number,
+    message: string,
+    options: { topic?: number; replyMessageId?: string; replyMarkup?: ReplyMarkup } = {},
+  ) => {
+    const { topic, replyMessageId, replyMarkup } = options;
     message = encodeURIComponent(message);
     let url = `${this.baseUrl}/sendMessage?chat_id=${channel}&disable_notification=true&parse_mode=html&text=${message}`;
     if (topic) url += `&message_thread_id=${topic}`;
@@ -160,13 +167,14 @@ class TelegramBot {
       url += `&reply_markup=${JSON.stringify({ force_reply: true, selective: true })}`;
       url += `&reply_parameters=${JSON.stringify({ message_id: replyMessageId, allow_sending_without_reply: true })}`;
     }
+    if (replyMarkup) url += `&reply_markup=${JSON.stringify(replyMarkup)}`;
     httpClient()
       .get(url)
       .catch((error) => {
         if (error.response) {
           if (error.response.data.description.includes("too long")) {
             this.notifyAdmin(`Too long: ${message.substring(0, 500)}...`);
-            setTimeout(() => this.sendMessage(channel, message.substring(0, 4000), topic), 200);
+            setTimeout(() => this.sendMessage(channel, message.substring(0, 4000), options), 200);
           } else if (error.response.data.description.includes("can't parse")) {
             this.notifyAdmin(`Send Message to ${channel} parse Fail: ${message}`);
           } else this.errorHandler(channel, "Send message", error);
@@ -188,7 +196,7 @@ class TelegramBot {
   };
 
   public queueMessage = (channel: number, message: string) => {
-    messageQueue.add("", { channel, message }, {});
+    messageQueue.add("", { channel, message, action: "sendMessage" }, {});
   };
 
   public getQueueCount = async (): Promise<number> => {
@@ -208,8 +216,9 @@ class TelegramBot {
   };
 
   public notifyCosmicForce = async (msg: string, keyboard?: Keyboard) => {
-    if (keyboard) await this.sendKeyboard(parseInt(process.env.COSMIC_FORCE_CHAT || ""), msg, keyboard, 17);
-    else await this.sendMessage(parseInt(process.env.COSMIC_FORCE_CHAT || ""), msg, 17);
+    if (keyboard)
+      await this.sendMessage(parseInt(process.env.COSMIC_FORCE_CHAT || ""), msg, { topic: 17, replyMarkup: keyboard });
+    else await this.sendMessage(parseInt(process.env.COSMIC_FORCE_CHAT || ""), msg, { topic: 17 });
   };
 
   public notifyAdmin = async (msg: string) => {
@@ -302,21 +311,8 @@ class TelegramBot {
     }
   };
 
-  public sendKeyboard = async (channel: number, message: string, keyboard: Keyboard, topic?: number) => {
-    let url = `${this.baseUrl}/sendMessage?chat_id=${channel}&disable_notification=true&parse_mode=html`;
-    url += `&text=${message.replace("&", "and")}`;
-    url += `&reply_markup=${JSON.stringify(keyboard)}`;
-    if (topic) url += `&message_thread_id=${topic}`;
-    try {
-      await httpClient().get(encodeURI(url));
-    } catch (error: AxiosError | any) {
-      if (
-        error.response?.data?.description ===
-        `Bad Request: can't parse entities: Can't find end tag corresponding to start tag "b"`
-      ) {
-        this.notifyAdmin(`Parse error with keyboard in ${channel}: ${message}`);
-      } else this.errorHandler(channel, "Send keyboard", error);
-    }
+  public sendKeyboard = async (channel: number, message: string, keyboard: Keyboard) => {
+    this.sendMessage(channel, message.replace("&", "and"), { replyMarkup: keyboard });
   };
 
   public sendPhoto = async (channel: number, photo: string) => {
@@ -332,6 +328,7 @@ class TelegramBot {
       } else this.errorHandler(channel, "Send photo", error);
     }
   };
+
   public sendAnimation = async (channel: number, animation: string) => {
     const url = `${this.baseUrl}/sendAnimation?chat_id=${channel}&animation=${animation}`;
     try {
@@ -354,6 +351,11 @@ class TelegramBot {
       this.errorHandler(channel, "Edit keyboard", error);
     }
   };
+
+  public queueEditKeyboard = (channel: number, message_id: string, keyboard: Keyboard) => {
+    messageQueue.add("", { channel, message_id, action: "editKeyboard", keyboard }, {});
+  };
+
   public answerCallback = async (callback_query_id: string, text: string) => {
     const url = `${this.baseUrl}/answerCallbackQuery?callback_query_id=${callback_query_id}&text=${text}`;
     try {
@@ -511,8 +513,30 @@ class TelegramBot {
 
 const bot = new TelegramBot(process.env.TELEGRAM_TOKEN!);
 
-messageQueue.process(async ({ data }: { data: { channel: number; message: string } }) => {
-  bot.sendMessage(data.channel, data.message);
-});
+enum Actions {
+  SendMessage = "sendMessage",
+  EditKeyboard = "editKeyboard",
+}
+
+messageQueue.process(
+  async ({
+    data,
+  }: {
+    data:
+      | { channel: number; action: Actions.SendMessage; message: string }
+      | { channel: number; action: Actions.EditKeyboard; message_id: string; keyboard: Keyboard };
+  }) => {
+    switch (data.action) {
+      case "sendMessage":
+        bot.sendMessage(data.channel, data.message);
+        break;
+      case "editKeyboard":
+        bot.editKeyboard(data.channel, data.message_id, data.keyboard!);
+        break;
+      default:
+        break;
+    }
+  },
+);
 
 export default bot;
