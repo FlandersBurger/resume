@@ -22,6 +22,7 @@ const stats_1 = require("./stats");
 const keyboards_1 = require("./keyboards");
 const telegram_1 = __importDefault(require("../../../connections/telegram"));
 const suggestions_1 = require("./suggestions");
+const string_helpers_1 = require("../../../utils/string-helpers");
 const commands = [
     "list",
     "hint",
@@ -157,7 +158,7 @@ const evaluate = async (msg, game, isNew) => {
             case "/search":
                 const search = msg.text;
                 if (game.pickedLists.length >= 10)
-                    return telegram_1.default.queueMessage(game.chat_id, `The queue already has the maximum of 10 lists, ${player.first_name}.\n -> /lists`);
+                    return telegram_1.default.queueMessage(game.chat_id, `${(0, i18n_1.default)(game.settings.language, "sentences.queueFull", { name: (0, string_helpers_1.parseSymbols)(player.first_name) })}\n -> /lists`);
                 if (search) {
                     player.searches++;
                     await player.save();
@@ -165,14 +166,17 @@ const evaluate = async (msg, game, isNew) => {
                     const foundLists = await (0, lists_1.searchList)(search, game);
                     if (foundLists.length > 0) {
                         const keyboard = (0, keyboards_1.listsKeyboard)(foundLists);
-                        telegram_1.default.sendKeyboard(game.chat_id, `<b>Which list would you like to ${msg.chatId === parseInt(process.env.ADMIN_CHAT || "") ? "curate" : "queue"}?</b>`, keyboard);
+                        telegram_1.default.sendKeyboard(game.chat_id, (0, i18n_1.default)(game.settings.language, `sentences.${msg.chatId === parseInt(process.env.ADMIN_CHAT || "") ? "curate" : "queue"}`), keyboard);
                     }
                     else {
-                        telegram_1.default.queueMessage(game.chat_id, `I didn't find any corresponding lists for <b>"${search}"</b>, ${player.first_name}.\nSimpler queries return better results.`);
+                        telegram_1.default.queueMessage(game.chat_id, (0, i18n_1.default)(game.settings.language, "sentences.noSearchResults", {
+                            search,
+                            name: (0, string_helpers_1.parseSymbols)(player.first_name),
+                        }));
                     }
                 }
                 else {
-                    telegram_1.default.queueMessage(msg.chatId, `You didn't search anything ${player.first_name}. Add your message after /search`);
+                    telegram_1.default.queueMessage(msg.chatId, (0, i18n_1.default)(game.settings.language, "sentences.emptySearch", { name: (0, string_helpers_1.parseSymbols)(player.first_name) }));
                 }
                 break;
             case "/dica":
@@ -289,7 +293,7 @@ const evaluate = async (msg, game, isNew) => {
                             $in: game.pickedLists,
                         },
                     }).exec((_, upcomingLists) => {
-                        let message = "<b>Upcoming lists</b>\n";
+                        let message = `${(0, i18n_1.default)(game.settings.language, "sentences.upcomingLists")}\n`;
                         for (const list of upcomingLists.slice(0, 10)) {
                             message += `- ${list.name}\n`;
                         }
@@ -297,7 +301,7 @@ const evaluate = async (msg, game, isNew) => {
                     });
                 }
                 else {
-                    telegram_1.default.queueMessage(msg.chatId, "There are no lists queued, use the /search [message] command to find some");
+                    telegram_1.default.queueMessage(msg.chatId, (0, i18n_1.default)(game.settings.language, "sentences.noUpcomingLists"));
                 }
                 break;
             default:

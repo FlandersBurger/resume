@@ -26,6 +26,7 @@ import {
   sendSuggestionMessage,
   SuggestionType,
 } from "./suggestions";
+import { parseSymbols } from "@root/utils/string-helpers";
 
 const commands = [
   "list",
@@ -181,7 +182,7 @@ export const evaluate = async (msg: Message, game: HydratedDocument<IGame>, isNe
         if (game.pickedLists.length >= 10)
           return bot.queueMessage(
             game.chat_id,
-            `The queue already has the maximum of 10 lists, ${player.first_name}.\n -> /lists`,
+            `${i18n(game.settings.language, "sentences.queueFull", { name: parseSymbols(player.first_name) })}\n -> /lists`,
           );
         if (search) {
           player.searches++;
@@ -192,21 +193,25 @@ export const evaluate = async (msg: Message, game: HydratedDocument<IGame>, isNe
             const keyboard = listsKeyboard(foundLists);
             bot.sendKeyboard(
               game.chat_id,
-              `<b>Which list would you like to ${
-                msg.chatId === parseInt(process.env.ADMIN_CHAT || "") ? "curate" : "queue"
-              }?</b>`,
+              i18n(
+                game.settings.language,
+                `sentences.${msg.chatId === parseInt(process.env.ADMIN_CHAT || "") ? "curate" : "queue"}`,
+              ),
               keyboard,
             );
           } else {
             bot.queueMessage(
               game.chat_id,
-              `I didn't find any corresponding lists for <b>"${search}"</b>, ${player.first_name}.\nSimpler queries return better results.`,
+              i18n(game.settings.language, "sentences.noSearchResults", {
+                search,
+                name: parseSymbols(player.first_name),
+              }),
             );
           }
         } else {
           bot.queueMessage(
             msg.chatId,
-            `You didn't search anything ${player.first_name}. Add your message after /search`,
+            i18n(game.settings.language, "sentences.emptySearch", { name: parseSymbols(player.first_name) }),
           );
         }
         break;
@@ -351,14 +356,14 @@ export const evaluate = async (msg: Message, game: HydratedDocument<IGame>, isNe
               $in: game.pickedLists,
             },
           }).exec((_, upcomingLists) => {
-            let message = "<b>Upcoming lists</b>\n";
+            let message = `${i18n(game.settings.language, "sentences.upcomingLists")}\n`;
             for (const list of upcomingLists.slice(0, 10)) {
               message += `- ${list.name}\n`;
             }
             bot.queueMessage(msg.chatId, message);
           });
         } else {
-          bot.queueMessage(msg.chatId, "There are no lists queued, use the /search [message] command to find some");
+          bot.queueMessage(msg.chatId, i18n(game.settings.language, "sentences.noUpcomingLists"));
         }
         break;
       default:

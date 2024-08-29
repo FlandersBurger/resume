@@ -2,7 +2,7 @@ import { HydratedDocument, Types } from "mongoose";
 import { Game, List } from "@models/index";
 import { IGame, IGameSettings } from "@models/tenthings/game";
 import { IList, IVote } from "@models/tenthings/list";
-import { capitalize } from "@root/utils/string-helpers";
+import { capitalize, parseSymbols } from "@root/utils/string-helpers";
 import { makePercentage } from "@root/utils/number-helpers";
 import find from "lodash/find";
 
@@ -103,14 +103,16 @@ export default async (callbackQuery: CallbackData) => {
         if (moment(callbackQuery.date) > moment().subtract(1, "days")) {
           game = await Game.findOne({ chat_id: callbackQuery.chatId }).select("settings").exec();
           if (!game) return;
-          bot.queueMessage(
-            callbackQuery.chatId,
-            i18n(game.settings.language, `sentences.${vote > 0 ? "" : "dis"}likesList`, {
-              name: callbackQuery.from.name,
-              list: foundList.name,
-              score: makePercentage(foundList.score),
-            }),
-          );
+          if (callbackQuery.from.name) {
+            bot.queueMessage(
+              callbackQuery.chatId,
+              i18n(game.settings.language, `sentences.${vote > 0 ? "" : "dis"}likesList`, {
+                name: parseSymbols(callbackQuery.from.name),
+                list: parseSymbols(foundList.name),
+                score: makePercentage(foundList.score),
+              }),
+            );
+          }
         }
       }
       break;

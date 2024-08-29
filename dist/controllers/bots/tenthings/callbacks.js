@@ -83,11 +83,13 @@ exports.default = async (callbackQuery) => {
                     game = await index_1.Game.findOne({ chat_id: callbackQuery.chatId }).select("settings").exec();
                     if (!game)
                         return;
-                    telegram_1.default.queueMessage(callbackQuery.chatId, (0, i18n_1.default)(game.settings.language, `sentences.${vote > 0 ? "" : "dis"}likesList`, {
-                        name: callbackQuery.from.name,
-                        list: foundList.name,
-                        score: (0, number_helpers_1.makePercentage)(foundList.score),
-                    }));
+                    if (callbackQuery.from.name) {
+                        telegram_1.default.queueMessage(callbackQuery.chatId, (0, i18n_1.default)(game.settings.language, `sentences.${vote > 0 ? "" : "dis"}likesList`, {
+                            name: (0, string_helpers_1.parseSymbols)(callbackQuery.from.name),
+                            list: (0, string_helpers_1.parseSymbols)(foundList.name),
+                            score: (0, number_helpers_1.makePercentage)(foundList.score),
+                        }));
+                    }
                 }
             }
             break;
