@@ -151,7 +151,8 @@
     "fullQueue": "A fila já possui o máximo de 10 listas, {{name}}",
     "alreadyInQueue": "<b>{{list}}</b> já está na fila, {{name}}",
     "unfoundList": "Esta lista não existe mais",
-    "corroborateBanBySamePlayer": "Peça a outra pessoa para confirmar a proibição, {{name}}!"
+    "corroborateBanBySamePlayer": "Peça a outra pessoa para confirmar a proibição, {{name}}!",
+    "noSuggestion": "Você não sugeriu nada, {{name}}"
   },
   "stats": {
     "stats": "Estatísticas",

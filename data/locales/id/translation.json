@@ -157,7 +157,8 @@
     "fullQueue": "Antrian sudah mencapai maksimum 10 daftar, {{name}}",
     "alreadyInQueue": "<b>{{list}}</b> sudah ada dalam antrian, {{name}}",
     "unfoundList": "Daftar ini tidak lagi ada",
-    "corroborateBanBySamePlayer": "Dapatkan orang lain untuk mengonfirmasi pelarangan, {{name}}!"
+    "corroborateBanBySamePlayer": "Dapatkan orang lain untuk mengonfirmasi pelarangan, {{name}}!",
+    "noSuggestion": "Kamu tidak menyarankan apa pun, {{name}}"
   },
   "stats": {
     "stats": "Statistik",

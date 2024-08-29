@@ -8,6 +8,7 @@ const string_helpers_1 = require("../../../utils/string-helpers");
 const telegram_1 = __importDefault(require("../../../connections/telegram"));
 const player_1 = require("../../../models/tenthings/player");
 const players_1 = require("./players");
+const i18n_1 = __importDefault(require("../../../i18n"));
 var SuggestionType;
 (function (SuggestionType) {
     SuggestionType["Bug"] = "bug";
@@ -17,19 +18,26 @@ var SuggestionType;
 const sendSuggestion = async (msg, game, player, suggestionType) => {
     if (game && player) {
         const playerName = (0, players_1.getPlayerName)(player);
-        player.suggestions++;
-        player.state = player_1.PlayerState.None;
-        await player.save();
-        let message = `<b>${(0, string_helpers_1.capitalize)(suggestionType)}</b>\n${msg.text}\n`;
-        if (suggestionType == SuggestionType.Typo) {
-            message += `Current list: ${(0, string_helpers_1.parseSymbols)(game.list.name)}\n`;
+        if (!msg.text) {
+            telegram_1.default.queueMessage(msg.chatId, (0, i18n_1.default)(game.settings.language, "warnings.noSuggestion", { name: playerName }));
+            player.state = player_1.PlayerState.None;
+            await player.save();
         }
-        telegram_1.default.queueMessage(msg.chatId, `${message}Thank you, ${playerName}`);
-        message += `<i>${playerName}</i>`;
-        telegram_1.default.notify(message);
-        const chatLink = await telegram_1.default.getChat(msg.chatId);
-        message += chatLink ? `\n${chatLink}` : "";
-        telegram_1.default.notifyAdmins(message);
+        else {
+            player.suggestions++;
+            player.state = player_1.PlayerState.None;
+            await player.save();
+            let message = `<b>${(0, string_helpers_1.capitalize)(suggestionType)}</b>\n${msg.text}\n`;
+            if (suggestionType == SuggestionType.Typo) {
+                message += `Current list: ${(0, string_helpers_1.parseSymbols)(game.list.name)}\n`;
+            }
+            telegram_1.default.queueMessage(msg.chatId, `${message}Thank you, ${playerName}`);
+            message += `<i>${playerName}</i>`;
+            telegram_1.default.notify(message);
+            const chatLink = await telegram_1.default.getChat(msg.chatId);
+            message += chatLink ? `\n${chatLink}` : "";
+            telegram_1.default.notifyAdmins(message);
+        }
     }
 };
 exports.sendSuggestion = sendSuggestion;

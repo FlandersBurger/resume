@@ -148,7 +148,8 @@
     "fullQueue": "The queue already has the maximum of 10 lists, {{name}}",
     "alreadyInQueue": "<b>{{list}}</b> is already in the queue, {{name}}",
     "unfoundList": "This list no longer exists",
-    "corroborateBanBySamePlayer": "Get someone else to confirm the ban, {{name}}!"
+    "corroborateBanBySamePlayer": "Get someone else to confirm the ban, {{name}}!",
+    "noSuggestion": "You didn't suggest anything, {{name}}"
   },
   "stats": {
     "stats": "Stats",

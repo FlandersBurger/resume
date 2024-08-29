@@ -148,7 +148,8 @@
     "fullQueue": "Ang pila ay puno na at umabot na sa maximum na 10 listahan, {{name}}",
     "alreadyInQueue": "Ang <b>{{list}}</b> ay nasa pila na, {{name}}",
     "unfoundList": "Ang listahang ito ay hindi na umiiral",
-    "corroborateBanBySamePlayer": "Kumuha ng ibang tao upang kumpirmahin ang ban, {{name}}!"
+    "corroborateBanBySamePlayer": "Kumuha ng ibang tao upang kumpirmahin ang ban, {{name}}!",
+    "noSuggestion": "Wala kang iminungkahing anuman, {{name}}"
   },
   "stats": {
     "stats": "Estadistika",

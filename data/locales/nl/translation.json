@@ -151,7 +151,8 @@
     "fullQueue": "De wachtrij heeft al het maximum van 10 lijsten, {{name}}",
     "alreadyInQueue": "<b>{{list}}</b> staat al in de wachtrij, {{name}}",
     "unfoundList": "Deze lijst bestaat niet meer",
-    "corroborateBanBySamePlayer": "Laat iemand anders het verbod bevestigen, {{name}}!"
+    "corroborateBanBySamePlayer": "Laat iemand anders het verbod bevestigen, {{name}}!",
+    "noSuggestion": "Je hebt niets gesuggereerd, {{name}}"
   },
   "stats": {
     "stats": "Statistieken",

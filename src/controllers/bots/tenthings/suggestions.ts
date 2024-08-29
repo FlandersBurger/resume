@@ -5,6 +5,7 @@ import { IGame } from "@root/models/tenthings/game";
 import { HydratedDocument } from "mongoose";
 import { IPlayer, PlayerState } from "@root/models/tenthings/player";
 import { getPlayerName } from "./players";
+import i18n from "@root/i18n";
 
 export enum SuggestionType {
   Bug = "bug",
@@ -20,19 +21,25 @@ export const sendSuggestion = async (
 ) => {
   if (game && player) {
     const playerName = getPlayerName(player);
-    player.suggestions++;
-    player.state = PlayerState.None;
-    await player.save();
-    let message = `<b>${capitalize(suggestionType)}</b>\n${msg.text}\n`;
-    if (suggestionType == SuggestionType.Typo) {
-      message += `Current list: ${parseSymbols(game.list.name)}\n`;
+    if (!msg.text) {
+      bot.queueMessage(msg.chatId, i18n(game.settings.language, "warnings.noSuggestion", { name: playerName }));
+      player.state = PlayerState.None;
+      await player.save();
+    } else {
+      player.suggestions++;
+      player.state = PlayerState.None;
+      await player.save();
+      let message = `<b>${capitalize(suggestionType)}</b>\n${msg.text}\n`;
+      if (suggestionType == SuggestionType.Typo) {
+        message += `Current list: ${parseSymbols(game.list.name)}\n`;
+      }
+      bot.queueMessage(msg.chatId, `${message}Thank you, ${playerName}`);
+      message += `<i>${playerName}</i>`;
+      bot.notify(message);
+      const chatLink = await bot.getChat(msg.chatId);
+      message += chatLink ? `\n${chatLink}` : "";
+      bot.notifyAdmins(message);
     }
-    bot.queueMessage(msg.chatId, `${message}Thank you, ${playerName}`);
-    message += `<i>${playerName}</i>`;
-    bot.notify(message);
-    const chatLink = await bot.getChat(msg.chatId);
-    message += chatLink ? `\n${chatLink}` : "";
-    bot.notifyAdmins(message);
   }
 };
 
