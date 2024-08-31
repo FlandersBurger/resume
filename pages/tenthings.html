@@ -79,7 +79,7 @@
         <tr>
           <th ng-if="currentUser.admin"></th>
           <th ng-click="orderBy('name')">
-            Name
+            Name <span style="font-weight: lighter; font-size: small">({{count || 0}})</span>
             <i
               ng-if="order.field === 'name'"
               class="fas"

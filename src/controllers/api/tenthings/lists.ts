@@ -27,14 +27,16 @@ tenthingsListsRoute.get("/", async (req: QueryableRequest, res: Response) => {
   if (!res.locals.isAuthorized) res.sendStatus(401);
   else {
     const page = parseInt(req.query.page ?? 1);
-    const lists: LeanDocument<IList>[] = await List.find(parseQuery(req.query))
+    const query = parseQuery(req.query);
+    const count = await List.countDocuments(query);
+    const lists: LeanDocument<IList>[] = await List.find(query)
       .limit(parseInt(req.query.limit) || 0)
       .skip(parseInt(req.query.limit) * (page - 1) || 0)
       .sort({ [req.query.sort_by ?? "date"]: parseInt(req.query.order_by ?? -1) as SortOrder })
       .populate("creator", "_id username displayName")
       .populate("values.creator", "_id username displayName")
       .lean({ virtuals: true });
-    res.json({ result: lists, nextPage: page + 1 });
+    res.json({ result: lists, nextPage: page + 1, count });
   }
 });
 
@@ -299,14 +301,6 @@ tenthingsListsRoute.delete("/:id/values/:valueId", async (req: Request, res: Res
         res.sendStatus(200);
       }
     }
-  }
-});
-
-tenthingsListsRoute.get("/names", (_: Request, res: Response) => {
-  if (!res.locals.isAuthorized) res.sendStatus(401);
-  else {
-    const listNames = List.find({}).select("_id name");
-    res.json(listNames);
   }
 });
 

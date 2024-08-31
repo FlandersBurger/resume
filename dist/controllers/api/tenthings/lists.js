@@ -26,14 +26,16 @@ exports.tenthingsListsRoute.get("/", async (req, res) => {
         res.sendStatus(401);
     else {
         const page = parseInt(req.query.page ?? 1);
-        const lists = await index_1.List.find(parseQuery(req.query))
+        const query = parseQuery(req.query);
+        const count = await index_1.List.countDocuments(query);
+        const lists = await index_1.List.find(query)
             .limit(parseInt(req.query.limit) || 0)
             .skip(parseInt(req.query.limit) * (page - 1) || 0)
             .sort({ [req.query.sort_by ?? "date"]: parseInt(req.query.order_by ?? -1) })
             .populate("creator", "_id username displayName")
             .populate("values.creator", "_id username displayName")
             .lean({ virtuals: true });
-        res.json({ result: lists, nextPage: page + 1 });
+        res.json({ result: lists, nextPage: page + 1, count });
     }
 });
 exports.tenthingsListsRoute.get("/:id", async (req, res) => {
@@ -300,14 +302,6 @@ exports.tenthingsListsRoute.delete("/:id/values/:valueId", async (req, res) => {
                 res.sendStatus(200);
             }
         }
-    }
-});
-exports.tenthingsListsRoute.get("/names", (_, res) => {
-    if (!res.locals.isAuthorized)
-        res.sendStatus(401);
-    else {
-        const listNames = index_1.List.find({}).select("_id name");
-        res.json(listNames);
     }
 });
 const parseQuery = (query) => {

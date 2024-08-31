@@ -118,7 +118,7 @@ angular
       });
       TenThingsSvc.getListLanguageStats().then(({ data }) => {
         $scope.languageStats = data.reduce((result, { _id, count }) => {
-          result[_id] = count;
+          result[_id.language] = (result[_id.language] || 0) + count;
           return result;
         }, {});
       });
@@ -220,7 +220,7 @@ angular
         languages: Object.keys($scope.languageFilter).filter((language) => $scope.languageFilter[language]),
         categories: Object.keys($scope.categoryFilter).filter((category) => $scope.categoryFilter[category]),
       });
-      console.log("Page ", page, " results ", data.result.length);
+      $scope.count = data.count;
       if (data.result.length < 100) exhausted = true;
       else page = data.nextPage;
       $scope.loading = false;
