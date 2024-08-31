@@ -84,6 +84,7 @@ class TelegramBot {
     "Bad Request: group chat was upgraded to a supergroup chat",
     "Bad Request: not enough rights to send animations to the chat",
     "Bad Request: message to delete not found",
+    "Bad Request: message to edit not found",
     "Bad Request: query is too old and response timeout expired or query ID is invalid",
     "Bad Request: message is not modified: specified new message content and reply markup are exactly the same as a specified new message content and reply markup are exactly the same as a current content and reply markup of the message",
     "Bad Request: message is not modified: specified new message content and reply markup are exactly the same as a current content and reply markup of the message",
@@ -158,6 +159,7 @@ class TelegramBot {
     channel: number,
     message: string,
     options: { topic?: number; replyMessageId?: string; replyMarkup?: ReplyMarkup } = {},
+    retries: number = 0,
   ) => {
     const { topic, replyMessageId, replyMarkup } = options;
     message = encodeURIComponent(message);
@@ -180,7 +182,15 @@ class TelegramBot {
           } else this.errorHandler(channel, "Send message", error);
         } else {
           if (channel !== parseInt(process.env.MASTER_CHAT || "")) {
-            this.errorHandler(channel, "Send message", error);
+            if (error === "Bad Gateway" || error.startsWith("Too Many Requests: retry after ")) {
+              if (retries < 3) {
+                setTimeout(() => this.sendMessage(channel, message, options, retries++), retries * 500);
+              } else {
+                this.errorHandler(channel, "Send message (failed 3 times)", error);
+              }
+            } else {
+              this.errorHandler(channel, "Send message", error);
+            }
           }
         }
       });
