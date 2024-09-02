@@ -195,7 +195,7 @@ export const evaluate = async (msg: Message, game: HydratedDocument<IGame>, isNe
               game.chat_id,
               i18n(
                 game.settings.language,
-                `sentences.${msg.chatId === parseInt(process.env.ADMIN_CHAT || "") ? "curate" : "queue"}`,
+                `sentences.${msg.chatId === parseInt(process.env.ADMIN_CHAT || "") ? "curate" : "queue"}List`,
               ),
               keyboard,
             );

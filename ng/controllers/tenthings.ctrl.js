@@ -168,6 +168,7 @@ angular
 
     $scope.getLists = () => {
       $scope.lists = [];
+      $scope.highlightedListIds = [];
       page = 1;
       exhausted = false;
       getLists().then((lists) => {
@@ -228,7 +229,7 @@ angular
       return data.result;
     };
 
-    $scope.getListName = (listId) => $scope.lists.find(({ _id }) => _id === listId).name;
+    $scope.getListName = (listId) => $scope.lists.find(({ _id }) => _id === listId)?.name;
 
     $scope.updateValue = async (item) => {
       if (!item.value) {

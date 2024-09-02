@@ -166,7 +166,7 @@ const evaluate = async (msg, game, isNew) => {
                     const foundLists = await (0, lists_1.searchList)(search, game);
                     if (foundLists.length > 0) {
                         const keyboard = (0, keyboards_1.listsKeyboard)(foundLists);
-                        telegram_1.default.sendKeyboard(game.chat_id, (0, i18n_1.default)(game.settings.language, `sentences.${msg.chatId === parseInt(process.env.ADMIN_CHAT || "") ? "curate" : "queue"}`), keyboard);
+                        telegram_1.default.sendKeyboard(game.chat_id, (0, i18n_1.default)(game.settings.language, `sentences.${msg.chatId === parseInt(process.env.ADMIN_CHAT || "") ? "curate" : "queue"}List`), keyboard);
                     }
                     else {
                         telegram_1.default.queueMessage(game.chat_id, (0, i18n_1.default)(game.settings.language, "sentences.noSearchResults", {
