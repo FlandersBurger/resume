@@ -37,7 +37,7 @@ const resetDailyScore = () => {
             .select("_id id")
             .exec();
           for (let game of games) {
-            bot.queueMessage(game.chat_id, await getDailyScores(game));
+            bot.queueMessage(game.chat_id, await getDailyScores(game), game.topicId);
             const players: IPlayer[] = await Player.find({
               game: game._id,
               scoreDaily: { $gt: 0 },
@@ -56,7 +56,7 @@ const resetDailyScore = () => {
             message += `\t - <a href="https://paypal.me/Game">Paypal</a>\n`;
             message += `\t - Bitcoin Address: bc1qnr4y95d3w5rwahcypazpjdv33g8wupewmw6rpa3s2927qvgmduqsvcpgfs`;
             //'\n\nCome join us in the <a href="https://t.me/tenthings">Ten Things Supergroup</a>!'
-            bot.queueMessage(game.chat_id, message);
+            bot.queueMessage(game.chat_id, message, game.topicId);
             await Player.updateMany({ game: game._id, scoreDaily: 0 }, { $set: { playStreak: 0 } });
             await Player.updateMany(
               {

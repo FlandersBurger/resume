@@ -12,9 +12,6 @@ const game_1 = require("../../../models/tenthings/game");
 const string_helpers_1 = require("../../../utils/string-helpers");
 const hints_1 = require("./hints");
 const sass_1 = __importDefault(require("./sass"));
-const maingame_1 = require("./maingame");
-const minigame_1 = require("./minigame");
-const tinygame_1 = require("./tinygame");
 const players_1 = require("./players");
 const guessQueue = new bull_1.default("processGuess", {
     redis: {
@@ -116,18 +113,6 @@ const processGuess = async (guess) => {
     if (!player) {
         console.error(`Player not found for ${guess.player}`);
         return;
-    }
-    if (guess.match.type === game_1.GameType.MAINGAME) {
-        await (0, maingame_1.checkMaingame)(game, player, guess, guess.msg);
-        console.log(`${guess.game} (${game.settings.language}) - ${game.list.name} for ${guess.match.value}: "${guess.msg.text}" by ${player.first_name}`);
-    }
-    else if (guess.match.type === game_1.GameType.MINIGAME) {
-        await (0, minigame_1.checkMinigame)(game, player, guess, guess.msg);
-        console.log(`${guess.game} (${game.settings.language}) - Minigame guess for ${game.minigame.answer}: "${guess.msg.text}" by ${player.first_name}`);
-    }
-    else if (guess.match.type === game_1.GameType.TINYGAME) {
-        await (0, tinygame_1.checkTinygame)(game, player, guess, guess.msg);
-        console.log(`${guess.game} (${game.settings.language}) - Tinygame guess for ${game.tinygame.answer}: "${guess.msg.text}" by ${player.first_name}`);
     }
 };
 const getAnswerScore = (hintCount, accuracy, playerCount = 1) => Math.round(((hints_1.MAX_HINTS - hintCount + playerCount) / (hints_1.MAX_HINTS + playerCount)) * 10 * accuracy);

@@ -31,10 +31,10 @@ exports.hintCooldown = hintCooldown;
 const processHint = async (game, player, type = game_1.GameType.MAINGAME) => {
     if ((type === game_1.GameType.MAINGAME && game.hints >= exports.MAX_HINTS) ||
         (type !== game_1.GameType.MAINGAME && game[type].hints >= exports.MAX_HINTS)) {
-        telegram_1.default.queueMessage(game.chat_id, "What? Another hint? I'm just gonna ignore that request");
+        telegram_1.default.queueMessage(game.chat_id, "What? Another hint? I'm just gonna ignore that request", game.topicId);
     }
     else if (exports.hintCache[game._id.toString()] && exports.hintCache[game._id.toString()] > 0) {
-        telegram_1.default.queueMessage(game.chat_id, `Calm down with the hints, wait ${exports.hintCache[game._id.toString()]} more seconds`);
+        telegram_1.default.queueMessage(game.chat_id, `Calm down with the hints, wait ${exports.hintCache[game._id.toString()]} more seconds`, game.topicId);
     }
     else {
         if (player) {

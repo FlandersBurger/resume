@@ -78,7 +78,7 @@ export const selectList = async (game: IGame): Promise<HydratedDocument<IList>> 
       game.playedLists = [];
       game.cycles++;
       game.lastCycleDate = moment().toDate();
-      bot.queueMessage(game.chat_id, i18n(game.settings.language, "sentences.allListsPlayed"));
+      bot.queueMessage(game.chat_id, i18n(game.settings.language, "sentences.allListsPlayed"), game.topicId);
       list = await getRandomList({
         _id: { $nin: game.bannedLists },
         categories: { $nin: game.disabledCategories },

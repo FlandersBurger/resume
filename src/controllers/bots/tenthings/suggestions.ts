@@ -22,7 +22,11 @@ export const sendSuggestion = async (
   if (game && player) {
     const playerName = getPlayerName(player);
     if (!msg.text) {
-      bot.queueMessage(msg.chatId, i18n(game.settings.language, "warnings.noSuggestion", { name: playerName }));
+      bot.queueMessage(
+        msg.chatId,
+        i18n(game.settings.language, "warnings.noSuggestion", { name: playerName }),
+        msg.topicId,
+      );
       player.state = PlayerState.None;
       await player.save();
     } else {
@@ -33,7 +37,7 @@ export const sendSuggestion = async (
       if (suggestionType == SuggestionType.Typo) {
         message += `Current list: ${parseSymbols(game.list.name)}\n`;
       }
-      bot.queueMessage(msg.chatId, `${message}Thank you, ${playerName}`);
+      bot.queueMessage(msg.chatId, `${message}Thank you, ${playerName}`, msg.topicId);
       message += `<i>${playerName}</i>`;
       bot.notify(message);
       const chatLink = await bot.getChat(msg.chatId);
@@ -74,7 +78,11 @@ export const sendSuggestionMessage = async (
     case "feature":
       player.state = PlayerState.Feature;
       await player.save();
-      bot.sendMessage(game.chat_id, `<b>FEATURE</b>\nPlease suggest your feature in your next message, ${playerName}!`);
+      bot.sendMessage(
+        game.chat_id,
+        `<b>FEATURE</b>\nPlease suggest your feature in your next message, ${playerName}!`,
+        { topic: game.topicId },
+      );
       break;
     case "typo":
       player.state = PlayerState.Typo;
@@ -82,6 +90,7 @@ export const sendSuggestionMessage = async (
       bot.sendMessage(
         game.chat_id,
         `<b>TYPO</b>\nPlease let me know what the typo is in your next message, ${playerName}!\nMention the list name too if the typo is not part of: <i>"${parseSymbols(game.list.name)}"</i>`,
+        { topic: game.topicId },
       );
       break;
     case "bug":
@@ -90,6 +99,7 @@ export const sendSuggestionMessage = async (
       bot.sendMessage(
         game.chat_id,
         `<b>BUG</b>\nPlease provide some details as to what went wrong in your next message, ${playerName}!`,
+        { topic: game.topicId },
       );
       break;
     default:

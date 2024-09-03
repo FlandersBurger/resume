@@ -39,7 +39,7 @@ export const processSkip = (game: IGame, skipper: IPlayer) => {
     if (skipCache[game.chat_id] && skipCache[game.chat_id].playerId !== skipper._id) {
       skipCache[game.chat_id].timer = 2;
     } else if (skipCache[game.chat_id] && skipCache[game.chat_id].playerId === skipper._id) {
-      bot.queueMessage(game.chat_id, i18n(game.settings.language, "sentences.skipDenial"));
+      bot.queueMessage(game.chat_id, i18n(game.settings.language, "sentences.skipDenial"), game.topicId);
     } else {
       bot.queueMessage(
         game.chat_id,
@@ -47,6 +47,7 @@ export const processSkip = (game: IGame, skipper: IPlayer) => {
           list: game.list.name,
           skipDelay: SKIP_DELAY,
         }),
+        game.topicId,
       );
       skipCache[game.chat_id] = {
         timer: SKIP_DELAY,
@@ -85,7 +86,7 @@ const skipList = (game: IGame, skipper: IPlayer) => {
       str += "</i>\n";
       return str;
     }, "");
-    bot.queueMessage(game.chat_id, message);
+    bot.queueMessage(game.chat_id, message, game.topicId);
     bot.sendKeyboard(
       game.chat_id,
       `Experimental feature to permanently ban list from game\nDo you want to ban "${game.list.name}"`,
@@ -109,7 +110,7 @@ const skipList = (game: IGame, skipper: IPlayer) => {
     } catch (err) {
       return bot.notifyAdmin(`Skip List Error:\n${err}`);
     }
-    bot.queueMessage(game.chat_id, await getDailyScores(game, 5));
+    bot.queueMessage(game.chat_id, await getDailyScores(game, 5), game.topicId);
     newRound(game);
   });
 };
@@ -136,6 +137,7 @@ export const checkSkipper = async (game: IGame, msg: Message, player: IPlayer) =
               name: parseSymbols(player.first_name),
               delay: skippers[player.id].delay,
             }),
+            game.topicId,
           );
           return false;
         } else if (skippers[player.id].delay < 60) {
@@ -147,6 +149,7 @@ export const checkSkipper = async (game: IGame, msg: Message, player: IPlayer) =
               name: parseSymbols(player.first_name),
               delay: skippers[player.id].delay,
             }),
+            game.topicId,
           );
           return false;
         } else if (skippers[player.id].delay != 3600) {
@@ -180,6 +183,7 @@ export const vetoSkip = async (game: IGame, player: HydratedDocument<IPlayer>) =
         name: parseSymbols(player.first_name),
         vetoDelay: VETO_DELAY,
       }),
+      game.topicId,
     );
   } else {
     bot.queueMessage(
@@ -187,6 +191,7 @@ export const vetoSkip = async (game: IGame, player: HydratedDocument<IPlayer>) =
       i18n(game.settings.language, "sentences.skipNotFound", {
         name: parseSymbols(player.first_name),
       }),
+      game.topicId,
     );
   }
 };
@@ -200,5 +205,6 @@ export const abortSkip = (game: IGame, player: IPlayer) => {
       name: parseSymbols(player.first_name),
       vetoDelay: VETO_DELAY,
     }),
+    game.topicId,
   );
 };

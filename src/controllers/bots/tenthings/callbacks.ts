@@ -111,6 +111,7 @@ export default async (callbackQuery: CallbackData) => {
                 list: parseSymbols(foundList.name),
                 score: makePercentage(foundList.score),
               }),
+              game.topicId,
             );
           }
         }
@@ -163,7 +164,11 @@ export default async (callbackQuery: CallbackData) => {
             game.disabledCategories.splice(categoryIndex, 1);
           } else {
             if (game.disabledCategories.length === categories.length - 1) {
-              return bot.queueMessage(callbackQuery.chatId, i18n(game.settings.language, "warnings.minimum1Category"));
+              return bot.queueMessage(
+                callbackQuery.chatId,
+                i18n(game.settings.language, "warnings.minimum1Category"),
+                game.topicId,
+              );
             }
             game.disabledCategories.push(callbackQuery.data);
           }
@@ -181,6 +186,7 @@ export default async (callbackQuery: CallbackData) => {
           bot.queueMessage(
             callbackQuery.chatId,
             i18n(game.settings.language, "warnings.adminFunction", { name: callbackQuery.from.name }),
+            game.topicId,
           );
         }
       }
@@ -223,6 +229,7 @@ export default async (callbackQuery: CallbackData) => {
           bot.queueMessage(
             callbackQuery.chatId,
             i18n(game.settings.language, "warnings.adminFunction", { name: callbackQuery.from.name }),
+            game.topicId,
           );
         }
       }
@@ -279,15 +286,21 @@ export default async (callbackQuery: CallbackData) => {
         msg += `Rate Difficulty and Update Frequency`;
         bot.notifyAdmins(msg, curateListKeyboard(list));
       } else {
-        game = await Game.findOne({ chat_id: callbackQuery.chatId }).select("chat_id pickedLists").exec();
+        game = await Game.findOne({ chat_id: callbackQuery.chatId }).select("chat_id topicId pickedLists").exec();
         if (!game) return;
         if (game.pickedLists.length >= 10)
           return bot.queueMessage(
             callbackQuery.chatId,
             i18n(game.settings.language, "warnings.fullQueue", { name: callbackQuery.from.name }),
+            game.topicId,
           );
         const list = await List.findOne({ _id: callbackQuery.data }).exec();
-        if (!list) return bot.queueMessage(callbackQuery.chatId, i18n(game.settings.language, "warnings.unfoundList"));
+        if (!list)
+          return bot.queueMessage(
+            callbackQuery.chatId,
+            i18n(game.settings.language, "warnings.unfoundList"),
+            game.topicId,
+          );
         const foundList = find(game.pickedLists, (pickedListId: Types.ObjectId) => pickedListId == list._id);
         if (foundList) {
           bot.queueMessage(
@@ -296,6 +309,7 @@ export default async (callbackQuery: CallbackData) => {
               list: list.name,
               name: callbackQuery.from.name,
             }),
+            game.topicId,
           );
         } else {
           game.pickedLists.push(list._id);
@@ -314,6 +328,7 @@ export default async (callbackQuery: CallbackData) => {
               list: list.name,
               name: callbackQuery.from.name,
             }),
+            game.topicId,
           );
         }
       }
@@ -353,6 +368,7 @@ export default async (callbackQuery: CallbackData) => {
       bot.queueMessage(
         callbackQuery.chatId,
         `<b>${list.name}</b>\n${i18n(game.settings.language, "description")}:\n<i>${list.description || "N/A"}</i>`,
+        game.topicId,
       );
       break;
     case CallbackDataType.Difficulty:

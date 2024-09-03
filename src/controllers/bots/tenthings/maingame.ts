@@ -46,7 +46,7 @@ export const checkRound = (game: IGame) => {
       if (foundList) {
         let message = getListStats(game.settings.language, foundList, undefined);
         message += await getDailyScores(game, 5);
-        bot.queueMessage(game.chat_id, message);
+        bot.queueMessage(game.chat_id, message, game.topicId);
         foundList.lastPlayDate = moment().toDate();
         foundList.save();
       }
@@ -115,7 +115,7 @@ export const newRound = (currentGame: IGame) => {
       message += `<b>${game.list.categories
         .map((category) => i18n(game.settings.language, `categories.${category}`))
         .join(", ")}</b>`;
-      bot.queueMessage(game.chat_id, message);
+      bot.queueMessage(game.chat_id, message, game.topicId);
       setTimeout(() => {
         let message = `<b>${game.list.name}</b> (${game.list.answers}) ${i18n(
           game.settings.language,
@@ -123,7 +123,7 @@ export const newRound = (currentGame: IGame) => {
           { creator: (game.list.creator as IUser).username },
         )}`;
         message += game.list.description ? `\n<i>${parseSymbols(game.list.description)}</i>` : "";
-        bot.queueMessage(game.chat_id, message);
+        bot.queueMessage(game.chat_id, message, game.topicId);
       }, 2000);
       game.playedLists.push(game.list._id);
       game.save((err) => {
@@ -137,7 +137,7 @@ export const activate = async (game: HydratedDocument<IGame>, save = false) => {
   if (!game.enabled) {
     game.lastPlayDate = moment().toDate();
     game.enabled = true;
-    bot.sendMessage(game.chat_id, "Ten Things started");
+    bot.sendMessage(game.chat_id, "Ten Things started", { topic: game.topicId });
     if (save) await game.save();
   }
 };
@@ -146,7 +146,7 @@ export const deactivate = (game: HydratedDocument<IGame>) => {
   if (game.enabled) {
     game.enabled = false;
     game.save();
-    bot.sendMessage(game.chat_id, i18n(game.settings.language, "sentences.inactivity"));
+    bot.sendMessage(game.chat_id, i18n(game.settings.language, "sentences.inactivity"), { topic: game.topicId });
   }
 };
 
@@ -241,7 +241,7 @@ export const checkMaingame = async (
   } else if (match) {
     player.snubs++;
     if (game.settings.snubs) {
-      bot.queueMessage(msg.chatId, getSnubbedMessage(parseSymbols(match.value), player, match.guesser));
+      bot.queueMessage(game.chat_id, getSnubbedMessage(parseSymbols(match.value), player, match.guesser), game.topicId);
     }
   }
   try {
@@ -302,7 +302,7 @@ export const sendMaingameMessage = async (game: IGame, long = true) => {
     }
     return str;
   }, "");
-  bot.queueMessage(game.chat_id, message);
+  bot.queueMessage(game.chat_id, message, game.topicId);
 };
 
 const guessed = async (
@@ -335,5 +335,5 @@ const guessed = async (
   } else {
     message += `\n${i18n(game.settings.language, "sentences.roundOver")}`;
   }
-  return await bot.queueMessage(chatId, message);
+  return await bot.queueMessage(chatId, message, game.topicId);
 };

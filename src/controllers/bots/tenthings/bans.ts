@@ -16,12 +16,13 @@ export const initiateBan = async (game: IGame, callbackQuery: CallbackData) => {
   ) {
     const foundList = await List.findOne({ _id: callbackQuery.data }).exec();
     if (!foundList) {
-      return bot.queueMessage(game.chat_id, i18n(game.settings.language, "warnings.unfoundList"));
+      return bot.queueMessage(game.chat_id, i18n(game.settings.language, "warnings.unfoundList"), game.topicId);
     }
     if (game.bannedLists.some((bannedListId) => bannedListId.toString() == callbackQuery.data)) {
       bot.queueMessage(
         game.chat_id,
         i18n(game.settings.language, "sentences.alreadyBannedList", { list: foundList.name }),
+        game.topicId,
       );
       bot.deleteMessage(callbackQuery.chatId, callbackQuery.id);
     } else {
@@ -40,6 +41,7 @@ export const initiateBan = async (game: IGame, callbackQuery: CallbackData) => {
     bot.queueMessage(
       game.chat_id,
       i18n(game.settings.language, "warnings.adminFunction", { name: callbackQuery.from.name }),
+      game.topicId,
     );
   }
 };
@@ -49,6 +51,7 @@ export const processBan = (game: HydratedDocument<IGame>, callbackQuery: Callbac
     bot.queueMessage(
       game.chat_id,
       i18n(game.settings.language, "sentences.banNotFound", { name: callbackQuery.from.name }),
+      game.topicId,
     );
     bot.deleteMessage(callbackQuery.chatId, callbackQuery.id);
   } else if (cache[`${game._id}-${callbackQuery.data}`] !== callbackQuery.from.id || game.chat_id > 0) {
@@ -59,6 +62,7 @@ export const processBan = (game: HydratedDocument<IGame>, callbackQuery: Callbac
     bot.queueMessage(
       game.chat_id,
       i18n(game.settings.language, "warnings.corroborateBanBySamePlayer", { name: callbackQuery.from.name }),
+      game.topicId,
     );
   }
 };
@@ -67,16 +71,24 @@ const banList = async (game: HydratedDocument<IGame>, listId: string) => {
   const list = await List.findOne({ _id: listId }).select("_id bans name").exec();
   if (list) {
     if (game.bannedLists.some((bannedListId) => bannedListId.toString() == listId)) {
-      bot.queueMessage(game.chat_id, i18n(game.settings.language, "sentences.alreadyBannedList", { list: list.name }));
+      bot.queueMessage(
+        game.chat_id,
+        i18n(game.settings.language, "sentences.alreadyBannedList", { list: list.name }),
+        game.topicId,
+      );
     } else {
       game.bannedLists.push(list._id);
       await game.save();
       list.bans++;
       await list.save();
-      bot.queueMessage(game.chat_id, i18n(game.settings.language, "sentences.listBanned", { list: list.name }));
+      bot.queueMessage(
+        game.chat_id,
+        i18n(game.settings.language, "sentences.listBanned", { list: list.name }),
+        game.topicId,
+      );
       console.log(`${game.chat_id} (${game.settings.language}) banned ${list.name}`);
     }
   } else {
-    bot.queueMessage(game.chat_id, i18n(game.settings.language, "warnings.unfoundList"));
+    bot.queueMessage(game.chat_id, i18n(game.settings.language, "warnings.unfoundList"), game.topicId);
   }
 };

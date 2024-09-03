@@ -56,7 +56,7 @@ export const sendTinygameMessage = (game: IGame) => {
     return msg;
   }, "");
   message += `\n<b>${getHint(game.tinygame.hints, game.tinygame.answer)}</b>`;
-  bot.queueMessage(game.chat_id, message);
+  bot.queueMessage(game.chat_id, message, game.topicId);
 };
 
 export const checkTinygame = async (
@@ -81,7 +81,7 @@ export const checkTinygame = async (
   message += `\n<u>${player.scoreDaily - score} + ${i18n(game.settings.language, "point", {
     count: score,
   })}</u>`;
-  bot.queueMessage(msg.chatId, message);
+  bot.queueMessage(msg.chatId, message, game.topicId);
   setTimeout(() => {
     createTinygame(game);
   }, 1000);

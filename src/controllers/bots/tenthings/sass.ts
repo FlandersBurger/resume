@@ -10,12 +10,12 @@ export default async (game: IGame, text: string) => {
       console.log(`SASS: ${text} => ${sassText}`);
       if (sassText.includes("http") && !sassText.includes("paypal")) {
         if (sassText.includes(".gif")) {
-          bot.sendAnimation(game.chat_id, sassText);
+          bot.sendAnimation(game.chat_id, sassText, game.topicId);
         } else {
-          bot.sendPhoto(game.chat_id, sassText);
+          bot.sendPhoto(game.chat_id, sassText, game.topicId);
         }
       } else {
-        bot.queueMessage(game.chat_id, sassText);
+        bot.queueMessage(game.chat_id, sassText, game.topicId);
       }
     }
   }

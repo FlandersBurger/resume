@@ -73,7 +73,7 @@ const selectList = async (game) => {
             game.playedLists = [];
             game.cycles++;
             game.lastCycleDate = (0, moment_1.default)().toDate();
-            telegram_1.default.queueMessage(game.chat_id, (0, i18n_1.default)(game.settings.language, "sentences.allListsPlayed"));
+            telegram_1.default.queueMessage(game.chat_id, (0, i18n_1.default)(game.settings.language, "sentences.allListsPlayed"), game.topicId);
             list = await (0, exports.getRandomList)({
                 _id: { $nin: game.bannedLists },
                 categories: { $nin: game.disabledCategories },

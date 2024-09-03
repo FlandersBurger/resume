@@ -12,14 +12,8 @@ import i18n from "@root/i18n";
 import { makePercentage, makeReadable } from "@root/utils/number-helpers";
 import { parseSymbols } from "@root/utils/string-helpers";
 
-export const getScores = async (game_id: number, type: string) => {
-  /*
-  stats('score', game_id, scoreType)
-  .then(function(str) {
-    bot.queueMessage(game_id, str);
-  });
-  */
-  const game = await Game.findOne({ chat_id: game_id }).select("chat_id settings").exec();
+export const getScores = async (chat_id: number, type: string) => {
+  const game = await Game.findOne({ chat_id: chat_id }).select("chat_id settings").exec();
   if (!game) return;
   const players = await Player.find({ game: game._id }).exec();
   let str = "";
@@ -35,7 +29,7 @@ export const getScores = async (game_id: number, type: string) => {
         .forEach(({ first_name, highScore }, index) => {
           str += `${index + 1}: ${parseSymbols(first_name)}: ${highScore}\n`;
         });
-      bot.queueMessage(game_id, str);
+      bot.queueMessage(chat_id, str, game.topicId);
       break;
     case "tr":
       str = "<b>Top Win Ratio</b>\n";
@@ -53,7 +47,7 @@ export const getScores = async (game_id: number, type: string) => {
             Math.round(plays === 0 ? 0 : (wins / plays) * 10000) / 100
           }%)\n`;
         });
-      bot.queueMessage(game_id, str);
+      bot.queueMessage(chat_id, str, game.topicId);
       break;
     case "ts":
       str = "<b>Top Overall Score</b>\n";
@@ -65,7 +59,7 @@ export const getScores = async (game_id: number, type: string) => {
         .forEach(({ first_name, score }, index) => {
           str += `${index + 1}: ${parseSymbols(first_name)}: ${score}\n`;
         });
-      bot.queueMessage(game_id, str);
+      bot.queueMessage(chat_id, str, game.topicId);
       break;
     case "ta":
       str = "<b>Top Average Daily Score</b>\n";
@@ -81,10 +75,10 @@ export const getScores = async (game_id: number, type: string) => {
         .forEach(({ first_name, plays, score }, index) => {
           str += `${index + 1}: ${parseSymbols(first_name)}: ${Math.round(plays === 0 ? 0 : score / plays)}\n`;
         });
-      bot.queueMessage(game_id, str);
+      bot.queueMessage(chat_id, str, game.topicId);
       break;
     default:
-      getDailyScores(game).then((message) => bot.queueMessage(game_id, message));
+      getDailyScores(game).then((message) => bot.queueMessage(chat_id, message));
   }
 };
 
@@ -176,7 +170,7 @@ export const getStats = async (chat_id: number, data: string, requestor?: string
           //message += `Cycled through all lists ${games.reduce((count, {cycles}) => count + (cycles ? cycles : 0), 0)} times\n`;
           message += "\n";
 
-          bot.queueMessage(game.chat_id, message);
+          bot.queueMessage(game.chat_id, message, game.topicId);
         },
       );
       break;
@@ -225,7 +219,7 @@ export const getStats = async (chat_id: number, data: string, requestor?: string
         (game.playedLists.length / count) * 100,
       ).toFixed(0)}%)\n`;
       message += "\n";
-      bot.queueMessage(game.chat_id, message);
+      bot.queueMessage(game.chat_id, message, game.topicId);
       break;
     case "c":
       creatorStats(game, requestor);
@@ -233,9 +227,9 @@ export const getStats = async (chat_id: number, data: string, requestor?: string
     case "p":
       const player = await Player.findOne({ game: game._id, id: _id });
       if (!player) {
-        bot.queueMessage(game.chat_id, "Player not found");
+        bot.queueMessage(game.chat_id, "Player not found", game.topicId);
       } else {
-        bot.queueMessage(game.chat_id, getPlayerStats(player, requestor));
+        bot.queueMessage(game.chat_id, getPlayerStats(player, requestor), game.topicId);
       }
       break;
     case "l":
@@ -245,9 +239,9 @@ export const getStats = async (chat_id: number, data: string, requestor?: string
         .populate("creator")
         .exec((_, gameList) => {
           if (!gameList) {
-            bot.queueMessage(game.chat_id, "List not found");
+            bot.queueMessage(game.chat_id, "List not found", game.topicId);
           } else {
-            bot.queueMessage(game.chat_id, getListStats(game.settings.language, gameList, requestor));
+            bot.queueMessage(game.chat_id, getListStats(game.settings.language, gameList, requestor), game.topicId);
           }
         });
       break;
@@ -471,7 +465,7 @@ export const getStats = async (chat_id: number, data: string, requestor?: string
       );
       break;
     default:
-      bot.queueMessage(game.chat_id, "Something");
+      bot.queueMessage(game.chat_id, "Something", game.topicId);
   }
 };
 
@@ -479,7 +473,7 @@ const addRequestor = (msg: string, requestor?: string) =>
   msg + (requestor ? `<i>Requested by ${parseSymbols(requestor)}</i>\n` : "");
 
 const listStats = (
-  { chat_id }: IGame,
+  { chat_id, topicId }: IGame,
   field: keyof IList,
   divisor: keyof IList | undefined,
   ratio: number,
@@ -514,12 +508,12 @@ const listStats = (
             divisor ? "%" : ""
           })\n`;
         });
-      bot.queueMessage(chat_id, message);
+      bot.queueMessage(chat_id, message, topicId);
     });
 };
 
 const playerStats = async (
-  { chat_id }: IGame,
+  { chat_id, topicId }: IGame,
   players: IPlayer[],
   field: keyof IPlayer,
   divisor: keyof IPlayer | undefined,
@@ -553,11 +547,11 @@ const playerStats = async (
         Math.round(((playerField * ratio) / playerDivisor) * 100) / 100
       }${divisor ? "%" : ""})\n`;
     });
-  bot.queueMessage(chat_id, message);
+  bot.queueMessage(chat_id, message, topicId);
 };
 
 const voteStats = async (
-  { chat_id }: IGame,
+  { chat_id, topicId }: IGame,
   players: IPlayer[],
   sorter: SortOrder,
   title: string,
@@ -577,11 +571,11 @@ const voteStats = async (
           message += `${i++}. ${player.first_name} (${voter.votes})\n`;
         }
       });
-      bot.queueMessage(chat_id, message);
+      bot.queueMessage(chat_id, message, topicId);
     });
 };
 
-const creatorStats = async ({ chat_id }: IGame, requestor?: string) => {
+const creatorStats = async ({ chat_id, topicId }: IGame, requestor?: string) => {
   const lists = await List.aggregate([
     { $unwind: "$votes" },
     {
@@ -652,11 +646,11 @@ const creatorStats = async ({ chat_id }: IGame, requestor?: string) => {
       result += ` - ${stat.creator} - ${stat.likeRatio}\n`;
       return result;
     }, "");
-  bot.queueMessage(chat_id, message);
+  bot.queueMessage(chat_id, message, topicId);
 };
 
 const voteSentimentStats = async (
-  { chat_id }: IGame,
+  { chat_id, topicId }: IGame,
   players: IPlayer[],
   sorter: SortOrder,
   title: string,
@@ -680,7 +674,7 @@ const voteSentimentStats = async (
           message += `${i++}. ${player.first_name} (${voter.votes})\n`;
         }
       });
-      bot.queueMessage(chat_id, message);
+      bot.queueMessage(chat_id, message, topicId);
     });
 };
 
