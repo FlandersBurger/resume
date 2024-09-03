@@ -4,7 +4,7 @@ import Queue, { Job } from "bull";
 import i18n from "@root/i18n";
 import redis from "@root/queue";
 import httpClient from "@root/http-client";
-import { chatNotFound, botMuted } from "@tenthings/errors";
+import { chatNotFound, botMuted, noTopic } from "@tenthings/errors";
 import { checkSpam } from "@tenthings/spam";
 import { MessageType } from "@tenthings/main";
 import { parseSymbols, maskUrls } from "@root/utils/string-helpers";
@@ -109,8 +109,9 @@ class TelegramBot {
         botMuted(channel);
       } else if (!this.ignoreReasons.includes(reason)) {
         bot.notifyAdmin(`Error from "${source}" in channel ${channel}:\n${parseSymbols(reason)}`);
-        // } else if (reason.includes("Bad Request: message thread not found")) {
-        //   noTopic(channel);
+      } else if (reason.includes("Bad Request: message thread not found")) {
+        noTopic(channel);
+        bot.notifyAdmin(`${channel} has no topic`);
       } else {
         console.error(reason);
       }

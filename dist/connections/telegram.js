@@ -64,6 +64,10 @@ class TelegramBot {
                 else if (!this.ignoreReasons.includes(reason)) {
                     bot.notifyAdmin(`Error from "${source}" in channel ${channel}:\n${(0, string_helpers_1.parseSymbols)(reason)}`);
                 }
+                else if (reason.includes("Bad Request: message thread not found")) {
+                    (0, errors_1.noTopic)(channel);
+                    bot.notifyAdmin(`${channel} has no topic`);
+                }
                 else {
                     console.error(reason);
                 }
