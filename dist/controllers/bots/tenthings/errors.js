@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.botMuted = exports.chatNotFound = void 0;
+exports.noTopic = exports.botMuted = exports.chatNotFound = void 0;
 const index_1 = require("../../../models/index");
 const chatNotFound = async (chat_id) => {
     const inactiveGame = await index_1.Game.findOneAndUpdate({ chat_id }, { $set: { enabled: false } });
@@ -18,4 +18,8 @@ const botMuted = async (chat_id, reason) => {
     }
 };
 exports.botMuted = botMuted;
+const noTopic = async (chat_id) => {
+    await index_1.Game.findOneAndUpdate({ chat_id, enabled: true }, { $set: { topicId: null } });
+};
+exports.noTopic = noTopic;
 //# sourceMappingURL=errors.js.map

@@ -15,3 +15,7 @@ export const botMuted = async (chat_id: number, reason?: string) => {
     console.error(`Muted game disabled: ${chat_id}${reason ? `, Reason: ${reason}` : ""}`);
   }
 };
+
+export const noTopic = async (chat_id: number) => {
+  await Game.findOneAndUpdate({ chat_id, enabled: true }, { $set: { topicId: null } });
+};
