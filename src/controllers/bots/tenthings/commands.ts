@@ -91,18 +91,16 @@ export const evaluate = async (msg: Message, game: HydratedDocument<IGame>, isNe
           i18n(game.settings.language, "sentences.introduction", {
             name: player.first_name,
           }),
-          msg.topicId,
         );
         break;
       case "/logica":
       case "/logic":
-        bot.queueMessage(msg.chatId, getLogicMessage(game.settings.language), msg.topicId);
+        bot.queueMessage(msg.chatId, getLogicMessage(game.settings.language));
         break;
       case "/comandos":
         bot.queueMessage(
           msg.chatId,
           commands.map((command) => `/${command} - ${i18n("PT", `commands.${command}.description`)}`).join("\n"),
-          msg.topicId,
         );
         break;
       case "/commands":
@@ -111,7 +109,6 @@ export const evaluate = async (msg: Message, game: HydratedDocument<IGame>, isNe
           commands
             .map((command) => `/${command} - ${i18n(game.settings.language, `commands.${command}.description`)}`)
             .join("\n"),
-          msg.topicId,
         );
         break;
       case "/parar":
@@ -122,7 +119,6 @@ export const evaluate = async (msg: Message, game: HydratedDocument<IGame>, isNe
           bot.queueMessage(
             game.chat_id,
             i18n(game.settings.language, "warnings.adminFunction", { name: player.first_name }),
-            msg.topicId,
           );
         }
         break;
@@ -149,7 +145,7 @@ export const evaluate = async (msg: Message, game: HydratedDocument<IGame>, isNe
       case "/minipule":
       case "/miniskip":
         if (await checkSkipper(game, msg, player)) {
-          bot.queueMessage(msg.chatId, `The minigame answer was:\n<i>${game.minigame.answer}</i>`, msg.topicId);
+          bot.queueMessage(msg.chatId, `The minigame answer was:\n<i>${game.minigame.answer}</i>`);
           setTimeout(() => {
             createMinigame(game);
           }, 200);
@@ -158,7 +154,7 @@ export const evaluate = async (msg: Message, game: HydratedDocument<IGame>, isNe
       case "/puleminusculo":
       case "/tinyskip":
         if (await checkSkipper(game, msg, player)) {
-          bot.queueMessage(msg.chatId, `The tinygame answer was:\n<i>${game.tinygame.answer}</i>`, msg.topicId);
+          bot.queueMessage(msg.chatId, `The tinygame answer was:\n<i>${game.tinygame.answer}</i>`);
           setTimeout(() => {
             createTinygame(game);
           }, 200);
@@ -169,12 +165,7 @@ export const evaluate = async (msg: Message, game: HydratedDocument<IGame>, isNe
         break;
       case "/estatisticas":
       case "/stats":
-        bot.sendKeyboard(
-          game.chat_id,
-          `<b>${i18n(game.settings.language, "stats.stats")}</b>`,
-          statsKeyboard(),
-          msg.topicId,
-        );
+        bot.sendKeyboard(game.chat_id, `<b>${i18n(game.settings.language, "stats.stats")}</b>`, statsKeyboard());
         break;
       case "/erro":
       case "/suggest":
@@ -192,7 +183,6 @@ export const evaluate = async (msg: Message, game: HydratedDocument<IGame>, isNe
           return bot.queueMessage(
             game.chat_id,
             `${i18n(game.settings.language, "sentences.queueFull", { name: parseSymbols(player.first_name) })}\n -> /lists`,
-            msg.topicId,
           );
         if (search) {
           player.searches++;
@@ -216,14 +206,12 @@ export const evaluate = async (msg: Message, game: HydratedDocument<IGame>, isNe
                 search,
                 name: parseSymbols(player.first_name),
               }),
-              msg.topicId,
             );
           }
         } else {
           bot.queueMessage(
             msg.chatId,
             i18n(game.settings.language, "sentences.emptySearch", { name: parseSymbols(player.first_name) }),
-            msg.topicId,
           );
         }
         break;
@@ -274,7 +262,7 @@ export const evaluate = async (msg: Message, game: HydratedDocument<IGame>, isNe
         break;
       case "/pontuacao":
       case "/score":
-        bot.queueMessage(game.chat_id, await getDailyScores(game), msg.topicId);
+        bot.queueMessage(game.chat_id, await getDailyScores(game));
         break;
       case "/minijogo":
       case "/minigame":
@@ -300,10 +288,9 @@ export const evaluate = async (msg: Message, game: HydratedDocument<IGame>, isNe
               game.chat_id,
               `<b>${i18n(game.settings.language, "category")}</b>`,
               categoriesKeyboard(game),
-              msg.topicId,
             );
           } else {
-            bot.queueMessage(game.chat_id, getCategoriesMessage(game), msg.topicId);
+            bot.queueMessage(game.chat_id, getCategoriesMessage(game));
           }
         }
         break;
@@ -315,20 +302,18 @@ export const evaluate = async (msg: Message, game: HydratedDocument<IGame>, isNe
               game.chat_id,
               `<b>${i18n(game.settings.language, "settings")}</b>`,
               settingsKeyboard(game),
-              msg.topicId,
             );
           } else {
             bot.queueMessage(
               game.chat_id,
               i18n(game.settings.language, "warnings.adminFunction", { name: player.first_name }),
-              msg.topicId,
             );
           }
         }
         break;
       case "/check":
         if (msg.from.id === parseInt(process.env.MASTER_CHAT || "")) {
-          bot.queueMessage(msg.chatId, "Yes, master. Let me send you what you need!", msg.topicId);
+          bot.queueMessage(msg.chatId, "Yes, master. Let me send you what you need!");
           bot.notifyAdmin(
             `Chat id: ${msg.chatId}\nGame _id: ${game._id}\nSettings:\n${JSON.stringify(game.settings)}\nList: ${
               game.list.name
@@ -344,7 +329,7 @@ export const evaluate = async (msg: Message, game: HydratedDocument<IGame>, isNe
           game.pickedLists = [];
           //game.playedLists = [];
           game.save();
-          bot.queueMessage(msg.chatId, "Flushed this chat", msg.topicId);
+          bot.queueMessage(msg.chatId, "Flushed this chat");
         }
         break;
       case "/minigames":
@@ -353,14 +338,14 @@ export const evaluate = async (msg: Message, game: HydratedDocument<IGame>, isNe
         }
         break;
       case "/ping":
-        bot.queueMessage(msg.chatId, "pong", msg.topicId);
+        bot.queueMessage(msg.chatId, "pong");
         break;
       case "/hello":
-        bot.queueMessage(msg.chatId, "You already had me but you got greedy, now you ruined it", msg.topicId);
+        bot.queueMessage(msg.chatId, "You already had me but you got greedy, now you ruined it");
         break;
       case "/queue":
         getQueue().then((message: string) => {
-          bot.sendMessage(msg.chatId, message, { topic: msg.topicId });
+          bot.sendMessage(msg.chatId, message);
         }, console.error);
         break;
       case "/listas":
@@ -375,10 +360,10 @@ export const evaluate = async (msg: Message, game: HydratedDocument<IGame>, isNe
             for (const list of upcomingLists.slice(0, 10)) {
               message += `- ${list.name}\n`;
             }
-            bot.queueMessage(msg.chatId, message, msg.topicId);
+            bot.queueMessage(msg.chatId, message);
           });
         } else {
-          bot.queueMessage(msg.chatId, i18n(game.settings.language, "sentences.noUpcomingLists"), msg.topicId);
+          bot.queueMessage(msg.chatId, i18n(game.settings.language, "sentences.noUpcomingLists"));
         }
         break;
       default:

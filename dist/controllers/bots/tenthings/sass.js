@@ -13,14 +13,14 @@ exports.default = async (game, text) => {
             console.log(`SASS: ${text} => ${sassText}`);
             if (sassText.includes("http") && !sassText.includes("paypal")) {
                 if (sassText.includes(".gif")) {
-                    telegram_1.default.sendAnimation(game.chat_id, sassText, game.topicId);
+                    telegram_1.default.sendAnimation(game.chat_id, sassText);
                 }
                 else {
-                    telegram_1.default.sendPhoto(game.chat_id, sassText, game.topicId);
+                    telegram_1.default.sendPhoto(game.chat_id, sassText);
                 }
             }
             else {
-                telegram_1.default.queueMessage(game.chat_id, sassText, game.topicId);
+                telegram_1.default.queueMessage(game.chat_id, sassText);
             }
         }
     }

@@ -37,13 +37,13 @@ const processSkip = (game, skipper) => {
             exports.skipCache[game.chat_id].timer = 2;
         }
         else if (exports.skipCache[game.chat_id] && exports.skipCache[game.chat_id].playerId === skipper._id) {
-            telegram_1.default.queueMessage(game.chat_id, (0, i18n_1.default)(game.settings.language, "sentences.skipDenial"), game.topicId);
+            telegram_1.default.queueMessage(game.chat_id, (0, i18n_1.default)(game.settings.language, "sentences.skipDenial"));
         }
         else {
             telegram_1.default.queueMessage(game.chat_id, (0, i18n_1.default)(game.settings.language, "sentences.skipConfirm", {
                 list: game.list.name,
                 skipDelay: SKIP_DELAY,
-            }), game.topicId);
+            }));
             exports.skipCache[game.chat_id] = {
                 timer: SKIP_DELAY,
                 playerId: skipper._id,
@@ -80,7 +80,7 @@ const skipList = (game, skipper) => {
             str += "</i>\n";
             return str;
         }, "");
-        telegram_1.default.queueMessage(game.chat_id, message, game.topicId);
+        telegram_1.default.queueMessage(game.chat_id, message);
         telegram_1.default.sendKeyboard(game.chat_id, `Experimental feature to permanently ban list from game\nDo you want to ban "${game.list.name}"`, (0, keyboards_1.banListKeyboard)(game.settings.language, game.list));
         delete exports.skipCache[game.chat_id];
         let foundList = await index_1.List.findOne({
@@ -102,7 +102,7 @@ const skipList = (game, skipper) => {
         catch (err) {
             return telegram_1.default.notifyAdmin(`Skip List Error:\n${err}`);
         }
-        telegram_1.default.queueMessage(game.chat_id, await (0, stats_1.getDailyScores)(game, 5), game.topicId);
+        telegram_1.default.queueMessage(game.chat_id, await (0, stats_1.getDailyScores)(game, 5));
         (0, maingame_1.newRound)(game);
     });
 };
@@ -127,7 +127,7 @@ const checkSkipper = async (game, msg, player) => {
                     telegram_1.default.queueMessage(msg.chatId, (0, i18n_1.default)(game.settings.language, "sentences.skipShortBan", {
                         name: (0, string_helpers_1.parseSymbols)(player.first_name),
                         delay: skippers[player.id].delay,
-                    }), game.topicId);
+                    }));
                     return false;
                 }
                 else if (skippers[player.id].delay < 60) {
@@ -136,7 +136,7 @@ const checkSkipper = async (game, msg, player) => {
                     telegram_1.default.queueMessage(msg.chatId, (0, i18n_1.default)(game.settings.language, "sentences.skipBanThreat", {
                         name: (0, string_helpers_1.parseSymbols)(player.first_name),
                         delay: skippers[player.id].delay,
-                    }), game.topicId);
+                    }));
                     return false;
                 }
                 else if (skippers[player.id].delay != 3600) {
@@ -167,12 +167,12 @@ const vetoSkip = async (game, player) => {
         telegram_1.default.queueMessage(game.chat_id, (0, i18n_1.default)(game.settings.language, "sentences.skipVeto", {
             name: (0, string_helpers_1.parseSymbols)(player.first_name),
             vetoDelay: VETO_DELAY,
-        }), game.topicId);
+        }));
     }
     else {
         telegram_1.default.queueMessage(game.chat_id, (0, i18n_1.default)(game.settings.language, "sentences.skipNotFound", {
             name: (0, string_helpers_1.parseSymbols)(player.first_name),
-        }), game.topicId);
+        }));
     }
 };
 exports.vetoSkip = vetoSkip;
@@ -182,7 +182,7 @@ const abortSkip = (game, player) => {
     telegram_1.default.queueMessage(game.chat_id, (0, i18n_1.default)(game.settings.language, "sentences.skipAbort", {
         name: (0, string_helpers_1.parseSymbols)(player.first_name),
         vetoDelay: VETO_DELAY,
-    }), game.topicId);
+    }));
 };
 exports.abortSkip = abortSkip;
 //# sourceMappingURL=skips.js.map

@@ -34,7 +34,7 @@ const resetDailyScore = () => {
                 .select("_id id")
                 .exec();
             for (let game of games) {
-                telegram_1.default.queueMessage(game.chat_id, await (0, stats_1.getDailyScores)(game), game.topicId);
+                telegram_1.default.queueMessage(game.chat_id, await (0, stats_1.getDailyScores)(game));
                 const players = await index_1.Player.find({
                     game: game._id,
                     scoreDaily: { $gt: 0 },
@@ -52,7 +52,7 @@ const resetDailyScore = () => {
                 message += `Your gratitude won\'t go unnoticed :)\n\n`;
                 message += `\t - <a href="https://paypal.me/Game">Paypal</a>\n`;
                 message += `\t - Bitcoin Address: bc1qnr4y95d3w5rwahcypazpjdv33g8wupewmw6rpa3s2927qvgmduqsvcpgfs`;
-                telegram_1.default.queueMessage(game.chat_id, message, game.topicId);
+                telegram_1.default.queueMessage(game.chat_id, message);
                 await index_1.Player.updateMany({ game: game._id, scoreDaily: 0 }, { $set: { playStreak: 0 } });
                 await index_1.Player.updateMany({
                     game: game._id,

@@ -14,10 +14,10 @@ const initiateBan = async (game, callbackQuery) => {
         (await telegram_1.default.checkAdmin(game.chat_id, callbackQuery.from.id))) {
         const foundList = await index_1.List.findOne({ _id: callbackQuery.data }).exec();
         if (!foundList) {
-            return telegram_1.default.queueMessage(game.chat_id, (0, i18n_1.default)(game.settings.language, "warnings.unfoundList"), game.topicId);
+            return telegram_1.default.queueMessage(game.chat_id, (0, i18n_1.default)(game.settings.language, "warnings.unfoundList"));
         }
         if (game.bannedLists.some((bannedListId) => bannedListId.toString() == callbackQuery.data)) {
-            telegram_1.default.queueMessage(game.chat_id, (0, i18n_1.default)(game.settings.language, "sentences.alreadyBannedList", { list: foundList.name }), game.topicId);
+            telegram_1.default.queueMessage(game.chat_id, (0, i18n_1.default)(game.settings.language, "sentences.alreadyBannedList", { list: foundList.name }));
             telegram_1.default.deleteMessage(callbackQuery.chatId, callbackQuery.id);
         }
         else {
@@ -30,13 +30,13 @@ const initiateBan = async (game, callbackQuery) => {
         }
     }
     else {
-        telegram_1.default.queueMessage(game.chat_id, (0, i18n_1.default)(game.settings.language, "warnings.adminFunction", { name: callbackQuery.from.name }), game.topicId);
+        telegram_1.default.queueMessage(game.chat_id, (0, i18n_1.default)(game.settings.language, "warnings.adminFunction", { name: callbackQuery.from.name }));
     }
 };
 exports.initiateBan = initiateBan;
 const processBan = (game, callbackQuery) => {
     if (!cache[`${game._id}-${callbackQuery.data}`]) {
-        telegram_1.default.queueMessage(game.chat_id, (0, i18n_1.default)(game.settings.language, "sentences.banNotFound", { name: callbackQuery.from.name }), game.topicId);
+        telegram_1.default.queueMessage(game.chat_id, (0, i18n_1.default)(game.settings.language, "sentences.banNotFound", { name: callbackQuery.from.name }));
         telegram_1.default.deleteMessage(callbackQuery.chatId, callbackQuery.id);
     }
     else if (cache[`${game._id}-${callbackQuery.data}`] !== callbackQuery.from.id || game.chat_id > 0) {
@@ -45,7 +45,7 @@ const processBan = (game, callbackQuery) => {
         telegram_1.default.deleteMessage(callbackQuery.chatId, callbackQuery.id);
     }
     else {
-        telegram_1.default.queueMessage(game.chat_id, (0, i18n_1.default)(game.settings.language, "warnings.corroborateBanBySamePlayer", { name: callbackQuery.from.name }), game.topicId);
+        telegram_1.default.queueMessage(game.chat_id, (0, i18n_1.default)(game.settings.language, "warnings.corroborateBanBySamePlayer", { name: callbackQuery.from.name }));
     }
 };
 exports.processBan = processBan;
@@ -53,19 +53,19 @@ const banList = async (game, listId) => {
     const list = await index_1.List.findOne({ _id: listId }).select("_id bans name").exec();
     if (list) {
         if (game.bannedLists.some((bannedListId) => bannedListId.toString() == listId)) {
-            telegram_1.default.queueMessage(game.chat_id, (0, i18n_1.default)(game.settings.language, "sentences.alreadyBannedList", { list: list.name }), game.topicId);
+            telegram_1.default.queueMessage(game.chat_id, (0, i18n_1.default)(game.settings.language, "sentences.alreadyBannedList", { list: list.name }));
         }
         else {
             game.bannedLists.push(list._id);
             await game.save();
             list.bans++;
             await list.save();
-            telegram_1.default.queueMessage(game.chat_id, (0, i18n_1.default)(game.settings.language, "sentences.listBanned", { list: list.name }), game.topicId);
+            telegram_1.default.queueMessage(game.chat_id, (0, i18n_1.default)(game.settings.language, "sentences.listBanned", { list: list.name }));
             console.log(`${game.chat_id} (${game.settings.language}) banned ${list.name}`);
         }
     }
     else {
-        telegram_1.default.queueMessage(game.chat_id, (0, i18n_1.default)(game.settings.language, "warnings.unfoundList"), game.topicId);
+        telegram_1.default.queueMessage(game.chat_id, (0, i18n_1.default)(game.settings.language, "warnings.unfoundList"));
     }
 };
 //# sourceMappingURL=bans.js.map

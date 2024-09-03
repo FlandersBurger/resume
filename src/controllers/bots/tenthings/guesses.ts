@@ -9,9 +9,9 @@ import { Types } from "mongoose";
 import { IPlayer } from "@models/tenthings/player";
 import { MAX_HINTS } from "./hints";
 import sass from "./sass";
-// import { checkMaingame } from "./maingame";
-// import { checkMinigame } from "./minigame";
-// import { checkTinygame } from "./tinygame";
+import { checkMaingame } from "./maingame";
+import { checkMinigame } from "./minigame";
+import { checkTinygame } from "./tinygame";
 import { getPlayer } from "./players";
 import { Message } from "./messages";
 
@@ -134,22 +134,22 @@ const processGuess = async (guess: Guess) => {
     console.error(`Player not found for ${guess.player}`);
     return;
   }
-  // if (guess.match.type === GameType.MAINGAME) {
-  //   await checkMaingame(game, player, guess, guess.msg);
-  //   console.log(
-  //     `${guess.game} (${game.settings.language}) - ${game.list.name} for ${guess.match.value}: "${guess.msg.text}" by ${player.first_name}`,
-  //   );
-  // } else if (guess.match.type === GameType.MINIGAME) {
-  //   await checkMinigame(game, player, guess, guess.msg);
-  //   console.log(
-  //     `${guess.game} (${game.settings.language}) - Minigame guess for ${game.minigame.answer}: "${guess.msg.text}" by ${player.first_name}`,
-  //   );
-  // } else if (guess.match.type === GameType.TINYGAME) {
-  //   await checkTinygame(game, player, guess, guess.msg);
-  //   console.log(
-  //     `${guess.game} (${game.settings.language}) - Tinygame guess for ${game.tinygame.answer}: "${guess.msg.text}" by ${player.first_name}`,
-  //   );
-  // }
+  if (guess.match.type === GameType.MAINGAME) {
+    await checkMaingame(game, player, guess, guess.msg);
+    console.log(
+      `${guess.game} (${game.settings.language}) - ${game.list.name} for ${guess.match.value}: "${guess.msg.text}" by ${player.first_name}`,
+    );
+  } else if (guess.match.type === GameType.MINIGAME) {
+    await checkMinigame(game, player, guess, guess.msg);
+    console.log(
+      `${guess.game} (${game.settings.language}) - Minigame guess for ${game.minigame.answer}: "${guess.msg.text}" by ${player.first_name}`,
+    );
+  } else if (guess.match.type === GameType.TINYGAME) {
+    await checkTinygame(game, player, guess, guess.msg);
+    console.log(
+      `${guess.game} (${game.settings.language}) - Tinygame guess for ${game.tinygame.answer}: "${guess.msg.text}" by ${player.first_name}`,
+    );
+  }
 };
 
 export const getAnswerScore = (hintCount: number, accuracy: number, playerCount: number = 1) =>

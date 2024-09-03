@@ -162,6 +162,7 @@ class TelegramBot {
     channel: number,
     message: string,
     options: { topic?: number; replyMessageId?: string; replyMarkup?: ReplyMarkup } = {},
+    retries: number = 0,
   ) => {
     const { topic, replyMessageId, replyMarkup } = options;
     message = encodeURIComponent(message);
@@ -184,7 +185,13 @@ class TelegramBot {
           } else this.errorHandler(channel, "Send message", error);
         } else {
           if (channel !== parseInt(process.env.MASTER_CHAT || "")) {
-            if (!(error === "Bad Gateway" || error.startsWith("Too Many Requests"))) {
+            if (error === "Bad Gateway" || error.startsWith("Too Many Requests: retry after ")) {
+              if (retries < 3) {
+                setTimeout(() => this.sendMessage(channel, message, options, retries++), retries * 500);
+              } else {
+                this.errorHandler(channel, "Send message (failed 3 times)", error);
+              }
+            } else {
               this.errorHandler(channel, "Send message", error);
             }
           }
@@ -201,8 +208,8 @@ class TelegramBot {
     }
   };
 
-  public queueMessage = (channel: number, message: string, topic?: number) => {
-    messageQueue.add("", { channel, message, action: "sendMessage", topic }, {});
+  public queueMessage = (channel: number, message: string) => {
+    messageQueue.add("", { channel, message, action: "sendMessage" }, {});
   };
 
   public getQueueCount = async (): Promise<number> => {
@@ -317,13 +324,12 @@ class TelegramBot {
     }
   };
 
-  public sendKeyboard = async (channel: number, message: string, keyboard: Keyboard, topic?: number) => {
-    this.sendMessage(channel, message.replace("&", "and"), { replyMarkup: keyboard, topic });
+  public sendKeyboard = async (channel: number, message: string, keyboard: Keyboard) => {
+    this.sendMessage(channel, message.replace("&", "and"), { replyMarkup: keyboard });
   };
 
-  public sendPhoto = async (channel: number, photo: string, topic?: number) => {
-    let url = `${this.baseUrl}/sendPhoto?chat_id=${channel}&photo=${photo}`;
-    if (topic) url += `&message_thread_id=${topic}`;
+  public sendPhoto = async (channel: number, photo: string) => {
+    const url = `${this.baseUrl}/sendPhoto?chat_id=${channel}&photo=${photo}`;
     try {
       await httpClient().get(encodeURI(url));
     } catch (error: AxiosError | any) {
@@ -336,9 +342,8 @@ class TelegramBot {
     }
   };
 
-  public sendAnimation = async (channel: number, animation: string, topic?: number) => {
-    let url = `${this.baseUrl}/sendAnimation?chat_id=${channel}&animation=${animation}`;
-    if (topic) url += `&message_thread_id=${topic}`;
+  public sendAnimation = async (channel: number, animation: string) => {
+    const url = `${this.baseUrl}/sendAnimation?chat_id=${channel}&animation=${animation}`;
     try {
       await httpClient().get(encodeURI(url));
     } catch (error: AxiosError | any) {
@@ -531,12 +536,12 @@ messageQueue.process(
     data,
   }: {
     data:
-      | { channel: number; action: Actions.SendMessage; message: string; topic?: number }
+      | { channel: number; action: Actions.SendMessage; message: string }
       | { channel: number; action: Actions.EditKeyboard; message_id: string; keyboard: Keyboard };
   }) => {
     switch (data.action) {
       case "sendMessage":
-        bot.sendMessage(data.channel, data.message, { topic: data.topic });
+        bot.sendMessage(data.channel, data.message);
         break;
       case "editKeyboard":
         bot.editKeyboard(data.channel, data.message_id, data.keyboard!);

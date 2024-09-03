@@ -21,10 +21,19 @@ const createMinigame = async (game) => {
         language: { $in: availableLanguages },
     });
     if (minigames.length === 0) {
-        minigames = await getMinigames({ categories: { $nin: game.disabledCategories }, language: "EN" });
+        minigames = await getMinigames({
+            categories: { $nin: game.disabledCategories },
+            language: "EN",
+        });
+        if (minigames.length > 0)
+            telegram_1.default.queueMessage(game.chat_id, "Not enough lists available in your chosen languages to make a minigame work, defaulting to English");
     }
     if (minigames.length === 0) {
-        minigames = await getMinigames({ language: "EN" });
+        minigames = await getMinigames({
+            language: "EN",
+        });
+        if (minigames.length > 0)
+            telegram_1.default.queueMessage(game.chat_id, "Not enough lists available in your chosen categories to make a minigame work, defaulting to all lists");
     }
     let minigame = minigames[Math.floor(Math.random() * minigames.length)];
     game.minigame.answer = minigame.answer;
@@ -122,7 +131,7 @@ const sendMinigameMessage = (game) => {
         return msg;
     }, "");
     message += `\n<b>${(0, hints_1.getHint)(game.minigame.hints, game.minigame.answer)}</b>`;
-    telegram_1.default.queueMessage(game.chat_id, message, game.topicId);
+    telegram_1.default.queueMessage(game.chat_id, message);
 };
 exports.sendMinigameMessage = sendMinigameMessage;
 const checkMinigame = async (game, player, guess, msg) => {
@@ -142,7 +151,7 @@ const checkMinigame = async (game, player, guess, msg) => {
     message += `\n<u>${player.scoreDaily - score} + ${(0, i18n_1.default)(game.settings.language, "point", {
         count: score,
     })}</u>`;
-    telegram_1.default.queueMessage(game.chat_id, message, game.topicId);
+    telegram_1.default.queueMessage(msg.chatId, message);
     setTimeout(() => {
         (0, exports.createMinigame)(game);
     }, 1000);

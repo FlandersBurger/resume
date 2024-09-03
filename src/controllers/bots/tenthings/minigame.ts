@@ -26,10 +26,25 @@ export const createMinigame = async (game: HydratedDocument<IGame>) => {
     language: { $in: availableLanguages },
   });
   if (minigames.length === 0) {
-    minigames = await getMinigames({ categories: { $nin: game.disabledCategories }, language: "EN" });
+    minigames = await getMinigames({
+      categories: { $nin: game.disabledCategories },
+      language: "EN",
+    });
+    if (minigames.length > 0)
+      bot.queueMessage(
+        game.chat_id,
+        "Not enough lists available in your chosen languages to make a minigame work, defaulting to English",
+      );
   }
   if (minigames.length === 0) {
-    minigames = await getMinigames({ language: "EN" });
+    minigames = await getMinigames({
+      language: "EN",
+    });
+    if (minigames.length > 0)
+      bot.queueMessage(
+        game.chat_id,
+        "Not enough lists available in your chosen categories to make a minigame work, defaulting to all lists",
+      );
   }
   let minigame = minigames[Math.floor(Math.random() * minigames.length)];
 
@@ -145,7 +160,7 @@ export const sendMinigameMessage = (game: IGame) => {
     return msg;
   }, "");
   message += `\n<b>${getHint(game.minigame.hints, game.minigame.answer)}</b>`;
-  bot.queueMessage(game.chat_id, message, game.topicId);
+  bot.queueMessage(game.chat_id, message);
 };
 
 export const checkMinigame = async (
@@ -170,7 +185,7 @@ export const checkMinigame = async (
   message += `\n<u>${player.scoreDaily - score} + ${i18n(game.settings.language, "point", {
     count: score,
   })}</u>`;
-  bot.queueMessage(game.chat_id, message, game.topicId);
+  bot.queueMessage(msg.chatId, message);
   setTimeout(() => {
     createMinigame(game);
   }, 1000);

@@ -88,7 +88,7 @@ exports.default = async (callbackQuery) => {
                             name: (0, string_helpers_1.parseSymbols)(callbackQuery.from.name),
                             list: (0, string_helpers_1.parseSymbols)(foundList.name),
                             score: (0, number_helpers_1.makePercentage)(foundList.score),
-                        }), game.topicId);
+                        }));
                     }
                 }
             }
@@ -144,7 +144,7 @@ exports.default = async (callbackQuery) => {
                     }
                     else {
                         if (game.disabledCategories.length === categories_1.default.length - 1) {
-                            return telegram_1.default.queueMessage(callbackQuery.chatId, (0, i18n_1.default)(game.settings.language, "warnings.minimum1Category"), game.topicId);
+                            return telegram_1.default.queueMessage(callbackQuery.chatId, (0, i18n_1.default)(game.settings.language, "warnings.minimum1Category"));
                         }
                         game.disabledCategories.push(callbackQuery.data);
                     }
@@ -156,7 +156,7 @@ exports.default = async (callbackQuery) => {
                     game = await index_1.Game.findOne({ chat_id: callbackQuery.chatId }).select("settings").exec();
                     if (!game)
                         return;
-                    telegram_1.default.queueMessage(callbackQuery.chatId, (0, i18n_1.default)(game.settings.language, "warnings.adminFunction", { name: callbackQuery.from.name }), game.topicId);
+                    telegram_1.default.queueMessage(callbackQuery.chatId, (0, i18n_1.default)(game.settings.language, "warnings.adminFunction", { name: callbackQuery.from.name }));
                 }
             }
             break;
@@ -197,7 +197,7 @@ exports.default = async (callbackQuery) => {
                     game = await index_1.Game.findOne({ chat_id: callbackQuery.chatId }).select("settings").exec();
                     if (!game)
                         return;
-                    telegram_1.default.queueMessage(callbackQuery.chatId, (0, i18n_1.default)(game.settings.language, "warnings.adminFunction", { name: callbackQuery.from.name }), game.topicId);
+                    telegram_1.default.queueMessage(callbackQuery.chatId, (0, i18n_1.default)(game.settings.language, "warnings.adminFunction", { name: callbackQuery.from.name }));
                 }
             }
             break;
@@ -253,20 +253,20 @@ exports.default = async (callbackQuery) => {
                 telegram_1.default.notifyAdmins(msg, (0, keyboards_1.curateListKeyboard)(list));
             }
             else {
-                game = await index_1.Game.findOne({ chat_id: callbackQuery.chatId }).select("chat_id topicId pickedLists").exec();
+                game = await index_1.Game.findOne({ chat_id: callbackQuery.chatId }).select("chat_id pickedLists").exec();
                 if (!game)
                     return;
                 if (game.pickedLists.length >= 10)
-                    return telegram_1.default.queueMessage(callbackQuery.chatId, (0, i18n_1.default)(game.settings.language, "warnings.fullQueue", { name: callbackQuery.from.name }), game.topicId);
+                    return telegram_1.default.queueMessage(callbackQuery.chatId, (0, i18n_1.default)(game.settings.language, "warnings.fullQueue", { name: callbackQuery.from.name }));
                 const list = await index_1.List.findOne({ _id: callbackQuery.data }).exec();
                 if (!list)
-                    return telegram_1.default.queueMessage(callbackQuery.chatId, (0, i18n_1.default)(game.settings.language, "warnings.unfoundList"), game.topicId);
+                    return telegram_1.default.queueMessage(callbackQuery.chatId, (0, i18n_1.default)(game.settings.language, "warnings.unfoundList"));
                 const foundList = (0, find_1.default)(game.pickedLists, (pickedListId) => pickedListId == list._id);
                 if (foundList) {
                     telegram_1.default.queueMessage(callbackQuery.chatId, (0, i18n_1.default)(game.settings.language, "warnings.alreadyInQueue", {
                         list: list.name,
                         name: callbackQuery.from.name,
-                    }), game.topicId);
+                    }));
                 }
                 else {
                     game.pickedLists.push(list._id);
@@ -279,7 +279,7 @@ exports.default = async (callbackQuery) => {
                     telegram_1.default.queueMessage(callbackQuery.chatId, (0, i18n_1.default)(game.settings.language, "sentences.addedListToQueue", {
                         list: list.name,
                         name: callbackQuery.from.name,
-                    }), game.topicId);
+                    }));
                 }
             }
             break;
@@ -318,7 +318,7 @@ exports.default = async (callbackQuery) => {
             list = await index_1.List.findOne({ _id: callbackQuery.data }).exec();
             if (!list)
                 return;
-            telegram_1.default.queueMessage(callbackQuery.chatId, `<b>${list.name}</b>\n${(0, i18n_1.default)(game.settings.language, "description")}:\n<i>${list.description || "N/A"}</i>`, game.topicId);
+            telegram_1.default.queueMessage(callbackQuery.chatId, `<b>${list.name}</b>\n${(0, i18n_1.default)(game.settings.language, "description")}:\n<i>${list.description || "N/A"}</i>`);
             break;
         case CallbackDataType.Difficulty:
             const [difficultyString, difficultyListId] = callbackQuery.data.split("_");
