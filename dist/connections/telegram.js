@@ -133,22 +133,29 @@ class TelegramBot {
                     else if (error.response.data.description.includes("can't parse")) {
                         this.notifyAdmin(`Send Message to ${channel} parse Fail: ${message}`);
                     }
+                    else if (error.response.data.description.startsWith("Too Many Requests: retry after ")) {
+                        const timeout = parseInt(error.response.data.description.match(/retry after (\d+)/)[1]);
+                        messageQueue.pause();
+                        this.notifyAdmin(`Pausing queue for ${timeout} seconds due to too many requests`);
+                        setTimeout(() => {
+                            messageQueue.resume();
+                        }, timeout * 1000);
+                        this.queueMessage(channel, message);
+                    }
+                    else if (error.response.data.description === "Bad Gateway") {
+                        if (retries < 3) {
+                            setTimeout(() => this.sendMessage(channel, message, options, retries++), retries * 500);
+                        }
+                        else {
+                            this.errorHandler(channel, "Send message (failed 3 times)", error);
+                        }
+                    }
                     else
                         this.errorHandler(channel, "Send message", error);
                 }
                 else {
                     if (channel !== parseInt(process.env.MASTER_CHAT || "")) {
-                        if (error === "Bad Gateway" || error.startsWith("Too Many Requests: retry after ")) {
-                            if (retries < 3) {
-                                setTimeout(() => this.sendMessage(channel, message, options, retries++), retries * 500);
-                            }
-                            else {
-                                this.errorHandler(channel, "Send message (failed 3 times)", error);
-                            }
-                        }
-                        else {
-                            this.errorHandler(channel, "Send message", error);
-                        }
+                        this.errorHandler(channel, "Send message", error);
                     }
                 }
             });
