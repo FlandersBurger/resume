@@ -41,6 +41,10 @@ exports.tenthingsListsRoute.get("/", async (req, res) => {
 exports.tenthingsListsRoute.get("/:id", async (req, res) => {
     if (!res.locals.isAuthorized)
         res.sendStatus(401);
+    else if (req.params.id === "names") {
+        const listNames = await index_1.List.find({}).select("_id name").lean();
+        res.json(listNames);
+    }
     else {
         const list = await (0, lists_1.getList)(new mongoose_1.Types.ObjectId(req.params.id));
         if (!list)

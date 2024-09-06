@@ -24,6 +24,7 @@ const lists_1 = require("./controllers/api/tenthings/lists");
 const pause_1 = require("./controllers/api/tenthings/pause");
 const players_1 = require("./controllers/api/tenthings/players");
 const stats_1 = require("./controllers/api/tenthings/stats");
+const search_1 = require("./controllers/api/tenthings/search");
 const users_1 = require("./controllers/api/users");
 const main_1 = require("./controllers/bots/tenthings/main");
 const queue_1 = require("./queue");
@@ -48,6 +49,7 @@ app.use("/api/tenthings/lists", lists_1.tenthingsListsRoute);
 app.use("/api/tenthings/pause", pause_1.tenthingsPauseRoute);
 app.use("/api/tenthings/players", players_1.tenthingsPlayersRoute);
 app.use("/api/tenthings/stats", stats_1.tenthingsStatsRoute);
+app.use("/api/tenthings/search", search_1.tenthingsSearchRoute);
 app.use("/bots/tenthings", main_1.tenthingsBotRoute);
 app.use(static_1.staticRoute);
 app.use((err, _req, res, _next) => {
