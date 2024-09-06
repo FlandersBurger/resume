@@ -106,33 +106,38 @@ angular
       $scope.categoryFilter = {};
     };
 
-    const getData = () => {
+    const getData = async () => {
       if (!$scope.currentUser) return;
-      TenThingsSvc.getLanguages().then((response) => {
-        $scope.languages = response.data;
-        resetLanguageFilter();
-      });
-      TenThingsSvc.getCategories().then((response) => {
-        $scope.categories = response.data;
-        resetCategoryFilter();
-      });
-      TenThingsSvc.getListLanguageStats().then(({ data }) => {
-        $scope.languageStats = data.reduce((result, { _id, count }) => {
-          result[_id.language] = (result[_id.language] || 0) + count;
-          return result;
-        }, {});
-      });
-      TenThingsSvc.getListCategoryStats().then(({ data }) => {
-        $scope.categoryStats = data.reduce((result, { _id, count }) => {
-          result[_id] = count;
-          return result;
-        }, {});
-      });
+      const { data: languages } = await TenThingsSvc.getLanguages();
+      $scope.languages = languages;
+      resetLanguageFilter();
+      const { data: categories } = await TenThingsSvc.getCategories();
+      $scope.categories = categories;
+      resetCategoryFilter();
+      const { data: languageStats } = await TenThingsSvc.getListLanguageStats();
+      $scope.languageStats = languageStats.reduce((result, { _id, count }) => {
+        result[_id.language] = (result[_id.language] || 0) + count;
+        return result;
+      }, {});
+      const { data: categoryStats } = await TenThingsSvc.getListCategoryStats();
+      $scope.categoryStats = categoryStats.reduce((result, { _id, count }) => {
+        result[_id] = count;
+        return result;
+      }, {});
       if ($location.search().list) {
         $scope.setSelectedList({ _id: $location.search().list });
       }
       $scope.search = $location.search().search || "";
       $scope.getLists();
+    };
+
+    $scope.searchLists = async () => {
+      if (!$scope.selectedList._id && $scope.selectedList.name) {
+        const { data } = await TenThingsSvc.searchLists($scope.selectedList.name);
+        $scope.searchedLists = data;
+      } else {
+        $scope.searchedLists = [];
+      }
     };
 
     $scope.valueOrder = {

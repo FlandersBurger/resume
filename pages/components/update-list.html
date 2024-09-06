@@ -33,6 +33,8 @@
 <br />
 <div class="input-group">
   <span class="input-group-addon" id="name-addon">Name</span>
+  <!-- ng-model-options="{updateOn: 'blur'}"
+  ng-change="upsertList(selectedList, {name: selectedList.name})" -->
   <input
     class="form-control"
     id="list-name"
@@ -40,8 +42,12 @@
     placeholder="Name"
     ng-disabled="!selectedList || (!currentUser.admin && selectedList.creator._id !== currentUser._id && selectedList._id)"
     aria-describedby="name-addon"
-    ng-model-options="{updateOn: 'blur'}"
-    ng-change="upsertList(selectedList, {name: selectedList.name})"
+    autocomplete="off"
+    ng-model-options="{ debounce: { 'default': 200, 'blur': 0 } }"
+    ng-change="searchLists()"
+    ng-blur="upsertList(selectedList, {name: selectedList.name})"
+    uib-typeahead="list.name for list in searchedLists | filter:{'name':$viewValue} | limitTo:20"
+    typeahead-on-select="setSelectedList($item)"
   />
 </div>
 <div class="input-group">

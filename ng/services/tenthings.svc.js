@@ -18,6 +18,10 @@ angular.module("app").service("TenThingsSvc", function ($http) {
     return $http.get(url);
   };
 
+  svc.searchLists = (name) => {
+    return $http.get(`/api/tenthings/search/list-names/${name}`);
+  };
+
   svc.getCategories = () => {
     return $http.get(`/api/tenthings/categories`);
   };

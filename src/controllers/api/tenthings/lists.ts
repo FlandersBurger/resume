@@ -42,7 +42,10 @@ tenthingsListsRoute.get("/", async (req: QueryableRequest, res: Response) => {
 
 tenthingsListsRoute.get("/:id", async (req: Request, res: Response) => {
   if (!res.locals.isAuthorized) res.sendStatus(401);
-  else {
+  else if (req.params.id === "names") {
+    const listNames = await List.find({}).select("_id name").lean();
+    res.json(listNames);
+  } else {
     const list = await getList(new Types.ObjectId(req.params.id));
     if (!list) res.sendStatus(404);
     else res.json(list);
