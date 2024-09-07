@@ -46,6 +46,7 @@ export interface IList {
   answers: number;
   blurbs: number;
   playRatio: number;
+  actualPlays: number;
 }
 
 let List: { [key: string]: Model<IList> } = {};

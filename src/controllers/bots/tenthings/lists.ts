@@ -147,6 +147,12 @@ export const getList = async (listId: Types.ObjectId): Promise<IList | undefined
   return list;
 };
 
+// ███    ███ ███████ ██████   ██████  ███████     ██      ██ ███████ ████████ ███████
+// ████  ████ ██      ██   ██ ██       ██          ██      ██ ██         ██    ██
+// ██ ████ ██ █████   ██████  ██   ███ █████       ██      ██ ███████    ██    ███████
+// ██  ██  ██ ██      ██   ██ ██    ██ ██          ██      ██      ██    ██         ██
+// ██      ██ ███████ ██   ██  ██████  ███████     ███████ ██ ███████    ██    ███████
+
 export const mergeLists = (originalList: IList, mergeList: IList): IList => {
   const valuesToMerge = mergeList.values.filter(
     (value) => !some(originalList.values, (listValue) => listValue.value == value.value),

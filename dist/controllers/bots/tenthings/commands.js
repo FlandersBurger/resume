@@ -23,31 +23,34 @@ const keyboards_1 = require("./keyboards");
 const telegram_1 = __importDefault(require("../../../connections/telegram"));
 const suggestions_1 = require("./suggestions");
 const string_helpers_1 = require("../../../utils/string-helpers");
-const commands = [
-    "list",
-    "hint",
-    "skip",
-    "minigame",
-    "minihint",
-    "miniskip",
-    "tinygame",
-    "tinyhint",
-    "tinyskip",
-    "score",
-    "stats",
-    "me",
-    "intro",
-    "logic",
-    "settings",
-    "categories",
-    "typo",
-    "bug",
-    "feature",
-    "search",
-    "lists",
-    "stop",
-    "commands",
-];
+var Commands;
+(function (Commands) {
+    Commands["Start"] = "start";
+    Commands["List"] = "list";
+    Commands["Hint"] = "hint";
+    Commands["Skip"] = "skip";
+    Commands["Minigame"] = "minigame";
+    Commands["Minihint"] = "minihint";
+    Commands["Miniskip"] = "miniskip";
+    Commands["Tinygame"] = "tinygame";
+    Commands["Tinyhint"] = "tinyhint";
+    Commands["Tinyskip"] = "tinyskip";
+    Commands["Score"] = "score";
+    Commands["Stats"] = "stats";
+    Commands["Me"] = "me";
+    Commands["Intro"] = "intro";
+    Commands["Logic"] = "logic";
+    Commands["Settings"] = "settings";
+    Commands["Categories"] = "categories";
+    Commands["Typo"] = "typo";
+    Commands["Bug"] = "bug";
+    Commands["Feature"] = "feature";
+    Commands["Search"] = "search";
+    Commands["Lists"] = "lists";
+    Commands["Stop"] = "stop";
+    Commands["Commands"] = "commands";
+})(Commands || (Commands = {}));
+const commands = Object.values(Commands);
 const evaluate = async (msg, game, isNew) => {
     let player = await (0, players_1.getPlayer)(game, msg.from);
     if (!player.first_name) {

@@ -28,31 +28,34 @@ import {
 } from "./suggestions";
 import { parseSymbols } from "@root/utils/string-helpers";
 
-const commands = [
-  "list",
-  "hint",
-  "skip",
-  "minigame",
-  "minihint",
-  "miniskip",
-  "tinygame",
-  "tinyhint",
-  "tinyskip",
-  "score",
-  "stats",
-  "me",
-  "intro",
-  "logic",
-  "settings",
-  "categories",
-  "typo",
-  "bug",
-  "feature",
-  "search",
-  "lists",
-  "stop",
-  "commands",
-];
+enum Commands {
+  Start = "start",
+  List = "list",
+  Hint = "hint",
+  Skip = "skip",
+  Minigame = "minigame",
+  Minihint = "minihint",
+  Miniskip = "miniskip",
+  Tinygame = "tinygame",
+  Tinyhint = "tinyhint",
+  Tinyskip = "tinyskip",
+  Score = "score",
+  Stats = "stats",
+  Me = "me",
+  Intro = "intro",
+  Logic = "logic",
+  Settings = "settings",
+  Categories = "categories",
+  Typo = "typo",
+  Bug = "bug",
+  Feature = "feature",
+  Search = "search",
+  Lists = "lists",
+  Stop = "stop",
+  Commands = "commands",
+}
+
+const commands: Commands[] = Object.values(Commands);
 
 export const evaluate = async (msg: Message, game: HydratedDocument<IGame>, isNew: boolean) => {
   //bot.notifyAdmin(tenthings);

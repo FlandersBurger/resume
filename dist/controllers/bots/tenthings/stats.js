@@ -193,16 +193,16 @@ const getStats = async (chat_id, data, requestor) => {
             });
             break;
         case "mostskipped":
-            listStats(game, "skips", "plays", 1, "Most Skipped Lists", "Skip commands / Amount played", 1, requestor);
+            listStats(game, "skips", "plays", 1, "Most Skipped Lists", "Skips / Amount played", 1, requestor);
             break;
         case "leastskipped":
-            listStats(game, "skips", "plays", 1, "Least Skipped Lists", "Skip commands / Amount played", -1, requestor);
+            listStats(game, "skips", "plays", 1, "Least Skipped Lists", "Skips / Amount played", -1, requestor);
             break;
         case "mosthinted":
-            listStats(game, "hints", "plays", 1 / 6, "Most Hinted Lists", "(Hint commands / 6) / Amount played", 1, requestor);
+            listStats(game, "hints", "plays", 1 / 6, "Most Hinted Lists", "(Hints / 6) / Amount played", 1, requestor);
             break;
         case "leasthinted":
-            listStats(game, "hints", "plays", 1 / 6, "Least Hinted Lists", "(Hint commands / 6) / Amount played", -1, requestor);
+            listStats(game, "hints", "plays", 1 / 6, "Least Hinted Lists", "(Hints / 6) / Amount played", -1, requestor);
             break;
         case "mostvoted":
             voteStats(game, players, -1, "Voted Most on Lists", requestor);
@@ -229,13 +229,13 @@ const getStats = async (chat_id, data, requestor) => {
             listStats(game, "score", undefined, 1, "Least Popular Lists", "Vote & skip ratio", -1, requestor);
             break;
         case "skippers":
-            playerStats(game, players, "skips", "lists", 1, "Most Skips Requested", "Skip commands / Lists played", 1, requestor);
+            playerStats(game, players, "skips", "lists", 1, "Most Skips Requested", "Skips / Lists played", 1, requestor);
             break;
         case "unskippers":
-            playerStats(game, players, "skips", "lists", 1, "Least Skips Requested", "Skip commands / Lists played", -1, requestor);
+            playerStats(game, players, "skips", "lists", 1, "Least Skips Requested", "Skips / Lists played", -1, requestor);
             break;
         case "answers":
-            playerStats(game, players, "answers", "lists", 0.1, "Most Correct Answers", "(Correct answers given / 10) / Lists played", 1, requestor);
+            playerStats(game, players, "answers", "lists", 0.1, "Most Correct Answers", "(Correct answers / 10) / Lists played", 1, requestor);
             break;
         case "minigames":
             playerStats(game, players, "minigamePlays", undefined, 1, "Most Correct Minigame Answers", "Sum of correct answers", 1, requestor);
@@ -250,10 +250,10 @@ const getStats = async (chat_id, data, requestor) => {
             playerStats(game, players, "snubs", "answers", 1, "Least Snubs", "Answers that were already answered / Total answers", -1, requestor);
             break;
         case "hints":
-            playerStats(game, players, "hints", "lists", 1 / 6, "Most Hints Asked", "(Hint commands / 6) / Lists played", 1, requestor);
+            playerStats(game, players, "hints", "lists", 1 / 6, "Most Hints Asked", "(Hints / 6) / Lists played", 1, requestor);
             break;
         case "unhints":
-            playerStats(game, players, "hints", "lists", 1 / 6, "Least Hints Asked", "(Hint commands / 6) / Lists played", -1, requestor);
+            playerStats(game, players, "hints", "lists", 1 / 6, "Least Hints Asked", "(Hints / 6) / Lists played", -1, requestor);
             break;
         case "plays":
             playerStats(game, players, "plays", undefined, 1, "Most Games Played", "Sum days played", 1, requestor);
@@ -279,34 +279,32 @@ const getStats = async (chat_id, data, requestor) => {
 };
 exports.getStats = getStats;
 const addRequestor = (msg, requestor) => msg + (requestor ? `<i>Requested by ${(0, string_helpers_1.parseSymbols)(requestor)}</i>\n` : "");
-const listStats = ({ chat_id }, field, divisor, ratio, title, description, sorter, requestor) => {
+const listStats = async ({ chat_id }, field, divisor, ratio, title, description, sorter, requestor) => {
     let message = `<b>${title}</b>\n`;
     message += description ? `<code>${description}</code>\n` : "";
     message = addRequestor(message, requestor);
-    index_1.List.find({ actualPlays: { $gt: 100 } })
-        .select(`${field} ${divisor} name`)
-        .exec((_, lists) => {
-        lists
-            .sort((a, b) => {
-            const aField = a[field];
-            const bField = b[field];
-            if (divisor) {
-                const aDivisor = (a[divisor] !== 0 ? a[divisor] : 1);
-                const bDivisor = (b[divisor] !== 0 ? b[divisor] : 1);
-                return (bField / bDivisor - aField / aDivisor) * sorter;
-            }
-            else {
-                return (bField - aField) * sorter;
-            }
-        })
-            .slice(0, 20)
-            .forEach((list, index) => {
-            const listField = list[field];
-            const listDivisor = (divisor ? (list[divisor] ? list[divisor] : 1) : 1);
-            message += `${index + 1}. ${list.name} (${Math.round(((listField * ratio) / listDivisor) * 100) / 100}${divisor ? "%" : ""})\n`;
-        });
-        telegram_1.default.queueMessage(chat_id, message);
+    const lists = await index_1.List.find().select(`${field} ${divisor} name actualPlays`).lean({ virtuals: true });
+    lists
+        .filter(({ actualPlays }) => actualPlays >= 100)
+        .sort((a, b) => {
+        const aField = a[field];
+        const bField = b[field];
+        if (divisor) {
+            const aDivisor = (a[divisor] !== 0 ? a[divisor] : 1);
+            const bDivisor = (b[divisor] !== 0 ? b[divisor] : 1);
+            return (bField / bDivisor - aField / aDivisor) * sorter;
+        }
+        else {
+            return (bField - aField) * sorter;
+        }
+    })
+        .slice(0, 20)
+        .forEach((list, index) => {
+        const listField = list[field];
+        const listDivisor = (divisor ? (list[divisor] ? list[divisor] : 1) : 1);
+        message += `${index + 1}. ${list.name} (${Math.round(((listField * ratio) / listDivisor) * 100) / 100}${divisor ? "%" : ""})\n`;
     });
+    telegram_1.default.queueMessage(chat_id, message);
 };
 const playerStats = async ({ chat_id }, players, field, divisor, ratio, title, description, sorter, requestor) => {
     let message = `<b>${title}</b>\n`;
