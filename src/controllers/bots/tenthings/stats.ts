@@ -466,7 +466,7 @@ const listStats = async (
   })
     .select(`${field} ${divisor} name actualPlays`)
     .lean({ virtuals: true });
-  console.log(lists.filter(({ actualPlays }) => actualPlays >= 100).length);
+  console.log(lists.slice(0, 5).map(({ actualPlays }) => actualPlays));
   lists
     .filter(({ actualPlays }) => actualPlays >= 100)
     .sort((a: IList, b: IList) => {

@@ -290,7 +290,7 @@ const listStats = async ({ chat_id, settings, disabledCategories }, field, divis
     })
         .select(`${field} ${divisor} name actualPlays`)
         .lean({ virtuals: true });
-    console.log(lists.filter(({ actualPlays }) => actualPlays >= 100).length);
+    console.log(lists.slice(0, 5).map(({ actualPlays }) => actualPlays));
     lists
         .filter(({ actualPlays }) => actualPlays >= 100)
         .sort((a, b) => {
