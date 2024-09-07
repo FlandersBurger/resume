@@ -121,10 +121,10 @@ listSchema.virtual("blurbs").get(function (this: IList) {
   return this.values ? this.values.filter((item) => item.blurb).length : 0;
 });
 listSchema.virtual("playRatio").get(function (this: IList) {
-  return this.plays ? (this.plays - this.skips) / this.plays : 0;
+  return this.plays ? (this.plays - (this.skips ?? 0)) / this.plays : 0;
 });
 listSchema.virtual("actualPlays").get(function (this: IList) {
-  return this.plays ? this.plays - this.skips : 0;
+  return this.plays ? this.plays - (this.skips ?? 0) : 0;
 });
 listSchema.virtual("upvotes").get(function (this: IList) {
   return this.votes ? this.votes.filter(({ vote }) => vote > 0).length : 0;
@@ -133,7 +133,7 @@ listSchema.virtual("downvotes").get(function (this: IList) {
   return this.votes ? this.votes.filter(({ vote }) => vote < 0).length : 0;
 });
 listSchema.virtual("calculatedDifficulty").get(function (this: IList) {
-  return this.plays ? this.hints / 6 / (this.plays - this.skips) : 0;
+  return this.plays ? (this.hints ?? 0) / 6 / (this.plays - (this.skips ?? 0)) : 0;
 });
 
 listSchema.plugin(mongooseLeanVirtuals);

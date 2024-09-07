@@ -74,10 +74,10 @@ listSchema.virtual("blurbs").get(function () {
     return this.values ? this.values.filter((item) => item.blurb).length : 0;
 });
 listSchema.virtual("playRatio").get(function () {
-    return this.plays ? (this.plays - this.skips) / this.plays : 0;
+    return this.plays ? (this.plays - (this.skips ?? 0)) / this.plays : 0;
 });
 listSchema.virtual("actualPlays").get(function () {
-    return this.plays ? this.plays - this.skips : 0;
+    return this.plays ? this.plays - (this.skips ?? 0) : 0;
 });
 listSchema.virtual("upvotes").get(function () {
     return this.votes ? this.votes.filter(({ vote }) => vote > 0).length : 0;
@@ -86,7 +86,7 @@ listSchema.virtual("downvotes").get(function () {
     return this.votes ? this.votes.filter(({ vote }) => vote < 0).length : 0;
 });
 listSchema.virtual("calculatedDifficulty").get(function () {
-    return this.plays ? this.hints / 6 / (this.plays - this.skips) : 0;
+    return this.plays ? (this.hints ?? 0) / 6 / (this.plays - (this.skips ?? 0)) : 0;
 });
 listSchema.plugin(mongoose_lean_virtuals_1.default);
 listSchema.index({ name: "text", description: "text", "values.value": "text", "values.blurb": "text" });
