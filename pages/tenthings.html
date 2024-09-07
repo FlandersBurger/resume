@@ -64,7 +64,10 @@
           ng-model="search"
           ng-change="getLists()"
           placeholder="Search"
-          ng-model-options="{ debounce: { 'default': 500, 'blur': 0 } }"
+          autocomplete="off"
+          ng-model-options="{ debounce: { 'default': 500, '*': 0 } }"
+          uib-typeahead="list.name for list in searchLists($viewValue)"
+          typeahead-on-select="setSelectedList($item);"
         />
         <div class="input-group-append">
           <button class="btn btn-default" ng-click="getLists()" uib-tooltip="Refresh">

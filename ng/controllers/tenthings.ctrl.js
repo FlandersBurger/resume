@@ -78,6 +78,7 @@ angular
     };
 
     $scope.setSelectedList = (list) => {
+      $scope.search = $location.search().search;
       if (list) {
         if (list._id === "new") {
           $scope.addList();
@@ -131,12 +132,12 @@ angular
       $scope.getLists();
     };
 
-    $scope.searchLists = async () => {
-      if (!$scope.selectedList._id && $scope.selectedList.name) {
-        const { data } = await TenThingsSvc.searchLists($scope.selectedList.name);
-        $scope.searchedLists = data;
+    $scope.searchLists = async (viewValue) => {
+      if (viewValue.length >= 3) {
+        const { data } = await TenThingsSvc.searchLists(viewValue);
+        return data;
       } else {
-        $scope.searchedLists = [];
+        return [];
       }
     };
 

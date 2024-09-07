@@ -43,10 +43,9 @@
     ng-disabled="!selectedList || (!currentUser.admin && selectedList.creator._id !== currentUser._id && selectedList._id)"
     aria-describedby="name-addon"
     autocomplete="off"
-    ng-model-options="{ debounce: { 'default': 500, 'blur': 0 } }"
-    ng-change="searchLists()"
+    ng-model-options="{ debounce: { 'default': 200, '*': 0 } }"
     ng-blur="upsertList(selectedList, {name: selectedList.name})"
-    uib-typeahead="list.name for list in searchedLists | filter:{'name':$viewValue} | limitTo:20"
+    uib-typeahead="list.name for list in searchLists($viewValue)"
     typeahead-on-select="setSelectedList($item)"
   />
 </div>
