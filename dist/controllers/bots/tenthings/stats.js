@@ -283,10 +283,13 @@ const listStats = async ({ chat_id, settings, disabledCategories }, field, divis
     let message = `<b>${title}</b>\n`;
     message += description ? `<code>${description}</code>\n` : "";
     message = addRequestor(message, requestor);
-    const lists = await index_1.List.find({ language: { $in: settings.languages }, categories: { $nin: disabledCategories } })
+    const lists = await index_1.List.find({
+        language: { $in: settings.languages },
+        categories: { $nin: disabledCategories },
+        plays: { $gte: 100 },
+    })
         .select(`${field} ${divisor} name actualPlays`)
         .lean({ virtuals: true });
-    console.log(lists.length);
     lists
         .filter(({ actualPlays }) => actualPlays >= 100)
         .sort((a, b) => {
@@ -306,8 +309,10 @@ const listStats = async ({ chat_id, settings, disabledCategories }, field, divis
         const listField = list[field];
         const listDivisor = (divisor ? (list[divisor] ? list[divisor] : 1) : 1);
         const result = Math.round(((listField * ratio) / listDivisor) * 100) / 100;
+        console.log(list.name, result);
         message += `${index + 1}. ${list.name} (${divisor ? (0, number_helpers_1.makePercentage)(result) : result})\n`;
     });
+    console.log(message);
     telegram_1.default.queueMessage(chat_id, message);
 };
 const playerStats = async ({ chat_id }, players, field, divisor, ratio, title, description, sorter, requestor) => {
