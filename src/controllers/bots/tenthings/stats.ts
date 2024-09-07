@@ -263,18 +263,6 @@ export const getStats = async (chat_id: number, data: string, requestor?: string
     case "leasthinted":
       listStats(game, "hints", "plays", 1 / 6, "Least Hinted Lists", "(Hints / 6) / Amount played", -1, requestor);
       break;
-    case "mostvoted":
-      voteStats(game, players, -1, "Voted Most on Lists", requestor);
-      break;
-    case "leastvoted":
-      voteStats(game, players, 1, "Voted Least on Lists", requestor);
-      break;
-    case "mostpositive":
-      voteSentimentStats(game, players, 1, "Voted Most Positively on Lists", requestor);
-      break;
-    case "mostnegative":
-      voteSentimentStats(game, players, -1, "Voted Most Negatively on Lists", requestor);
-      break;
     case "mostplayed":
       listStats(game, "plays", undefined, 1, "Most Played Lists", "Sum of plays", 1, requestor);
       break;
@@ -286,6 +274,18 @@ export const getStats = async (chat_id: number, data: string, requestor?: string
       break;
     case "leastpopular":
       listStats(game, "score", undefined, 1, "Least Popular Lists", "Vote & skip ratio", -1, requestor);
+      break;
+    case "mostvoted":
+      voteStats(game, players, -1, "Voted Most on Lists", requestor);
+      break;
+    case "leastvoted":
+      voteStats(game, players, 1, "Voted Least on Lists", requestor);
+      break;
+    case "mostpositive":
+      voteSentimentStats(game, players, 1, "Voted Most Positively on Lists", requestor);
+      break;
+    case "mostnegative":
+      voteSentimentStats(game, players, -1, "Voted Most Negatively on Lists", requestor);
       break;
     case "skippers":
       playerStats(game, players, "skips", "lists", 1, "Most Skips Requested", "Skips / Lists played", 1, requestor);
@@ -447,7 +447,7 @@ const addRequestor = (msg: string, requestor?: string) =>
 // ███████ ██ ███████    ██        ███████    ██    ██   ██    ██    ███████
 
 const listStats = async (
-  { chat_id }: IGame,
+  { chat_id, settings, disabledCategories }: IGame,
   field: keyof IList,
   divisor: keyof IList | undefined,
   ratio: number,
@@ -459,7 +459,10 @@ const listStats = async (
   let message = `<b>${title}</b>\n`;
   message += description ? `<code>${description}</code>\n` : "";
   message = addRequestor(message, requestor);
-  const lists = await List.find().select(`${field} ${divisor} name actualPlays`).lean({ virtuals: true });
+  const lists = await List.find({ language: { $in: settings.languages }, categories: { $nin: disabledCategories } })
+    .select(`${field} ${divisor} name actualPlays`)
+    .lean({ virtuals: true });
+  console.log(lists.length);
   lists
     .filter(({ actualPlays }) => actualPlays >= 100)
     .sort((a: IList, b: IList) => {
@@ -477,9 +480,8 @@ const listStats = async (
     .forEach((list: IList, index: number) => {
       const listField: number = list[field] as number;
       const listDivisor: number = (divisor ? (list[divisor] ? list[divisor] : 1) : 1) as number;
-      message += `${index + 1}. ${list.name} (${Math.round(((listField * ratio) / listDivisor) * 100) / 100}${
-        divisor ? "%" : ""
-      })\n`;
+      const result = Math.round(((listField * ratio) / listDivisor) * 100) / 100;
+      message += `${index + 1}. ${list.name} (${divisor ? makePercentage(result) : result})\n`;
     });
   bot.queueMessage(chat_id, message);
 };
@@ -521,9 +523,8 @@ const playerStats = async (
     .forEach((player, index) => {
       const playerField: number = player[field] as number;
       const playerDivisor: number = (divisor ? (player[divisor] ? player[divisor] : 1) : 1) as number;
-      message += `${index + 1}. ${parseSymbols(player.first_name)} (${
-        Math.round(((playerField * ratio) / playerDivisor) * 100) / 100
-      }${divisor ? "%" : ""})\n`;
+      const result = Math.round(((playerField * ratio) / playerDivisor) * 100) / 100;
+      message += `${index + 1}. ${parseSymbols(player.first_name)} (${divisor ? makePercentage(result) : result})\n`;
     });
   bot.queueMessage(chat_id, message);
 };
