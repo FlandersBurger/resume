@@ -89,6 +89,7 @@ class TelegramBot {
     "Bad Request: message is not modified: specified new message content and reply markup are exactly the same as a specified new message content and reply markup are exactly the same as a current content and reply markup of the message",
     "Bad Request: message is not modified: specified new message content and reply markup are exactly the same as a current content and reply markup of the message",
   ];
+  private paused: boolean = false;
 
   constructor(token: string) {
     this.baseUrl = `https://api.telegram.org/bot${token}`;
@@ -183,12 +184,16 @@ class TelegramBot {
           } else if (error.response.data.description.includes("can't parse")) {
             this.notifyAdmin(`Send Message to ${channel} parse Fail: ${message}`);
           } else if (error.response.data.description.startsWith("Too Many Requests: retry after ")) {
-            const timeout = parseInt(error.response.data.description.match(/retry after (\d+)/)![1]);
-            messageQueue.pause();
-            this.notifyAdmin(`Pausing queue for ${timeout} seconds due to too many requests`);
-            setTimeout(() => {
-              messageQueue.resume();
-            }, timeout * 1000);
+            if (!this.paused) {
+              this.paused = true;
+              const timeout = parseInt(error.response.data.description.match(/retry after (\d+)/)![1]);
+              messageQueue.pause();
+              this.notifyAdmin(`Pausing queue for ${timeout} seconds due to too many requests`);
+              setTimeout(() => {
+                messageQueue.resume();
+                this.paused = false;
+              }, timeout * 1000);
+            }
             this.queueMessage(channel, message);
           } else if (error.response.data.description === "Bad Gateway") {
             if (retries < 3) {

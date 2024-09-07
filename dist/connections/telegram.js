@@ -50,6 +50,7 @@ class TelegramBot {
             "Bad Request: message is not modified: specified new message content and reply markup are exactly the same as a specified new message content and reply markup are exactly the same as a current content and reply markup of the message",
             "Bad Request: message is not modified: specified new message content and reply markup are exactly the same as a current content and reply markup of the message",
         ];
+        this.paused = false;
         this.init = async () => {
             const { data } = await (0, http_client_1.default)().get(`${this.baseUrl}/getMe`);
             this.telegramBotUser = data.result;
@@ -134,12 +135,16 @@ class TelegramBot {
                         this.notifyAdmin(`Send Message to ${channel} parse Fail: ${message}`);
                     }
                     else if (error.response.data.description.startsWith("Too Many Requests: retry after ")) {
-                        const timeout = parseInt(error.response.data.description.match(/retry after (\d+)/)[1]);
-                        messageQueue.pause();
-                        this.notifyAdmin(`Pausing queue for ${timeout} seconds due to too many requests`);
-                        setTimeout(() => {
-                            messageQueue.resume();
-                        }, timeout * 1000);
+                        if (!this.paused) {
+                            this.paused = true;
+                            const timeout = parseInt(error.response.data.description.match(/retry after (\d+)/)[1]);
+                            messageQueue.pause();
+                            this.notifyAdmin(`Pausing queue for ${timeout} seconds due to too many requests`);
+                            setTimeout(() => {
+                                messageQueue.resume();
+                                this.paused = false;
+                            }, timeout * 1000);
+                        }
                         this.queueMessage(channel, message);
                     }
                     else if (error.response.data.description === "Bad Gateway") {
