@@ -466,6 +466,7 @@ const listStats = async (
   })
     .select(`${field} ${divisor} name actualPlays`)
     .lean({ virtuals: true });
+  console.log(lists.filter(({ actualPlays }) => actualPlays >= 100).length);
   lists
     .filter(({ actualPlays }) => actualPlays >= 100)
     .sort((a: IList, b: IList) => {
@@ -484,7 +485,6 @@ const listStats = async (
       const listField: number = list[field] as number;
       const listDivisor: number = (divisor ? (list[divisor] ? list[divisor] : 1) : 1) as number;
       const result = Math.round(((listField * ratio) / listDivisor) * 100) / 100;
-      console.log(list.name, result);
       message += `${index + 1}. ${list.name} (${divisor ? makePercentage(result) : result})\n`;
     });
   console.log(message);
