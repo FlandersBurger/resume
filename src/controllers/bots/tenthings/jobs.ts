@@ -19,6 +19,12 @@ import { getDailyScores } from "./stats";
 const backup = require("@root/utils/backup/backup-db");
 import { Game, Player, Stats, List } from "@models/index";
 
+// ██████  ███████ ███████ ███████ ████████     ██████   █████  ██ ██      ██    ██     ███████  ██████  ██████  ██████  ███████
+// ██   ██ ██      ██      ██         ██        ██   ██ ██   ██ ██ ██       ██  ██      ██      ██      ██    ██ ██   ██ ██
+// ██████  █████   ███████ █████      ██        ██   ██ ███████ ██ ██        ████       ███████ ██      ██    ██ ██████  █████
+// ██   ██ ██           ██ ██         ██        ██   ██ ██   ██ ██ ██         ██             ██ ██      ██    ██ ██   ██ ██
+// ██   ██ ███████ ███████ ███████    ██        ██████  ██   ██ ██ ███████    ██        ███████  ██████  ██████  ██   ██ ███████
+
 const resetDailyScore = () => {
   if (moment().utc().hour() === 1) {
     bot.notifyAdmin(`Score Reset Triggered; ${moment().format("DD-MMM-YYYY hh:mm")}`);
@@ -120,6 +126,12 @@ const getYearlyStats = async (): Promise<{ min: any; max: any }> => {
     max: maxBy(yearStats, (stat) => stat.uniquePlayers),
   };
 };
+
+// ██████   █████  ██ ██      ██    ██     ███████ ████████  █████  ████████ ███████
+// ██   ██ ██   ██ ██ ██       ██  ██      ██         ██    ██   ██    ██    ██
+// ██   ██ ███████ ██ ██        ████       ███████    ██    ███████    ██    ███████
+// ██   ██ ██   ██ ██ ██         ██             ██    ██    ██   ██    ██         ██
+// ██████  ██   ██ ██ ███████    ██        ███████    ██    ██   ██    ██    ███████
 
 const updateDailyStats = async (games: IGame[], totalPlayers: number, uniquePlayers: number) => {
   let base = await Stats.findOne({ base: true }).exec();
@@ -264,6 +276,12 @@ const updateDailyStats = async (games: IGame[], totalPlayers: number, uniquePlay
   });
   */
 
+// ███    ██ ███████ ██     ██     ██      ██ ███████ ████████ ███████
+// ████   ██ ██      ██     ██     ██      ██ ██         ██    ██
+// ██ ██  ██ █████   ██  █  ██     ██      ██ ███████    ██    ███████
+// ██  ██ ██ ██      ██ ███ ██     ██      ██      ██    ██         ██
+// ██   ████ ███████  ███ ███      ███████ ██ ███████    ██    ███████
+
 const sendNewLists = () => {
   List.find({
     date: { $gte: moment().subtract(1, "days") },
@@ -342,6 +360,12 @@ const sendUpdatedLists = () => {
 //var dailyScore = schedule.scheduleJob('*/10 * * * * *', function() {
 //resetDailyScore()
 
+// ███████ ████████  █████  ██      ███████      ██████   █████  ███    ███ ███████ ███████
+// ██         ██    ██   ██ ██      ██          ██       ██   ██ ████  ████ ██      ██
+// ███████    ██    ███████ ██      █████       ██   ███ ███████ ██ ████ ██ █████   ███████
+//      ██    ██    ██   ██ ██      ██          ██    ██ ██   ██ ██  ██  ██ ██           ██
+// ███████    ██    ██   ██ ███████ ███████      ██████  ██   ██ ██      ██ ███████ ███████
+
 const deleteStaleGames = () => {
   Game.find({ lastPlayDate: { $lt: moment().subtract(12, "months") } })
     .select("_id")
@@ -353,6 +377,12 @@ const deleteStaleGames = () => {
       if (staleGames.length > 0) bot.notifyAdmin(`${staleGames.length} stale games deleted`);
     });
 };
+
+// ██ ███    ██  █████   ██████ ████████ ██ ██    ██ ███████      ██████ ██   ██  █████  ████████ ███████
+// ██ ████   ██ ██   ██ ██         ██    ██ ██    ██ ██          ██      ██   ██ ██   ██    ██    ██
+// ██ ██ ██  ██ ███████ ██         ██    ██ ██    ██ █████       ██      ███████ ███████    ██    ███████
+// ██ ██  ██ ██ ██   ██ ██         ██    ██  ██  ██  ██          ██      ██   ██ ██   ██    ██         ██
+// ██ ██   ████ ██   ██  ██████    ██    ██   ████   ███████      ██████ ██   ██ ██   ██    ██    ███████
 
 const deactivateInactiveChats = () => {
   Game.find({
@@ -366,6 +396,12 @@ const deactivateInactiveChats = () => {
       if (games.length > 0) bot.notifyAdmin(`${games.length} inactive chats deactivated`);
     });
 };
+
+// ██████  ██       █████  ██    ██     ███████ ████████ ██████  ███████  █████  ██   ██
+// ██   ██ ██      ██   ██  ██  ██      ██         ██    ██   ██ ██      ██   ██ ██  ██
+// ██████  ██      ███████   ████       ███████    ██    ██████  █████   ███████ █████
+// ██      ██      ██   ██    ██             ██    ██    ██   ██ ██      ██   ██ ██  ██
+// ██      ███████ ██   ██    ██        ███████    ██    ██   ██ ███████ ██   ██ ██   ██
 
 const updatePlayStreak = () => {
   //Update play streaks
@@ -388,6 +424,12 @@ const updatePlayStreak = () => {
     });
 };
 
+// ███████ ████████  █████  ██      ███████     ██████  ██       █████  ██    ██ ███████ ██████  ███████
+// ██         ██    ██   ██ ██      ██          ██   ██ ██      ██   ██  ██  ██  ██      ██   ██ ██
+// ███████    ██    ███████ ██      █████       ██████  ██      ███████   ████   █████   ██████  ███████
+//      ██    ██    ██   ██ ██      ██          ██      ██      ██   ██    ██    ██      ██   ██      ██
+// ███████    ██    ██   ██ ███████ ███████     ██      ███████ ██   ██    ██    ███████ ██   ██ ███████
+
 const deleteStalePlayers = async () => {
   const results = await Player.deleteMany({
     date: { $lt: moment().subtract(30, "days") },
@@ -400,6 +442,12 @@ const deleteStalePlayers = async () => {
 };
 
 let jobs: Job[] = [];
+
+// ███████  ██████ ██   ██ ███████ ██████  ██    ██ ██      ███████
+// ██      ██      ██   ██ ██      ██   ██ ██    ██ ██      ██
+// ███████ ██      ███████ █████   ██   ██ ██    ██ ██      █████
+//      ██ ██      ██   ██ ██      ██   ██ ██    ██ ██      ██
+// ███████  ██████ ██   ██ ███████ ██████   ██████  ███████ ███████
 
 if (process.env.NODE_ENV === "production") {
   jobs.push(schedule.scheduleJob("Reset Daily Scores", "0 2 1 * * *", resetDailyScore));

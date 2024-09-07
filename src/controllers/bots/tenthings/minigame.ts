@@ -141,7 +141,8 @@ export const updateMinigames = async () => {
       return count;
     }),
   );
-  bot.notifyAdmin(`Minigames updated: ${count.updated} new: ${count.new}`);
+  const total = await Minigame.countDocuments();
+  bot.notifyAdmin(`Minigames total: ${total} updated: ${count.updated} new: ${count.new}`);
 };
 
 const getMinigames = async (parameters: QueryOptions): Promise<IMinigame[]> => {

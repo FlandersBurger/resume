@@ -115,7 +115,8 @@ const updateMinigames = async () => {
         }
         return count;
     }));
-    telegram_1.default.notifyAdmin(`Minigames updated: ${count.updated} new: ${count.new}`);
+    const total = await index_1.Minigame.countDocuments();
+    telegram_1.default.notifyAdmin(`Minigames total: ${total} updated: ${count.updated} new: ${count.new}`);
 };
 exports.updateMinigames = updateMinigames;
 const getMinigames = async (parameters) => {
