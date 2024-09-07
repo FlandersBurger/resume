@@ -48,12 +48,7 @@ const listStatsKeyboard = (game) => {
                 getButton("Least Hints Asked", { type: callbacks_1.CallbackDataType.Stats, id: "leasthinted" }),
             ],
             [
-                getButton("Least Popular Lists", { type: callbacks_1.CallbackDataType.Stats, id: "leastpopular" }),
-                getButton("Most Popular Lists", { type: callbacks_1.CallbackDataType.Stats, id: "mostpopular" }),
-            ],
-            [
                 getButton("Most Played Lists", { type: callbacks_1.CallbackDataType.Stats, id: "mostplayed" }),
-                getButton("Most Banned Lists", { type: callbacks_1.CallbackDataType.Stats, id: "mostbanned" }),
             ],
         ],
     };

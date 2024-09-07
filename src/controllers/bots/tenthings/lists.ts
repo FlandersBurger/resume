@@ -53,11 +53,7 @@ const getAvailableLanguages = ({ settings }: { settings: IGameSettings }) =>
 export const selectList = async (game: IGame): Promise<HydratedDocument<IList>> => {
   const availableLanguages = getAvailableLanguages(game);
   if (game.pickedLists.length > 0) {
-    let list = await List.findOne({
-      _id: game.pickedLists[0],
-    })
-      .populate("creator")
-      .exec();
+    let list = await List.findOne({ _id: game.pickedLists[0] }).populate("creator").exec();
     if (!list) {
       game.pickedLists.shift();
       console.log(`Moving to next picked list`);

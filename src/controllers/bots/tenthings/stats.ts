@@ -466,7 +466,6 @@ const listStats = async (
   })
     .select(`${field} ${divisor} name actualPlays`)
     .lean({ virtuals: true });
-  console.log(lists.slice(0, 5).map(({ actualPlays }) => actualPlays));
   lists
     .filter(({ actualPlays }) => actualPlays >= 100)
     .sort((a: IList, b: IList) => {
@@ -487,7 +486,6 @@ const listStats = async (
       const result = Math.round(((listField * ratio) / listDivisor) * 100) / 100;
       message += `${index + 1}. ${list.name} (${divisor ? makePercentage(result) : result})\n`;
     });
-  console.log(message);
   bot.queueMessage(chat_id, message);
 };
 

@@ -53,13 +53,13 @@ export const listStatsKeyboard = (game: IGame): Keyboard => {
         getButton("Most Hints Asked", { type: CallbackDataType.Stats, id: "mosthinted" }),
         getButton("Least Hints Asked", { type: CallbackDataType.Stats, id: "leasthinted" }),
       ],
-      [
-        getButton("Least Popular Lists", { type: CallbackDataType.Stats, id: "leastpopular" }),
-        getButton("Most Popular Lists", { type: CallbackDataType.Stats, id: "mostpopular" }),
-      ],
+      // [
+      //   getButton("Least Popular Lists", { type: CallbackDataType.Stats, id: "leastpopular" }),
+      //   getButton("Most Popular Lists", { type: CallbackDataType.Stats, id: "mostpopular" }),
+      // ],
       [
         getButton("Most Played Lists", { type: CallbackDataType.Stats, id: "mostplayed" }),
-        getButton("Most Banned Lists", { type: CallbackDataType.Stats, id: "mostbanned" }),
+        // getButton("Most Banned Lists", { type: CallbackDataType.Stats, id: "mostbanned" }),
       ],
     ],
   };
