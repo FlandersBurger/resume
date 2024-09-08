@@ -312,8 +312,11 @@ const parseQuery = (query) => {
     return Object.keys(query).reduce((params, key) => {
         switch (key) {
             case "search":
-                if (query[key])
-                    Object.assign(params, { $text: { $search: `"${query[key]}"` } });
+                if (query[key]) {
+                    Object.assign(params, {
+                        $or: [{ $text: { $search: `"${query[key]}"` } }, { name: { $regex: query[key], $options: "i" } }],
+                    });
+                }
                 break;
             case "categories":
             case "language":

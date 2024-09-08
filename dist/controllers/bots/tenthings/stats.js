@@ -309,7 +309,7 @@ const listStats = async ({ chat_id, settings, disabledCategories }, field, divis
         const listField = list[field];
         const listDivisor = (divisor ? (list[divisor] ? list[divisor] : 1) : 1);
         const result = Math.round(((listField * ratio) / listDivisor) * 100) / 100;
-        message += `${index + 1}. ${list.name} (${divisor ? (0, number_helpers_1.makePercentage)(result) : result})\n`;
+        message += `${index + 1}. ${list.name} (${divisor ? (0, number_helpers_1.makePercentage)(result, 0) : result})\n`;
     });
     telegram_1.default.queueMessage(chat_id, message);
 };
@@ -336,7 +336,7 @@ const playerStats = async ({ chat_id }, players, field, divisor, ratio, title, d
         const playerField = player[field];
         const playerDivisor = (divisor ? (player[divisor] ? player[divisor] : 1) : 1);
         const result = Math.round(((playerField * ratio) / playerDivisor) * 100) / 100;
-        message += `${index + 1}. ${(0, string_helpers_1.parseSymbols)(player.first_name)} (${divisor ? (0, number_helpers_1.makePercentage)(result) : result})\n`;
+        message += `${index + 1}. ${(0, string_helpers_1.parseSymbols)(player.first_name)} (${divisor ? (0, number_helpers_1.makePercentage)(result, 0) : result})\n`;
     });
     telegram_1.default.queueMessage(chat_id, message);
 };

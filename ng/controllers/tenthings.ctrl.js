@@ -141,6 +141,15 @@ angular
       }
     };
 
+    $scope.highlightedSearchText = (text) => {
+      if ($scope.search) {
+        const regex = new RegExp(`(${$scope.search})`, "gi");
+        return text.replace(regex, "<span class='highlight'>$1</span>");
+      } else {
+        return text;
+      }
+    };
+
     $scope.valueOrder = {
       field: "value",
       direction: false,

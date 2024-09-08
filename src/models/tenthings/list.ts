@@ -138,6 +138,7 @@ listSchema.virtual("calculatedDifficulty").get(function (this: IList) {
 
 listSchema.plugin(mongooseLeanVirtuals);
 
+listSchema.index({ name: 1 });
 listSchema.index({ name: "text", description: "text", "values.value": "text", "values.blurb": "text" });
 
 for (const name in db) {

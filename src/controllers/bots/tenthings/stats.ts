@@ -484,7 +484,7 @@ const listStats = async (
       const listField: number = list[field] as number;
       const listDivisor: number = (divisor ? (list[divisor] ? list[divisor] : 1) : 1) as number;
       const result = Math.round(((listField * ratio) / listDivisor) * 100) / 100;
-      message += `${index + 1}. ${list.name} (${divisor ? makePercentage(result) : result})\n`;
+      message += `${index + 1}. ${list.name} (${divisor ? makePercentage(result, 0) : result})\n`;
     });
   bot.queueMessage(chat_id, message);
 };
@@ -527,7 +527,7 @@ const playerStats = async (
       const playerField: number = player[field] as number;
       const playerDivisor: number = (divisor ? (player[divisor] ? player[divisor] : 1) : 1) as number;
       const result = Math.round(((playerField * ratio) / playerDivisor) * 100) / 100;
-      message += `${index + 1}. ${parseSymbols(player.first_name)} (${divisor ? makePercentage(result) : result})\n`;
+      message += `${index + 1}. ${parseSymbols(player.first_name)} (${divisor ? makePercentage(result, 0) : result})\n`;
     });
   bot.queueMessage(chat_id, message);
 };

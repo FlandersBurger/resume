@@ -89,6 +89,7 @@ listSchema.virtual("calculatedDifficulty").get(function () {
     return this.plays ? (this.hints ?? 0) / 6 / (this.plays - (this.skips ?? 0)) : 0;
 });
 listSchema.plugin(mongoose_lean_virtuals_1.default);
+listSchema.index({ name: 1 });
 listSchema.index({ name: "text", description: "text", "values.value": "text", "values.blurb": "text" });
 for (const name in db_1.default) {
     List[name] = db_1.default[name].model("List", listSchema);

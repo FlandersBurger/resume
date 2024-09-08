@@ -61,6 +61,7 @@
         </div>
         <input
           class="form-control"
+          type="search"
           ng-model="search"
           ng-change="getLists()"
           placeholder="Search"
@@ -169,7 +170,7 @@
               ng-class="{'fas fa-check-square': highlightedListIds.includes(list._id), 'far fa-square': !highlightedListIds.includes(list._id) }"
             ></i>
           </td>
-          <td class="list-name" ng-click="setSelectedList(list)">{{list.name}}</td>
+          <td class="list-name" ng-click="setSelectedList(list)" ng-bind-html="highlightedSearchText(list.name)"></td>
           <td class="hidden-sm visible-md visible-lg" ng-click="setSelectedList(list)">
             {{list.categories.join(", ")}}
           </td>
