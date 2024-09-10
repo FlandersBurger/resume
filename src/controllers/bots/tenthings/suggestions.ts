@@ -22,7 +22,7 @@ export const sendSuggestion = async (
   if (game && player) {
     const playerName = getPlayerName(player);
     if (!msg.text) {
-      bot.queueMessage(msg.chatId, i18n(game.settings.language, "warnings.noSuggestion", { name: playerName }));
+      bot.queueMessage(game.chat_id, i18n(game.settings.language, "warnings.noSuggestion", { name: playerName }));
       player.state = PlayerState.None;
       await player.save();
     } else {
@@ -33,10 +33,10 @@ export const sendSuggestion = async (
       if (suggestionType == SuggestionType.Typo) {
         message += `Current list: ${parseSymbols(game.list.name)}\n`;
       }
-      bot.queueMessage(msg.chatId, `${message}Thank you, ${playerName}`);
+      bot.queueMessage(game.chat_id, `${message}Thank you, ${playerName}`);
       message += `<i>${playerName}</i>`;
       bot.notify(message);
-      const chatLink = await bot.getChat(msg.chatId);
+      const chatLink = await bot.getChat(game.chat_id);
       message += chatLink ? `\n${chatLink}` : "";
       bot.notifyAdmins(message);
     }

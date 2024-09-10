@@ -81,7 +81,7 @@ export const checkTinygame = async (
   message += `\n<u>${player.scoreDaily - score} + ${i18n(game.settings.language, "point", {
     count: score,
   })}</u>`;
-  bot.queueMessage(msg.chatId, message);
+  bot.queueMessage(game.chat_id, message);
   setTimeout(() => {
     createTinygame(game);
   }, 1000);

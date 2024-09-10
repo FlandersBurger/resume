@@ -59,13 +59,13 @@ const commands: Commands[] = Object.values(Commands);
 
 export const evaluate = async (msg: Message, game: HydratedDocument<IGame>, isNew: boolean) => {
   //bot.notifyAdmin(tenthings);
-  //bot.notifyAdmin(games[msg.chatId].list);
+  //bot.notifyAdmin(games[game.chat_id].list);
   let player = await getPlayer(game, msg.from);
   if (!player.first_name) {
     console.error("msg without a first_name?");
     console.error(msg);
     return;
-  } else if (msg.chatId === parseInt(process.env.ADMIN_CHAT || "") && msg.command) {
+  } else if (game.chat_id === parseInt(process.env.ADMIN_CHAT || "") && msg.command) {
     //Admin group chat
     if (!["/search", "/stats", "/typo", "/bug", "/feature", "/suggest"].includes(msg.command)) {
       return;
@@ -85,12 +85,12 @@ export const evaluate = async (msg: Message, game: HydratedDocument<IGame>, isNe
   if (msg.command) {
     switch (msg.command) {
       case "/error":
-        const chatLink = await bot.exportChatInviteLink(msg.chatId);
-        bot.notifyAdmins(`Error reported in ${msg.chatId}: \n${msg.text}\n\n${chatLink}`);
+        const chatLink = await bot.exportChatInviteLink(game.chat_id);
+        bot.notifyAdmins(`Error reported in ${game.chat_id}: \n${msg.text}\n\n${chatLink}`);
         break;
       case "/intro":
         bot.queueMessage(
-          msg.chatId,
+          game.chat_id,
           i18n(game.settings.language, "sentences.introduction", {
             name: player.first_name,
           }),
@@ -98,17 +98,17 @@ export const evaluate = async (msg: Message, game: HydratedDocument<IGame>, isNe
         break;
       case "/logica":
       case "/logic":
-        bot.queueMessage(msg.chatId, getLogicMessage(game.settings.language));
+        bot.queueMessage(game.chat_id, getLogicMessage(game.settings.language));
         break;
       case "/comandos":
         bot.queueMessage(
-          msg.chatId,
+          game.chat_id,
           commands.map((command) => `/${command} - ${i18n("PT", `commands.${command}.description`)}`).join("\n"),
         );
         break;
       case "/commands":
         bot.queueMessage(
-          msg.chatId,
+          game.chat_id,
           commands
             .map((command) => `/${command} - ${i18n(game.settings.language, `commands.${command}.description`)}`)
             .join("\n"),
@@ -141,14 +141,14 @@ export const evaluate = async (msg: Message, game: HydratedDocument<IGame>, isNe
         break;
       case "/pule":
       case "/skip":
-        if (await checkSkipper(game, msg, player)) {
+        if (await checkSkipper(game, player)) {
           processSkip(game, player);
         }
         break;
       case "/minipule":
       case "/miniskip":
-        if (await checkSkipper(game, msg, player)) {
-          bot.queueMessage(msg.chatId, `The minigame answer was:\n<i>${game.minigame.answer}</i>`);
+        if (await checkSkipper(game, player)) {
+          bot.queueMessage(game.chat_id, `The minigame answer was:\n<i>${game.minigame.answer}</i>`);
           setTimeout(() => {
             createMinigame(game);
           }, 200);
@@ -156,8 +156,8 @@ export const evaluate = async (msg: Message, game: HydratedDocument<IGame>, isNe
         break;
       case "/puleminusculo":
       case "/tinyskip":
-        if (await checkSkipper(game, msg, player)) {
-          bot.queueMessage(msg.chatId, `The tinygame answer was:\n<i>${game.tinygame.answer}</i>`);
+        if (await checkSkipper(game, player)) {
+          bot.queueMessage(game.chat_id, `The tinygame answer was:\n<i>${game.tinygame.answer}</i>`);
           setTimeout(() => {
             createTinygame(game);
           }, 200);
@@ -198,7 +198,7 @@ export const evaluate = async (msg: Message, game: HydratedDocument<IGame>, isNe
               game.chat_id,
               i18n(
                 game.settings.language,
-                `sentences.${msg.chatId === parseInt(process.env.ADMIN_CHAT || "") ? "curate" : "queue"}List`,
+                `sentences.${game.chat_id === parseInt(process.env.ADMIN_CHAT || "") ? "curate" : "queue"}List`,
               ),
               keyboard,
             );
@@ -213,7 +213,7 @@ export const evaluate = async (msg: Message, game: HydratedDocument<IGame>, isNe
           }
         } else {
           bot.queueMessage(
-            msg.chatId,
+            game.chat_id,
             i18n(game.settings.language, "sentences.emptySearch", { name: parseSymbols(player.first_name) }),
           );
         }
@@ -237,7 +237,7 @@ export const evaluate = async (msg: Message, game: HydratedDocument<IGame>, isNe
         processHint(game, player, GameType.TINYGAME);
         break;
       case "/notify":
-        if (msg.chatId === parseInt(process.env.MASTER_CHAT || "")) {
+        if (game.chat_id === parseInt(process.env.MASTER_CHAT || "")) {
           Game.find({ enabled: true })
             .select("chat_id")
             .then((games) => {
@@ -250,7 +250,7 @@ export const evaluate = async (msg: Message, game: HydratedDocument<IGame>, isNe
         break;
       /*
     case '/pause':
-      if (msg.chatId === parseInt(process.env.MASTER_CHAT || "")) {
+      if (game.chat_id === parseInt(process.env.MASTER_CHAT || "")) {
         redis.get('pause').then(value => {
           const pause = value === 'true';
           bot.notifyAdmin(`Pause = ${!pause}`);
@@ -261,7 +261,7 @@ export const evaluate = async (msg: Message, game: HydratedDocument<IGame>, isNe
       */
       case "/eu":
       case "/me":
-        getStats(msg.chatId, `p_${msg.from.id}`, msg.from.first_name);
+        getStats(game.chat_id, `p_${msg.from.id}`, msg.from.first_name);
         break;
       case "/pontuacao":
       case "/score":
@@ -316,9 +316,9 @@ export const evaluate = async (msg: Message, game: HydratedDocument<IGame>, isNe
         break;
       case "/check":
         if (msg.from.id === parseInt(process.env.MASTER_CHAT || "")) {
-          bot.queueMessage(msg.chatId, "Yes, master. Let me send you what you need!");
+          bot.queueMessage(game.chat_id, "Yes, master. Let me send you what you need!");
           bot.notifyAdmin(
-            `Chat id: ${msg.chatId}\nGame _id: ${game._id}\nSettings:\n${JSON.stringify(game.settings)}\nList: ${
+            `Chat id: ${game.chat_id}\nGame _id: ${game._id}\nSettings:\n${JSON.stringify(game.settings)}\nList: ${
               game.list.name
             }\nMinigame: ${game.minigame.answer}\nTinygame: ${
               game.tinygame.answer
@@ -332,7 +332,7 @@ export const evaluate = async (msg: Message, game: HydratedDocument<IGame>, isNe
           game.pickedLists = [];
           //game.playedLists = [];
           game.save();
-          bot.queueMessage(msg.chatId, "Flushed this chat");
+          bot.queueMessage(game.chat_id, "Flushed this chat");
         }
         break;
       case "/minigames":
@@ -341,14 +341,14 @@ export const evaluate = async (msg: Message, game: HydratedDocument<IGame>, isNe
         }
         break;
       case "/ping":
-        bot.queueMessage(msg.chatId, "pong");
+        bot.queueMessage(game.chat_id, "pong");
         break;
       case "/hello":
-        bot.queueMessage(msg.chatId, "You already had me but you got greedy, now you ruined it");
+        bot.queueMessage(game.chat_id, "You already had me but you got greedy, now you ruined it");
         break;
       case "/queue":
         getQueue().then((message: string) => {
-          bot.sendMessage(msg.chatId, message);
+          bot.sendMessage(game.chat_id, message);
         }, console.error);
         break;
       case "/listas":
@@ -363,10 +363,10 @@ export const evaluate = async (msg: Message, game: HydratedDocument<IGame>, isNe
             for (const list of upcomingLists.slice(0, 10)) {
               message += `- ${list.name}\n`;
             }
-            bot.queueMessage(msg.chatId, message);
+            bot.queueMessage(game.chat_id, message);
           });
         } else {
-          bot.queueMessage(msg.chatId, i18n(game.settings.language, "sentences.noUpcomingLists"));
+          bot.queueMessage(game.chat_id, i18n(game.settings.language, "sentences.noUpcomingLists"));
         }
         break;
       default:
@@ -375,7 +375,7 @@ export const evaluate = async (msg: Message, game: HydratedDocument<IGame>, isNe
   } else {
     if (game.lastPlayDate <= moment().subtract(30, "days").toDate()) {
       deactivate(game);
-    } else if (game.enabled && msg.chatId != parseInt(process.env.ADMIN_CHAT || "")) {
+    } else if (game.enabled && game.chat_id != parseInt(process.env.ADMIN_CHAT || "")) {
       queueGuess(game, msg);
     }
   }

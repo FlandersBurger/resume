@@ -58,7 +58,7 @@ const evaluate = async (msg, game, isNew) => {
         console.error(msg);
         return;
     }
-    else if (msg.chatId === parseInt(process.env.ADMIN_CHAT || "") && msg.command) {
+    else if (game.chat_id === parseInt(process.env.ADMIN_CHAT || "") && msg.command) {
         if (!["/search", "/stats", "/typo", "/bug", "/feature", "/suggest"].includes(msg.command)) {
             return;
         }
@@ -73,23 +73,23 @@ const evaluate = async (msg, game, isNew) => {
     if (msg.command) {
         switch (msg.command) {
             case "/error":
-                const chatLink = await telegram_1.default.exportChatInviteLink(msg.chatId);
-                telegram_1.default.notifyAdmins(`Error reported in ${msg.chatId}: \n${msg.text}\n\n${chatLink}`);
+                const chatLink = await telegram_1.default.exportChatInviteLink(game.chat_id);
+                telegram_1.default.notifyAdmins(`Error reported in ${game.chat_id}: \n${msg.text}\n\n${chatLink}`);
                 break;
             case "/intro":
-                telegram_1.default.queueMessage(msg.chatId, (0, i18n_1.default)(game.settings.language, "sentences.introduction", {
+                telegram_1.default.queueMessage(game.chat_id, (0, i18n_1.default)(game.settings.language, "sentences.introduction", {
                     name: player.first_name,
                 }));
                 break;
             case "/logica":
             case "/logic":
-                telegram_1.default.queueMessage(msg.chatId, (0, messages_1.getLogicMessage)(game.settings.language));
+                telegram_1.default.queueMessage(game.chat_id, (0, messages_1.getLogicMessage)(game.settings.language));
                 break;
             case "/comandos":
-                telegram_1.default.queueMessage(msg.chatId, commands.map((command) => `/${command} - ${(0, i18n_1.default)("PT", `commands.${command}.description`)}`).join("\n"));
+                telegram_1.default.queueMessage(game.chat_id, commands.map((command) => `/${command} - ${(0, i18n_1.default)("PT", `commands.${command}.description`)}`).join("\n"));
                 break;
             case "/commands":
-                telegram_1.default.queueMessage(msg.chatId, commands
+                telegram_1.default.queueMessage(game.chat_id, commands
                     .map((command) => `/${command} - ${(0, i18n_1.default)(game.settings.language, `commands.${command}.description`)}`)
                     .join("\n"));
                 break;
@@ -119,14 +119,14 @@ const evaluate = async (msg, game, isNew) => {
                 break;
             case "/pule":
             case "/skip":
-                if (await (0, skips_1.checkSkipper)(game, msg, player)) {
+                if (await (0, skips_1.checkSkipper)(game, player)) {
                     (0, skips_1.processSkip)(game, player);
                 }
                 break;
             case "/minipule":
             case "/miniskip":
-                if (await (0, skips_1.checkSkipper)(game, msg, player)) {
-                    telegram_1.default.queueMessage(msg.chatId, `The minigame answer was:\n<i>${game.minigame.answer}</i>`);
+                if (await (0, skips_1.checkSkipper)(game, player)) {
+                    telegram_1.default.queueMessage(game.chat_id, `The minigame answer was:\n<i>${game.minigame.answer}</i>`);
                     setTimeout(() => {
                         (0, minigame_1.createMinigame)(game);
                     }, 200);
@@ -134,8 +134,8 @@ const evaluate = async (msg, game, isNew) => {
                 break;
             case "/puleminusculo":
             case "/tinyskip":
-                if (await (0, skips_1.checkSkipper)(game, msg, player)) {
-                    telegram_1.default.queueMessage(msg.chatId, `The tinygame answer was:\n<i>${game.tinygame.answer}</i>`);
+                if (await (0, skips_1.checkSkipper)(game, player)) {
+                    telegram_1.default.queueMessage(game.chat_id, `The tinygame answer was:\n<i>${game.tinygame.answer}</i>`);
                     setTimeout(() => {
                         (0, tinygame_1.createTinygame)(game);
                     }, 200);
@@ -169,7 +169,7 @@ const evaluate = async (msg, game, isNew) => {
                     const foundLists = await (0, lists_1.searchList)(search, game);
                     if (foundLists.length > 0) {
                         const keyboard = (0, keyboards_1.listsKeyboard)(foundLists);
-                        telegram_1.default.sendKeyboard(game.chat_id, (0, i18n_1.default)(game.settings.language, `sentences.${msg.chatId === parseInt(process.env.ADMIN_CHAT || "") ? "curate" : "queue"}List`), keyboard);
+                        telegram_1.default.sendKeyboard(game.chat_id, (0, i18n_1.default)(game.settings.language, `sentences.${game.chat_id === parseInt(process.env.ADMIN_CHAT || "") ? "curate" : "queue"}List`), keyboard);
                     }
                     else {
                         telegram_1.default.queueMessage(game.chat_id, (0, i18n_1.default)(game.settings.language, "sentences.noSearchResults", {
@@ -179,7 +179,7 @@ const evaluate = async (msg, game, isNew) => {
                     }
                 }
                 else {
-                    telegram_1.default.queueMessage(msg.chatId, (0, i18n_1.default)(game.settings.language, "sentences.emptySearch", { name: (0, string_helpers_1.parseSymbols)(player.first_name) }));
+                    telegram_1.default.queueMessage(game.chat_id, (0, i18n_1.default)(game.settings.language, "sentences.emptySearch", { name: (0, string_helpers_1.parseSymbols)(player.first_name) }));
                 }
                 break;
             case "/dica":
@@ -202,7 +202,7 @@ const evaluate = async (msg, game, isNew) => {
                 (0, hints_1.processHint)(game, player, game_1.GameType.TINYGAME);
                 break;
             case "/notify":
-                if (msg.chatId === parseInt(process.env.MASTER_CHAT || "")) {
+                if (game.chat_id === parseInt(process.env.MASTER_CHAT || "")) {
                     index_1.Game.find({ enabled: true })
                         .select("chat_id")
                         .then((games) => {
@@ -212,7 +212,7 @@ const evaluate = async (msg, game, isNew) => {
                 break;
             case "/eu":
             case "/me":
-                (0, stats_1.getStats)(msg.chatId, `p_${msg.from.id}`, msg.from.first_name);
+                (0, stats_1.getStats)(game.chat_id, `p_${msg.from.id}`, msg.from.first_name);
                 break;
             case "/pontuacao":
             case "/score":
@@ -260,8 +260,8 @@ const evaluate = async (msg, game, isNew) => {
                 break;
             case "/check":
                 if (msg.from.id === parseInt(process.env.MASTER_CHAT || "")) {
-                    telegram_1.default.queueMessage(msg.chatId, "Yes, master. Let me send you what you need!");
-                    telegram_1.default.notifyAdmin(`Chat id: ${msg.chatId}\nGame _id: ${game._id}\nSettings:\n${JSON.stringify(game.settings)}\nList: ${game.list.name}\nMinigame: ${game.minigame.answer}\nTinygame: ${game.tinygame.answer}\nhttps://belgocanadian.com/tenthings/${game.chat_id}`);
+                    telegram_1.default.queueMessage(game.chat_id, "Yes, master. Let me send you what you need!");
+                    telegram_1.default.notifyAdmin(`Chat id: ${game.chat_id}\nGame _id: ${game._id}\nSettings:\n${JSON.stringify(game.settings)}\nList: ${game.list.name}\nMinigame: ${game.minigame.answer}\nTinygame: ${game.tinygame.answer}\nhttps://belgocanadian.com/tenthings/${game.chat_id}`);
                 }
                 break;
             case "/flush":
@@ -269,7 +269,7 @@ const evaluate = async (msg, game, isNew) => {
                     game.list = (await (0, lists_1.getRandomList)());
                     game.pickedLists = [];
                     game.save();
-                    telegram_1.default.queueMessage(msg.chatId, "Flushed this chat");
+                    telegram_1.default.queueMessage(game.chat_id, "Flushed this chat");
                 }
                 break;
             case "/minigames":
@@ -278,14 +278,14 @@ const evaluate = async (msg, game, isNew) => {
                 }
                 break;
             case "/ping":
-                telegram_1.default.queueMessage(msg.chatId, "pong");
+                telegram_1.default.queueMessage(game.chat_id, "pong");
                 break;
             case "/hello":
-                telegram_1.default.queueMessage(msg.chatId, "You already had me but you got greedy, now you ruined it");
+                telegram_1.default.queueMessage(game.chat_id, "You already had me but you got greedy, now you ruined it");
                 break;
             case "/queue":
                 (0, queue_1.getQueue)().then((message) => {
-                    telegram_1.default.sendMessage(msg.chatId, message);
+                    telegram_1.default.sendMessage(game.chat_id, message);
                 }, console.error);
                 break;
             case "/listas":
@@ -300,11 +300,11 @@ const evaluate = async (msg, game, isNew) => {
                         for (const list of upcomingLists.slice(0, 10)) {
                             message += `- ${list.name}\n`;
                         }
-                        telegram_1.default.queueMessage(msg.chatId, message);
+                        telegram_1.default.queueMessage(game.chat_id, message);
                     });
                 }
                 else {
-                    telegram_1.default.queueMessage(msg.chatId, (0, i18n_1.default)(game.settings.language, "sentences.noUpcomingLists"));
+                    telegram_1.default.queueMessage(game.chat_id, (0, i18n_1.default)(game.settings.language, "sentences.noUpcomingLists"));
                 }
                 break;
             default:
@@ -315,7 +315,7 @@ const evaluate = async (msg, game, isNew) => {
         if (game.lastPlayDate <= (0, moment_1.default)().subtract(30, "days").toDate()) {
             (0, maingame_1.deactivate)(game);
         }
-        else if (game.enabled && msg.chatId != parseInt(process.env.ADMIN_CHAT || "")) {
+        else if (game.enabled && game.chat_id != parseInt(process.env.ADMIN_CHAT || "")) {
             (0, guesses_1.queueGuess)(game, msg);
         }
     }

@@ -12,7 +12,6 @@ import i18n from "@root/i18n";
 
 import { getDailyScores } from "./stats";
 import { banListKeyboard } from "./keyboards";
-import { Message } from "./messages";
 
 const SKIP_DELAY = 10;
 const VETO_DELAY = 15;
@@ -114,7 +113,7 @@ const skipList = (game: IGame, skipper: IPlayer) => {
   });
 };
 
-export const checkSkipper = async (game: IGame, msg: Message, player: IPlayer) => {
+export const checkSkipper = async (game: IGame, player: IPlayer) => {
   if (game.chat_id > 0) return true;
   if (!vetoCache[game.chat_id] || vetoCache[game.chat_id] < moment().subtract(VETO_DELAY, "seconds")) {
     delete vetoCache[game.chat_id];
@@ -131,7 +130,7 @@ export const checkSkipper = async (game: IGame, msg: Message, player: IPlayer) =
           skippers[player.id].lastSkipped = moment();
           skippers[player.id].delay += 10;
           bot.queueMessage(
-            msg.chatId,
+            game.chat_id,
             i18n(game.settings.language, "sentences.skipShortBan", {
               name: parseSymbols(player.first_name),
               delay: skippers[player.id].delay,
@@ -142,7 +141,7 @@ export const checkSkipper = async (game: IGame, msg: Message, player: IPlayer) =
           skippers[player.id].lastSkipped = moment();
           skippers[player.id].delay += 10;
           bot.queueMessage(
-            msg.chatId,
+            game.chat_id,
             i18n(game.settings.language, "sentences.skipBanThreat", {
               name: parseSymbols(player.first_name),
               delay: skippers[player.id].delay,

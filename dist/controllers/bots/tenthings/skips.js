@@ -106,7 +106,7 @@ const skipList = (game, skipper) => {
         (0, maingame_1.newRound)(game);
     });
 };
-const checkSkipper = async (game, msg, player) => {
+const checkSkipper = async (game, player) => {
     if (game.chat_id > 0)
         return true;
     if (!exports.vetoCache[game.chat_id] || exports.vetoCache[game.chat_id] < (0, moment_1.default)().subtract(VETO_DELAY, "seconds")) {
@@ -124,7 +124,7 @@ const checkSkipper = async (game, msg, player) => {
                 else if (skippers[player.id].delay < 50) {
                     skippers[player.id].lastSkipped = (0, moment_1.default)();
                     skippers[player.id].delay += 10;
-                    telegram_1.default.queueMessage(msg.chatId, (0, i18n_1.default)(game.settings.language, "sentences.skipShortBan", {
+                    telegram_1.default.queueMessage(game.chat_id, (0, i18n_1.default)(game.settings.language, "sentences.skipShortBan", {
                         name: (0, string_helpers_1.parseSymbols)(player.first_name),
                         delay: skippers[player.id].delay,
                     }));
@@ -133,7 +133,7 @@ const checkSkipper = async (game, msg, player) => {
                 else if (skippers[player.id].delay < 60) {
                     skippers[player.id].lastSkipped = (0, moment_1.default)();
                     skippers[player.id].delay += 10;
-                    telegram_1.default.queueMessage(msg.chatId, (0, i18n_1.default)(game.settings.language, "sentences.skipBanThreat", {
+                    telegram_1.default.queueMessage(game.chat_id, (0, i18n_1.default)(game.settings.language, "sentences.skipBanThreat", {
                         name: (0, string_helpers_1.parseSymbols)(player.first_name),
                         delay: skippers[player.id].delay,
                     }));

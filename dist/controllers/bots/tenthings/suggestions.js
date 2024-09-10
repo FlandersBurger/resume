@@ -19,7 +19,7 @@ const sendSuggestion = async (msg, game, player, suggestionType) => {
     if (game && player) {
         const playerName = (0, players_1.getPlayerName)(player);
         if (!msg.text) {
-            telegram_1.default.queueMessage(msg.chatId, (0, i18n_1.default)(game.settings.language, "warnings.noSuggestion", { name: playerName }));
+            telegram_1.default.queueMessage(game.chat_id, (0, i18n_1.default)(game.settings.language, "warnings.noSuggestion", { name: playerName }));
             player.state = player_1.PlayerState.None;
             await player.save();
         }
@@ -31,10 +31,10 @@ const sendSuggestion = async (msg, game, player, suggestionType) => {
             if (suggestionType == SuggestionType.Typo) {
                 message += `Current list: ${(0, string_helpers_1.parseSymbols)(game.list.name)}\n`;
             }
-            telegram_1.default.queueMessage(msg.chatId, `${message}Thank you, ${playerName}`);
+            telegram_1.default.queueMessage(game.chat_id, `${message}Thank you, ${playerName}`);
             message += `<i>${playerName}</i>`;
             telegram_1.default.notify(message);
-            const chatLink = await telegram_1.default.getChat(msg.chatId);
+            const chatLink = await telegram_1.default.getChat(game.chat_id);
             message += chatLink ? `\n${chatLink}` : "";
             telegram_1.default.notifyAdmins(message);
         }

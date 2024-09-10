@@ -74,7 +74,7 @@ const checkTinygame = async (game, player, guess, msg) => {
     message += `\n<u>${player.scoreDaily - score} + ${(0, i18n_1.default)(game.settings.language, "point", {
         count: score,
     })}</u>`;
-    telegram_1.default.queueMessage(msg.chatId, message);
+    telegram_1.default.queueMessage(game.chat_id, message);
     setTimeout(() => {
         (0, exports.createTinygame)(game);
     }, 1000);
