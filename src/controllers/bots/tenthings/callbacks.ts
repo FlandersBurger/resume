@@ -61,7 +61,9 @@ export enum CallbackDataType {
 }
 
 export default async (callbackQuery: CallbackData) => {
-  const game: HydratedDocument<IGame> | null = await Game.findOne({ chat_id: callbackQuery.chatId });
+  const game: HydratedDocument<IGame> | null = await Game.findOne({ chat_id: callbackQuery.chatId }).select(
+    "telegramChannel settings disabledCategories list pickedLists bannedLists",
+  );
   if (!game) {
     return;
   }

@@ -41,7 +41,7 @@ var CallbackDataType;
     CallbackDataType["Vote"] = "vote";
 })(CallbackDataType || (exports.CallbackDataType = CallbackDataType = {}));
 exports.default = async (callbackQuery) => {
-    const game = await index_1.Game.findOne({ chat_id: callbackQuery.chatId });
+    const game = await index_1.Game.findOne({ chat_id: callbackQuery.chatId }).select("telegramChannel settings disabledCategories list pickedLists bannedLists");
     if (!game) {
         return;
     }
