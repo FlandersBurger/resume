@@ -41,7 +41,7 @@ export const getListScore = (list: IList): number => {
 
 export const rateList = (game: IGame) => {
   bot.sendKeyboard(
-    game.chat_id,
+    game.telegramChannel,
     i18n(game.settings.language, "sentences.likeList", { list: parseSymbols(game.list!.name) }),
     likeListKeyboard(game),
   );
@@ -74,7 +74,7 @@ export const selectList = async (game: IGame): Promise<HydratedDocument<IList>> 
       game.playedLists = [];
       game.cycles++;
       game.lastCycleDate = moment().toDate();
-      bot.queueMessage(game.chat_id, i18n(game.settings.language, "sentences.allListsPlayed"));
+      bot.queueMessage(game.telegramChannel, i18n(game.settings.language, "sentences.allListsPlayed"));
       list = await getRandomList({
         _id: { $nin: game.bannedLists },
         categories: { $nin: game.disabledCategories },

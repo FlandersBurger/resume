@@ -38,10 +38,10 @@ export const processSkip = (game: IGame, skipper: IPlayer) => {
     if (skipCache[game.chat_id] && skipCache[game.chat_id].playerId !== skipper._id) {
       skipCache[game.chat_id].timer = 2;
     } else if (skipCache[game.chat_id] && skipCache[game.chat_id].playerId === skipper._id) {
-      bot.queueMessage(game.chat_id, i18n(game.settings.language, "sentences.skipDenial"));
+      bot.queueMessage(game.telegramChannel, i18n(game.settings.language, "sentences.skipDenial"));
     } else {
       bot.queueMessage(
-        game.chat_id,
+        game.telegramChannel,
         i18n(game.settings.language, "sentences.skipConfirm", {
           list: game.list.name,
           skipDelay: SKIP_DELAY,
@@ -84,9 +84,9 @@ const skipList = (game: IGame, skipper: IPlayer) => {
       str += "</i>\n";
       return str;
     }, "");
-    bot.queueMessage(game.chat_id, message);
+    bot.queueMessage(game.telegramChannel, message);
     bot.sendKeyboard(
-      game.chat_id,
+      game.telegramChannel,
       `Experimental feature to permanently ban list from game\nDo you want to ban "${game.list.name}"`,
       banListKeyboard(game.settings.language, game.list),
     );
@@ -108,7 +108,7 @@ const skipList = (game: IGame, skipper: IPlayer) => {
     } catch (err) {
       return bot.notifyAdmin(`Skip List Error:\n${err}`);
     }
-    bot.queueMessage(game.chat_id, await getDailyScores(game, 5));
+    bot.queueMessage(game.telegramChannel, await getDailyScores(game, 5));
     newRound(game);
   });
 };
@@ -130,7 +130,7 @@ export const checkSkipper = async (game: IGame, player: IPlayer) => {
           skippers[player.id].lastSkipped = moment();
           skippers[player.id].delay += 10;
           bot.queueMessage(
-            game.chat_id,
+            game.telegramChannel,
             i18n(game.settings.language, "sentences.skipShortBan", {
               name: parseSymbols(player.first_name),
               delay: skippers[player.id].delay,
@@ -141,7 +141,7 @@ export const checkSkipper = async (game: IGame, player: IPlayer) => {
           skippers[player.id].lastSkipped = moment();
           skippers[player.id].delay += 10;
           bot.queueMessage(
-            game.chat_id,
+            game.telegramChannel,
             i18n(game.settings.language, "sentences.skipBanThreat", {
               name: parseSymbols(player.first_name),
               delay: skippers[player.id].delay,
@@ -174,7 +174,7 @@ export const vetoSkip = async (game: IGame, player: HydratedDocument<IPlayer>) =
     delete skipCache[game.chat_id];
     vetoCache[game.chat_id] = moment();
     bot.queueMessage(
-      game.chat_id,
+      game.telegramChannel,
       i18n(game.settings.language, "sentences.skipVeto", {
         name: parseSymbols(player.first_name),
         vetoDelay: VETO_DELAY,
@@ -182,7 +182,7 @@ export const vetoSkip = async (game: IGame, player: HydratedDocument<IPlayer>) =
     );
   } else {
     bot.queueMessage(
-      game.chat_id,
+      game.telegramChannel,
       i18n(game.settings.language, "sentences.skipNotFound", {
         name: parseSymbols(player.first_name),
       }),
@@ -194,7 +194,7 @@ export const abortSkip = (game: IGame, player: IPlayer) => {
   delete skipCache[game.chat_id];
   vetoCache[game.chat_id] = moment();
   bot.queueMessage(
-    game.chat_id,
+    game.telegramChannel,
     i18n(game.settings.language, "sentences.skipAbort", {
       name: parseSymbols(player.first_name),
       vetoDelay: VETO_DELAY,

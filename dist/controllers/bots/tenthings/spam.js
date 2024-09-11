@@ -24,17 +24,17 @@ const checkSpam = (body) => {
         else if (cache[from].count <= 30) {
             cache[from].count++;
             if (cache[from].count === 20) {
-                telegram_1.default.queueMessage(chat, `You sure seem to be sending a lot of messages, ${name}. I'm keeping an eye on you`);
+                telegram_1.default.queueMessage({ chat }, `You sure seem to be sending a lot of messages, ${name}. I'm keeping an eye on you`);
             }
             else if (cache[from].count === 30) {
                 cache[from].lastMessage = (0, moment_1.default)();
-                telegram_1.default.queueMessage(chat, `Ok, ${name}, calm down, I can't keep up.  Please stay silent for 10 seconds so I can process your stuff`);
+                telegram_1.default.queueMessage({ chat }, `Ok, ${name}, calm down, I can't keep up.  Please stay silent for 10 seconds so I can process your stuff`);
             }
         }
         else if (cache[from].count > 35) {
             cache[from].count++;
             if (cache[from].count === 35) {
-                telegram_1.default.exportChatInviteLink(chat).then((url) => {
+                telegram_1.default.exportChatInviteLink({ chat }).then((url) => {
                     telegram_1.default.notifyAdmin(`Possible spammer: ${name} (${from}) in chat ${chat} ${chat == parseInt(process.env.GROUP_CHAT || "") ? " - The main chat!" : ""}\n\n${body.message}\n\nURL: ${url ? url : "N/A"}`);
                 });
             }

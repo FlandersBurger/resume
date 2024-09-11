@@ -12,10 +12,7 @@ const telegram_1 = __importDefault(require("../../../connections/telegram"));
 const i18n_1 = __importDefault(require("../../../i18n"));
 const number_helpers_1 = require("../../../utils/number-helpers");
 const string_helpers_1 = require("../../../utils/string-helpers");
-const getScores = async (game_id, type) => {
-    const game = await index_1.Game.findOne({ chat_id: game_id }).select("chat_id settings").exec();
-    if (!game)
-        return;
+const getScores = async (game, type) => {
     const players = await index_1.Player.find({ game: game._id }).exec();
     let str = "";
     switch (type) {
@@ -30,7 +27,7 @@ const getScores = async (game_id, type) => {
                 .forEach(({ first_name, highScore }, index) => {
                 str += `${index + 1}: ${(0, string_helpers_1.parseSymbols)(first_name)}: ${highScore}\n`;
             });
-            telegram_1.default.queueMessage(game_id, str);
+            telegram_1.default.queueMessage(game.telegramChannel, str);
             break;
         case "tr":
             str = "<b>Top Win Ratio</b>\n";
@@ -43,7 +40,7 @@ const getScores = async (game_id, type) => {
                 .forEach(({ first_name, wins, plays }, index) => {
                 str += `${index + 1}: ${(0, string_helpers_1.parseSymbols)(first_name)}: ${wins}/${plays} (${Math.round(plays === 0 ? 0 : (wins / plays) * 10000) / 100}%)\n`;
             });
-            telegram_1.default.queueMessage(game_id, str);
+            telegram_1.default.queueMessage(game.telegramChannel, str);
             break;
         case "ts":
             str = "<b>Top Overall Score</b>\n";
@@ -55,7 +52,7 @@ const getScores = async (game_id, type) => {
                 .forEach(({ first_name, score }, index) => {
                 str += `${index + 1}: ${(0, string_helpers_1.parseSymbols)(first_name)}: ${score}\n`;
             });
-            telegram_1.default.queueMessage(game_id, str);
+            telegram_1.default.queueMessage(game.telegramChannel, str);
             break;
         case "ta":
             str = "<b>Top Average Daily Score</b>\n";
@@ -68,10 +65,10 @@ const getScores = async (game_id, type) => {
                 .forEach(({ first_name, plays, score }, index) => {
                 str += `${index + 1}: ${(0, string_helpers_1.parseSymbols)(first_name)}: ${Math.round(plays === 0 ? 0 : score / plays)}\n`;
             });
-            telegram_1.default.queueMessage(game_id, str);
+            telegram_1.default.queueMessage(game.telegramChannel, str);
             break;
         default:
-            (0, exports.getDailyScores)(game).then((message) => telegram_1.default.queueMessage(game_id, message));
+            (0, exports.getDailyScores)(game).then((message) => telegram_1.default.queueMessage(game.telegramChannel, message));
     }
 };
 exports.getScores = getScores;
@@ -88,11 +85,8 @@ const getDailyScores = async ({ _id, settings }, limit = 0) => {
     return message;
 };
 exports.getDailyScores = getDailyScores;
-const getStats = async (chat_id, data, requestor) => {
+const getStats = async (game, data, requestor) => {
     const [type, _id] = data.split("_");
-    const game = await index_1.Game.findOne({ chat_id }).exec();
-    if (!game)
-        return;
     const players = await index_1.Player.find({ game: game._id, present: true, score: { $gt: 0 } }).exec();
     switch (type) {
         case "global":
@@ -138,7 +132,7 @@ const getStats = async (chat_id, data, requestor) => {
                 message += `Lists searched: ${(0, number_helpers_1.makeReadable)(stats.searches)}\n`;
                 message += `Lists Skipped: ${(0, number_helpers_1.makeReadable)(stats.skips)}\n`;
                 message += "\n";
-                telegram_1.default.queueMessage(game.chat_id, message);
+                telegram_1.default.queueMessage(game.telegramChannel, message);
             });
             break;
         case "g":
@@ -164,7 +158,7 @@ const getStats = async (chat_id, data, requestor) => {
             message += game.cycles ? `Last cycled: ${(0, moment_1.default)(game.lastCycleDate).format("DD-MMM-YYYY")}\n` : "";
             message += `${game.playedLists.length} of ${count} lists played (${Math.round((game.playedLists.length / count) * 100).toFixed(0)}%)\n`;
             message += "\n";
-            telegram_1.default.queueMessage(game.chat_id, message);
+            telegram_1.default.queueMessage(game.telegramChannel, message);
             break;
         case "c":
             creatorStats(game, requestor);
@@ -172,10 +166,10 @@ const getStats = async (chat_id, data, requestor) => {
         case "p":
             const player = await index_1.Player.findOne({ game: game._id, id: _id });
             if (!player) {
-                telegram_1.default.queueMessage(game.chat_id, "Player not found");
+                telegram_1.default.queueMessage(game.telegramChannel, "Player not found");
             }
             else {
-                telegram_1.default.queueMessage(game.chat_id, (0, messages_1.getPlayerStats)(player, requestor));
+                telegram_1.default.queueMessage(game.telegramChannel, (0, messages_1.getPlayerStats)(player, requestor));
             }
             break;
         case "l":
@@ -185,10 +179,10 @@ const getStats = async (chat_id, data, requestor) => {
                 .populate("creator")
                 .exec((_, gameList) => {
                 if (!gameList) {
-                    telegram_1.default.queueMessage(game.chat_id, "List not found");
+                    telegram_1.default.queueMessage(game.telegramChannel, "List not found");
                 }
                 else {
-                    telegram_1.default.queueMessage(game.chat_id, (0, messages_1.getListStats)(game.settings.language, gameList, requestor));
+                    telegram_1.default.queueMessage(game.telegramChannel, (0, messages_1.getListStats)(game.settings.language, gameList, requestor));
                 }
             });
             break;
@@ -274,12 +268,12 @@ const getStats = async (chat_id, data, requestor) => {
             playerStats(game, players, "maxHintStreak", undefined, 1, "No Hint Streak", "Consecutive answers given without asking hints", 1, requestor);
             break;
         default:
-            telegram_1.default.queueMessage(game.chat_id, "Something");
+            telegram_1.default.queueMessage(game.telegramChannel, "Something");
     }
 };
 exports.getStats = getStats;
 const addRequestor = (msg, requestor) => msg + (requestor ? `<i>Requested by ${(0, string_helpers_1.parseSymbols)(requestor)}</i>\n` : "");
-const listStats = async ({ chat_id, settings, disabledCategories }, field, divisor, ratio, title, description, sorter, requestor) => {
+const listStats = async ({ telegramChannel, settings, disabledCategories }, field, divisor, ratio, title, description, sorter, requestor) => {
     let message = `<b>${title}</b>\n`;
     message += description ? `<code>${description}</code>\n` : "";
     message = addRequestor(message, requestor);
@@ -311,9 +305,9 @@ const listStats = async ({ chat_id, settings, disabledCategories }, field, divis
         const result = Math.round(((listField * ratio) / listDivisor) * 100) / 100;
         message += `${index + 1}. ${list.name} (${divisor ? (0, number_helpers_1.makePercentage)(result, 0) : result})\n`;
     });
-    telegram_1.default.queueMessage(chat_id, message);
+    telegram_1.default.queueMessage(telegramChannel, message);
 };
-const playerStats = async ({ chat_id }, players, field, divisor, ratio, title, description, sorter, requestor) => {
+const playerStats = async ({ telegramChannel }, players, field, divisor, ratio, title, description, sorter, requestor) => {
     let message = `<b>${title}</b>\n`;
     message += description ? `<code>${description}</code>\n` : "";
     message = addRequestor(message, requestor);
@@ -338,9 +332,9 @@ const playerStats = async ({ chat_id }, players, field, divisor, ratio, title, d
         const result = Math.round(((playerField * ratio) / playerDivisor) * 100) / 100;
         message += `${index + 1}. ${(0, string_helpers_1.parseSymbols)(player.first_name)} (${divisor ? (0, number_helpers_1.makePercentage)(result, 0) : result})\n`;
     });
-    telegram_1.default.queueMessage(chat_id, message);
+    telegram_1.default.queueMessage(telegramChannel, message);
 };
-const voteStats = async ({ chat_id }, players, sorter, title, requestor) => {
+const voteStats = async ({ telegramChannel }, players, sorter, title, requestor) => {
     index_1.List.aggregate([{ $unwind: "$votes" }, { $group: { _id: "$votes.voter", votes: { $sum: 1 } } }])
         .sort({ votes: sorter })
         .limit(10)
@@ -356,10 +350,10 @@ const voteStats = async ({ chat_id }, players, sorter, title, requestor) => {
                 message += `${i++}. ${player.first_name} (${voter.votes})\n`;
             }
         });
-        telegram_1.default.queueMessage(chat_id, message);
+        telegram_1.default.queueMessage(telegramChannel, message);
     });
 };
-const creatorStats = async ({ chat_id }, requestor) => {
+const creatorStats = async ({ telegramChannel }, requestor) => {
     const lists = await index_1.List.aggregate([
         { $unwind: "$votes" },
         {
@@ -429,9 +423,9 @@ const creatorStats = async ({ chat_id }, requestor) => {
         result += ` - ${stat.creator} - ${stat.likeRatio}\n`;
         return result;
     }, "");
-    telegram_1.default.queueMessage(chat_id, message);
+    telegram_1.default.queueMessage(telegramChannel, message);
 };
-const voteSentimentStats = async ({ chat_id }, players, sorter, title, requestor) => {
+const voteSentimentStats = async ({ telegramChannel }, players, sorter, title, requestor) => {
     index_1.List.aggregate([
         { $match: { "votes.vote": sorter } },
         { $unwind: "$votes" },
@@ -451,7 +445,7 @@ const voteSentimentStats = async ({ chat_id }, players, sorter, title, requestor
                 message += `${i++}. ${player.first_name} (${voter.votes})\n`;
             }
         });
-        telegram_1.default.queueMessage(chat_id, message);
+        telegram_1.default.queueMessage(telegramChannel, message);
     });
 };
 const tenThingsStats = (game, sorter, field, title) => {

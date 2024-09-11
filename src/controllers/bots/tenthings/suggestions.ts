@@ -22,7 +22,10 @@ export const sendSuggestion = async (
   if (game && player) {
     const playerName = getPlayerName(player);
     if (!msg.text) {
-      bot.queueMessage(game.chat_id, i18n(game.settings.language, "warnings.noSuggestion", { name: playerName }));
+      bot.queueMessage(
+        game.telegramChannel,
+        i18n(game.settings.language, "warnings.noSuggestion", { name: playerName }),
+      );
       player.state = PlayerState.None;
       await player.save();
     } else {
@@ -33,10 +36,10 @@ export const sendSuggestion = async (
       if (suggestionType == SuggestionType.Typo) {
         message += `Current list: ${parseSymbols(game.list.name)}\n`;
       }
-      bot.queueMessage(game.chat_id, `${message}Thank you, ${playerName}`);
+      bot.queueMessage(game.telegramChannel, `${message}Thank you, ${playerName}`);
       message += `<i>${playerName}</i>`;
       bot.notify(message);
-      const chatLink = await bot.getChat(game.chat_id);
+      const chatLink = await bot.getChat(game.telegramChannel);
       message += chatLink ? `\n${chatLink}` : "";
       bot.notifyAdmins(message);
     }
@@ -74,13 +77,16 @@ export const sendSuggestionMessage = async (
     case "feature":
       player.state = PlayerState.Feature;
       await player.save();
-      bot.sendMessage(game.chat_id, `<b>FEATURE</b>\nPlease suggest your feature in your next message, ${playerName}!`);
+      bot.sendMessage(
+        game.telegramChannel,
+        `<b>FEATURE</b>\nPlease suggest your feature in your next message, ${playerName}!`,
+      );
       break;
     case "typo":
       player.state = PlayerState.Typo;
       await player.save();
       bot.sendMessage(
-        game.chat_id,
+        game.telegramChannel,
         `<b>TYPO</b>\nPlease let me know what the typo is in your next message, ${playerName}!\nMention the list name too if the typo is not part of: <i>"${parseSymbols(game.list.name)}"</i>`,
       );
       break;
@@ -88,7 +94,7 @@ export const sendSuggestionMessage = async (
       player.state = PlayerState.Bug;
       await player.save();
       bot.sendMessage(
-        game.chat_id,
+        game.telegramChannel,
         `<b>BUG</b>\nPlease provide some details as to what went wrong in your next message, ${playerName}!`,
       );
       break;

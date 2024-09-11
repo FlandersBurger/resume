@@ -23,7 +23,7 @@ const resetDailyScore = () => {
         index_1.Game.find({
             lastPlayDate: { $gte: (0, moment_1.default)().subtract(1, "days") },
         })
-            .select("chat_id list date hints")
+            .select("telegramChannel list date hints")
             .populate("list.creator")
             .then(async (games) => {
             const dailyPlayers = await index_1.Player.find({
@@ -34,7 +34,7 @@ const resetDailyScore = () => {
                 .select("_id id")
                 .exec();
             for (let game of games) {
-                telegram_1.default.queueMessage(game.chat_id, await (0, stats_1.getDailyScores)(game));
+                telegram_1.default.queueMessage(game.telegramChannel, await (0, stats_1.getDailyScores)(game));
                 const players = await index_1.Player.find({
                     game: game._id,
                     scoreDaily: { $gt: 0 },
@@ -52,7 +52,7 @@ const resetDailyScore = () => {
                 message += `Your gratitude won\'t go unnoticed :)\n\n`;
                 message += `\t - <a href="https://paypal.me/Game">Paypal</a>\n`;
                 message += `\t - Bitcoin Address: bc1qnr4y95d3w5rwahcypazpjdv33g8wupewmw6rpa3s2927qvgmduqsvcpgfs`;
-                telegram_1.default.queueMessage(game.chat_id, message);
+                telegram_1.default.queueMessage(game.telegramChannel, message);
                 await index_1.Player.updateMany({ game: game._id, scoreDaily: 0 }, { $set: { playStreak: 0 } });
                 await index_1.Player.updateMany({
                     game: game._id,
@@ -213,9 +213,9 @@ const sendNewLists = () => {
                 enabled: true,
                 listsPlayed: { $gt: 0 },
             })
-                .select("chat_id")
+                .select("telegramChannel")
                 .then((games) => {
-                telegram_1.default.broadcast(games.map((game) => game.chat_id), message);
+                telegram_1.default.broadcast(games.map((game) => game.telegramChannel), message);
             });
         }
         else {
@@ -250,9 +250,9 @@ const sendUpdatedLists = () => {
                 enabled: true,
                 listsPlayed: { $gt: 0 },
             })
-                .select("chat_id")
+                .select("telegramChannel")
                 .then((games) => {
-                telegram_1.default.broadcast(games.map((game) => game.chat_id), message);
+                telegram_1.default.broadcast(games.map((game) => game.telegramChannel), message);
                 telegram_1.default.notifyAdmins(message);
             });
         }
@@ -279,7 +279,7 @@ const deactivateInactiveChats = () => {
         lastPlayDate: { $lt: (0, moment_1.default)().subtract(30, "days") },
         enabled: true,
     })
-        .select("chat_id")
+        .select("telegramChannel enabled settings")
         .then((games) => {
         games.forEach(maingame_1.deactivate);
         if (games.length > 0)

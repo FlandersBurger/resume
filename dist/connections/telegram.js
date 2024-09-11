@@ -60,13 +60,13 @@ class TelegramBot {
             const reason = error?.response?.data?.description;
             if (reason) {
                 if (this.muteReasons.includes(reason)) {
-                    (0, errors_1.botMuted)(channel);
+                    (0, errors_1.botMuted)(channel.chat);
                 }
                 else if (!this.ignoreReasons.includes(reason)) {
                     bot.notifyAdmin(`Error from "${source}" in channel ${channel}:\n${(0, string_helpers_1.parseSymbols)(reason)}`);
                 }
                 else if (reason.includes("Bad Request: message thread not found")) {
-                    (0, errors_1.noTopic)(channel);
+                    (0, errors_1.noTopic)(channel.chat);
                     bot.notifyAdmin(`${channel} has no topic`);
                 }
                 else {
@@ -112,11 +112,11 @@ class TelegramBot {
             }
         };
         this.sendMessage = (channel, message, options = {}, retries = 0) => {
-            const { topic, replyMessageId, replyMarkup } = options;
+            const { replyMessageId, replyMarkup } = options;
             message = encodeURIComponent(message);
-            let url = `${this.baseUrl}/sendMessage?chat_id=${channel}&disable_notification=true&parse_mode=html&text=${message}`;
-            if (channel === parseInt(process.env.COSMIC_FORCE_CHAT) && topic)
-                url += `&message_thread_id=${topic}`;
+            let url = `${this.baseUrl}/sendMessage?chat_id=${channel.chat}}&disable_notification=true&parse_mode=html&text=${message}`;
+            if (channel.chat === parseInt(process.env.COSMIC_FORCE_CHAT) && channel.topic)
+                url += `&message_thread_id=${channel.topic}`;
             if (replyMessageId) {
                 url += `&reply_markup=${JSON.stringify({ force_reply: true, selective: true })}`;
                 url += `&reply_parameters=${JSON.stringify({ message_id: replyMessageId, allow_sending_without_reply: true })}`;
@@ -159,14 +159,14 @@ class TelegramBot {
                         this.errorHandler(channel, "Send message", error);
                 }
                 else {
-                    if (channel !== parseInt(process.env.MASTER_CHAT || "")) {
+                    if (channel.chat !== parseInt(process.env.MASTER_CHAT || "")) {
                         this.errorHandler(channel, "Send message", error);
                     }
                 }
             });
         };
         this.deleteMessage = async (channel, message_id) => {
-            const url = `${this.baseUrl}/deleteMessage?chat_id=${channel}&message_id=${message_id}`;
+            const url = `${this.baseUrl}/deleteMessage?chat_id=${channel.chat}}&message_id=${message_id}`;
             try {
                 await (0, http_client_1.default)().get(url);
             }
@@ -185,7 +185,7 @@ class TelegramBot {
                 minutes = 1;
             let date = new Date();
             const untilDate = Math.floor(date.setTime(date.getTime() + minutes * 60 * 1000) / 1000);
-            const url = `${this.baseUrl}/kickChatMember?chat_id=${channel}&user_id=${userId}&until_date=${untilDate}`;
+            const url = `${this.baseUrl}/kickChatMember?chat_id=${channel.chat}}&user_id=${userId}&until_date=${untilDate}`;
             try {
                 await (0, http_client_1.default)().get(url);
             }
@@ -195,21 +195,23 @@ class TelegramBot {
         };
         this.notifyCosmicForce = async (msg, keyboard) => {
             if (keyboard)
-                await this.sendMessage(parseInt(process.env.COSMIC_FORCE_CHAT || ""), msg, { topic: 17, replyMarkup: keyboard });
+                await this.sendMessage({ chat: parseInt(process.env.COSMIC_FORCE_CHAT || ""), topic: 17 }, msg, {
+                    replyMarkup: keyboard,
+                });
             else
-                await this.sendMessage(parseInt(process.env.COSMIC_FORCE_CHAT || ""), msg, { topic: 17 });
+                await this.sendMessage({ chat: parseInt(process.env.COSMIC_FORCE_CHAT || ""), topic: 17 }, msg);
         };
         this.notifyAdmin = async (msg) => {
-            await this.queueMessage(parseInt(process.env.MASTER_CHAT || ""), msg);
+            await this.queueMessage({ chat: parseInt(process.env.MASTER_CHAT || "") }, msg);
         };
         this.notify = async (msg) => {
-            await this.queueMessage(parseInt(process.env.NOTICE_CHAT || ""), msg);
+            await this.queueMessage({ chat: parseInt(process.env.NOTICE_CHAT || "") }, msg);
         };
         this.notifyAdmins = async (msg, keyboard) => {
             if (keyboard)
-                await this.sendKeyboard(parseInt(process.env.ADMIN_CHAT || ""), msg, keyboard);
+                await this.sendKeyboard({ chat: parseInt(process.env.ADMIN_CHAT || "") }, msg, keyboard);
             else
-                await this.queueMessage(parseInt(process.env.ADMIN_CHAT || ""), msg);
+                await this.queueMessage({ chat: parseInt(process.env.ADMIN_CHAT || "") }, msg);
         };
         this.broadcast = async (channels, message) => {
             await this.notifyAdmin(`Starting broadcast to ${channels.length} chats`);
@@ -223,7 +225,7 @@ class TelegramBot {
             });
         };
         this.exportChatInviteLink = async (channel) => {
-            const url = `${this.baseUrl}/exportChatInviteLink?chat_id=${channel}`;
+            const url = `${this.baseUrl}/exportChatInviteLink?chat_id=${channel.chat}`;
             try {
                 const { data } = await (0, http_client_1.default)().get(encodeURI(url));
                 return data.result;
@@ -233,7 +235,7 @@ class TelegramBot {
             }
         };
         this.getChat = async (channel) => {
-            const url = `${bot.baseUrl}/getChat?chat_id=${channel}`;
+            const url = `${bot.baseUrl}/getChat?chat_id=${channel.chat}}`;
             try {
                 const { data } = await (0, http_client_1.default)().get(encodeURI(url));
                 if (data.result.invite_link)
@@ -249,7 +251,7 @@ class TelegramBot {
             }
             catch (error) {
                 if (error.response.data.error_code === 400) {
-                    (0, errors_1.chatNotFound)(channel);
+                    (0, errors_1.chatNotFound)(channel.chat);
                 }
                 else {
                     this.errorHandler(channel, "Get chat", error);
@@ -259,7 +261,7 @@ class TelegramBot {
             return "";
         };
         this.getChatMember = async (channel, userId) => {
-            const url = `${this.baseUrl}/getChatMember?chat_id=${channel}&user_id=${userId}`;
+            const url = `${this.baseUrl}/getChatMember?chat_id=${channel.chat}}&user_id=${userId}`;
             try {
                 const response = await (0, http_client_1.default)().get(url);
                 return (response &&
@@ -274,9 +276,9 @@ class TelegramBot {
         this.checkAdmin = async (channel, userId) => {
             if (userId === parseInt(process.env.MASTER_CHAT || ""))
                 return true;
-            if (channel > 0)
+            if (channel.chat > 0)
                 return true;
-            const url = `${this.baseUrl}/getChatMember?chat_id=${channel}&user_id=${userId}`;
+            const url = `${this.baseUrl}/getChatMember?chat_id=${channel.chat}}&user_id=${userId}`;
             try {
                 const response = await (0, http_client_1.default)().get(url);
                 return (response &&
@@ -295,7 +297,7 @@ class TelegramBot {
             this.sendMessage(channel, message.replace("&", "and"), { replyMarkup: keyboard });
         };
         this.sendPhoto = async (channel, photo) => {
-            const url = `${this.baseUrl}/sendPhoto?chat_id=${channel}&photo=${photo}`;
+            const url = `${this.baseUrl}/sendPhoto?chat_id=${channel.chat}}&photo=${photo}`;
             try {
                 await (0, http_client_1.default)().get(encodeURI(url));
             }
@@ -309,7 +311,7 @@ class TelegramBot {
             }
         };
         this.sendAnimation = async (channel, animation) => {
-            const url = `${this.baseUrl}/sendAnimation?chat_id=${channel}&animation=${animation}`;
+            const url = `${this.baseUrl}/sendAnimation?chat_id=${channel.chat}}&animation=${animation}`;
             try {
                 await (0, http_client_1.default)().get(encodeURI(url));
             }
@@ -323,7 +325,7 @@ class TelegramBot {
             }
         };
         this.editKeyboard = async (channel, message_id, keyboard) => {
-            let url = `${this.baseUrl}/editMessageReplyMarkup?chat_id=${channel}&message_id=${message_id}`;
+            let url = `${this.baseUrl}/editMessageReplyMarkup?chat_id=${channel.chat}}&message_id=${message_id}`;
             if (keyboard)
                 url += `&reply_markup=${JSON.stringify(keyboard)}`;
             try {
@@ -342,7 +344,7 @@ class TelegramBot {
                 await (0, http_client_1.default)().get(encodeURI(url));
             }
             catch (error) {
-                this.errorHandler(0, "Answer callback", error);
+                this.errorHandler({ chat: 0 }, "Answer callback", error);
             }
         };
         this.getName = () => {
@@ -384,7 +386,7 @@ class TelegramBot {
             }));
             const scope = {
                 type: "chat",
-                chat_id: channel,
+                chat_id: channel.chat,
             };
             const url = `${this.baseUrl}/setMyCommands?commands=${JSON.stringify(commands)}&scope=${JSON.stringify(scope)}`;
             try {

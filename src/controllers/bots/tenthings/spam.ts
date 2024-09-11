@@ -29,18 +29,18 @@ export const checkSpam = (body: {
     } else if (cache[from].count <= 30) {
       cache[from].count++;
       if (cache[from].count === 20) {
-        bot.queueMessage(chat, `You sure seem to be sending a lot of messages, ${name}. I'm keeping an eye on you`);
+        bot.queueMessage({chat}, `You sure seem to be sending a lot of messages, ${name}. I'm keeping an eye on you`);
       } else if (cache[from].count === 30) {
         cache[from].lastMessage = moment();
         bot.queueMessage(
-          chat,
+          {chat},
           `Ok, ${name}, calm down, I can't keep up.  Please stay silent for 10 seconds so I can process your stuff`,
         );
       }
     } else if (cache[from].count > 35) {
       cache[from].count++;
       if (cache[from].count === 35) {
-        bot.exportChatInviteLink(chat).then((url: string | undefined) => {
+        bot.exportChatInviteLink({chat}).then((url: string | undefined) => {
           bot.notifyAdmin(
             `Possible spammer: ${name} (${from}) in chat ${chat} ${
               chat == parseInt(process.env.GROUP_CHAT || "") ? " - The main chat!" : ""

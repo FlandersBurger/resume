@@ -54,7 +54,7 @@ const sendTinygameMessage = (game) => {
         return msg;
     }, "");
     message += `\n<b>${(0, hints_1.getHint)(game.tinygame.hints, game.tinygame.answer)}</b>`;
-    telegram_1.default.queueMessage(game.chat_id, message);
+    telegram_1.default.queueMessage(game.telegramChannel, message);
 };
 exports.sendTinygameMessage = sendTinygameMessage;
 const checkTinygame = async (game, player, guess, msg) => {
@@ -74,7 +74,7 @@ const checkTinygame = async (game, player, guess, msg) => {
     message += `\n<u>${player.scoreDaily - score} + ${(0, i18n_1.default)(game.settings.language, "point", {
         count: score,
     })}</u>`;
-    telegram_1.default.queueMessage(game.chat_id, message);
+    telegram_1.default.queueMessage(game.telegramChannel, message);
     setTimeout(() => {
         (0, exports.createTinygame)(game);
     }, 1000);

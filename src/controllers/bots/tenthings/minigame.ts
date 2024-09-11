@@ -32,7 +32,7 @@ export const createMinigame = async (game: HydratedDocument<IGame>) => {
     });
     if (minigames.length > 0)
       bot.queueMessage(
-        game.chat_id,
+        game.telegramChannel,
         "Not enough lists available in your chosen languages to make a minigame work, defaulting to English",
       );
   }
@@ -42,7 +42,7 @@ export const createMinigame = async (game: HydratedDocument<IGame>) => {
     });
     if (minigames.length > 0)
       bot.queueMessage(
-        game.chat_id,
+        game.telegramChannel,
         "Not enough lists available in your chosen categories to make a minigame work, defaulting to all lists",
       );
   }
@@ -161,7 +161,7 @@ export const sendMinigameMessage = (game: IGame) => {
     return msg;
   }, "");
   message += `\n<b>${getHint(game.minigame.hints, game.minigame.answer)}</b>`;
-  bot.queueMessage(game.chat_id, message);
+  bot.queueMessage(game.telegramChannel, message);
 };
 
 export const checkMinigame = async (
@@ -186,7 +186,7 @@ export const checkMinigame = async (
   message += `\n<u>${player.scoreDaily - score} + ${i18n(game.settings.language, "point", {
     count: score,
   })}</u>`;
-  bot.queueMessage(game.chat_id, message);
+  bot.queueMessage(game.telegramChannel, message);
   setTimeout(() => {
     createMinigame(game);
   }, 1000);

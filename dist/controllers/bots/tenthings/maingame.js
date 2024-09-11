@@ -36,7 +36,7 @@ const checkRound = (game) => {
             if (foundList) {
                 let message = (0, messages_1.getListStats)(game.settings.language, foundList, undefined);
                 message += await (0, stats_1.getDailyScores)(game, 5);
-                telegram_1.default.queueMessage(game.chat_id, message);
+                telegram_1.default.queueMessage(game.telegramChannel, message);
                 foundList.lastPlayDate = (0, moment_1.default)().toDate();
                 foundList.save();
             }
@@ -54,7 +54,7 @@ const newRound = (currentGame) => {
     index_1.Game.findOne({
         _id: currentGame._id,
     })
-        .select("_id chat_id playedLists list listsPlayed pickedLists cycles guessers hints disabledCategories settings")
+        .select("_id telegramChannel playedLists list listsPlayed pickedLists cycles guessers hints disabledCategories settings")
         .populate("list.creator")
         .exec(async (err, game) => {
         if (err)
@@ -101,11 +101,11 @@ const newRound = (currentGame) => {
         message += `<b>${game.list.categories
             .map((category) => (0, i18n_1.default)(game.settings.language, `categories.${category}`))
             .join(", ")}</b>`;
-        telegram_1.default.queueMessage(game.chat_id, message);
+        telegram_1.default.queueMessage(game.telegramChannel, message);
         setTimeout(() => {
             let message = `<b>${game.list.name}</b> (${game.list.answers}) ${(0, i18n_1.default)(game.settings.language, "sentences.createdBy", { creator: game.list.creator.username })}`;
             message += game.list.description ? `\n<i>${(0, string_helpers_1.parseSymbols)(game.list.description)}</i>` : "";
-            telegram_1.default.queueMessage(game.chat_id, message);
+            telegram_1.default.queueMessage(game.telegramChannel, message);
         }, 2000);
         game.playedLists.push(game.list._id);
         game.save((err) => {
@@ -121,7 +121,7 @@ const activate = async (game, save = false) => {
     if (!game.enabled) {
         game.lastPlayDate = (0, moment_1.default)().toDate();
         game.enabled = true;
-        telegram_1.default.sendMessage(game.chat_id, "Ten Things started");
+        telegram_1.default.sendMessage(game.telegramChannel, "Ten Things started");
         if (save)
             await game.save();
     }
@@ -131,7 +131,7 @@ const deactivate = (game) => {
     if (game.enabled) {
         game.enabled = false;
         game.save();
-        telegram_1.default.sendMessage(game.chat_id, (0, i18n_1.default)(game.settings.language, "sentences.inactivity"));
+        telegram_1.default.sendMessage(game.telegramChannel, (0, i18n_1.default)(game.settings.language, "sentences.inactivity"));
     }
 };
 exports.deactivate = deactivate;
@@ -180,12 +180,12 @@ const checkMaingame = async (game, player, guess, msg) => {
             player.maxHintStreak = player.hintStreak;
         }
         if (match.blurb) {
-            guessed(game, player, msg, match.value, match.blurb.substring(0, 4) === "http"
+            guessed(game, player, match.value, match.blurb.substring(0, 4) === "http"
                 ? `<a href="${match.blurb}">&#8204;</a>`
                 : `\n<i>${(0, string_helpers_1.parseSymbols)(match.blurb)}</i>`, score, accuracy);
         }
         else {
-            guessed(game, player, msg, match.value, "", score, accuracy);
+            guessed(game, player, match.value, "", score, accuracy);
         }
         setTimeout(() => {
             (0, exports.checkRound)(game);
@@ -194,7 +194,7 @@ const checkMaingame = async (game, player, guess, msg) => {
     else if (match) {
         player.snubs++;
         if (game.settings.snubs) {
-            telegram_1.default.queueMessage(game.chat_id, (0, messages_1.getSnubbedMessage)((0, string_helpers_1.parseSymbols)(match.value), player, match.guesser));
+            telegram_1.default.queueMessage(game.telegramChannel, (0, messages_1.getSnubbedMessage)((0, string_helpers_1.parseSymbols)(match.value), player, match.guesser));
         }
     }
     try {
@@ -259,10 +259,10 @@ const sendMaingameMessage = async (game, long = true) => {
         }
         return str;
     }, "");
-    telegram_1.default.queueMessage(game.chat_id, message);
+    telegram_1.default.queueMessage(game.telegramChannel, message);
 };
 exports.sendMaingameMessage = sendMaingameMessage;
-const guessed = async (game, { scoreDaily, first_name }, { chatId }, value, blurb, score, accuracy) => {
+const guessed = async (game, { scoreDaily, first_name }, value, blurb, score, accuracy) => {
     let message = (0, messages_1.getGuessedMessage)(game.settings.language, (0, string_helpers_1.parseSymbols)(value), (0, string_helpers_1.parseSymbols)(first_name));
     message += (0, messages_1.getStreakMessage)(game.streak.count);
     message += blurb;
@@ -285,6 +285,6 @@ const guessed = async (game, { scoreDaily, first_name }, { chatId }, value, blur
     else {
         message += `\n${(0, i18n_1.default)(game.settings.language, "sentences.roundOver")}`;
     }
-    return await telegram_1.default.queueMessage(chatId, message);
+    return await telegram_1.default.queueMessage(game.telegramChannel, message);
 };
 //# sourceMappingURL=maingame.js.map
