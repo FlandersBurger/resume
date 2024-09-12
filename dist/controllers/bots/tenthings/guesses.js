@@ -100,7 +100,7 @@ const processGuess = async (guess) => {
         chat_id: guess.game,
     })
         .populate("list.creator")
-        .select("_id telegramChannel guessers list lastPlayDate hints streak settings minigame tinygame disabledCategories");
+        .select("-bannedLists -playedLists -pickedLists");
     if (!game) {
         console.error(`Game not found`);
         return console.error(guess);

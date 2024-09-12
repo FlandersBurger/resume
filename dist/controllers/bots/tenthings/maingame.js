@@ -54,7 +54,7 @@ const newRound = (currentGame) => {
     index_1.Game.findOne({
         _id: currentGame._id,
     })
-        .select("_id telegramChannel playedLists list listsPlayed pickedLists cycles guessers hints disabledCategories settings")
+        .select("_id chat_id telegramChannel playedLists list listsPlayed pickedLists cycles guessers hints disabledCategories settings")
         .populate("list.creator")
         .exec(async (err, game) => {
         if (err)
