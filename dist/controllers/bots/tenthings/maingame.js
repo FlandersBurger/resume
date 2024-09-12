@@ -285,6 +285,6 @@ const guessed = async (game, { scoreDaily, first_name }, value, blurb, score, ac
     else {
         message += `\n${(0, i18n_1.default)(game.settings.language, "sentences.roundOver")}`;
     }
-    return await telegram_1.default.queueMessage(game.telegramChannel, message);
+    return telegram_1.default.queueMessage(game.telegramChannel, message);
 };
 //# sourceMappingURL=maingame.js.map

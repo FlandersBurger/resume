@@ -223,7 +223,7 @@ export const checkMaingame = async (
       /*
       request(`https://en.wikipedia.org/w/api.php?action=query&format=json&prop=extracts&titles=Earth&generator=prefixsearch&exintro=1&explaintext=1&gpssearch=${encodeURIComponent(match.value)}`, (err, response, body) => {
         if (err) {
-          guessed(game, player, msg, match.value, '', score, accuracy);
+          guessed(game, player,  match.value, '', score, accuracy);
         } else {
           try {
             const pages = JSON.parse(body).query.pages;
@@ -232,13 +232,13 @@ export const checkMaingame = async (
               result = result.substring(0, 200) + '...';
             }
             if (result && !result.includes('refer to:') && !result.includes('refers to:')) {
-              guessed(game, player, msg, match.value, `\nRandom Wiki:\n<i>${result}</i>`, score, accuracy);
+              guessed(game, player, match.value, `\nRandom Wiki:\n<i>${result}</i>`, score, accuracy);
             } else {
-              guessed(game, player, msg, match.value, '', score, accuracy);
+              guessed(game, player, match.value, '', score, accuracy);
             }
           } catch (e) {
             console.error(e);
-            guessed(game, player, msg, match.value, '', score, accuracy);
+            guessed(game, player, match.value, '', score, accuracy);
           }
         }
       });
@@ -355,5 +355,5 @@ const guessed = async (
   } else {
     message += `\n${i18n(game.settings.language, "sentences.roundOver")}`;
   }
-  return await bot.queueMessage(game.telegramChannel, message);
+  return bot.queueMessage(game.telegramChannel, message);
 };

@@ -96,9 +96,7 @@ guessQueue.process(async ({ data }, done) => {
     done();
 });
 const processGuess = async (guess) => {
-    const game = await index_1.Game.findOne({
-        chat_id: guess.game,
-    })
+    const game = await index_1.Game.findOne({ chat_id: guess.game })
         .populate("list.creator")
         .select("-bannedLists -playedLists -pickedLists");
     if (!game) {
