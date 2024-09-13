@@ -23,7 +23,7 @@ const resetDailyScore = () => {
         index_1.Game.find({
             lastPlayDate: { $gte: (0, moment_1.default)().subtract(1, "days") },
         })
-            .select("telegramChannel list date hints")
+            .select("chat_id topicId telegramChannel list date hints")
             .populate("list.creator")
             .then(async (games) => {
             const dailyPlayers = await index_1.Player.find({
@@ -213,7 +213,7 @@ const sendNewLists = () => {
                 enabled: true,
                 listsPlayed: { $gt: 0 },
             })
-                .select("telegramChannel")
+                .select("chat_id topicId telegramChannel")
                 .then((games) => {
                 telegram_1.default.broadcast(games.map((game) => game.telegramChannel), message);
             });
@@ -250,7 +250,7 @@ const sendUpdatedLists = () => {
                 enabled: true,
                 listsPlayed: { $gt: 0 },
             })
-                .select("telegramChannel")
+                .select("chat_id topicId telegramChannel")
                 .then((games) => {
                 telegram_1.default.broadcast(games.map((game) => game.telegramChannel), message);
                 telegram_1.default.notifyAdmins(message);
@@ -279,7 +279,7 @@ const deactivateInactiveChats = () => {
         lastPlayDate: { $lt: (0, moment_1.default)().subtract(30, "days") },
         enabled: true,
     })
-        .select("telegramChannel enabled settings")
+        .select("chat_id topicId telegramChannel enabled settings")
         .then((games) => {
         games.forEach(maingame_1.deactivate);
         if (games.length > 0)

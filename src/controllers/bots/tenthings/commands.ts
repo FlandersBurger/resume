@@ -243,7 +243,7 @@ export const evaluate = async (msg: Message, game: HydratedDocument<IGame>, isNe
       case "/notify":
         if (game.chat_id === parseInt(process.env.MASTER_CHAT || "")) {
           Game.find({ enabled: true })
-            .select("telegramChannel")
+            .select("chat_id topicId telegramChannel")
             .then((games) => {
               bot.broadcast(
                 games.map(({ telegramChannel }) => telegramChannel),

@@ -204,7 +204,7 @@ const evaluate = async (msg, game, isNew) => {
             case "/notify":
                 if (game.chat_id === parseInt(process.env.MASTER_CHAT || "")) {
                     index_1.Game.find({ enabled: true })
-                        .select("telegramChannel")
+                        .select("chat_id topicId telegramChannel")
                         .then((games) => {
                         telegram_1.default.broadcast(games.map(({ telegramChannel }) => telegramChannel), msg.text.replace("/notify ", ""));
                     });

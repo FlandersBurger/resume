@@ -69,7 +69,7 @@ export const newRound = (currentGame: IGame) => {
     _id: currentGame._id,
   })
     .select(
-      "_id chat_id telegramChannel playedLists list listsPlayed pickedLists cycles guessers hints disabledCategories settings",
+      "_id chat_id topicId telegramChannel playedLists list listsPlayed pickedLists cycles guessers hints disabledCategories settings",
     )
     .populate("list.creator")
     .exec(async (err, game) => {
