@@ -386,7 +386,7 @@ class TelegramBot {
   };
 
   public queueEditKeyboard = (channel: Channel, message_id: string, keyboard: Keyboard) => {
-    console.log("queueing keyboard");
+    console.log(channel);
     messageQueue.add("", { channel, message_id, action: "editKeyboard", keyboard }, {});
   };
 

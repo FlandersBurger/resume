@@ -337,7 +337,7 @@ class TelegramBot {
             }
         };
         this.queueEditKeyboard = (channel, message_id, keyboard) => {
-            console.log("queueing keyboard");
+            console.log(channel);
             messageQueue.add("", { channel, message_id, action: "editKeyboard", keyboard }, {});
         };
         this.answerCallback = async (callback_query_id, text) => {
