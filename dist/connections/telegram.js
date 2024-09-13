@@ -114,7 +114,7 @@ class TelegramBot {
         this.sendMessage = (channel, message, options = {}, retries = 0) => {
             const { replyMessageId, replyMarkup } = options;
             message = encodeURIComponent(message);
-            let url = `${this.baseUrl}/sendMessage?chat_id=${channel.chat}}&disable_notification=true&parse_mode=html&text=${message}`;
+            let url = `${this.baseUrl}/sendMessage?chat_id=${channel.chat}&disable_notification=true&parse_mode=html&text=${message}`;
             if (channel.chat === parseInt(process.env.COSMIC_FORCE_CHAT) && channel.topic)
                 url += `&message_thread_id=${channel.topic}`;
             if (replyMessageId) {
@@ -166,7 +166,7 @@ class TelegramBot {
             });
         };
         this.deleteMessage = async (channel, message_id) => {
-            const url = `${this.baseUrl}/deleteMessage?chat_id=${channel.chat}}&message_id=${message_id}`;
+            const url = `${this.baseUrl}/deleteMessage?chat_id=${channel.chat}&message_id=${message_id}`;
             try {
                 await (0, http_client_1.default)().get(url);
             }
@@ -185,7 +185,7 @@ class TelegramBot {
                 minutes = 1;
             let date = new Date();
             const untilDate = Math.floor(date.setTime(date.getTime() + minutes * 60 * 1000) / 1000);
-            const url = `${this.baseUrl}/kickChatMember?chat_id=${channel.chat}}&user_id=${userId}&until_date=${untilDate}`;
+            const url = `${this.baseUrl}/kickChatMember?chat_id=${channel.chat}&user_id=${userId}&until_date=${untilDate}`;
             try {
                 await (0, http_client_1.default)().get(url);
             }
@@ -235,7 +235,7 @@ class TelegramBot {
             }
         };
         this.getChat = async (channel) => {
-            const url = `${bot.baseUrl}/getChat?chat_id=${channel.chat}}`;
+            const url = `${bot.baseUrl}/getChat?chat_id=${channel.chat}`;
             try {
                 const { data } = await (0, http_client_1.default)().get(encodeURI(url));
                 if (data.result.invite_link)
@@ -261,7 +261,7 @@ class TelegramBot {
             return "";
         };
         this.getChatMember = async (channel, userId) => {
-            const url = `${this.baseUrl}/getChatMember?chat_id=${channel.chat}}&user_id=${userId}`;
+            const url = `${this.baseUrl}/getChatMember?chat_id=${channel.chat}&user_id=${userId}`;
             try {
                 const response = await (0, http_client_1.default)().get(url);
                 return (response &&
@@ -278,7 +278,7 @@ class TelegramBot {
                 return true;
             if (channel.chat > 0)
                 return true;
-            const url = `${this.baseUrl}/getChatMember?chat_id=${channel.chat}}&user_id=${userId}`;
+            const url = `${this.baseUrl}/getChatMember?chat_id=${channel.chat}&user_id=${userId}`;
             try {
                 const response = await (0, http_client_1.default)().get(url);
                 return (response &&
@@ -297,7 +297,7 @@ class TelegramBot {
             this.sendMessage(channel, message.replace("&", "and"), { replyMarkup: keyboard });
         };
         this.sendPhoto = async (channel, photo) => {
-            const url = `${this.baseUrl}/sendPhoto?chat_id=${channel.chat}}&photo=${photo}`;
+            const url = `${this.baseUrl}/sendPhoto?chat_id=${channel.chat}&photo=${photo}`;
             try {
                 await (0, http_client_1.default)().get(encodeURI(url));
             }
@@ -311,7 +311,7 @@ class TelegramBot {
             }
         };
         this.sendAnimation = async (channel, animation) => {
-            const url = `${this.baseUrl}/sendAnimation?chat_id=${channel.chat}}&animation=${animation}`;
+            const url = `${this.baseUrl}/sendAnimation?chat_id=${channel.chat}&animation=${animation}`;
             try {
                 await (0, http_client_1.default)().get(encodeURI(url));
             }
