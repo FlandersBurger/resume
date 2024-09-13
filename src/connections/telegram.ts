@@ -377,6 +377,7 @@ class TelegramBot {
   public editKeyboard = async (channel: Channel, message_id: string, keyboard: Keyboard) => {
     let url = `${this.baseUrl}/editMessageReplyMarkup?chat_id=${channel.chat}}&message_id=${message_id}`;
     if (keyboard) url += `&reply_markup=${JSON.stringify(keyboard)}`;
+    console.log(url);
     try {
       await httpClient().get(encodeURI(url));
     } catch (error: AxiosError | any) {
@@ -385,6 +386,7 @@ class TelegramBot {
   };
 
   public queueEditKeyboard = (channel: Channel, message_id: string, keyboard: Keyboard) => {
+    console.log("queueing keyboard");
     messageQueue.add("", { channel, message_id, action: "editKeyboard", keyboard }, {});
   };
 
