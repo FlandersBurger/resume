@@ -31,7 +31,7 @@ const resetDailyScore = () => {
     Game.find({
       lastPlayDate: { $gte: moment().subtract(1, "days") },
     })
-      .select("chat_id list date hints")
+      .select("chat_id topicId telegramChannel list date hints")
       .populate("list.creator")
       .then(
         async (games: HydratedDocument<IGame>[]) => {
@@ -43,7 +43,7 @@ const resetDailyScore = () => {
             .select("_id id")
             .exec();
           for (let game of games) {
-            bot.queueMessage(game.chat_id, await getDailyScores(game));
+            bot.queueMessage(game.telegramChannel, await getDailyScores(game));
             const players: IPlayer[] = await Player.find({
               game: game._id,
               scoreDaily: { $gt: 0 },
@@ -62,7 +62,7 @@ const resetDailyScore = () => {
             message += `\t - <a href="https://paypal.me/Game">Paypal</a>\n`;
             message += `\t - Bitcoin Address: bc1qnr4y95d3w5rwahcypazpjdv33g8wupewmw6rpa3s2927qvgmduqsvcpgfs`;
             //'\n\nCome join us in the <a href="https://t.me/tenthings">Ten Things Supergroup</a>!'
-            bot.queueMessage(game.chat_id, message);
+            bot.queueMessage(game.telegramChannel, message);
             await Player.updateMany({ game: game._id, scoreDaily: 0 }, { $set: { playStreak: 0 } });
             await Player.updateMany(
               {
@@ -300,10 +300,10 @@ const sendNewLists = () => {
           enabled: true,
           listsPlayed: { $gt: 0 },
         })
-          .select("chat_id")
+          .select("chat_id topicId telegramChannel")
           .then((games: IGame[]) => {
             bot.broadcast(
-              games.map((game) => game.chat_id),
+              games.map((game) => game.telegramChannel),
               message,
             );
           });
@@ -341,10 +341,10 @@ const sendUpdatedLists = () => {
           enabled: true,
           listsPlayed: { $gt: 0 },
         })
-          .select("chat_id")
+          .select("chat_id topicId telegramChannel")
           .then((games: IGame[]) => {
             bot.broadcast(
-              games.map((game) => game.chat_id),
+              games.map((game) => game.telegramChannel),
               message,
             );
             bot.notifyAdmins(message);
@@ -390,7 +390,7 @@ const deactivateInactiveChats = () => {
     lastPlayDate: { $lt: moment().subtract(30, "days") },
     enabled: true,
   })
-    .select("chat_id")
+    .select("chat_id topicId telegramChannel enabled settings")
     .then((games: HydratedDocument<IGame>[]) => {
       games.forEach(deactivate);
       if (games.length > 0) bot.notifyAdmin(`${games.length} inactive chats deactivated`);

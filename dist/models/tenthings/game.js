@@ -75,6 +75,9 @@ const gameSchema = new mongoose_1.Schema({
         language: { type: String, required: true, default: "EN" },
     },
 }, { timestamps: true });
+gameSchema.virtual("telegramChannel").get(function () {
+    return { chat: this.chat_id, topic: this.topicId };
+});
 gameSchema.index({ chat_id: 1 });
 for (const name in db_1.default) {
     Game[name] = db_1.default[name].model("TenThings", gameSchema);

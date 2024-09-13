@@ -34,9 +34,12 @@ export const processHint = async (
     (type === GameType.MAINGAME && game.hints >= MAX_HINTS) ||
     (type !== GameType.MAINGAME && game[type].hints >= MAX_HINTS)
   ) {
-    bot.queueMessage(game.chat_id, "What? Another hint? I'm just gonna ignore that request");
+    bot.queueMessage(game.telegramChannel, "What? Another hint? I'm just gonna ignore that request");
   } else if (hintCache[game._id.toString()] && hintCache[game._id.toString()] > 0) {
-    bot.queueMessage(game.chat_id, `Calm down with the hints, wait ${hintCache[game._id.toString()]} more seconds`);
+    bot.queueMessage(
+      game.telegramChannel,
+      `Calm down with the hints, wait ${hintCache[game._id.toString()]} more seconds`,
+    );
   } else {
     if (player) {
       if (player.hints) player.hints++;

@@ -62,6 +62,11 @@ export type Keyboard =
       selective?: boolean;
     };
 
+export type Channel = {
+  chat: number;
+  topic?: number;
+};
+
 type ReplyMarkup = Keyboard;
 
 class TelegramBot {
@@ -102,16 +107,16 @@ class TelegramBot {
     this.introduceYourself();
   };
 
-  private errorHandler = (channel: number, source: string, error: any) => {
+  private errorHandler = (channel: Channel, source: string, error: any) => {
     const reason = error?.response?.data?.description;
 
     if (reason) {
       if (this.muteReasons.includes(reason)) {
-        botMuted(channel);
+        botMuted(channel.chat);
       } else if (!this.ignoreReasons.includes(reason)) {
         bot.notifyAdmin(`Error from "${source}" in channel ${channel}:\n${parseSymbols(reason)}`);
       } else if (reason.includes("Bad Request: message thread not found")) {
-        noTopic(channel);
+        noTopic(channel.chat);
         bot.notifyAdmin(`${channel} has no topic`);
       } else {
         console.error(reason);
@@ -160,15 +165,16 @@ class TelegramBot {
   };
 
   public sendMessage = (
-    channel: number,
+    channel: Channel,
     message: string,
-    options: { topic?: number; replyMessageId?: string; replyMarkup?: ReplyMarkup } = {},
+    options: { replyMessageId?: string; replyMarkup?: ReplyMarkup } = {},
     retries: number = 0,
   ) => {
-    const { topic, replyMessageId, replyMarkup } = options;
+    const { replyMessageId, replyMarkup } = options;
     message = encodeURIComponent(message);
-    let url = `${this.baseUrl}/sendMessage?chat_id=${channel}&disable_notification=true&parse_mode=html&text=${message}`;
-    if (channel === parseInt(process.env.COSMIC_FORCE_CHAT!) && topic) url += `&message_thread_id=${topic}`;
+    let url = `${this.baseUrl}/sendMessage?chat_id=${channel.chat}}&disable_notification=true&parse_mode=html&text=${message}`;
+    if (channel.chat === parseInt(process.env.COSMIC_FORCE_CHAT!) && channel.topic)
+      url += `&message_thread_id=${channel.topic}`;
     if (replyMessageId) {
       url += `&reply_markup=${JSON.stringify({ force_reply: true, selective: true })}`;
       url += `&reply_parameters=${JSON.stringify({ message_id: replyMessageId, allow_sending_without_reply: true })}`;
@@ -203,15 +209,15 @@ class TelegramBot {
             }
           } else this.errorHandler(channel, "Send message", error);
         } else {
-          if (channel !== parseInt(process.env.MASTER_CHAT || "")) {
+          if (channel.chat !== parseInt(process.env.MASTER_CHAT || "")) {
             this.errorHandler(channel, "Send message", error);
           }
         }
       });
   };
 
-  public deleteMessage = async (channel: number, message_id: string) => {
-    const url = `${this.baseUrl}/deleteMessage?chat_id=${channel}&message_id=${message_id}`;
+  public deleteMessage = async (channel: Channel, message_id: string) => {
+    const url = `${this.baseUrl}/deleteMessage?chat_id=${channel.chat}}&message_id=${message_id}`;
     try {
       await httpClient().get(url);
     } catch (error: AxiosError | any) {
@@ -219,7 +225,7 @@ class TelegramBot {
     }
   };
 
-  public queueMessage = (channel: number, message: string) => {
+  public queueMessage = (channel: Channel, message: string) => {
     messageQueue.add("", { channel, message, action: "sendMessage" }, {});
   };
 
@@ -227,11 +233,11 @@ class TelegramBot {
     return await messageQueue.count();
   };
 
-  public kick = async (channel: number, userId: number, minutes: number) => {
+  public kick = async (channel: Channel, userId: number, minutes: number) => {
     if (!minutes) minutes = 1;
     let date = new Date();
     const untilDate = Math.floor(date.setTime(date.getTime() + minutes * 60 * 1000) / 1000);
-    const url = `${this.baseUrl}/kickChatMember?chat_id=${channel}&user_id=${userId}&until_date=${untilDate}`;
+    const url = `${this.baseUrl}/kickChatMember?chat_id=${channel.chat}}&user_id=${userId}&until_date=${untilDate}`;
     try {
       await httpClient().get(url);
     } catch (error: AxiosError | any) {
@@ -241,26 +247,28 @@ class TelegramBot {
 
   public notifyCosmicForce = async (msg: string, keyboard?: Keyboard) => {
     if (keyboard)
-      await this.sendMessage(parseInt(process.env.COSMIC_FORCE_CHAT || ""), msg, { topic: 17, replyMarkup: keyboard });
-    else await this.sendMessage(parseInt(process.env.COSMIC_FORCE_CHAT || ""), msg, { topic: 17 });
+      await this.sendMessage({ chat: parseInt(process.env.COSMIC_FORCE_CHAT || ""), topic: 17 }, msg, {
+        replyMarkup: keyboard,
+      });
+    else await this.sendMessage({ chat: parseInt(process.env.COSMIC_FORCE_CHAT || ""), topic: 17 }, msg);
   };
 
   public notifyAdmin = async (msg: string) => {
-    await this.queueMessage(parseInt(process.env.MASTER_CHAT || ""), msg);
+    await this.queueMessage({ chat: parseInt(process.env.MASTER_CHAT || "") }, msg);
   };
 
   public notify = async (msg: string) => {
-    await this.queueMessage(parseInt(process.env.NOTICE_CHAT || ""), msg);
+    await this.queueMessage({ chat: parseInt(process.env.NOTICE_CHAT || "") }, msg);
   };
 
   public notifyAdmins = async (msg: string, keyboard?: Keyboard) => {
-    if (keyboard) await this.sendKeyboard(parseInt(process.env.ADMIN_CHAT || ""), msg, keyboard);
-    else await this.queueMessage(parseInt(process.env.ADMIN_CHAT || ""), msg);
+    if (keyboard) await this.sendKeyboard({ chat: parseInt(process.env.ADMIN_CHAT || "") }, msg, keyboard);
+    else await this.queueMessage({ chat: parseInt(process.env.ADMIN_CHAT || "") }, msg);
   };
 
-  public broadcast = async (channels: number[], message: string) => {
+  public broadcast = async (channels: Channel[], message: string) => {
     await this.notifyAdmin(`Starting broadcast to ${channels.length} chats`);
-    channels.forEach((channel: number, index) => {
+    channels.forEach((channel: Channel, index) => {
       setTimeout(() => {
         this.queueMessage(channel, message);
         if (index === channels.length - 1) {
@@ -270,8 +278,8 @@ class TelegramBot {
     });
   };
 
-  public exportChatInviteLink = async (channel: number) => {
-    const url = `${this.baseUrl}/exportChatInviteLink?chat_id=${channel}`;
+  public exportChatInviteLink = async (channel: Channel) => {
+    const url = `${this.baseUrl}/exportChatInviteLink?chat_id=${channel.chat}`;
     try {
       const { data } = await httpClient().get(encodeURI(url));
       return data.result;
@@ -280,8 +288,8 @@ class TelegramBot {
     }
   };
 
-  public getChat = async (channel: number): Promise<string> => {
-    const url = `${bot.baseUrl}/getChat?chat_id=${channel}`;
+  public getChat = async (channel: Channel): Promise<string> => {
+    const url = `${bot.baseUrl}/getChat?chat_id=${channel.chat}}`;
     try {
       const { data } = await httpClient().get(encodeURI(url));
       if (data.result.invite_link) return `Group Chat: ${data.result.invite_link}`;
@@ -291,7 +299,7 @@ class TelegramBot {
       else if (data.result.type === "private") return `Private Chat`;
     } catch (error: any) {
       if (error.response.data.error_code === 400) {
-        chatNotFound(channel);
+        chatNotFound(channel.chat);
       } else {
         this.errorHandler(channel, "Get chat", error);
       }
@@ -300,8 +308,8 @@ class TelegramBot {
     return "";
   };
 
-  public getChatMember = async (channel: number, userId: number) => {
-    const url = `${this.baseUrl}/getChatMember?chat_id=${channel}&user_id=${userId}`;
+  public getChatMember = async (channel: Channel, userId: number) => {
+    const url = `${this.baseUrl}/getChatMember?chat_id=${channel.chat}}&user_id=${userId}`;
     try {
       const response = await httpClient().get(url);
       return (
@@ -315,10 +323,10 @@ class TelegramBot {
     }
   };
 
-  public checkAdmin = async (channel: number, userId: number) => {
+  public checkAdmin = async (channel: Channel, userId: number) => {
     if (userId === parseInt(process.env.MASTER_CHAT || "")) return true;
-    if (channel > 0) return true;
-    const url = `${this.baseUrl}/getChatMember?chat_id=${channel}&user_id=${userId}`;
+    if (channel.chat > 0) return true;
+    const url = `${this.baseUrl}/getChatMember?chat_id=${channel.chat}}&user_id=${userId}`;
     try {
       const response = await httpClient().get(url);
       return (
@@ -335,12 +343,12 @@ class TelegramBot {
     }
   };
 
-  public sendKeyboard = async (channel: number, message: string, keyboard: Keyboard) => {
+  public sendKeyboard = async (channel: Channel, message: string, keyboard: Keyboard) => {
     this.sendMessage(channel, message.replace("&", "and"), { replyMarkup: keyboard });
   };
 
-  public sendPhoto = async (channel: number, photo: string) => {
-    const url = `${this.baseUrl}/sendPhoto?chat_id=${channel}&photo=${photo}`;
+  public sendPhoto = async (channel: Channel, photo: string) => {
+    const url = `${this.baseUrl}/sendPhoto?chat_id=${channel.chat}}&photo=${photo}`;
     try {
       await httpClient().get(encodeURI(url));
     } catch (error: AxiosError | any) {
@@ -353,8 +361,8 @@ class TelegramBot {
     }
   };
 
-  public sendAnimation = async (channel: number, animation: string) => {
-    const url = `${this.baseUrl}/sendAnimation?chat_id=${channel}&animation=${animation}`;
+  public sendAnimation = async (channel: Channel, animation: string) => {
+    const url = `${this.baseUrl}/sendAnimation?chat_id=${channel.chat}}&animation=${animation}`;
     try {
       await httpClient().get(encodeURI(url));
     } catch (error: AxiosError | any) {
@@ -366,9 +374,10 @@ class TelegramBot {
       } else this.errorHandler(channel, "Send animation", error);
     }
   };
-  public editKeyboard = async (channel: number, message_id: string, keyboard: Keyboard) => {
-    let url = `${this.baseUrl}/editMessageReplyMarkup?chat_id=${channel}&message_id=${message_id}`;
+  public editKeyboard = async (channel: Channel, message_id: string, keyboard: Keyboard) => {
+    let url = `${this.baseUrl}/editMessageReplyMarkup?chat_id=${channel.chat}&message_id=${message_id}`;
     if (keyboard) url += `&reply_markup=${JSON.stringify(keyboard)}`;
+    console.log(url);
     try {
       await httpClient().get(encodeURI(url));
     } catch (error: AxiosError | any) {
@@ -376,7 +385,8 @@ class TelegramBot {
     }
   };
 
-  public queueEditKeyboard = (channel: number, message_id: string, keyboard: Keyboard) => {
+  public queueEditKeyboard = (channel: Channel, message_id: string, keyboard: Keyboard) => {
+    console.log(channel);
     messageQueue.add("", { channel, message_id, action: "editKeyboard", keyboard }, {});
   };
 
@@ -385,7 +395,7 @@ class TelegramBot {
     try {
       await httpClient().get(encodeURI(url));
     } catch (error: AxiosError | any) {
-      this.errorHandler(0, "Answer callback", error);
+      this.errorHandler({ chat: 0 }, "Answer callback", error);
     }
   };
 
@@ -412,7 +422,7 @@ class TelegramBot {
     await this.init();
   };
 
-  public setCommands = async (channel: number, language: string) => {
+  public setCommands = async (channel: Channel, language: string) => {
     const commands = [
       "list",
       "hint",
@@ -432,7 +442,7 @@ class TelegramBot {
     }));
     const scope = {
       type: "chat",
-      chat_id: channel,
+      chat_id: channel.chat,
     };
     const url = `${this.baseUrl}/setMyCommands?commands=${JSON.stringify(commands)}&scope=${JSON.stringify(scope)}`;
     try {
@@ -547,8 +557,8 @@ messageQueue.process(
     data,
   }: {
     data:
-      | { channel: number; action: Actions.SendMessage; message: string }
-      | { channel: number; action: Actions.EditKeyboard; message_id: string; keyboard: Keyboard };
+      | { channel: Channel; action: Actions.SendMessage; message: string }
+      | { channel: Channel; action: Actions.EditKeyboard; message_id: string; keyboard: Keyboard };
   }) => {
     switch (data.action) {
       case "sendMessage":

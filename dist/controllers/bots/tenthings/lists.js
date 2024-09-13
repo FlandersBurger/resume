@@ -39,7 +39,7 @@ const getListScore = (list) => {
 };
 exports.getListScore = getListScore;
 const rateList = (game) => {
-    telegram_1.default.sendKeyboard(game.chat_id, (0, i18n_1.default)(game.settings.language, "sentences.likeList", { list: (0, string_helpers_1.parseSymbols)(game.list.name) }), (0, keyboards_1.likeListKeyboard)(game));
+    telegram_1.default.sendKeyboard(game.telegramChannel, (0, i18n_1.default)(game.settings.language, "sentences.likeList", { list: (0, string_helpers_1.parseSymbols)(game.list.name) }), (0, keyboards_1.likeListKeyboard)(game));
 };
 exports.rateList = rateList;
 const getAvailableLanguages = ({ settings }) => settings.languages && settings.languages.length > 0 ? settings.languages : ["EN"];
@@ -69,7 +69,7 @@ const selectList = async (game) => {
             game.playedLists = [];
             game.cycles++;
             game.lastCycleDate = (0, moment_1.default)().toDate();
-            telegram_1.default.queueMessage(game.chat_id, (0, i18n_1.default)(game.settings.language, "sentences.allListsPlayed"));
+            telegram_1.default.queueMessage(game.telegramChannel, (0, i18n_1.default)(game.settings.language, "sentences.allListsPlayed"));
             list = await (0, exports.getRandomList)({
                 _id: { $nin: game.bannedLists },
                 categories: { $nin: game.disabledCategories },

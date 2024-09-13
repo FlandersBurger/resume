@@ -42,6 +42,7 @@ export interface IGame {
   _id: Types.ObjectId;
   chat_id: number;
   topicId?: number;
+  telegramChannel: { chat: number; topic?: number };
   enabled: boolean;
   hints: number;
   cycles: number;
@@ -143,6 +144,10 @@ const gameSchema = new Schema<IGame>(
   },
   { timestamps: true },
 );
+
+gameSchema.virtual("telegramChannel").get(function () {
+  return { chat: this.chat_id, topic: this.topicId };
+});
 
 gameSchema.index({ chat_id: 1 });
 
