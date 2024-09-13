@@ -61,14 +61,13 @@ export enum CallbackDataType {
 }
 
 export default async (callbackQuery: CallbackData) => {
-  const game: HydratedDocument<IGame> | null = await Game.findOne({ chat_id: callbackQuery.chatId }).select(
-    "telegramChannel settings disabledCategories list pickedLists bannedLists",
-  );
+  const game: HydratedDocument<IGame> | null = await Game.findOne({ chat_id: callbackQuery.chatId });
   if (!game) {
     return;
   }
+  console.log(callbackQuery);
+  console.log(game.telegramChannel);
   let list: HydratedDocument<IList> | null;
-  const channel = game.telegramChannel;
   switch (callbackQuery.type) {
     case CallbackDataType.Vote:
       let doVote = false;
@@ -110,7 +109,7 @@ export default async (callbackQuery: CallbackData) => {
           if (!game) return;
           if (callbackQuery.from.name) {
             bot.queueMessage(
-              channel,
+              game.telegramChannel,
               i18n(game.settings.language, `sentences.${vote > 0 ? "" : "dis"}likesList`, {
                 name: parseSymbols(callbackQuery.from.name),
                 list: parseSymbols(foundList.name),
@@ -123,17 +122,17 @@ export default async (callbackQuery: CallbackData) => {
       break;
     case CallbackDataType.StatOptions:
       console.log(callbackQuery);
-      if (await bot.checkAdmin(channel, callbackQuery.from.id)) {
+      if (await bot.checkAdmin(game.telegramChannel, callbackQuery.from.id)) {
         if (!game) return;
         const text = i18n(game.settings.language, `stats.${callbackQuery.data}`);
         switch (callbackQuery.data) {
           case "list":
             bot.answerCallback(callbackQuery.callbackQueryId, text);
-            bot.sendKeyboard(channel, `<b>${text}</b>`, listStatsKeyboard(game));
+            bot.sendKeyboard(game.telegramChannel, `<b>${text}</b>`, listStatsKeyboard(game));
             break;
           case "player":
             bot.answerCallback(callbackQuery.callbackQueryId, text);
-            bot.sendKeyboard(channel, `<b>${text}</b>`, playerStatsKeyboard());
+            bot.sendKeyboard(game.telegramChannel, `<b>${text}</b>`, playerStatsKeyboard());
             break;
           case "global":
             bot.answerCallback(callbackQuery.callbackQueryId, text);
@@ -157,14 +156,14 @@ export default async (callbackQuery: CallbackData) => {
       break;
     case CallbackDataType.Category:
       if (game.chat_id != parseInt(process.env.GROUP_CHAT || "")) {
-        if (await bot.checkAdmin(channel, callbackQuery.from.id)) {
+        if (await bot.checkAdmin(game.telegramChannel, callbackQuery.from.id)) {
           if (!game || !callbackQuery.data) return;
           const categoryIndex = game.disabledCategories.indexOf(callbackQuery.data);
           if (categoryIndex >= 0) {
             game.disabledCategories.splice(categoryIndex, 1);
           } else {
             if (game.disabledCategories.length === categories.length - 1) {
-              return bot.queueMessage(channel, i18n(game.settings.language, "warnings.minimum1Category"));
+              return bot.queueMessage(game.telegramChannel, i18n(game.settings.language, "warnings.minimum1Category"));
             }
             game.disabledCategories.push(callbackQuery.data);
           }
@@ -175,11 +174,11 @@ export default async (callbackQuery: CallbackData) => {
               categoryIndex >= 0 ? i18n(game.settings.language, "on") : i18n(game.settings.language, "off")
             }`,
           );
-          bot.queueEditKeyboard(channel, callbackQuery.id, categoriesKeyboard(game));
+          bot.queueEditKeyboard(game.telegramChannel, callbackQuery.id, categoriesKeyboard(game));
         } else {
           if (!game) return;
           bot.queueMessage(
-            channel,
+            game.telegramChannel,
             i18n(game.settings.language, "warnings.adminFunction", { name: callbackQuery.from.name }),
           );
         }
@@ -187,19 +186,19 @@ export default async (callbackQuery: CallbackData) => {
       break;
     case CallbackDataType.Setting:
       if (game.chat_id !== parseInt(process.env.ADMIN_CHAT || "")) {
-        if (await bot.checkAdmin(channel, callbackQuery.from.id)) {
+        if (await bot.checkAdmin(game.telegramChannel, callbackQuery.from.id)) {
           if (!game || !callbackQuery.data) return;
           if (callbackQuery.data === "langs") {
             const availableLanguages = await List.aggregate([
               { $group: { _id: "$language", count: { $sum: 1 } } },
             ]).exec();
-            bot.queueEditKeyboard(channel, callbackQuery.id, languagesKeyboard(game, availableLanguages));
+            bot.queueEditKeyboard(game.telegramChannel, callbackQuery.id, languagesKeyboard(game, availableLanguages));
           } else if (callbackQuery.data === "lang") {
-            bot.queueEditKeyboard(channel, callbackQuery.id, languageKeyboard(game));
+            bot.queueEditKeyboard(game.telegramChannel, callbackQuery.id, languageKeyboard(game));
           } else if (callbackQuery.data === "cats") {
-            bot.queueEditKeyboard(channel, callbackQuery.id, categoriesKeyboard(game));
+            bot.queueEditKeyboard(game.telegramChannel, callbackQuery.id, categoriesKeyboard(game));
           } else if (callbackQuery.data === "settings") {
-            bot.queueEditKeyboard(channel, callbackQuery.id, settingsKeyboard(game));
+            bot.queueEditKeyboard(game.telegramChannel, callbackQuery.id, settingsKeyboard(game));
           } else {
             console.log(`${callbackQuery.data} toggled for ${game._id}`);
             game.settings[callbackQuery.data] = !game.settings[callbackQuery.data as keyof IGameSettings];
@@ -212,19 +211,19 @@ export default async (callbackQuery: CallbackData) => {
                   : i18n(game.settings.language, "off")
               }`,
             );
-            bot.queueEditKeyboard(channel, callbackQuery.id, settingsKeyboard(game));
+            bot.queueEditKeyboard(game.telegramChannel, callbackQuery.id, settingsKeyboard(game));
           }
         } else {
           if (!game) return;
           bot.queueMessage(
-            channel,
+            game.telegramChannel,
             i18n(game.settings.language, "warnings.adminFunction", { name: callbackQuery.from.name }),
           );
         }
       }
       break;
     case CallbackDataType.TriviaLanguages:
-      if (await bot.checkAdmin(channel, callbackQuery.from.id)) {
+      if (await bot.checkAdmin(game.telegramChannel, callbackQuery.from.id)) {
         if (!game || !callbackQuery.data) return;
         const isSelected = game.settings.languages.includes(callbackQuery.data);
         if (isSelected) {
@@ -243,17 +242,17 @@ export default async (callbackQuery: CallbackData) => {
           }`,
         );
         const availableLanguages = await List.aggregate([{ $group: { _id: "$language", count: { $sum: 1 } } }]).exec();
-        bot.queueEditKeyboard(channel, callbackQuery.id, languagesKeyboard(game, availableLanguages));
+        bot.queueEditKeyboard(game.telegramChannel, callbackQuery.id, languagesKeyboard(game, availableLanguages));
       }
       break;
     case CallbackDataType.BotLanguage:
-      if (await bot.checkAdmin(channel, callbackQuery.from.id)) {
+      if (await bot.checkAdmin(game.telegramChannel, callbackQuery.from.id)) {
         if (!game || !callbackQuery.data) return;
         game.settings.language = callbackQuery.data;
         await game.save();
         bot.answerCallback(callbackQuery.callbackQueryId, `${callbackQuery.data} -> New bot language`);
-        bot.setCommands(channel, callbackQuery.data);
-        bot.queueEditKeyboard(channel, callbackQuery.id, languageKeyboard(game));
+        bot.setCommands(game.telegramChannel, callbackQuery.data);
+        bot.queueEditKeyboard(game.telegramChannel, callbackQuery.id, languageKeyboard(game));
       }
       break;
     case CallbackDataType.Pick:
@@ -276,15 +275,15 @@ export default async (callbackQuery: CallbackData) => {
         if (!game) return;
         if (game.pickedLists.length >= 10)
           return bot.queueMessage(
-            channel,
+            game.telegramChannel,
             i18n(game.settings.language, "warnings.fullQueue", { name: callbackQuery.from.name }),
           );
         const list = await List.findOne({ _id: callbackQuery.data }).exec();
-        if (!list) return bot.queueMessage(channel, i18n(game.settings.language, "warnings.unfoundList"));
+        if (!list) return bot.queueMessage(game.telegramChannel, i18n(game.settings.language, "warnings.unfoundList"));
         const foundList = find(game.pickedLists, (pickedListId: Types.ObjectId) => pickedListId == list._id);
         if (foundList) {
           bot.queueMessage(
-            channel,
+            game.telegramChannel,
             i18n(game.settings.language, "warnings.alreadyInQueue", {
               list: list.name,
               name: callbackQuery.from.name,
@@ -302,7 +301,7 @@ export default async (callbackQuery: CallbackData) => {
             }),
           );
           bot.queueMessage(
-            channel,
+            game.telegramChannel,
             i18n(game.settings.language, "sentences.addedListToQueue", {
               list: list.name,
               name: callbackQuery.from.name,
@@ -325,10 +324,10 @@ export default async (callbackQuery: CallbackData) => {
     case CallbackDataType.Values:
       List.findOne({ _id: callbackQuery.data }).exec((_, list) => {
         if (!list) {
-          bot.queueMessage(channel, "List not found");
+          bot.queueMessage(game.telegramChannel, "List not found");
         } else {
           bot.queueMessage(
-            channel,
+            game.telegramChannel,
             list.values
               .sort((a, b) => (a.value < b.value ? -1 : 1))
               .reduce((message, item) => `${message}- ${item.value}\n`, `<b>${list.name}</b>\n`),
@@ -341,7 +340,7 @@ export default async (callbackQuery: CallbackData) => {
       list = await List.findOne({ _id: callbackQuery.data }).exec();
       if (!list) return;
       bot.queueMessage(
-        channel,
+        game.telegramChannel,
         `<b>${list.name}</b>\n${i18n(game.settings.language, "description")}:\n<i>${list.description || "N/A"}</i>`,
       );
       break;
@@ -352,7 +351,7 @@ export default async (callbackQuery: CallbackData) => {
       bot.answerCallback(callbackQuery.callbackQueryId, `List is ${getDifficultyMessage(difficulty)}`);
       list = await List.findOne({ _id: difficultyListId }).exec();
       if (!list) return;
-      bot.queueEditKeyboard(channel, callbackQuery.id, curateListKeyboard(list));
+      bot.queueEditKeyboard(game.telegramChannel, callbackQuery.id, curateListKeyboard(list));
       break;
     case CallbackDataType.Frequency:
       const [frequencyString, frequencyListId] = callbackQuery.data.split("_");
@@ -361,12 +360,12 @@ export default async (callbackQuery: CallbackData) => {
       bot.answerCallback(callbackQuery.callbackQueryId, `${capitalize(getFrequencyMessage(frequency))} changes`);
       list = await List.findOne({ _id: frequencyListId }).exec();
       if (!list) return;
-      bot.queueEditKeyboard(channel, callbackQuery.id, curateListKeyboard(list));
+      bot.queueEditKeyboard(game.telegramChannel, callbackQuery.id, curateListKeyboard(list));
       break;
     case CallbackDataType.Suggestion:
       if (!game) return;
       const player = await getPlayer(game, callbackQuery.from);
       await sendSuggestionMessage(game, player, callbackQuery.data as SuggestionType);
-      bot.deleteMessage(channel, callbackQuery.id);
+      bot.deleteMessage(game.telegramChannel, callbackQuery.id);
   }
 };
