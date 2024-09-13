@@ -375,7 +375,7 @@ class TelegramBot {
     }
   };
   public editKeyboard = async (channel: Channel, message_id: string, keyboard: Keyboard) => {
-    let url = `${this.baseUrl}/editMessageReplyMarkup?chat_id=${channel.chat}}&message_id=${message_id}`;
+    let url = `${this.baseUrl}/editMessageReplyMarkup?chat_id=${channel.chat}&message_id=${message_id}`;
     if (keyboard) url += `&reply_markup=${JSON.stringify(keyboard)}`;
     console.log(url);
     try {
