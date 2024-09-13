@@ -11,6 +11,7 @@ const errors_1 = require("../controllers/bots/tenthings/errors");
 const spam_1 = require("../controllers/bots/tenthings/spam");
 const main_1 = require("../controllers/bots/tenthings/main");
 const string_helpers_1 = require("../utils/string-helpers");
+const moment_1 = __importDefault(require("moment"));
 const BANNED_TELEGRAM_USERS = [1726294650];
 const messageQueue = new bull_1.default("sendMessage", {
     redis: {
@@ -51,6 +52,7 @@ class TelegramBot {
             "Bad Request: message is not modified: specified new message content and reply markup are exactly the same as a current content and reply markup of the message",
         ];
         this.paused = false;
+        this.timeoutUntil = (0, moment_1.default)();
         this.init = async () => {
             const { data } = await (0, http_client_1.default)().get(`${this.baseUrl}/getMe`);
             this.telegramBotUser = data.result;
@@ -63,18 +65,18 @@ class TelegramBot {
                     (0, errors_1.botMuted)(channel.chat);
                 }
                 else if (!this.ignoreReasons.includes(reason)) {
-                    bot.notifyAdmin(`Error from "${source}" in channel ${channel}:\n${(0, string_helpers_1.parseSymbols)(reason)}`);
+                    bot.notifyAdmin(`Error from "${source}" in channel ${channel.chat}:\n${(0, string_helpers_1.parseSymbols)(reason)}`);
                 }
                 else if (reason.includes("Bad Request: message thread not found")) {
                     (0, errors_1.noTopic)(channel.chat);
-                    bot.notifyAdmin(`${channel} has no topic`);
+                    bot.notifyAdmin(`${channel.chat} has no topic`);
                 }
                 else {
                     console.error(reason);
                 }
             }
             else {
-                bot.notifyAdmin(`Unknown error from "${source}" in channel ${channel}\nCode:${(0, string_helpers_1.parseSymbols)(error.code)}\nMessage:${(0, string_helpers_1.parseSymbols)(error.message)}`);
+                bot.notifyAdmin(`Unknown error from "${source}" in channel ${channel.chat}\nCode:${(0, string_helpers_1.parseSymbols)(error.code)}\nMessage:${(0, string_helpers_1.parseSymbols)(error.message)}`);
                 console.error(`${source} error`, error);
             }
         };
@@ -111,7 +113,7 @@ class TelegramBot {
                 console.error(error.response.data);
             }
         };
-        this.sendMessage = (channel, message, options = {}, retries = 0) => {
+        this.sendMessage = async (channel, message, options = {}, retries = 0) => {
             const { replyMessageId, replyMarkup } = options;
             message = encodeURIComponent(message);
             let url = `${this.baseUrl}/sendMessage?chat_id=${channel.chat}&disable_notification=true&parse_mode=html&text=${message}`;
@@ -123,6 +125,10 @@ class TelegramBot {
             }
             if (replyMarkup)
                 url += `&reply_markup=${JSON.stringify(replyMarkup)}`;
+            if ((0, moment_1.default)().isAfter(this.timeoutUntil) && (await messageQueue.isPaused())) {
+                messageQueue.resume();
+                this.paused = false;
+            }
             (0, http_client_1.default)()
                 .get(url)
                 .catch((error) => {
@@ -138,6 +144,7 @@ class TelegramBot {
                         if (!this.paused) {
                             this.paused = true;
                             const timeout = parseInt(error.response.data.description.match(/retry after (\d+)/)[1]);
+                            this.timeoutUntil = (0, moment_1.default)().add(timeout, "seconds");
                             messageQueue.pause();
                             this.notifyAdmin(`Pausing queue for ${timeout} seconds due to too many requests`);
                             setTimeout(() => {

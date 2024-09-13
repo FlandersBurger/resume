@@ -9,6 +9,7 @@ import { checkSpam } from "@tenthings/spam";
 import { MessageType } from "@tenthings/main";
 import { parseSymbols, maskUrls } from "@root/utils/string-helpers";
 import { UserInput } from "@tenthings/messages";
+import moment, { Moment } from "moment";
 
 const BANNED_TELEGRAM_USERS = [1726294650];
 
@@ -95,6 +96,7 @@ class TelegramBot {
     "Bad Request: message is not modified: specified new message content and reply markup are exactly the same as a current content and reply markup of the message",
   ];
   private paused: boolean = false;
+  private timeoutUntil: Moment = moment();
 
   constructor(token: string) {
     this.baseUrl = `https://api.telegram.org/bot${token}`;
@@ -114,16 +116,16 @@ class TelegramBot {
       if (this.muteReasons.includes(reason)) {
         botMuted(channel.chat);
       } else if (!this.ignoreReasons.includes(reason)) {
-        bot.notifyAdmin(`Error from "${source}" in channel ${channel}:\n${parseSymbols(reason)}`);
+        bot.notifyAdmin(`Error from "${source}" in channel ${channel.chat}:\n${parseSymbols(reason)}`);
       } else if (reason.includes("Bad Request: message thread not found")) {
         noTopic(channel.chat);
-        bot.notifyAdmin(`${channel} has no topic`);
+        bot.notifyAdmin(`${channel.chat} has no topic`);
       } else {
         console.error(reason);
       }
     } else {
       bot.notifyAdmin(
-        `Unknown error from "${source}" in channel ${channel}\nCode:${parseSymbols(error.code)}\nMessage:${parseSymbols(error.message)}`,
+        `Unknown error from "${source}" in channel ${channel.chat}\nCode:${parseSymbols(error.code)}\nMessage:${parseSymbols(error.message)}`,
       );
       console.error(`${source} error`, error);
     }
@@ -164,7 +166,7 @@ class TelegramBot {
     }
   };
 
-  public sendMessage = (
+  public sendMessage = async (
     channel: Channel,
     message: string,
     options: { replyMessageId?: string; replyMarkup?: ReplyMarkup } = {},
@@ -180,6 +182,10 @@ class TelegramBot {
       url += `&reply_parameters=${JSON.stringify({ message_id: replyMessageId, allow_sending_without_reply: true })}`;
     }
     if (replyMarkup) url += `&reply_markup=${JSON.stringify(replyMarkup)}`;
+    if (moment().isAfter(this.timeoutUntil) && (await messageQueue.isPaused())) {
+      messageQueue.resume();
+      this.paused = false;
+    }
     httpClient()
       .get(url)
       .catch((error) => {
@@ -193,6 +199,7 @@ class TelegramBot {
             if (!this.paused) {
               this.paused = true;
               const timeout = parseInt(error.response.data.description.match(/retry after (\d+)/)![1]);
+              this.timeoutUntil = moment().add(timeout, "seconds");
               messageQueue.pause();
               this.notifyAdmin(`Pausing queue for ${timeout} seconds due to too many requests`);
               setTimeout(() => {
