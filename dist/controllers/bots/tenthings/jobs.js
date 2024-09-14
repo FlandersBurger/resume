@@ -50,7 +50,7 @@ const resetDailyScore = () => {
                 message += `Thanks for playing! I gotta say it warms my heart knowing the game is played widely and I want to keep it free.\n`;
                 message += `However, the game costs me around <i>$40/month</i> to host so if you\'re feeling generous and want to support Ten Things then please consider donating.\n`;
                 message += `Your gratitude won\'t go unnoticed :)\n\n`;
-                message += `\t - <a href="https://paypal.me/Game">Paypal</a>\n`;
+                message += `\t - <a href="https://paypal.me/tenthingsgame">Paypal</a>\n`;
                 message += `\t - Bitcoin Address: bc1qnr4y95d3w5rwahcypazpjdv33g8wupewmw6rpa3s2927qvgmduqsvcpgfs`;
                 telegram_1.default.queueMessage(game.telegramChannel, message);
                 await index_1.Player.updateMany({ game: game._id, scoreDaily: 0 }, { $set: { playStreak: 0 } });
