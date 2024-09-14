@@ -96,7 +96,7 @@ class TelegramBot {
     "Bad Request: message is not modified: specified new message content and reply markup are exactly the same as a current content and reply markup of the message",
   ];
   private paused: boolean = false;
-  private timeoutUntil: Moment = moment();
+  private timeoutUntil: Moment | undefined;
 
   constructor(token: string) {
     this.baseUrl = `https://api.telegram.org/bot${token}`;
@@ -182,10 +182,6 @@ class TelegramBot {
       url += `&reply_parameters=${JSON.stringify({ message_id: replyMessageId, allow_sending_without_reply: true })}`;
     }
     if (replyMarkup) url += `&reply_markup=${JSON.stringify(replyMarkup)}`;
-    if (moment().isAfter(this.timeoutUntil) && (await messageQueue.isPaused())) {
-      messageQueue.resume();
-      this.paused = false;
-    }
     httpClient()
       .get(url)
       .catch((error) => {
@@ -202,10 +198,7 @@ class TelegramBot {
               this.timeoutUntil = moment().add(timeout, "seconds");
               messageQueue.pause();
               this.notifyAdmin(`Pausing queue for ${timeout} seconds due to too many requests`);
-              setTimeout(() => {
-                messageQueue.resume();
-                this.paused = false;
-              }, timeout * 1000);
+              setTimeout(this.resumeQueue, timeout * 1000);
             }
             this.queueMessage(channel, message);
           } else if (error.response.data.description === "Bad Gateway") {
@@ -232,8 +225,17 @@ class TelegramBot {
     }
   };
 
-  public queueMessage = (channel: Channel, message: string) => {
+  public queueMessage = async (channel: Channel, message: string) => {
     messageQueue.add("", { channel, message, action: "sendMessage" }, {});
+    if (this.timeoutUntil && moment().isAfter(this.timeoutUntil) && (await messageQueue.isPaused())) {
+      this.resumeQueue();
+    }
+  };
+
+  private resumeQueue = async () => {
+    messageQueue.resume();
+    this.paused = false;
+    this.timeoutUntil = undefined;
   };
 
   public getQueueCount = async (): Promise<number> => {

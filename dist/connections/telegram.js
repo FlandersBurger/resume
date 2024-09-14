@@ -52,7 +52,6 @@ class TelegramBot {
             "Bad Request: message is not modified: specified new message content and reply markup are exactly the same as a current content and reply markup of the message",
         ];
         this.paused = false;
-        this.timeoutUntil = (0, moment_1.default)();
         this.init = async () => {
             const { data } = await (0, http_client_1.default)().get(`${this.baseUrl}/getMe`);
             this.telegramBotUser = data.result;
@@ -125,10 +124,6 @@ class TelegramBot {
             }
             if (replyMarkup)
                 url += `&reply_markup=${JSON.stringify(replyMarkup)}`;
-            if ((0, moment_1.default)().isAfter(this.timeoutUntil) && (await messageQueue.isPaused())) {
-                messageQueue.resume();
-                this.paused = false;
-            }
             (0, http_client_1.default)()
                 .get(url)
                 .catch((error) => {
@@ -147,10 +142,7 @@ class TelegramBot {
                             this.timeoutUntil = (0, moment_1.default)().add(timeout, "seconds");
                             messageQueue.pause();
                             this.notifyAdmin(`Pausing queue for ${timeout} seconds due to too many requests`);
-                            setTimeout(() => {
-                                messageQueue.resume();
-                                this.paused = false;
-                            }, timeout * 1000);
+                            setTimeout(this.resumeQueue, timeout * 1000);
                         }
                         this.queueMessage(channel, message);
                     }
@@ -181,8 +173,16 @@ class TelegramBot {
                 this.errorHandler(channel, "Delete message", error);
             }
         };
-        this.queueMessage = (channel, message) => {
+        this.queueMessage = async (channel, message) => {
             messageQueue.add("", { channel, message, action: "sendMessage" }, {});
+            if (this.timeoutUntil && (0, moment_1.default)().isAfter(this.timeoutUntil) && (await messageQueue.isPaused())) {
+                this.resumeQueue();
+            }
+        };
+        this.resumeQueue = async () => {
+            messageQueue.resume();
+            this.paused = false;
+            this.timeoutUntil = undefined;
         };
         this.getQueueCount = async () => {
             return await messageQueue.count();
