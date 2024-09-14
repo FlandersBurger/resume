@@ -67,7 +67,6 @@ class TelegramBot {
                     bot.notifyAdmin(`Error from "${source}" in channel ${channel.chat}:\n${(0, string_helpers_1.parseSymbols)(reason)}`);
                 }
                 else if (reason.includes("Bad Request: message thread not found")) {
-                    (0, errors_1.noTopic)(channel.chat);
                     bot.notifyAdmin(`${channel.chat} has no topic`);
                 }
                 else {
@@ -134,6 +133,7 @@ class TelegramBot {
                     }
                     else if (error.response.data.description.includes("Bad Request: message thread not found")) {
                         this.notifyAdmin(`Topic ${channel.topic} for channel ${channel.chat} not found`);
+                        (0, errors_1.noTopic)(channel.chat);
                     }
                     else if (error.response.data.description.includes("can't parse")) {
                         this.notifyAdmin(`Send Message to ${channel} parse Fail: ${message}`);
