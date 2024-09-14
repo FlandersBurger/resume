@@ -175,8 +175,7 @@ class TelegramBot {
     const { replyMessageId, replyMarkup } = options;
     message = encodeURIComponent(message);
     let url = `${this.baseUrl}/sendMessage?chat_id=${channel.chat}&disable_notification=true&parse_mode=html&text=${message}`;
-    if (channel.chat === parseInt(process.env.COSMIC_FORCE_CHAT!) && channel.topic)
-      url += `&message_thread_id=${channel.topic}`;
+    if (channel.topic) url += `&message_thread_id=${channel.topic}`;
     if (replyMessageId) {
       url += `&reply_markup=${JSON.stringify({ force_reply: true, selective: true })}`;
       url += `&reply_parameters=${JSON.stringify({ message_id: replyMessageId, allow_sending_without_reply: true })}`;
