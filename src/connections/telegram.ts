@@ -115,8 +115,6 @@ class TelegramBot {
     if (reason) {
       if (this.muteReasons.includes(reason)) {
         botMuted(channel.chat);
-      } else if (!this.ignoreReasons.includes(reason)) {
-        bot.notifyAdmin(`Error from "${source}" in channel ${channel.chat}:\n${parseSymbols(reason)}`);
       } else if (reason.includes("too long")) {
         if (message) {
           this.notifyAdmin(`Too long: ${message.substring(0, 500)}...`);
@@ -141,8 +139,8 @@ class TelegramBot {
         `Bad Request: invalid file HTTP URL specified: Wrong port number specified in the URL`
       ) {
         this.notifyAdmin(`Invalid URL for ${source} in ${channel}: ${message}`);
-      } else {
-        console.error(reason);
+      } else if (!this.ignoreReasons.includes(reason)) {
+        bot.notifyAdmin(`Error from "${source}" in channel ${channel.chat}:\n${parseSymbols(reason)}`);
       }
     } else {
       bot.notifyAdmin(
