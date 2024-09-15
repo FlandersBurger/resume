@@ -47,10 +47,7 @@ export const sendSuggestion = async (
 };
 
 export const getSuggestionType = (msg: Message): SuggestionType | undefined => {
-  const suggestionType = msg.command
-    ?.replace("/", "")
-    .replace("erro", "bug")
-    .replace("suggest", "feature") as SuggestionType;
+  const suggestionType = msg.command?.replace("erro", "bug").replace("suggest", "feature") as SuggestionType;
   if (Object.values(SuggestionType).includes(suggestionType)) {
     return suggestionType;
   }

@@ -42,10 +42,7 @@ const sendSuggestion = async (msg, game, player, suggestionType) => {
 };
 exports.sendSuggestion = sendSuggestion;
 const getSuggestionType = (msg) => {
-    const suggestionType = msg.command
-        ?.replace("/", "")
-        .replace("erro", "bug")
-        .replace("suggest", "feature");
+    const suggestionType = msg.command?.replace("erro", "bug").replace("suggest", "feature");
     if (Object.values(SuggestionType).includes(suggestionType)) {
         return suggestionType;
     }

@@ -67,7 +67,7 @@ exports.tenthingsBotRoute.post("/", async (req, res) => {
         }
         else {
             if (!existingGame.enabled) {
-                if (msg.command && ["/list", "/start", "/minigame", "/tinygame"].includes(msg.command.toLowerCase())) {
+                if (msg.command && ["list", "start", "minigame", "tinygame"].includes(msg.command.toLowerCase())) {
                     await (0, maingame_1.activate)(existingGame, true);
                     await (0, commands_1.evaluate)(msg, existingGame, false);
                 }

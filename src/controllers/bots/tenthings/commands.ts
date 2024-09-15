@@ -67,7 +67,7 @@ export const evaluate = async (msg: Message, game: HydratedDocument<IGame>, isNe
     return;
   } else if (game.chat_id === parseInt(process.env.ADMIN_CHAT || "") && msg.command) {
     //Admin group chat
-    if (!["/search", "/stats", "/typo", "/bug", "/feature", "/suggest"].includes(msg.command)) {
+    if (!["search", "stats", "typo", "bug", "feature", "suggest"].includes(msg.command)) {
       return;
     }
   }
@@ -87,11 +87,11 @@ export const evaluate = async (msg: Message, game: HydratedDocument<IGame>, isNe
       game.topicId = msg.topicId;
     }
     switch (msg.command) {
-      case "/error":
+      case "error":
         const chatLink = await bot.exportChatInviteLink(game.telegramChannel);
         bot.notifyAdmins(`Error reported in ${game.chat_id}: \n${msg.text}\n\n${chatLink}`);
         break;
-      case "/intro":
+      case "intro":
         bot.queueMessage(
           game.telegramChannel,
           i18n(game.settings.language, "sentences.introduction", {
@@ -99,17 +99,17 @@ export const evaluate = async (msg: Message, game: HydratedDocument<IGame>, isNe
           }),
         );
         break;
-      case "/logica":
-      case "/logic":
+      case "logica":
+      case "logic":
         bot.queueMessage(game.telegramChannel, getLogicMessage(game.settings.language));
         break;
-      case "/comandos":
+      case "comandos":
         bot.queueMessage(
           game.telegramChannel,
           commands.map((command) => `/${command} - ${i18n("PT", `commands.${command}.description`)}`).join("\n"),
         );
         break;
-      case "/commands":
+      case "commands":
         bot.queueMessage(
           game.telegramChannel,
           commands
@@ -117,8 +117,8 @@ export const evaluate = async (msg: Message, game: HydratedDocument<IGame>, isNe
             .join("\n"),
         );
         break;
-      case "/parar":
-      case "/stop":
+      case "parar":
+      case "stop":
         if (await bot.checkAdmin(game.telegramChannel, msg.from.id)) {
           deactivate(game);
         } else {
@@ -128,28 +128,28 @@ export const evaluate = async (msg: Message, game: HydratedDocument<IGame>, isNe
           );
         }
         break;
-      case "/new":
-      case "/start":
+      case "new":
+      case "start":
         if (isNew) {
           newRound(game);
           break;
         }
-      case "/lista":
-      case "/list":
+      case "lista":
+      case "list":
         try {
           sendMaingameMessage(game);
         } catch (e) {
           console.error(e);
         }
         break;
-      case "/pule":
-      case "/skip":
+      case "pule":
+      case "skip":
         if (await checkSkipper(game, player)) {
           processSkip(game, player);
         }
         break;
-      case "/minipule":
-      case "/miniskip":
+      case "minipule":
+      case "miniskip":
         if (await checkSkipper(game, player)) {
           bot.queueMessage(game.telegramChannel, `The minigame answer was:\n<i>${game.minigame.answer}</i>`);
           setTimeout(() => {
@@ -157,8 +157,8 @@ export const evaluate = async (msg: Message, game: HydratedDocument<IGame>, isNe
           }, 200);
         }
         break;
-      case "/puleminusculo":
-      case "/tinyskip":
+      case "puleminusculo":
+      case "tinyskip":
         if (await checkSkipper(game, player)) {
           bot.queueMessage(game.telegramChannel, `The tinygame answer was:\n<i>${game.tinygame.answer}</i>`);
           setTimeout(() => {
@@ -166,28 +166,28 @@ export const evaluate = async (msg: Message, game: HydratedDocument<IGame>, isNe
           }, 200);
         }
         break;
-      case "/veto":
+      case "veto":
         vetoSkip(game, player);
         break;
-      case "/estatisticas":
-      case "/stats":
+      case "estatisticas":
+      case "stats":
         bot.sendKeyboard(
           game.telegramChannel,
           `<b>${i18n(game.settings.language, "stats.stats")}</b>`,
           statsKeyboard(),
         );
         break;
-      case "/erro":
-      case "/suggest":
-      case "/typo":
-      case "/bug":
-      case "/feature":
+      case "erro":
+      case "suggest":
+      case "typo":
+      case "bug":
+      case "feature":
         if (!checkSuggestionProvided(msg, game, player)) {
           sendSuggestionMessage(game, player, getSuggestionType(msg)!);
         }
         break;
-      case "/pesquisar":
-      case "/search":
+      case "pesquisar":
+      case "search":
         const search = msg.text;
         if (game.pickedLists.length >= 10)
           return bot.queueMessage(
@@ -225,8 +225,8 @@ export const evaluate = async (msg: Message, game: HydratedDocument<IGame>, isNe
           );
         }
         break;
-      case "/dica":
-      case "/hint":
+      case "dica":
+      case "hint":
         if (game.list.values.filter(({ guesser }) => guesser).length !== 0) {
           try {
             processHint(game, player);
@@ -235,15 +235,15 @@ export const evaluate = async (msg: Message, game: HydratedDocument<IGame>, isNe
           }
         }
         break;
-      case "/minidica":
-      case "/minihint":
+      case "minidica":
+      case "minihint":
         processHint(game, player, GameType.MINIGAME);
         break;
-      case "/dicaminusculo":
-      case "/tinyhint":
+      case "dicaminusculo":
+      case "tinyhint":
         processHint(game, player, GameType.TINYGAME);
         break;
-      case "/notify":
+      case "notify":
         if (game.chat_id === parseInt(process.env.MASTER_CHAT || "")) {
           Game.find({ enabled: true })
             .select("chat_id topicId telegramChannel")
@@ -266,32 +266,32 @@ export const evaluate = async (msg: Message, game: HydratedDocument<IGame>, isNe
       }
       break;
       */
-      case "/eu":
-      case "/me":
+      case "eu":
+      case "me":
         getStats(game, `p_${msg.from.id}`, msg.from.first_name);
         break;
-      case "/pontuacao":
-      case "/score":
+      case "pontuacao":
+      case "score":
         bot.queueMessage(game.telegramChannel, await getDailyScores(game));
         break;
-      case "/minijogo":
-      case "/minigame":
+      case "minijogo":
+      case "minigame":
         if (!game.minigame.answer) {
           createMinigame(game);
         } else {
           sendMinigameMessage(game);
         }
         break;
-      case "/jogominusculo":
-      case "/tinygame":
+      case "jogominusculo":
+      case "tinygame":
         if (!game.tinygame.answer) {
           createTinygame(game);
         } else {
           sendTinygameMessage(game);
         }
         break;
-      case "/categorias":
-      case "/categories":
+      case "categorias":
+      case "categories":
         if (game.chat_id != parseInt(process.env.GROUP_CHAT || "")) {
           if (await bot.checkAdmin(game.telegramChannel, msg.from.id)) {
             bot.sendKeyboard(
@@ -304,8 +304,8 @@ export const evaluate = async (msg: Message, game: HydratedDocument<IGame>, isNe
           }
         }
         break;
-      case "/confi":
-      case "/settings":
+      case "confi":
+      case "settings":
         if (game.chat_id != parseInt(process.env.GROUP_CHAT || "")) {
           if (await bot.checkAdmin(game.telegramChannel, msg.from.id)) {
             bot.sendKeyboard(
@@ -321,7 +321,7 @@ export const evaluate = async (msg: Message, game: HydratedDocument<IGame>, isNe
           }
         }
         break;
-      case "/check":
+      case "check":
         if (msg.from.id === parseInt(process.env.MASTER_CHAT || "")) {
           bot.queueMessage(game.telegramChannel, "Yes, master. Let me send you what you need!");
           bot.notifyAdmin(
@@ -333,7 +333,7 @@ export const evaluate = async (msg: Message, game: HydratedDocument<IGame>, isNe
           );
         }
         break;
-      case "/flush":
+      case "flush":
         if (msg.from.id === parseInt(process.env.MASTER_CHAT || "")) {
           game.list = (await getRandomList()) as LeanDocument<IList>;
           game.pickedLists = [];
@@ -342,24 +342,24 @@ export const evaluate = async (msg: Message, game: HydratedDocument<IGame>, isNe
           bot.queueMessage(game.telegramChannel, "Flushed this chat");
         }
         break;
-      case "/minigames":
+      case "minigames":
         if (msg.from.id === parseInt(process.env.MASTER_CHAT || "")) {
           updateMinigames();
         }
         break;
-      case "/ping":
+      case "ping":
         bot.queueMessage(game.telegramChannel, "pong");
         break;
-      case "/hello":
+      case "hello":
         bot.queueMessage(game.telegramChannel, "You already had me but you got greedy, now you ruined it");
         break;
-      case "/queue":
+      case "queue":
         getQueue().then((message: string) => {
           bot.sendMessage(game.telegramChannel, message);
         }, console.error);
         break;
-      case "/listas":
-      case "/lists":
+      case "listas":
+      case "lists":
         if (game.pickedLists.length > 0) {
           List.find({
             _id: {

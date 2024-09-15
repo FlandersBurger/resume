@@ -120,7 +120,6 @@ class TelegramBot {
           this.notifyAdmin(`Too long: ${message.substring(0, 500)}...`);
         }
       } else if (reason.includes("Bad Request: message thread not found")) {
-        this.notifyAdmin(`Topic ${channel.topic} for channel ${channel.chat} not found`);
         noTopic(channel.chat);
       } else if (reason.includes("can't parse")) {
         this.notifyAdmin(`Send Message to ${channel} parse Fail: ${message}`);
@@ -498,7 +497,7 @@ class TelegramBot {
             message: {
               id: body.message.message_id,
               from,
-              command: "/info",
+              command: "info",
               chatId: body.message.chat.id,
               text: "",
             },
@@ -526,7 +525,7 @@ class TelegramBot {
           command = command.substring(0, command.indexOf("@"));
         }
         command = command.toLowerCase();
-        command = command.startsWith("/") ? command : undefined;
+        command = command.startsWith("/") ? command.replace("/", "") : undefined;
         if (command) {
           text = body.message.text.substring(command.length + 1, body.message.text.length);
           if (text === "TenThings_Bot") text = "";
