@@ -120,6 +120,7 @@ class TelegramBot {
           this.notifyAdmin(`Too long: ${message.substring(0, 500)}...`);
         }
       } else if (reason.includes("Bad Request: message thread not found")) {
+        this.notifyAdmin(`Topic ${channel.topic} for channel ${channel.chat} not found`);
         noTopic(channel.chat);
       } else if (reason.includes("can't parse")) {
         this.notifyAdmin(`Send Message to ${channel} parse Fail: ${message}`);

@@ -69,6 +69,7 @@ class TelegramBot {
                     }
                 }
                 else if (reason.includes("Bad Request: message thread not found")) {
+                    this.notifyAdmin(`Topic ${channel.topic} for channel ${channel.chat} not found`);
                     (0, errors_1.noTopic)(channel.chat);
                 }
                 else if (reason.includes("can't parse")) {
