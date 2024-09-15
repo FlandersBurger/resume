@@ -71,6 +71,9 @@ const evaluate = async (msg, game, isNew) => {
         (0, maingame_1.newRound)(game);
     }
     if (msg.command) {
+        if (commands.map((command) => `/${command}`).includes(msg.command) && msg.topicId && msg.topicId !== game.topicId) {
+            game.topicId = msg.topicId;
+        }
         switch (msg.command) {
             case "/error":
                 const chatLink = await telegram_1.default.exportChatInviteLink(game.telegramChannel);

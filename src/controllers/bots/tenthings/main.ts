@@ -110,15 +110,11 @@ tenthingsBotRoute.post("/", async (req: Request, res: Response) => {
       .populate("list.creator")
       .select("-playedLists")
       .exec();
-
     if (!existingGame) {
-      const newGame = await createMaingame(msg.chatId, msg.topicId);
+      const newGame = await createMaingame(msg.chatId);
       console.log(`New game created for ${msg.chatId}`);
       await evaluate(msg, newGame, true);
     } else {
-      if (msg.topicId && msg.topicId !== existingGame.topicId) {
-        existingGame.topicId = msg.topicId;
-      }
       if (!existingGame.enabled) {
         if (msg.command && ["/list", "/start", "/minigame", "/tinygame"].includes(msg.command.toLowerCase())) {
           await activate(existingGame, true);

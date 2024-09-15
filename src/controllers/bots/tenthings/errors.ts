@@ -17,5 +17,5 @@ export const botMuted = async (chat_id: number, reason?: string) => {
 };
 
 export const noTopic = async (chat_id: number) => {
-  await Game.findOneAndUpdate({ chat_id, enabled: true }, { $set: { topicId: null } });
+  await Game.findOneAndUpdate({ chat_id }, { $set: { topicId: null } });
 };

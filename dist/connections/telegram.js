@@ -57,21 +57,42 @@ class TelegramBot {
             this.telegramBotUser = data.result;
             this.introduceYourself();
         };
-        this.errorHandler = (channel, source, error) => {
+        this.errorHandler = (channel, source, error, message) => {
             const reason = error?.response?.data?.description;
             if (reason) {
                 if (this.muteReasons.includes(reason)) {
                     (0, errors_1.botMuted)(channel.chat);
                 }
-                else if (!this.ignoreReasons.includes(reason)) {
-                    bot.notifyAdmin(`Error from "${source}" in channel ${channel.chat}:\n${(0, string_helpers_1.parseSymbols)(reason)}`);
+                else if (reason.includes("too long")) {
+                    if (message) {
+                        this.notifyAdmin(`Too long: ${message.substring(0, 500)}...`);
+                    }
                 }
                 else if (reason.includes("Bad Request: message thread not found")) {
+                    this.notifyAdmin(`Topic ${channel.topic} for channel ${channel.chat} not found`);
                     (0, errors_1.noTopic)(channel.chat);
-                    bot.notifyAdmin(`${channel.chat} has no topic`);
                 }
-                else {
-                    console.error(reason);
+                else if (reason.includes("can't parse")) {
+                    this.notifyAdmin(`Send Message to ${channel} parse Fail: ${message}`);
+                }
+                else if (error.response.data.description.startsWith("Too Many Requests: retry after ")) {
+                    if (!this.paused) {
+                        this.paused = true;
+                        const timeout = parseInt(error.response.data.description.match(/retry after (\d+)/)[1]);
+                        this.timeoutUntil = (0, moment_1.default)().add(timeout, "seconds");
+                        messageQueue.pause();
+                        this.notifyAdmin(`Pausing queue for ${timeout} seconds due to too many requests`);
+                        setTimeout(this.resumeQueue, timeout * 1000);
+                    }
+                    if (message)
+                        this.queueMessage(channel, message);
+                }
+                else if (error.response?.data?.description ===
+                    `Bad Request: invalid file HTTP URL specified: Wrong port number specified in the URL`) {
+                    this.notifyAdmin(`Invalid URL for ${source} in ${channel}: ${message}`);
+                }
+                else if (!this.ignoreReasons.includes(reason)) {
+                    bot.notifyAdmin(`Error from "${source}" in channel ${channel.chat}:\n${(0, string_helpers_1.parseSymbols)(reason)}`);
                 }
             }
             else {
@@ -116,7 +137,7 @@ class TelegramBot {
             const { replyMessageId, replyMarkup } = options;
             message = encodeURIComponent(message);
             let url = `${this.baseUrl}/sendMessage?chat_id=${channel.chat}&disable_notification=true&parse_mode=html&text=${message}`;
-            if (channel.chat === parseInt(process.env.COSMIC_FORCE_CHAT) && channel.topic)
+            if (channel.topic)
                 url += `&message_thread_id=${channel.topic}`;
             if (replyMessageId) {
                 url += `&reply_markup=${JSON.stringify({ force_reply: true, selective: true })}`;
@@ -128,34 +149,16 @@ class TelegramBot {
                 .get(url)
                 .catch((error) => {
                 if (error.response) {
-                    if (error.response.data.description.includes("too long")) {
-                        this.notifyAdmin(`Too long: ${message.substring(0, 500)}...`);
-                        setTimeout(() => this.sendMessage(channel, message.substring(0, 4000), options), 200);
-                    }
-                    else if (error.response.data.description.includes("can't parse")) {
-                        this.notifyAdmin(`Send Message to ${channel} parse Fail: ${message}`);
-                    }
-                    else if (error.response.data.description.startsWith("Too Many Requests: retry after ")) {
-                        if (!this.paused) {
-                            this.paused = true;
-                            const timeout = parseInt(error.response.data.description.match(/retry after (\d+)/)[1]);
-                            this.timeoutUntil = (0, moment_1.default)().add(timeout, "seconds");
-                            messageQueue.pause();
-                            this.notifyAdmin(`Pausing queue for ${timeout} seconds due to too many requests`);
-                            setTimeout(this.resumeQueue, timeout * 1000);
-                        }
-                        this.queueMessage(channel, message);
-                    }
-                    else if (error.response.data.description === "Bad Gateway") {
+                    if (error.response.data.description === "Bad Gateway") {
                         if (retries < 3) {
                             setTimeout(() => this.sendMessage(channel, message, options, retries++), retries * 500);
                         }
                         else {
-                            this.errorHandler(channel, "Send message (failed 3 times)", error);
+                            this.errorHandler(channel, "Send message (failed 3 times)", error, message);
                         }
                     }
                     else
-                        this.errorHandler(channel, "Send message", error);
+                        this.errorHandler(channel, "Send message", error, message);
                 }
                 else {
                     if (channel.chat !== parseInt(process.env.MASTER_CHAT || "")) {
@@ -304,31 +307,25 @@ class TelegramBot {
             this.sendMessage(channel, message.replace("&", "and"), { replyMarkup: keyboard });
         };
         this.sendPhoto = async (channel, photo) => {
-            const url = `${this.baseUrl}/sendPhoto?chat_id=${channel.chat}&photo=${photo}`;
+            let url = `${this.baseUrl}/sendPhoto?chat_id=${channel.chat}&photo=${photo}`;
+            if (channel.topic)
+                url += `&message_thread_id=${channel.topic}`;
             try {
                 await (0, http_client_1.default)().get(encodeURI(url));
             }
             catch (error) {
-                if (error.response?.data?.description ===
-                    `Bad Request: invalid file HTTP URL specified: Wrong port number specified in the URL`) {
-                    this.notifyAdmin(`Invalid photo URL in ${channel}: ${photo}`);
-                }
-                else
-                    this.errorHandler(channel, "Send photo", error);
+                this.errorHandler(channel, "Send photo", error, photo);
             }
         };
         this.sendAnimation = async (channel, animation) => {
-            const url = `${this.baseUrl}/sendAnimation?chat_id=${channel.chat}&animation=${animation}`;
+            let url = `${this.baseUrl}/sendAnimation?chat_id=${channel.chat}&animation=${animation}`;
+            if (channel.topic)
+                url += `&message_thread_id=${channel.topic}`;
             try {
                 await (0, http_client_1.default)().get(encodeURI(url));
             }
             catch (error) {
-                if (error.response?.data?.description ===
-                    `Bad Request: invalid file HTTP URL specified: Wrong port number specified in the URL`) {
-                    this.notifyAdmin(`Invalid animation URL in ${channel}: ${animation}`);
-                }
-                else
-                    this.errorHandler(channel, "Send animation", error);
+                this.errorHandler(channel, "Send animation", error, animation);
             }
         };
         this.editKeyboard = async (channel, message_id, keyboard) => {
