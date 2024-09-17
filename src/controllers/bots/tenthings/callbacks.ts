@@ -29,6 +29,7 @@ import {
 import bot, { TelegramUser } from "@root/connections/telegram";
 import { getPlayer } from "./players";
 import { sendSuggestionMessage, SuggestionType } from "./suggestions";
+import { adminOnly } from "./errors";
 
 export type CallbackData = {
   id: string;
@@ -177,10 +178,7 @@ export default async (callbackQuery: CallbackData) => {
           bot.queueEditKeyboard(game.telegramChannel, callbackQuery.id, categoriesKeyboard(game));
         } else {
           if (!game) return;
-          bot.queueMessage(
-            game.telegramChannel,
-            i18n(game.settings.language, "warnings.adminFunction", { name: callbackQuery.from.name }),
-          );
+          adminOnly(game, callbackQuery.from.name, callbackQuery.from);
         }
       }
       break;
@@ -215,10 +213,7 @@ export default async (callbackQuery: CallbackData) => {
           }
         } else {
           if (!game) return;
-          bot.queueMessage(
-            game.telegramChannel,
-            i18n(game.settings.language, "warnings.adminFunction", { name: callbackQuery.from.name }),
-          );
+          adminOnly(game, callbackQuery.from.name, callbackQuery.from);
         }
       }
       break;

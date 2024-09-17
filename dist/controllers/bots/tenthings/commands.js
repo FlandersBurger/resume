@@ -23,6 +23,7 @@ const keyboards_1 = require("./keyboards");
 const telegram_1 = __importDefault(require("../../../connections/telegram"));
 const suggestions_1 = require("./suggestions");
 const string_helpers_1 = require("../../../utils/string-helpers");
+const errors_1 = require("./errors");
 var Commands;
 (function (Commands) {
     Commands["Start"] = "start";
@@ -102,7 +103,7 @@ const evaluate = async (msg, game, isNew) => {
                     (0, maingame_1.deactivate)(game);
                 }
                 else {
-                    telegram_1.default.queueMessage(game.telegramChannel, (0, i18n_1.default)(game.settings.language, "warnings.adminFunction", { name: player.first_name }));
+                    (0, errors_1.adminOnly)(game, player.first_name, msg.from);
                 }
                 break;
             case "new":
@@ -257,7 +258,7 @@ const evaluate = async (msg, game, isNew) => {
                         telegram_1.default.sendKeyboard(game.telegramChannel, `<b>${(0, i18n_1.default)(game.settings.language, "settings")}</b>`, (0, keyboards_1.settingsKeyboard)(game));
                     }
                     else {
-                        telegram_1.default.queueMessage(game.telegramChannel, (0, i18n_1.default)(game.settings.language, "warnings.adminFunction", { name: player.first_name }));
+                        (0, errors_1.adminOnly)(game, player.first_name, msg.from);
                     }
                 }
                 break;

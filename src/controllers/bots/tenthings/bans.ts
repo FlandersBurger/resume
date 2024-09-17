@@ -6,6 +6,7 @@ import { CallbackData } from "./callbacks";
 import i18n from "@root/i18n";
 import { confirmBanListKeyboard } from "./keyboards";
 import bot from "@root/connections/telegram";
+import { adminOnly } from "./errors";
 
 const cache: { [key: string]: number } = {};
 
@@ -37,10 +38,7 @@ export const initiateBan = async (game: IGame, callbackQuery: CallbackData) => {
       }
     }
   } else {
-    bot.queueMessage(
-      game.telegramChannel,
-      i18n(game.settings.language, "warnings.adminFunction", { name: callbackQuery.from.name }),
-    );
+    adminOnly(game, callbackQuery.from.name, callbackQuery.from);
   }
 };
 
