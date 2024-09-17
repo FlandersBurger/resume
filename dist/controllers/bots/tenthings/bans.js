@@ -8,6 +8,7 @@ const index_1 = require("../../../models/index");
 const i18n_1 = __importDefault(require("../../../i18n"));
 const keyboards_1 = require("./keyboards");
 const telegram_1 = __importDefault(require("../../../connections/telegram"));
+const errors_1 = require("./errors");
 const cache = {};
 const initiateBan = async (game, callbackQuery) => {
     if (game.chat_id !== parseInt(process.env.GROUP_CHAT || "") ||
@@ -30,7 +31,7 @@ const initiateBan = async (game, callbackQuery) => {
         }
     }
     else {
-        telegram_1.default.queueMessage(game.telegramChannel, (0, i18n_1.default)(game.settings.language, "warnings.adminFunction", { name: callbackQuery.from.name }));
+        (0, errors_1.adminOnly)(game, callbackQuery.from.name, callbackQuery.from);
     }
 };
 exports.initiateBan = initiateBan;

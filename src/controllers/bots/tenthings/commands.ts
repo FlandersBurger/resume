@@ -27,6 +27,7 @@ import {
   SuggestionType,
 } from "./suggestions";
 import { parseSymbols } from "@root/utils/string-helpers";
+import { adminOnly } from "./errors";
 
 export enum Commands {
   Start = "start",
@@ -132,10 +133,7 @@ export const evaluate = async (msg: Message, game: HydratedDocument<IGame>, isNe
         if (await bot.checkAdmin(game.telegramChannel, msg.from.id)) {
           deactivate(game);
         } else {
-          bot.queueMessage(
-            game.telegramChannel,
-            i18n(game.settings.language, "warnings.adminFunction", { name: player.first_name }),
-          );
+          adminOnly(game, player.first_name, msg.from);
         }
         break;
       case Commands.Start:
@@ -306,10 +304,7 @@ export const evaluate = async (msg: Message, game: HydratedDocument<IGame>, isNe
               settingsKeyboard(game),
             );
           } else {
-            bot.queueMessage(
-              game.telegramChannel,
-              i18n(game.settings.language, "warnings.adminFunction", { name: player.first_name }),
-            );
+            adminOnly(game, player.first_name, msg.from);
           }
         }
         break;

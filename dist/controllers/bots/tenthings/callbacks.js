@@ -21,6 +21,7 @@ const keyboards_1 = require("./keyboards");
 const telegram_1 = __importDefault(require("../../../connections/telegram"));
 const players_1 = require("./players");
 const suggestions_1 = require("./suggestions");
+const errors_1 = require("./errors");
 var CallbackDataType;
 (function (CallbackDataType) {
     CallbackDataType["Ban"] = "ban";
@@ -155,7 +156,7 @@ exports.default = async (callbackQuery) => {
                 else {
                     if (!game)
                         return;
-                    telegram_1.default.queueMessage(game.telegramChannel, (0, i18n_1.default)(game.settings.language, "warnings.adminFunction", { name: callbackQuery.from.name }));
+                    (0, errors_1.adminOnly)(game, callbackQuery.from.name, callbackQuery.from);
                 }
             }
             break;
@@ -192,7 +193,7 @@ exports.default = async (callbackQuery) => {
                 else {
                     if (!game)
                         return;
-                    telegram_1.default.queueMessage(game.telegramChannel, (0, i18n_1.default)(game.settings.language, "warnings.adminFunction", { name: callbackQuery.from.name }));
+                    (0, errors_1.adminOnly)(game, callbackQuery.from.name, callbackQuery.from);
                 }
             }
             break;
