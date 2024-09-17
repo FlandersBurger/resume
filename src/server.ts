@@ -93,6 +93,7 @@ server.listen(port, async () => {
   if (process.env.NODE_ENV === "production") {
     bot.notifyAdmin("<b>Started Ten Things</b>");
   }
+  //bot.setWebhook("tenthings");
   await subscribe("new_post", (post: any) => {
     websocketServer.broadcast("new_post", post);
   });

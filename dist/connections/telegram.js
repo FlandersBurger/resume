@@ -101,7 +101,7 @@ class TelegramBot {
             }
         };
         this.setWebhook = async (api) => {
-            const allowed_updates = JSON.stringify(["message", "callback_query"]);
+            const allowed_updates = JSON.stringify(["message", "callback_query", "chat_member"]);
             const url = `${this.baseUrl}/setWebhook?url=https://belgocanadian.com/bots/${api}&allowed_updates=${allowed_updates}`;
             try {
                 return await (0, http_client_1.default)().get(url);
@@ -490,6 +490,14 @@ class TelegramBot {
                             text,
                         },
                     };
+                }
+            }
+            else if (body.chat_member) {
+                if (body.chat_member.chat.id === parseInt(process.env.GROUP_CHAT || "")) {
+                    if (body.chat_member.new_chat_member.user.first_name !== body.chat_member.old_chat_member.user.first_name) {
+                        this.sendMessage(body.chat_member, `${body.chat_member.old_chat_member.user.first_name} updated their name to ${body.chat_member.new_chat_member.user.first_name}`);
+                        this.notifyAdmin(`Name change: ${body.chat_member.new_chat_member.user}`);
+                    }
                 }
             }
             return { messageType: main_1.MessageType.Ignore };
