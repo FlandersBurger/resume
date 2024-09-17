@@ -12,6 +12,7 @@ const spam_1 = require("../controllers/bots/tenthings/spam");
 const main_1 = require("../controllers/bots/tenthings/main");
 const string_helpers_1 = require("../utils/string-helpers");
 const moment_1 = __importDefault(require("moment"));
+const commands_1 = require("../controllers/bots/tenthings/commands");
 const BANNED_TELEGRAM_USERS = [1726294650];
 const messageQueue = new bull_1.default("sendMessage", {
     redis: {
@@ -374,18 +375,18 @@ class TelegramBot {
         };
         this.setCommands = async (channel, language) => {
             const commands = [
-                "list",
-                "hint",
-                "minigame",
-                "tinygame",
-                "minihint",
-                "tinyhint",
-                "skip",
-                "miniskip",
-                "tinyskip",
-                "commands",
-                "me",
-                "stats",
+                commands_1.Commands.List,
+                commands_1.Commands.Hint,
+                commands_1.Commands.Minigame,
+                commands_1.Commands.Tinygame,
+                commands_1.Commands.Minihint,
+                commands_1.Commands.Tinyhint,
+                commands_1.Commands.Skip,
+                commands_1.Commands.Miniskip,
+                commands_1.Commands.Tinyskip,
+                commands_1.Commands.Commands,
+                commands_1.Commands.Me,
+                commands_1.Commands.Stats,
             ].map((command) => ({
                 command: command,
                 description: (0, i18n_1.default)(language, `commands.${command}.description`),
@@ -442,7 +443,7 @@ class TelegramBot {
                             message: {
                                 id: body.message.message_id,
                                 from,
-                                command: "info",
+                                command: commands_1.Commands.Commands,
                                 chatId: body.message.chat.id,
                                 text: "",
                             },

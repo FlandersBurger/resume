@@ -18,6 +18,8 @@ i18next.use(Backend).init({
   backend: {
     loadPath: join(localesFolder, "{{lng}}/{{ns}}.json"),
   },
+  ns: ["translation", "commands"],
+  defaultNS: "translation",
   interpolation: { escapeValue: false },
 });
 

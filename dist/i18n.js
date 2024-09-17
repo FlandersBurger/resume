@@ -20,6 +20,8 @@ i18next_1.default.use(i18next_fs_backend_1.default).init({
     backend: {
         loadPath: (0, path_1.join)(localesFolder, "{{lng}}/{{ns}}.json"),
     },
+    ns: ["translation", "commands"],
+    defaultNS: "translation",
     interpolation: { escapeValue: false },
 });
 exports.default = (lng, key, params = {}) => i18next_1.default.getFixedT(lng ? lng.toLowerCase() : systemLocale)(key, params);
