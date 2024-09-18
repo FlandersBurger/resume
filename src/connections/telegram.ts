@@ -11,7 +11,7 @@ import { parseSymbols, maskUrls } from "@root/utils/string-helpers";
 import { UserInput } from "@tenthings/messages";
 import moment, { Moment } from "moment";
 
-const BANNED_TELEGRAM_USERS = [1726294650];
+const BANNED_TELEGRAM_USERS = [1726294650, 6758829541];
 
 const messageQueue = new Queue("sendMessage", {
   redis: {

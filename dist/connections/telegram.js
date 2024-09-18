@@ -12,7 +12,7 @@ const spam_1 = require("../controllers/bots/tenthings/spam");
 const main_1 = require("../controllers/bots/tenthings/main");
 const string_helpers_1 = require("../utils/string-helpers");
 const moment_1 = __importDefault(require("moment"));
-const BANNED_TELEGRAM_USERS = [1726294650];
+const BANNED_TELEGRAM_USERS = [1726294650, 6758829541];
 const messageQueue = new bull_1.default("sendMessage", {
     redis: {
         port: parseInt(process.env.REDIS_PORT || "6379"),
