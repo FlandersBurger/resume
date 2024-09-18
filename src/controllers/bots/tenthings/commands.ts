@@ -84,7 +84,8 @@ export const evaluate = async (msg: Message, game: HydratedDocument<IGame>, isNe
     newRound(game);
   }
   if (msg.command) {
-    if (commands.map((command) => `/${command}`).includes(msg.command) && msg.topicId && msg.topicId !== game.topicId) {
+    if (commands.map((command) => `${command}`).includes(msg.command) && msg.topicId && msg.topicId !== game.topicId) {
+      console.log(`${game.chat_id} - Topic changed to ${msg.topicId}`);
       game.topicId = msg.topicId;
     }
     switch (msg.command) {
