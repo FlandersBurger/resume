@@ -82,7 +82,7 @@ export const evaluate = async (msg: Message, game: HydratedDocument<IGame>, isNe
       return;
     }
   }
-  if (player.state !== undefined) {
+  if (player.state !== undefined && player.state !== "none") {
     sendSuggestion(msg, game, player, player.state);
     return;
   }

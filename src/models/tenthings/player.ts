@@ -2,7 +2,7 @@ import { Model, Schema, Types } from "mongoose";
 import db from "@root/db";
 import { Command } from "@root/controllers/bots/tenthings/commands";
 
-export type PlayerState = Command.Typo | Command.Bug | Command.Feature | undefined;
+export type PlayerState = Command.Typo | Command.Bug | Command.Feature | "none" | undefined;
 
 export interface IPlayer {
   _id: Types.ObjectId;
