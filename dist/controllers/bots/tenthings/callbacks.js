@@ -19,8 +19,6 @@ const stats_1 = require("./stats");
 const cache_1 = require("./cache");
 const keyboards_1 = require("./keyboards");
 const telegram_1 = __importDefault(require("../../../connections/telegram"));
-const players_1 = require("./players");
-const suggestions_1 = require("./suggestions");
 const errors_1 = require("./errors");
 var CallbackDataType;
 (function (CallbackDataType) {
@@ -330,12 +328,6 @@ exports.default = async (callbackQuery) => {
                 return;
             telegram_1.default.queueEditKeyboard(game.telegramChannel, callbackQuery.id, (0, keyboards_1.curateListKeyboard)(list));
             break;
-        case CallbackDataType.Suggestion:
-            if (!game)
-                return;
-            const player = await (0, players_1.getPlayer)(game, callbackQuery.from);
-            await (0, suggestions_1.sendSuggestionMessage)(game, player, callbackQuery.data);
-            telegram_1.default.deleteMessage(game.telegramChannel, callbackQuery.id);
     }
 };
 //# sourceMappingURL=callbacks.js.map

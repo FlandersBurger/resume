@@ -27,8 +27,6 @@ import {
   settingsKeyboard,
 } from "./keyboards";
 import bot, { TelegramUser } from "@root/connections/telegram";
-import { getPlayer } from "./players";
-import { sendSuggestionMessage, SuggestionType } from "./suggestions";
 import { adminOnly } from "./errors";
 
 export type CallbackData = {
@@ -357,10 +355,5 @@ export default async (callbackQuery: CallbackData) => {
       if (!list) return;
       bot.queueEditKeyboard(game.telegramChannel, callbackQuery.id, curateListKeyboard(list));
       break;
-    case CallbackDataType.Suggestion:
-      if (!game) return;
-      const player = await getPlayer(game, callbackQuery.from);
-      await sendSuggestionMessage(game, player, callbackQuery.data as SuggestionType);
-      bot.deleteMessage(game.telegramChannel, callbackQuery.id);
   }
 };

@@ -3,18 +3,8 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.PlayerState = void 0;
 const mongoose_1 = require("mongoose");
 const db_1 = __importDefault(require("../../db"));
-const suggestions_1 = require("../../controllers/bots/tenthings/suggestions");
-var NoState;
-(function (NoState) {
-    NoState["None"] = "none";
-})(NoState || (NoState = {}));
-exports.PlayerState = {
-    ...NoState,
-    ...suggestions_1.SuggestionType,
-};
 let Player = {};
 const playerSchema = new mongoose_1.Schema({
     game: { type: mongoose_1.Schema.Types.ObjectId, ref: "TenThings", required: true },
@@ -45,7 +35,7 @@ const playerSchema = new mongoose_1.Schema({
     present: { type: Boolean, required: true, default: true },
     minigamePlays: { type: Number, required: false, default: 0 },
     tinygamePlays: { type: Number, required: false, default: 0 },
-    state: { type: String, required: false, default: exports.PlayerState.None },
+    state: { type: String, required: false, default: null },
 }, { timestamps: true });
 playerSchema.index({ game: 1, id: 1 });
 for (const name in db_1.default) {

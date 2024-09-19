@@ -116,7 +116,7 @@ tenthingsBotRoute.post("/", async (req: Request, res: Response) => {
       await evaluate(msg, newGame, true);
     } else {
       if (!existingGame.enabled) {
-        if (msg.command && ["list", "start", "minigame", "tinygame"].includes(msg.command.toLowerCase())) {
+        if (msg.command && ["list", "start", "minigame", "tinygame"].includes(msg.command)) {
           await activate(existingGame, true);
           await evaluate(msg, existingGame, false);
         }

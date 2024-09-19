@@ -10,7 +10,7 @@ import { MessageType } from "@tenthings/main";
 import { parseSymbols, maskUrls } from "@root/utils/string-helpers";
 import { UserInput } from "@tenthings/messages";
 import moment, { Moment } from "moment";
-import { Commands } from "@root/controllers/bots/tenthings/commands";
+import { Command } from "@root/controllers/bots/tenthings/commands";
 
 const BANNED_TELEGRAM_USERS = [1726294650, 6758829541];
 
@@ -429,18 +429,18 @@ class TelegramBot {
 
   public setCommands = async (channel: Channel, language: string) => {
     const commands = [
-      Commands.List,
-      Commands.Hint,
-      Commands.Minigame,
-      Commands.Tinygame,
-      Commands.Minihint,
-      Commands.Tinyhint,
-      Commands.Skip,
-      Commands.Miniskip,
-      Commands.Tinyskip,
-      Commands.Commands,
-      Commands.Me,
-      Commands.Stats,
+      Command.List,
+      Command.Hint,
+      Command.Minigame,
+      Command.Tinygame,
+      Command.Minihint,
+      Command.Tinyhint,
+      Command.Skip,
+      Command.Miniskip,
+      Command.Tinyskip,
+      Command.Commands,
+      Command.Me,
+      Command.Stats,
     ].map((command) => ({
       command: command,
       description: i18n(language, `commands.${command}.description`),
@@ -498,7 +498,7 @@ class TelegramBot {
             message: {
               id: body.message.message_id,
               from,
-              command: Commands.Commands,
+              command: Command.Commands,
               chatId: body.message.chat.id,
               topicId: body.message.message_thread_id,
               text: "",

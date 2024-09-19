@@ -1,16 +1,8 @@
 import { Model, Schema, Types } from "mongoose";
 import db from "@root/db";
-import { SuggestionType } from "@root/controllers/bots/tenthings/suggestions";
+import { Command } from "@root/controllers/bots/tenthings/commands";
 
-enum NoState {
-  None = "none",
-}
-
-export const PlayerState = {
-  ...NoState,
-  ...SuggestionType,
-};
-export type PlayerState = NoState | SuggestionType;
+export type PlayerState = Command.Typo | Command.Bug | Command.Feature | undefined;
 
 export interface IPlayer {
   _id: Types.ObjectId;
@@ -77,7 +69,7 @@ const playerSchema = new Schema<IPlayer>(
     present: { type: Boolean, required: true, default: true },
     minigamePlays: { type: Number, required: false, default: 0 },
     tinygamePlays: { type: Number, required: false, default: 0 },
-    state: { type: String, required: false, default: PlayerState.None },
+    state: { type: String, required: false, default: null },
   },
   { timestamps: true },
 );

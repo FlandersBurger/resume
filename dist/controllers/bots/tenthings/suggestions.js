@@ -3,32 +3,26 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.sendSuggestionMessage = exports.checkSuggestionProvided = exports.getSuggestionType = exports.sendSuggestion = exports.SuggestionType = void 0;
+exports.sendSuggestionMessage = exports.checkSuggestionProvided = exports.sendSuggestion = void 0;
 const string_helpers_1 = require("../../../utils/string-helpers");
 const telegram_1 = __importDefault(require("../../../connections/telegram"));
-const player_1 = require("../../../models/tenthings/player");
 const players_1 = require("./players");
 const i18n_1 = __importDefault(require("../../../i18n"));
-var SuggestionType;
-(function (SuggestionType) {
-    SuggestionType["Bug"] = "bug";
-    SuggestionType["Feature"] = "feature";
-    SuggestionType["Typo"] = "typo";
-})(SuggestionType || (exports.SuggestionType = SuggestionType = {}));
-const sendSuggestion = async (msg, game, player, suggestionType) => {
+const commands_1 = require("./commands");
+const sendSuggestion = async (msg, game, player, command) => {
     if (game && player) {
         const playerName = (0, players_1.getPlayerName)(player);
         if (!msg.text) {
             telegram_1.default.queueMessage(game.telegramChannel, (0, i18n_1.default)(game.settings.language, "warnings.noSuggestion", { name: playerName }));
-            player.state = player_1.PlayerState.None;
+            player.state = undefined;
             await player.save();
         }
         else {
             player.suggestions++;
-            player.state = player_1.PlayerState.None;
+            player.state = undefined;
             await player.save();
-            let message = `<b>${(0, string_helpers_1.capitalize)(suggestionType)}</b>\n${msg.text}\n`;
-            if (suggestionType == SuggestionType.Typo) {
+            let message = `<b>${(0, string_helpers_1.capitalize)(command)}</b>\n${msg.text}\n`;
+            if (command == commands_1.Command.Typo) {
                 message += `Current list: ${(0, string_helpers_1.parseSymbols)(game.list.name)}\n`;
             }
             telegram_1.default.queueMessage(game.telegramChannel, `${message}Thank you, ${playerName}`);
@@ -41,39 +35,35 @@ const sendSuggestion = async (msg, game, player, suggestionType) => {
     }
 };
 exports.sendSuggestion = sendSuggestion;
-const getSuggestionType = (msg) => {
-    const suggestionType = msg.command?.replace("erro", "bug").replace("suggest", "feature");
-    if (Object.values(SuggestionType).includes(suggestionType)) {
-        return suggestionType;
-    }
-    return undefined;
-};
-exports.getSuggestionType = getSuggestionType;
-const checkSuggestionProvided = (msg, game, player) => {
+const checkSuggestionProvided = (msg, game, player, command) => {
     const suggestion = msg.text;
-    const suggestionType = (0, exports.getSuggestionType)(msg);
-    if (suggestion && suggestionType && Object.values(SuggestionType).includes(suggestionType)) {
-        (0, exports.sendSuggestion)(msg, game, player, suggestionType);
+    if (suggestion && [commands_1.Command.Bug, commands_1.Command.Feature, commands_1.Command.Typo, commands_1.Command.Suggestion].includes(command)) {
+        (0, exports.sendSuggestion)(msg, game, player, command);
         return true;
     }
     return false;
 };
 exports.checkSuggestionProvided = checkSuggestionProvided;
-const sendSuggestionMessage = async (game, player, suggestionType) => {
+const sendSuggestionMessage = async (game, player, command) => {
     const playerName = (0, players_1.getPlayerName)(player);
-    switch (suggestionType) {
-        case "feature":
-            player.state = player_1.PlayerState.Feature;
+    switch (command) {
+        case commands_1.Command.Suggestion:
+            player.state = commands_1.Command.Feature;
+            await player.save();
+            telegram_1.default.sendMessage(game.telegramChannel, `<b>SUGGESTION</b>\nPlease add your suggestion in your next message, ${playerName}!`);
+            break;
+        case commands_1.Command.Feature:
+            player.state = commands_1.Command.Feature;
             await player.save();
             telegram_1.default.sendMessage(game.telegramChannel, `<b>FEATURE</b>\nPlease suggest your feature in your next message, ${playerName}!`);
             break;
-        case "typo":
-            player.state = player_1.PlayerState.Typo;
+        case commands_1.Command.Typo:
+            player.state = commands_1.Command.Typo;
             await player.save();
             telegram_1.default.sendMessage(game.telegramChannel, `<b>TYPO</b>\nPlease let me know what the typo is in your next message, ${playerName}!\nMention the list name too if the typo is not part of: <i>"${(0, string_helpers_1.parseSymbols)(game.list.name)}"</i>`);
             break;
-        case "bug":
-            player.state = player_1.PlayerState.Bug;
+        case commands_1.Command.Bug:
+            player.state = commands_1.Command.Bug;
             await player.save();
             telegram_1.default.sendMessage(game.telegramChannel, `<b>BUG</b>\nPlease provide some details as to what went wrong in your next message, ${playerName}!`);
             break;

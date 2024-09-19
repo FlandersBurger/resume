@@ -17,13 +17,12 @@ import emojis from "./emojis";
 import { CallbackData } from "./callbacks";
 import { TelegramUser } from "@root/connections/telegram";
 import { getListScore } from "./lists";
-import { Commands } from "./commands";
 
 export type UserInput = Message | CallbackData;
 export type Message = {
   id: string;
   from: TelegramUser;
-  command?: Commands;
+  command?: string;
   text: string;
   chatId: number;
   topicId?: number;
