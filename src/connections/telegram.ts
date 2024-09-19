@@ -12,7 +12,7 @@ import { UserInput } from "@tenthings/messages";
 import moment, { Moment } from "moment";
 import { Commands } from "@root/controllers/bots/tenthings/commands";
 
-const BANNED_TELEGRAM_USERS = [1726294650];
+const BANNED_TELEGRAM_USERS = [1726294650, 6758829541];
 
 const messageQueue = new Queue("sendMessage", {
   redis: {
@@ -500,6 +500,7 @@ class TelegramBot {
               from,
               command: Commands.Commands,
               chatId: body.message.chat.id,
+              topicId: body.message.message_thread_id,
               text: "",
             },
           };

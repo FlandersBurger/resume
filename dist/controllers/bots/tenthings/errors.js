@@ -29,7 +29,7 @@ const noTopic = async (chat_id) => {
 exports.noTopic = noTopic;
 const adminOnly = async (game, name, additionalInfo) => {
     if (game.chat_id === parseInt(process.env.GROUP_CHAT || ""))
-        telegram_1.default.notifyAdmin(`Admin warning triggered by ${additionalInfo}`);
+        telegram_1.default.notifyAdmin(`Admin warning triggered by ${JSON.stringify(additionalInfo)}`);
     telegram_1.default.queueMessage(game.telegramChannel, (0, i18n_1.default)(game.settings.language, "warnings.adminFunction", { name }));
 };
 exports.adminOnly = adminOnly;

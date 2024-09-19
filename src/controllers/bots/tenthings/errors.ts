@@ -25,6 +25,6 @@ export const noTopic = async (chat_id: number) => {
 
 export const adminOnly = async (game: IGame, name: string | undefined, additionalInfo: any) => {
   if (game.chat_id === parseInt(process.env.GROUP_CHAT || ""))
-    bot.notifyAdmin(`Admin warning triggered by ${additionalInfo}`);
+    bot.notifyAdmin(`Admin warning triggered by ${JSON.stringify(additionalInfo)}`);
   bot.queueMessage(game.telegramChannel, i18n(game.settings.language, "warnings.adminFunction", { name }));
 };

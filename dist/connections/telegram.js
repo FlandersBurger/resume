@@ -13,7 +13,7 @@ const main_1 = require("../controllers/bots/tenthings/main");
 const string_helpers_1 = require("../utils/string-helpers");
 const moment_1 = __importDefault(require("moment"));
 const commands_1 = require("../controllers/bots/tenthings/commands");
-const BANNED_TELEGRAM_USERS = [1726294650];
+const BANNED_TELEGRAM_USERS = [1726294650, 6758829541];
 const messageQueue = new bull_1.default("sendMessage", {
     redis: {
         port: parseInt(process.env.REDIS_PORT || "6379"),
@@ -445,6 +445,7 @@ class TelegramBot {
                                 from,
                                 command: commands_1.Commands.Commands,
                                 chatId: body.message.chat.id,
+                                topicId: body.message.message_thread_id,
                                 text: "",
                             },
                         };
