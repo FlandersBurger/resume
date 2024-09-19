@@ -107,6 +107,7 @@ class TelegramBot {
     const { data } = await httpClient().get(`${this.baseUrl}/getMe`);
     this.telegramBotUser = data.result;
     this.introduceYourself();
+    this.resumeQueue();
   };
 
   private errorHandler = (channel: Channel, source: string, error: any, message?: string) => {
