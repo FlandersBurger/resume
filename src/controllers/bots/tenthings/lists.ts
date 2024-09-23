@@ -94,7 +94,7 @@ export const selectList = async (game: IGame): Promise<HydratedDocument<IList>> 
 
 export const searchList = async (search: string, game: IGame): Promise<IList[]> => {
   const availableLanguages = getAvailableLanguages(game);
-  const foundLists = await List.find({
+  let foundLists = await List.find({
     categories: { $nin: game.disabledCategories },
     language: { $in: availableLanguages },
     name: { $regex: search, $options: "i" },
@@ -103,18 +103,33 @@ export const searchList = async (search: string, game: IGame): Promise<IList[]> 
     .lean();
   if (foundLists.length > 0) {
     return sampleSize(foundLists, 10);
-  } else {
-    return sampleSize(
-      await List.find({
-        categories: { $nin: game.disabledCategories },
-        language: { $in: availableLanguages },
-        $text: { $search: `"${search}"` },
-      })
-        .select("name")
-        .lean(),
-      10,
-    );
   }
+  foundLists = await List.find({
+    categories: { $nin: game.disabledCategories },
+    language: { $in: availableLanguages },
+    $text: { $search: `"${search}"` },
+  })
+    .select("name")
+    .lean();
+  if (foundLists.length > 0) {
+    return sampleSize(foundLists, 10);
+  }
+  foundLists = await List.find({
+    language: { $in: availableLanguages },
+    name: { $regex: search, $options: "i" },
+  })
+    .select("name")
+    .lean();
+  if (foundLists.length > 0) {
+    return sampleSize(foundLists, 10);
+  }
+  foundLists = await List.find({
+    language: { $in: availableLanguages },
+    $text: { $search: `"${search}"` },
+  })
+    .select("name")
+    .lean();
+  return sampleSize(foundLists, 10);
 };
 
 /*
