@@ -70,7 +70,6 @@ class TelegramBot {
                     }
                 }
                 else if (reason.includes("Bad Request: message thread not found")) {
-                    this.notifyAdmin(`Topic ${channel.topic} for channel ${channel.chat} not found`);
                     (0, errors_1.noTopic)(channel.chat);
                 }
                 else if (reason.includes("can't parse")) {
@@ -474,7 +473,7 @@ class TelegramBot {
                     command = command.toLowerCase();
                     command = command.startsWith("/") ? command.replace("/", "") : undefined;
                     if (command) {
-                        text = body.message.text.substring(command.length + 1, body.message.text.length);
+                        text = body.message.text.substring(command.length + 2, body.message.text.length);
                         if (text === "TenThings_Bot")
                             text = "";
                     }

@@ -275,7 +275,7 @@ export default async (callbackQuery: CallbackData) => {
           );
         const list = await List.findOne({ _id: callbackQuery.data }).exec();
         if (!list) return bot.queueMessage(game.telegramChannel, i18n(game.settings.language, "warnings.unfoundList"));
-        const foundList = find(game.pickedLists, (pickedListId: Types.ObjectId) => pickedListId == list._id);
+        const foundList = find(game.pickedLists, (pickedListId: Types.ObjectId) => pickedListId === list._id);
         if (foundList) {
           bot.queueMessage(
             game.telegramChannel,
@@ -286,6 +286,9 @@ export default async (callbackQuery: CallbackData) => {
           );
         } else {
           game.pickedLists.push(list._id);
+          if (find(game.bannedLists, (bannedListId: Types.ObjectId) => bannedListId === list._id)) {
+            game.bannedLists = game.bannedLists.filter((bannedListId: Types.ObjectId) => bannedListId !== list._id);
+          }
           game.save();
           list.picks++;
           list.save();

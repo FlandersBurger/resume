@@ -97,11 +97,24 @@ export const searchList = async (search: string, game: IGame): Promise<IList[]> 
   const foundLists = await List.find({
     categories: { $nin: game.disabledCategories },
     language: { $in: availableLanguages },
-    $text: { $search: `"${search}"` },
+    name: { $regex: search, $options: "i" },
   })
     .select("name")
     .lean();
-  return sampleSize(foundLists, 10);
+  if (foundLists.length > 0) {
+    return sampleSize(foundLists, 10);
+  } else {
+    return sampleSize(
+      await List.find({
+        categories: { $nin: game.disabledCategories },
+        language: { $in: availableLanguages },
+        $text: { $search: `"${search}"` },
+      })
+        .select("name")
+        .lean(),
+      10,
+    );
+  }
 };
 
 /*
