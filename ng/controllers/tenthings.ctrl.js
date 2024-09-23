@@ -88,6 +88,11 @@ angular
               $scope.selectedList = data;
               $location.search("list", data._id);
               $scope.selectedLanguage = $scope.selectedList.language;
+              $scope.readOnly =
+                !$scope.selectedList ||
+                (!$scope.currentUser.admin &&
+                  $scope.selectedList.creator._id !== $scope.currentUser._id &&
+                  $scope.selectedList._id);
             })
             .catch((err) => console.error(err));
         }

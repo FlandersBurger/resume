@@ -1,4 +1,4 @@
-import { Router, Request, Response } from "express";
+import { Router, Request, Response, QueryableRequest } from "express";
 
 import bcrypt from "bcryptjs";
 import jwt from "jwt-simple";
@@ -13,13 +13,14 @@ usersRoute.get("/", (_: Request, res: Response) => {
   else res.json(res.locals.user);
 });
 
-usersRoute.get("/all", async (req: Request, res: Response) => {
+usersRoute.get("/all", async (req: QueryableRequest, res: Response) => {
   if (!res.locals.isAdmin) res.sendStatus(401);
   else {
+    const page = parseInt(req.query.page ?? 1);
     const users = await User.find({})
       .select("-gender -flags -highscore")
-      .limit(parseInt(req.query.limit as string))
-      .skip(parseInt(req.query.limit as string) * (parseInt(req.query.page as string) - 1));
+      .limit(parseInt(req.query.limit) || 0)
+      .skip(parseInt(req.query.limit) * (page - 1) || 0);
     res.json(users);
   }
 });

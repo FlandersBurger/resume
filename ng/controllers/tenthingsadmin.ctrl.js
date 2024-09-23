@@ -36,7 +36,6 @@ angular
 
     TenThingsSvc.getPause().then((response) => {
       $scope.paused = response.data;
-      console.log($scope.paused);
     });
 
     const getUsers = () => {
