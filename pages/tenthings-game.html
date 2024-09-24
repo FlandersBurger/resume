@@ -1,91 +1,87 @@
 <div id="tenthingsgame-page" class="col-md-12" ng-if="currentUser.admin">
-	<h1>{{game.chat_id}}</h1>
-	<p><b>Intro:</b> {{game.settings.intro ? 'On' : 'Off'}}</p>
-	<p><b>Sass:</b> {{game.settings.sass ? 'On' : 'Off'}}</p>
-	<p><b>Snubs:</b> {{game.settings.snubs ? 'On' : 'Off'}}</p>
-	<p><b>Updates:</b> {{game.settings.updates ? 'On' : 'Off'}}</p>
-	<p><b>Languages:</b> {{game.settings.languages.join(', ')}}</p>
-	<p><b>Hints:</b> {{game.hints}}</p>
-	<p><b>Cycles:</b> {{game.cycles}}</p>
-	<p><b>Last Cycled:</b> {{formatDate(game.lastCycleDate)}}</p>
-	<p><b>Last Played:</b> {{formatDate(game.lastPlayDate)}}</p>
-	<p><b>Lists Played:</b> {{game.listsPlayed}}</p>
-	<p><b>Disabled Categories:</b> {{game.disabledCategories.join(', ')}}</p>
-	<hr />
-	<h3>Players</h3>
-	<table class="table table-striped">
-		<thead>
-			<tr>
-				<th>Name</th>
-				<th>Wins</th>
-				<th>Answers</th>
-				<th>High Score</th>
-				<th>Score</th>
-				<th>Hints</th>
-				<th>Snubs</th>
-				<th>Skips</th>
-				<th>Vetoes</th>
-				<th>Suggestions</th>
-				<th>Searches</th>
-				<th>Streak</th>
-				<th>Play Streak (max)</th>
-				<th>Hint Streak (max)</th>
-				<th>Last Played</th>
-			</tr>
-		</thead>
-		<tbody>
-			<tr ng-repeat="player in game.players | orderBy: '+username'">
-				<td>{{player.username ? player.username : player.first_name}}</td>
-				<td>{{player.wins}}</td>
-				<td>{{player.answers}}</td>
-				<td>{{player.highScore}}</td>
-				<td>{{player.score}}</td>
-				<td>{{player.hints}}</td>
-				<td>{{player.snubs}}</td>
-				<td>{{player.skips}}</td>
-				<td>{{player.vetoes}}</td>
-				<td>{{player.suggestions}}</td>
-				<td>{{player.searches}}</td>
-				<td>{{player.streak}}</td>
-				<td>{{player.playStreak}} ({{player.maxPlayStreak}})</td>
-				<td>{{player.hintStreak}} ({{player.maxHintStreak}})</td>
-				<td>{{formatDate(player.lastPlayDate)}}</td>
-			</tr>
-		</tbody>
-	</table>
-	<hr />
-	<h3>Game</h3>
-	<h4>{{game.list.name}}</h4>
-	<p>{{game.list.categories.join(', ')}}</p>
-	<table class="table table-striped">
-		<thead>
-			<tr>
-				<th>Value</th>
-				<th>Guesser</th>
-			</tr>
-		</thead>
-		<tbody>
-			<tr ng-repeat="item in game.list.values | orderBy: '+value'">
-				<td>{{item.value}}</td>
-				<td>
-					{{item.guesser.username ? item.guesser.username :
-					item.guesser.first_name}}
-				</td>
-			</tr>
-		</tbody>
-	</table>
-	<hr />
-	<h3>Minigame</h3>
-	<h4>{{game.minigame.answer}}</h4>
-	<ul>
-		<li ng-repeat="list in game.minigame.lists">{{list}}</li>
-	</ul>
-	<hr />
-	<h3>Tinygame</h3>
-	<h4>{{game.tinygame.answer}}</h4>
-	<ul>
-		<li ng-repeat="clue in game.tinygame.clues">{{clue}}</li>
-	</ul>
-	<hr />
-	<br />
+  <h1>{{game.chat_id}} <span ng-if="game.topicId">({{game.topicId}})</span></h1>
+  <div class="flex-column">
+    <p><b>Intro:</b> {{game.settings.intro ? '🟢' : '⚫'}}</p>
+    <p><b>Sass:</b> {{game.settings.sass ? '🟢' : '⚫'}}</p>
+    <p><b>Snubs:</b> {{game.settings.snubs ? '🟢' : '⚫'}}</p>
+    <p><b>Updates:</b> {{game.settings.updates ? '🟢' : '⚫'}}</p>
+    <p><b>Bot Language:</b> {{game.settings.language}}</p>
+    <p><b>Languages:</b> {{game.settings.languages.join(', ')}}</p>
+    <p><b>Hints:</b> {{game.hints}}</p>
+    <p><b>Cycles:</b> {{game.cycles}}</p>
+    <p><b>Last Cycled:</b> {{formatDate(game.lastCycleDate)}}</p>
+    <p><b>Last Played:</b> {{formatDate(game.lastPlayDate)}}</p>
+    <p><b>Lists Played:</b> {{game.listsPlayed}}</p>
+    <p><b>Disabled Categories:</b> {{game.disabledCategories.join(', ')}}</p>
+  </div>
+  <hr />
+  <h3>Game</h3>
+  <h4>{{game.list.name}}</h4>
+  <p>Categories: {{game.list.categories.join(', ')}}</p>
+  <table class="table table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Value</th>
+        <th>Guesser</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr ng-repeat="item in game.list.values | orderBy: '+value'">
+        <td>{{item.value}}</td>
+        <td>{{item.guesser.username ? item.guesser.username : item.guesser.first_name}}</td>
+      </tr>
+    </tbody>
+  </table>
+  <hr />
+  <h3>Minigame</h3>
+  <h4>{{game.minigame.answer}}</h4>
+  <p>{{game.minigame.lists.join(" / ")}}</p>
+  <hr />
+  <h3>Tinygame</h3>
+  <h4>{{game.tinygame.answer}}</h4>
+  <p>{{game.tinygame.clues.join(" / ")}}</p>
+  <hr />
+  <h3>{{game.players.length}} Players</h3>
+  <table class="table table-striped">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th><i class="fas fa-medal" uib-tooltip="Wins"></i></th>
+        <th><i class="fas fa-comment-check" uib-tooltip="Answers"></i></th>
+        <th><i class="fas fa-trophy-alt" uib-tooltip="High score"></i></th>
+        <th><i class="fas fa-trophy" uib-tooltip="Score"></i></th>
+        <th><i class="fas fa-question-circle" uib-tooltip="Hints"></i></th>
+        <th><i class="fas fa-comment-times" uib-tooltip="Snubs"></i></th>
+        <th><i class="fas fa-forward" uib-tooltip="Skips"></i></th>
+        <th><i class="fas fa-do-not-enter" uib-tooltip="Vetoes"></i></th>
+        <th><i class="fas fa-lightbulb" uib-tooltip="Suggestions"></i></th>
+        <th><i class="fas fa-search" uib-tooltip="Searches"></i></th>
+        <th><i class="fas fa-comment-medical" uib-tooltip="Streak"></i></th>
+        <th><i class="far fa-play" uib-tooltip="Play streak (max)"></i></th>
+        <th><i class="far fa-question" uib-tooltip="Hint streak (max)"></i></th>
+        <th>Last Played</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr ng-repeat="player in game.players | orderBy: '-lastPlayDate'">
+        <td>{{player.username ? player.username : player.first_name}}</td>
+        <td>{{player.wins}}</td>
+        <td>{{player.answers}}</td>
+        <td>{{player.highScore}}</td>
+        <td>{{player.score}}</td>
+        <td>{{player.hints}}</td>
+        <td>{{player.snubs}}</td>
+        <td>{{player.skips}}</td>
+        <td>{{player.vetoes}}</td>
+        <td>{{player.suggestions}}</td>
+        <td>{{player.searches}}</td>
+        <td>{{player.streak}}</td>
+        <td>{{player.playStreak}} ({{player.maxPlayStreak}})</td>
+        <td>{{player.hintStreak}} ({{player.maxHintStreak}})</td>
+        <td>{{formatDate(player.lastPlayDate)}}</td>
+      </tr>
+    </tbody>
+  </table>
+  <hr />
+  <br />
 </div>

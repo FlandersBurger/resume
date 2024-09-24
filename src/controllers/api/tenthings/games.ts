@@ -4,7 +4,7 @@ import { Game, Player } from "@models/index";
 
 export const tenthingsGamesRoute = Router();
 
-tenthingsGamesRoute.get("/games", async (req: Request, res: Response) => {
+tenthingsGamesRoute.get("/", async (req: Request, res: Response) => {
   if (!res.locals.isAdmin) res.sendStatus(401);
   else {
     const games = await Game.find({
@@ -21,7 +21,7 @@ tenthingsGamesRoute.get("/games", async (req: Request, res: Response) => {
   }
 });
 
-tenthingsGamesRoute.get("/game/:id", async (req: Request, res: Response) => {
+tenthingsGamesRoute.get("/:id", async (req: Request, res: Response) => {
   if (!res.locals.isAdmin) res.sendStatus(401);
   else {
     const game = await Game.findOne({ chat_id: req.params.id }).lean();

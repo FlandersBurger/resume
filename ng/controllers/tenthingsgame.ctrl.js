@@ -13,13 +13,12 @@ angular
     $scope.$on("login", () => {
       if ($scope.currentUser.admin) {
         getUsers();
+        if ($stateParams.game) {
+          TenThingsSvc.getGame($stateParams.game).then((response) => {
+            $scope.game = response.data;
+            console.log($scope.game);
+          });
+        }
       }
     });
-
-    if ($stateParams.game) {
-      TenThingsSvc.getGame($stateParams.game).then((response) => {
-        $scope.game = response.data;
-        console.log($scope.game);
-      });
-    }
   });

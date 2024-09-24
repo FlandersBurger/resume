@@ -4,7 +4,7 @@ exports.tenthingsGamesRoute = void 0;
 const express_1 = require("express");
 const index_1 = require("../../../models/index");
 exports.tenthingsGamesRoute = (0, express_1.Router)();
-exports.tenthingsGamesRoute.get("/games", async (req, res) => {
+exports.tenthingsGamesRoute.get("/", async (req, res) => {
     if (!res.locals.isAdmin)
         res.sendStatus(401);
     else {
@@ -21,7 +21,7 @@ exports.tenthingsGamesRoute.get("/games", async (req, res) => {
         });
     }
 });
-exports.tenthingsGamesRoute.get("/game/:id", async (req, res) => {
+exports.tenthingsGamesRoute.get("/:id", async (req, res) => {
     if (!res.locals.isAdmin)
         res.sendStatus(401);
     else {
