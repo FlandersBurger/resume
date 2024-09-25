@@ -77,7 +77,7 @@ const evaluate = async (msg, game, isNew) => {
             return;
         }
     }
-    if (player.state !== undefined && player.state !== "none") {
+    if (player.state && player.state !== "none") {
         console.log(player.state, msg.text);
         (0, suggestions_1.sendSuggestion)(msg, game, player, player.state);
         return;
