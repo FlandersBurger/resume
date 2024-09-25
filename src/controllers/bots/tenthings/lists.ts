@@ -93,7 +93,9 @@ export const selectList = async (game: IGame): Promise<HydratedDocument<IList>> 
 };
 
 const sampleLists = async (query: QueryOptions<IList>, sampledLists: IList[]): Promise<IList[]> => {
-  let foundLists = await List.find(query).select("name").lean();
+  let foundLists = await List.find({ ...query, _id: { $nin: sampledLists.map(({ _id }) => _id) } })
+    .select("name")
+    .lean();
   return [...sampledLists, ...sampleSize(foundLists, 10 - sampledLists.length)];
 };
 

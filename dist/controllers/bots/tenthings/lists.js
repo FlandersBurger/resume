@@ -88,7 +88,9 @@ const selectList = async (game) => {
 };
 exports.selectList = selectList;
 const sampleLists = async (query, sampledLists) => {
-    let foundLists = await index_1.List.find(query).select("name").lean();
+    let foundLists = await index_1.List.find({ ...query, _id: { $nin: sampledLists.map(({ _id }) => _id) } })
+        .select("name")
+        .lean();
     return [...sampledLists, ...(0, sampleSize_1.default)(foundLists, 10 - sampledLists.length)];
 };
 const searchList = async (search, game) => {
