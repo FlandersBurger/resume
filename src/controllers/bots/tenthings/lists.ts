@@ -92,44 +92,41 @@ export const selectList = async (game: IGame): Promise<HydratedDocument<IList>> 
   }
 };
 
+const sampleLists = async (query: QueryOptions<IList>, sampledLists: IList[]): Promise<IList[]> => {
+  let foundLists = await List.find(query).select("name").lean();
+  return [...sampledLists, ...sampleSize(foundLists, 10 - sampledLists.length)];
+};
+
 export const searchList = async (search: string, game: IGame): Promise<IList[]> => {
   const availableLanguages = getAvailableLanguages(game);
-  let foundLists = await List.find({
-    categories: { $nin: game.disabledCategories },
-    language: { $in: availableLanguages },
-    name: { $regex: search, $options: "i" },
-  })
-    .select("name")
-    .lean();
-  if (foundLists.length > 0) {
-    return sampleSize(foundLists, 10);
-  }
-  foundLists = await List.find({
-    categories: { $nin: game.disabledCategories },
-    language: { $in: availableLanguages },
-    $text: { $search: `"${search}"` },
-  })
-    .select("name")
-    .lean();
-  if (foundLists.length > 0) {
-    return sampleSize(foundLists, 10);
-  }
-  foundLists = await List.find({
-    language: { $in: availableLanguages },
-    name: { $regex: search, $options: "i" },
-  })
-    .select("name")
-    .lean();
-  if (foundLists.length > 0) {
-    return sampleSize(foundLists, 10);
-  }
-  foundLists = await List.find({
-    language: { $in: availableLanguages },
-    $text: { $search: `"${search}"` },
-  })
-    .select("name")
-    .lean();
-  return sampleSize(foundLists, 10);
+  let foundLists = await sampleLists(
+    {
+      categories: { $nin: game.disabledCategories },
+      language: { $in: availableLanguages },
+      name: { $regex: search, $options: "i" },
+    },
+    [],
+  );
+  if (foundLists.length >= 10) return foundLists;
+  foundLists = await sampleLists(
+    {
+      categories: { $nin: game.disabledCategories },
+      language: { $in: availableLanguages },
+      $text: { $search: `"${search}"` },
+    },
+    foundLists,
+  );
+  if (foundLists.length >= 10) return foundLists;
+  foundLists = await sampleLists(
+    { language: { $in: availableLanguages }, name: { $regex: search, $options: "i" } },
+    foundLists,
+  );
+  if (foundLists.length >= 10) return foundLists;
+  foundLists = await sampleLists(
+    { language: { $in: availableLanguages }, $text: { $search: `"${search}"` } },
+    foundLists,
+  );
+  return foundLists;
 };
 
 /*

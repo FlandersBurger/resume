@@ -87,44 +87,31 @@ const selectList = async (game) => {
     }
 };
 exports.selectList = selectList;
+const sampleLists = async (query, sampledLists) => {
+    let foundLists = await index_1.List.find(query).select("name").lean();
+    return [...sampledLists, ...(0, sampleSize_1.default)(foundLists, 10 - sampledLists.length)];
+};
 const searchList = async (search, game) => {
     const availableLanguages = getAvailableLanguages(game);
-    let foundLists = await index_1.List.find({
+    let foundLists = await sampleLists({
         categories: { $nin: game.disabledCategories },
         language: { $in: availableLanguages },
         name: { $regex: search, $options: "i" },
-    })
-        .select("name")
-        .lean();
-    if (foundLists.length > 0) {
-        return (0, sampleSize_1.default)(foundLists, 10);
-    }
-    foundLists = await index_1.List.find({
+    }, []);
+    if (foundLists.length >= 10)
+        return foundLists;
+    foundLists = await sampleLists({
         categories: { $nin: game.disabledCategories },
         language: { $in: availableLanguages },
         $text: { $search: `"${search}"` },
-    })
-        .select("name")
-        .lean();
-    if (foundLists.length > 0) {
-        return (0, sampleSize_1.default)(foundLists, 10);
-    }
-    foundLists = await index_1.List.find({
-        language: { $in: availableLanguages },
-        name: { $regex: search, $options: "i" },
-    })
-        .select("name")
-        .lean();
-    if (foundLists.length > 0) {
-        return (0, sampleSize_1.default)(foundLists, 10);
-    }
-    foundLists = await index_1.List.find({
-        language: { $in: availableLanguages },
-        $text: { $search: `"${search}"` },
-    })
-        .select("name")
-        .lean();
-    return (0, sampleSize_1.default)(foundLists, 10);
+    }, foundLists);
+    if (foundLists.length >= 10)
+        return foundLists;
+    foundLists = await sampleLists({ language: { $in: availableLanguages }, name: { $regex: search, $options: "i" } }, foundLists);
+    if (foundLists.length >= 10)
+        return foundLists;
+    foundLists = await sampleLists({ language: { $in: availableLanguages }, $text: { $search: `"${search}"` } }, foundLists);
+    return foundLists;
 };
 exports.searchList = searchList;
 const logHint = async (listId) => {
