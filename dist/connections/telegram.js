@@ -374,6 +374,7 @@ class TelegramBot {
             await this.init();
         };
         this.setCommands = async (channel, language) => {
+            console.log("Setting commands to", language);
             const commands = [
                 commands_1.Command.List,
                 commands_1.Command.Hint,
@@ -388,7 +389,7 @@ class TelegramBot {
                 commands_1.Command.Me,
                 commands_1.Command.Stats,
             ].map((command) => ({
-                command: (0, commands_1.translateCommand)(language, command),
+                command: (0, i18n_1.default)(language, `commands.${command}.name`),
                 description: (0, i18n_1.default)(language, `commands.${command}.description`),
             }));
             const scope = {

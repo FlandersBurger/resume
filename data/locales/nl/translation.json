@@ -67,7 +67,7 @@
     "Transportation": "Transport"
   },
   "commands": {
-    "commands": { "name": "commando's", "description": "Lijst met commando's" },
+    "commands": { "name": "commandos", "description": "Lijst met commando's" },
     "list": { "name": "lijst", "description": "Toon de geraden antwoorden in de huidige ronde" },
     "hint": { "name": "hint", "description": "Krijg een hint" },
     "skip": { "name": "skip", "description": "Sla de huidige ronde over" },
@@ -87,7 +87,7 @@
       "description": "Botinstellingen (Alleen voor beheerders)"
     },
     "categories": {
-      "name": "categorieën",
+      "name": "categorieen",
       "description": "Selecteer welke categorieën moeten worden opgenomen (Alleen voor beheerders)"
     },
     "typo": { "name": "typo", "description": "Meld een typefout in de huidige lijst" },

@@ -83,7 +83,7 @@
     "score": { "name": "skor", "description": "Peringkat skor harian" },
     "stats": { "name": "statistik", "description": "Statistik permainan" },
     "me": { "name": "saya", "description": "Statistik saya" },
-    "intro": { "name": "intro", "description": "Apa saya ini?" },
+    "intro": { "name": "pengenalan", "description": "Apa saya ini?" },
     "logic": { "name": "logika", "description": "Penjelasan logika yang digunakan" },
     "settings": {
       "name": "pengaturan",
@@ -100,7 +100,7 @@
     "bug": { "name": "bug", "description": "Laporkan bug pada bot" },
     "feature": { "name": "fitur", "description": "Rekomendasikan fitur baru untuk bot" },
     "search": { "name": "cari", "description": "Cari daftar untuk dimasukkan dalam antrian" },
-    "lists": { "name": "daftar", "description": "Lihat daftar yang dijadwalkan" },
+    "lists": { "name": "daftarberikutnya", "description": "Lihat daftar yang dijadwalkan" },
     "stop": { "name": "berhenti", "description": "Matikan saya" }
   },
   "sentences": {
