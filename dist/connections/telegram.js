@@ -388,7 +388,7 @@ class TelegramBot {
                 commands_1.Command.Me,
                 commands_1.Command.Stats,
             ].map((command) => ({
-                command: command,
+                command: (0, commands_1.translateCommand)(language, command),
                 description: (0, i18n_1.default)(language, `commands.${command}.description`),
             }));
             const scope = {
