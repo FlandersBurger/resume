@@ -324,7 +324,6 @@ if (process.env.NODE_ENV === "production") {
     jobs.push(node_schedule_1.default.scheduleJob("Deactivate Inactive Chats", "0 0 4 * * *", deactivateInactiveChats));
     jobs.push(node_schedule_1.default.scheduleJob("Delete Stale Players", "0 0 5 * * *", deleteStalePlayers));
     jobs.push(node_schedule_1.default.scheduleJob("Delete Stale Games", "0 0 6 * * *", deleteStaleGames));
-    jobs.push(node_schedule_1.default.scheduleJob("Send New List Notice", "0 0 12 * * *", sendNewLists));
 }
 jobs.push(node_schedule_1.default.scheduleJob("Backup Database", "0 0 21 * * *", backupDatabase));
 exports.default = jobs;

@@ -252,7 +252,7 @@ exports.default = async (callbackQuery) => {
                 const list = await index_1.List.findOne({ _id: callbackQuery.data }).exec();
                 if (!list)
                     return telegram_1.default.queueMessage(game.telegramChannel, (0, i18n_1.default)(game.settings.language, "warnings.unfoundList"));
-                const foundList = (0, find_1.default)(game.pickedLists, (pickedListId) => pickedListId == list._id);
+                const foundList = (0, find_1.default)(game.pickedLists, (pickedListId) => pickedListId === list._id);
                 if (foundList) {
                     telegram_1.default.queueMessage(game.telegramChannel, (0, i18n_1.default)(game.settings.language, "warnings.alreadyInQueue", {
                         list: list.name,
@@ -261,6 +261,9 @@ exports.default = async (callbackQuery) => {
                 }
                 else {
                     game.pickedLists.push(list._id);
+                    if ((0, find_1.default)(game.bannedLists, (bannedListId) => bannedListId === list._id)) {
+                        game.bannedLists = game.bannedLists.filter((bannedListId) => bannedListId !== list._id);
+                    }
                     game.save();
                     list.picks++;
                     list.save();

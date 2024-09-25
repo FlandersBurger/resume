@@ -20,10 +20,11 @@ exports.usersRoute.get("/all", async (req, res) => {
     if (!res.locals.isAdmin)
         res.sendStatus(401);
     else {
+        const page = parseInt(req.query.page ?? 1);
         const users = await index_1.User.find({})
             .select("-gender -flags -highscore")
-            .limit(parseInt(req.query.limit))
-            .skip(parseInt(req.query.limit) * (parseInt(req.query.page) - 1));
+            .limit(parseInt(req.query.limit) || 0)
+            .skip(parseInt(req.query.limit) * (page - 1) || 0);
         res.json(users);
     }
 });

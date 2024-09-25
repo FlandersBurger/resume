@@ -40,7 +40,7 @@
     id="list-name"
     ng-model="selectedList.name"
     placeholder="Name"
-    ng-disabled="!selectedList || (!currentUser.admin && selectedList.creator._id !== currentUser._id && selectedList._id)"
+    ng-disabled="readOnly"
     aria-describedby="name-addon"
     autocomplete="off"
     ng-model-options="{ debounce: { 'default': 200, '*': 0 } }"
@@ -56,7 +56,7 @@
     id="list-description"
     ng-model="selectedList.description"
     placeholder="Description displays when the list is introduced to the players."
-    ng-disabled="!selectedList || (!currentUser.admin && selectedList.creator._id !== currentUser._id && selectedList._id)"
+    ng-disabled="readOnly"
     aria-describedby="description-addon"
     style="resize: vertical"
     oninput='this.style.height = "";this.style.height = this.scrollHeight + "px"'
@@ -73,7 +73,7 @@
     <button
       class="btn btn-default dropdown-toggle"
       type="button"
-      ng-disabled="!selectedList || (!currentUser.admin && selectedList.creator._id !== currentUser._id && selectedList._id)"
+      ng-disabled="readOnly"
       data-toggle="dropdown"
       uib-tooltip="Language"
     >
@@ -89,6 +89,7 @@
     <button
       class="btn dropdown-toggle"
       ng-class="{ 'btn-danger': selectedList.categories.length === 0, 'btn-default': selectedList.categories.length > 0 }"
+      ng-disabled="readOnly"
       type="button"
       aria-haspopup="true"
       aria-expanded="false"
@@ -173,18 +174,13 @@
       class="btn btn-default"
       ng-click="getBlurbs(blurbType.api)"
       ng-if="(currentUser.admin || !blurbType.adminOnly) && haveCommonItems(selectedList.categories, blurbType.categories)"
-      ng-disabled="gettingBlurbs || !selectedList || (!currentUser.admin && selectedList.creator._id !== currentUser._id && selectedList._id)"
+      ng-disabled="gettingBlurbs || readOnly"
     >
       {{blurbType.text}}
     </button>
   </div>
   <div class="btn-group" role="group">
-    <button
-      class="btn btn-danger"
-      ng-if="selectedList._id"
-      ng-click="deleteList(selectedList)"
-      ng-disabled="!selectedList || (!currentUser.admin && selectedList.creator._id !== currentUser._id && selectedList._id)"
-    >
+    <button class="btn btn-danger" ng-if="selectedList._id" ng-click="deleteList(selectedList)" ng-disabled="readOnly">
       <i class="fas fa-trash" aria-hidden="true"></i>
     </button>
   </div>
@@ -303,7 +299,7 @@
           ng-model="item.value"
           ng-class="{'bg-info': selectedList.creator._id !== currentUser._id && item.creator !== currentUser._id, 'bg-success': selectedList.creator._id !== currentUser._id && item.creator === currentUser._id, }"
           placeholder="Answer {{selectedList.values.length - $index}}"
-          ng-disabled="!loggedIn || !currentUser.admin && selectedList.creator._id !== currentUser._id && item.creator !== currentUser._id"
+          ng-disabled="readOnly && item.creator !== currentUser._id"
           ng-model-options="{updateOn: 'blur'}"
           ng-change="updateValue(item)"
           style="resize: none"
@@ -319,7 +315,7 @@
           ng-model="item.blurb"
           ng-class="{'bg-info': selectedList.creator._id !== currentUser._id && item.creator !== currentUser._id, 'bg-success': selectedList.creator._id !== currentUser._id && item.creator === currentUser._id, }"
           placeholder="Display after guessing {{item.value}} (Can be a URL)"
-          ng-disabled="!loggedIn || !currentUser.admin && selectedList.creator._id !== currentUser._id && item.creator !== currentUser._id"
+          ng-disabled="readOnly && item.creator !== currentUser._id"
           ng-model-options="{updateOn: 'blur'}"
           ng-change="updateValue(item)"
           style="resize: none"
@@ -346,6 +342,7 @@
         class="icon-column"
         ng-class="{ 'delete-column' : selectedList.values.length > 10 && selectedList._id, 'disabled-column' : selectedList.values.length <= 10 || !selectedList._id}"
         ng-click="deleteValue(item)"
+        ng-disabled="readOnly && item.creator !== currentUser._id"
         uib-tooltip="{{ selectedList.values.length <= 10 ? 'Deleting is only possible if you have more than 10 values' : 'Delete' }}"
       >
         <i class="fas fa-trash-alt"></i>

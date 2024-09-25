@@ -89,8 +89,36 @@ const selectList = async (game) => {
 exports.selectList = selectList;
 const searchList = async (search, game) => {
     const availableLanguages = getAvailableLanguages(game);
-    const foundLists = await index_1.List.find({
+    let foundLists = await index_1.List.find({
         categories: { $nin: game.disabledCategories },
+        language: { $in: availableLanguages },
+        name: { $regex: search, $options: "i" },
+    })
+        .select("name")
+        .lean();
+    if (foundLists.length > 0) {
+        return (0, sampleSize_1.default)(foundLists, 10);
+    }
+    foundLists = await index_1.List.find({
+        categories: { $nin: game.disabledCategories },
+        language: { $in: availableLanguages },
+        $text: { $search: `"${search}"` },
+    })
+        .select("name")
+        .lean();
+    if (foundLists.length > 0) {
+        return (0, sampleSize_1.default)(foundLists, 10);
+    }
+    foundLists = await index_1.List.find({
+        language: { $in: availableLanguages },
+        name: { $regex: search, $options: "i" },
+    })
+        .select("name")
+        .lean();
+    if (foundLists.length > 0) {
+        return (0, sampleSize_1.default)(foundLists, 10);
+    }
+    foundLists = await index_1.List.find({
         language: { $in: availableLanguages },
         $text: { $search: `"${search}"` },
     })

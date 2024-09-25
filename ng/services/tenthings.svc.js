@@ -94,6 +94,6 @@ angular.module("app").service("TenThingsSvc", function ($http) {
   };
 
   svc.getGame = function (id) {
-    return $http.get(`/api/tenthings/game/${id}`);
+    return $http.get(`/api/tenthings/games/${id}`);
   };
 });

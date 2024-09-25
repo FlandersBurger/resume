@@ -108,6 +108,7 @@ class TelegramBot {
     const { data } = await httpClient().get(`${this.baseUrl}/getMe`);
     this.telegramBotUser = data.result;
     this.introduceYourself();
+    this.resumeQueue();
   };
 
   private errorHandler = (channel: Channel, source: string, error: any, message?: string) => {
@@ -121,7 +122,6 @@ class TelegramBot {
           this.notifyAdmin(`Too long: ${message.substring(0, 500)}...`);
         }
       } else if (reason.includes("Bad Request: message thread not found")) {
-        this.notifyAdmin(`Topic ${channel.topic} for channel ${channel.chat} not found`);
         noTopic(channel.chat);
       } else if (reason.includes("can't parse")) {
         this.notifyAdmin(`Send Message to ${channel} parse Fail: ${message}`);
@@ -529,7 +529,7 @@ class TelegramBot {
         command = command.toLowerCase();
         command = command.startsWith("/") ? command.replace("/", "") : undefined;
         if (command) {
-          text = body.message.text.substring(command.length + 1, body.message.text.length);
+          text = body.message.text.substring(command.length + 2, body.message.text.length);
           if (text === "TenThings_Bot") text = "";
         } else {
           text = body.message.text;
