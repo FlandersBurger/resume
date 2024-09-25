@@ -234,7 +234,6 @@ exports.likeListKeyboard = likeListKeyboard;
 const listsKeyboard = (lists) => ({
     inline_keyboard: (0, shuffle_1.default)(lists)
         .slice(0, 10)
-        .sort()
         .reduce((result, list) => {
         result.push([
             getButton((0, string_helpers_1.parseSymbols)(list.name.replace("&", "and")), {

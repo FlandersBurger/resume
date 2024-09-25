@@ -271,7 +271,6 @@ export const likeListKeyboard = (game: IGame): Keyboard => {
 export const listsKeyboard = (lists: IList[]): Keyboard => ({
   inline_keyboard: shuffle(lists)
     .slice(0, 10)
-    .sort()
     .reduce((result: KeyboardButton[][], list: IList) => {
       result.push([
         getButton(parseSymbols(list.name.replace("&", "and")), {
