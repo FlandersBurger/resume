@@ -59,7 +59,7 @@ export const sendSuggestionMessage = async (game: IGame, player: HydratedDocumen
   const playerName = getPlayerName(player);
   switch (command) {
     case Command.Suggestion:
-      player.state = Command.Feature;
+      player.state = Command.Suggestion;
       await player.save();
       bot.sendMessage(
         game.telegramChannel,

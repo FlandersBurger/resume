@@ -48,7 +48,7 @@ const sendSuggestionMessage = async (game, player, command) => {
     const playerName = (0, players_1.getPlayerName)(player);
     switch (command) {
         case commands_1.Command.Suggestion:
-            player.state = commands_1.Command.Feature;
+            player.state = commands_1.Command.Suggestion;
             await player.save();
             telegram_1.default.sendMessage(game.telegramChannel, `<b>SUGGESTION</b>\nPlease add your suggestion in your next message, ${playerName}!`);
             break;
