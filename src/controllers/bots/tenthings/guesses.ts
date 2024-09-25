@@ -43,11 +43,11 @@ guessQueue.on("completed", function (job: Job) {
 export const getCount = () => guessQueue.count();
 
 export const queueGuess = async (game: IGame, msg: Message) => {
-  const values = game.list.values
-    .filter(({ guesser }) => guesser)
-    .map(({ value }) => ({ type: GameType.MAINGAME, value }));
-  if (game.minigame.answer) values.push({ type: GameType.MINIGAME, value: game.minigame.answer });
-  if (game.tinygame.answer) values.push({ type: GameType.TINYGAME, value: game.tinygame.answer });
+  const values = [
+    ...(game.minigame.answer ? [{ type: GameType.MINIGAME, value: game.minigame.answer }] : []),
+    ...(game.tinygame.answer ? [{ type: GameType.TINYGAME, value: game.tinygame.answer }] : []),
+    ...game.list.values.map(({ value }) => ({ type: GameType.MAINGAME, value })),
+  ];
   const text = removeAllButLetters(msg.text);
   const correctMatch = find(values, ({ value }) => removeAllButLetters(value) === text);
   if (correctMatch) {

@@ -29,13 +29,11 @@ guessQueue.on("completed", function (job) {
 const getCount = () => guessQueue.count();
 exports.getCount = getCount;
 const queueGuess = async (game, msg) => {
-    const values = game.list.values
-        .filter(({ guesser }) => guesser)
-        .map(({ value }) => ({ type: game_1.GameType.MAINGAME, value }));
-    if (game.minigame.answer)
-        values.push({ type: game_1.GameType.MINIGAME, value: game.minigame.answer });
-    if (game.tinygame.answer)
-        values.push({ type: game_1.GameType.TINYGAME, value: game.tinygame.answer });
+    const values = [
+        ...(game.minigame.answer ? [{ type: game_1.GameType.MINIGAME, value: game.minigame.answer }] : []),
+        ...(game.tinygame.answer ? [{ type: game_1.GameType.TINYGAME, value: game.tinygame.answer }] : []),
+        ...game.list.values.map(({ value }) => ({ type: game_1.GameType.MAINGAME, value })),
+    ];
     const text = (0, string_helpers_1.removeAllButLetters)(msg.text);
     const correctMatch = (0, find_1.default)(values, ({ value }) => (0, string_helpers_1.removeAllButLetters)(value) === text);
     if (correctMatch) {
