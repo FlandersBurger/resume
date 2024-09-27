@@ -67,98 +67,35 @@
     "Transportation": "Transport"
   },
   "commands": {
-    "commands": {
-      "name": "befehle",
-      "description": "Befehlsliste"
-    },
-    "list": {
-      "name": "liste",
-      "description": "Liste der erratenen Antworten in der aktuellen Runde"
-    },
-    "hint": {
-      "name": "hinweis",
-      "description": "Hinweis erhalten"
-    },
-    "skip": {
-      "name": "uberspringen",
-      "description": "Aktuelle Runde überspringen"
-    },
-    "minigame": {
-      "name": "minispiel",
-      "description": "Umgekehrte Quizfrage"
-    },
-    "minihint": {
-      "name": "minihinweis",
-      "description": "Hinweis für Minispiel erhalten"
-    },
-    "miniskip": {
-      "name": "miniuberspringen",
-      "description": "Aktuelle Runde überspringen Minispiel"
-    },
-    "tinygame": {
-      "name": "kleinspiel",
-      "description": "Liste erraten"
-    },
-    "tinyhint": {
-      "name": "kleinhinweis",
-      "description": "Hinweis für Tinygame erhalten"
-    },
-    "tinyskip": {
-      "name": "kleinuberspringen",
-      "description": "Aktuelles Tinygame überspringen"
-    },
-    "score": {
-      "name": "punktzahl",
-      "description": "Täglicher Punktestand"
-    },
-    "stats": {
-      "name": "statistiken",
-      "description": "Statistiken zum Spiel"
-    },
-    "me": {
-      "name": "ich",
-      "description": "Meine Statistiken"
-    },
-    "intro": {
-      "name": "intro",
-      "description": "Was bin ich?"
-    },
-    "logic": {
-      "name": "logik",
-      "description": "Eine Erklärung der verwendeten Logik"
-    },
-    "settings": {
-      "name": "einstellungen",
-      "description": "Einstellungen für Bot-Verhalten (nur Admin)"
-    },
+    "start": { "name": "start", "description": "Spiel starten" },
+    "commands": { "name": "befehle", "description": "Befehlsliste" },
+    "list": { "name": "liste", "description": "Liste der erratenen Antworten in der aktuellen Runde" },
+    "hint": { "name": "hinweis", "description": "Hinweis erhalten" },
+    "skip": { "name": "uberspringen", "description": "Aktuelle Runde überspringen" },
+    "veto": { "name": "veto", "description": "Veto gegen Überspringen einlegen" },
+    "minigame": { "name": "minispiel", "description": "Umgekehrte Quizfrage" },
+    "minihint": { "name": "minihinweis", "description": "Hinweis für Minispiel erhalten" },
+    "miniskip": { "name": "miniuberspringen", "description": "Aktuelle Runde überspringen Minispiel" },
+    "tinygame": { "name": "kleinspiel", "description": "Liste erraten" },
+    "tinyhint": { "name": "kleinhinweis", "description": "Hinweis für Tinygame erhalten" },
+    "tinyskip": { "name": "kleinuberspringen", "description": "Aktuelles Tinygame überspringen" },
+    "score": { "name": "punktzahl", "description": "Täglicher Punktestand" },
+    "stats": { "name": "statistiken", "description": "Statistiken zum Spiel" },
+    "me": { "name": "ich", "description": "Meine Statistiken" },
+    "intro": { "name": "intro", "description": "Was bin ich?" },
+    "logic": { "name": "logik", "description": "Eine Erklärung der verwendeten Logik" },
+    "settings": { "name": "einstellungen", "description": "Einstellungen für Bot-Verhalten (nur Admin)" },
     "categories": {
       "name": "kategorien",
       "description": "Wählen Sie aus, welche Kategorien eingeschlossen werden sollen (nur Admin)"
     },
-    "typo": {
-      "name": "tippfehler",
-      "description": "Tippfehler in der aktuellen Liste melden"
-    },
-    "bug": {
-      "name": "fehler",
-      "description": "Fehler beim Bot melden"
-    },
-    "feature": {
-      "name": "funktion",
-      "description": "Neue Funktion für den Bot empfehlen"
-    },
-    "search": {
-      "name": "suche",
-      "description": "Listen zur Warteschlange durchsuchen"
-    },
-    "lists": {
-      "name": "listen",
-      "description": "Listen in der Warteschlange anzeigen"
-    },
-    "stop": {
-      "name": "stopp",
-      "description": "Mich ausschalten"
-    }
+    "typo": { "name": "tippfehler", "description": "Tippfehler in der aktuellen Liste melden" },
+    "bug": { "name": "fehler", "description": "Fehler beim Bot melden" },
+    "feature": { "name": "funktion", "description": "Neue Funktion für den Bot empfehlen" },
+    "suggestion": { "name": "vorschlag", "description": "Neue Funktion für den Bot vorschlagen" },
+    "search": { "name": "suche", "description": "Listen zur Warteschlange durchsuchen" },
+    "lists": { "name": "listen", "description": "Listen in der Warteschlange anzeigen" },
+    "stop": { "name": "stopp", "description": "Mich ausschalten" }
   },
   "sentences": {
     "likeList": "Hat Ihnen <b>{{list}}</b> gefallen?",

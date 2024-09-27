@@ -67,10 +67,12 @@
     "Transportation": "Transport"
   },
   "commands": {
+    "start": { "name": "start", "description": "Start het spel" },
     "commands": { "name": "commandos", "description": "Lijst met commando's" },
     "list": { "name": "lijst", "description": "Toon de geraden antwoorden in de huidige ronde" },
     "hint": { "name": "hint", "description": "Krijg een hint" },
     "skip": { "name": "skip", "description": "Sla de huidige ronde over" },
+    "veto": { "name": "veto", "description": "Annuleer een skipverzoek" },
     "minigame": { "name": "minigame", "description": "Omgekeerde trivia-vraag" },
     "minihint": { "name": "minihint", "description": "Krijg een hint voor minigame" },
     "miniskip": { "name": "miniskip", "description": "Sla de huidige minigame over" },
@@ -93,6 +95,7 @@
     "typo": { "name": "typo", "description": "Meld een typefout in de huidige lijst" },
     "bug": { "name": "bug", "description": "Meld een bug bij de bot" },
     "feature": { "name": "functie", "description": "Dien een nieuwe functie in voor de bot" },
+    "suggestion": { "name": "suggestie", "description": "Voer een suggestie in voor de bot" },
     "search": { "name": "zoek", "description": "Doorzoek lijsten om in de wachtrij te zetten" },
     "lists": { "name": "lijsten", "description": "Bekijk de lijsten in de wachtrij" },
     "stop": { "name": "stop", "description": "Zet me uit" }

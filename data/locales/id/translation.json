@@ -67,6 +67,7 @@
     "Transportation": "Transportasi"
   },
   "commands": {
+    "start": { "name": "mulai", "description": "Mulai permainan" },
     "commands": { "name": "perintah", "description": "Daftar perintah" },
     "list": {
       "name": "daftar",
@@ -74,6 +75,7 @@
     },
     "hint": { "name": "petunjuk", "description": "Dapatkan petunjuk" },
     "skip": { "name": "lewati", "description": "Lewati putaran saat ini" },
+    "veto": { "name": "veto", "description": "Veto jawaban saat ini" },
     "minigame": { "name": "minipermainan", "description": "Pertanyaan trivia terbalik" },
     "minihint": { "name": "minipetunjuk", "description": "Dapatkan petunjuk untuk minipermainan" },
     "miniskip": { "name": "minilewati", "description": "Lewati minipermainan saat ini" },
@@ -99,6 +101,7 @@
     },
     "bug": { "name": "bug", "description": "Laporkan bug pada bot" },
     "feature": { "name": "fitur", "description": "Rekomendasikan fitur baru untuk bot" },
+    "suggestion": { "name": "saran", "description": "Beri saran untuk bot" },
     "search": { "name": "cari", "description": "Cari daftar untuk dimasukkan dalam antrian" },
     "lists": { "name": "daftarberikutnya", "description": "Lihat daftar yang dijadwalkan" },
     "stop": { "name": "berhenti", "description": "Matikan saya" }

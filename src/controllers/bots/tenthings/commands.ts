@@ -45,7 +45,7 @@ export enum Command {
   Typo = "typo",
   Bug = "bug",
   Feature = "feature",
-  Suggestion = "suggestion",
+  Suggestion = "suggest",
   Error = "error",
   Search = "search",
   Lists = "lists",
@@ -61,6 +61,9 @@ export enum Command {
 }
 
 const commands: Command[] = Object.values(Command);
+const userCommands = commands.filter(
+  (command) => ![Command.Notify, Command.Check, Command.Flush, Command.Minigames, Command.Hello].includes(command),
+);
 
 export const translateCommand = (language: string, key: string): Command | undefined =>
   commands.find((command) => command == i18n(language, key, { ns: "commands" }));
@@ -117,7 +120,7 @@ export const evaluate = async (msg: Message, game: HydratedDocument<IGame>, isNe
       case Command.Commands:
         bot.queueMessage(
           game.telegramChannel,
-          commands
+          userCommands
             .map((command) => `/${command} - ${i18n(game.settings.language, `commands.${command}.description`)}`)
             .join("\n"),
         );

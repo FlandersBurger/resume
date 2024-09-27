@@ -47,7 +47,7 @@ var Command;
     Command["Typo"] = "typo";
     Command["Bug"] = "bug";
     Command["Feature"] = "feature";
-    Command["Suggestion"] = "suggestion";
+    Command["Suggestion"] = "suggest";
     Command["Error"] = "error";
     Command["Search"] = "search";
     Command["Lists"] = "lists";
@@ -62,6 +62,7 @@ var Command;
     Command["Queue"] = "queue";
 })(Command || (exports.Command = Command = {}));
 const commands = Object.values(Command);
+const userCommands = commands.filter((command) => ![Command.Notify, Command.Check, Command.Flush, Command.Minigames, Command.Hello].includes(command));
 const translateCommand = (language, key) => commands.find((command) => command == (0, i18n_1.default)(language, key, { ns: "commands" }));
 exports.translateCommand = translateCommand;
 const evaluate = async (msg, game, isNew) => {
@@ -103,7 +104,7 @@ const evaluate = async (msg, game, isNew) => {
                 telegram_1.default.queueMessage(game.telegramChannel, (0, messages_1.getLogicMessage)(game.settings.language));
                 break;
             case Command.Commands:
-                telegram_1.default.queueMessage(game.telegramChannel, commands
+                telegram_1.default.queueMessage(game.telegramChannel, userCommands
                     .map((command) => `/${command} - ${(0, i18n_1.default)(game.settings.language, `commands.${command}.description`)}`)
                     .join("\n"));
                 break;

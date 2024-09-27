@@ -67,10 +67,12 @@
     "Transportation": "Transportation"
   },
   "commands": {
+    "start": { "name": "start", "description": "Start the game" },
     "commands": { "name": "commands", "description": "List of commands" },
     "list": { "name": "list", "description": "List the guessed answers in the current round" },
     "hint": { "name": "hint", "description": "Get a hint" },
     "skip": { "name": "skip", "description": "Skip the current round" },
+    "veto": { "name": "veto", "description": "Veto the skip" },
     "minigame": { "name": "minigame", "description": "Reverse trivia question" },
     "minihint": { "name": "minihint", "description": "Get a hint for minigame" },
     "miniskip": { "name": "miniskip", "description": "Skip the current minigame" },
@@ -90,6 +92,7 @@
     "typo": { "name": "typo", "description": "Report a typo in the current list" },
     "bug": { "name": "bug", "description": "Report a bug with the bot" },
     "feature": { "name": "feature", "description": "Recommend a new feature for the bot" },
+    "suggestion": { "name": "suggest", "description": "Suggest a new feature for the bot" },
     "search": { "name": "search", "description": "Search lists to queue" },
     "lists": { "name": "lists", "description": "See queued lists" },
     "stop": { "name": "stop", "description": "Switch me off" }

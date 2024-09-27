@@ -67,10 +67,12 @@
     "Transportation": "Transporte"
   },
   "commands": {
+    "start": { "name": "start", "description": "Comece o jogo" },
     "commands": { "name": "comandos", "description": "Lista de comandos" },
     "list": { "name": "lista", "description": "Lista das respostas adivinhadas na rodada atual" },
     "hint": { "name": "dica", "description": "Obter uma dica" },
     "skip": { "name": "pule", "description": "Pule a rodada atual" },
+    "veto": { "name": "veto", "description": "Vote na lista atual" },
     "minigame": { "name": "minijogo", "description": "Pergunta de trivia reversa" },
     "minihint": { "name": "minidica", "description": "Obter uma dica para o minigame" },
     "miniskip": { "name": "minipule", "description": "Pule o minigame atual" },
@@ -93,6 +95,7 @@
     "typo": { "name": "erro", "description": "Relate um erro de digitação na lista atual" },
     "bug": { "name": "bug", "description": "Relate um bug com o bot" },
     "feature": { "name": "recurso", "description": "Recomende um novo recurso para o bot" },
+    "suggestion": { "name": "sugestao", "description": "Dê uma sugestão para o bot" },
     "search": { "name": "pesquisar", "description": "Pesquise listas para a fila" },
     "lists": { "name": "listas", "description": "Veja listas na fila" },
     "stop": { "name": "parar", "description": "Desligue-me" }

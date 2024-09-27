@@ -67,10 +67,12 @@
     "Transportation": "Transportasyon"
   },
   "commands": {
+    "start": { "name": "simula", "description": "Simulan ang trivia" },
     "commands": { "name": "mgautos", "description": "Listahan ng mga utos" },
     "list": { "name": "listahan", "description": "Listahan ng mga hula sa kasalukuyang putukan" },
     "hint": { "name": "pahiwatig", "description": "Kumuha ng hint" },
     "skip": { "name": "laktawan", "description": "I-skip ang kasalukuyang putukan" },
+    "veto": { "name": "boto", "description": "Bumoto sa isang listahan" },
     "minigame": { "name": "muntinglaro", "description": "Baligtad na tanong sa trivia" },
     "minihint": { "name": "muntingpahiwatig", "description": "Kumuha ng hint para sa minigame" },
     "miniskip": { "name": "muntinglaktawan", "description": "I-skip ang kasalukuyang minigame" },
@@ -90,6 +92,7 @@
     "typo": { "name": "pagkakamali", "description": "I-ulat ang isang typo sa kasalukuyang listahan" },
     "bug": { "name": "bug", "description": "I-ulat ang isang bug sa bot" },
     "feature": { "name": "tampok", "description": "Magrekomenda ng bagong feature para sa bot" },
+    "suggestion": { "name": "mungkahi", "description": "Magrekomenda ng isang bagong feature para sa bot" },
     "search": { "name": "maghanap", "description": "Maghanap ng mga listahan na isasama sa queue" },
     "lists": { "name": "mgalistahan", "description": "Makita ang mga naka-queue na listahan" },
     "stop": { "name": "itigil", "description": "Patayin ako" }
