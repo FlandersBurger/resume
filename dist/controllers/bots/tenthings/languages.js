@@ -1,6 +1,9 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.supportedLanguages = void 0;
+exports.supportedLanguages = ["AR", "FR", "EN", "DE", "NL", "ID", "PT", "TL"];
 const languages = [
+    { code: "AR", name: "Arabic", native: "العربية" },
     { code: "DE", name: "German", native: "Deutsch" },
     { code: "EN", name: "English", native: "English" },
     { code: "FR", name: "French", native: "français" },

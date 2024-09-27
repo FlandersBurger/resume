@@ -6,7 +6,7 @@ import find from "lodash/find";
 import concat from "lodash/concat";
 import shuffle from "lodash/shuffle";
 import categories from "./categories";
-import languages, { Language, LanguageCount } from "./languages";
+import languages, { Language, LanguageCount, SupportedLanguage, supportedLanguages } from "./languages";
 import { getFrequencyMessage } from "./messages";
 import { parseSymbols, capitalize } from "@root/utils/string-helpers";
 import i18n from "@root/i18n";
@@ -222,7 +222,7 @@ export const languageKeyboard = ({ settings }: IGame): Keyboard => {
   return {
     inline_keyboard: concat(
       languages
-        .filter((language) => ["EN", "NL", "ID", "PT", "TL"].includes(language.code))
+        .filter((language) => supportedLanguages.includes(language.code as SupportedLanguage))
         .sort()
         .reduce((result: KeyboardButton[][], language: Language, i: number) => {
           const button = getButton(

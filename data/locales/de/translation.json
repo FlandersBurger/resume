@@ -1,0 +1,242 @@
+{
+  "settings": "Einstellungen",
+  "playerIntro": "Spielereinführung",
+  "sass": "Sass",
+  "dailyUpdates": "Tägliche Updates",
+  "language_one": "Sprache",
+  "language_other": "Sprachen",
+  "botLanguage": "Botsprache",
+  "plays": "Spiele",
+  "votes": "Stimmen",
+  "snubs": "Snubs",
+  "hints": "Hinweise",
+  "skips": "Übersprungen",
+  "values": "Werte",
+  "score": "Punktzahl",
+  "difficulty": "Schwierigkeit",
+  "createdOn": "Erstellt am",
+  "modifiedOn": "Geändert am",
+  "on": "AN",
+  "off": "AUS",
+  "and": "und",
+  "description": "Beschreibung",
+  "point_one": "{{count}} Punkte",
+  "point_other": "{{count}} Punkte",
+  "category_one": "Kategorie",
+  "category_other": "Kategorien",
+  "categories": {
+    "Adult": "Erwachsene",
+    "Albums": "Alben",
+    "Animation": "Animation",
+    "Anime/Manga": "Anime/Manga",
+    "Art": "Kunst",
+    "Biology": "Biologie",
+    "Business": "Wirtschaft",
+    "Celebrities": "Prominente",
+    "Challenging": "Herausfordernd",
+    "Chemistry": "Chemie",
+    "Culture": "Kultur",
+    "Entertainment": "Unterhaltung",
+    "Food and Drink": "Essen und Trinken",
+    "Funny": "Lustig",
+    "Gaming": "Gaming",
+    "Geography": "Geographie",
+    "History": "Geschichte",
+    "Internet": "Internet",
+    "K-drama": "K-Drama",
+    "K-pop": "K-Pop",
+    "Language": "Sprache",
+    "Literature": "Literatur",
+    "Lyrics": "Songtexte",
+    "Mathematics": "Mathematik",
+    "Medicine": "Medizin",
+    "Misc": "Sonstiges",
+    "Movies": "Filme",
+    "Music": "Musik",
+    "Nature": "Natur",
+    "Non-English": "Nicht-Englisch",
+    "Objects": "Objekte",
+    "Politics": "Politik",
+    "Religion": "Religion",
+    "Science": "Wissenschaft",
+    "Society": "Gesellschaft",
+    "Sports": "Sport",
+    "Technology": "Technologie",
+    "Telenovelas": "Telenovelas",
+    "Television": "Fernsehen",
+    "Transportation": "Transport"
+  },
+  "commands": {
+    "commands": {
+      "name": "befehle",
+      "description": "Befehlsliste"
+    },
+    "list": {
+      "name": "liste",
+      "description": "Liste der erratenen Antworten in der aktuellen Runde"
+    },
+    "hint": {
+      "name": "hinweis",
+      "description": "Hinweis erhalten"
+    },
+    "skip": {
+      "name": "uberspringen",
+      "description": "Aktuelle Runde überspringen"
+    },
+    "minigame": {
+      "name": "minispiel",
+      "description": "Umgekehrte Quizfrage"
+    },
+    "minihint": {
+      "name": "minihinweis",
+      "description": "Hinweis für Minispiel erhalten"
+    },
+    "miniskip": {
+      "name": "miniuberspringen",
+      "description": "Aktuelle Runde überspringen Minispiel"
+    },
+    "tinygame": {
+      "name": "kleinspiel",
+      "description": "Liste erraten"
+    },
+    "tinyhint": {
+      "name": "kleinhinweis",
+      "description": "Hinweis für Tinygame erhalten"
+    },
+    "tinyskip": {
+      "name": "kleinuberspringen",
+      "description": "Aktuelles Tinygame überspringen"
+    },
+    "score": {
+      "name": "punktzahl",
+      "description": "Täglicher Punktestand"
+    },
+    "stats": {
+      "name": "statistiken",
+      "description": "Statistiken zum Spiel"
+    },
+    "me": {
+      "name": "ich",
+      "description": "Meine Statistiken"
+    },
+    "intro": {
+      "name": "intro",
+      "description": "Was bin ich?"
+    },
+    "logic": {
+      "name": "logik",
+      "description": "Eine Erklärung der verwendeten Logik"
+    },
+    "settings": {
+      "name": "einstellungen",
+      "description": "Einstellungen für Bot-Verhalten (nur Admin)"
+    },
+    "categories": {
+      "name": "kategorien",
+      "description": "Wählen Sie aus, welche Kategorien eingeschlossen werden sollen (nur Admin)"
+    },
+    "typo": {
+      "name": "tippfehler",
+      "description": "Tippfehler in der aktuellen Liste melden"
+    },
+    "bug": {
+      "name": "fehler",
+      "description": "Fehler beim Bot melden"
+    },
+    "feature": {
+      "name": "funktion",
+      "description": "Neue Funktion für den Bot empfehlen"
+    },
+    "search": {
+      "name": "suche",
+      "description": "Listen zur Warteschlange durchsuchen"
+    },
+    "lists": {
+      "name": "listen",
+      "description": "Listen in der Warteschlange anzeigen"
+    },
+    "stop": {
+      "name": "stopp",
+      "description": "Mich ausschalten"
+    }
+  },
+  "sentences": {
+    "likeList": "Hat Ihnen <b>{{list}}</b> gefallen?",
+    "likesList": "👍 {{name}} gefällt <b>{{list}}</b> ({{score}})",
+    "dislikesList": "👎 {{name}} gefällt nicht <b>{{list}}</b> ({{score}})",
+    "queueList": "<b>Welche Liste möchten Sie in die Warteschlange stellen?</b>",
+    "curateList": "<b>Welche Liste möchten Sie kuratieren?</b>",
+    "queueFull": "Die Warteschlange enthält bereits das Maximum von 10 Listen, {{name}}.",
+    "noSearchResults": "Ich habe keine entsprechenden Listen für <b>\"{{search}}\"</b>, {{name}} gefunden.\nEinfachere Abfragen liefern bessere Ergebnisse.",
+    "emptySearch": "Sie haben nichts gesucht, {{name}}. Fügen Sie Ihre Nachricht nach /search hinzu",
+    "upcomingLists": "<b>Bevorstehende Listen</b>",
+    "noUpcomingLists": "Es stehen keine Listen in der Warteschlange. Verwenden Sie den Befehl /search [Nachricht], um welche zu finden",
+    "skippedList": "<b>{{list}}</b> übersprungen!",
+    "skipConfirm": "Überspringen von <b>{{list}}</b> in {{skipDelay}} Sekunden.\nGeben Sie /veto ein, um abzubrechen, oder lassen Sie zur Bestätigung von jemand anderem /skip eingeben.",
+    "skipDenial": "Lassen Sie Ihre Überspringanforderung von jemand anderem bestätigen!",
+    "skipVeto": "Veto gegen Überspringen von {{name}}\nKein Überspringen für {{vetoDelay}} Sekunden erlaubt",
+    "skipAbort": "Veto gegen Überspringen von {{name}} mit korrekter Antwort\nKein Überspringen für {{vetoDelay}} Sekunden erlaubt",
+    "skipNotFound": "Ich kann keine Überspringanfrage finden, {{name}}",
+    "skipShortBan": "Erneutes Überspringen für {{name}} Sekunden für {{delay}} gesperrt",
+    "skipBanThreat": "Wenn Sie innerhalb von {{delay}} Sekunden, {{name}}, erneut überspringen, wird Ihnen das Überspringen für 1 Stunde gesperrt",
+    "skipLongBan": "Das Überspringen für 1 Stunde für {{name}} gesperrt",
+    "addedList": "\"{{list}}\" hinzugefügt",
+    "addedListToQueue": "<b>{{list}}</b> zur Warteschlange hinzugefügt, {{name}}.\nGeben Sie /lists ein, um die Warteschlange anzuzeigen",
+    "addOwnList": "Beachten Sie, dass Sie unter https://belgocanadian.com/tenthings Ihre eigenen Listen hinzufügen können",
+    "banListQuestion": "Sperrliste?",
+    "banListCommand": "Sperrliste!",
+    "confirmBan": "Bestätigen Sie die Sperrliste \"{{list}}\"?",
+    "corroborateBan": "Stimmt jemand der Sperrliste \"{{list}}\" zu?",
+    "alreadyBannedList": "\"{{list}}\" ist bereits gesperrt!",
+    "listBanned": "\"{{list}}\" gesperrt!",
+    "banNotFound": "Ich kann keine Sperranfrage finden, {{name}}",
+    "inactivity": "Ich schlafe, geben Sie /list oder /start ein, um mich aufzuwecken.\nIch gehe nach 30 Tagen Inaktivität schlafen.",
+    "introduction": "Hallo {{name}},\nTen Things, Ihr ergebener Diener, ist ein Spiel, bei dem Sie ein Thema erhalten und dann alles beantworten, was Ihnen in dieser Kategorie in den Sinn kommt.\nGeben Sie /commands ein, um alle Dinge anzuzeigen, die Sie mich fragen können.\nWenn Sie Ihre eigenen Listen hinzufügen möchten, gehen Sie bitte zu https://belgocanadian.com/tenthings.\nViel Spaß!",
+    "suggestionNoted": "Vorschlag notiert",
+    "findTheConnection": "Finde die Verbindung",
+    "minigameAnswered": "Minispiel-Antwort erraten!",
+    "findTheTitle": "Finde den Listentitel",
+    "tinygameAnswered": "Tinygame-Antwort erraten!",
+    "roundOver": "Runde vorbei",
+    "newRound": "Eine neue Runde beginnt in 2 Sekunden",
+    "allListsPlayed": "Alle Listen wurden gespielt, ein neuer Zyklus beginnt jetzt.",
+    "createdBy": "von {{creator}}",
+    "requestedBy": "Angefordert von {{requestor}}",
+    "guessedBy": "{{guesser}} erhalten {{answer}}",
+    "notGuessed": "Nicht erraten",
+    "dailyScores": "<b>Tagesergebnisse</b>",
+    "topDailyScores": "<b>Top-Tagesergebnisse</b>",
+    "dailyScoresWithLimit": "<b>Top-Tagesergebnisse {{limit}}</b>"
+  },
+  "warnings": {
+    "minimum1Category": "Mindestens 1 Kategorie ist erforderlich",
+    "adminFunction": "Entschuldigung {{name}}, dies ist eine Chat-Admin-Funktion",
+    "fullQueue": "Die Warteschlange hat bereits das Maximum von 10 Listen, {{name}}",
+    "alreadyInQueue": "<b>{{list}}</b> ist bereits in der Warteschlange, {{name}}",
+    "unfoundList": "Diese Liste existiert nicht mehr",
+    "corroborateBanBySamePlayer": "Lassen Sie jemand anderen das Verbot bestätigen, {{name}}!",
+    "noSuggestion": "Sie haben nichts vorgeschlagen, {{name}}"
+  },
+  "stats": {
+    "stats": "Statistiken",
+    "list": "Listenstatistiken",
+    "player": "Spielerstatistiken",
+    "global": "Globale Statistiken",
+    "game": "Spielstatistiken",
+    "misc": "Statistiken für <b>{{something}}</b>"
+  },
+  "rules": [
+    "Wenn eine Antwort zu 100 % richtig ist, wird sie sofort dem Ratenden zuerkannt.",
+    "Wenn eine Antwort über 75 % richtig ist, wird sie nach (2 * Richtigkeitsprozentsatz) Sekunden zuerkannt, wenn keine bessere Antwort gegeben wird.",
+    "Nicht-alphanumerische Zeichen und Groß- und Kleinschreibung werden bei der Bestimmung der Richtigkeit ignoriert.",
+    "Erzielte Punkte = (Max. Hinweise {{maxHints}} - gefragte Hinweise + Anzahl der aktuellen Spieler) / (Max. Hinweise {{maxHints}} + Anzahl der aktuellen Spieler) * Antwortgenauigkeit % * 10",
+    "Hinweise werden in dieser Reihenfolge angezeigt: Anfangsbuchstaben, Endbuchstaben, Vokale und der Rest. Der Rest wird vom am wenigsten häufigen bis zum am häufigsten vorkommenden Buchstaben angezeigt.",
+    "Zwischen den Hinweisen gibt es eine Abkühlphase von 10 Sekunden.",
+    "Eine Liste kann übersprungen werden, wenn 2 Spieler sie mit /skip überspringen.",
+    "Wenn nur 1 Spieler eine Liste überspringt, gibt es eine Abkühlphase von 10 Sekunden, bis die Liste übersprungen wird.",
+    "Ein Überspringen kann von jedem abgebrochen werden, indem er /veto eingibt oder eine richtige Antwort gibt.",
+    "Wenn ein Überspringen abgelehnt wird, werden neue Überspringungen 15 Sekunden lang ignoriert.",
+    "Jeden Tag um Mitternacht (Weltzeit) werden die Tagesergebnisse zurückgesetzt und ein Gewinner aufgezeichnet.",
+    "Spammer werden ignoriert, bis sie mindestens 10 Sekunden lang still sind."
+  ]
+}

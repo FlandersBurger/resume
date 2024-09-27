@@ -62,7 +62,7 @@ var Command;
     Command["Queue"] = "queue";
 })(Command || (exports.Command = Command = {}));
 const commands = Object.values(Command);
-const translateCommand = (lng, key) => commands.find((command) => command == (0, i18n_1.default)(lng, key, { ns: "commands" }));
+const translateCommand = (language, key) => commands.find((command) => command == (0, i18n_1.default)(language, key, { ns: "commands" }));
 exports.translateCommand = translateCommand;
 const evaluate = async (msg, game, isNew) => {
     const command = msg.command && (0, exports.translateCommand)(game.settings.language, msg.command);

@@ -62,8 +62,8 @@ export enum Command {
 
 const commands: Command[] = Object.values(Command);
 
-export const translateCommand = (lng: string, key: string): Command | undefined =>
-  commands.find((command) => command == i18n(lng, key, { ns: "commands" }));
+export const translateCommand = (language: string, key: string): Command | undefined =>
+  commands.find((command) => command == i18n(language, key, { ns: "commands" }));
 
 export const evaluate = async (msg: Message, game: HydratedDocument<IGame>, isNew: boolean) => {
   //bot.notifyAdmin(tenthings);

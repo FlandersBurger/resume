@@ -9,26 +9,22 @@ export type LanguageCount = {
   count: number;
 };
 
-export type SupportedLanguage = "EN" | "ID" | "NL" | "PT" | "TL";
+export type SupportedLanguage = "AR" | "FR" | "EN" | "DE" | "ID" | "NL" | "PT" | "TL";
+export const supportedLanguages: SupportedLanguage[] = ["AR", "FR", "EN", "DE", "NL", "ID", "PT", "TL"];
 
 export type AllowedLanguage =
+  | SupportedLanguage
   | "DE"
-  | "EN"
   | "ES"
-  | "FR"
   | "HI"
-  | "ID"
   | "IT"
   | "JA"
   | "KO"
   | "LA"
-  | "NL"
   | "PA"
   | "PL"
-  | "PT"
   | "RU"
   | "TA"
-  | "TL"
   | "TH"
   | "TR"
   | "ZH";
@@ -39,6 +35,7 @@ const languages: Array<Language> = [
   // { code: "AF", name: "Afrikaans", native: "Afrikaans" },
   // { code: "AM", name: "Amharic", native: "አማርኛ" },
   // { code: "AN", name: "Aragonese", native: "aragonés" },
+  { code: "AR", name: "Arabic", native: "العربية" },
   // { code: "AS", name: "Assamese", native: "অসমীয়া" },
   // { code: "AV", name: "Avaric", native: "Магӏарул мацӏ; Авар мацӏ" },
   // { code: "BA", name: "Bashkir", native: "Башҡорт теле; Başqort tele" },
