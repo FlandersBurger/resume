@@ -95,7 +95,7 @@
     "typo": { "name": "erro", "description": "Relate um erro de digitação na lista atual" },
     "bug": { "name": "bug", "description": "Relate um bug com o bot" },
     "feature": { "name": "recurso", "description": "Recomende um novo recurso para o bot" },
-    "suggestion": { "name": "sugestao", "description": "Dê uma sugestão para o bot" },
+    "suggest": { "name": "sugestao", "description": "Dê uma sugestão para o bot" },
     "search": { "name": "pesquisar", "description": "Pesquise listas para a fila" },
     "lists": { "name": "listas", "description": "Veja listas na fila" },
     "stop": { "name": "parar", "description": "Desligue-me" }

@@ -92,7 +92,7 @@
     "typo": { "name": "tippfehler", "description": "Tippfehler in der aktuellen Liste melden" },
     "bug": { "name": "fehler", "description": "Fehler beim Bot melden" },
     "feature": { "name": "funktion", "description": "Neue Funktion für den Bot empfehlen" },
-    "suggestion": { "name": "vorschlag", "description": "Neue Funktion für den Bot vorschlagen" },
+    "suggest": { "name": "vorschlag", "description": "Neue Funktion für den Bot vorschlagen" },
     "search": { "name": "suche", "description": "Listen zur Warteschlange durchsuchen" },
     "lists": { "name": "listen", "description": "Listen in der Warteschlange anzeigen" },
     "stop": { "name": "stopp", "description": "Mich ausschalten" }

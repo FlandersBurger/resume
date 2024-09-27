@@ -95,7 +95,7 @@
     "typo": { "name": "faute", "description": "Signaler une faute de frappe dans la liste actuelle" },
     "bug": { "name": "bug", "description": "Signaler un bug avec le bot" },
     "feature": { "name": "fonctionnalite", "description": "Recommander une nouvelle fonctionnalité pour le bot" },
-    "suggestion": { "name": "suggestion", "description": "Suggérer quelque chose" },
+    "suggest": { "name": "suggest", "description": "Suggérer quelque chose" },
     "search": { "name": "recherche", "description": "Rechercher des listes à mettre en file d'attente" },
     "lists": { "name": "listes", "description": "Voir les listes en file d'attente" },
     "stop": { "name": "arreter", "description": "Désactiver" }

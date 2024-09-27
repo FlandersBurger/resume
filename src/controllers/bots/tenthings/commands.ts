@@ -121,7 +121,10 @@ export const evaluate = async (msg: Message, game: HydratedDocument<IGame>, isNe
         bot.queueMessage(
           game.telegramChannel,
           userCommands
-            .map((command) => `/${command} - ${i18n(game.settings.language, `commands.${command}.description`)}`)
+            .map(
+              (command) =>
+                `/${i18n(game.settings.language, `commands.${command}.name`)} - ${i18n(game.settings.language, `commands.${command}.description`)}`,
+            )
             .join("\n"),
         );
         break;

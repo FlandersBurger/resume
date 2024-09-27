@@ -89,7 +89,7 @@
     "typo": { "name": "typo", "description": "الإبلاغ عن خطأ مطبعي في القائمة الحالية" },
     "bug": { "name": "bug", "description": "الإبلاغ عن خطأ في الروبوت" },
     "feature": { "name": "feature", "description": "التوصية بميزة جديدة للروبوت" },
-    "suggestion": { "name": "suggest", "description": "توصية بميزة جديدة للروبوت" },
+    "suggest": { "name": "suggest", "description": "توصية بميزة جديدة للروبوت" },
     "search": { "name": "search", "description": "البحث عن القوائم لوضعها في قائمة الانتظار" },
     "lists": { "name": "lists", "description": "مشاهدة القوائم في قائمة الانتظار" },
     "stop": { "name": "stop", "description": "إيقاف تشغيلي" }

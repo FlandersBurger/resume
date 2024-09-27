@@ -95,7 +95,7 @@
     "typo": { "name": "typo", "description": "Meld een typefout in de huidige lijst" },
     "bug": { "name": "bug", "description": "Meld een bug bij de bot" },
     "feature": { "name": "functie", "description": "Dien een nieuwe functie in voor de bot" },
-    "suggestion": { "name": "suggestie", "description": "Voer een suggestie in voor de bot" },
+    "suggest": { "name": "suggestie", "description": "Voer een suggestie in voor de bot" },
     "search": { "name": "zoek", "description": "Doorzoek lijsten om in de wachtrij te zetten" },
     "lists": { "name": "lijsten", "description": "Bekijk de lijsten in de wachtrij" },
     "stop": { "name": "stop", "description": "Zet me uit" }

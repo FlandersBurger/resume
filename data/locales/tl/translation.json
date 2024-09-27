@@ -92,7 +92,7 @@
     "typo": { "name": "pagkakamali", "description": "I-ulat ang isang typo sa kasalukuyang listahan" },
     "bug": { "name": "bug", "description": "I-ulat ang isang bug sa bot" },
     "feature": { "name": "tampok", "description": "Magrekomenda ng bagong feature para sa bot" },
-    "suggestion": { "name": "mungkahi", "description": "Magrekomenda ng isang bagong feature para sa bot" },
+    "suggest": { "name": "mungkahi", "description": "Magrekomenda ng isang bagong feature para sa bot" },
     "search": { "name": "maghanap", "description": "Maghanap ng mga listahan na isasama sa queue" },
     "lists": { "name": "mgalistahan", "description": "Makita ang mga naka-queue na listahan" },
     "stop": { "name": "itigil", "description": "Patayin ako" }

@@ -105,7 +105,7 @@ const evaluate = async (msg, game, isNew) => {
                 break;
             case Command.Commands:
                 telegram_1.default.queueMessage(game.telegramChannel, userCommands
-                    .map((command) => `/${command} - ${(0, i18n_1.default)(game.settings.language, `commands.${command}.description`)}`)
+                    .map((command) => `/${(0, i18n_1.default)(game.settings.language, `commands.${command}.name`)} - ${(0, i18n_1.default)(game.settings.language, `commands.${command}.description`)}`)
                     .join("\n"));
                 break;
             case Command.Stop:

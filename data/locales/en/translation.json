@@ -92,10 +92,13 @@
     "typo": { "name": "typo", "description": "Report a typo in the current list" },
     "bug": { "name": "bug", "description": "Report a bug with the bot" },
     "feature": { "name": "feature", "description": "Recommend a new feature for the bot" },
-    "suggestion": { "name": "suggest", "description": "Suggest a new feature for the bot" },
+    "suggest": { "name": "suggest", "description": "Suggest a new feature for the bot" },
+    "error": { "name": "error", "description": "Report an error with the bot" },
     "search": { "name": "search", "description": "Search lists to queue" },
     "lists": { "name": "lists", "description": "See queued lists" },
-    "stop": { "name": "stop", "description": "Switch me off" }
+    "stop": { "name": "stop", "description": "Switch me off" },
+    "ping": { "name": "ping", "description": "pong" },
+    "queue": { "name": "queue", "description": "Where's the bot stuck?" }
   },
   "sentences": {
     "likeList": "Did you like <b>{{list}}</b>?",
