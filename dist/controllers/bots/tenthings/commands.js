@@ -60,6 +60,7 @@ var Command;
     Command["Ping"] = "ping";
     Command["Hello"] = "hello";
     Command["Queue"] = "queue";
+    Command["Resume"] = "resume";
 })(Command || (exports.Command = Command = {}));
 const commands = Object.values(Command);
 const userCommands = commands.filter((command) => ![Command.Notify, Command.Check, Command.Flush, Command.Minigames, Command.Hello].includes(command));
@@ -280,6 +281,10 @@ const evaluate = async (msg, game, isNew) => {
             case Command.Hello:
                 telegram_1.default.queueMessage(game.telegramChannel, "You already had me but you got greedy, now you ruined it");
                 break;
+            case Command.Resume:
+                if (game.chat_id === parseInt(process.env.MASTER_CHAT || "")) {
+                    telegram_1.default.resumeQueue();
+                }
             case Command.Queue:
                 (0, queue_1.getQueue)().then((message) => {
                     telegram_1.default.sendMessage(game.telegramChannel, message);

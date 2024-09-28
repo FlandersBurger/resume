@@ -58,6 +58,7 @@ export enum Command {
   Ping = "ping",
   Hello = "hello",
   Queue = "queue",
+  Resume = "resume",
 }
 
 const commands: Command[] = Object.values(Command);
@@ -340,6 +341,10 @@ export const evaluate = async (msg: Message, game: HydratedDocument<IGame>, isNe
       case Command.Hello:
         bot.queueMessage(game.telegramChannel, "You already had me but you got greedy, now you ruined it");
         break;
+      case Command.Resume:
+        if (game.chat_id === parseInt(process.env.MASTER_CHAT || "")) {
+          bot.resumeQueue();
+        }
       case Command.Queue:
         getQueue().then((message: string) => {
           bot.sendMessage(game.telegramChannel, message);

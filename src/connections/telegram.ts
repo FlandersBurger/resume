@@ -124,7 +124,7 @@ class TelegramBot {
       } else if (reason.includes("Bad Request: message thread not found")) {
         noTopic(channel.chat);
       } else if (reason.includes("can't parse")) {
-        this.notifyAdmin(`Send Message to ${channel} parse Fail: ${message}`);
+        this.notifyAdmin(`Send Message to ${channel.chat} parse Fail: ${message}`);
       } else if (error.response.data.description.startsWith("Too Many Requests: retry after ")) {
         if (!this.paused) {
           this.paused = true;
@@ -139,7 +139,7 @@ class TelegramBot {
         error.response?.data?.description ===
         `Bad Request: invalid file HTTP URL specified: Wrong port number specified in the URL`
       ) {
-        this.notifyAdmin(`Invalid URL for ${source} in ${channel}: ${message}`);
+        this.notifyAdmin(`Invalid URL for ${source} in ${channel.chat}: ${message}`);
       } else if (!this.ignoreReasons.includes(reason)) {
         bot.notifyAdmin(`Error from "${source}" in channel ${channel.chat}:\n${parseSymbols(reason)}`);
       }
@@ -230,15 +230,18 @@ class TelegramBot {
 
   public queueMessage = async (channel: Channel, message: string) => {
     messageQueue.add("", { channel, message, action: "sendMessage" }, {});
-    if (this.timeoutUntil && moment().isAfter(this.timeoutUntil) && (await messageQueue.isPaused())) {
+    if (this.timeoutUntil && moment().isAfter(this.timeoutUntil)) {
       this.resumeQueue();
     }
   };
 
-  private resumeQueue = async () => {
-    messageQueue.resume();
-    this.paused = false;
-    this.timeoutUntil = undefined;
+  public resumeQueue = async () => {
+    if (await messageQueue.isPaused()) {
+      bot.notifyAdmin("Resuming message queue");
+      messageQueue.resume();
+      this.paused = false;
+      this.timeoutUntil = undefined;
+    }
   };
 
   public getQueueCount = async (): Promise<number> => {
