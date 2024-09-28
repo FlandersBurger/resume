@@ -262,10 +262,16 @@ tenthingsListsRoute.post("/:id/values", async (req: Request, res: Response) => {
     else if (list.values.some(({ value }) => value === req.body.value)) res.sendStatus(400);
     else {
       list.values.push({ ...req.body, creator: res.locals.user!._id });
+      list.modifyDate = new Date();
       await list.save();
       const updatedList = await List.findOne({ _id: req.params.id }).lean({ virtuals: true });
       if (!updatedList) res.sendStatus(500);
-      else res.json(updatedList.values[updatedList.values.length - 1]);
+      else {
+        if (moment(list.modifyDate).diff(list.date, "days") > 1) {
+          bot.notifyAdmins(`<u>Value added to "${updatedList.name}"</u>\n<b>${req.body.value}</b>`);
+        }
+        res.json(updatedList.values[updatedList.values.length - 1]);
+      }
     }
   }
 });
@@ -280,7 +286,11 @@ tenthingsListsRoute.put("/:id/values/:valueId", async (req: Request, res: Respon
       if (!value) res.sendStatus(404);
       else if (value.creator !== res.locals.user?._id && !res.locals.isAdmin) res.sendStatus(401);
       else {
+        if (moment(list.modifyDate).diff(list.date, "days") > 1) {
+          bot.notifyAdmins(`<u>Value changed in "${list.name}"</u>\n<b>${value.value}</b> -> <b>${req.body.value}</b>`);
+        }
         Object.assign(value, req.body);
+        list.modifyDate = new Date();
         await list.save();
         const updatedList = await List.findOne({ _id: req.params.id }).lean({ virtuals: true });
         if (!updatedList) res.sendStatus(500);

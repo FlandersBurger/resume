@@ -254,12 +254,17 @@ exports.tenthingsListsRoute.post("/:id/values", async (req, res) => {
             res.sendStatus(400);
         else {
             list.values.push({ ...req.body, creator: res.locals.user._id });
+            list.modifyDate = new Date();
             await list.save();
             const updatedList = await index_1.List.findOne({ _id: req.params.id }).lean({ virtuals: true });
             if (!updatedList)
                 res.sendStatus(500);
-            else
+            else {
+                if ((0, moment_1.default)(list.modifyDate).diff(list.date, "days") > 1) {
+                    telegram_1.default.notifyAdmins(`<u>Value added to "${updatedList.name}"</u>\n<b>${req.body.value}</b>`);
+                }
                 res.json(updatedList.values[updatedList.values.length - 1]);
+            }
         }
     }
 });
@@ -277,7 +282,11 @@ exports.tenthingsListsRoute.put("/:id/values/:valueId", async (req, res) => {
             else if (value.creator !== res.locals.user?._id && !res.locals.isAdmin)
                 res.sendStatus(401);
             else {
+                if ((0, moment_1.default)(list.modifyDate).diff(list.date, "days") > 1) {
+                    telegram_1.default.notifyAdmins(`<u>Value changed in "${list.name}"</u>\n<b>${value.value}</b> -> <b>${req.body.value}</b>`);
+                }
                 Object.assign(value, req.body);
+                list.modifyDate = new Date();
                 await list.save();
                 const updatedList = await index_1.List.findOne({ _id: req.params.id }).lean({ virtuals: true });
                 if (!updatedList)
