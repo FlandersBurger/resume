@@ -32,7 +32,9 @@ const queueGuess = async (game, msg) => {
     const values = [
         ...(game.minigame.answer ? [{ type: game_1.GameType.MINIGAME, value: game.minigame.answer }] : []),
         ...(game.tinygame.answer ? [{ type: game_1.GameType.TINYGAME, value: game.tinygame.answer }] : []),
-        ...game.list.values.map(({ value }) => ({ type: game_1.GameType.MAINGAME, value })),
+        ...game.list.values
+            .sort(({ guesser: a }, { guesser: b }) => (!!a ? 1 : -Infinity) - (!!b ? 1 : -Infinity))
+            .map(({ value }) => ({ type: game_1.GameType.MAINGAME, value })),
     ];
     const text = (0, string_helpers_1.removeAllButLetters)(msg.text);
     const correctMatch = (0, find_1.default)(values, ({ value }) => (0, string_helpers_1.removeAllButLetters)(value) === text);

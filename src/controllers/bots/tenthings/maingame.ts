@@ -96,7 +96,6 @@ export const newRound = (currentGame: IGame) => {
         player.lists++;
         await player.save();
       }
-      if (game.chat_id === -1001182285167) console.log("saved players");
       game.list = JSON.parse(JSON.stringify(list));
       game.list.answers = game.list.values.length;
       game.list.values = sampleSize(game.list.values, 10);

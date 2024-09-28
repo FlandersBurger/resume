@@ -9,6 +9,7 @@ const bcryptjs_1 = __importDefault(require("bcryptjs"));
 const jwt_simple_1 = __importDefault(require("jwt-simple"));
 const server_1 = require("../../server");
 const index_1 = require("../../models/index");
+const telegram_1 = __importDefault(require("../../connections/telegram"));
 exports.usersRoute = (0, express_1.Router)();
 exports.usersRoute.get("/", (_, res) => {
     if (!res.locals.isAuthorized)
@@ -79,7 +80,7 @@ exports.usersRoute.post("/authenticate", async (req, res) => {
             uid: uid,
         });
         await newUser.save();
-        console.log(user.username + " created");
+        telegram_1.default.notifyAdmin("New user registered: " + user.displayName);
         const token = jwt_simple_1.default.encode({ userid: user.id }, process.env.SECRET);
         res.json(token);
     }

@@ -5,6 +5,7 @@ import jwt from "jwt-simple";
 import { firebase } from "@root/server";
 
 import { User } from "@models/index";
+import bot from "@root/connections/telegram";
 
 export const usersRoute = Router();
 
@@ -75,7 +76,7 @@ usersRoute.post("/authenticate", async (req: Request, res: Response) => {
       uid: uid,
     });
     await newUser.save();
-    console.log(user.username + " created");
+    bot.notifyAdmin("New user registered: " + user.displayName);
     const token = jwt.encode({ userid: user.id }, process.env.SECRET!);
     res.json(token);
   } else {

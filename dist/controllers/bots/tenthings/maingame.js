@@ -83,8 +83,6 @@ const newRound = (currentGame) => {
             player.lists++;
             await player.save();
         }
-        if (game.chat_id === -1001182285167)
-            console.log("saved players");
         game.list = JSON.parse(JSON.stringify(list));
         game.list.answers = game.list.values.length;
         game.list.values = (0, sampleSize_1.default)(game.list.values, 10);

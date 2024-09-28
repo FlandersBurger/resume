@@ -46,7 +46,10 @@ export const queueGuess = async (game: IGame, msg: Message) => {
   const values = [
     ...(game.minigame.answer ? [{ type: GameType.MINIGAME, value: game.minigame.answer }] : []),
     ...(game.tinygame.answer ? [{ type: GameType.TINYGAME, value: game.tinygame.answer }] : []),
-    ...game.list.values.map(({ value }) => ({ type: GameType.MAINGAME, value })),
+    ...game.list.values
+      // sort by no guesser first to vet those before the others
+      .sort(({ guesser: a }, { guesser: b }) => (!!a ? 1 : -Infinity) - (!!b ? 1 : -Infinity))
+      .map(({ value }) => ({ type: GameType.MAINGAME, value })),
   ];
   const text = removeAllButLetters(msg.text);
   const correctMatch = find(values, ({ value }) => removeAllButLetters(value) === text);
