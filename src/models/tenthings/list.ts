@@ -2,7 +2,7 @@ import { Model, Schema, Types } from "mongoose";
 import mongooseLeanVirtuals from "mongoose-lean-virtuals";
 import db from "@root/db";
 import { IUser } from "@models/user";
-import { AllowedLanguage } from "@tenthings/languages";
+import { SupportedLanguage } from "@tenthings/languages";
 
 export interface IVote {
   voter: number;
@@ -24,7 +24,7 @@ export interface IList {
   name: string;
   search: string;
   description: string;
-  language: AllowedLanguage;
+  language: SupportedLanguage;
   categories: string[];
   creator: Types.ObjectId | IUser;
   frequency: number;
@@ -80,7 +80,7 @@ const listSchema = new Schema<IList>(
     name: String,
     search: String,
     description: String,
-    language: { type: String, required: true, default: "EN" },
+    language: { type: String, required: true, default: SupportedLanguage.EN },
     categories: [String],
     creator: { type: Schema.Types.ObjectId, ref: "User", required: false },
     frequency: { type: Number, required: false },

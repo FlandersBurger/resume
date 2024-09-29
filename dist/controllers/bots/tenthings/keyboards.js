@@ -212,7 +212,7 @@ exports.languagesKeyboard = languagesKeyboard;
 const languageKeyboard = ({ settings }) => {
     return {
         inline_keyboard: (0, concat_1.default)(languages_1.default
-            .filter((language) => languages_1.supportedLanguages.includes(language.code))
+            .filter((language) => languages_1.botLanguages.includes(language.code))
             .sort()
             .reduce((result, language, i) => {
             const button = getButton(`${language.code} - ${language.native} ${settings.language === language.code ? emojis_1.default.green : ""}`, { type: callbacks_1.CallbackDataType.BotLanguage, id: language.code });

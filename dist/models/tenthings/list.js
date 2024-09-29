@@ -6,6 +6,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const mongoose_1 = require("mongoose");
 const mongoose_lean_virtuals_1 = __importDefault(require("mongoose-lean-virtuals"));
 const db_1 = __importDefault(require("../../db"));
+const languages_1 = require("../../controllers/bots/tenthings/languages");
 let List = {};
 const listValueSchema = new mongoose_1.Schema({
     value: { type: String, default: "", required: true },
@@ -36,7 +37,7 @@ const listSchema = new mongoose_1.Schema({
     name: String,
     search: String,
     description: String,
-    language: { type: String, required: true, default: "EN" },
+    language: { type: String, required: true, default: languages_1.SupportedLanguage.EN },
     categories: [String],
     creator: { type: mongoose_1.Schema.Types.ObjectId, ref: "User", required: false },
     frequency: { type: Number, required: false },
