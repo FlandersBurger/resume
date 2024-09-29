@@ -16,7 +16,7 @@ import { IStats } from "@models/tenthings/stats";
 import { IList } from "@models/tenthings/list";
 import { updateMinigames } from "./minigame";
 import { getDailyScores } from "./stats";
-const backup = require("@root/utils/backup/backup-db");
+const backup = require("@root/scripts/backup-db");
 import { Game, Player, Stats, List } from "@models/index";
 
 // ██████  ███████ ███████ ███████ ████████     ██████   █████  ██ ██      ██    ██     ███████  ██████  ██████  ██████  ███████
