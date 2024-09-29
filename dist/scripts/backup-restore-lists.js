@@ -1,8 +1,8 @@
 "use strict";
 const _ = require("underscore");
 const moment = require("moment");
-const srcList = require("../../models/tenthings/list")("backup");
-const dstList = require("../../models/tenthings/list")("master");
+const srcList = require("../models/tenthings/list")("backup");
+const dstList = require("../models/tenthings/list")("master");
 const backup = async () => {
     const existingLists = await dstList.find({}).select("_id").lean();
     N = 0;

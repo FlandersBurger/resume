@@ -9,13 +9,11 @@ export type LanguageCount = {
   count: number;
 };
 
-export type SupportedLanguage = "AR" | "FR" | "EN" | "DE" | "ID" | "NL" | "PT" | "TL";
-export const supportedLanguages: SupportedLanguage[] = ["AR", "FR", "EN", "DE", "NL", "ID", "PT", "TL"];
+export type SupportedLanguage = "AR" | "FR" | "EN" | "ES" | "DE" | "ID" | "NL" | "PT" | "RU" | "TL";
+export const supportedLanguages: SupportedLanguage[] = ["AR", "FR", "EN", "ES", "DE", "NL", "ID", "PT", "RU", "TL"];
 
 export type AllowedLanguage =
   | SupportedLanguage
-  | "DE"
-  | "ES"
   | "HI"
   | "IT"
   | "JA"
@@ -23,7 +21,6 @@ export type AllowedLanguage =
   | "LA"
   | "PA"
   | "PL"
-  | "RU"
   | "TA"
   | "TH"
   | "TR"

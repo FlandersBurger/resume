@@ -1,0 +1,266 @@
+{
+  "settings": "Ajustes",
+  "playerIntro": "Introducción del jugador",
+  "sass": "Sass",
+  "dailyUpdates": "Actualizaciones diarias",
+  "language_one": "Idioma",
+  "language_other": "Idiomas",
+  "botLanguage": "Idioma del bot",
+  "plays": "Jugadas",
+  "votes": "Votos",
+  "snubs": "Desaires",
+  "hints": "Pistas",
+  "skips": "Saltos",
+  "values": "Valores",
+  "score": "Puntuación",
+  "difficulty": "Dificultad",
+  "createdOn": "Creado el",
+  "modifiedOn": "Modificado el",
+  "on": "ON",
+  "off": "OFF",
+  "and": "y",
+  "description": "Descripción",
+  "point_one": "{{count}} punto",
+  "point_other": "{{count}} puntos",
+  "category_one": "Categoría",
+  "category_other": "Categorías",
+  "categories": {
+    "Adult": "Adultos",
+    "Albums": "Álbumes",
+    "Animation": "Animación",
+    "Anime/Manga": "Anime/Manga",
+    "Art": "Arte",
+    "Biology": "Biología",
+    "Business": "Negocios",
+    "Celebrities": "Celebridades",
+    "Challenging": "Desafiante",
+    "Chemistry": "Química",
+    "Culture": "Cultura",
+    "Entertainment": "Entretenimiento",
+    "Food and Drink": "Comida y bebida",
+    "Funny": "Gracioso",
+    "Gaming": "Juegos",
+    "Geography": "Geografía",
+    "History": "Historia",
+    "Internet": "Internet",
+    "K-drama": "K-drama",
+    "K-pop": "K-pop",
+    "Language": "Idioma",
+    "Literature": "Literatura",
+    "Lyrics": "Letras",
+    "Mathematics": "Matemáticas",
+    "Medicine": "Medicina",
+    "Misc": "Misc",
+    "Movies": "Películas",
+    "Music": "Música",
+    "Nature": "Naturaleza",
+    "Non-English": "No inglés",
+    "Objects": "Objetos",
+    "Politics": "Política",
+    "Religion": "Religión",
+    "Science": "Ciencia",
+    "Society": "Sociedad",
+    "Sports": "Deportes",
+    "Technology": "Tecnología",
+    "Telenovelas": "Telenovelas",
+    "Television": "Televisión",
+    "Transportation": "Transporte"
+  },
+  "commands": {
+    "start": {
+      "name": "inicio",
+      "description": "Iniciar el juego"
+    },
+    "commands": {
+      "name": "comandos",
+      "description": "Lista de comandos"
+    },
+    "list": {
+      "name": "lista",
+      "description": "Enumerar las respuestas adivinadas en la ronda actual"
+    },
+    "hint": {
+      "name": "pista",
+      "description": "Obtener una pista"
+    },
+    "skip": {
+      "name": "saltar",
+      "description": "Saltar la ronda actual"
+    },
+    "veto": {
+      "name": "vetar",
+      "description": "Veto el salto"
+    },
+    "minigame": {
+      "name": "minijuego",
+      "description": "Trivia inversa pregunta"
+    },
+    "minihint": {
+      "name": "minipista",
+      "description": "Obtener una pista para el minijuego"
+    },
+    "miniskip": {
+      "name": "minisalto",
+      "description": "Saltar el minijuego actual"
+    },
+    "tinygame": {
+      "name": "pequenojuego",
+      "description": "Adivina la lista"
+    },
+    "tinyhint": {
+      "name": "pequenapista",
+      "description": "Obtener una pista para el minijuego"
+    },
+    "tinyskip": {
+      "name": "pequenosalto",
+      "description": "Saltar el minijuego actual"
+    },
+    "score": {
+      "name": "puntuacion",
+      "description": "Puntuación diaria"
+    },
+    "stats": {
+      "name": "estadisticas",
+      "description": "Estadísticas del juego"
+    },
+    "me": {
+      "name": "yo",
+      "description": "Mis estadísticas"
+    },
+    "intro": {
+      "name": "introduccion",
+      "description": "¿Qué soy?"
+    },
+    "logic": {
+      "name": "logica",
+      "description": "Una explicación de la lógica utilizada"
+    },
+    "settings": {
+      "name": "configuraciones",
+      "description": "Configuración de comportamiento del bot (solo administrador)"
+    },
+    "categories": {
+      "name": "categorias",
+      "description": "Seleccionar qué categorías incluir (solo administrador)"
+    },
+    "typo": {
+      "name": "errortipografico",
+      "description": "Informar un error tipográfico en la lista actual"
+    },
+    "bug": {
+      "name": "error",
+      "description": "Informar un error con el bot"
+    },
+    "feature": {
+      "name": "caracteristica",
+      "description": "Recomendar una nueva función para el bot"
+    },
+    "suggest": {
+      "name": "sugerir",
+      "description": "Sugerir una nueva función para el bot"
+    },
+    "error": {
+      "name": "error",
+      "description": "Informar un error con el bot"
+    },
+    "search": {
+      "name": "buscar",
+      "description": "Buscar listas para poner en cola"
+    },
+    "lists": {
+      "name": "listas",
+      "description": "Ver listas en cola"
+    },
+    "stop": {
+      "name": "detener",
+      "description": "Desactivarme"
+    },
+    "ping": {
+      "name": "ping",
+      "description": "pong"
+    },
+    "queue": {
+      "name": "cola",
+      "description": "¿Dónde está atascado el bot?"
+    }
+  },
+  "sentences": {
+    "likeList": "¿Te gustó <b>{{list}}</b>?",
+    "likesList": "👍 {{name}} me gusta <b>{{list}}</b> ({{score}})",
+    "dislikesList": "👎 {{name}} no me gusta <b>{{list}}</b> ({{score}})",
+    "queueList": "<b>¿Qué lista te gustaría poner en cola?</b>",
+    "curateList": "<b>¿Qué lista te gustaría conservar?</b>",
+    "queueFull": "La cola ya tiene el máximo de 10 listas, {{name}}.",
+    "noSearchResults": "No encontré ninguna lista correspondiente para <b>\"{{search}}\"</b>, {{name}}.\nLas consultas más simples devuelven mejores resultados.",
+    "emptySearch": "No has buscado nada, {{name}}. Agrega tu mensaje después de /search",
+    "upcomingLists": "<b>Próximas listas</b>",
+    "noUpcomingLists": "No hay listas en cola, usa el comando /search [mensaje] para encontrar algunas",
+    "skippedList": "¡Se omitieron <b>{{list}}</b>!",
+    "skipConfirm": "Se omitirán <b>{{list}}</b> en {{skipDelay}} segundos.\nEscribe /veto para cancelar o haz que otra persona escriba /skip para confirmar.",
+    "skipDenial": "¡Pídele a otra persona que confirme tu solicitud de omisión!",
+    "skipVeto": "Saltar vetado por {{name}}\nNo se permite saltar durante {{vetoDelay}} segundos",
+    "skipAbort": "Saltar vetado por {{name}} al dar una respuesta correcta\nNo se permite saltar durante {{vetoDelay}} segundos",
+    "skipNotFound": "No puedo encontrar una solicitud de salto, {{name}}",
+    "skipShortBan": "A {{name}} se le ha prohibido saltar de nuevo durante {{delay}} segundos",
+    "skipBanThreat": "Si saltas de nuevo dentro de los {{delay}} segundos, {{name}}, se te prohibirá saltar durante 1 hora",
+    "skipLongBan": "A {{name}} se le ha prohibido saltar durante 1 hora",
+    "addedList": "Se ha añadido \"{{list}}\"",
+    "addedListToQueue": "Se ha añadido a la cola \"<b>{{list}}</b>\", {{name}}.\nEscribe /lists para ver la cola",
+    "addOwnList": "Ten en cuenta que puedes agregar tus propias listas en https://belgocanadian.com/tenthings",
+    "banListQuestion": "¿Lista de baneos?",
+    "banListCommand": "¡Lista de baneos!",
+    "confirmBan": "¿Confirmas banear la lista \"{{list}}\"?",
+    "corroborateBan": "¿Alguien está de acuerdo con banear la lista \"{{list}}\"?",
+    "alreadyBannedList": "¡\"{{list}}\" ya está baneado!",
+    "listBanned": "\"{{list}}\" baneado!",
+    "banNotFound": "No puedo encontrar una solicitud de ban, {{name}}",
+    "inactivity": "Estoy durmiendo, escribe /list o /start para despertarme.\nMe voy a dormir después de 30 días de inactividad.",
+    "introduction": "Hola {{name}},\nTen Things, un servidor, es un juego que te dará un tema y luego responderás cualquier cosa que se te ocurra en esa categoría.\nEscribe /commands para ver todas las cosas que puedes preguntarme\nSi quieres agregar tus propias listas, ve a https://belgocanadian.com/tenthings\n¡Diviértete!",
+    "suggestionNoted": "Sugerencia anotada",
+    "findTheConnection": "Encuentra la conexión",
+    "minigameAnswered": "¡Respuesta del minijuego adivinada!",
+    "findTheTitle": "Encuentra el título de la lista",
+    "tinygameAnswered": "¡Respuesta del minijuego adivinada!",
+    "roundOver": "Finalizada la ronda",
+    "newRound": "En 2 segundos comenzará una nueva ronda",
+    "allListsPlayed": "Se han jugado todas las listas, ahora comenzará un nuevo ciclo.",
+    "createdBy": "por {{creator}}",
+    "requestedBy": "Solicitado por {{requestor}}",
+    "guessedBy": "{{guesser}} obtuvo {{answer}}",
+    "notGuessed": "No se adivinó",
+    "dailyScores": "<b>Puntuaciones diarias</b>",
+    "topDailyScores": "<b>Puntuaciones diarias más altas</b>",
+    "dailyScoresWithLimit": "<b>Puntuaciones diarias más altas {{limit}}</b>"
+  },
+  "warnings": {
+    "minimum1Category": "Se requiere un mínimo de 1 categoría",
+    "adminFunction": "Lo sentimos {{name}}, esta es una función de administración del chat",
+    "fullQueue": "La cola ya tiene el máximo de 10 listas, {{name}}",
+    "alreadyInQueue": "<b>{{list}}</b> ya está en la cola, {{name}}",
+    "unfoundList": "Esta lista ya no existe",
+    "corroborateBanBySamePlayer": "¡Pídele a otra persona que confirme la prohibición, {{name}}!",
+    "noSuggestion": "No has sugerido nada, {{name}}"
+  },
+  "stats": {
+    "stats": "Estadísticas",
+    "list": "Estadísticas de la lista",
+    "player": "Estadísticas del jugador",
+    "global": "Estadísticas globales",
+    "game": "Estadísticas del juego",
+    "misc": "Estadísticas de <b>{{something}}</b>"
+  },
+  "rules": [
+    "Si una respuesta es 100% correcta, se le otorgará inmediatamente al que la adivinó",
+    "Si una respuesta es más del 75% correcta, se otorgará después de (2 * porcentaje de aciertos) segundos si no se proporciona una respuesta mejor",
+    "Los signos no alfanuméricos y las mayúsculas y minúsculas se ignoran al determinar la exactitud",
+    "Puntos obtenidos = (Pistas máximas {{maxHints}} - pistas solicitadas + # de jugadores actuales) / (Pistas máximas {{maxHints}} + # de jugadores actuales) * % de precisión de la respuesta * 10",
+    "Las pistas se revelan en este orden: primeras letras, últimas letras, vocales y el resto. El resto se revelará de la letra menos frecuente a la más frecuente",
+    "Hay un tiempo de espera de 10 segundos entre las preguntas de pistas",
+    "Se puede omitir una lista si 2 jugadores la /omiten",
+    "Si solo 1 jugador se salta una lista, habrá un tiempo de espera de 10 segundos hasta que se omita la lista",
+    "Cualquiera puede cancelar un salto escribiendo /veto o una respuesta correcta",
+    "Si se veta un salto, los nuevos saltos se ignorarán durante 15 segundos",
+    "Todos los días a la medianoche (hora universal) se restablecerán los puntajes diarios y se registrará un ganador",
+    "Se ignorará a los spammers hasta que permanezcan en silencio durante al menos 10 segundos"
+  ]
+}

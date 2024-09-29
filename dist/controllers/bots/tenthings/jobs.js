@@ -15,7 +15,7 @@ const maingame_1 = require("./maingame");
 const number_helpers_1 = require("../../../utils/number-helpers");
 const minigame_1 = require("./minigame");
 const stats_1 = require("./stats");
-const backup = require("../../../utils/backup/backup-db");
+const backup = require("@root/utils/backup/backup-db");
 const index_1 = require("../../../models/index");
 const resetDailyScore = () => {
     if ((0, moment_1.default)().utc().hour() === 1) {
