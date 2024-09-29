@@ -15,6 +15,7 @@ export enum BotLanguage {
   EN = "EN",
   ES = "ES",
   DE = "DE",
+  KO = "KO",
   NL = "NL",
   HI = "HI",
   ID = "ID",
@@ -29,6 +30,7 @@ export enum SupportedLanguage {
   EN = "EN",
   ES = "ES",
   DE = "DE",
+  KO = "KO",
   NL = "NL",
   HI = "HI",
   ID = "ID",
@@ -38,7 +40,6 @@ export enum SupportedLanguage {
 
   IT = "IT",
   JA = "JA",
-  KO = "KO",
   LA = "LA",
   PA = "PA",
   PL = "PL",
