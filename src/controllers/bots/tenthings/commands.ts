@@ -203,10 +203,10 @@ export const evaluate = async (msg: Message, game: HydratedDocument<IGame>, isNe
             const keyboard = listsKeyboard(foundLists);
             bot.sendKeyboard(
               game.telegramChannel,
-              i18n(
+              `${i18n(
                 game.settings.language,
                 `sentences.${game.chat_id === parseInt(process.env.ADMIN_CHAT || "") ? "curate" : "queue"}List`,
-              ),
+              )}\n<i>(${search})</i>`,
               keyboard,
             );
           } else {

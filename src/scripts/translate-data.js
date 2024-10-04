@@ -28,19 +28,19 @@ if (fs.existsSync(`${newLanguagePath}/commands.json`)) {
     ret[key] = removeDiacritics(commandsData[key].toLowerCase().replace(" ", ""));
     return ret;
   }, {});
-  const flippedCommands = Object.keys(commands).reduce((ret, key) => {
-    ret[commands[key]] = key;
-    return ret;
+  const flippedCommands = Object.keys(commands).reduce((result, key) => {
+    result[commands[key]] = key;
+    return result;
   }, {});
   fs.writeFileSync(`${newLanguagePath}/commands.json`, JSON.stringify(flippedCommands, null, 2));
 
   const translationData = JSON.parse(fs.readFileSync(`${newLanguagePath}/translation.json`, "utf8"));
-  translationData.commands = Object.keys(translationData.commands).reduce((ret, key) => {
-    ret[key] = {
+  translationData.commands = Object.keys(translationData.commands).reduce((result, key) => {
+    result[key] = {
       ...translationData.commands[key],
       name: commands[key],
     };
-    return ret;
+    return result;
   }, {});
   fs.writeFileSync(`${newLanguagePath}/translation.json`, JSON.stringify(translationData, null, 2));
 }
