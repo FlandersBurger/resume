@@ -95,8 +95,8 @@ export const evaluate = async (msg: Message, game: HydratedDocument<IGame>, isNe
   const flood = await floodChecker();
   if (flood) res.sendStatus(200);
   */
-  if (game.list.values.length === 0) {
-    newRound(game);
+  if (isNew || game.list.values.length === 0) {
+    await newRound(game);
   }
   if (command) {
     if (command && commands.includes(command) && msg.topicId && msg.topicId !== game.topicId) {
@@ -137,7 +137,7 @@ export const evaluate = async (msg: Message, game: HydratedDocument<IGame>, isNe
         }
         break;
       case Command.Start:
-        if (isNew) {
+        if (!game.list) {
           newRound(game);
           break;
         }

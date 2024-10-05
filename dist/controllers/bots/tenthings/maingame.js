@@ -51,69 +51,61 @@ const checkRound = (game) => {
     }
 };
 exports.checkRound = checkRound;
-const newRound = (currentGame) => {
-    index_1.Game.findOne({
+const newRound = async (currentGame) => {
+    const game = await index_1.Game.findOne({
         _id: currentGame._id,
     })
         .select("_id chat_id topicId telegramChannel playedLists list listsPlayed pickedLists cycles guessers hints disabledCategories settings")
-        .populate("list.creator")
-        .exec(async (err, game) => {
-        if (err)
-            return console.error(err);
-        if (!game)
-            return console.log("Game not found");
-        let players = await index_1.Player.find({
-            game: currentGame._id,
-            id: {
-                $in: game.guessers,
-            },
-        }).exec();
-        const list = await (0, lists_1.selectList)(game);
-        if (game.pickedLists.length > 0) {
-            game.pickedLists = game.pickedLists.filter((pickedList) => pickedList != list._id);
-        }
-        list.plays++;
-        list.score = (0, lists_1.getListScore)(list);
-        try {
-            await list.validate();
-            await list.save();
-        }
-        catch (error) {
-            telegram_1.default.notifyAdmin(`New Round List Error\n${error}\n\n${list}`);
-        }
-        for (let player of players) {
-            player.lists++;
-            await player.save();
-        }
-        game.list = JSON.parse(JSON.stringify(list));
-        game.list.answers = game.list.values.length;
-        game.list.values = (0, sampleSize_1.default)(game.list.values, 10);
-        game.listsPlayed++;
-        game.hints = 0;
-        hints_1.hintCache[game.id] = 3;
-        (0, hints_1.hintCooldown)(game.id);
-        game.guessers = [];
-        let message = (0, i18n_1.default)(game.settings.language, "sentences.newRound");
-        message += `\n${(0, i18n_1.default)(game.settings.language, "category", {
-            count: game.list.categories.length,
-        })}: `;
-        message += `<b>${game.list.categories
-            .map((category) => (0, i18n_1.default)(game.settings.language, `categories.${category}`))
-            .join(", ")}</b>`;
+        .populate("list.creator");
+    if (!game)
+        return console.log("Game not found");
+    let players = await index_1.Player.find({
+        game: currentGame._id,
+        id: {
+            $in: game.guessers,
+        },
+    }).exec();
+    const list = await (0, lists_1.selectList)(game);
+    if (game.pickedLists.length > 0) {
+        game.pickedLists = game.pickedLists.filter((pickedList) => pickedList != list._id);
+    }
+    list.plays++;
+    list.score = (0, lists_1.getListScore)(list);
+    try {
+        await list.validate();
+        await list.save();
+    }
+    catch (error) {
+        telegram_1.default.notifyAdmin(`New Round List Error\n${error}\n\n${list}`);
+    }
+    for (let player of players) {
+        player.lists++;
+        await player.save();
+    }
+    game.list = JSON.parse(JSON.stringify(list));
+    game.list.answers = game.list.values.length;
+    game.list.values = (0, sampleSize_1.default)(game.list.values, 10);
+    game.listsPlayed++;
+    game.hints = 0;
+    hints_1.hintCache[game.id] = 3;
+    (0, hints_1.hintCooldown)(game.id);
+    game.guessers = [];
+    let message = (0, i18n_1.default)(game.settings.language, "sentences.newRound");
+    message += `\n${(0, i18n_1.default)(game.settings.language, "category", {
+        count: game.list.categories.length,
+    })}: `;
+    message += `<b>${game.list.categories
+        .map((category) => (0, i18n_1.default)(game.settings.language, `categories.${category}`))
+        .join(", ")}</b>`;
+    telegram_1.default.queueMessage(game.telegramChannel, message);
+    setTimeout(() => {
+        let message = `<b>${game.list.name}</b> (${game.list.answers}) ${(0, i18n_1.default)(game.settings.language, "sentences.createdBy", { creator: game.list.creator.username })}`;
+        message += game.list.description ? `\n<i>${(0, string_helpers_1.parseSymbols)(game.list.description)}</i>` : "";
         telegram_1.default.queueMessage(game.telegramChannel, message);
-        setTimeout(() => {
-            let message = `<b>${game.list.name}</b> (${game.list.answers}) ${(0, i18n_1.default)(game.settings.language, "sentences.createdBy", { creator: game.list.creator.username })}`;
-            message += game.list.description ? `\n<i>${(0, string_helpers_1.parseSymbols)(game.list.description)}</i>` : "";
-            telegram_1.default.queueMessage(game.telegramChannel, message);
-        }, 2000);
-        game.playedLists.push(game.list._id);
-        game.save((err) => {
-            if (err)
-                telegram_1.default.notifyAdmin("newRound: " + JSON.stringify(err) + "\n" + JSON.stringify(game));
-            else
-                console.log(`${game.chat_id} - New round started -> "${list.name}"`);
-        });
-    });
+    }, 2000);
+    game.playedLists.push(game.list._id);
+    await game.save();
+    console.log(`${game.chat_id} - New round started -> "${list.name}"`);
 };
 exports.newRound = newRound;
 const activate = async (game, save = false) => {

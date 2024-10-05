@@ -65,8 +65,9 @@ export const selectList = async (game: IGame): Promise<HydratedDocument<IList>> 
       return list;
     }
   } else {
+    console.log(game.bannedLists);
     let list = await getRandomList({
-      _id: { $nin: [...game.playedLists, ...game.bannedLists] },
+      _id: { $nin: game.playedLists.concat(game.bannedLists ?? []) },
       categories: { $nin: game.disabledCategories },
       language: { $in: availableLanguages },
     });

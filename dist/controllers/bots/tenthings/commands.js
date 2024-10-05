@@ -84,8 +84,8 @@ const evaluate = async (msg, game, isNew) => {
         (0, suggestions_1.sendSuggestion)(msg, game, player, player.state);
         return;
     }
-    if (game.list.values.length === 0) {
-        (0, maingame_1.newRound)(game);
+    if (isNew || game.list.values.length === 0) {
+        await (0, maingame_1.newRound)(game);
     }
     if (command) {
         if (command && commands.includes(command) && msg.topicId && msg.topicId !== game.topicId) {
@@ -118,7 +118,7 @@ const evaluate = async (msg, game, isNew) => {
                 }
                 break;
             case Command.Start:
-                if (isNew) {
+                if (!game.list) {
                     (0, maingame_1.newRound)(game);
                     break;
                 }
