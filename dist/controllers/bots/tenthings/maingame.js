@@ -22,7 +22,6 @@ const createMaingame = async (chat_id) => {
     const game = new index_1.Game({
         chat_id,
         settings: { languages: ["EN"] },
-        enabled: true,
         playedLists: nonStarredLists.map(({ _id }) => _id),
     });
     const savedGame = await game.save();

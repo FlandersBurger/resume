@@ -87,7 +87,7 @@ const gameSchema = new Schema<IGame>(
     hints: { type: Number, required: true, default: 0 },
     cycles: { type: Number, required: true, default: 0 },
     lastCycleDate: { type: Date, required: true, default: Date.now },
-    lastPlayDate: { type: Date, required: false, default: new Date(2019, 5, 15).valueOf() },
+    lastPlayDate: { type: Date, required: true, default: Date.now },
     listsPlayed: { type: Number, required: true, default: 0 },
     guessers: [{ type: String, required: true }],
     streak: {

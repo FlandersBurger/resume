@@ -24,7 +24,6 @@ export const createMaingame = async (chat_id: number): Promise<HydratedDocument<
   const game = new Game({
     chat_id,
     settings: { languages: ["EN"] },
-    enabled: true,
     playedLists: nonStarredLists.map(({ _id }) => _id),
   });
   const savedGame = await game.save();
