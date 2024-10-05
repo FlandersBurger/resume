@@ -109,6 +109,9 @@ const skipList = (game: IGame, skipper: IPlayer) => {
       return bot.notifyAdmin(`Skip List Error:\n${err}`);
     }
     bot.queueMessage(game.telegramChannel, await getDailyScores(game, 5));
+    if (game.pickedLists.find((list) => list._id.equals(game.list._id))) {
+      game.pickedLists = game.pickedLists.filter((list) => !list._id.equals(game.list._id));
+    }
     newRound(game);
   });
 };

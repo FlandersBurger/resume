@@ -103,6 +103,9 @@ const skipList = (game, skipper) => {
             return telegram_1.default.notifyAdmin(`Skip List Error:\n${err}`);
         }
         telegram_1.default.queueMessage(game.telegramChannel, await (0, stats_1.getDailyScores)(game, 5));
+        if (game.pickedLists.find((list) => list._id.equals(game.list._id))) {
+            game.pickedLists = game.pickedLists.filter((list) => !list._id.equals(game.list._id));
+        }
         (0, maingame_1.newRound)(game);
     });
 };
