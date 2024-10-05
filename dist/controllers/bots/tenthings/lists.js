@@ -61,7 +61,7 @@ const selectList = async (game) => {
     }
     else {
         let list = await (0, exports.getRandomList)({
-            _id: { $nin: game.playedLists.concat(game.bannedLists) },
+            _id: { $nin: [...game.playedLists, ...game.bannedLists] },
             categories: { $nin: game.disabledCategories },
             language: { $in: availableLanguages },
         });

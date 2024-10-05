@@ -95,9 +95,9 @@ const gameSchema = new Schema<IGame>(
       count: { type: Number, required: false },
     },
     disabledCategories: [String],
-    playedLists: [{ type: String }],
-    pickedLists: [{ type: String }],
-    bannedLists: [{ type: String }],
+    playedLists: [{ type: Schema.Types.ObjectId, ref: "List" }],
+    pickedLists: [{ type: Schema.Types.ObjectId, ref: "List" }],
+    bannedLists: [{ type: Schema.Types.ObjectId, ref: "List" }],
     list: {
       _id: String,
       name: String,

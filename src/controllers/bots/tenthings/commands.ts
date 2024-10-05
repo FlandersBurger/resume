@@ -352,11 +352,7 @@ export const evaluate = async (msg: Message, game: HydratedDocument<IGame>, isNe
         break;
       case Command.Lists:
         if (game.pickedLists.length > 0) {
-          List.find({
-            _id: {
-              $in: game.pickedLists,
-            },
-          }).exec((_, upcomingLists) => {
+          List.find({ _id: { $in: game.pickedLists } }).exec((_, upcomingLists) => {
             let message = `${i18n(game.settings.language, "sentences.upcomingLists")}\n`;
             for (const list of upcomingLists.slice(0, 10)) {
               message += `- ${list.name}\n`;

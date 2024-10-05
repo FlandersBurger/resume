@@ -28,9 +28,9 @@ const gameSchema = new mongoose_1.Schema({
         count: { type: Number, required: false },
     },
     disabledCategories: [String],
-    playedLists: [{ type: String }],
-    pickedLists: [{ type: String }],
-    bannedLists: [{ type: String }],
+    playedLists: [{ type: mongoose_1.Schema.Types.ObjectId, ref: "List" }],
+    pickedLists: [{ type: mongoose_1.Schema.Types.ObjectId, ref: "List" }],
+    bannedLists: [{ type: mongoose_1.Schema.Types.ObjectId, ref: "List" }],
     list: {
         _id: String,
         name: String,

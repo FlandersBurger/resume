@@ -292,11 +292,7 @@ const evaluate = async (msg, game, isNew) => {
                 break;
             case Command.Lists:
                 if (game.pickedLists.length > 0) {
-                    index_1.List.find({
-                        _id: {
-                            $in: game.pickedLists,
-                        },
-                    }).exec((_, upcomingLists) => {
+                    index_1.List.find({ _id: { $in: game.pickedLists } }).exec((_, upcomingLists) => {
                         let message = `${(0, i18n_1.default)(game.settings.language, "sentences.upcomingLists")}\n`;
                         for (const list of upcomingLists.slice(0, 10)) {
                             message += `- ${list.name}\n`;
