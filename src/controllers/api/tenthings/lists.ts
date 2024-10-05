@@ -145,7 +145,7 @@ tenthingsListsRoute.put("/:id", async (req: Request, res: Response) => {
       const updatedList = await getList(new Types.ObjectId(req.params.id));
       if (!updatedList) res.sendStatus(404);
       else {
-        if (previousModifyDate < yesterday) {
+        if (previousModifyDate < yesterday && process.env.NODE_ENV === "production") {
           bot.notifyAdmins(
             `<u>List Updated</u>\nUpdated by <i>${res.locals.user?.username}</i>\n${getListMessage(updatedList)}`,
             curateListKeyboard(list),

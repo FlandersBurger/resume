@@ -154,7 +154,7 @@ exports.tenthingsListsRoute.put("/:id", async (req, res) => {
             if (!updatedList)
                 res.sendStatus(404);
             else {
-                if (previousModifyDate < yesterday) {
+                if (previousModifyDate < yesterday && process.env.NODE_ENV === "production") {
                     telegram_1.default.notifyAdmins(`<u>List Updated</u>\nUpdated by <i>${res.locals.user?.username}</i>\n${(0, messages_1.getListMessage)(updatedList)}`, (0, keyboards_1.curateListKeyboard)(list));
                 }
                 res.json(updatedList);

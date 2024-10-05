@@ -82,6 +82,7 @@
       <thead>
         <tr>
           <th ng-if="currentUser.admin"></th>
+          <th ng-if="currentUser.admin"></th>
           <th ng-click="orderBy('name')">
             Name <span style="font-weight: lighter; font-size: small">({{count || 0}})</span>
             <i
@@ -169,6 +170,9 @@
             <i
               ng-class="{'fas fa-check-square': highlightedListIds.includes(list._id), 'far fa-square': !highlightedListIds.includes(list._id) }"
             ></i>
+          </td>
+          <td ng-if="currentUser.admin" ng-click="updateList(list, {starred: !list.starred})">
+            <i ng-class="{'fas fa-star': list.starred, 'far fa-star': !list.starred }"></i>
           </td>
           <td class="list-name" ng-click="setSelectedList(list)" ng-bind-html="highlightedSearchText(list.name)"></td>
           <td class="hidden-sm visible-md visible-lg" ng-click="setSelectedList(list)">

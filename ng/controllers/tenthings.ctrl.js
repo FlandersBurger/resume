@@ -288,6 +288,19 @@ angular
       });
     };
 
+    $scope.updateList = (list, updates) => {
+      if (list._id && list._id !== "new") {
+        TenThingsSvc.updateList({
+          ...updates,
+          _id: list._id,
+        }).then(({ data }) => {
+          $scope.saving = false;
+          const listIndex = $scope.lists.findIndex((list) => list._id === data._id);
+          $scope.lists[listIndex] = data;
+        }, console.error);
+      }
+    };
+
     $scope.upsertList = (list, updates) => {
       $scope.saving = true;
       if (list.values.length >= 10 && list.name && list.categories.length > 0) {

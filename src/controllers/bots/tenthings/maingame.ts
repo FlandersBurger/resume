@@ -20,9 +20,11 @@ import i18n from "@root/i18n";
 import bot from "@root/connections/telegram";
 
 export const createMaingame = async (chat_id: number): Promise<HydratedDocument<IGame>> => {
+  const nonStarredLists = await List.find({ $or: [{ starred: false }, { starred: null }] }).select("_id");
   const game = new Game({
     chat_id,
     settings: { languages: ["EN"] },
+    playedLists: nonStarredLists.map(({ id }) => id),
   });
   const savedGame = await game.save();
   const newGame = await Game.findOne({ _id: savedGame._id }).exec();

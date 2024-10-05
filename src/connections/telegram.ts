@@ -237,7 +237,6 @@ class TelegramBot {
 
   public resumeQueue = async () => {
     if (await messageQueue.isPaused()) {
-      bot.notifyAdmin("Resuming message queue");
       messageQueue.resume();
       this.paused = false;
       this.timeoutUntil = undefined;

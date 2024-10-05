@@ -43,6 +43,7 @@ const listSchema = new mongoose_1.Schema({
     frequency: { type: Number, required: false },
     difficulty: { type: Number, required: false },
     isDynamic: { type: Boolean, required: true, default: true },
+    starred: { type: Boolean, required: true, default: false },
     enabled: { type: Boolean, required: true, default: true },
     values: [listValueSchema],
     date: { type: Date, required: true, default: Date.now },

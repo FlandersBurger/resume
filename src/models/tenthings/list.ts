@@ -30,6 +30,7 @@ export interface IList {
   frequency: number;
   difficulty: number;
   isDynamic: boolean;
+  starred: boolean;
   enabled: boolean;
   values: IListValue[];
   date: Date;
@@ -86,6 +87,7 @@ const listSchema = new Schema<IList>(
     frequency: { type: Number, required: false },
     difficulty: { type: Number, required: false },
     isDynamic: { type: Boolean, required: true, default: true },
+    starred: { type: Boolean, required: true, default: false },
     enabled: { type: Boolean, required: true, default: true },
     values: [listValueSchema],
     date: { type: Date, required: true, default: Date.now },
