@@ -47,8 +47,8 @@ const selectList = async (game) => {
     const availableLanguages = getAvailableLanguages(game);
     if (game.pickedLists.length > 0) {
         let list = await index_1.List.findOne({ _id: game.pickedLists[0] }).populate("creator").exec();
+        game.pickedLists.shift();
         if (!list) {
-            game.pickedLists.shift();
             console.log(`Moving to next picked list`);
             return await (0, exports.selectList)(game);
         }
@@ -60,7 +60,6 @@ const selectList = async (game) => {
         }
     }
     else {
-        console.log(game.bannedLists);
         let list = await (0, exports.getRandomList)({
             _id: { $nin: game.playedLists.concat(game.bannedLists ?? []) },
             categories: { $nin: game.disabledCategories },

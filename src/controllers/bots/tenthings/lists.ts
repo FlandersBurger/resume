@@ -54,8 +54,8 @@ export const selectList = async (game: IGame): Promise<HydratedDocument<IList>> 
   const availableLanguages = getAvailableLanguages(game);
   if (game.pickedLists.length > 0) {
     let list = await List.findOne({ _id: game.pickedLists[0] }).populate("creator").exec();
+    game.pickedLists.shift();
     if (!list) {
-      game.pickedLists.shift();
       console.log(`Moving to next picked list`);
       return await selectList(game);
     } else {
@@ -65,7 +65,6 @@ export const selectList = async (game: IGame): Promise<HydratedDocument<IList>> 
       return list;
     }
   } else {
-    console.log(game.bannedLists);
     let list = await getRandomList({
       _id: { $nin: game.playedLists.concat(game.bannedLists ?? []) },
       categories: { $nin: game.disabledCategories },
