@@ -5,6 +5,20 @@ angular
     $scope.languageStats = [];
     $scope.categoryStats = { labels: [], datasets: [] };
 
+    const lineChartOptions = {
+      responsive: true,
+      plugins: {
+        legend: {
+          display: true,
+          position: "top",
+        },
+        title: {
+          display: true,
+          text: "Chart.js Line Chart",
+        },
+      },
+    };
+
     const getData = () => {
       if (!$scope.currentUser) return;
       $scope.languageStats = [];
@@ -23,32 +37,31 @@ angular
           data: years.map((year) =>
             months.map((month) => data.find((item) => item.month === month && item.year === year)?.uniquePlayers || 0),
           ),
-          options: {
-            responsive: true,
-            plugins: {
-              legend: {
-                display: true,
-                position: "top",
-              },
-              title: {
-                display: true,
-                text: "Chart.js Line Chart",
-              },
-            },
-          },
+          options: lineChartOptions,
         };
       });
       TenThingsSvc.getListLanguageStats().then(({ data }) => {
         const years = _.uniq(data.map(({ _id }) => _id.year)).sort();
         const languages = _.uniq(data.map(({ _id }) => _id.language)).sort();
         $scope.languageStats = {
-          labels: languages,
-          series: years,
-          data: years.map((year) =>
-            languages.map(
-              (language) => data.find(({ _id }) => _id.language === language && _id.year === year)?.count || 0,
-            ),
+          labels: years,
+          series: languages,
+          data: languages.map((language) =>
+            years.map((year) => data.find(({ _id }) => _id.language === language && _id.year === year)?.count || 0),
           ),
+          options: lineChartOptions,
+        };
+      });
+      TenThingsSvc.getGameStats().then(({ data }) => {
+        const years = _.uniq(data.map(({ _id }) => _id.year)).sort();
+        const languages = _.uniq(data.map(({ _id }) => _id.language)).sort();
+        $scope.gameStats = {
+          labels: years,
+          series: languages,
+          data: languages.map((language) =>
+            years.map((year) => data.find(({ _id }) => _id.language === language && _id.year === year)?.count || 0),
+          ),
+          options: lineChartOptions,
         };
       });
 

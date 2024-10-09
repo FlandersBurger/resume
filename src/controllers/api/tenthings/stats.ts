@@ -2,7 +2,7 @@ import { Router, Request, Response } from "express";
 
 export const tenthingsStatsRoute = Router();
 
-import { List, Stats } from "@root/models";
+import { Game, List, Stats } from "@root/models";
 
 tenthingsStatsRoute.get("/total", async (_: Request, res: Response) => {
   const total = await List.countDocuments({});
@@ -77,4 +77,18 @@ tenthingsStatsRoute.get("/play", async (_: Request, res: Response) => {
       };
     }),
   );
+});
+
+tenthingsStatsRoute.get("/games", async (_: Request, res: Response) => {
+  const games = await Game.aggregate([
+    { $match: { date: { $ne: null }, "settings.language": { $ne: null } } },
+    { $project: { "settings.language": 1, year: { $year: "$date" } } },
+    {
+      $group: {
+        _id: { language: "$settings.language", year: "$year" },
+        count: { $sum: 1 },
+      },
+    },
+  ]);
+  res.json(games);
 });

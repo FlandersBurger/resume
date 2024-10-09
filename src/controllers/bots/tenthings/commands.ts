@@ -325,7 +325,9 @@ export const evaluate = async (msg: Message, game: HydratedDocument<IGame>, isNe
         if (msg.from.id === parseInt(process.env.MASTER_CHAT || "")) {
           game.list = (await getRandomList()) as LeanDocument<IList>;
           game.pickedLists = [];
-          //game.playedLists = [];
+          game.playedLists = [];
+          game.cycles++;
+          game.lastCycleDate = new Date();
           game.save();
           bot.queueMessage(game.telegramChannel, "Flushed this chat");
         }

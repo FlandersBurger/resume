@@ -58,4 +58,17 @@ exports.tenthingsStatsRoute.get("/play", async (_, res) => {
         };
     }));
 });
+exports.tenthingsStatsRoute.get("/games", async (_, res) => {
+    const games = await models_1.Game.aggregate([
+        { $match: { date: { $ne: null }, "settings.language": { $ne: null } } },
+        { $project: { "settings.language": 1, year: { $year: "$date" } } },
+        {
+            $group: {
+                _id: { language: "$settings.language", year: "$year" },
+                count: { $sum: 1 },
+            },
+        },
+    ]);
+    res.json(games);
+});
 //# sourceMappingURL=stats.js.map

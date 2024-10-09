@@ -76,13 +76,13 @@ export const selectList = async (game: IGame): Promise<HydratedDocument<IList>> 
       game.lastCycleDate = moment().toDate();
       bot.queueMessage(game.telegramChannel, i18n(game.settings.language, "sentences.allListsPlayed"));
       list = await getRandomList({
-        _id: { $nin: game.bannedLists },
+        _id: { $nin: game.bannedLists ?? [] },
         categories: { $nin: game.disabledCategories },
         language: { $in: availableLanguages },
       });
       if (!list) {
         list = await getRandomList({
-          _id: { $nin: game.bannedLists },
+          _id: { $nin: game.bannedLists ?? [] },
           categories: { $nin: game.disabledCategories },
           language: "EN",
         });

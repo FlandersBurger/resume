@@ -266,6 +266,9 @@ const evaluate = async (msg, game, isNew) => {
                 if (msg.from.id === parseInt(process.env.MASTER_CHAT || "")) {
                     game.list = (await (0, lists_1.getRandomList)());
                     game.pickedLists = [];
+                    game.playedLists = [];
+                    game.cycles++;
+                    game.lastCycleDate = new Date();
                     game.save();
                     telegram_1.default.queueMessage(game.telegramChannel, "Flushed this chat");
                 }
