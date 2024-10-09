@@ -87,7 +87,7 @@ export const sendSuggestionMessage = async (game: IGame, player: HydratedDocumen
       await player.save();
       bot.sendMessage(
         game.telegramChannel,
-        `<b>BUG</b>\nPlease provide some details as to what went wrong in your next message, ${playerName}!`,
+        `<b>BUG</b>\nPlease provide some details as to what went wrong in your next message, ${playerName}! Please let me know directly if it's an issue with your specific chat -> @FlandersBurger`,
       );
       break;
     default:

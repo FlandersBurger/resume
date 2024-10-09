@@ -106,6 +106,10 @@ export const evaluate = async (msg: Message, game: HydratedDocument<IGame>, isNe
       case Command.Error:
         const chatLink = await bot.exportChatInviteLink(game.telegramChannel);
         bot.notifyAdmins(`Error reported in ${game.chat_id}: \n${msg.text}\n\n${chatLink}`);
+        bot.queueMessage(
+          game.telegramChannel,
+          "Please let me know directly if it's an issue with your specific chat -> @FlandersBurger",
+        );
         break;
       case Command.Intro:
         bot.queueMessage(

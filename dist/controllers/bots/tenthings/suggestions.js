@@ -65,7 +65,7 @@ const sendSuggestionMessage = async (game, player, command) => {
         case commands_1.Command.Bug:
             player.state = commands_1.Command.Bug;
             await player.save();
-            telegram_1.default.sendMessage(game.telegramChannel, `<b>BUG</b>\nPlease provide some details as to what went wrong in your next message, ${playerName}!`);
+            telegram_1.default.sendMessage(game.telegramChannel, `<b>BUG</b>\nPlease provide some details as to what went wrong in your next message, ${playerName}! Please let me know directly if it's an issue with your specific chat -> @FlandersBurger`);
             break;
         default:
             break;
