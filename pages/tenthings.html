@@ -82,7 +82,14 @@
       <thead>
         <tr>
           <th ng-if="currentUser.admin"></th>
-          <th ng-if="currentUser.admin"></th>
+          <th ng-if="currentUser.admin" ng-click="orderBy('starred')">
+            <i class="fas fa-star-half-alt"></i>
+            <i
+              ng-if="order.field === 'name'"
+              class="fas"
+              ng-class="{'fa-sort-alpha-down-alt' : order.direction, 'fa-sort-alpha-down': !order.direction}"
+            ></i>
+          </th>
           <th ng-click="orderBy('name')">
             Name <span style="font-weight: lighter; font-size: small">({{count || 0}})</span>
             <i
@@ -116,9 +123,9 @@
               ng-class="{'fa-sort-numeric-down-alt' : order.direction, 'fa-sort-numeric-down': !order.direction}"
             ></i>
           </th>
-          <th><i class="fas fa-list-ol"></i></th>
+          <th><i class="fas fa-list-ol" uib-tooltip="Values"></i></th>
           <th ng-click="orderBy('language')">
-            <i class="fas fa-language"></i>
+            <i class="fas fa-language" uib-tooltip="Language"></i>
             <i
               ng-if="order.field === 'language'"
               class="fas"
@@ -126,7 +133,7 @@
             ></i>
           </th>
           <th ng-click="orderBy('upvotes')" class="hidden-sm visible-md visible-lg">
-            <i class="fas fa-thumbs-up"></i>
+            <i class="fas fa-thumbs-up" uib-tooltip="Upvotes"></i>
             <i
               ng-if="order.field === 'upvotes'"
               class="fas"
@@ -134,15 +141,23 @@
             ></i>
           </th>
           <th ng-click="orderBy('downvotes')" class="hidden-sm visible-md visible-lg">
-            <i class="fas fa-thumbs-down"></i>
+            <i class="fas fa-thumbs-down" uib-tooltip="Downvotes"></i>
             <i
               ng-if="order.field === 'downvotes'"
               class="fas"
               ng-class="{'fa-sort-numeric-down-alt' : order.direction, 'fa-sort-numeric-down': !order.direction}"
             ></i>
           </th>
+          <th ng-click="orderBy('likeRatio')" class="hidden-sm visible-md visible-lg">
+            <i class="fas fa-heart-square" uib-tooltip="Like Ratio"></i>
+            <i
+              ng-if="order.field === 'likeRatio'"
+              class="fas"
+              ng-class="{'fa-sort-numeric-down-alt' : order.direction, 'fa-sort-numeric-down': !order.direction}"
+            ></i>
+          </th>
           <th ng-click="orderBy('plays')" class="hidden-sm visible-md visible-lg">
-            <i class="fas fa-play"></i>
+            <i class="fas fa-play" uib-tooltip="Plays"></i>
             <i
               ng-if="order.field === 'plays'"
               class="fas"
@@ -150,7 +165,7 @@
             ></i>
           </th>
           <th ng-click="orderBy('playRatio')" class="hidden-sm visible-md visible-lg">
-            <i class="fas fa-percentage"></i>
+            <i class="fas fa-percentage" uib-tooltip="Play Ratio"></i>
             <i
               ng-if="order.field === 'playRatio'"
               class="fas"
@@ -189,6 +204,7 @@
           <td>{{list.language}}</td>
           <td class="hidden-sm visible-md visible-lg">{{list.upvotes}}</td>
           <td class="hidden-sm visible-md visible-lg">{{list.downvotes}}</td>
+          <td class="hidden-sm visible-md visible-lg">{{list.likeRatio.makePercentage(0)}}</td>
           <td class="hidden-sm visible-md visible-lg">{{list.plays}}</td>
           <td class="hidden-sm visible-md visible-lg">{{list.playRatio.makePercentage(0)}}</td>
           <td ng-if="currentUser.admin" ng-click="deleteList(list)" class="hidden-xs visible-sm visible-md visible-lg">

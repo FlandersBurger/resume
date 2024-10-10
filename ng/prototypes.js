@@ -676,7 +676,7 @@ Object.defineProperty(Number.prototype, "makeReadable", {
 
 Object.defineProperty(Number.prototype, "makePercentage", {
   value: function (decimals) {
-    if (!decimals) decimals = 2;
+    if (decimals === undefined) decimals = 2;
     return `${(this * 100).toFixed(decimals)}%`;
   },
 });
