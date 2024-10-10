@@ -172,6 +172,14 @@
               ng-class="{'fa-sort-numeric-down-alt' : order.direction, 'fa-sort-numeric-down': !order.direction}"
             ></i>
           </th>
+          <th ng-click="orderBy('bans')" class="hidden-sm visible-md visible-lg">
+            <i class="fas fa-ban" uib-tooltip="Bans"></i>
+            <i
+              ng-if="order.field === 'bans'"
+              class="fas"
+              ng-class="{'fa-sort-numeric-down-alt' : order.direction, 'fa-sort-numeric-down': !order.direction}"
+            ></i>
+          </th>
           <th ng-if="currentUser.admin" class="hidden-xs visible-sm visible-md visible-lg"></th>
         </tr>
       </thead>
@@ -207,6 +215,7 @@
           <td class="hidden-sm visible-md visible-lg">{{list.likeRatio.makePercentage(0)}}</td>
           <td class="hidden-sm visible-md visible-lg">{{list.plays}}</td>
           <td class="hidden-sm visible-md visible-lg">{{list.playRatio.makePercentage(0)}}</td>
+          <td class="hidden-sm visible-md visible-lg">{{list.bans}}</td>
           <td ng-if="currentUser.admin" ng-click="deleteList(list)" class="hidden-xs visible-sm visible-md visible-lg">
             <i class="fas fa-trash-alt delete"></i>
           </td>
