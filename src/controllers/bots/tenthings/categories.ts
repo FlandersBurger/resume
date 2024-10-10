@@ -7,7 +7,6 @@ export default [
   "Biology",
   "Business",
   "Celebrities",
-  "Challenging",
   "Chemistry",
   "Culture",
   "Entertainment",

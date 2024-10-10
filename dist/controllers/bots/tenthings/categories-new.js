@@ -11,7 +11,6 @@ const oldCategoryHelperDictionary = {
     Geography: "science.geography",
     Politics: "society.politics",
     Celebrities: "culture.celebrities",
-    Challenging: "",
     Mathematics: "science.mathematics",
     History: "history",
     Science: "science",

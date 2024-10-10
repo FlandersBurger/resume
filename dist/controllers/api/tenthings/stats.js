@@ -22,7 +22,6 @@ exports.tenthingsStatsRoute.get("/languages", async (_, res) => {
 });
 exports.tenthingsStatsRoute.get("/categories", async (_, res) => {
     const categories = await models_1.List.aggregate([
-        { $match: { categories: { $nin: ["Challenging"] } } },
         { $project: { categories: 1 } },
         { $unwind: "$categories" },
         { $group: { _id: "$categories", count: { $sum: 1 } } },
