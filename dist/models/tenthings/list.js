@@ -87,6 +87,11 @@ listSchema.virtual("upvotes").get(function () {
 listSchema.virtual("downvotes").get(function () {
     return this.votes ? this.votes.filter(({ vote }) => vote < 0).length : 0;
 });
+listSchema.virtual("likeRatio").get(function () {
+    if (!this.votes)
+        return 0;
+    return this.votes.filter(({ vote }) => vote > 0).length / this.votes.length;
+});
 listSchema.virtual("calculatedDifficulty").get(function () {
     return this.plays ? (this.hints ?? 0) / 6 / (this.plays - (this.skips ?? 0)) : 0;
 });
