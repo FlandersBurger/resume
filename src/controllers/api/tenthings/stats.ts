@@ -24,7 +24,7 @@ tenthingsStatsRoute.get("/languages", async (_: Request, res: Response) => {
 
 tenthingsStatsRoute.get("/categories", async (_: Request, res: Response) => {
   const categories = await List.aggregate([
-    { $match: { categories: { $nin: ["Non-English", "Challenging"] } } },
+    { $match: { categories: { $nin: ["Challenging"] } } },
     { $project: { categories: 1 } },
     { $unwind: "$categories" },
     { $group: { _id: "$categories", count: { $sum: 1 } } },

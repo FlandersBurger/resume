@@ -34,7 +34,6 @@ const oldCategoryHelperDictionary: { [key: string]: string } = {
   Entertainment: "culture.entertainment",
   Animation: "movies.animation",
   "Anime/Manga": "movies.anime",
-  "Non-English": "",
   Chemistry: "science.chemistry",
   Biology: "science.biology",
   Medicine: "science.medicine",

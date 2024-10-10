@@ -28,7 +28,6 @@ export default [
   "Movies",
   "Music",
   "Nature",
-  "Non-English",
   "Objects",
   "Politics",
   "Religion",

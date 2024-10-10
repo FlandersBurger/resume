@@ -385,12 +385,6 @@ angular
     $scope.setLanguage = (list, language) => {
       list.language = language.code;
       $scope.selectedLanguage = language.code;
-      const nonEnglishIndex = list.categories.indexOf("Non-English");
-      if (language.code !== "EN" && nonEnglishIndex < 0) {
-        list.categories.push("Non-English");
-      } else if (language.code === "EN" && nonEnglishIndex >= 0) {
-        list.categories.splice(nonEnglishIndex, 1);
-      }
       $scope.upsertList(list, {
         categories: list.categories,
         language: language.code,
