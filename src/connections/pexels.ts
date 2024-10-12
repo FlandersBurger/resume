@@ -11,7 +11,7 @@ class Pexels {
           },
         },
       );
-      return result.data.photos[0].src.original;
+      return result.data.photos[0].src?.original;
     } catch (e) {
       console.error(e);
     }

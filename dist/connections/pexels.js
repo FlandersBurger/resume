@@ -13,7 +13,7 @@ class Pexels {
                         Authorization: process.env.PEXELS_TOKEN,
                     },
                 });
-                return result.data.photos[0].src.original;
+                return result.data.photos[0].src?.original;
             }
             catch (e) {
                 console.error(e);

@@ -545,7 +545,7 @@ angular.module("app").controller("AsteroidsCtrl", function ($location, $scope, G
   function resizeCanvas() {
     console.log(window.innerWidth);
     canvas.width = window.innerWidth;
-    canvas.height = window.innerHeight - (canvas.width <= 768 ? 50 : 105);
+    canvas.height = window.innerHeight - (canvas.width <= 768 ? 50 : 65);
   }
 
   initialize();

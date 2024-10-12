@@ -17,12 +17,11 @@ if (!fs.existsSync(newLanguagePath)) {
 
 for (const file of files) {
   const cmd = `npx i18n-auto-translation -k ${process.env.GOOGLE_TOKEN} -p "${englishPath}/${file}" -t ${language}`;
-  console.log(cmd);
   execSync(cmd);
   fs.renameSync(`${englishPath}/${language}.json`, `${newLanguagePath}/${file}`);
 }
 
-if (fs.existsSync(`${newLanguagePath}/commands.json`)) {
+if (false && fs.existsSync(`${newLanguagePath}/commands.json`)) {
   const commandsData = JSON.parse(fs.readFileSync(`${newLanguagePath}/commands.json`, "utf8"));
   const commands = Object.keys(commandsData).reduce((ret, key) => {
     ret[key] = removeDiacritics(commandsData[key].toLowerCase().replace(" ", ""));

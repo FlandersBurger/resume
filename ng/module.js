@@ -10,6 +10,8 @@ angular.module("app", [
   "ui.bootstrap",
   "ngAnimate",
   "ngSanitize",
+  "ngMaterial",
+  "ngMessages",
   "ngDragDrop",
   "ngTagsInput",
   "vcRecaptcha",

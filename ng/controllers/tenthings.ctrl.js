@@ -1,7 +1,7 @@
 angular
   .module("app")
   //AngularJs can't have an arrow function here
-  .controller("TenThingsCtrl", function ($scope, $sce, $location, TenThingsSvc) {
+  .controller("TenThingsCtrl", function ($scope, $sce, $location, $mdToast, TenThingsSvc) {
     let page = 1;
     $scope.lists = [];
     $scope.search = "";
@@ -14,6 +14,10 @@ angular
     $scope.listIdsToDelete = [];
     $scope.confirmed = false;
     let exhausted = false;
+
+    const toast = (message) => {
+      $mdToast.show($mdToast.simple().textContent(message).position("bottom right").hideDelay(3000));
+    };
 
     const objectCategories = [
       "Art",
@@ -273,6 +277,7 @@ angular
       } else {
         const createdItemResponse = await TenThingsSvc.createListValue($scope.selectedList, $scope.newItem);
         $scope.selectedList.values.push(createdItemResponse.data);
+        toast(`"${$scope.newItem}" added`);
       }
       $scope.newItem.value = "";
       $scope.newItem.blurb = "";
@@ -285,6 +290,7 @@ angular
     $scope.deleteValue = (item) => {
       TenThingsSvc.deleteListValue($scope.selectedList, item).then((response) => {
         $scope.selectedList.values = $scope.selectedList.values.filter((value) => value._id !== item._id);
+        toast(`"${item.value}" removed`);
       });
     };
 
@@ -324,6 +330,7 @@ angular
             $scope.selectedList._id = data._id;
             $scope.getLists();
             $scope.saving = false;
+            toast(`"${data.name}" created`);
           }, console.error);
         }
       } else {
@@ -357,6 +364,7 @@ angular
       $scope.setSelectedList(response.data);
       $scope.highlightedListIds = [];
       $scope.confirmed = false;
+      toast("Merged");
       $("#modal-merge-lists").modal("hide");
     };
 
@@ -369,6 +377,7 @@ angular
       $scope.listIdsToDelete = [];
       $scope.highlightedListIds = [];
       $scope.confirmed = false;
+      toast("Lists deleted");
       $("#modal-delete-lists").modal("hide");
     };
 
@@ -431,10 +440,12 @@ angular
         .then(() => {
           $scope.setSelectedList($scope.selectedList);
           $scope.gettingBlurbs = false;
+          toast("Blurbs updated");
         })
         .catch((err) => {
           console.error(err);
           $scope.gettingBlurbs = false;
+          toast("Blurb update failed");
         });
     };
 

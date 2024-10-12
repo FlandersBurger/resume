@@ -1,17 +1,15 @@
-<div id="workout-page doodle-page" class="container">
+<div id="workout-page">
   <div class="well well-lg">
     <div class="input-group">
       <span class="input-group-addon">Exercise Time</span>
-      <input class="form-control" type="number" ng-model="timeExercising" ng-disabled="timeRemaining"/>
+      <input class="form-control" type="number" ng-model="timeExercising" ng-disabled="timeRemaining" />
     </div>
     <div class="input-group">
       <span class="input-group-addon">Rest Time</span>
-      <input class="form-control" type="number" ng-model="timeResting" ng-disabled="timeRemaining"/>
+      <input class="form-control" type="number" ng-model="timeResting" ng-disabled="timeRemaining" />
     </div>
     <br />
-    <button class="btn btn-default" ng-click="workout()">
-      {{ timeRemaining ? 'Stop' : 'Start' }} Workout
-    </button>
+    <button class="btn btn-default" ng-click="workout()">{{ timeRemaining ? 'Stop' : 'Start' }} Workout</button>
   </div>
   <h1 class="display-2">{{timer}}</h1>
   <h2 class="display-3" ng-show="timeRemaining">{{rest ? 'Next up: ' : ''}}{{exercise.name}} ({{progress()}})</h2>
