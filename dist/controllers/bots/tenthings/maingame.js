@@ -18,11 +18,9 @@ const skips_1 = require("./skips");
 const i18n_1 = __importDefault(require("../../../i18n"));
 const telegram_1 = __importDefault(require("../../../connections/telegram"));
 const createMaingame = async (chat_id) => {
-    const starredLists = await index_1.List.find({ starred: true }).select("_id");
     const game = new index_1.Game({
         chat_id,
         settings: { languages: ["EN"] },
-        pickedLists: starredLists.map(({ _id }) => _id),
     });
     const savedGame = await game.save();
     const newGame = await index_1.Game.findOne({ _id: savedGame._id }).exec();
