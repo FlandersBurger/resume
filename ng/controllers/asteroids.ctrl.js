@@ -1,21 +1,24 @@
 angular.module("app").controller("AsteroidsCtrl", function ($location, $scope, GameSvc) {
   $scope.announce = false;
-  const canvas = document.getElementById("asteroids-page");
+  const canvas = document.getElementsByTagName("canvas")[0];
   if (!canvas) {
     $location.path("/home");
     return alert("");
   }
   const ctx = canvas.getContext("2d");
+  if (!ctx) {
+    return $location.path("/home");
+  }
   ctx.font = "30px Comic Sans MS";
   ctx.fillStyle = "red";
   ctx.textAlign = "center";
-  const shots = {};
+  let shots = {};
   const asteroids = {};
   const powerups = {};
   const explosions = {};
   const map = {};
   const spacepics = 10;
-  const space = Math.floor(Math.random() * spacepics);
+  let space = Math.floor(Math.random() * spacepics);
   const powerupTypes = [
     {
       name: "speed",
@@ -544,8 +547,8 @@ angular.module("app").controller("AsteroidsCtrl", function ($location, $scope, G
   // then draws the new borders accordingly.
   function resizeCanvas() {
     console.log(window.innerWidth);
-    canvas.width = window.innerWidth;
-    canvas.height = window.innerHeight - (canvas.width <= 768 ? 50 : 65);
+    canvas.width = window.innerWidth - 1;
+    canvas.height = window.innerHeight - (canvas.width <= 768 ? 50 : 59);
   }
 
   initialize();
