@@ -3,6 +3,40 @@
   float: unset;
 }
 
+.category-list {
+  display: flex;
+  flex-direction: column;
+  flex-wrap: wrap;
+  list-style: none;
+  padding: 0;
+
+  > li {
+    flex: 1 1 0%;
+
+    > a {
+      width: 100%;
+      text-align: left;
+    }
+
+    > ul {
+      display: flex;
+      flex-direction: row;
+      flex-wrap: wrap;
+      list-style: none;
+      margin-bottom: 5px;
+      padding: 0 15px;
+
+      > li {
+        flex: 1 1 0%;
+
+        > a {
+          width: 100%;
+        }
+      }
+    }
+  }
+}
+
 .filter-list {
   display: flex;
   flex-direction: row;

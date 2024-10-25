@@ -19,23 +19,13 @@ angular
       $mdToast.show($mdToast.simple().textContent(message).position("bottom right").hideDelay(3000));
     };
 
-    const objectCategories = [
-      "Art",
-      "Culture",
-      "Food and Drink",
-      "Nature",
-      "Objects",
-      "Religion",
-      "Society",
-      "Sports",
-      "Transportation",
-    ];
+    const objectCategories = ["culture", "nature", "misc", "society", "sports"];
     $scope.blurbTypes = [
-      { api: "movies", categories: ["Movies"], text: "Get movie posters", adminOnly: false },
-      { api: "tv", categories: ["Television"], text: "Get tv posters", adminOnly: false },
-      { api: "actors", categories: ["Movies", "Television"], text: "Get actor pics", adminOnly: false },
-      { api: "books", categories: ["Literature"], text: "Get book covers", adminOnly: false },
-      { api: "musicvideos", categories: ["Music"], text: "Get music videos", adminOnly: true },
+      { api: "movies", categories: ["movies"], text: "Get movie posters", adminOnly: false },
+      { api: "tv", categories: ["television"], text: "Get tv posters", adminOnly: false },
+      { api: "actors", categories: ["movies", "television"], text: "Get actor pics", adminOnly: false },
+      { api: "books", categories: ["literature"], text: "Get book covers", adminOnly: false },
+      { api: "musicvideos", categories: ["music"], text: "Get music videos", adminOnly: true },
       { api: "unsplash", categories: objectCategories, text: "Get Unsplash pics", adminOnly: false },
       { api: "pexels", categories: objectCategories, text: "Get Pexels pics", adminOnly: false },
       { api: "wiki", categories: objectCategories, text: "Get Wiki pics", adminOnly: false },
@@ -230,6 +220,28 @@ angular
       $scope.getLists();
     };
 
+    $scope.getCategoryLabel = (categories) => {
+      if (!categories || categories.length === 0) return "";
+      const mainCategories = categories.filter((category) => !category.includes("."));
+      return mainCategories
+        .sort()
+        .map((category) => {
+          const subcategories = categories
+            .filter((subcategory) => subcategory.startsWith(category) && subcategory !== category)
+            .map(
+              (subcategory) =>
+                $scope.categories
+                  .find(({ value }) => value === category)
+                  .subcategories.find(({ value }) => value === subcategory)?.label,
+            );
+          return (
+            $scope.categories.find(({ value }) => value === category).label +
+            (subcategories.length > 0 ? " (" + subcategories.sort().join(", ") + ")" : "")
+          );
+        })
+        .join(", ");
+    };
+
     const getLists = async () => {
       if ($scope.loading || exhausted) return [];
       $scope.loading = true;
@@ -394,36 +406,29 @@ angular
     $scope.setLanguage = (list, language) => {
       list.language = language.code;
       $scope.selectedLanguage = language.code;
-      $scope.upsertList(list, {
-        categories: list.categories,
-        language: language.code,
-      });
+      $scope.upsertList(list, { language: language.code });
     };
 
     $scope.setDifficulty = (list, difficulty) => {
       list.difficulty = difficulty;
-      $scope.upsertList(list, {
-        difficulty: difficulty,
-      });
+      $scope.upsertList(list, { difficulty: difficulty });
     };
 
     $scope.setFrequency = (list, frequency) => {
       list.frequency = frequency;
-      $scope.upsertList(list, {
-        frequency: frequency,
-      });
+      $scope.upsertList(list, { frequency: frequency });
     };
 
     $scope.setCategory = (list, category) => {
-      const categoryIndex = list.categories.indexOf(category);
-      if (categoryIndex >= 0) {
-        list.categories.splice(categoryIndex, 1);
+      if (list.categories.some((listCategory) => listCategory === category)) {
+        list.categories = list.categories.filter((listCategory) => listCategory !== category);
+        if (list.categories.some((listCategory) => listCategory.startsWith(category)) && !category.includes(".")) {
+          list.categories = list.categories.filter((listCategory) => !listCategory.startsWith(category));
+        }
       } else {
         list.categories.push(category);
       }
-      $scope.upsertList(list, {
-        categories: list.categories,
-      });
+      $scope.upsertList(list, { categories: list.categories });
     };
 
     $scope.hasDuplicate = () =>

@@ -27,7 +27,7 @@
 </h5>
 <kbd ng-if="!selectedList._id">
   Please search existing lists first and add answers to them. Subjective, niche and duplicate lists will be deleted.
-  <span ng-if="selectedList.categories.indexOf('Music') >= 0">
+  <span ng-if="selectedList.categories.includes('music')">
     Music lists will be scrutinized by admins for global recognition.
   </span>
 </kbd>
@@ -99,7 +99,7 @@
       uib-tooltip="Categories"
     >
       <span ng-if="selectedList.categories.length === 0"><i class="fas fa-tags"></i> Select...</span>
-      {{selectedList.categories.join(", ")}}
+      {{getCategoryLabel(selectedList.categories)}}
     </button>
   </div>
   <div class="btn-group" role="group">

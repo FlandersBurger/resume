@@ -17,6 +17,8 @@ import emojis from "./emojis";
 import { CallbackData } from "./callbacks";
 import { TelegramUser } from "@root/connections/telegram";
 import { getListScore } from "./lists";
+import { getCategoryLabel } from "./categories-new";
+import { BotLanguage } from "./languages";
 
 export type UserInput = Message | CallbackData;
 export type Message = {
@@ -97,7 +99,7 @@ export const getListMessage = (list: HydratedDocument<IList> | IList): string =>
   let msg = `<b>${list.name}</b> [${list.language}]\n`;
   msg += `<i>by ${(list.creator as IUser).username}</i>\n`;
   msg += `${list.description ? `${parseSymbols(list.description)}\n` : ""}`;
-  msg += ` - Categories: ${list.categories.join(", ")}\n`;
+  msg += ` - Categories: ${getCategoryLabel(BotLanguage.EN, list)}\n`;
   msg += list.difficulty ? ` - Difficulty: ${getDifficultyMessage(list.difficulty)}\n` : "";
   msg += list.frequency ? ` - Frequency: ${capitalize(getFrequencyMessage(list.frequency))} changes\n` : "";
   return msg;

@@ -1,14 +1,15 @@
 import { Model, Schema, Types } from "mongoose";
 import db from "@root/db";
 import { IUser } from "@models/user";
+import { BotLanguage, SupportedLanguage } from "@root/controllers/bots/tenthings/languages";
 
 export interface IGameSettings extends Record<string, boolean | string[] | string> {
   intro: boolean;
   sass: boolean;
   snubs: boolean;
   updates: boolean;
-  languages: string[];
-  language: string;
+  languages: SupportedLanguage[];
+  language: BotLanguage;
 }
 
 export enum GameType {

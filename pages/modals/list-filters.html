@@ -23,17 +23,30 @@
         </ul>
         <br />
         <h4>Categories</h4>
-        <ul class="filter-list">
-          <li ng-repeat="category in categories | orderBy">
+        <ul class="category-list">
+          <li ng-repeat="category in categories | orderBy: 'value'">
             <a
               class="btn btn-sm"
-              ng-class="{'btn-default': !categoryFilter[category],'btn-primary': categoryFilter[category]}"
+              ng-click="setCategoryFilter(category.value)"
+              ng-class="{'btn-default': !categoryFilter[category.value],'btn-primary': categoryFilter[category.value]}"
+              uib-tooltip="{{categoryStats[category.value] || 0}} lists"
               href="#"
-              ng-click="setCategoryFilter(category)"
-              uib-tooltip="{{categoryStats[category] || 0}} lists"
             >
-              {{category}}
+              {{category.label}}
             </a>
+            <ul ng-if="categoryFilter[category.value]">
+              <li ng-repeat="subcategory in category.subcategories | orderBy: 'value'">
+                <a
+                  class="btn btn-sm"
+                  ng-click="setCategoryFilter(subcategory.value)"
+                  ng-class="{'btn-default': !categoryFilter[subcategory.value],'btn-primary': categoryFilter[subcategory.value]}"
+                  uib-tooltip="{{categoryStats[subcategory.value] || 0}} lists"
+                  href="#"
+                >
+                  {{subcategory.label}}
+                </a>
+              </li>
+            </ul>
           </li>
         </ul>
       </div>

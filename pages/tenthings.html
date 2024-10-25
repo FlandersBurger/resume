@@ -199,7 +199,7 @@
           </td>
           <td class="list-name" ng-click="setSelectedList(list)" ng-bind-html="highlightedSearchText(list.name)"></td>
           <td class="hidden-sm visible-md visible-lg" ng-click="setSelectedList(list)">
-            {{list.categories.join(", ")}}
+            {{getCategoryLabel(list.categories)}}
           </td>
           <td class="hidden-sm hidden-md visible-lg" ng-click="setSelectedList(list)">{{list.creator.username}}</td>
           <td class="hidden-xs visible-sm visible-md visible-lg" ng-click="setSelectedList(list)">

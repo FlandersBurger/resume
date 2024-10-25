@@ -5,8 +5,8 @@ import some from "lodash/some";
 import find from "lodash/find";
 import concat from "lodash/concat";
 import shuffle from "lodash/shuffle";
-import categories from "./categories";
-import languages, { Language, LanguageCount, BotLanguage, botLanguages } from "./languages";
+import categories from "./categories-new";
+import languages, { Language, LanguageCount, isSupportedLanguage, SupportedLanguage, isBotLanguage } from "./languages";
 import { getFrequencyMessage } from "./messages";
 import { parseSymbols, capitalize } from "@root/utils/string-helpers";
 import i18n from "@root/i18n";
@@ -123,15 +123,16 @@ export const playerStatsKeyboard = (): Keyboard => {
 export const categoriesKeyboard = ({ settings, disabledCategories }: IGame): Keyboard => {
   return {
     inline_keyboard: concat(
-      categories
+      Object.keys(categories)
         .sort((category1, category2) =>
-          i18n(settings.language, `categories.${category1}`) > i18n(settings.language, `categories.${category2}`)
+          i18n(settings.language, `${category1}.name`, { ns: "categories" }) >
+          i18n(settings.language, `${category2}.name`, { ns: "categories" })
             ? 1
             : -1,
         )
         .reduce((result: KeyboardButton[][], category: string, i: number) => {
           const button = getButton(
-            `${i18n(settings.language, `categories.${category}`)}: ${
+            `${i18n(settings.language, `${category}.name`, { ns: "categories" })}: ${
               disabledCategories.indexOf(category) < 0 ? emojis.on : emojis.off
             }`,
             { type: CallbackDataType.Category, id: category },
@@ -143,7 +144,44 @@ export const categoriesKeyboard = ({ settings, disabledCategories }: IGame): Key
           }
           return result;
         }, []),
-      [[getButton(`${i18n(settings.language, "settings")}`, { type: CallbackDataType.Setting, id: "settings" })]],
+      [[getButton(`⬅️ ${i18n(settings.language, "settings")}`, { type: CallbackDataType.Setting, id: "settings" })]],
+    ),
+  };
+};
+
+export const subcategoriesKeyboard = ({ settings, disabledCategories }: IGame, category: string): Keyboard => {
+  return {
+    inline_keyboard: concat(
+      [[getButton(`${i18n(settings.language, "All")}`, { type: CallbackDataType.Subcategory, id: category })]],
+      categories[category]
+        .sort((subcategory1, subcategory2) =>
+          i18n(settings.language, `${category}.${subcategory1}`, { ns: "categories" }) >
+          i18n(settings.language, `${category}.${subcategory2}`, { ns: "categories" })
+            ? 1
+            : -1,
+        )
+        .reduce((result: KeyboardButton[][], subcategory: string, i: number) => {
+          const button = getButton(
+            `${i18n(settings.language, `${category}.${subcategory}`, { ns: "categories" })}: ${
+              disabledCategories.indexOf(`${category}.${subcategory}`) < 0 ? emojis.on : emojis.off
+            }`,
+            { type: CallbackDataType.Subcategory, id: `${category}.${subcategory}` },
+          );
+          if (i % 2 === 0) {
+            result.push([button]);
+          } else {
+            result[result.length - 1].push(button);
+          }
+          return result;
+        }, []),
+      [
+        [
+          getButton(`⬅️ ${i18n(settings.language, "category", { count: 0 })}`, {
+            type: CallbackDataType.Setting,
+            id: "cats",
+          }),
+        ],
+      ],
     ),
   };
 };
@@ -198,10 +236,11 @@ export const languagesKeyboard = ({ settings }: IGame, availableLanguages: Langu
     inline_keyboard: concat(
       languages
         .filter((language) => some(availableLanguages, (availableLanguage) => availableLanguage._id === language.code))
+        .filter((language) => isSupportedLanguage(language.code))
         .sort()
         .reduce((result: KeyboardButton[][], language: Language, i: number) => {
           const button = getButton(
-            `${settings.languages.includes(language.code) ? emojis.on : emojis.off} ${language.code} - ${
+            `${settings.languages.includes(language.code as SupportedLanguage) ? emojis.on : emojis.off} ${language.code} - ${
               language.native
             } (${find(availableLanguages, (availableLanguage) => availableLanguage._id === language.code)!.count})`,
             { type: CallbackDataType.TriviaLanguages, id: language.code },
@@ -213,7 +252,7 @@ export const languagesKeyboard = ({ settings }: IGame, availableLanguages: Langu
           }
           return result;
         }, []),
-      [[getButton(`${i18n(settings.language, "settings")}`, { type: CallbackDataType.Setting, id: "settings" })]],
+      [[getButton(`⬅️ ${i18n(settings.language, "settings")}`, { type: CallbackDataType.Setting, id: "settings" })]],
     ),
   };
 };
@@ -222,7 +261,7 @@ export const languageKeyboard = ({ settings }: IGame): Keyboard => {
   return {
     inline_keyboard: concat(
       languages
-        .filter((language) => botLanguages.includes(language.code as BotLanguage))
+        .filter((language) => isBotLanguage(language.code))
         .sort()
         .reduce((result: KeyboardButton[][], language: Language, i: number) => {
           const button = getButton(
@@ -236,7 +275,7 @@ export const languageKeyboard = ({ settings }: IGame): Keyboard => {
           }
           return result;
         }, []),
-      [[getButton(`${i18n(settings.language, "settings")}`, { type: CallbackDataType.Setting, id: "settings" })]],
+      [[getButton(`⬅️ ${i18n(settings.language, "settings")}`, { type: CallbackDataType.Setting, id: "settings" })]],
     ),
   };
 };

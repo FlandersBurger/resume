@@ -25,9 +25,11 @@ import {
   listStatsKeyboard,
   playerStatsKeyboard,
   settingsKeyboard,
+  subcategoriesKeyboard,
 } from "./keyboards";
 import bot, { TelegramUser } from "@root/connections/telegram";
 import { adminOnly } from "./errors";
+import { isBotLanguage, isSupportedLanguage, SupportedLanguage } from "./languages";
 
 export type CallbackData = {
   id: string;
@@ -44,6 +46,7 @@ export enum CallbackDataType {
   Ban = "ban",
   BotLanguage = "lang",
   Category = "cat",
+  Subcategory = "sub",
   ConfirmBan = "cban",
   Description = "desc",
   Difficulty = "diff",
@@ -156,15 +159,32 @@ export default async (callbackQuery: CallbackData) => {
     case CallbackDataType.Category:
       if (game.chat_id != parseInt(process.env.GROUP_CHAT || "")) {
         if (await bot.checkAdmin(game.telegramChannel, callbackQuery.from.id)) {
+          bot.queueEditKeyboard(
+            game.telegramChannel,
+            callbackQuery.id,
+            subcategoriesKeyboard(game, callbackQuery.data),
+          );
+        }
+      }
+    case CallbackDataType.Subcategory:
+      if (game.chat_id != parseInt(process.env.GROUP_CHAT || "")) {
+        if (await bot.checkAdmin(game.telegramChannel, callbackQuery.from.id)) {
           if (!game || !callbackQuery.data) return;
           const categoryIndex = game.disabledCategories.indexOf(callbackQuery.data);
-          if (categoryIndex >= 0) {
-            game.disabledCategories.splice(categoryIndex, 1);
+          if (Object.keys(categories).includes(callbackQuery.data)) {
+            // Toggle all or none
           } else {
-            if (game.disabledCategories.length === categories.length - 1) {
-              return bot.queueMessage(game.telegramChannel, i18n(game.settings.language, "warnings.minimum1Category"));
+            if (categoryIndex >= 0) {
+              game.disabledCategories.splice(categoryIndex, 1);
+            } else {
+              if (game.disabledCategories.length === categories.length - 1) {
+                return bot.queueMessage(
+                  game.telegramChannel,
+                  i18n(game.settings.language, "warnings.minimum1Category"),
+                );
+              }
+              game.disabledCategories.push(callbackQuery.data);
             }
-            game.disabledCategories.push(callbackQuery.data);
           }
           await game.save();
           bot.answerCallback(
@@ -218,6 +238,7 @@ export default async (callbackQuery: CallbackData) => {
     case CallbackDataType.TriviaLanguages:
       if (await bot.checkAdmin(game.telegramChannel, callbackQuery.from.id)) {
         if (!game || !callbackQuery.data) return;
+        if (!isSupportedLanguage(callbackQuery.data)) return;
         const isSelected = game.settings.languages.includes(callbackQuery.data);
         if (isSelected) {
           game.settings.languages = game.settings.languages.filter((language) => language !== callbackQuery.data);
@@ -225,7 +246,7 @@ export default async (callbackQuery: CallbackData) => {
           game.settings.languages.push(callbackQuery.data);
         }
         if (!game.settings.languages || game.settings.languages.length === 0) {
-          game.settings.languages = ["EN"];
+          game.settings.languages = [SupportedLanguage.EN];
         }
         game.save();
         bot.answerCallback(
@@ -241,6 +262,7 @@ export default async (callbackQuery: CallbackData) => {
     case CallbackDataType.BotLanguage:
       if (await bot.checkAdmin(game.telegramChannel, callbackQuery.from.id)) {
         if (!game || !callbackQuery.data) return;
+        if (!isBotLanguage(callbackQuery.data)) return;
         game.settings.language = callbackQuery.data;
         await game.save();
         bot.answerCallback(callbackQuery.callbackQueryId, `${callbackQuery.data} -> New bot language`);

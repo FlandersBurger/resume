@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.convertCategory = void 0;
+exports.convertGameCategories = exports.convertListCategories = exports.convertCategory = void 0;
 const oldCategoryHelperDictionary = {
     Music: "music",
     Albums: "music.albums",
@@ -43,7 +43,18 @@ const oldCategoryHelperDictionary = {
 };
 const convertCategory = (oldCategory) => oldCategoryHelperDictionary[oldCategory];
 exports.convertCategory = convertCategory;
-exports.default = {
+const convertListCategories = async (list) => {
+    list.categories = list.categories.map(exports.convertCategory);
+    console.log(list.categories);
+    await list.save();
+};
+exports.convertListCategories = convertListCategories;
+const convertGameCategories = async (game) => {
+    game.disabledCategories = game.disabledCategories.map(exports.convertCategory);
+    await game.save();
+};
+exports.convertGameCategories = convertGameCategories;
+const categories = {
     music: [
         "albums",
         "artists",
@@ -83,7 +94,8 @@ exports.default = {
         "characters",
         "details",
         "filmography",
-        "marvel_dc",
+        "marvel",
+        "dc",
         "star_wars",
         "titles",
     ],
@@ -103,6 +115,7 @@ exports.default = {
     region: [
         "africa",
         "antarctica",
+        "arctic",
         "asia",
         "atlantic_ocean",
         "australia",
@@ -138,13 +151,16 @@ exports.default = {
         "southern_africa",
         "south_africa",
         "south_america",
-        "sub_saharan_africa",
         "united_kingdom",
         "united_states",
         "west_africa",
     ],
     history: [
         "ancient_civilizations",
+        "ancient_china",
+        "ancient_egypt",
+        "ancient_greece",
+        "ancient_rome",
         "artifacts",
         "conflict",
         "epochs",
@@ -153,11 +169,8 @@ exports.default = {
         "historic_places",
         "inventions",
         "monuments",
-        "ottoman_empire",
         "prehistory",
         "renaissance",
-        "roman_empire",
-        "russian_empire",
         "world_wars",
     ],
     science: ["astronomy", "biology", "chemistry", "geography", "mathematics", "medicine", "physics", "social_sciences"],
@@ -228,4 +241,5 @@ exports.default = {
         "software",
     ],
 };
+exports.default = categories;
 //# sourceMappingURL=categories-new.js.map

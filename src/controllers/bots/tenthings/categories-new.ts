@@ -1,47 +1,95 @@
+import { IGame, IGameList } from "@root/models/tenthings/game";
+import { IList } from "@root/models/tenthings/list";
+import { HydratedDocument } from "mongoose";
+import i18n from "@root/i18n";
+import { BotLanguage } from "./languages";
+import uniq from "lodash/uniq";
+
 const oldCategoryHelperDictionary: { [key: string]: string } = {
-  Music: "music",
-  Albums: "music.albums",
-  Lyrics: "music.lyrics",
-  Television: "television",
-  Movies: "movies",
-  Culture: "culture",
-  Geography: "science.geography",
-  Politics: "society.politics",
-  Celebrities: "culture.celebrities",
-  Mathematics: "science.mathematics",
-  History: "history",
-  Science: "science",
-  Gaming: "gaming",
-  Sports: "sports",
-  Religion: "culture.religion",
-  Objects: "misc.things",
-  Transportation: "society.transportation",
-  Adult: "culture.adult",
-  Art: "culture.visual_arts",
-  Literature: "literature",
-  Misc: "misc",
-  Funny: "misc.funny",
-  "Food and Drink": "culture.food_drink",
-  Society: "society",
-  Nature: "nature",
-  Technology: "technology",
-  Language: "language",
-  Business: "society.business",
-  Internet: "technology.internet",
-  "K-pop": "music.k_pop",
-  "K-drama": "television.k_drama",
-  Entertainment: "culture.entertainment",
-  Animation: "movies.animation",
   "Anime/Manga": "movies.anime",
-  Chemistry: "science.chemistry",
+  "Food and Drink": "culture.food_drink",
+  "K-drama": "television.k_drama",
+  "K-pop": "music.k_pop",
+  Adult: "culture.adult",
+  Albums: "music.albums",
+  Animation: "movies.animation",
+  Art: "culture.visual_arts",
   Biology: "science.biology",
+  Business: "society.business",
+  Celebrities: "culture.celebrities",
+  Chemistry: "science.chemistry",
+  Culture: "culture",
+  Entertainment: "culture.entertainment",
+  Funny: "misc.funny",
+  Gaming: "gaming",
+  Geography: "science.geography",
+  History: "history",
+  Internet: "technology.internet",
+  Language: "language",
+  Literature: "literature",
+  Lyrics: "music.lyrics",
+  Mathematics: "science.mathematics",
   Medicine: "science.medicine",
+  Misc: "misc",
+  Movies: "movies",
+  Music: "music",
+  Nature: "nature",
+  Objects: "misc.things",
+  Politics: "society.politics",
+  Religion: "culture.religion",
+  Science: "science",
+  Society: "society",
+  Sports: "sports",
+  Technology: "technology",
   Telenovelas: "television.telenovelas",
+  Television: "television",
+  Transportation: "society.transportation",
 };
 
-export const convertCategory = (oldCategory: string): string => oldCategoryHelperDictionary[oldCategory];
+export const convertCategory = (oldCategory: string): string => oldCategoryHelperDictionary[oldCategory] ?? oldCategory;
 
-export default {
+const convertCategories = (oldCategories: string[]): string[] => {
+  const newCategories = oldCategories
+    .filter((category) => !["Non-English", "Challenging"].includes(category))
+    .map(convertCategory)
+    .filter((category) => category);
+  const mainCategories = uniq(newCategories.map((category) => category.split(".")[0]));
+  for (const category of mainCategories) {
+    if (!newCategories.includes(category)) newCategories.push(category);
+  }
+  return uniq(newCategories);
+};
+
+export const convertListCategories = async (list: HydratedDocument<IList>) => {
+  list.categories = convertCategories(list.categories);
+  await list.save();
+};
+
+export const convertGameCategories = async (game: HydratedDocument<IGame>) => {
+  game.disabledCategories = uniq(game.disabledCategories.map(convertCategory).filter((category) => category));
+  console.log(game.disabledCategories);
+  game.list.categories = convertCategories(game.list.categories);
+  await game.save();
+};
+
+export const getCategoryLabel = (lng: BotLanguage, list: IList | IGameList): string => {
+  if (!list.categories || list.categories.length === 0) return "";
+  const mainCategories = list.categories.filter((category) => !category.includes("."));
+  return mainCategories
+    .sort()
+    .map((category) => {
+      const subcategories = list.categories
+        .filter((subcategory) => subcategory.startsWith(category) && subcategory !== category)
+        .map((subcategory) => i18n(lng, subcategory, { ns: "categories" }) || "");
+      return (
+        i18n(lng, `${category}.name`, { ns: "categories" }) +
+        (subcategories.length > 0 ? " (" + subcategories.sort().join(", ") + ")" : "")
+      );
+    })
+    .join(", ");
+};
+
+const categories: { [key: string]: string[] } = {
   music: [
     "albums",
     "artists",
@@ -81,7 +129,8 @@ export default {
     "characters",
     "details",
     "filmography",
-    "marvel_dc",
+    "marvel",
+    "dc",
     "star_wars",
     "titles",
   ],
@@ -89,6 +138,7 @@ export default {
     "adult",
     "astrology",
     "celebrations",
+    "celebrities",
     "entertainment",
     "fashion",
     "food_drink",
@@ -101,6 +151,7 @@ export default {
   region: [
     "africa",
     "antarctica",
+    "arctic",
     "asia",
     "atlantic_ocean",
     "australia",
@@ -136,13 +187,16 @@ export default {
     "southern_africa",
     "south_africa",
     "south_america",
-    "sub_saharan_africa",
     "united_kingdom",
     "united_states",
     "west_africa",
   ],
   history: [
     "ancient_civilizations",
+    "ancient_china",
+    "ancient_egypt",
+    "ancient_greece",
+    "ancient_rome",
     "artifacts",
     "conflict",
     "epochs",
@@ -151,11 +205,8 @@ export default {
     "historic_places",
     "inventions",
     "monuments",
-    "ottoman_empire",
     "prehistory",
     "renaissance",
-    "roman_empire",
-    "russian_empire",
     "world_wars",
   ],
   science: ["astronomy", "biology", "chemistry", "geography", "mathematics", "medicine", "physics", "social_sciences"],
@@ -200,7 +251,6 @@ export default {
     "automotive",
     "business",
     "capitals",
-    "celebrities",
     "cities",
     "countries",
     "crime",
@@ -226,3 +276,4 @@ export default {
     "software",
   ],
 };
+export default categories;

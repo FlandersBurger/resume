@@ -18,6 +18,7 @@ import { abortSkip, skipCache } from "./skips";
 import i18n from "@root/i18n";
 
 import bot from "@root/connections/telegram";
+import { getCategoryLabel } from "./categories-new";
 
 export const createMaingame = async (chat_id: number): Promise<HydratedDocument<IGame>> => {
   // const starredLists = await List.find({ starred: true }).select("_id");
@@ -109,9 +110,7 @@ export const newRound = async (currentGame: IGame) => {
   message += `\n${i18n(game.settings.language, "category", {
     count: game.list.categories.length,
   })}: `;
-  message += `<b>${game.list.categories
-    .map((category) => i18n(game.settings.language, `categories.${category}`))
-    .join(", ")}</b>`;
+  message += `<b>${getCategoryLabel(game.settings.language, list)}</b>`;
   bot.queueMessage(game.telegramChannel, message);
   setTimeout(() => {
     let message = `<b>${game.list.name}</b> (${game.list.answers}) ${i18n(
@@ -280,9 +279,7 @@ export const sendMaingameMessage = async (game: IGame, long = true) => {
     message += `${i18n(game.settings.language, "category", {
       count: game.list.categories.length,
     })}: `;
-    message += `<b>${game.list.categories
-      .map((category) => i18n(game.settings.language, `categories.${category}`))
-      .join(", ")}</b>\n`;
+    message += `<b>${getCategoryLabel(game.settings.language, game.list)}</b>\n`;
     message += game.list.description
       ? game.list.description.includes("href")
         ? game.list.description

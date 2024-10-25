@@ -127,13 +127,10 @@ export const updateMinigames = async () => {
     newMinigames.map(async (minigame) => {
       const existingMinigame = await Minigame.findOne({ language: minigame.language, answer: minigame.answer });
       if (existingMinigame) {
-        const combinedLists = uniq([...existingMinigame.lists, ...minigame.lists]);
-        if (combinedLists.length !== existingMinigame.lists.length) {
-          existingMinigame.lists = combinedLists;
-          existingMinigame.categories = uniq([...existingMinigame.categories, ...minigame.categories]);
-          await existingMinigame.save();
-          count.updated++;
-        }
+        existingMinigame.lists = uniq(minigame.lists);
+        existingMinigame.categories = uniq(minigame.categories);
+        await existingMinigame.save();
+        count.updated++;
       } else {
         await Minigame.create(minigame);
         count.new++;

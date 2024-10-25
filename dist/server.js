@@ -29,6 +29,8 @@ const users_1 = require("./controllers/api/users");
 const main_1 = require("./controllers/bots/tenthings/main");
 const queue_1 = require("./queue");
 const telegram_1 = __importDefault(require("./connections/telegram"));
+const categories_new_1 = require("./controllers/bots/tenthings/categories-new");
+const models_1 = require("./models");
 const serviceAccount = require("../keys/resume-172205-firebase-adminsdk-r34t7-0028c702be.json");
 exports.firebase = firebase_admin_1.default.initializeApp({
     credential: firebase_admin_1.default.credential.cert(serviceAccount),
@@ -65,6 +67,10 @@ server.listen(port, async () => {
     if (process.env.NODE_ENV === "production") {
         telegram_1.default.notifyAdmin("<b>Started Ten Things</b>");
     }
+    models_1.List.findOne({ _id: "63ec44eee63b26243a7c748d" }).then((list) => {
+        if (list)
+            (0, categories_new_1.convertListCategories)(list);
+    });
     await (0, queue_1.subscribe)("new_post", (post) => {
         exports.websocketServer.broadcast("new_post", post);
     });

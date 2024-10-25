@@ -49,7 +49,11 @@ export enum SupportedLanguage {
   ZH = "ZH",
 }
 
-export const botLanguages: BotLanguage[] = Object.values(BotLanguage);
+export const isSupportedLanguage = (language: string): language is SupportedLanguage =>
+  Object.values(SupportedLanguage).includes(language as SupportedLanguage);
+
+export const isBotLanguage = (language: string): language is BotLanguage =>
+  Object.values(BotLanguage).includes(language as BotLanguage);
 
 const languages: Array<Language> = [
   // { code: SupportedLanguage.AA, name: "Afar", native: "Qafaraf; ’Afar Af; Afaraf; Qafar af" },
