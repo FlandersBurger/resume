@@ -29,8 +29,6 @@ const users_1 = require("./controllers/api/users");
 const main_1 = require("./controllers/bots/tenthings/main");
 const queue_1 = require("./queue");
 const telegram_1 = __importDefault(require("./connections/telegram"));
-const categories_new_1 = require("./controllers/bots/tenthings/categories-new");
-const models_1 = require("./models");
 const serviceAccount = require("../keys/resume-172205-firebase-adminsdk-r34t7-0028c702be.json");
 exports.firebase = firebase_admin_1.default.initializeApp({
     credential: firebase_admin_1.default.credential.cert(serviceAccount),
@@ -67,26 +65,6 @@ server.listen(port, async () => {
     if (process.env.NODE_ENV === "production") {
         telegram_1.default.notifyAdmin("<b>Started Ten Things</b>");
     }
-    let N = 0;
-    let errors = 0;
-    const count = await models_1.Game.count();
-    const gameCursor = await models_1.Game.find().cursor();
-    await gameCursor.eachAsync(async (game) => {
-        N++;
-        if (N % 500 === 0)
-            console.log(`${N}/${count} games converted`);
-        try {
-            await (0, categories_new_1.convertGameCategories)(game);
-        }
-        catch (e) {
-            errors++;
-            if (N % 500 === 0) {
-                console.log(`${errors} errors`);
-                console.log(e);
-            }
-        }
-        return Promise.resolve();
-    });
     await (0, queue_1.subscribe)("new_post", (post) => {
         exports.websocketServer.broadcast("new_post", post);
     });

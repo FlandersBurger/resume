@@ -24,8 +24,6 @@ import { usersRoute } from "@api/users";
 import { tenthingsBotRoute } from "@tenthings/main";
 import { redisConnect, subscribe } from "@root/queue";
 import bot from "./connections/telegram";
-import { convertGameCategories } from "./controllers/bots/tenthings/categories-new";
-import { Game } from "./models";
 
 const serviceAccount = require("../keys/resume-172205-firebase-adminsdk-r34t7-0028c702be.json");
 
@@ -104,24 +102,24 @@ server.listen(port, async () => {
   //   if (i % 500 === 0) console.log(`${i}/${lists.length}`);
   // }
   // console.log(`Converted ${lists.length} lists`);
-  let N = 0;
-  let errors = 0;
-  const count = await Game.count();
-  const gameCursor = await Game.find().cursor();
-  await gameCursor.eachAsync(async (game) => {
-    N++;
-    if (N % 500 === 0) console.log(`${N}/${count} games converted`);
-    try {
-      await convertGameCategories(game);
-    } catch (e) {
-      errors++;
-      if (N % 500 === 0) {
-        console.log(`${errors} errors`);
-        console.log(e);
-      }
-    }
-    return Promise.resolve();
-  });
+  // let N = 0;
+  // let errors = 0;
+  // const count = await Game.count();
+  // const gameCursor = await Game.find().cursor();
+  // await gameCursor.eachAsync(async (game) => {
+  //   N++;
+  //   if (N % 500 === 0) console.log(`${N}/${count} games converted`);
+  //   try {
+  //     await convertGameCategories(game);
+  //   } catch (e) {
+  //     errors++;
+  //     if (N % 500 === 0) {
+  //       console.log(`${errors} errors`);
+  //       console.log(e);
+  //     }
+  //   }
+  //   return Promise.resolve();
+  // });
   //bot.setWebhook("tenthings");
   await subscribe("new_post", (post: any) => {
     websocketServer.broadcast("new_post", post);

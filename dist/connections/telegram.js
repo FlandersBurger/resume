@@ -335,7 +335,6 @@ class TelegramBot {
             let url = `${this.baseUrl}/editMessageReplyMarkup?chat_id=${channel.chat}&message_id=${message_id}`;
             if (keyboard)
                 url += `&reply_markup=${JSON.stringify(keyboard)}`;
-            console.log(url);
             try {
                 await (0, http_client_1.default)().get(encodeURI(url));
             }
