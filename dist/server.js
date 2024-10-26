@@ -29,8 +29,6 @@ const users_1 = require("./controllers/api/users");
 const main_1 = require("./controllers/bots/tenthings/main");
 const queue_1 = require("./queue");
 const telegram_1 = __importDefault(require("./connections/telegram"));
-const models_1 = require("./models");
-const categories_new_1 = require("./controllers/bots/tenthings/categories-new");
 const serviceAccount = require("../keys/resume-172205-firebase-adminsdk-r34t7-0028c702be.json");
 exports.firebase = firebase_admin_1.default.initializeApp({
     credential: firebase_admin_1.default.credential.cert(serviceAccount),
@@ -66,15 +64,6 @@ server.listen(port, async () => {
     (0, queue_1.redisConnect)();
     if (process.env.NODE_ENV === "production") {
         telegram_1.default.notifyAdmin("<b>Started Ten Things</b>");
-    }
-    const minigames = await models_1.Minigame.find().select("categories");
-    let i = 0;
-    console.log(`Converting ${minigames.length} minigames`);
-    for (const minigame of minigames) {
-        await (0, categories_new_1.convertMiniGameCategories)(minigame);
-        i++;
-        if (i % 500 === 0)
-            console.log(`${i}/${minigames.length}`);
     }
     await (0, queue_1.subscribe)("new_post", (post) => {
         exports.websocketServer.broadcast("new_post", post);

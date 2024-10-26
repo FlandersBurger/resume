@@ -24,8 +24,6 @@ import { usersRoute } from "@api/users";
 import { tenthingsBotRoute } from "@tenthings/main";
 import { redisConnect, subscribe } from "@root/queue";
 import bot from "./connections/telegram";
-import { Minigame } from "./models";
-import { convertMiniGameCategories } from "./controllers/bots/tenthings/categories-new";
 
 const serviceAccount = require("../keys/resume-172205-firebase-adminsdk-r34t7-0028c702be.json");
 
@@ -95,14 +93,14 @@ server.listen(port, async () => {
   if (process.env.NODE_ENV === "production") {
     bot.notifyAdmin("<b>Started Ten Things</b>");
   }
-  const minigames = await Minigame.find().select("categories");
-  let i = 0;
-  console.log(`Converting ${minigames.length} minigames`);
-  for (const minigame of minigames) {
-    await convertMiniGameCategories(minigame);
-    i++;
-    if (i % 500 === 0) console.log(`${i}/${minigames.length}`);
-  }
+  // const minigames = await Minigame.find().select("categories");
+  // let i = 0;
+  // console.log(`Converting ${minigames.length} minigames`);
+  // for (const minigame of minigames) {
+  //   await convertMiniGameCategories(minigame);
+  //   i++;
+  //   if (i % 500 === 0) console.log(`${i}/${minigames.length}`);
+  // }
   // console.log(`Converted ${lists.length} lists`);
   // let N = 0;
   // let errors = 0;
