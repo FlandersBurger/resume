@@ -152,12 +152,10 @@ exports.default = async (callbackQuery) => {
                         const subcategories = categories_new_1.default[callbackQuery.data];
                         if (subcategories.every((subcategory) => game.disabledCategories.includes(subcategory))) {
                             game.disabledCategories = game.disabledCategories.filter((category) => !category.startsWith(mainCategory));
-                            telegram_1.default.queueEditKeyboard(game.telegramChannel, callbackQuery.id, (0, keyboards_1.subcategoriesKeyboard)(game, mainCategory));
                         }
                         else {
                             game.disabledCategories.push(callbackQuery.data);
                             game.disabledCategories = game.disabledCategories.concat(subcategories);
-                            telegram_1.default.queueEditKeyboard(game.telegramChannel, callbackQuery.id, (0, keyboards_1.subcategoriesKeyboard)(game, mainCategory));
                         }
                     }
                     else {
@@ -170,6 +168,7 @@ exports.default = async (callbackQuery) => {
                     }
                     await game.save();
                     telegram_1.default.answerCallback(callbackQuery.callbackQueryId, `${(0, i18n_1.default)(game.settings.language, callbackQuery.data, { ns: "categories" })} -> ${categoryIndex >= 0 ? (0, i18n_1.default)(game.settings.language, "on") : (0, i18n_1.default)(game.settings.language, "off")}`);
+                    telegram_1.default.queueEditKeyboard(game.telegramChannel, callbackQuery.id, (0, keyboards_1.subcategoriesKeyboard)(game, mainCategory));
                 }
                 else {
                     if (!game)

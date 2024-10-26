@@ -179,11 +179,9 @@ export default async (callbackQuery: CallbackData) => {
               game.disabledCategories = game.disabledCategories.filter(
                 (category) => !category.startsWith(mainCategory),
               );
-              bot.queueEditKeyboard(game.telegramChannel, callbackQuery.id, subcategoriesKeyboard(game, mainCategory));
             } else {
               game.disabledCategories.push(callbackQuery.data);
               game.disabledCategories = game.disabledCategories.concat(subcategories);
-              bot.queueEditKeyboard(game.telegramChannel, callbackQuery.id, subcategoriesKeyboard(game, mainCategory));
             }
           } else {
             if (categoryIndex >= 0) {
@@ -199,6 +197,7 @@ export default async (callbackQuery: CallbackData) => {
               categoryIndex >= 0 ? i18n(game.settings.language, "on") : i18n(game.settings.language, "off")
             }`,
           );
+          bot.queueEditKeyboard(game.telegramChannel, callbackQuery.id, subcategoriesKeyboard(game, mainCategory));
         } else {
           if (!game) return;
           adminOnly(game, callbackQuery.from.name, callbackQuery.from);
