@@ -30,6 +30,7 @@ import {
 import bot, { TelegramUser } from "@root/connections/telegram";
 import { adminOnly } from "./errors";
 import { isBotLanguage, isSupportedLanguage, SupportedLanguage } from "./languages";
+import uniq from "lodash/uniq";
 
 export type CallbackData = {
   id: string;
@@ -174,13 +175,13 @@ export default async (callbackQuery: CallbackData) => {
           const mainCategory = callbackQuery.data.split(".")[0];
           const categoryIndex = game.disabledCategories.indexOf(callbackQuery.data);
           if (Object.keys(categories).includes(callbackQuery.data)) {
-            const subcategories = categories[callbackQuery.data];
+            const subcategories = categories[mainCategory];
             if (subcategories.every((subcategory) => game.disabledCategories.includes(subcategory))) {
               game.disabledCategories = game.disabledCategories.filter(
-                (category) => !category.startsWith(mainCategory),
+                (subcategory) => !subcategory.startsWith(mainCategory),
               );
             } else {
-              game.disabledCategories.push(callbackQuery.data);
+              game.disabledCategories.push(mainCategory);
               game.disabledCategories = game.disabledCategories.concat(subcategories);
             }
           } else {
@@ -190,6 +191,7 @@ export default async (callbackQuery: CallbackData) => {
               game.disabledCategories.push(callbackQuery.data);
             }
           }
+          game.disabledCategories = uniq(game.disabledCategories);
           await game.save();
           bot.answerCallback(
             callbackQuery.callbackQueryId,

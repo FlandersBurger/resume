@@ -21,6 +21,7 @@ const keyboards_1 = require("./keyboards");
 const telegram_1 = __importDefault(require("../../../connections/telegram"));
 const errors_1 = require("./errors");
 const languages_1 = require("./languages");
+const uniq_1 = __importDefault(require("lodash/uniq"));
 var CallbackDataType;
 (function (CallbackDataType) {
     CallbackDataType["Ban"] = "ban";
@@ -149,12 +150,12 @@ exports.default = async (callbackQuery) => {
                     const mainCategory = callbackQuery.data.split(".")[0];
                     const categoryIndex = game.disabledCategories.indexOf(callbackQuery.data);
                     if (Object.keys(categories_new_1.default).includes(callbackQuery.data)) {
-                        const subcategories = categories_new_1.default[callbackQuery.data];
+                        const subcategories = categories_new_1.default[mainCategory];
                         if (subcategories.every((subcategory) => game.disabledCategories.includes(subcategory))) {
-                            game.disabledCategories = game.disabledCategories.filter((category) => !category.startsWith(mainCategory));
+                            game.disabledCategories = game.disabledCategories.filter((subcategory) => !subcategory.startsWith(mainCategory));
                         }
                         else {
-                            game.disabledCategories.push(callbackQuery.data);
+                            game.disabledCategories.push(mainCategory);
                             game.disabledCategories = game.disabledCategories.concat(subcategories);
                         }
                     }
@@ -166,6 +167,7 @@ exports.default = async (callbackQuery) => {
                             game.disabledCategories.push(callbackQuery.data);
                         }
                     }
+                    game.disabledCategories = (0, uniq_1.default)(game.disabledCategories);
                     await game.save();
                     telegram_1.default.answerCallback(callbackQuery.callbackQueryId, `${(0, i18n_1.default)(game.settings.language, callbackQuery.data, { ns: "categories" })} -> ${categoryIndex >= 0 ? (0, i18n_1.default)(game.settings.language, "on") : (0, i18n_1.default)(game.settings.language, "off")}`);
                     telegram_1.default.queueEditKeyboard(game.telegramChannel, callbackQuery.id, (0, keyboards_1.subcategoriesKeyboard)(game, mainCategory));
