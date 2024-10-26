@@ -17,6 +17,7 @@ const stats_1 = require("./stats");
 const skips_1 = require("./skips");
 const i18n_1 = __importDefault(require("../../../i18n"));
 const telegram_1 = __importDefault(require("../../../connections/telegram"));
+const categories_new_1 = require("./categories-new");
 const createMaingame = async (chat_id) => {
     const game = new index_1.Game({
         chat_id,
@@ -93,9 +94,7 @@ const newRound = async (currentGame) => {
     message += `\n${(0, i18n_1.default)(game.settings.language, "category", {
         count: game.list.categories.length,
     })}: `;
-    message += `<b>${game.list.categories
-        .map((category) => (0, i18n_1.default)(game.settings.language, `categories.${category}`))
-        .join(", ")}</b>`;
+    message += `<b>${(0, categories_new_1.getCategoryLabel)(game.settings.language, list)}</b>`;
     telegram_1.default.queueMessage(game.telegramChannel, message);
     setTimeout(() => {
         let message = `<b>${game.list.name}</b> (${game.list.answers}) ${(0, i18n_1.default)(game.settings.language, "sentences.createdBy", { creator: game.list.creator.username })}`;
@@ -213,9 +212,7 @@ const sendMaingameMessage = async (game, long = true) => {
         message += `${(0, i18n_1.default)(game.settings.language, "category", {
             count: game.list.categories.length,
         })}: `;
-        message += `<b>${game.list.categories
-            .map((category) => (0, i18n_1.default)(game.settings.language, `categories.${category}`))
-            .join(", ")}</b>\n`;
+        message += `<b>${(0, categories_new_1.getCategoryLabel)(game.settings.language, game.list)}</b>\n`;
         message += game.list.description
             ? game.list.description.includes("href")
                 ? game.list.description

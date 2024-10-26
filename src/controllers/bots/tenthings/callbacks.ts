@@ -12,7 +12,7 @@ import { getListScore } from "./lists";
 
 import i18n from "@root/i18n";
 
-import categories from "./categories";
+import categories from "./categories-new";
 import emojis from "./emojis";
 import { initiateBan, processBan } from "./bans";
 import { getScores, getStats } from "./stats";
@@ -170,19 +170,24 @@ export default async (callbackQuery: CallbackData) => {
       if (game.chat_id != parseInt(process.env.GROUP_CHAT || "")) {
         if (await bot.checkAdmin(game.telegramChannel, callbackQuery.from.id)) {
           if (!game || !callbackQuery.data) return;
+          const mainCategory = callbackQuery.data.split(".")[0];
           const categoryIndex = game.disabledCategories.indexOf(callbackQuery.data);
           if (Object.keys(categories).includes(callbackQuery.data)) {
-            // Toggle all or none
+            const subcategories = categories[callbackQuery.data];
+            if (subcategories.every((subcategory) => game.disabledCategories.includes(subcategory))) {
+              game.disabledCategories = game.disabledCategories.filter(
+                (category) => !category.startsWith(mainCategory),
+              );
+              bot.queueEditKeyboard(game.telegramChannel, callbackQuery.id, categoriesKeyboard(game));
+            } else {
+              game.disabledCategories.push(callbackQuery.data);
+              game.disabledCategories = game.disabledCategories.concat(subcategories);
+              bot.queueEditKeyboard(game.telegramChannel, callbackQuery.id, subcategoriesKeyboard(game, mainCategory));
+            }
           } else {
             if (categoryIndex >= 0) {
               game.disabledCategories.splice(categoryIndex, 1);
             } else {
-              if (game.disabledCategories.length === categories.length - 1) {
-                return bot.queueMessage(
-                  game.telegramChannel,
-                  i18n(game.settings.language, "warnings.minimum1Category"),
-                );
-              }
               game.disabledCategories.push(callbackQuery.data);
             }
           }
@@ -193,7 +198,6 @@ export default async (callbackQuery: CallbackData) => {
               categoryIndex >= 0 ? i18n(game.settings.language, "on") : i18n(game.settings.language, "off")
             }`,
           );
-          bot.queueEditKeyboard(game.telegramChannel, callbackQuery.id, categoriesKeyboard(game));
         } else {
           if (!game) return;
           adminOnly(game, callbackQuery.from.name, callbackQuery.from);

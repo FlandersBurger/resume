@@ -26,7 +26,6 @@ import { redisConnect, subscribe } from "@root/queue";
 import bot from "./connections/telegram";
 import { convertGameCategories, convertListCategories } from "./controllers/bots/tenthings/categories-new";
 import { Game, List } from "./models";
-import { categoriesKeyboard, subcategoriesKeyboard } from "./controllers/bots/tenthings/keyboards";
 
 const serviceAccount = require("../keys/resume-172205-firebase-adminsdk-r34t7-0028c702be.json");
 
@@ -96,26 +95,28 @@ server.listen(port, async () => {
   if (process.env.NODE_ENV === "production") {
     bot.notifyAdmin("<b>Started Ten Things</b>");
   }
-  // List.find()
-  //   .select("categories")
-  //   .then(async (lists) => {
-  //     let i = 0;
-  //     console.log(`Converting ${lists.length} lists`);
-  //     for (const list of lists) {
-  //       await convertListCategories(list);
-  //       i++;
-  //       if (i % 500 === 0) console.log(`${i}/${lists.length}`);
-  //     }
-  //     console.log(`Converted ${lists.length} lists`);
-  //   });
-  Game.findOne({ _id: "5b6df0f734d1f33db3ff49f3" })
-    .select("chat_id topic settings disabledCategories list telegramChannel")
-    .then(async (game) => {
-      if (game) {
-        await convertGameCategories(game);
-        bot.sendKeyboard(game?.telegramChannel, "test", subcategoriesKeyboard(game, "music"));
-      }
-    });
+  const lists = await List.find().select("categories");
+  let i = 0;
+  console.log(`Converting ${lists.length} lists`);
+  for (const list of lists) {
+    await convertListCategories(list);
+    i++;
+    if (i % 500 === 0) console.log(`${i}/${lists.length}`);
+  }
+  console.log(`Converted ${lists.length} lists`);
+  let N = 0;
+  const count = await Game.count();
+  const gameCursor = await Game.find().cursor();
+  await gameCursor.eachAsync(async (game) => {
+    N++;
+    if (N % 500 === 0) console.log(`${N}/${count} games synced`);
+    try {
+      await convertGameCategories(game);
+    } catch (e) {
+      console.error(game.date);
+    }
+    return Promise.resolve();
+  });
   //bot.setWebhook("tenthings");
   await subscribe("new_post", (post: any) => {
     websocketServer.broadcast("new_post", post);

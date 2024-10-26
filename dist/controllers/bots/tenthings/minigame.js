@@ -101,13 +101,10 @@ const updateMinigames = async () => {
     await Promise.all(newMinigames.map(async (minigame) => {
         const existingMinigame = await index_1.Minigame.findOne({ language: minigame.language, answer: minigame.answer });
         if (existingMinigame) {
-            const combinedLists = (0, uniq_1.default)([...existingMinigame.lists, ...minigame.lists]);
-            if (combinedLists.length !== existingMinigame.lists.length) {
-                existingMinigame.lists = combinedLists;
-                existingMinigame.categories = (0, uniq_1.default)([...existingMinigame.categories, ...minigame.categories]);
-                await existingMinigame.save();
-                count.updated++;
-            }
+            existingMinigame.lists = (0, uniq_1.default)(minigame.lists);
+            existingMinigame.categories = (0, uniq_1.default)(minigame.categories);
+            await existingMinigame.save();
+            count.updated++;
         }
         else {
             await index_1.Minigame.create(minigame);

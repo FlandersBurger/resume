@@ -1,59 +1,92 @@
 "use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.convertGameCategories = exports.convertListCategories = exports.convertCategory = void 0;
-const oldCategoryHelperDictionary = {
-    Music: "music",
-    Albums: "music.albums",
-    Lyrics: "music.lyrics",
-    Television: "television",
-    Movies: "movies",
-    Culture: "culture",
-    Geography: "science.geography",
-    Politics: "society.politics",
-    Celebrities: "culture.celebrities",
-    Mathematics: "science.mathematics",
-    History: "history",
-    Science: "science",
-    Gaming: "gaming",
-    Sports: "sports",
-    Religion: "culture.religion",
-    Objects: "misc.things",
-    Transportation: "society.transportation",
-    Adult: "culture.adult",
-    Art: "culture.visual_arts",
-    Literature: "literature",
-    Misc: "misc",
-    Funny: "misc.funny",
-    "Food and Drink": "culture.food_drink",
-    Society: "society",
-    Nature: "nature",
-    Technology: "technology",
-    Language: "language",
-    Business: "society.business",
-    Internet: "technology.internet",
-    "K-pop": "music.k_pop",
-    "K-drama": "television.k_drama",
-    Entertainment: "culture.entertainment",
-    Animation: "movies.animation",
-    "Anime/Manga": "movies.anime",
-    Chemistry: "science.chemistry",
-    Biology: "science.biology",
-    Medicine: "science.medicine",
-    Telenovelas: "television.telenovelas",
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
 };
-const convertCategory = (oldCategory) => oldCategoryHelperDictionary[oldCategory];
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.getCategoryLabel = exports.convertGameCategories = exports.convertListCategories = exports.convertCategory = void 0;
+const i18n_1 = __importDefault(require("../../../i18n"));
+const uniq_1 = __importDefault(require("lodash/uniq"));
+const oldCategoryHelperDictionary = {
+    "Anime/Manga": "movies.anime",
+    "Food and Drink": "culture.food_drink",
+    "K-drama": "television.k_drama",
+    "K-pop": "music.k_pop",
+    Adult: "culture.adult",
+    Albums: "music.albums",
+    Animation: "movies.animation",
+    Art: "culture.visual_arts",
+    Biology: "science.biology",
+    Business: "society.business",
+    Celebrities: "culture.celebrities",
+    Chemistry: "science.chemistry",
+    Culture: "culture",
+    Entertainment: "culture.entertainment",
+    Funny: "misc.funny",
+    Gaming: "gaming",
+    Geography: "science.geography",
+    History: "history",
+    Internet: "technology.internet",
+    Language: "language",
+    Literature: "literature",
+    Lyrics: "music.lyrics",
+    Mathematics: "science.mathematics",
+    Medicine: "science.medicine",
+    Misc: "misc",
+    Movies: "movies",
+    Music: "music",
+    Nature: "nature",
+    Objects: "misc.things",
+    Politics: "society.politics",
+    Religion: "culture.religion",
+    Science: "science",
+    Society: "society",
+    Sports: "sports",
+    Technology: "technology",
+    Telenovelas: "television.telenovelas",
+    Television: "television",
+    Transportation: "society.transportation",
+};
+const convertCategory = (oldCategory) => oldCategoryHelperDictionary[oldCategory] ?? oldCategory;
 exports.convertCategory = convertCategory;
+const convertCategories = (oldCategories) => {
+    const newCategories = oldCategories
+        .filter((category) => !["Non-English", "Challenging"].includes(category))
+        .map(exports.convertCategory)
+        .filter((category) => category);
+    const mainCategories = (0, uniq_1.default)(newCategories.map((category) => category.split(".")[0]));
+    for (const category of mainCategories) {
+        if (!newCategories.includes(category))
+            newCategories.push(category);
+    }
+    return (0, uniq_1.default)(newCategories);
+};
 const convertListCategories = async (list) => {
-    list.categories = list.categories.map(exports.convertCategory);
-    console.log(list.categories);
+    list.categories = convertCategories(list.categories);
     await list.save();
 };
 exports.convertListCategories = convertListCategories;
 const convertGameCategories = async (game) => {
-    game.disabledCategories = game.disabledCategories.map(exports.convertCategory);
+    game.disabledCategories = (0, uniq_1.default)(game.disabledCategories.map(exports.convertCategory).filter((category) => category));
+    game.list.categories = convertCategories(game.list.categories);
     await game.save();
 };
 exports.convertGameCategories = convertGameCategories;
+const getCategoryLabel = (lng, list) => {
+    if (!list.categories || list.categories.length === 0)
+        return "";
+    const mainCategories = list.categories.filter((category) => !category.includes("."));
+    return mainCategories
+        .sort()
+        .map((category) => {
+        const subcategories = list.categories
+            .filter((subcategory) => subcategory.startsWith(category) && subcategory !== category)
+            .map((subcategory) => (0, i18n_1.default)(lng, subcategory, { ns: "categories" }) || "");
+        return ((0, i18n_1.default)(lng, `${category}.name`, { ns: "categories" }) +
+            (subcategories.length > 0 ? " (" + subcategories.sort().join(", ") + ")" : ""));
+    })
+        .join(", ");
+};
+exports.getCategoryLabel = getCategoryLabel;
 const categories = {
     music: [
         "albums",
@@ -103,6 +136,7 @@ const categories = {
         "adult",
         "astrology",
         "celebrations",
+        "celebrities",
         "entertainment",
         "fashion",
         "food_drink",
@@ -215,7 +249,6 @@ const categories = {
         "automotive",
         "business",
         "capitals",
-        "celebrities",
         "cities",
         "countries",
         "crime",

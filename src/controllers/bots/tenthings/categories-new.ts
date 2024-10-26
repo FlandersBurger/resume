@@ -67,7 +67,6 @@ export const convertListCategories = async (list: HydratedDocument<IList>) => {
 
 export const convertGameCategories = async (game: HydratedDocument<IGame>) => {
   game.disabledCategories = uniq(game.disabledCategories.map(convertCategory).filter((category) => category));
-  console.log(game.disabledCategories);
   game.list.categories = convertCategories(game.list.categories);
   await game.save();
 };

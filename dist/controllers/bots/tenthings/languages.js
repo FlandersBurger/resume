@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.botLanguages = exports.SupportedLanguage = exports.BotLanguage = void 0;
+exports.isBotLanguage = exports.isSupportedLanguage = exports.SupportedLanguage = exports.BotLanguage = void 0;
 var BotLanguage;
 (function (BotLanguage) {
     BotLanguage["AR"] = "AR";
@@ -40,7 +40,10 @@ var SupportedLanguage;
     SupportedLanguage["TR"] = "TR";
     SupportedLanguage["ZH"] = "ZH";
 })(SupportedLanguage || (exports.SupportedLanguage = SupportedLanguage = {}));
-exports.botLanguages = Object.values(BotLanguage);
+const isSupportedLanguage = (language) => Object.values(SupportedLanguage).includes(language);
+exports.isSupportedLanguage = isSupportedLanguage;
+const isBotLanguage = (language) => Object.values(BotLanguage).includes(language);
+exports.isBotLanguage = isBotLanguage;
 const languages = [
     { code: SupportedLanguage.AR, name: "Arabic", native: "العربية" },
     { code: SupportedLanguage.DE, name: "German", native: "Deutsch" },

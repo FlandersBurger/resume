@@ -37,6 +37,8 @@ const difference_1 = __importDefault(require("lodash/difference"));
 const i18n_1 = __importStar(require("../../../i18n"));
 const emojis_1 = __importDefault(require("./emojis"));
 const lists_1 = require("./lists");
+const categories_new_1 = require("./categories-new");
+const languages_1 = require("./languages");
 const getLogicMessage = (language) => {
     const rules = (0, i18n_1.t_list)(language, "rules", { maxHints: MAXHINTS, returnObjects: true });
     return rules.reduce((message, rule, i) => `${message}${i + 1}: ${rule}\n`, "");
@@ -112,7 +114,7 @@ const getListMessage = (list) => {
     let msg = `<b>${list.name}</b> [${list.language}]\n`;
     msg += `<i>by ${list.creator.username}</i>\n`;
     msg += `${list.description ? `${(0, string_helpers_1.parseSymbols)(list.description)}\n` : ""}`;
-    msg += ` - Categories: ${list.categories.join(", ")}\n`;
+    msg += ` - Categories: ${(0, categories_new_1.getCategoryLabel)(languages_1.BotLanguage.EN, list)}\n`;
     msg += list.difficulty ? ` - Difficulty: ${(0, exports.getDifficultyMessage)(list.difficulty)}\n` : "";
     msg += list.frequency ? ` - Frequency: ${(0, string_helpers_2.capitalize)((0, exports.getFrequencyMessage)(list.frequency))} changes\n` : "";
     return msg;

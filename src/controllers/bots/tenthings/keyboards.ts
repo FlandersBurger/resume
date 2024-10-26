@@ -150,9 +150,17 @@ export const categoriesKeyboard = ({ settings, disabledCategories }: IGame): Key
 };
 
 export const subcategoriesKeyboard = ({ settings, disabledCategories }: IGame, category: string): Keyboard => {
+  const allSelected = categories[category].every((subcategory) => disabledCategories.includes(subcategory));
   return {
     inline_keyboard: concat(
-      [[getButton(`${i18n(settings.language, "All")}`, { type: CallbackDataType.Subcategory, id: category })]],
+      [
+        [
+          getButton(`${i18n(settings.language, allSelected ? "None" : "All")}`, {
+            type: CallbackDataType.Subcategory,
+            id: category,
+          }),
+        ],
+      ],
       categories[category]
         .sort((subcategory1, subcategory2) =>
           i18n(settings.language, `${category}.${subcategory1}`, { ns: "categories" }) >

@@ -21,7 +21,6 @@ exports.tenthingsCategoriesRoute.get("/", (_, res) => {
                 label: (0, i18n_1.default)("en", `${category}.${subcategory}`, { ns: "categories" }),
             })),
         }));
-        console.log(categories);
         res.json(categories);
     }
 });

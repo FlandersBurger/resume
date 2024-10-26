@@ -149,6 +149,7 @@ class TelegramBot {
             (0, http_client_1.default)()
                 .get(url)
                 .catch((error) => {
+                console.log(channel);
                 if (error.response) {
                     if (error.response.data.description === "Bad Gateway") {
                         if (retries < 3) {

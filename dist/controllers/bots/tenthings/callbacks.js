@@ -12,7 +12,7 @@ const moment_1 = __importDefault(require("moment"));
 const messages_1 = require("./messages");
 const lists_1 = require("./lists");
 const i18n_1 = __importDefault(require("../../../i18n"));
-const categories_1 = __importDefault(require("./categories"));
+const categories_new_1 = __importDefault(require("./categories-new"));
 const emojis_1 = __importDefault(require("./emojis"));
 const bans_1 = require("./bans");
 const stats_1 = require("./stats");
@@ -20,11 +20,13 @@ const cache_1 = require("./cache");
 const keyboards_1 = require("./keyboards");
 const telegram_1 = __importDefault(require("../../../connections/telegram"));
 const errors_1 = require("./errors");
+const languages_1 = require("./languages");
 var CallbackDataType;
 (function (CallbackDataType) {
     CallbackDataType["Ban"] = "ban";
     CallbackDataType["BotLanguage"] = "lang";
     CallbackDataType["Category"] = "cat";
+    CallbackDataType["Subcategory"] = "sub";
     CallbackDataType["ConfirmBan"] = "cban";
     CallbackDataType["Description"] = "desc";
     CallbackDataType["Difficulty"] = "diff";
@@ -135,21 +137,38 @@ exports.default = async (callbackQuery) => {
         case CallbackDataType.Category:
             if (game.chat_id != parseInt(process.env.GROUP_CHAT || "")) {
                 if (await telegram_1.default.checkAdmin(game.telegramChannel, callbackQuery.from.id)) {
+                    telegram_1.default.queueEditKeyboard(game.telegramChannel, callbackQuery.id, (0, keyboards_1.subcategoriesKeyboard)(game, callbackQuery.data));
+                }
+            }
+        case CallbackDataType.Subcategory:
+            if (game.chat_id != parseInt(process.env.GROUP_CHAT || "")) {
+                if (await telegram_1.default.checkAdmin(game.telegramChannel, callbackQuery.from.id)) {
                     if (!game || !callbackQuery.data)
                         return;
+                    const mainCategory = callbackQuery.data.split(".")[0];
                     const categoryIndex = game.disabledCategories.indexOf(callbackQuery.data);
-                    if (categoryIndex >= 0) {
-                        game.disabledCategories.splice(categoryIndex, 1);
+                    if (Object.keys(categories_new_1.default).includes(callbackQuery.data)) {
+                        const subcategories = categories_new_1.default[callbackQuery.data];
+                        if (subcategories.every((subcategory) => game.disabledCategories.includes(subcategory))) {
+                            game.disabledCategories = game.disabledCategories.filter((category) => !category.startsWith(mainCategory));
+                            telegram_1.default.queueEditKeyboard(game.telegramChannel, callbackQuery.id, (0, keyboards_1.categoriesKeyboard)(game));
+                        }
+                        else {
+                            game.disabledCategories.push(callbackQuery.data);
+                            game.disabledCategories = game.disabledCategories.concat(subcategories);
+                            telegram_1.default.queueEditKeyboard(game.telegramChannel, callbackQuery.id, (0, keyboards_1.subcategoriesKeyboard)(game, mainCategory));
+                        }
                     }
                     else {
-                        if (game.disabledCategories.length === categories_1.default.length - 1) {
-                            return telegram_1.default.queueMessage(game.telegramChannel, (0, i18n_1.default)(game.settings.language, "warnings.minimum1Category"));
+                        if (categoryIndex >= 0) {
+                            game.disabledCategories.splice(categoryIndex, 1);
                         }
-                        game.disabledCategories.push(callbackQuery.data);
+                        else {
+                            game.disabledCategories.push(callbackQuery.data);
+                        }
                     }
                     await game.save();
                     telegram_1.default.answerCallback(callbackQuery.callbackQueryId, `${callbackQuery.data} -> ${categoryIndex >= 0 ? (0, i18n_1.default)(game.settings.language, "on") : (0, i18n_1.default)(game.settings.language, "off")}`);
-                    telegram_1.default.queueEditKeyboard(game.telegramChannel, callbackQuery.id, (0, keyboards_1.categoriesKeyboard)(game));
                 }
                 else {
                     if (!game)
@@ -199,6 +218,8 @@ exports.default = async (callbackQuery) => {
             if (await telegram_1.default.checkAdmin(game.telegramChannel, callbackQuery.from.id)) {
                 if (!game || !callbackQuery.data)
                     return;
+                if (!(0, languages_1.isSupportedLanguage)(callbackQuery.data))
+                    return;
                 const isSelected = game.settings.languages.includes(callbackQuery.data);
                 if (isSelected) {
                     game.settings.languages = game.settings.languages.filter((language) => language !== callbackQuery.data);
@@ -207,7 +228,7 @@ exports.default = async (callbackQuery) => {
                     game.settings.languages.push(callbackQuery.data);
                 }
                 if (!game.settings.languages || game.settings.languages.length === 0) {
-                    game.settings.languages = ["EN"];
+                    game.settings.languages = [languages_1.SupportedLanguage.EN];
                 }
                 game.save();
                 telegram_1.default.answerCallback(callbackQuery.callbackQueryId, `${callbackQuery.data} -> ${isSelected ? (0, i18n_1.default)(game.settings.language, "off") : (0, i18n_1.default)(game.settings.language, "on")}`);
@@ -218,6 +239,8 @@ exports.default = async (callbackQuery) => {
         case CallbackDataType.BotLanguage:
             if (await telegram_1.default.checkAdmin(game.telegramChannel, callbackQuery.from.id)) {
                 if (!game || !callbackQuery.data)
+                    return;
+                if (!(0, languages_1.isBotLanguage)(callbackQuery.data))
                     return;
                 game.settings.language = callbackQuery.data;
                 await game.save();
