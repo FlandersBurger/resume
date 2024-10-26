@@ -140,7 +140,9 @@ const categoriesKeyboard = ({ settings, disabledCategories }) => {
             ? 1
             : -1)
             .reduce((result, category, i) => {
-            const button = getButton(`${(0, i18n_1.default)(settings.language, `${category}.name`, { ns: "categories" })}: ${disabledCategories.indexOf(category) < 0 ? emojis_1.default.on : emojis_1.default.off}`, { type: callbacks_1.CallbackDataType.Category, id: category });
+            const allSelected = !categories_new_1.default[category].some((subcategory) => disabledCategories.includes(`${category}.${subcategory}`));
+            const noneSelected = categories_new_1.default[category].every((subcategory) => disabledCategories.includes(`${category}.${subcategory}`));
+            const button = getButton(`${(0, i18n_1.default)(settings.language, `${category}.name`, { ns: "categories" })}: ${allSelected ? emojis_1.default.green : noneSelected ? emojis_1.default.off : emojis_1.default.on}`, { type: callbacks_1.CallbackDataType.Category, id: category });
             if (i % 2 === 0) {
                 result.push([button]);
             }

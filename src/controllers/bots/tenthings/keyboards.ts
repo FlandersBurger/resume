@@ -131,9 +131,15 @@ export const categoriesKeyboard = ({ settings, disabledCategories }: IGame): Key
             : -1,
         )
         .reduce((result: KeyboardButton[][], category: string, i: number) => {
+          const allSelected = !categories[category].some((subcategory) =>
+            disabledCategories.includes(`${category}.${subcategory}`),
+          );
+          const noneSelected = categories[category].every((subcategory) =>
+            disabledCategories.includes(`${category}.${subcategory}`),
+          );
           const button = getButton(
             `${i18n(settings.language, `${category}.name`, { ns: "categories" })}: ${
-              disabledCategories.indexOf(category) < 0 ? emojis.on : emojis.off
+              allSelected ? emojis.green : noneSelected ? emojis.off : emojis.on
             }`,
             { type: CallbackDataType.Category, id: category },
           );
