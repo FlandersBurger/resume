@@ -178,7 +178,7 @@ export default async (callbackQuery: CallbackData) => {
               game.disabledCategories = game.disabledCategories.filter(
                 (category) => !category.startsWith(mainCategory),
               );
-              bot.queueEditKeyboard(game.telegramChannel, callbackQuery.id, categoriesKeyboard(game));
+              bot.queueEditKeyboard(game.telegramChannel, callbackQuery.id, subcategoriesKeyboard(game, mainCategory));
             } else {
               game.disabledCategories.push(callbackQuery.data);
               game.disabledCategories = game.disabledCategories.concat(subcategories);
@@ -194,7 +194,7 @@ export default async (callbackQuery: CallbackData) => {
           await game.save();
           bot.answerCallback(
             callbackQuery.callbackQueryId,
-            `${callbackQuery.data} -> ${
+            `${i18n(game.settings.language, callbackQuery.data, { ns: "categories" })} -> ${
               categoryIndex >= 0 ? i18n(game.settings.language, "on") : i18n(game.settings.language, "off")
             }`,
           );
