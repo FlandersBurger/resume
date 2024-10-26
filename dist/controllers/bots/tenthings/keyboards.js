@@ -153,11 +153,11 @@ const categoriesKeyboard = ({ settings, disabledCategories }) => {
 };
 exports.categoriesKeyboard = categoriesKeyboard;
 const subcategoriesKeyboard = ({ settings, disabledCategories }, category) => {
-    const allSelected = categories_new_1.default[category].every((subcategory) => disabledCategories.includes(`${category}.${subcategory}`));
+    const allDisabled = categories_new_1.default[category].every((subcategory) => disabledCategories.includes(`${category}.${subcategory}`));
     return {
         inline_keyboard: (0, concat_1.default)([
             [
-                getButton(`${(0, i18n_1.default)(settings.language, allSelected ? "None" : "All")}`, {
+                getButton(`${(0, i18n_1.default)(settings.language, allDisabled ? "All" : "None")}`, {
                     type: callbacks_1.CallbackDataType.Subcategory,
                     id: category,
                 }),
