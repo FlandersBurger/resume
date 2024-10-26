@@ -150,7 +150,9 @@ export const categoriesKeyboard = ({ settings, disabledCategories }: IGame): Key
 };
 
 export const subcategoriesKeyboard = ({ settings, disabledCategories }: IGame, category: string): Keyboard => {
-  const allSelected = categories[category].every((subcategory) => disabledCategories.includes(subcategory));
+  const allSelected = categories[category].every((subcategory) =>
+    disabledCategories.includes(`${category}.${subcategory}`),
+  );
   return {
     inline_keyboard: concat(
       [

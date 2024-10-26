@@ -153,7 +153,7 @@ const categoriesKeyboard = ({ settings, disabledCategories }) => {
 };
 exports.categoriesKeyboard = categoriesKeyboard;
 const subcategoriesKeyboard = ({ settings, disabledCategories }, category) => {
-    const allSelected = categories_new_1.default[category].every((subcategory) => disabledCategories.includes(subcategory));
+    const allSelected = categories_new_1.default[category].every((subcategory) => disabledCategories.includes(`${category}.${subcategory}`));
     return {
         inline_keyboard: (0, concat_1.default)([
             [

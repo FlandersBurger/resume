@@ -174,21 +174,31 @@ export default async (callbackQuery: CallbackData) => {
           if (!game || !callbackQuery.data) return;
           const mainCategory = callbackQuery.data.split(".")[0];
           const categoryIndex = game.disabledCategories.indexOf(callbackQuery.data);
+          const subcategories = categories[mainCategory].map((subcategory) => `${mainCategory}.${subcategory}`);
           if (Object.keys(categories).includes(callbackQuery.data)) {
-            const subcategories = categories[mainCategory].map((subcategory) => `${mainCategory}.${subcategory}`);
             if (subcategories.every((subcategory) => game.disabledCategories.includes(subcategory))) {
+              // Enable all from category
               game.disabledCategories = game.disabledCategories.filter(
                 (subcategory) => !subcategory.startsWith(mainCategory),
               );
             } else {
+              // Disable all from category
               game.disabledCategories.push(mainCategory);
               game.disabledCategories = game.disabledCategories.concat(subcategories);
             }
           } else {
             if (categoryIndex >= 0) {
               game.disabledCategories.splice(categoryIndex, 1);
+              if (!subcategories.some((subcategory) => game.disabledCategories.includes(subcategory))) {
+                // All subcategories were disabled
+                game.disabledCategories = game.disabledCategories.filter((category) => category !== mainCategory);
+              }
             } else {
               game.disabledCategories.push(callbackQuery.data);
+              if (subcategories.every((subcategory) => game.disabledCategories.includes(subcategory))) {
+                // All subcategories were enabled
+                game.disabledCategories.push(mainCategory);
+              }
             }
           }
           game.disabledCategories = uniq(game.disabledCategories);

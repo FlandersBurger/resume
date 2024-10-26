@@ -149,8 +149,8 @@ exports.default = async (callbackQuery) => {
                         return;
                     const mainCategory = callbackQuery.data.split(".")[0];
                     const categoryIndex = game.disabledCategories.indexOf(callbackQuery.data);
+                    const subcategories = categories_new_1.default[mainCategory].map((subcategory) => `${mainCategory}.${subcategory}`);
                     if (Object.keys(categories_new_1.default).includes(callbackQuery.data)) {
-                        const subcategories = categories_new_1.default[mainCategory].map((subcategory) => `${mainCategory}.${subcategory}`);
                         if (subcategories.every((subcategory) => game.disabledCategories.includes(subcategory))) {
                             game.disabledCategories = game.disabledCategories.filter((subcategory) => !subcategory.startsWith(mainCategory));
                         }
@@ -162,9 +162,15 @@ exports.default = async (callbackQuery) => {
                     else {
                         if (categoryIndex >= 0) {
                             game.disabledCategories.splice(categoryIndex, 1);
+                            if (!subcategories.some((subcategory) => game.disabledCategories.includes(subcategory))) {
+                                game.disabledCategories = game.disabledCategories.filter((category) => category !== mainCategory);
+                            }
                         }
                         else {
                             game.disabledCategories.push(callbackQuery.data);
+                            if (subcategories.every((subcategory) => game.disabledCategories.includes(subcategory))) {
+                                game.disabledCategories.push(mainCategory);
+                            }
                         }
                     }
                     game.disabledCategories = (0, uniq_1.default)(game.disabledCategories);
