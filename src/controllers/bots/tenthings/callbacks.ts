@@ -175,7 +175,7 @@ export default async (callbackQuery: CallbackData) => {
           const mainCategory = callbackQuery.data.split(".")[0];
           const categoryIndex = game.disabledCategories.indexOf(callbackQuery.data);
           if (Object.keys(categories).includes(callbackQuery.data)) {
-            const subcategories = categories[mainCategory];
+            const subcategories = categories[mainCategory].map((subcategory) => `${mainCategory}.${subcategory}`);
             if (subcategories.every((subcategory) => game.disabledCategories.includes(subcategory))) {
               game.disabledCategories = game.disabledCategories.filter(
                 (subcategory) => !subcategory.startsWith(mainCategory),
