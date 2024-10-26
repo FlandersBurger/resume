@@ -151,12 +151,12 @@ exports.default = async (callbackQuery) => {
                     const categoryIndex = game.disabledCategories.indexOf(callbackQuery.data);
                     const subcategories = categories_new_1.default[mainCategory].map((subcategory) => `${mainCategory}.${subcategory}`);
                     if (Object.keys(categories_new_1.default).includes(callbackQuery.data)) {
-                        if (subcategories.every((subcategory) => game.disabledCategories.includes(subcategory))) {
-                            game.disabledCategories = game.disabledCategories.filter((subcategory) => !subcategory.startsWith(mainCategory));
-                        }
-                        else {
+                        if (!subcategories.some((subcategory) => game.disabledCategories.includes(subcategory))) {
                             game.disabledCategories.push(mainCategory);
                             game.disabledCategories = game.disabledCategories.concat(subcategories);
+                        }
+                        else {
+                            game.disabledCategories = game.disabledCategories.filter((subcategory) => !subcategory.startsWith(mainCategory));
                         }
                     }
                     else {
