@@ -166,6 +166,7 @@ export default async (callbackQuery: CallbackData) => {
           );
         }
       }
+      break;
     case CallbackDataType.Subcategory:
       if (game.chat_id != parseInt(process.env.GROUP_CHAT || "")) {
         if (await bot.checkAdmin(game.telegramChannel, callbackQuery.from.id)) {

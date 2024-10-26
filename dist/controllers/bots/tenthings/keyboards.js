@@ -168,7 +168,7 @@ const subcategoriesKeyboard = ({ settings, disabledCategories }, category) => {
             ? 1
             : -1)
             .reduce((result, subcategory, i) => {
-            const button = getButton(`${(0, i18n_1.default)(settings.language, `${category}.${subcategory}`, { ns: "categories" })}: ${disabledCategories.indexOf(`${category}.${subcategory}`) < 0 ? emojis_1.default.on : emojis_1.default.off}`, { type: callbacks_1.CallbackDataType.Subcategory, id: `${category}.${subcategory}` });
+            const button = getButton(`${(0, i18n_1.default)(settings.language, `${category}.${subcategory}`, { ns: "categories" })}: ${disabledCategories.includes(`${category}.${subcategory}`) ? emojis_1.default.on : emojis_1.default.off}`, { type: callbacks_1.CallbackDataType.Subcategory, id: `${category}.${subcategory}` });
             if (i % 2 === 0) {
                 result.push([button]);
             }

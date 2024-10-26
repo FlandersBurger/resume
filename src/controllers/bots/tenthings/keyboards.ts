@@ -171,7 +171,7 @@ export const subcategoriesKeyboard = ({ settings, disabledCategories }: IGame, c
         .reduce((result: KeyboardButton[][], subcategory: string, i: number) => {
           const button = getButton(
             `${i18n(settings.language, `${category}.${subcategory}`, { ns: "categories" })}: ${
-              disabledCategories.indexOf(`${category}.${subcategory}`) < 0 ? emojis.on : emojis.off
+              disabledCategories.includes(`${category}.${subcategory}`) ? emojis.on : emojis.off
             }`,
             { type: CallbackDataType.Subcategory, id: `${category}.${subcategory}` },
           );

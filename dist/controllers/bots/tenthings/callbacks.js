@@ -140,6 +140,7 @@ exports.default = async (callbackQuery) => {
                     telegram_1.default.queueEditKeyboard(game.telegramChannel, callbackQuery.id, (0, keyboards_1.subcategoriesKeyboard)(game, callbackQuery.data));
                 }
             }
+            break;
         case CallbackDataType.Subcategory:
             if (game.chat_id != parseInt(process.env.GROUP_CHAT || "")) {
                 if (await telegram_1.default.checkAdmin(game.telegramChannel, callbackQuery.from.id)) {
