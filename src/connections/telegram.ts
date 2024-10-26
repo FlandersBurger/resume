@@ -203,7 +203,6 @@ class TelegramBot {
     httpClient()
       .get(url)
       .catch((error) => {
-        console.log(channel);
         if (error.response) {
           if (error.response.data.description === "Bad Gateway") {
             if (retries < 3) {
@@ -394,7 +393,6 @@ class TelegramBot {
   };
 
   public queueEditKeyboard = (channel: Channel, message_id: string, keyboard: Keyboard) => {
-    console.log(channel);
     messageQueue.add("", { channel, message_id, action: "editKeyboard", keyboard }, {});
   };
 

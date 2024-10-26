@@ -67,28 +67,23 @@ server.listen(port, async () => {
     if (process.env.NODE_ENV === "production") {
         telegram_1.default.notifyAdmin("<b>Started Ten Things</b>");
     }
-    const lists = await models_1.List.find().select("categories");
-    let i = 0;
-    console.log(`Converting ${lists.length} lists`);
-    for (const list of lists) {
-        await (0, categories_new_1.convertListCategories)(list);
-        i++;
-        if (i % 500 === 0)
-            console.log(`${i}/${lists.length}`);
-    }
-    console.log(`Converted ${lists.length} lists`);
     let N = 0;
+    let errors = 0;
     const count = await models_1.Game.count();
     const gameCursor = await models_1.Game.find().cursor();
     await gameCursor.eachAsync(async (game) => {
         N++;
         if (N % 500 === 0)
-            console.log(`${N}/${count} games synced`);
+            console.log(`${N}/${count} games converted`);
         try {
             await (0, categories_new_1.convertGameCategories)(game);
         }
         catch (e) {
-            console.error(game.date);
+            errors++;
+            if (N % 500 === 0) {
+                console.log(`${errors} errors`);
+                console.log(e);
+            }
         }
         return Promise.resolve();
     });
