@@ -3,7 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getCategoryLabel = exports.convertGameCategories = exports.convertListCategories = exports.convertCategory = void 0;
+exports.getCategoryLabel = exports.convertMiniGameCategories = exports.convertGameCategories = exports.convertListCategories = exports.convertCategory = void 0;
 const i18n_1 = __importDefault(require("../../../i18n"));
 const uniq_1 = __importDefault(require("lodash/uniq"));
 const oldCategoryHelperDictionary = {
@@ -71,6 +71,11 @@ const convertGameCategories = async (game) => {
     await game.save();
 };
 exports.convertGameCategories = convertGameCategories;
+const convertMiniGameCategories = async (minigame) => {
+    minigame.categories = convertCategories(minigame.categories);
+    await minigame.save();
+};
+exports.convertMiniGameCategories = convertMiniGameCategories;
 const getCategoryLabel = (lng, list) => {
     if (!list.categories || list.categories.length === 0)
         return "";

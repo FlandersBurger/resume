@@ -4,6 +4,7 @@ import { HydratedDocument } from "mongoose";
 import i18n from "@root/i18n";
 import { BotLanguage } from "./languages";
 import uniq from "lodash/uniq";
+import { IMinigame } from "@root/models/tenthings/minigame";
 
 const oldCategoryHelperDictionary: { [key: string]: string } = {
   "Anime/Manga": "movies.anime",
@@ -69,6 +70,11 @@ export const convertGameCategories = async (game: HydratedDocument<IGame>) => {
   game.disabledCategories = uniq(game.disabledCategories.map(convertCategory).filter((category) => category));
   game.list.categories = convertCategories(game.list.categories);
   await game.save();
+};
+
+export const convertMiniGameCategories = async (minigame: HydratedDocument<IMinigame>) => {
+  minigame.categories = convertCategories(minigame.categories);
+  await minigame.save();
 };
 
 export const getCategoryLabel = (lng: BotLanguage, list: IList | IGameList): string => {
