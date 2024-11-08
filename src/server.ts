@@ -54,14 +54,6 @@ app.use("/api/tenthings/players", tenthingsPlayersRoute);
 app.use("/api/tenthings/stats", tenthingsStatsRoute);
 app.use("/api/tenthings/search", tenthingsSearchRoute);
 
-/*
-app.use(logger('dev', {
-  skip: (req, res) => {
-    console.log(req.method, req.url);
-    return req.method.indexOf('/bots/tenthings') > -1;
-  }
-}));
-*/
 app.use("/bots/tenthings", tenthingsBotRoute);
 
 app.use(staticRoute);
@@ -70,18 +62,6 @@ app.use((err: Error, _req: Request, res: Response, _next: NextFunction) => {
   console.error(err.stack);
   res.status(500).send("Something broke!");
 });
-/*
-app.use((req, res) => {
-  let buffs = [];
-  req.on('data', (chunk) => {
-    buffs.push(chunk);
-  });
-  req.on('end', () => {
-    res.write(Buffer.concat(buffs));
-    res.end();
-  });
-});
-*/
 const port = process.env.PORT || 3000;
 const server = http.createServer(app);
 
@@ -93,65 +73,10 @@ server.listen(port, async () => {
   if (process.env.NODE_ENV === "production") {
     bot.notifyAdmin("<b>Started Ten Things</b>");
   }
-  // const minigames = await Minigame.find().select("categories");
-  // let i = 0;
-  // console.log(`Converting ${minigames.length} minigames`);
-  // for (const minigame of minigames) {
-  //   await convertMiniGameCategories(minigame);
-  //   i++;
-  //   if (i % 500 === 0) console.log(`${i}/${minigames.length}`);
-  // }
-  // console.log(`Converted ${lists.length} lists`);
-  // let N = 0;
-  // let errors = 0;
-  // const count = await Game.count();
-  // const gameCursor = await Game.find().cursor();
-  // await gameCursor.eachAsync(async (game) => {
-  //   N++;
-  //   if (N % 500 === 0) console.log(`${N}/${count} games converted`);
-  //   try {
-  //     await convertGameCategories(game);
-  //   } catch (e) {
-  //     errors++;
-  //     if (N % 500 === 0) {
-  //       console.log(`${errors} errors`);
-  //       console.log(e);
-  //     }
-  //   }
-  //   return Promise.resolve();
-  // });
   //bot.setWebhook("tenthings");
   await subscribe("new_post", (post: any) => {
     websocketServer.broadcast("new_post", post);
   });
-  // Player.find({ id: { $type: "string" } })
-  //   .select("_id id")
-  //   .then((players) => {
-  //     console.log("players", players.length);
-  //     players.forEach(async (player, i) => {
-  //       if (i % 1000 === 0) console.log(`${i + 1}/${players.length}`);
-  //       const result = await Player.findOneAndUpdate(
-  //         { _id: player._id },
-  //         { $set: { id: parseInt(player.id) } },
-  //         { returnOriginal: false }
-  //       );
-  //     });
-  //     console.log("done");
-  //   });
-  // Game.find({ chat_id: { $type: "string" } })
-  //   .select("_id id")
-  //   .then((games) => {
-  //     console.log("games", games.length);
-  //     games.forEach(async (game, i) => {
-  //       if (i % 1000 === 0) console.log(`${i + 1}/${games.length}`);
-  //       const result = await Game.findOneAndUpdate(
-  //         { _id: game._id },
-  //         { $set: { chat_id: parseInt(game.chat_id as any) } },
-  //         { returnOriginal: false }
-  //       );
-  //     });
-  //     console.log("done");
-  //   });
 });
 
 process

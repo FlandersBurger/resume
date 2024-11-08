@@ -192,7 +192,7 @@ class TelegramBot {
     retries: number = 0,
   ) => {
     const { replyMessageId, replyMarkup } = options;
-    message = encodeURIComponent(message);
+    if (retries === 0) message = encodeURIComponent(message);
     let url = `${this.baseUrl}/sendMessage?chat_id=${channel.chat}&disable_notification=true&parse_mode=html&text=${message}`;
     if (channel.topic) url += `&message_thread_id=${channel.topic}`;
     if (replyMessageId) {
@@ -276,8 +276,10 @@ class TelegramBot {
   };
 
   public notifyAdmins = async (msg: string, keyboard?: Keyboard) => {
-    if (keyboard) await this.sendKeyboard({ chat: parseInt(process.env.ADMIN_CHAT || "") }, msg, keyboard);
-    else await this.queueMessage({ chat: parseInt(process.env.ADMIN_CHAT || "") }, msg);
+    if (process.env.NODE_ENV === "production") {
+      if (keyboard) await this.sendKeyboard({ chat: parseInt(process.env.ADMIN_CHAT || "") }, msg, keyboard);
+      else await this.queueMessage({ chat: parseInt(process.env.ADMIN_CHAT || "") }, msg);
+    }
   };
 
   public broadcast = async (channels: Channel[], message: string) => {

@@ -18,7 +18,7 @@ import { abortSkip, skipCache } from "./skips";
 import i18n from "@root/i18n";
 
 import bot from "@root/connections/telegram";
-import { getCategoryLabel } from "./categories-new";
+import { getCategoryLabel } from "./categories";
 
 export const createMaingame = async (chat_id: number): Promise<HydratedDocument<IGame>> => {
   // const starredLists = await List.find({ starred: true }).select("_id");

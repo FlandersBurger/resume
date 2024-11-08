@@ -5,7 +5,7 @@ import some from "lodash/some";
 import find from "lodash/find";
 import concat from "lodash/concat";
 import shuffle from "lodash/shuffle";
-import categories from "./categories-new";
+import categories from "./categories";
 import languages, { Language, LanguageCount, isSupportedLanguage, SupportedLanguage, isBotLanguage } from "./languages";
 import { getFrequencyMessage } from "./messages";
 import { parseSymbols, capitalize } from "@root/utils/string-helpers";

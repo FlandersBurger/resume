@@ -12,7 +12,7 @@ import { getListScore } from "./lists";
 
 import i18n from "@root/i18n";
 
-import categories from "./categories-new";
+import categories from "./categories";
 import emojis from "./emojis";
 import { initiateBan, processBan } from "./bans";
 import { getScores, getStats } from "./stats";

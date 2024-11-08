@@ -8,16 +8,14 @@ import { parseSymbols } from "@root/utils/string-helpers";
 import moment from "moment";
 const MAXHINTS = 6;
 
-import categories from "./categories";
+import categories, { getCategoryLabel } from "./categories";
 import { makePercentage } from "@root/utils/number-helpers";
 import { capitalize } from "@root/utils/string-helpers";
-import difference from "lodash/difference";
 import i18n, { t_list } from "@root/i18n";
 import emojis from "./emojis";
 import { CallbackData } from "./callbacks";
 import { TelegramUser } from "@root/connections/telegram";
 import { getListScore } from "./lists";
-import { getCategoryLabel } from "./categories-new";
 import { BotLanguage } from "./languages";
 
 export type UserInput = Message | CallbackData;
@@ -35,9 +33,21 @@ export const getLogicMessage = (language: string): string => {
   return rules.reduce((message: string, rule: string, i: number) => `${message}${i + 1}: ${rule}\n`, "");
 };
 export const getCategoriesMessage = (game: IGame): string => {
-  return difference(categories, game.disabledCategories)
+  return Object.keys(categories)
     .sort()
-    .reduce((result: string, category: string) => result + `- ${i18n(game.settings.language, category)}\n`, "");
+    .map(
+      (category) =>
+        `*${i18n(game.settings.language, category, { ns: "categories" })}*\n` +
+        categories[category]
+          .sort()
+          .map(
+            (subcategory) =>
+              ` - ${i18n(game.settings.language, `${category}.${subcategory}`, { ns: "categories" })}` +
+              `${game.disabledCategories.includes(`${category}.${subcategory}`) ? emojis.off : emojis.on}`,
+          )
+          .join("\n"),
+    )
+    .join("\n");
 };
 export const getGuessedMessage = (language: string, answer: string, guesser: string): string => {
   return `<b>${i18n(language, "sentences.guessedBy", { answer, guesser })}</b> `;

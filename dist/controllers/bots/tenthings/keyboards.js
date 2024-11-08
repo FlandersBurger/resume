@@ -31,7 +31,7 @@ const some_1 = __importDefault(require("lodash/some"));
 const find_1 = __importDefault(require("lodash/find"));
 const concat_1 = __importDefault(require("lodash/concat"));
 const shuffle_1 = __importDefault(require("lodash/shuffle"));
-const categories_new_1 = __importDefault(require("./categories-new"));
+const categories_1 = __importDefault(require("./categories"));
 const languages_1 = __importStar(require("./languages"));
 const messages_1 = require("./messages");
 const string_helpers_1 = require("../../../utils/string-helpers");
@@ -134,14 +134,14 @@ const playerStatsKeyboard = () => {
 exports.playerStatsKeyboard = playerStatsKeyboard;
 const categoriesKeyboard = ({ settings, disabledCategories }) => {
     return {
-        inline_keyboard: (0, concat_1.default)(Object.keys(categories_new_1.default)
+        inline_keyboard: (0, concat_1.default)(Object.keys(categories_1.default)
             .sort((category1, category2) => (0, i18n_1.default)(settings.language, `${category1}.name`, { ns: "categories" }) >
             (0, i18n_1.default)(settings.language, `${category2}.name`, { ns: "categories" })
             ? 1
             : -1)
             .reduce((result, category, i) => {
-            const allSelected = !categories_new_1.default[category].some((subcategory) => disabledCategories.includes(`${category}.${subcategory}`));
-            const noneSelected = categories_new_1.default[category].every((subcategory) => disabledCategories.includes(`${category}.${subcategory}`));
+            const allSelected = !categories_1.default[category].some((subcategory) => disabledCategories.includes(`${category}.${subcategory}`));
+            const noneSelected = categories_1.default[category].every((subcategory) => disabledCategories.includes(`${category}.${subcategory}`));
             const button = getButton(`${(0, i18n_1.default)(settings.language, `${category}.name`, { ns: "categories" })}: ${allSelected ? emojis_1.default.green : noneSelected ? emojis_1.default.off : emojis_1.default.on}`, { type: callbacks_1.CallbackDataType.Category, id: category });
             if (i % 2 === 0) {
                 result.push([button]);
@@ -155,7 +155,7 @@ const categoriesKeyboard = ({ settings, disabledCategories }) => {
 };
 exports.categoriesKeyboard = categoriesKeyboard;
 const subcategoriesKeyboard = ({ settings, disabledCategories }, category) => {
-    const allSelected = !categories_new_1.default[category].some((subcategory) => disabledCategories.includes(`${category}.${subcategory}`));
+    const allSelected = !categories_1.default[category].some((subcategory) => disabledCategories.includes(`${category}.${subcategory}`));
     return {
         inline_keyboard: (0, concat_1.default)([
             [
@@ -164,7 +164,7 @@ const subcategoriesKeyboard = ({ settings, disabledCategories }, category) => {
                     id: category,
                 }),
             ],
-        ], categories_new_1.default[category]
+        ], categories_1.default[category]
             .sort((subcategory1, subcategory2) => (0, i18n_1.default)(settings.language, `${category}.${subcategory1}`, { ns: "categories" }) >
             (0, i18n_1.default)(settings.language, `${category}.${subcategory2}`, { ns: "categories" })
             ? 1

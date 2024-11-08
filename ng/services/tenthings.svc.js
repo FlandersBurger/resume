@@ -39,10 +39,7 @@ angular.module("app").service("TenThingsSvc", function ($http) {
   };
 
   svc.createList = function (user, list) {
-    return $http.post("/api/tenthings/lists", {
-      user: user,
-      list: list,
-    });
+    return $http.post("/api/tenthings/lists", { user, list });
   };
 
   svc.mergeLists = function (lists) {

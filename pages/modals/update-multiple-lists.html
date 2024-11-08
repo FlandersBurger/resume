@@ -1,0 +1,39 @@
+<div id="modal-update-multiple-lists" class="modal" role="dialog">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal">&times;</button>
+        <h4 class="modal-title">{{getSelectedListsTitle()}}</h4>
+      </div>
+      <div class="modal-body">
+        <ul class="category-list">
+          <li ng-repeat="category in categories | orderBy: 'value'">
+            <a
+              class="btn btn-sm"
+              ng-click="setCategories(category.value)"
+              ng-class="{'btn-default': categoryStatus(category.value) === 'unchecked', 'btn-warning': categoryStatus(category.value) === 'partial', 'btn-primary': categoryStatus(category.value) === 'checked'}"
+              href="#"
+            >
+              {{category.label}}
+            </a>
+            <ul ng-if="categoryStatus(category.value) !== 'unchecked'">
+              <li ng-repeat="subcategory in category.subcategories | orderBy: 'value'">
+                <a
+                  class="btn btn-sm"
+                  ng-click="setCategories(subcategory.value)"
+                  ng-class="{'btn-default': categoryStatus(subcategory.value) === 'unchecked', 'btn-warning': categoryStatus(subcategory.value) === 'partial', 'btn-primary': categoryStatus(subcategory.value) === 'checked'}"
+                  href="#"
+                >
+                  {{subcategory.label}}
+                </a>
+              </li>
+            </ul>
+          </li>
+        </ul>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>

@@ -135,6 +135,16 @@ exports.tenthingsListsRoute.get("/:id/report/:user", async (req, res) => {
         }
     }
 });
+exports.tenthingsListsRoute.put("/", async (req, res) => {
+    if (!res.locals.isAdmin)
+        res.sendStatus(401);
+    else {
+        const ids = req.body.ids;
+        const validUpdates = ["categories", "language", "difficulty", "frequency"];
+        Object.keys(req.body.updates).forEach((key) => validUpdates.includes(key) || delete req.body.updates[key]);
+        await index_1.List.updateMany({ _id: { $in: ids } }, { $set: req.body.changes });
+    }
+});
 exports.tenthingsListsRoute.put("/:id", async (req, res) => {
     if (!res.locals.isAuthorized)
         res.sendStatus(401);

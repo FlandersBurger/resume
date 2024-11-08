@@ -30,14 +30,12 @@ exports.getStreakMessage = exports.getPlayerStats = exports.getListStats = expor
 const string_helpers_1 = require("../../../utils/string-helpers");
 const moment_1 = __importDefault(require("moment"));
 const MAXHINTS = 6;
-const categories_1 = __importDefault(require("./categories"));
+const categories_1 = __importStar(require("./categories"));
 const number_helpers_1 = require("../../../utils/number-helpers");
 const string_helpers_2 = require("../../../utils/string-helpers");
-const difference_1 = __importDefault(require("lodash/difference"));
 const i18n_1 = __importStar(require("../../../i18n"));
 const emojis_1 = __importDefault(require("./emojis"));
 const lists_1 = require("./lists");
-const categories_new_1 = require("./categories-new");
 const languages_1 = require("./languages");
 const getLogicMessage = (language) => {
     const rules = (0, i18n_1.t_list)(language, "rules", { maxHints: MAXHINTS, returnObjects: true });
@@ -45,9 +43,15 @@ const getLogicMessage = (language) => {
 };
 exports.getLogicMessage = getLogicMessage;
 const getCategoriesMessage = (game) => {
-    return (0, difference_1.default)(categories_1.default, game.disabledCategories)
+    return Object.keys(categories_1.default)
         .sort()
-        .reduce((result, category) => result + `- ${(0, i18n_1.default)(game.settings.language, category)}\n`, "");
+        .map((category) => `*${(0, i18n_1.default)(game.settings.language, category, { ns: "categories" })}*\n` +
+        categories_1.default[category]
+            .sort()
+            .map((subcategory) => ` - ${(0, i18n_1.default)(game.settings.language, `${category}.${subcategory}`, { ns: "categories" })}` +
+            `${game.disabledCategories.includes(`${category}.${subcategory}`) ? emojis_1.default.off : emojis_1.default.on}`)
+            .join("\n"))
+        .join("\n");
 };
 exports.getCategoriesMessage = getCategoriesMessage;
 const getGuessedMessage = (language, answer, guesser) => {
@@ -114,7 +118,7 @@ const getListMessage = (list) => {
     let msg = `<b>${list.name}</b> [${list.language}]\n`;
     msg += `<i>by ${list.creator.username}</i>\n`;
     msg += `${list.description ? `${(0, string_helpers_1.parseSymbols)(list.description)}\n` : ""}`;
-    msg += ` - Categories: ${(0, categories_new_1.getCategoryLabel)(languages_1.BotLanguage.EN, list)}\n`;
+    msg += ` - Categories: ${(0, categories_1.getCategoryLabel)(languages_1.BotLanguage.EN, list)}\n`;
     msg += list.difficulty ? ` - Difficulty: ${(0, exports.getDifficultyMessage)(list.difficulty)}\n` : "";
     msg += list.frequency ? ` - Frequency: ${(0, string_helpers_2.capitalize)((0, exports.getFrequencyMessage)(list.frequency))} changes\n` : "";
     return msg;

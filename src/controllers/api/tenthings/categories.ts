@@ -1,6 +1,5 @@
 import { Request, Response, Router } from "express";
-import categories from "@tenthings/categories";
-import newCategories from "@tenthings/categories-new";
+import newCategories from "@root/controllers/bots/tenthings/categories";
 import i18n from "@root/i18n";
 
 export const tenthingsCategoriesRoute = Router();
@@ -24,8 +23,4 @@ tenthingsCategoriesRoute.get("/", (_: Request, res: Response) => {
     }));
     res.json(categories);
   }
-});
-
-tenthingsCategoriesRoute.get("/old", (_: Request, res: Response) => {
-  res.json(categories);
 });

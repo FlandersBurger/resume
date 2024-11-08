@@ -10,6 +10,7 @@ angular
     $scope.categoryFilter = {};
     $scope.selectedList = undefined;
     $scope.selectedLanguage = "EN";
+    $scope.highlightedLists = [];
     $scope.highlightedListIds = [];
     $scope.listIdsToDelete = [];
     $scope.confirmed = false;
@@ -289,7 +290,8 @@ angular
       } else {
         const createdItemResponse = await TenThingsSvc.createListValue($scope.selectedList, $scope.newItem);
         $scope.selectedList.values.push(createdItemResponse.data);
-        toast(`"${$scope.newItem}" added`);
+        console.log($scope.newItem.value);
+        toast(`"${$scope.newItem.value}" added`);
       }
       $scope.newItem.value = "";
       $scope.newItem.blurb = "";
@@ -300,7 +302,7 @@ angular
     };
 
     $scope.deleteValue = (item) => {
-      TenThingsSvc.deleteListValue($scope.selectedList, item).then((response) => {
+      TenThingsSvc.deleteListValue($scope.selectedList, item).then(() => {
         $scope.selectedList.values = $scope.selectedList.values.filter((value) => value._id !== item._id);
         toast(`"${item.value}" removed`);
       });
@@ -330,8 +332,7 @@ angular
             _id: list._id,
           }).then(({ data }) => {
             $scope.saving = false;
-            const listIndex = $scope.lists.findIndex((list) => list._id === data._id);
-            $scope.lists[listIndex] = data;
+            $scope.lists[$scope.lists.findIndex((list) => list._id === data._id)] = data;
             $scope.selectedList = data;
           }, console.error);
         } else {
@@ -374,6 +375,7 @@ angular
       const response = await TenThingsSvc.mergeLists($scope.highlightedListIds);
       $scope.getLists();
       $scope.setSelectedList(response.data);
+      $scope.highlightedLists = [];
       $scope.highlightedListIds = [];
       $scope.confirmed = false;
       toast("Merged");
@@ -387,6 +389,7 @@ angular
       $scope.getLists();
       $scope.selectedList = null;
       $scope.listIdsToDelete = [];
+      $scope.highlightedLists = [];
       $scope.highlightedListIds = [];
       $scope.confirmed = false;
       toast("Lists deleted");
@@ -401,6 +404,7 @@ angular
       } else {
         $scope.highlightedListIds.push(list._id);
       }
+      $scope.highlightedLists = $scope.lists.filter(({ _id }) => $scope.highlightedListIds.includes(_id));
     };
 
     $scope.setLanguage = (list, language) => {
@@ -419,16 +423,66 @@ angular
       $scope.upsertList(list, { frequency: frequency });
     };
 
-    $scope.setCategory = (list, category) => {
-      if (list.categories.some((listCategory) => listCategory === category)) {
-        list.categories = list.categories.filter((listCategory) => listCategory !== category);
-        if (list.categories.some((listCategory) => listCategory.startsWith(category)) && !category.includes(".")) {
-          list.categories = list.categories.filter((listCategory) => !listCategory.startsWith(category));
+    const getUpdatedCategories = (list, category) => {
+      let categories = list.categories;
+      if (categories.some((listCategory) => listCategory === category)) {
+        categories = list.categories.filter((listCategory) => listCategory !== category);
+        if (!category.includes(".") && categories.some((listCategory) => listCategory.startsWith(category))) {
+          categories = categories.filter((listCategory) => !listCategory.startsWith(category));
         }
       } else {
-        list.categories.push(category);
+        categories.push(category);
+        if (category.includes(".") && !categories.find((listCategory) => listCategory === category.split(".")[0])) {
+          categories.push(category.split(".")[0]);
+        }
       }
-      $scope.upsertList(list, { categories: list.categories });
+      return categories;
+    };
+
+    $scope.setCategory = (list, category) => {
+      const updatedCategories = getUpdatedCategories(list, category);
+      if (updatedCategories.length === 0) {
+        toast(`You must have at least 1 category for ${list.name}`);
+      } else {
+        $scope.upsertList(list, { categories: updatedCategories });
+      }
+    };
+
+    $scope.setCategories = async (category) => {
+      $scope.saving = true;
+      let listsToUpdate = [];
+      if ($scope.highlightedLists.every(({ categories }) => categories.includes(category))) {
+        listsToUpdate = $scope.highlightedLists;
+      } else if ($scope.highlightedLists.some(({ categories }) => categories.includes(category))) {
+        listsToUpdate = $scope.highlightedLists.filter(({ categories }) => !categories.includes(category));
+      } else {
+        listsToUpdate = $scope.highlightedLists;
+      }
+      for (const listToUpdate of listsToUpdate) {
+        const updatedCategories = getUpdatedCategories(listToUpdate, category);
+        if (updatedCategories.length === 0) {
+          toast(`You must have at least 1 category for ${listToUpdate.name}`);
+        } else {
+          const { data } = await TenThingsSvc.updateList({
+            _id: listToUpdate._id,
+            categories: updatedCategories,
+          });
+          const listIndex = $scope.lists.findIndex((list) => list._id === data._id);
+          $scope.lists[listIndex] = data;
+        }
+      }
+      $scope.highlightedLists = $scope.lists.filter(({ _id }) => $scope.highlightedListIds.includes(_id));
+      $scope.$apply();
+    };
+
+    $scope.categoryStatus = (category) => {
+      if ($scope.highlightedLists.every(({ categories }) => categories.includes(category))) {
+        return "checked";
+      } else if ($scope.highlightedLists.some(({ categories }) => categories.includes(category))) {
+        return "partial";
+      } else {
+        return "unchecked";
+      }
     };
 
     $scope.hasDuplicate = () =>
@@ -438,6 +492,8 @@ angular
         $scope.selectedList.values,
         (answer) => answer.value.removeAllButLetters() == $scope.newItem.value.removeAllButLetters(),
       );
+
+    $scope.getSelectedListsTitle = () => $scope.highlightedLists.map((list) => list.name).join(" / ");
 
     $scope.getBlurbs = (type) => {
       $scope.gettingBlurbs = true;
@@ -474,4 +530,7 @@ angular
     };
 
     $scope.$watch("currentUser", getData);
+    $(document).on("hidden.bs.modal", "#modal-update-multiple-lists", function () {
+      $scope.getLists();
+    });
   });

@@ -12,7 +12,7 @@ const moment_1 = __importDefault(require("moment"));
 const messages_1 = require("./messages");
 const lists_1 = require("./lists");
 const i18n_1 = __importDefault(require("../../../i18n"));
-const categories_new_1 = __importDefault(require("./categories-new"));
+const categories_1 = __importDefault(require("./categories"));
 const emojis_1 = __importDefault(require("./emojis"));
 const bans_1 = require("./bans");
 const stats_1 = require("./stats");
@@ -149,8 +149,8 @@ exports.default = async (callbackQuery) => {
                         return;
                     const mainCategory = callbackQuery.data.split(".")[0];
                     const categoryIndex = game.disabledCategories.indexOf(callbackQuery.data);
-                    const subcategories = categories_new_1.default[mainCategory].map((subcategory) => `${mainCategory}.${subcategory}`);
-                    if (Object.keys(categories_new_1.default).includes(callbackQuery.data)) {
+                    const subcategories = categories_1.default[mainCategory].map((subcategory) => `${mainCategory}.${subcategory}`);
+                    if (Object.keys(categories_1.default).includes(callbackQuery.data)) {
                         if (!subcategories.some((subcategory) => game.disabledCategories.includes(subcategory))) {
                             game.disabledCategories.push(mainCategory);
                             game.disabledCategories = game.disabledCategories.concat(subcategories);

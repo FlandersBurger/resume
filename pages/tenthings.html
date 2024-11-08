@@ -14,6 +14,12 @@
           </div>
         </div>
         <div class="btn-group" role="group" ng-if="currentUser.admin && highlightedListIds.length > 1">
+          <div class="btn btn-primary" data-toggle="modal" data-target="#modal-update-multiple-lists">
+            <i class="fas fa-edit" ng-class="{ 'fa-spin': loading }" aria-hidden="true"></i> Edit
+            ({{highlightedListIds.length}})
+          </div>
+        </div>
+        <div class="btn-group" role="group" ng-if="currentUser.admin && highlightedListIds.length > 1">
           <div class="btn btn-info" data-toggle="modal" data-target="#modal-merge-lists" ng-click="confirmed = false">
             <i class="far fa-code-merge" ng-class="{ 'fa-spin': loading }" aria-hidden="true"></i> Merge
             ({{highlightedListIds.length}})
@@ -33,6 +39,16 @@
           ng-disabled="selectedList && !selectedList._id"
         >
           <i class="far fa-sparkles" aria-hidden="true"></i> New list
+        </div>
+        <div
+          class="btn btn-primary hidden-xs visible-sm visible-md visible-lg"
+          ng-if="currentUser.admin && highlightedListIds.length > 1"
+          data-toggle="modal"
+          data-target="#modal-update-multiple-lists"
+          uib-tooltip="Edit selected lists"
+        >
+          <i class="far fa-edit" ng-class="{ 'fa-spin': loading }" aria-hidden="true"></i>
+          ({{highlightedListIds.length}})
         </div>
         <div
           class="btn btn-info hidden-xs visible-sm visible-md visible-lg"
@@ -234,5 +250,6 @@
   <div ng-include="'/modals/delete-lists.html'"></div>
   <div ng-include="'/modals/merge-lists.html'"></div>
   <div ng-include="'/modals/blurb.html'"></div>
+  <div ng-include="'/modals/update-multiple-lists.html'"></div>
   <div id="overlay" ng-style="{ display: selectedList ? 'block': 'none' }" ng-click="setSelectedList()"></div>
 </div>
