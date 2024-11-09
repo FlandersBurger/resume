@@ -160,8 +160,8 @@ tenthingsListsRoute.put("/:id", async (req: Request, res: Response) => {
 tenthingsListsRoute.post("/", async (req: Request, res: Response) => {
   if (!res.locals.isAuthorized) res.sendStatus(401);
   else {
-    const yesterday = moment().subtract(1, "days");
-    const previousModifyDate = moment(req.body.list.modifyDate);
+    // const yesterday = moment().subtract(1, "days");
+    // const previousModifyDate = moment(req.body.list.modifyDate);
     req.body.list.modifyDate = new Date();
     req.body.list.search = removeAllButLetters(req.body.list.name);
     req.body.list.score = getListScore(req.body.list);
@@ -181,12 +181,12 @@ tenthingsListsRoute.post("/", async (req: Request, res: Response) => {
     else {
       if (!req.body.list._id) {
         bot.notifyAdmins(`<u>List Created</u>\n${getListMessage(updatedList)}`, curateListKeyboard(updatedList));
-      } else if (previousModifyDate < yesterday) {
+      } /* else if (previousModifyDate < yesterday) {
         bot.notifyAdmins(
           `<u>List Updated</u>\nUpdated by <i>${res.locals.user?.username}</i>\n${getListMessage(updatedList)}`,
           curateListKeyboard(list),
         );
-      }
+      }*/
       res.json(updatedList);
     }
   }

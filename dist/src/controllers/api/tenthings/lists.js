@@ -161,8 +161,6 @@ exports.tenthingsListsRoute.post("/", async (req, res) => {
     if (!res.locals.isAuthorized)
         res.sendStatus(401);
     else {
-        const yesterday = (0, moment_1.default)().subtract(1, "days");
-        const previousModifyDate = (0, moment_1.default)(req.body.list.modifyDate);
         req.body.list.modifyDate = new Date();
         req.body.list.search = (0, string_helpers_1.removeAllButLetters)(req.body.list.name);
         req.body.list.score = (0, lists_1.getListScore)(req.body.list);
@@ -178,9 +176,6 @@ exports.tenthingsListsRoute.post("/", async (req, res) => {
         else {
             if (!req.body.list._id) {
                 telegram_1.default.notifyAdmins(`<u>List Created</u>\n${(0, messages_1.getListMessage)(updatedList)}`, (0, keyboards_1.curateListKeyboard)(updatedList));
-            }
-            else if (previousModifyDate < yesterday) {
-                telegram_1.default.notifyAdmins(`<u>List Updated</u>\nUpdated by <i>${res.locals.user?.username}</i>\n${(0, messages_1.getListMessage)(updatedList)}`, (0, keyboards_1.curateListKeyboard)(list));
             }
             res.json(updatedList);
         }
