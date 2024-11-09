@@ -139,12 +139,10 @@ exports.tenthingsListsRoute.put("/:id", async (req, res) => {
     if (!res.locals.isAuthorized)
         res.sendStatus(401);
     else {
-        const yesterday = (0, moment_1.default)().subtract(1, "days");
         const list = await index_1.List.findOne({ _id: req.params.id });
         if (!list)
             res.sendStatus(404);
         else {
-            const previousModifyDate = (0, moment_1.default)(list.modifyDate);
             list.values.filter(({ creator }) => !creator).forEach((value) => (value.creator = list.creator));
             Object.assign(list, req.body);
             list.modifyDate = new Date();
@@ -154,9 +152,6 @@ exports.tenthingsListsRoute.put("/:id", async (req, res) => {
             if (!updatedList)
                 res.sendStatus(404);
             else {
-                if (previousModifyDate < yesterday) {
-                    telegram_1.default.notifyAdmins(`<u>List Updated</u>\nUpdated by <i>${res.locals.user?.username}</i>\n${(0, messages_1.getListMessage)(updatedList)}`, (0, keyboards_1.curateListKeyboard)(list));
-                }
                 res.json(updatedList);
             }
         }

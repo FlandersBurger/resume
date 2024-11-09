@@ -136,9 +136,7 @@ class TelegramBot {
         };
         this.sendMessage = async (channel, message, options = {}, retries = 0) => {
             const { replyMessageId, replyMarkup } = options;
-            if (retries === 0)
-                message = encodeURIComponent(message);
-            let url = `${this.baseUrl}/sendMessage?chat_id=${channel.chat}&disable_notification=true&parse_mode=html&text=${message}`;
+            let url = `${this.baseUrl}/sendMessage?chat_id=${channel.chat}&disable_notification=true&parse_mode=html&text=${encodeURIComponent(message)}`;
             if (channel.topic)
                 url += `&message_thread_id=${channel.topic}`;
             if (replyMessageId) {

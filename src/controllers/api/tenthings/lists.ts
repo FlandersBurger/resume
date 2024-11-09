@@ -131,11 +131,11 @@ tenthingsListsRoute.get("/:id/report/:user", async (req: Request, res: Response)
 tenthingsListsRoute.put("/:id", async (req: Request, res: Response) => {
   if (!res.locals.isAuthorized) res.sendStatus(401);
   else {
-    const yesterday = moment().subtract(1, "days");
+    // const yesterday = moment().subtract(1, "days");
     const list = await List.findOne({ _id: req.params.id });
     if (!list) res.sendStatus(404);
     else {
-      const previousModifyDate = moment(list.modifyDate);
+      // const previousModifyDate = moment(list.modifyDate);
       list.values.filter(({ creator }) => !creator).forEach((value) => (value.creator = list.creator));
 
       Object.assign(list, req.body);
@@ -145,12 +145,12 @@ tenthingsListsRoute.put("/:id", async (req: Request, res: Response) => {
       const updatedList = await getList(new Types.ObjectId(req.params.id));
       if (!updatedList) res.sendStatus(404);
       else {
-        if (previousModifyDate < yesterday) {
-          bot.notifyAdmins(
-            `<u>List Updated</u>\nUpdated by <i>${res.locals.user?.username}</i>\n${getListMessage(updatedList)}`,
-            curateListKeyboard(list),
-          );
-        }
+        // if (previousModifyDate < yesterday) {
+        //   bot.notifyAdmins(
+        //     `<u>List Updated</u>\nUpdated by <i>${res.locals.user?.username}</i>\n${getListMessage(updatedList)}`,
+        //     curateListKeyboard(list),
+        //   );
+        // }
         res.json(updatedList);
       }
     }
