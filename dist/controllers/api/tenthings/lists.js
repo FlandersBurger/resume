@@ -135,26 +135,14 @@ exports.tenthingsListsRoute.get("/:id/report/:user", async (req, res) => {
         }
     }
 });
-exports.tenthingsListsRoute.put("/", async (req, res) => {
-    if (!res.locals.isAdmin)
-        res.sendStatus(401);
-    else {
-        const ids = req.body.ids;
-        const validUpdates = ["categories", "language", "difficulty", "frequency"];
-        Object.keys(req.body.updates).forEach((key) => validUpdates.includes(key) || delete req.body.updates[key]);
-        await index_1.List.updateMany({ _id: { $in: ids } }, { $set: req.body.changes });
-    }
-});
 exports.tenthingsListsRoute.put("/:id", async (req, res) => {
     if (!res.locals.isAuthorized)
         res.sendStatus(401);
     else {
-        const yesterday = (0, moment_1.default)().subtract(1, "days");
         const list = await index_1.List.findOne({ _id: req.params.id });
         if (!list)
             res.sendStatus(404);
         else {
-            const previousModifyDate = (0, moment_1.default)(list.modifyDate);
             list.values.filter(({ creator }) => !creator).forEach((value) => (value.creator = list.creator));
             Object.assign(list, req.body);
             list.modifyDate = new Date();
@@ -164,9 +152,6 @@ exports.tenthingsListsRoute.put("/:id", async (req, res) => {
             if (!updatedList)
                 res.sendStatus(404);
             else {
-                if (previousModifyDate < yesterday && process.env.NODE_ENV === "production") {
-                    telegram_1.default.notifyAdmins(`<u>List Updated</u>\nUpdated by <i>${res.locals.user?.username}</i>\n${(0, messages_1.getListMessage)(updatedList)}`, (0, keyboards_1.curateListKeyboard)(list));
-                }
                 res.json(updatedList);
             }
         }
@@ -176,8 +161,6 @@ exports.tenthingsListsRoute.post("/", async (req, res) => {
     if (!res.locals.isAuthorized)
         res.sendStatus(401);
     else {
-        const yesterday = (0, moment_1.default)().subtract(1, "days");
-        const previousModifyDate = (0, moment_1.default)(req.body.list.modifyDate);
         req.body.list.modifyDate = new Date();
         req.body.list.search = (0, string_helpers_1.removeAllButLetters)(req.body.list.name);
         req.body.list.score = (0, lists_1.getListScore)(req.body.list);
@@ -191,13 +174,8 @@ exports.tenthingsListsRoute.post("/", async (req, res) => {
         else if (!list)
             res.sendStatus(500);
         else {
-            if (process.env.NODE_ENV === "production") {
-                if (!req.body.list._id) {
-                    telegram_1.default.notifyAdmins(`<u>List Created</u>\n${(0, messages_1.getListMessage)(updatedList)}`, (0, keyboards_1.curateListKeyboard)(updatedList));
-                }
-                else if (previousModifyDate < yesterday) {
-                    telegram_1.default.notifyAdmins(`<u>List Updated</u>\nUpdated by <i>${res.locals.user?.username}</i>\n${(0, messages_1.getListMessage)(updatedList)}`, (0, keyboards_1.curateListKeyboard)(list));
-                }
+            if (!req.body.list._id) {
+                telegram_1.default.notifyAdmins(`<u>List Created</u>\n${(0, messages_1.getListMessage)(updatedList)}`, (0, keyboards_1.curateListKeyboard)(updatedList));
             }
             res.json(updatedList);
         }
@@ -225,9 +203,7 @@ exports.tenthingsListsRoute.post("/merge", async (req, res) => {
             res.sendStatus(500);
         else {
             res.json(updatedList);
-            if (process.env.NODE_ENV === "production") {
-                telegram_1.default.notifyAdmins(`<u>Lists Merged</u>\nUpdated by <i>${res.locals.user?.username}</i>\n${lists.reduce((result, list) => `${result} - ${(0, string_helpers_1.parseSymbols)(list.name)}\n`, "")}<b>→</b> ${(0, messages_1.getListMessage)(updatedList)}`, (0, keyboards_1.curateListKeyboard)(updatedList));
-            }
+            telegram_1.default.notifyAdmins(`<u>Lists Merged</u>\nUpdated by <i>${res.locals.user?.username}</i>\n${lists.reduce((result, list) => `${result} - ${(0, string_helpers_1.parseSymbols)(list.name)}\n`, "")}<b>→</b> ${(0, messages_1.getListMessage)(updatedList)}`, (0, keyboards_1.curateListKeyboard)(updatedList));
         }
     }
 });
@@ -239,11 +215,9 @@ exports.tenthingsListsRoute.delete("/:id", async (req, res) => {
         if (list) {
             if (res.locals.isAdmin || res.locals.user?._id.equals(list.creator.toString())) {
                 await index_1.List.findByIdAndRemove({ _id: req.params.id });
-                if (process.env.NODE_ENV === "production") {
-                    telegram_1.default.notifyAdmins(list.values
-                        .sort((a, b) => (a.value < b.value ? -1 : 1))
-                        .reduce((message, item) => `${message}- ${item.value}\n`, `<b>${list.name}</b>\ndeleted by ${res.locals.user.username}\n`));
-                }
+                telegram_1.default.notifyAdmins(list.values
+                    .sort((a, b) => (a.value < b.value ? -1 : 1))
+                    .reduce((message, item) => `${message}- ${item.value}\n`, `<b>${list.name}</b>\ndeleted by ${res.locals.user.username}\n`));
                 res.sendStatus(200);
             }
             else {

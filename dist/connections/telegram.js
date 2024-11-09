@@ -136,9 +136,7 @@ class TelegramBot {
         };
         this.sendMessage = async (channel, message, options = {}, retries = 0) => {
             const { replyMessageId, replyMarkup } = options;
-            if (retries === 0)
-                message = encodeURIComponent(message);
-            let url = `${this.baseUrl}/sendMessage?chat_id=${channel.chat}&disable_notification=true&parse_mode=html&text=${message}`;
+            let url = `${this.baseUrl}/sendMessage?chat_id=${channel.chat}&disable_notification=true&parse_mode=html&text=${encodeURIComponent(message)}`;
             if (channel.topic)
                 url += `&message_thread_id=${channel.topic}`;
             if (replyMessageId) {
@@ -222,10 +220,12 @@ class TelegramBot {
             await this.queueMessage({ chat: parseInt(process.env.NOTICE_CHAT || "") }, msg);
         };
         this.notifyAdmins = async (msg, keyboard) => {
-            if (keyboard)
-                await this.sendKeyboard({ chat: parseInt(process.env.ADMIN_CHAT || "") }, msg, keyboard);
-            else
-                await this.queueMessage({ chat: parseInt(process.env.ADMIN_CHAT || "") }, msg);
+            if (process.env.NODE_ENV === "production") {
+                if (keyboard)
+                    await this.sendKeyboard({ chat: parseInt(process.env.ADMIN_CHAT || "") }, msg, keyboard);
+                else
+                    await this.queueMessage({ chat: parseInt(process.env.ADMIN_CHAT || "") }, msg);
+            }
         };
         this.broadcast = async (channels, message) => {
             await this.notifyAdmin(`Starting broadcast to ${channels.length} chats`);
