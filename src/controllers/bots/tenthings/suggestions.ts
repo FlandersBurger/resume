@@ -29,7 +29,7 @@ export const sendSuggestion = async (
       await player.save();
       let message = `<b>${capitalize(command)}</b>\n${msg.text}\n`;
       if (command == Command.Typo) {
-        message += `Current list: ${parseSymbols(game.list.name)}\n`;
+        message += `Current list: <a href="https://belgocanadian.com/tenthings?list=${game.list._id}">${parseSymbols(game.list.name)}</a>\n`;
       }
       bot.queueMessage(game.telegramChannel, `${message}Thank you, ${playerName}`);
       message += `<i>${playerName}</i>`;

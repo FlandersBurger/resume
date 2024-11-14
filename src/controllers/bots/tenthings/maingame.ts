@@ -27,6 +27,7 @@ export const createMaingame = async (chat_id: number): Promise<HydratedDocument<
     settings: { languages: ["EN"] },
     //pickedLists: starredLists.map(({ _id }) => _id),
     pickedLists: ["5b444eeab1436b72a67aff8e"], // Numbers 0-9
+    disabledCategories: ["culture.adult"],
   });
   const savedGame = await game.save();
   const newGame = await Game.findOne({ _id: savedGame._id }).exec();
