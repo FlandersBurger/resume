@@ -34,7 +34,7 @@
             >
               {{category.label}}
             </a>
-            <ul ng-if="categoryFilter[category.value]">
+            <ul>
               <li ng-repeat="subcategory in category.subcategories | orderBy: 'value'">
                 <a
                   class="btn btn-sm"

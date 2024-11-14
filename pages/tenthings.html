@@ -72,7 +72,7 @@
         </div>
         <div class="input-group-prepend">
           <div class="btn btn-default" data-toggle="modal" data-target="#modal-list-filters" uib-tooltip="Filter">
-            <i class="fas fa-filter"></i>
+            <i class="fas fa-filter"></i> ({{getFilterCount()}})
           </div>
         </div>
         <input
@@ -97,7 +97,13 @@
     <table id="table-lists" class="table table-striped">
       <thead>
         <tr>
-          <th ng-if="currentUser.admin"></th>
+          <th ng-if="currentUser.admin">
+            <i
+              ng-click="toggleHighlightedLists()"
+              ng-if="count === lists.length"
+              ng-class="{'fas fa-check-square': highlightedListIds.length === lists.length, 'far fa-square':  highlightedListIds.length !== lists.length }"
+            ></i>
+          </th>
           <th ng-if="currentUser.admin" ng-click="orderBy('starred')">
             <i class="fas fa-star-half-alt"></i>
             <i

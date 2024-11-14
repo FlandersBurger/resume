@@ -107,6 +107,13 @@ angular
       $scope.categoryFilter = {};
     };
 
+    $scope.getFilterCount = () => {
+      return (
+        Object.values($scope.languageFilter).filter((value) => value).length +
+        Object.values($scope.categoryFilter).filter((value) => value).length
+      );
+    };
+
     const getData = async () => {
       if (!$scope.currentUser) return;
       const { data: languages } = await TenThingsSvc.getLanguages();
@@ -394,6 +401,15 @@ angular
       $scope.confirmed = false;
       toast("Lists deleted");
       $("#modal-delete-lists").modal("hide");
+    };
+
+    $scope.toggleHighlightedLists = () => {
+      if ($scope.highlightedListIds.length === $scope.lists.length) {
+        $scope.highlightedListIds = [];
+      } else {
+        $scope.highlightedListIds = $scope.lists.map(({ _id }) => _id);
+      }
+      $scope.highlightedLists = $scope.lists.filter(({ _id }) => $scope.highlightedListIds.includes(_id));
     };
 
     $scope.toggleHighlightedList = (list) => {
