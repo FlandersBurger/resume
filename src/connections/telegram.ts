@@ -131,7 +131,7 @@ class TelegramBot {
           const timeout = parseInt(error.response.data.description.match(/retry after (\d+)/)![1]);
           this.timeoutUntil = moment().add(timeout, "seconds");
           messageQueue.pause();
-          this.notifyAdmin(`Pausing queue for ${timeout} seconds due to too many requests`);
+          if (timeout > 100) this.notifyAdmin(`Pausing queue for ${timeout} seconds due to too many requests`);
           setTimeout(this.resumeQueue, timeout * 1000);
         }
         if (message) this.queueMessage(channel, message);
