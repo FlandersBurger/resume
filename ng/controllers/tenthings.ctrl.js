@@ -269,7 +269,7 @@ angular
       if (data.result.length < 100) exhausted = true;
       else page = data.nextPage;
       $scope.loading = false;
-      console.log(data.result.slice(0, 10));
+      console.log(data.result.length + " lists loaded");
       return data.result;
     };
 

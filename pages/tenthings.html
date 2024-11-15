@@ -86,6 +86,7 @@
           uib-typeahead="list.name for list in searchLists($viewValue)"
           typeahead-on-select="setSelectedList($item);"
         />
+        <i class="fas fa-times clear-input" ng-click="search = '';getLists();"></i>
         <div class="input-group-append">
           <button class="btn btn-default" ng-click="getLists()" uib-tooltip="Refresh">
             <i class="fas fa-sync" ng-class="{ 'fa-spin': loading }" aria-hidden="true"></i>
