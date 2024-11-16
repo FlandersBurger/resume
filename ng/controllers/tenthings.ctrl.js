@@ -474,19 +474,23 @@ angular
       } else {
         listsToUpdate = $scope.highlightedLists;
       }
-      for (const listToUpdate of listsToUpdate) {
-        const updatedCategories = getUpdatedCategories(listToUpdate, category);
-        if (updatedCategories.length === 0) {
-          toast(`You must have at least 1 category for ${listToUpdate.name}`);
-        } else {
-          const { data } = await TenThingsSvc.updateList({
-            _id: listToUpdate._id,
-            categories: updatedCategories,
-          });
-          const listIndex = $scope.lists.findIndex((list) => list._id === data._id);
-          $scope.lists[listIndex] = data;
-        }
-      }
+      const updatedLists = await Promise.all(
+        listsToUpdate.map((listToUpdate) => {
+          const updatedCategories = getUpdatedCategories(listToUpdate, category);
+          if (updatedCategories.length === 0) {
+            toast(`You must have at least 1 category for ${listToUpdate.name}`);
+          } else {
+            return TenThingsSvc.updateList({
+              _id: listToUpdate._id,
+              categories: updatedCategories,
+            });
+          }
+        }),
+      );
+      updatedLists.forEach((updatedList) => {
+        const listIndex = $scope.lists.findIndex((list) => list._id === updatedList._id);
+        $scope.lists[listIndex] = updatedList;
+      });
       $scope.highlightedLists = $scope.lists.filter(({ _id }) => $scope.highlightedListIds.includes(_id));
       $scope.$apply();
     };
@@ -546,7 +550,4 @@ angular
     };
 
     $scope.$watch("currentUser", getData);
-    $(document).on("hidden.bs.modal", "#modal-update-multiple-lists", function () {
-      $scope.getLists();
-    });
   });
