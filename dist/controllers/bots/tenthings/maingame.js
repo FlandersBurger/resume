@@ -23,6 +23,7 @@ const createMaingame = async (chat_id) => {
         chat_id,
         settings: { languages: ["EN"] },
         pickedLists: ["5b444eeab1436b72a67aff8e"],
+        disabledCategories: ["culture.adult"],
     });
     const savedGame = await game.save();
     const newGame = await index_1.Game.findOne({ _id: savedGame._id }).exec();

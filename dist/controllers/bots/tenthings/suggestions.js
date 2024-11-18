@@ -22,8 +22,8 @@ const sendSuggestion = async (msg, game, player, command) => {
             player.state = undefined;
             await player.save();
             let message = `<b>${(0, string_helpers_1.capitalize)(command)}</b>\n${msg.text}\n`;
-            if (command == commands_1.Command.Typo) {
-                message += `Current list: ${(0, string_helpers_1.parseSymbols)(game.list.name)}\n`;
+            if (command === commands_1.Command.Typo) {
+                message += `Current list: <a href="https://belgocanadian.com/tenthings?list=${game.list._id}">${(0, string_helpers_1.parseSymbols)(game.list.name)}</a>\n`;
             }
             telegram_1.default.queueMessage(game.telegramChannel, `${message}Thank you, ${playerName}`);
             message += `<i>${playerName}</i>`;
