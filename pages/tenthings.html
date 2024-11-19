@@ -88,6 +88,26 @@
         />
         <i class="fas fa-times clear-input" ng-click="search = '';getLists();"></i>
         <div class="input-group-append">
+          <button
+            class="btn"
+            ng-class="{'btn-default': searchField !== 'all', 'btn-primary': searchField === 'all'}"
+            ng-click="searchField = 'all';getLists();"
+            uib-tooltip="Search in names, blurbs and values"
+          >
+            <i class="fas fa-search"></i> All
+          </button>
+        </div>
+        <div class="input-group-append">
+          <button
+            class="btn"
+            ng-class="{'btn-default': searchField !== 'name', 'btn-primary': searchField === 'name'}"
+            ng-click="searchField = 'name';getLists()"
+            uib-tooltip="Search only in list names"
+          >
+            <i class="fas fa-search"></i> Name
+          </button>
+        </div>
+        <div class="input-group-append">
           <button class="btn btn-default" ng-click="getLists()" uib-tooltip="Refresh">
             <i class="fas fa-sync" ng-class="{ 'fa-spin': loading }" aria-hidden="true"></i>
           </button>

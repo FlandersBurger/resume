@@ -4,7 +4,6 @@ import db from "@root/db";
 export interface IUser {
   _id: Types.ObjectId;
   username: string;
-  usernameLC: string;
   password: string;
   admin: boolean;
   banned: boolean;

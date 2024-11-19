@@ -27,6 +27,7 @@ exports.tenthingsListsRoute.get("/", async (req, res) => {
     else {
         const page = parseInt(req.query.page ?? 1);
         const query = parseQuery(req.query);
+        console.log(req.query, query);
         const count = await index_1.List.countDocuments(query);
         const lists = await index_1.List.find(query)
             .limit(parseInt(req.query.limit) || 0)
@@ -321,10 +322,18 @@ const parseQuery = (query) => {
                     });
                 }
                 break;
+            case "name":
+                Object.assign(params, { name: { $regex: query[key], $options: "i" } });
+                break;
             case "categories":
             case "language":
                 const values = query[key].split(",");
                 Object.assign(params, { [key]: { $in: values } });
+                break;
+            case "!categories":
+            case "!language":
+                const notValues = query[key].split(",");
+                Object.assign(params, { [key.replace("!", "")]: { $nin: notValues } });
                 break;
             default:
                 break;

@@ -5,6 +5,7 @@ angular
     let page = 1;
     $scope.lists = [];
     $scope.search = "";
+    $scope.searchField = "all";
     $scope.newItem = {};
     $scope.languageFilter = {};
     $scope.categoryFilter = {};
@@ -107,12 +108,8 @@ angular
       $scope.categoryFilter = {};
     };
 
-    $scope.getFilterCount = () => {
-      return (
-        Object.values($scope.languageFilter).filter((value) => value).length +
-        Object.values($scope.categoryFilter).filter((value) => value).length
-      );
-    };
+    $scope.getFilterCount = () =>
+      Object.values($scope.languageFilter).length + Object.values($scope.categoryFilter).length;
 
     const getData = async () => {
       if (!$scope.currentUser) return;
@@ -200,19 +197,23 @@ angular
     };
 
     $scope.setLanguageFilter = (language) => {
-      if (!$scope.languageFilter[language.code]) {
+      if ($scope.languageFilter[language.code] === undefined) {
         $scope.languageFilter[language.code] = true;
-      } else {
+      } else if ($scope.languageFilter[language.code] === true) {
         $scope.languageFilter[language.code] = !$scope.languageFilter[language.code];
+      } else {
+        delete $scope.languageFilter[language.code];
       }
       $scope.getLists();
     };
 
     $scope.setCategoryFilter = (category) => {
-      if (!$scope.categoryFilter[category]) {
+      if ($scope.categoryFilter[category] === undefined) {
         $scope.categoryFilter[category] = true;
-      } else {
+      } else if ($scope.categoryFilter[category] === true) {
         $scope.categoryFilter[category] = !$scope.categoryFilter[category];
+      } else {
+        delete $scope.categoryFilter[category];
       }
       $scope.getLists();
     };
@@ -261,9 +262,14 @@ angular
         sortBy: $scope.order.field,
         orderBy: $scope.order.direction ? -1 : 1,
         limit: 100,
-        search: $scope.search,
-        languages: Object.keys($scope.languageFilter).filter((language) => $scope.languageFilter[language]),
-        categories: Object.keys($scope.categoryFilter).filter((category) => $scope.categoryFilter[category]),
+        ...($scope.searchField === "all" ? { search: $scope.search } : {}),
+        ...($scope.searchField === "name" ? { name: $scope.search } : {}),
+        language: Object.keys($scope.languageFilter).filter((language) => $scope.languageFilter[language] === true),
+        categories: Object.keys($scope.categoryFilter).filter((category) => $scope.categoryFilter[category] === true),
+        languageNot: Object.keys($scope.languageFilter).filter((language) => $scope.languageFilter[language] === false),
+        categoriesNot: Object.keys($scope.categoryFilter).filter(
+          (category) => $scope.categoryFilter[category] === false,
+        ),
       });
       $scope.count = data.count;
       if (data.result.length < 100) exhausted = true;

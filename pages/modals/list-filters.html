@@ -12,12 +12,12 @@
           <li ng-repeat="language in languages | orderBy: 'code'">
             <a
               class="btn btn-sm"
-              ng-class="{'btn-default': !languageFilter[language.code],'btn-primary': languageFilter[language.code]}"
+              ng-class="{'btn-default': languageFilter[language.code] === undefined,'btn-primary': languageFilter[language.code] === true, 'btn-warning': languageFilter[language.code] === false}"
               href="#"
               ng-click="setLanguageFilter(language)"
-              uib-tooltip="{{languageStats[language.code] || 0}} lists"
+              uib-tooltip="{{language.name}} - {{languageStats[language.code] || 0}} lists"
             >
-              {{language.code}} - {{language.native}}
+              {{language.code}}
             </a>
           </li>
         </ul>
@@ -28,7 +28,7 @@
             <a
               class="btn btn-sm"
               ng-click="setCategoryFilter(category.value)"
-              ng-class="{'btn-default': !categoryFilter[category.value],'btn-primary': categoryFilter[category.value]}"
+              ng-class="{'btn-default': categoryFilter[category.value] === undefined,'btn-primary': categoryFilter[category.value] === true, 'btn-warning': categoryFilter[category.value] === false}"
               uib-tooltip="{{categoryStats[category.value] || 0}} lists"
               href="#"
             >
@@ -39,7 +39,7 @@
                 <a
                   class="btn btn-sm"
                   ng-click="setCategoryFilter(subcategory.value)"
-                  ng-class="{'btn-default': !categoryFilter[subcategory.value],'btn-primary': categoryFilter[subcategory.value]}"
+                  ng-class="{'btn-default': categoryFilter[subcategory.value] === undefined,'btn-primary': categoryFilter[subcategory.value] === true, 'btn-warning': categoryFilter[subcategory.value] === false}"
                   uib-tooltip="{{categoryStats[subcategory.value] || 0}} lists"
                   href="#"
                 >

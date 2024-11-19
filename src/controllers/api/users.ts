@@ -46,7 +46,6 @@ usersRoute.post("/ban/:id", async (req: Request, res: Response) => {
 usersRoute.post("/", async (req: Request, res: Response) => {
   const user = new User({
     username: req.body.username,
-    usernameLC: req.body.username.toLowerCase(),
   });
   const salt = await bcrypt.genSalt(10);
   const hash = await bcrypt.hash(req.body.password, salt);
@@ -154,19 +153,19 @@ usersRoute.post("/:id/password", async (req: Request, res: Response) => {
 
 usersRoute.post("/:id/username", async (req: Request, res: Response) => {
   if (checkUser(req.params.id, res)) {
-    const user = await User.findOne({ _id: res.locals.user?._id }).select("username").select("usernameLC");
+    const user = await User.findOne({ _id: res.locals.user?._id }).select("username");
     if (!user || user.banned) res.sendStatus(401);
     else {
-      const user2 = await User.findOne({ username_lower: req.body.newUsername.toLowerCase() });
+      const user2 = await User.findOne({ username: { $regex: `^${req.body.newUsername}$`, $options: "i" } });
       if (user2) {
         if (user2._id !== res.locals.user?._id) {
+          console.log(user2);
           console.log(req.body.newUsername + " already taken");
           res.sendStatus(304);
         }
       } else {
         console.log(user.username + " changed their name to " + req.body.newUsername);
         user.username = req.body.newUsername;
-        user.usernameLC = req.body.newUsername.toLowerCase();
         await user.save();
         res.sendStatus(200);
       }
