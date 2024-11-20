@@ -1,4 +1,4 @@
-angular.module("app").controller("AppCtrl", function ($scope, LanguageSvc, UserSvc) {
+angular.module("app").controller("AppCtrl", function ($scope, LanguageSvc, UserSvc, $mdToast) {
   console.log(
     "%cYou sneaky bugger!",
     "font: 2em sans-serif; color: DodgerBlue; text-shadow: 2px 0 0 #444, -2px 0 0 #444, 0 2px 0 #444, 0 -2px 0 #444, 1px 1px #444, -1px -1px 0 #444, 1px -1px 0 #444, -1px 1px 0 #444;",
@@ -10,6 +10,9 @@ angular.module("app").controller("AppCtrl", function ($scope, LanguageSvc, UserS
     "The code for my resume is hosted on Github if you really want to go into all this! => https://github.com/FlandersBurger/resume",
   );
 
+  $scope.toast = (message) => {
+    $mdToast.show($mdToast.simple().textContent(message).position("bottom right").hideDelay(3000));
+  };
   /*
     $(document).bind("keyup keydown", function(e){
       if(e.ctrlKey && e.keyCode == 80){

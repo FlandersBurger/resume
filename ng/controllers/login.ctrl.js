@@ -1,14 +1,14 @@
-angular.module('app').controller('LoginCtrl', function ($scope, $location, UserSvc) {
+angular.module("app").controller("LoginCtrl", function ($scope, $location, UserSvc) {
   // Initialize the FirebaseUI Widget using Firebase.
   var ui = new firebaseui.auth.AuthUI(firebase.auth());
 
-  $scope.$on('logout', function (event) {
+  $scope.$on("logout", function (event) {
     ui.reset();
     startUI();
   });
 
   function startUI() {
-    ui.start('#firebaseui-auth-container', {
+    ui.start("#firebaseui-auth-container", {
       callbacks: {
         signInSuccess: function (currentUser, credential, redirectUrl) {
           // No redirect.
@@ -24,16 +24,13 @@ angular.module('app').controller('LoginCtrl', function ($scope, $location, UserS
                 idToken: idToken,
               }).then(
                 function (response) {
-                  $scope.$emit('login', response.data);
-                  $('#modal-login').modal('hide');
+                  $scope.$emit("login", response.data);
+                  $("#modal-login").modal("hide");
                   //$location.path('/');
                 },
                 function () {
-                  $scope.$emit('popup', {
-                    message: 'Login Failed',
-                    type: 'alert-danger',
-                  });
-                }
+                  $scope.toast("Login Failed");
+                },
               );
               // ...
             })
@@ -49,7 +46,7 @@ angular.module('app').controller('LoginCtrl', function ($scope, $location, UserS
         signInFailure: function (error) {
           // For merge conflicts, the error.code will be
           // 'firebaseui/anonymous-upgrade-merge-conflict'.
-          if (error.code != 'firebaseui/anonymous-upgrade-merge-conflict') {
+          if (error.code != "firebaseui/anonymous-upgrade-merge-conflict") {
             return Promise.resolve();
           }
           // The credential the user tried to sign in with.
@@ -63,10 +60,10 @@ angular.module('app').controller('LoginCtrl', function ($scope, $location, UserS
         uiShown: function () {
           // The widget is rendered.
           // Hide the loader.
-          document.getElementById('loader').style.display = 'none';
+          document.getElementById("loader").style.display = "none";
         },
       },
-      signInSuccessUrl: '/home',
+      signInSuccessUrl: "/home",
       signInOptions: [
         //firebase.auth.EmailAuthProvider.PROVIDER_ID,
         firebase.auth.GoogleAuthProvider.PROVIDER_ID,
@@ -74,7 +71,7 @@ angular.module('app').controller('LoginCtrl', function ($scope, $location, UserS
       ],
 
       // Will use popup for IDP Providers sign-in flow instead of the default, redirect.
-      signInFlow: 'popup',
+      signInFlow: "popup",
       // Other config options...
     });
   }

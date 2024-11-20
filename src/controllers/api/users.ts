@@ -159,7 +159,6 @@ usersRoute.post("/:id/username", async (req: Request, res: Response) => {
       const user2 = await User.findOne({ username: { $regex: `^${req.body.newUsername}$`, $options: "i" } });
       if (user2) {
         if (user2._id !== res.locals.user?._id) {
-          console.log(user2);
           console.log(req.body.newUsername + " already taken");
           res.sendStatus(304);
         }

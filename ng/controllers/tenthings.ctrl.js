@@ -1,7 +1,7 @@
 angular
   .module("app")
   //AngularJs can't have an arrow function here
-  .controller("TenThingsCtrl", function ($scope, $sce, $location, $mdToast, TenThingsSvc) {
+  .controller("TenThingsCtrl", function ($scope, $sce, $location, TenThingsSvc) {
     let page = 1;
     $scope.lists = [];
     $scope.search = "";
@@ -16,10 +16,6 @@ angular
     $scope.listIdsToDelete = [];
     $scope.confirmed = false;
     let exhausted = false;
-
-    const toast = (message) => {
-      $mdToast.show($mdToast.simple().textContent(message).position("bottom right").hideDelay(3000));
-    };
 
     const objectCategories = ["culture", "nature", "misc", "society", "sports"];
     $scope.blurbTypes = [
@@ -304,7 +300,7 @@ angular
         const createdItemResponse = await TenThingsSvc.createListValue($scope.selectedList, $scope.newItem);
         $scope.selectedList.values.push(createdItemResponse.data);
         console.log($scope.newItem.value);
-        toast(`"${$scope.newItem.value}" added`);
+        $scope.toast(`"${$scope.newItem.value}" added`);
       }
       $scope.newItem.value = "";
       $scope.newItem.blurb = "";
@@ -317,7 +313,7 @@ angular
     $scope.deleteValue = (item) => {
       TenThingsSvc.deleteListValue($scope.selectedList, item).then(() => {
         $scope.selectedList.values = $scope.selectedList.values.filter((value) => value._id !== item._id);
-        toast(`"${item.value}" removed`);
+        $scope.toast(`"${item.value}" removed`);
       });
     };
 
@@ -356,7 +352,7 @@ angular
             $scope.selectedList._id = data._id;
             $scope.getLists();
             $scope.saving = false;
-            toast(`"${data.name}" created`);
+            $scope.toast(`"${data.name}" created`);
           }, console.error);
         }
       } else {
@@ -391,7 +387,7 @@ angular
       $scope.highlightedLists = [];
       $scope.highlightedListIds = [];
       $scope.confirmed = false;
-      toast("Merged");
+      $scope.toast("Merged");
       $("#modal-merge-lists").modal("hide");
     };
 
@@ -405,7 +401,7 @@ angular
       $scope.highlightedLists = [];
       $scope.highlightedListIds = [];
       $scope.confirmed = false;
-      toast("Lists deleted");
+      $scope.toast("Lists deleted");
       $("#modal-delete-lists").modal("hide");
     };
 
@@ -464,7 +460,7 @@ angular
     $scope.setCategory = (list, category) => {
       const updatedCategories = getUpdatedCategories(list, category);
       if (updatedCategories.length === 0) {
-        toast(`You must have at least 1 category for ${list.name}`);
+        $scope.toast(`You must have at least 1 category for ${list.name}`);
       } else {
         $scope.upsertList(list, { categories: updatedCategories });
       }
@@ -484,7 +480,7 @@ angular
         listsToUpdate.map((listToUpdate) => {
           const updatedCategories = getUpdatedCategories(listToUpdate, category);
           if (updatedCategories.length === 0) {
-            toast(`You must have at least 1 category for ${listToUpdate.name}`);
+            $scope.toast(`You must have at least 1 category for ${listToUpdate.name}`);
           } else {
             return TenThingsSvc.updateList({
               _id: listToUpdate._id,
@@ -527,12 +523,12 @@ angular
         .then(() => {
           $scope.setSelectedList($scope.selectedList);
           $scope.gettingBlurbs = false;
-          toast("Blurbs updated");
+          $scope.toast("Blurbs updated");
         })
         .catch((err) => {
           console.error(err);
           $scope.gettingBlurbs = false;
-          toast("Blurb update failed");
+          $scope.toast("Blurb update failed");
         });
     };
 

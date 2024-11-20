@@ -301,18 +301,12 @@ angular.module("app").controller("ProfileCtrl", function ($scope, $location, Use
         var user = $scope.currentUser._id;
         UserSvc.changePassword(user, oldPassword, newPassword).then(
           function () {
-            $scope.$emit("popup", {
-              message: "Password Changed",
-              type: "alert-success",
-            });
+            $scope.toast("Password changed");
             $scope.oldPassword = null;
             $scope.togglePassword();
           },
           function () {
-            $scope.$emit("popup", {
-              message: "Password Change Failed",
-              type: "alert-danger",
-            });
+            $scope.toast("Password change failed");
           },
         );
       } else {
@@ -329,10 +323,7 @@ angular.module("app").controller("ProfileCtrl", function ($scope, $location, Use
         $scope.$emit("update", response.data);
       },
       function () {
-        $scope.$emit("popup", {
-          message: username + " already in use",
-          type: "alert-danger",
-        });
+        $scope.toast(username + " already in use");
       },
     );
   };

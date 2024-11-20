@@ -36,11 +36,13 @@ angular.module("app").controller("ContactCtrl", function ($scope, EmailSvc) {
       message: $scope.contact.message,
     }).then(
       function (response) {
+        $scope.toast("Message sent");
         $scope.sent = true;
         console.log("SUCCESS. status=%d, text=%s", response.status, response.text);
         console.log(response);
       },
       function (err) {
+        $scope.toast("Message send failed");
         $scope.sending = false;
         console.log("FAILED. error=", err);
       },
