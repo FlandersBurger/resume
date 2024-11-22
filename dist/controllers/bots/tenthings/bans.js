@@ -37,7 +37,6 @@ const initiateBan = async (game, callbackQuery) => {
 exports.initiateBan = initiateBan;
 const processBan = (game, callbackQuery) => {
     if (!cache[`${game._id}-${callbackQuery.data}`]) {
-        telegram_1.default.queueMessage(game.telegramChannel, (0, i18n_1.default)(game.settings.language, "sentences.banNotFound", { name: callbackQuery.from.name }));
         telegram_1.default.deleteMessage(game.telegramChannel, callbackQuery.id);
     }
     else if (cache[`${game._id}-${callbackQuery.data}`] !== callbackQuery.from.id || game.chat_id > 0) {

@@ -27,7 +27,6 @@ exports.tenthingsListsRoute.get("/", async (req, res) => {
     else {
         const page = parseInt(req.query.page ?? 1);
         const query = parseQuery(req.query);
-        console.log(req.query, query);
         const count = await index_1.List.countDocuments(query);
         const lists = await index_1.List.find(query)
             .limit(parseInt(req.query.limit) || 0)

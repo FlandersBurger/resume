@@ -44,10 +44,6 @@ export const initiateBan = async (game: IGame, callbackQuery: CallbackData) => {
 
 export const processBan = (game: HydratedDocument<IGame>, callbackQuery: CallbackData) => {
   if (!cache[`${game._id}-${callbackQuery.data}`]) {
-    bot.queueMessage(
-      game.telegramChannel,
-      i18n(game.settings.language, "sentences.banNotFound", { name: callbackQuery.from.name }),
-    );
     bot.deleteMessage(game.telegramChannel, callbackQuery.id);
   } else if (cache[`${game._id}-${callbackQuery.data}`] !== callbackQuery.from.id || game.chat_id > 0) {
     banList(game, callbackQuery.data);
