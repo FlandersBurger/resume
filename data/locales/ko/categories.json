@@ -18,7 +18,8 @@
     "rap": "랩",
     "rock": "록",
     "songs": "노래",
-    "soundtracks": "사운드트랙"
+    "soundtracks": "사운드트랙",
+    "pop": "팝"
   },
   "television": {
     "name": "텔레비전",
@@ -157,7 +158,9 @@
     "rts": "RTS",
     "survival": "생존",
     "tabletop_gaming": "테이블탑 게임",
-    "vr": "VR"
+    "vr": "VR",
+    "nintendo": "닌텐도",
+    "tabletop_rpg": "테이블탑 RPG"
   },
   "sports": {
     "name": "스포츠",
@@ -168,7 +171,10 @@
     "olympic_games": "올림픽",
     "racing": "레이싱",
     "teams": "팀",
-    "venues": "경기장"
+    "venues": "경기장",
+    "basketball": "농구",
+    "cricket": "크리켓",
+    "football": "축구"
   },
   "literature": {
     "name": "문학",
@@ -185,7 +191,8 @@
     "manga": "만화",
     "middle_earth": "중간계",
     "non_fiction": "논픽션",
-    "shakespeare": "셰익스피어"
+    "shakespeare": "셰익스피어",
+    "poetry": "시"
   },
   "misc": {
     "name": "기타",

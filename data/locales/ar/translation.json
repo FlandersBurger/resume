@@ -65,32 +65,122 @@
     "Transportation": "المواصلات"
   },
   "commands": {
-    "start": { "name": "start", "description": "بدء اللعبة" },
-    "commands": { "name": "commands", "description": "قائمة الأوامر" },
-    "list": { "name": "list", "description": "إدراج الإجابات المتوقعة في الجولة الحالية" },
-    "hint": { "name": "hint", "description": "احصل على تلميح" },
-    "skip": { "name": "skip", "description": "تخطي الجولة الحالية" },
-    "veto": { "name": "veto", "description": "تصويت للتخطي" },
-    "minigame": { "name": "minigame", "description": "سؤال تافه عكسي" },
-    "minihint": { "name": "minihint", "description": "احصل على تلميح للعبة صغيرة" },
-    "miniskip": { "name": "miniskip", "description": "تخطي اللعبة الصغيرة الحالية" },
-    "tinygame": { "name": "tinygame", "description": "تخمين القائمة" },
-    "tinyhint": { "name": "tinyhint", "description": "احصل على تلميح للعبة صغيرة" },
-    "tinyskip": { "name": "tinyskip", "description": "تخطي لعبة صغيرة الحالية" },
-    "score": { "name": "score", "description": "ترتيب النتيجة اليومية" },
-    "stats": { "name": "stats", "description": "إحصائيات حول اللعبة" },
-    "me": { "name": "me", "description": "إحصائياتي" },
-    "intro": { "name": "intro", "description": "ماذا أكون؟" },
-    "logic": { "name": "logic", "description": "شرح للمنطق المستخدم" },
-    "settings": { "name": "settings", "description": "إعدادات سلوك الروبوت (للمسؤولين فقط)" },
-    "categories": { "name": "categories", "description": "حدد الفئات التي تريد تضمينها (للمسؤولين فقط)" },
-    "typo": { "name": "typo", "description": "الإبلاغ عن خطأ مطبعي في القائمة الحالية" },
-    "bug": { "name": "bug", "description": "الإبلاغ عن خطأ في الروبوت" },
-    "feature": { "name": "feature", "description": "التوصية بميزة جديدة للروبوت" },
-    "suggest": { "name": "suggest", "description": "توصية بميزة جديدة للروبوت" },
-    "search": { "name": "search", "description": "البحث عن القوائم لوضعها في قائمة الانتظار" },
-    "lists": { "name": "lists", "description": "مشاهدة القوائم في قائمة الانتظار" },
-    "stop": { "name": "stop", "description": "إيقاف تشغيلي" }
+    "start": {
+      "name": "start",
+      "description": "بدء اللعبة"
+    },
+    "commands": {
+      "name": "commands",
+      "description": "قائمة الأوامر"
+    },
+    "list": {
+      "name": "list",
+      "description": "إدراج الإجابات المتوقعة في الجولة الحالية"
+    },
+    "hint": {
+      "name": "hint",
+      "description": "احصل على تلميح"
+    },
+    "skip": {
+      "name": "skip",
+      "description": "تخطي الجولة الحالية"
+    },
+    "veto": {
+      "name": "veto",
+      "description": "تصويت للتخطي"
+    },
+    "minigame": {
+      "name": "minigame",
+      "description": "سؤال تافه عكسي"
+    },
+    "minihint": {
+      "name": "minihint",
+      "description": "احصل على تلميح للعبة صغيرة"
+    },
+    "miniskip": {
+      "name": "miniskip",
+      "description": "تخطي اللعبة الصغيرة الحالية"
+    },
+    "tinygame": {
+      "name": "tinygame",
+      "description": "تخمين القائمة"
+    },
+    "tinyhint": {
+      "name": "tinyhint",
+      "description": "احصل على تلميح للعبة صغيرة"
+    },
+    "tinyskip": {
+      "name": "tinyskip",
+      "description": "تخطي لعبة صغيرة الحالية"
+    },
+    "score": {
+      "name": "score",
+      "description": "ترتيب النتيجة اليومية"
+    },
+    "stats": {
+      "name": "stats",
+      "description": "إحصائيات حول اللعبة"
+    },
+    "me": {
+      "name": "me",
+      "description": "إحصائياتي"
+    },
+    "intro": {
+      "name": "intro",
+      "description": "ماذا أكون؟"
+    },
+    "logic": {
+      "name": "logic",
+      "description": "شرح للمنطق المستخدم"
+    },
+    "settings": {
+      "name": "settings",
+      "description": "إعدادات سلوك الروبوت (للمسؤولين فقط)"
+    },
+    "categories": {
+      "name": "categories",
+      "description": "حدد الفئات التي تريد تضمينها (للمسؤولين فقط)"
+    },
+    "typo": {
+      "name": "typo",
+      "description": "الإبلاغ عن خطأ مطبعي في القائمة الحالية"
+    },
+    "bug": {
+      "name": "bug",
+      "description": "الإبلاغ عن خطأ في الروبوت"
+    },
+    "feature": {
+      "name": "feature",
+      "description": "التوصية بميزة جديدة للروبوت"
+    },
+    "suggest": {
+      "name": "suggest",
+      "description": "توصية بميزة جديدة للروبوت"
+    },
+    "search": {
+      "name": "search",
+      "description": "البحث عن القوائم لوضعها في قائمة الانتظار"
+    },
+    "lists": {
+      "name": "lists",
+      "description": "مشاهدة القوائم في قائمة الانتظار"
+    },
+    "stop": {
+      "name": "stop",
+      "description": "إيقاف تشغيلي"
+    },
+    "error": {
+      "name": "error",
+      "description": "إبلاغ عن خطأ في الروبوت"
+    },
+    "ping": {
+      "name": "ping",
+      "description": "pong"
+    },
+    "queue": {
+      "name": "queue",
+      "description": "أين توقف الروبوت؟"
+    }
   },
   "sentences": {
     "likeList": "هل أعجبتك <b>{{list}}</b>؟",

@@ -18,7 +18,8 @@
     "rap": "Рэп",
     "rock": "Рок",
     "songs": "Песни",
-    "soundtracks": "Саундтреки"
+    "soundtracks": "Саундтреки",
+    "pop": "Поп"
   },
   "television": {
     "name": "Телевидение",
@@ -157,7 +158,9 @@
     "rts": "РТС",
     "survival": "Выживание",
     "tabletop_gaming": "Настольные игры",
-    "vr": "Виртуальная реальность"
+    "vr": "Виртуальная реальность",
+    "nintendo": "Nintendo",
+    "tabletop_rpg": "Настольная RPG"
   },
   "sports": {
     "name": "Спорт",
@@ -168,7 +171,10 @@
     "olympic_games": "Олимпийские игры",
     "racing": "Гонки",
     "teams": "Команды",
-    "venues": "Места проведения"
+    "venues": "Места проведения",
+    "basketball": "Баскетбол",
+    "cricket": "Крикет",
+    "football": "Футбол"
   },
   "literature": {
     "name": "Литература",
@@ -185,7 +191,8 @@
     "manga": "Манга",
     "middle_earth": "Средиземье",
     "non_fiction": "Нон-фикшн",
-    "shakespeare": "Шекспир"
+    "shakespeare": "Шекспир",
+    "poetry": "Поэзия"
   },
   "misc": {
     "name": "Разное",

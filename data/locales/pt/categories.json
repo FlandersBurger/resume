@@ -18,7 +18,8 @@
     "rap": "Rap",
     "rock": "Rock",
     "songs": "Canções",
-    "soundtracks": "Trilhas sonoras"
+    "soundtracks": "Trilhas sonoras",
+    "pop": "Pop"
   },
   "television": {
     "name": "Televisão",
@@ -157,7 +158,9 @@
     "rts": "RTS",
     "survival": "Sobrevivência",
     "tabletop_gaming": "Jogos de mesa",
-    "vr": "VR"
+    "vr": "VR",
+    "nintendo": "Nintendo",
+    "tabletop_rpg": "RPG de mesa"
   },
   "sports": {
     "name": "Esportes",
@@ -168,7 +171,10 @@
     "olympic_games": "Jogos Olímpicos",
     "racing": "Corrida",
     "teams": "Times",
-    "venues": "Locais"
+    "venues": "Locais",
+    "basketball": "Basquete",
+    "cricket": "Críquete",
+    "football": "Futebol"
   },
   "literature": {
     "name": "Literatura",
@@ -185,7 +191,8 @@
     "manga": "Mangá",
     "middle_earth": "Terra-média",
     "non_fiction": "Não-ficção",
-    "shakespeare": "Shakespeare"
+    "shakespeare": "Shakespeare",
+    "poetry": "Poesia"
   },
   "misc": {
     "name": "Diversos",

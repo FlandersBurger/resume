@@ -18,7 +18,8 @@
     "rap": "Rap",
     "rock": "Rock",
     "songs": "Lagu",
-    "soundtracks": "Soundtrack"
+    "soundtracks": "Soundtrack",
+    "pop": "Pop"
   },
   "television": {
     "name": "Televisi",
@@ -157,7 +158,9 @@
     "rts": "RTS",
     "survival": "Bertahan hidup",
     "tabletop_gaming": "Permainan meja",
-    "vr": "VR"
+    "vr": "VR",
+    "nintendo": "Nintendo",
+    "tabletop_rpg": "RPG Meja"
   },
   "sports": {
     "name": "Olahraga",
@@ -168,7 +171,10 @@
     "olympic_games": "Olimpiade",
     "racing": "Balap",
     "teams": "Tim",
-    "venues": "Tempat"
+    "venues": "Tempat",
+    "basketball": "Bola Basket",
+    "cricket": "Kriket",
+    "football": "Sepak Bola"
   },
   "literature": {
     "name": "Sastra",
@@ -185,7 +191,8 @@
     "manga": "Manga",
     "middle_earth": "Middle Earth",
     "non_fiction": "Non-fiksi",
-    "shakespeare": "Shakespeare"
+    "shakespeare": "Shakespeare",
+    "poetry": "Puisi"
   },
   "misc": {
     "name": "Lain-lain",

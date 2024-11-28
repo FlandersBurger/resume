@@ -15,6 +15,7 @@
     "k_pop": "K-pop",
     "lyrics": "Lyrics",
     "musicals": "Musicals",
+    "pop": "Pop",
     "rap": "Rap",
     "rock": "Rock",
     "songs": "Songs",
@@ -150,6 +151,7 @@
     "minecraft": "Minecraft",
     "mmo": "MMO",
     "mobile_gaming": "Mobile gaming",
+    "nintendo": "Nintendo",
     "open_world": "Open world",
     "pokemon": "Pokemon",
     "retro_gaming": "Retro gaming",
@@ -157,14 +159,18 @@
     "rts": "RTS",
     "survival": "Survival",
     "tabletop_gaming": "Tabletop gaming",
+    "tabletop_rpg": "Tabletop RPG",
     "vr": "VR"
   },
   "sports": {
     "name": "Sports",
     "athletes": "Athletes",
     "bar_sports": "Bar sports",
+    "basketball": "Basketball",
     "brain_sports": "Brain sports",
     "championships": "Championships",
+    "cricket": "Cricket",
+    "football": "Football",
     "olympic_games": "Olympic games",
     "racing": "Racing",
     "teams": "Teams",
@@ -185,6 +191,7 @@
     "manga": "Manga",
     "middle_earth": "Middle earth",
     "non_fiction": "Non-fiction",
+    "poetry": "Poetry",
     "shakespeare": "Shakespeare"
   },
   "misc": {

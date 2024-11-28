@@ -158,7 +158,7 @@
               ng-class="{'fa-sort-numeric-down-alt' : order.direction, 'fa-sort-numeric-down': !order.direction}"
             ></i>
           </th>
-          <th ng-click="orderBy('modifyDate')" class="hidden-sm visible-md visible-lg">
+          <th ng-click="orderBy('modifyDate')" class="hidden-sm hidden-md visible-lg">
             Updated
             <i
               ng-if="order.field === 'modifyDate'"
@@ -248,7 +248,7 @@
           <td class="hidden-xs visible-sm visible-md visible-lg" ng-click="setSelectedList(list)">
             {{formatDate(list.date)}}
           </td>
-          <td class="hidden-sm visible-md visible-lg" ng-click="setSelectedList(list)">
+          <td class="hidden-sm hidden-md visible-lg" ng-click="setSelectedList(list)">
             {{formatDate(list.modifyDate)}}
           </td>
           <td>{{list.answers}}</td>

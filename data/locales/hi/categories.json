@@ -18,7 +18,8 @@
     "rap": "रैप",
     "rock": "रॉक",
     "songs": "गाने",
-    "soundtracks": "साउंडट्रैक"
+    "soundtracks": "साउंडट्रैक",
+    "pop": "पॉप"
   },
   "television": {
     "name": "टेलीविजन",
@@ -157,7 +158,9 @@
     "rts": "आरटीएस",
     "survival": "जीवित रहना",
     "tabletop_gaming": "टेबलटॉप गेमिंग",
-    "vr": "वीआर"
+    "vr": "वीआर",
+    "nintendo": "निंटेंडो",
+    "tabletop_rpg": "टेबलटॉप आरपीजी"
   },
   "sports": {
     "name": "खेल",
@@ -168,7 +171,10 @@
     "olympic_games": "ओलंपिक खेल",
     "racing": "दौड़",
     "teams": "टीमें",
-    "venues": "स्थल"
+    "venues": "स्थल",
+    "basketball": "बास्केटबॉल",
+    "cricket": "क्रिकेट",
+    "football": "फुटबॉल"
   },
   "literature": {
     "name": "साहित्य",
@@ -185,7 +191,8 @@
     "manga": "मंगा",
     "middle_earth": "मध्य पृथ्वी",
     "non_fiction": "गैर-काल्पनिक",
-    "shakespeare": "शेक्सपियर"
+    "shakespeare": "शेक्सपियर",
+    "poetry": "कविता"
   },
   "misc": {
     "name": "विविध",

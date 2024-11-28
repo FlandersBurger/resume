@@ -114,6 +114,7 @@ angular
       resetLanguageFilter();
       const { data: categories } = await TenThingsSvc.getCategories();
       $scope.categories = categories;
+      console.log(categories);
       resetCategoryFilter();
       const { data: languageStats } = await TenThingsSvc.getListLanguageStats();
       $scope.languageStats = languageStats.reduce((result, { _id, count }) => {

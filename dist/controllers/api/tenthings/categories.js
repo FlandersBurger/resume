@@ -12,7 +12,7 @@ exports.tenthingsCategoriesRoute.get("/", (_, res) => {
     if (!res.locals.isAuthorized)
         res.sendStatus(401);
     else {
-        const categories = Object.keys(categories_1.default).map((category) => ({
+        const labeledCategories = Object.keys(categories_1.default).map((category) => ({
             value: category,
             label: (0, i18n_1.default)("en", `${category}.name`, { ns: "categories" }),
             subcategories: categories_1.default[category].map((subcategory) => ({
@@ -20,7 +20,7 @@ exports.tenthingsCategoriesRoute.get("/", (_, res) => {
                 label: (0, i18n_1.default)("en", `${category}.${subcategory}`, { ns: "categories" }),
             })),
         }));
-        res.json(categories);
+        res.json(labeledCategories);
     }
 });
 //# sourceMappingURL=categories.js.map

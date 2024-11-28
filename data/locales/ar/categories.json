@@ -18,7 +18,8 @@
     "rap": "راب",
     "rock": "روك",
     "songs": "أغاني",
-    "soundtracks": "موسيقى تصويرية"
+    "soundtracks": "موسيقى تصويرية",
+    "pop": "موسيقى البوب"
   },
   "television": {
     "name": "تلفزيون",
@@ -157,7 +158,9 @@
     "rts": "ألعاب استراتيجية",
     "survival": "ألعاب بقاء",
     "tabletop_gaming": "ألعاب الطاولة",
-    "vr": "واقع افتراضي"
+    "vr": "واقع افتراضي",
+    "nintendo": "نينتندو",
+    "tabletop_rpg": "ألعاب تقمص الأدوار على الطاولة"
   },
   "sports": {
     "name": "رياضة",
@@ -168,7 +171,10 @@
     "olympic_games": "الألعاب الأولمبية",
     "racing": "سباقات",
     "teams": "فرق",
-    "venues": "أماكن"
+    "venues": "أماكن",
+    "basketball": "كرة السلة",
+    "cricket": "الكريكيت",
+    "football": "كرة القدم"
   },
   "literature": {
     "name": "أدب",
@@ -185,7 +191,8 @@
     "manga": "مانغا",
     "middle_earth": "الأرض الوسطى",
     "non_fiction": "غير خيالي",
-    "shakespeare": "شكسبير"
+    "shakespeare": "شكسبير",
+    "poetry": "الشعر"
   },
   "misc": {
     "name": "متنوع",
