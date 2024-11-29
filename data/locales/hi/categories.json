@@ -63,7 +63,8 @@
     "performing_arts": "प्रदर्शन कला",
     "religion": "धर्म",
     "tradition": "परंपरा",
-    "visual_arts": "दृश्य कला"
+    "visual_arts": "दृश्य कला",
+    "architecture": "वास्तुकला"
   },
   "region": {
     "name": "क्षेत्र",
@@ -221,7 +222,8 @@
     "politics": "राजनीति",
     "social_movements": "सामाजिक आंदोलन",
     "tourism": "पर्यटन",
-    "transportation": "परिवहन"
+    "transportation": "परिवहन",
+    "flags": "झंडे"
   },
   "language": {
     "name": "भाषा",

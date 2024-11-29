@@ -63,7 +63,8 @@
     "performing_arts": "Seni pertunjukan",
     "religion": "Agama",
     "tradition": "Tradisi",
-    "visual_arts": "Seni visual"
+    "visual_arts": "Seni visual",
+    "architecture": "Arsitektur"
   },
   "region": {
     "name": "Wilayah",
@@ -221,7 +222,8 @@
     "politics": "Politik",
     "social_movements": "Gerakan sosial",
     "tourism": "Pariwisata",
-    "transportation": "Transportasi"
+    "transportation": "Transportasi",
+    "flags": "Bendera"
   },
   "language": {
     "name": "Bahasa",

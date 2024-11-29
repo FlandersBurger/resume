@@ -63,7 +63,8 @@
     "performing_arts": "Сценическое искусство",
     "religion": "Религия",
     "tradition": "Традиция",
-    "visual_arts": "Изобразительное искусство"
+    "visual_arts": "Изобразительное искусство",
+    "architecture": "Архитектура"
   },
   "region": {
     "name": "Регион",
@@ -221,7 +222,8 @@
     "politics": "Политика",
     "social_movements": "Социальные движения",
     "tourism": "Туризм",
-    "transportation": "Транспорт"
+    "transportation": "Транспорт",
+    "flags": "Флаги"
   },
   "language": {
     "name": "Язык",

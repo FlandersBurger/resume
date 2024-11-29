@@ -63,7 +63,8 @@
     "performing_arts": "فنون الأداء",
     "religion": "دين",
     "tradition": "تقاليد",
-    "visual_arts": "فنون بصرية"
+    "visual_arts": "فنون بصرية",
+    "architecture": "الهندسة المعمارية"
   },
   "region": {
     "name": "منطقة",
@@ -221,7 +222,8 @@
     "politics": "سياسة",
     "social_movements": "حركات اجتماعية",
     "tourism": "سياحة",
-    "transportation": "نقل"
+    "transportation": "نقل",
+    "flags": "الأعلام"
   },
   "language": {
     "name": "لغة",

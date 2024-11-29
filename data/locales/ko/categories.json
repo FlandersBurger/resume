@@ -63,7 +63,8 @@
     "performing_arts": "공연 예술",
     "religion": "종교",
     "tradition": "전통",
-    "visual_arts": "시각 예술"
+    "visual_arts": "시각 예술",
+    "architecture": "건축"
   },
   "region": {
     "name": "지역",
@@ -221,7 +222,8 @@
     "politics": "정치",
     "social_movements": "사회 운동",
     "tourism": "관광",
-    "transportation": "교통"
+    "transportation": "교통",
+    "flags": "플래그"
   },
   "language": {
     "name": "언어",

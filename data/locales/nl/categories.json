@@ -63,7 +63,8 @@
     "performing_arts": "Podiumkunsten",
     "religion": "Religie",
     "tradition": "Traditie",
-    "visual_arts": "Beeldende kunst"
+    "visual_arts": "Beeldende kunst",
+    "architecture": "Architectuur"
   },
   "region": {
     "name": "Regio",
@@ -221,7 +222,8 @@
     "politics": "Politiek",
     "social_movements": "Sociale bewegingen",
     "tourism": "Toerisme",
-    "transportation": "Vervoer"
+    "transportation": "Vervoer",
+    "flags": "Vlaggen"
   },
   "language": {
     "name": "Taal",

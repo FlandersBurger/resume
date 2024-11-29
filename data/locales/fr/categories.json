@@ -63,7 +63,8 @@
     "performing_arts": "Arts de la scène",
     "religion": "Religion",
     "tradition": "Tradition",
-    "visual_arts": "Arts visuels"
+    "visual_arts": "Arts visuels",
+    "architecture": "Architecture"
   },
   "region": {
     "name": "Région",
@@ -221,7 +222,8 @@
     "politics": "Politique",
     "social_movements": "Mouvements sociaux",
     "tourism": "Tourisme",
-    "transportation": "Transport"
+    "transportation": "Transport",
+    "flags": "Drapeaux"
   },
   "language": {
     "name": "Langue",

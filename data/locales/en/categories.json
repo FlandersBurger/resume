@@ -53,6 +53,7 @@
   "culture": {
     "name": "Culture",
     "adult": "Adult",
+    "architecture": "Architecture",
     "astrology": "Astrology",
     "celebrations": "Celebrations",
     "celebrities": "Celebrities",
@@ -215,6 +216,7 @@
     "countries": "Countries",
     "crime": "Crime",
     "education": "Education",
+    "flags": "Flags",
     "human_rights": "Human rights",
     "infrastructure": "Infrastructure",
     "leaders": "Leaders",
