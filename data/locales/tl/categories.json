@@ -159,7 +159,9 @@
     "rts": "RTS",
     "survival": "Survival",
     "tabletop_gaming": "Tabletop Gaming",
-    "vr": "VR"
+    "vr": "VR",
+    "nintendo": "Nintendo\n#___#\nRPG ng tabletop\n#___#\nBasketbol\n#___#\nKuliglig\n#___#\nFootball\n#___#\nTula\n#___#\nMga watawat",
+    "tabletop_rpg": "RPG ng tabletop\n#___#\nBasketbol\n#___#\nKuliglig\n#___#\nFootball\n#___#\nTula\n#___#\nMga watawat"
   },
   "sports": {
     "name": "Palakasan",
@@ -170,7 +172,8 @@
     "olympic_games": "Mga Larong Olimpiko",
     "racing": "Karera",
     "teams": "Mga Koponan",
-    "venues": "Mga Lugar"
+    "venues": "Mga Lugar",
+    "basketball": "Basketbol\n#___#\nKuliglig\n#___#\nFootball\n#___#\nTula\n#___#\nMga bandila"
   },
   "literature": {
     "name": "Panitikan",

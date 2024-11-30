@@ -65,40 +65,123 @@
     "Transportation": "Transportasyon"
   },
   "commands": {
-    "start": { "name": "simula", "description": "Simulan ang trivia" },
-    "commands": { "name": "mgautos", "description": "Listahan ng mga utos" },
-    "list": { "name": "listahan", "description": "Listahan ng mga hula sa kasalukuyang putukan" },
-    "hint": { "name": "pahiwatig", "description": "Kumuha ng hint" },
-    "skip": { "name": "laktawan", "description": "I-skip ang kasalukuyang putukan" },
-    "veto": { "name": "boto", "description": "Bumoto sa isang listahan" },
-    "minigame": { "name": "muntinglaro", "description": "Baligtad na tanong sa trivia" },
-    "minihint": { "name": "muntingpahiwatig", "description": "Kumuha ng hint para sa minigame" },
-    "miniskip": { "name": "muntinglaktawan", "description": "I-skip ang kasalukuyang minigame" },
-    "tinygame": { "name": "maliitlaro", "description": "Hulaan ang listahan" },
-    "tinyhint": { "name": "maliitpahiwatig", "description": "Kumuha ng hint para sa tinygame" },
-    "tinyskip": { "name": "maliitlaktawan", "description": "I-skip ang kasalukuyang tinygame" },
-    "score": { "name": "iskor", "description": "Araw-araw na pagkakasunod-sunod ng score" },
-    "stats": { "name": "eastdistika", "description": "Estadistika sa laro" },
-    "me": { "name": "ako", "description": "Aking estadistika" },
-    "intro": { "name": "panimula", "description": "Ano ako?" },
-    "logic": { "name": "lohika", "description": "Pagsusuri ng ginamit na logic" },
-    "settings": { "name": "mgasetting", "description": "Mga setting ng ugali ng Bot (Admin Lang)" },
+    "start": {
+      "name": "simula",
+      "description": "Simulan ang trivia"
+    },
+    "commands": {
+      "name": "mgautos",
+      "description": "Listahan ng mga utos"
+    },
+    "list": {
+      "name": "listahan",
+      "description": "Listahan ng mga hula sa kasalukuyang putukan"
+    },
+    "hint": {
+      "name": "pahiwatig",
+      "description": "Kumuha ng hint"
+    },
+    "skip": {
+      "name": "laktawan",
+      "description": "I-skip ang kasalukuyang putukan"
+    },
+    "veto": {
+      "name": "boto",
+      "description": "Bumoto sa isang listahan"
+    },
+    "minigame": {
+      "name": "muntinglaro",
+      "description": "Baligtad na tanong sa trivia"
+    },
+    "minihint": {
+      "name": "muntingpahiwatig",
+      "description": "Kumuha ng hint para sa minigame"
+    },
+    "miniskip": {
+      "name": "muntinglaktawan",
+      "description": "I-skip ang kasalukuyang minigame"
+    },
+    "tinygame": {
+      "name": "maliitlaro",
+      "description": "Hulaan ang listahan"
+    },
+    "tinyhint": {
+      "name": "maliitpahiwatig",
+      "description": "Kumuha ng hint para sa tinygame"
+    },
+    "tinyskip": {
+      "name": "maliitlaktawan",
+      "description": "I-skip ang kasalukuyang tinygame"
+    },
+    "score": {
+      "name": "iskor",
+      "description": "Araw-araw na pagkakasunod-sunod ng score"
+    },
+    "stats": {
+      "name": "eastdistika",
+      "description": "Estadistika sa laro"
+    },
+    "me": {
+      "name": "ako",
+      "description": "Aking estadistika"
+    },
+    "intro": {
+      "name": "panimula",
+      "description": "Ano ako?"
+    },
+    "logic": {
+      "name": "lohika",
+      "description": "Pagsusuri ng ginamit na logic"
+    },
+    "settings": {
+      "name": "mgasetting",
+      "description": "Mga setting ng ugali ng Bot (Admin Lang)"
+    },
     "categories": {
       "name": "mgakategorya",
       "description": "Pumili kung aling mga kategorya ang isasama (Admin Lang)"
     },
-    "typo": { "name": "pagkakamali", "description": "I-ulat ang isang typo sa kasalukuyang listahan" },
-    "bug": { "name": "bug", "description": "I-ulat ang isang bug sa bot" },
-    "feature": { "name": "tampok", "description": "Magrekomenda ng bagong feature para sa bot" },
-    "suggest": { "name": "mungkahi", "description": "Magrekomenda ng isang bagong feature para sa bot" },
-    "search": { "name": "maghanap", "description": "Maghanap ng mga listahan na isasama sa queue" },
-    "lists": { "name": "mgalistahan", "description": "Makita ang mga naka-queue na listahan" },
-    "stop": { "name": "itigil", "description": "Patayin ako" }
+    "typo": {
+      "name": "pagkakamali",
+      "description": "I-ulat ang isang typo sa kasalukuyang listahan"
+    },
+    "bug": {
+      "name": "bug",
+      "description": "I-ulat ang isang bug sa bot"
+    },
+    "feature": {
+      "name": "tampok",
+      "description": "Magrekomenda ng bagong feature para sa bot"
+    },
+    "suggest": {
+      "name": "mungkahi",
+      "description": "Magrekomenda ng isang bagong feature para sa bot"
+    },
+    "search": {
+      "name": "maghanap",
+      "description": "Maghanap ng mga listahan na isasama sa queue"
+    },
+    "lists": {
+      "name": "mgalistahan",
+      "description": "Makita ang mga naka-queue na listahan"
+    },
+    "stop": {
+      "name": "itigil",
+      "description": "Patayin ako"
+    },
+    "error": {
+      "name": "pagkakamali\n#___#\nMag-ulat ng error sa bot\n#___#\nping\n#___#\npong\n#___#\npila\n#___#\nSaan na-stuck ang bot?",
+      "description": "Mag-ulat ng error sa bot\n#___#\nping\n#___#\npong\n#___#\npila\n#___#\nSaan na-stuck ang bot?"
+    },
+    "ping": {
+      "name": "ping\n#___#\npong\n#___#\npila\n#___#\nSaan na-stuck ang bot?"
+    },
+    "queue": {}
   },
   "sentences": {
     "likeList": "Nagustuhan mo ba si {{list}}?",
-    "likesList": " \ud83d\udc4d Si {{name}} ay gusto ng <b>{{list}}</b> ({{score}})",
-    "dislikesList": " \ud83d\udc4e Si {{name}} ay hindi gusto ang <b>{{list}}</b> ({{score}})",
+    "likesList": " 👍 Si {{name}} ay gusto ng <b>{{list}}</b> ({{score}})",
+    "dislikesList": " 👎 Si {{name}} ay hindi gusto ang <b>{{list}}</b> ({{score}})",
     "queueList": "<b>Aling listahan ang nais mong ilagay sa pila?</b>",
     "curateList": "<b>Aling listahan ang nais mong i-curate?</b>",
     "queueFull": "Ang pila ay mayroon nang maximum na 10 listahan, {{name}}.",

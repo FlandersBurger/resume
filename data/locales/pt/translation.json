@@ -65,23 +65,74 @@
     "Transportation": "Transporte"
   },
   "commands": {
-    "start": { "name": "start", "description": "Comece o jogo" },
-    "commands": { "name": "comandos", "description": "Lista de comandos" },
-    "list": { "name": "lista", "description": "Lista das respostas adivinhadas na rodada atual" },
-    "hint": { "name": "dica", "description": "Obter uma dica" },
-    "skip": { "name": "pule", "description": "Pule a rodada atual" },
-    "veto": { "name": "veto", "description": "Vote na lista atual" },
-    "minigame": { "name": "minijogo", "description": "Pergunta de trivia reversa" },
-    "minihint": { "name": "minidica", "description": "Obter uma dica para o minigame" },
-    "miniskip": { "name": "minipule", "description": "Pule o minigame atual" },
-    "tinygame": { "name": "jogominusculo", "description": "Adivinhe a lista" },
-    "tinyhint": { "name": "dicaminusculo", "description": "Obter uma dica para o jogominusculo" },
-    "tinyskip": { "name": "puleminusculo", "description": "Pule o jogominusculo atual" },
-    "score": { "name": "pontuacao", "description": "Classificação diária" },
-    "stats": { "name": "estatisticas", "description": "Estatísticas do jogo" },
-    "me": { "name": "eu", "description": "Minhas estatísticas" },
-    "intro": { "name": "intro", "description": "O que sou eu?" },
-    "logic": { "name": "logica", "description": "Uma explicação da lógica usada" },
+    "start": {
+      "name": "start",
+      "description": "Comece o jogo"
+    },
+    "commands": {
+      "name": "comandos",
+      "description": "Lista de comandos"
+    },
+    "list": {
+      "name": "lista",
+      "description": "Lista das respostas adivinhadas na rodada atual"
+    },
+    "hint": {
+      "name": "dica",
+      "description": "Obter uma dica"
+    },
+    "skip": {
+      "name": "pule",
+      "description": "Pule a rodada atual"
+    },
+    "veto": {
+      "name": "veto",
+      "description": "Vote na lista atual"
+    },
+    "minigame": {
+      "name": "minijogo",
+      "description": "Pergunta de trivia reversa"
+    },
+    "minihint": {
+      "name": "minidica",
+      "description": "Obter uma dica para o minigame"
+    },
+    "miniskip": {
+      "name": "minipule",
+      "description": "Pule o minigame atual"
+    },
+    "tinygame": {
+      "name": "jogominusculo",
+      "description": "Adivinhe a lista"
+    },
+    "tinyhint": {
+      "name": "dicaminusculo",
+      "description": "Obter uma dica para o jogominusculo"
+    },
+    "tinyskip": {
+      "name": "puleminusculo",
+      "description": "Pule o jogominusculo atual"
+    },
+    "score": {
+      "name": "pontuacao",
+      "description": "Classificação diária"
+    },
+    "stats": {
+      "name": "estatisticas",
+      "description": "Estatísticas do jogo"
+    },
+    "me": {
+      "name": "eu",
+      "description": "Minhas estatísticas"
+    },
+    "intro": {
+      "name": "intro",
+      "description": "O que sou eu?"
+    },
+    "logic": {
+      "name": "logica",
+      "description": "Uma explicação da lógica usada"
+    },
     "settings": {
       "name": "confi",
       "description": "Configurações (Somente Admin)"
@@ -90,18 +141,51 @@
       "name": "categorias",
       "description": "Selecione as categorias a incluir (Somente Admin)"
     },
-    "typo": { "name": "erro", "description": "Relate um erro de digitação na lista atual" },
-    "bug": { "name": "bug", "description": "Relate um bug com o bot" },
-    "feature": { "name": "recurso", "description": "Recomende um novo recurso para o bot" },
-    "suggest": { "name": "sugestao", "description": "Dê uma sugestão para o bot" },
-    "search": { "name": "pesquisar", "description": "Pesquise listas para a fila" },
-    "lists": { "name": "listas", "description": "Veja listas na fila" },
-    "stop": { "name": "parar", "description": "Desligue-me" }
+    "typo": {
+      "name": "erro",
+      "description": "Relate um erro de digitação na lista atual"
+    },
+    "bug": {
+      "name": "bug",
+      "description": "Relate um bug com o bot"
+    },
+    "feature": {
+      "name": "recurso",
+      "description": "Recomende um novo recurso para o bot"
+    },
+    "suggest": {
+      "name": "sugestao",
+      "description": "Dê uma sugestão para o bot"
+    },
+    "search": {
+      "name": "pesquisar",
+      "description": "Pesquise listas para a fila"
+    },
+    "lists": {
+      "name": "listas",
+      "description": "Veja listas na fila"
+    },
+    "stop": {
+      "name": "parar",
+      "description": "Desligue-me"
+    },
+    "error": {
+      "name": "erro",
+      "description": "Reportar um erro com o bot"
+    },
+    "ping": {
+      "name": "ping",
+      "description": "pong"
+    },
+    "queue": {
+      "name": "queue",
+      "description": "Onde o bot está preso?"
+    }
   },
   "sentences": {
     "likeList": "Você gostou de {{list}}?",
-    "likesList": " \ud83d\udc4d {{name}} gosta de <b>{{list}}</b> ({{score}})",
-    "dislikesList": " \ud83d\udc4e {{name}} não gosta de <b>{{list}}</b> ({{score}})",
+    "likesList": " 👍 {{name}} gosta de <b>{{list}}</b> ({{score}})",
+    "dislikesList": " 👎 {{name}} não gosta de <b>{{list}}</b> ({{score}})",
     "queueList": "<b>Qual lista você gostaria de colocar na fila?</b>",
     "curateList": "<b>Qual lista você gostaria de curar?</b>",
     "queueFull": "A fila já tem o máximo de 10 listas, {{name}}.",

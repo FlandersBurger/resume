@@ -65,23 +65,74 @@
     "Transportation": "Transport"
   },
   "commands": {
-    "start": { "name": "demarrer", "description": "Obtenez un indice pour petitjeu" },
-    "commands": { "name": "commandes", "description": "Liste des commandes" },
-    "list": { "name": "liste", "description": "Lister les réponses devinées dans le tour en cours" },
-    "hint": { "name": "indice", "description": "Obtenir un indice" },
-    "skip": { "name": "sauter", "description": "Passer le tour en cours" },
-    "veto": { "name": "veto", "description": "Veto sauter" },
-    "minigame": { "name": "minijeu", "description": "Question de culture générale inversée" },
-    "minihint": { "name": "miniindice", "description": "Obtenir un indice pour le minijeu" },
-    "miniskip": { "name": "minisauter", "description": "Passer le tour en cours minijeu" },
-    "tinygame": { "name": "petitjeu", "description": "Devinez la liste" },
-    "tinyhint": { "name": "petitindice", "description": "Obtenez un indice pour petitjeu" },
-    "tinyskip": { "name": "petitsauter", "description": "Passer le petitjeu actuel" },
-    "score": { "name": "score", "description": "Classement du score quotidien" },
-    "stats": { "name": "statistiques", "description": "Statistiques sur le jeu" },
-    "me": { "name": "moi", "description": "Mes statistiques" },
-    "intro": { "name": "intro", "description": "Que suis-je?" },
-    "logic": { "name": "logique", "description": "Une explication de la logique utilisée" },
+    "start": {
+      "name": "demarrer",
+      "description": "Obtenez un indice pour petitjeu"
+    },
+    "commands": {
+      "name": "commandes",
+      "description": "Liste des commandes"
+    },
+    "list": {
+      "name": "liste",
+      "description": "Lister les réponses devinées dans le tour en cours"
+    },
+    "hint": {
+      "name": "indice",
+      "description": "Obtenir un indice"
+    },
+    "skip": {
+      "name": "sauter",
+      "description": "Passer le tour en cours"
+    },
+    "veto": {
+      "name": "veto",
+      "description": "Veto sauter"
+    },
+    "minigame": {
+      "name": "minijeu",
+      "description": "Question de culture générale inversée"
+    },
+    "minihint": {
+      "name": "miniindice",
+      "description": "Obtenir un indice pour le minijeu"
+    },
+    "miniskip": {
+      "name": "minisauter",
+      "description": "Passer le tour en cours minijeu"
+    },
+    "tinygame": {
+      "name": "petitjeu",
+      "description": "Devinez la liste"
+    },
+    "tinyhint": {
+      "name": "petitindice",
+      "description": "Obtenez un indice pour petitjeu"
+    },
+    "tinyskip": {
+      "name": "petitsauter",
+      "description": "Passer le petitjeu actuel"
+    },
+    "score": {
+      "name": "score",
+      "description": "Classement du score quotidien"
+    },
+    "stats": {
+      "name": "statistiques",
+      "description": "Statistiques sur le jeu"
+    },
+    "me": {
+      "name": "moi",
+      "description": "Mes statistiques"
+    },
+    "intro": {
+      "name": "intro",
+      "description": "Que suis-je?"
+    },
+    "logic": {
+      "name": "logique",
+      "description": "Une explication de la logique utilisée"
+    },
     "settings": {
       "name": "parametres",
       "description": "Paramètres de comportement du bot (administrateur uniquement)"
@@ -90,13 +141,46 @@
       "name": "categories",
       "description": "Sélectionnez les catégories à inclure (administrateur uniquement)"
     },
-    "typo": { "name": "faute", "description": "Signaler une faute de frappe dans la liste actuelle" },
-    "bug": { "name": "bug", "description": "Signaler un bug avec le bot" },
-    "feature": { "name": "fonctionnalite", "description": "Recommander une nouvelle fonctionnalité pour le bot" },
-    "suggest": { "name": "suggest", "description": "Suggérer quelque chose" },
-    "search": { "name": "recherche", "description": "Rechercher des listes à mettre en file d'attente" },
-    "lists": { "name": "listes", "description": "Voir les listes en file d'attente" },
-    "stop": { "name": "arreter", "description": "Désactiver" }
+    "typo": {
+      "name": "faute",
+      "description": "Signaler une faute de frappe dans la liste actuelle"
+    },
+    "bug": {
+      "name": "bug",
+      "description": "Signaler un bug avec le bot"
+    },
+    "feature": {
+      "name": "fonctionnalite",
+      "description": "Recommander une nouvelle fonctionnalité pour le bot"
+    },
+    "suggest": {
+      "name": "suggest",
+      "description": "Suggérer quelque chose"
+    },
+    "search": {
+      "name": "recherche",
+      "description": "Rechercher des listes à mettre en file d'attente"
+    },
+    "lists": {
+      "name": "listes",
+      "description": "Voir les listes en file d'attente"
+    },
+    "stop": {
+      "name": "arreter",
+      "description": "Désactiver"
+    },
+    "error": {
+      "name": "erreur",
+      "description": "Signaler une erreur avec le bot"
+    },
+    "ping": {
+      "name": "ping",
+      "description": "pong"
+    },
+    "queue": {
+      "name": "queue",
+      "description": "Où est bloqué le bot ?"
+    }
   },
   "sentences": {
     "likeList": "Avez-vous aimé <b>{{list}}</b> ?",

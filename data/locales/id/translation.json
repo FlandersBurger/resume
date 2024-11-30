@@ -65,26 +65,74 @@
     "Transportation": "Transportasi"
   },
   "commands": {
-    "start": { "name": "mulai", "description": "Mulai permainan" },
-    "commands": { "name": "perintah", "description": "Daftar perintah" },
+    "start": {
+      "name": "mulai",
+      "description": "Mulai permainan"
+    },
+    "commands": {
+      "name": "perintah",
+      "description": "Daftar perintah"
+    },
     "list": {
       "name": "daftar",
       "description": "Daftar jawaban yang ditebak pada putaran saat ini"
     },
-    "hint": { "name": "petunjuk", "description": "Dapatkan petunjuk" },
-    "skip": { "name": "lewati", "description": "Lewati putaran saat ini" },
-    "veto": { "name": "veto", "description": "Veto jawaban saat ini" },
-    "minigame": { "name": "minipermainan", "description": "Pertanyaan trivia terbalik" },
-    "minihint": { "name": "minipetunjuk", "description": "Dapatkan petunjuk untuk minipermainan" },
-    "miniskip": { "name": "minilewati", "description": "Lewati minipermainan saat ini" },
-    "tinygame": { "name": "permainankecil", "description": "Tebak daftar" },
-    "tinyhint": { "name": "petunjukkecil", "description": "Dapatkan petunjuk untuk permainankecil" },
-    "tinyskip": { "name": "lewatikecil", "description": "Lewati permainankecil saat ini" },
-    "score": { "name": "skor", "description": "Peringkat skor harian" },
-    "stats": { "name": "statistik", "description": "Statistik permainan" },
-    "me": { "name": "saya", "description": "Statistik saya" },
-    "intro": { "name": "pengenalan", "description": "Apa saya ini?" },
-    "logic": { "name": "logika", "description": "Penjelasan logika yang digunakan" },
+    "hint": {
+      "name": "petunjuk",
+      "description": "Dapatkan petunjuk"
+    },
+    "skip": {
+      "name": "lewati",
+      "description": "Lewati putaran saat ini"
+    },
+    "veto": {
+      "name": "veto",
+      "description": "Veto jawaban saat ini"
+    },
+    "minigame": {
+      "name": "minipermainan",
+      "description": "Pertanyaan trivia terbalik"
+    },
+    "minihint": {
+      "name": "minipetunjuk",
+      "description": "Dapatkan petunjuk untuk minipermainan"
+    },
+    "miniskip": {
+      "name": "minilewati",
+      "description": "Lewati minipermainan saat ini"
+    },
+    "tinygame": {
+      "name": "permainankecil",
+      "description": "Tebak daftar"
+    },
+    "tinyhint": {
+      "name": "petunjukkecil",
+      "description": "Dapatkan petunjuk untuk permainankecil"
+    },
+    "tinyskip": {
+      "name": "lewatikecil",
+      "description": "Lewati permainankecil saat ini"
+    },
+    "score": {
+      "name": "skor",
+      "description": "Peringkat skor harian"
+    },
+    "stats": {
+      "name": "statistik",
+      "description": "Statistik permainan"
+    },
+    "me": {
+      "name": "saya",
+      "description": "Statistik saya"
+    },
+    "intro": {
+      "name": "pengenalan",
+      "description": "Apa saya ini?"
+    },
+    "logic": {
+      "name": "logika",
+      "description": "Penjelasan logika yang digunakan"
+    },
     "settings": {
       "name": "pengaturan",
       "description": "Pengaturan perilaku bot (Hanya untuk admin)"
@@ -97,17 +145,47 @@
       "name": "kesalahanpenulisan",
       "description": "Laporkan kesalahan penulisan pada daftar saat ini"
     },
-    "bug": { "name": "bug", "description": "Laporkan bug pada bot" },
-    "feature": { "name": "fitur", "description": "Rekomendasikan fitur baru untuk bot" },
-    "suggest": { "name": "saran", "description": "Beri saran untuk bot" },
-    "search": { "name": "cari", "description": "Cari daftar untuk dimasukkan dalam antrian" },
-    "lists": { "name": "daftarberikutnya", "description": "Lihat daftar yang dijadwalkan" },
-    "stop": { "name": "berhenti", "description": "Matikan saya" }
+    "bug": {
+      "name": "bug",
+      "description": "Laporkan bug pada bot"
+    },
+    "feature": {
+      "name": "fitur",
+      "description": "Rekomendasikan fitur baru untuk bot"
+    },
+    "suggest": {
+      "name": "saran",
+      "description": "Beri saran untuk bot"
+    },
+    "search": {
+      "name": "cari",
+      "description": "Cari daftar untuk dimasukkan dalam antrian"
+    },
+    "lists": {
+      "name": "daftarberikutnya",
+      "description": "Lihat daftar yang dijadwalkan"
+    },
+    "stop": {
+      "name": "berhenti",
+      "description": "Matikan saya"
+    },
+    "error": {
+      "name": "error",
+      "description": "Laporkan kesalahan pada bot"
+    },
+    "ping": {
+      "name": "ping",
+      "description": "pong"
+    },
+    "queue": {
+      "name": "queue",
+      "description": "Di mana bot macet?"
+    }
   },
   "sentences": {
     "likeList": "Apakah kamu suka {{list}}?",
-    "likesList": " \ud83d\udc4d {{name}} suka <b>{{list}}</b> ({{score}})",
-    "dislikesList": " \ud83d\udc4e {{name}} tidak suka <b>{{list}}</b> ({{score}})",
+    "likesList": " 👍 {{name}} suka <b>{{list}}</b> ({{score}})",
+    "dislikesList": " 👎 {{name}} tidak suka <b>{{list}}</b> ({{score}})",
     "queueList": "<b>Daftar mana yang ingin Anda antre?</b>",
     "curateList": "<b>Daftar mana yang ingin Anda kurasi?</b>",
     "queueFull": "Antrean sudah mencapai maksimum 10 daftar, {{name}}.",

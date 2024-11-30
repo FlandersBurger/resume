@@ -65,23 +65,74 @@
     "Transportation": "Transport"
   },
   "commands": {
-    "start": { "name": "start", "description": "Start het spel" },
-    "commands": { "name": "commandos", "description": "Lijst met commando's" },
-    "list": { "name": "lijst", "description": "Toon de geraden antwoorden in de huidige ronde" },
-    "hint": { "name": "hint", "description": "Krijg een hint" },
-    "skip": { "name": "skip", "description": "Sla de huidige ronde over" },
-    "veto": { "name": "veto", "description": "Annuleer een skipverzoek" },
-    "minigame": { "name": "minigame", "description": "Omgekeerde trivia-vraag" },
-    "minihint": { "name": "minihint", "description": "Krijg een hint voor minigame" },
-    "miniskip": { "name": "miniskip", "description": "Sla de huidige minigame over" },
-    "tinygame": { "name": "tinygame", "description": "Raad de lijst" },
-    "tinyhint": { "name": "tinyhint", "description": "Krijg een hint voor tinygame" },
-    "tinyskip": { "name": "tinyskip", "description": "Sla de huidige tinygame over" },
-    "score": { "name": "score", "description": "Dagelijkse scorestand" },
-    "stats": { "name": "stats", "description": "Statistieken over het spel" },
-    "me": { "name": "ik", "description": "Mijn statistieken" },
-    "intro": { "name": "intro", "description": "Wat ben ik?" },
-    "logic": { "name": "logica", "description": "Een uitleg van de gebruikte logica" },
+    "start": {
+      "name": "start",
+      "description": "Start het spel"
+    },
+    "commands": {
+      "name": "commandos",
+      "description": "Lijst met commando's"
+    },
+    "list": {
+      "name": "lijst",
+      "description": "Toon de geraden antwoorden in de huidige ronde"
+    },
+    "hint": {
+      "name": "hint",
+      "description": "Krijg een hint"
+    },
+    "skip": {
+      "name": "skip",
+      "description": "Sla de huidige ronde over"
+    },
+    "veto": {
+      "name": "veto",
+      "description": "Annuleer een skipverzoek"
+    },
+    "minigame": {
+      "name": "minigame",
+      "description": "Omgekeerde trivia-vraag"
+    },
+    "minihint": {
+      "name": "minihint",
+      "description": "Krijg een hint voor minigame"
+    },
+    "miniskip": {
+      "name": "miniskip",
+      "description": "Sla de huidige minigame over"
+    },
+    "tinygame": {
+      "name": "tinygame",
+      "description": "Raad de lijst"
+    },
+    "tinyhint": {
+      "name": "tinyhint",
+      "description": "Krijg een hint voor tinygame"
+    },
+    "tinyskip": {
+      "name": "tinyskip",
+      "description": "Sla de huidige tinygame over"
+    },
+    "score": {
+      "name": "score",
+      "description": "Dagelijkse scorestand"
+    },
+    "stats": {
+      "name": "stats",
+      "description": "Statistieken over het spel"
+    },
+    "me": {
+      "name": "ik",
+      "description": "Mijn statistieken"
+    },
+    "intro": {
+      "name": "intro",
+      "description": "Wat ben ik?"
+    },
+    "logic": {
+      "name": "logica",
+      "description": "Een uitleg van de gebruikte logica"
+    },
     "settings": {
       "name": "instellingen",
       "description": "Botinstellingen (Alleen voor beheerders)"
@@ -90,18 +141,51 @@
       "name": "categorieen",
       "description": "Selecteer welke categorieën moeten worden opgenomen (Alleen voor beheerders)"
     },
-    "typo": { "name": "typo", "description": "Meld een typefout in de huidige lijst" },
-    "bug": { "name": "bug", "description": "Meld een bug bij de bot" },
-    "feature": { "name": "functie", "description": "Dien een nieuwe functie in voor de bot" },
-    "suggest": { "name": "suggestie", "description": "Voer een suggestie in voor de bot" },
-    "search": { "name": "zoek", "description": "Doorzoek lijsten om in de wachtrij te zetten" },
-    "lists": { "name": "lijsten", "description": "Bekijk de lijsten in de wachtrij" },
-    "stop": { "name": "stop", "description": "Zet me uit" }
+    "typo": {
+      "name": "typo",
+      "description": "Meld een typefout in de huidige lijst"
+    },
+    "bug": {
+      "name": "bug",
+      "description": "Meld een bug bij de bot"
+    },
+    "feature": {
+      "name": "functie",
+      "description": "Dien een nieuwe functie in voor de bot"
+    },
+    "suggest": {
+      "name": "suggestie",
+      "description": "Voer een suggestie in voor de bot"
+    },
+    "search": {
+      "name": "zoek",
+      "description": "Doorzoek lijsten om in de wachtrij te zetten"
+    },
+    "lists": {
+      "name": "lijsten",
+      "description": "Bekijk de lijsten in de wachtrij"
+    },
+    "stop": {
+      "name": "stop",
+      "description": "Zet me uit"
+    },
+    "error": {
+      "name": "error",
+      "description": "Meld een fout met de bot"
+    },
+    "ping": {
+      "name": "ping",
+      "description": "pong"
+    },
+    "queue": {
+      "name": "queue",
+      "description": "Waar zit de bot vast?"
+    }
   },
   "sentences": {
     "likeList": "Vind je <b>{{list}}</b> leuk?",
-    "likesList": " \ud83d\udc4d {{name}} vindt <b>{{list}}</b> leuk ({{score}})",
-    "dislikesList": " \ud83d\udc4e {{name}} vindt <b>{{list}}</b> niet leuk ({{score}})",
+    "likesList": " 👍 {{name}} vindt <b>{{list}}</b> leuk ({{score}})",
+    "dislikesList": " 👎 {{name}} vindt <b>{{list}}</b> niet leuk ({{score}})",
     "queueList": "<b>Welke lijst wil je in de wachtrij plaatsen?</b>",
     "curateList": "<b>Welke lijst wil je cureren?</b>",
     "queueFull": "De wachtrij heeft al het maximum van 10 lijsten, {{name}}.",
