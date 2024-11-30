@@ -170,13 +170,17 @@
       "description": "Patayin ako"
     },
     "error": {
-      "name": "pagkakamali\n#___#\nMag-ulat ng error sa bot\n#___#\nping\n#___#\npong\n#___#\npila\n#___#\nSaan na-stuck ang bot?",
-      "description": "Mag-ulat ng error sa bot\n#___#\nping\n#___#\npong\n#___#\npila\n#___#\nSaan na-stuck ang bot?"
+      "name": "pagkakamali",
+      "description": "Mag-ulat ng error sa bot"
     },
     "ping": {
-      "name": "ping\n#___#\npong\n#___#\npila\n#___#\nSaan na-stuck ang bot?"
+      "name": "ping",
+      "description": "pong"
     },
-    "queue": {}
+    "queue": {
+      "name": "pila",
+      "description": "Saan na-stuck ang bot?"
+    }
   },
   "sentences": {
     "likeList": "Nagustuhan mo ba si {{list}}?",

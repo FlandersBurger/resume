@@ -19,7 +19,7 @@
     "rock": "Rock",
     "songs": "Mga Kanta",
     "soundtracks": "Mga Soundtrack",
-    "pop": "Pop\n#___#\nNintendo\n#___#\nRPG ng tabletop\n#___#\nBasketbol\n#___#\nKuliglig\n#___#\nFootball\n#___#\nTula"
+    "pop": "Pop"
   },
   "television": {
     "name": "Telebisyon",
@@ -64,7 +64,7 @@
     "religion": "Relihiyon",
     "tradition": "Tradisyon",
     "visual_arts": "Sining Biswal",
-    "architecture": "Arkitektura\n#___#\nNintendo\n#___#\nRPG ng tabletop\n#___#\nBasketbol\n#___#\nKuliglig\n#___#\nFootball\n#___#\nTula\n#___#\nMga watawat"
+    "architecture": "Arkitektura"
   },
   "region": {
     "name": "Rehiyon",
@@ -160,8 +160,8 @@
     "survival": "Survival",
     "tabletop_gaming": "Tabletop Gaming",
     "vr": "VR",
-    "nintendo": "Nintendo\n#___#\nRPG ng tabletop\n#___#\nBasketbol\n#___#\nKuliglig\n#___#\nFootball\n#___#\nTula\n#___#\nMga watawat",
-    "tabletop_rpg": "RPG ng tabletop\n#___#\nBasketbol\n#___#\nKuliglig\n#___#\nFootball\n#___#\nTula\n#___#\nMga watawat"
+    "nintendo": "Nintendo",
+    "tabletop_rpg": "RPG ng tabletop"
   },
   "sports": {
     "name": "Palakasan",
@@ -173,7 +173,8 @@
     "racing": "Karera",
     "teams": "Mga Koponan",
     "venues": "Mga Lugar",
-    "basketball": "Basketbol\n#___#\nKuliglig\n#___#\nFootball\n#___#\nTula\n#___#\nMga bandila"
+    "basketball": "Basketbol",
+    "cricket": "Kuliglig"
   },
   "literature": {
     "name": "Panitikan",
