@@ -174,7 +174,8 @@
     "teams": "Mga Koponan",
     "venues": "Mga Lugar",
     "basketball": "Basketbol",
-    "cricket": "Kuliglig"
+    "cricket": "Kuliglig",
+    "football": "Football"
   },
   "literature": {
     "name": "Panitikan",
@@ -191,7 +192,8 @@
     "manga": "Manga",
     "middle_earth": "Middle Earth",
     "non_fiction": "Di-kathang-isip",
-    "shakespeare": "Shakespeare"
+    "shakespeare": "Shakespeare",
+    "poetry": "Tula"
   },
   "misc": {
     "name": "Iba pa",
@@ -220,7 +222,8 @@
     "politics": "Pulitika",
     "social_movements": "Mga Kilusang Panlipunan",
     "tourism": "Turismo",
-    "transportation": "Transportasyon"
+    "transportation": "Transportasyon",
+    "flags": "Mga watawat"
   },
   "language": {
     "name": "Wika",
