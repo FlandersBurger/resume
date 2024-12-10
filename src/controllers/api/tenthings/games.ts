@@ -1,6 +1,7 @@
 import { Router, Request, Response } from "express";
 
 import { Game, Player } from "@models/index";
+import { setDisabledCategories } from "@root/controllers/bots/tenthings/categories";
 
 export const tenthingsGamesRoute = Router();
 
@@ -29,6 +30,19 @@ tenthingsGamesRoute.get("/:id", async (req: Request, res: Response) => {
     else {
       const players = await Player.find({ game: game._id }).lean();
       res.json({ ...game, players });
+    }
+  }
+});
+
+tenthingsGamesRoute.post("/:id/category/:category", async (req: Request, res: Response) => {
+  if (!res.locals.isAdmin) res.sendStatus(401);
+  else {
+    const game = await Game.findOne({ chat_id: req.params.id });
+    if (!game) res.sendStatus(404);
+    else {
+      setDisabledCategories(game, req.params.category);
+      const updatedGame = await game.save();
+      res.json(updatedGame.disabledCategories);
     }
   }
 });

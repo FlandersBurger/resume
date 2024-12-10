@@ -11,6 +11,7 @@ import { Message } from "./messages";
 
 // DO NOT REMOVE jobs
 import jobs from "./jobs";
+
 console.log(
   `Scheduled Jobs:\n${jobs
     .map((j) => ` - ${j.name}: ${moment.duration(moment(new Date()).diff(j.nextInvocation())).humanize(true)}`)

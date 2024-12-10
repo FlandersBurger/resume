@@ -1,9 +1,10 @@
 import { join } from "path";
 import fs from "fs";
-import { IGameList } from "@root/models/tenthings/game";
+import { IGame, IGameList } from "@root/models/tenthings/game";
 import { IList } from "@root/models/tenthings/list";
 import i18n from "@root/i18n";
 import { BotLanguage } from "./languages";
+import { uniq } from "lodash";
 
 export const getCategoryLabel = (lng: BotLanguage, list: IList | IGameList): string => {
   if (!list.categories || list.categories.length === 0) return "";
@@ -31,5 +32,39 @@ const categories: { [key: string]: string[] } = Object.keys(categoriesJson).redu
   },
   {},
 );
+
+export const setDisabledCategories = (game: IGame, selectedCategory: string): void => {
+  const mainCategory = selectedCategory.split(".")[0];
+  const categoryIndex = game.disabledCategories.indexOf(selectedCategory);
+  const subcategories = categories[mainCategory].map((subcategory) => `${mainCategory}.${subcategory}`);
+  if (Object.keys(categories).includes(selectedCategory)) {
+    if (!subcategories.some((subcategory) => game.disabledCategories.includes(subcategory))) {
+      // Disable all from category
+      game.disabledCategories.push(mainCategory);
+      game.disabledCategories = game.disabledCategories.concat(subcategories);
+    } else {
+      // Enable all from category
+      game.disabledCategories = game.disabledCategories.filter((subcategory) => !subcategory.startsWith(mainCategory));
+    }
+  } else {
+    if (categoryIndex >= 0) {
+      game.disabledCategories.splice(categoryIndex, 1);
+      if (game.disabledCategories.includes(mainCategory)) {
+        // Enable the main category
+        game.disabledCategories = game.disabledCategories.filter((category) => category !== mainCategory);
+      }
+    } else {
+      game.disabledCategories.push(selectedCategory);
+      if (subcategories.every((subcategory) => game.disabledCategories.includes(subcategory))) {
+        // All subcategories were enabled
+        game.disabledCategories.push(mainCategory);
+      } else {
+        // Enable the main category
+        game.disabledCategories = game.disabledCategories.filter((category) => category !== mainCategory);
+      }
+    }
+  }
+  game.disabledCategories = uniq(game.disabledCategories);
+};
 
 export default categories;

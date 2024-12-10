@@ -12,7 +12,30 @@
     <p><b>Last Cycled:</b> {{formatDate(game.lastCycleDate)}}</p>
     <p><b>Last Played:</b> {{formatDate(game.lastPlayDate)}}</p>
     <p><b>Lists Played:</b> {{game.listsPlayed}}</p>
-    <p><b>Disabled Categories:</b> {{game.disabledCategories.join(', ')}}</p>
+    <ul class="category-list">
+      <li ng-repeat="category in categories | orderBy: 'value'">
+        <a
+          class="btn btn-sm"
+          ng-click="setCategory( category.value)"
+          ng-class="{'btn-default': !game.disabledCategories.includes(category.value),'btn-warning': game.disabledCategories.includes(category.value)}"
+          href="#"
+        >
+          {{category.label}}
+        </a>
+        <ul>
+          <li ng-repeat="subcategory in category.subcategories | orderBy: 'value'">
+            <a
+              class="btn btn-sm"
+              ng-click="setCategory(subcategory.value)"
+              ng-class="{'btn-default': !game.disabledCategories.includes(subcategory.value),'btn-warning': game.disabledCategories.includes(subcategory.value)}"
+              href="#"
+            >
+              {{subcategory.label}}
+            </a>
+          </li>
+        </ul>
+      </li>
+    </ul>
   </div>
   <hr />
   <h3>Game</h3>

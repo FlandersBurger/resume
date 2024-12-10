@@ -12,7 +12,7 @@ import { getListScore } from "./lists";
 
 import i18n from "@root/i18n";
 
-import categories from "./categories";
+import { setDisabledCategories } from "./categories";
 import emojis from "./emojis";
 import { initiateBan, processBan } from "./bans";
 import { getScores, getStats } from "./stats";
@@ -30,7 +30,6 @@ import {
 import bot, { TelegramUser } from "@root/connections/telegram";
 import { adminOnly } from "./errors";
 import { isBotLanguage, isSupportedLanguage, SupportedLanguage } from "./languages";
-import uniq from "lodash/uniq";
 
 export type CallbackData = {
   id: string;
@@ -174,34 +173,7 @@ export default async (callbackQuery: CallbackData) => {
           if (!game || !callbackQuery.data) return;
           const mainCategory = callbackQuery.data.split(".")[0];
           const categoryIndex = game.disabledCategories.indexOf(callbackQuery.data);
-          const subcategories = categories[mainCategory].map((subcategory) => `${mainCategory}.${subcategory}`);
-          if (Object.keys(categories).includes(callbackQuery.data)) {
-            if (!subcategories.some((subcategory) => game.disabledCategories.includes(subcategory))) {
-              // Disable all from category
-              game.disabledCategories.push(mainCategory);
-              game.disabledCategories = game.disabledCategories.concat(subcategories);
-            } else {
-              // Enable all from category
-              game.disabledCategories = game.disabledCategories.filter(
-                (subcategory) => !subcategory.startsWith(mainCategory),
-              );
-            }
-          } else {
-            if (categoryIndex >= 0) {
-              game.disabledCategories.splice(categoryIndex, 1);
-              if (game.disabledCategories.includes(mainCategory)) {
-                // Enable the main category
-                game.disabledCategories = game.disabledCategories.filter((category) => category !== mainCategory);
-              }
-            } else {
-              game.disabledCategories.push(callbackQuery.data);
-              if (subcategories.every((subcategory) => game.disabledCategories.includes(subcategory))) {
-                // All subcategories were enabled
-                game.disabledCategories.push(mainCategory);
-              }
-            }
-          }
-          game.disabledCategories = uniq(game.disabledCategories);
+          setDisabledCategories(game, callbackQuery.data);
           await game.save();
           bot.answerCallback(
             callbackQuery.callbackQueryId,
