@@ -14,7 +14,7 @@ exports.filesRoute.get("/:type/:folder", (req, res) => {
             if (err || !files || files.length === 0)
                 res.sendStatus(404);
             else {
-                res.json(files.sort((file1, file2) => file1.substring(file1.indexOf(".") - 2) < file2.substring(file2.indexOf(".") - 2) ? 1 : -1));
+                res.json(files.sort(() => Math.random() - 0.5));
             }
         });
     }

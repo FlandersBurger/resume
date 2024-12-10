@@ -189,8 +189,8 @@ export default async (callbackQuery: CallbackData) => {
           } else {
             if (categoryIndex >= 0) {
               game.disabledCategories.splice(categoryIndex, 1);
-              if (!subcategories.some((subcategory) => game.disabledCategories.includes(subcategory))) {
-                // All subcategories were disabled
+              if (game.disabledCategories.includes(mainCategory)) {
+                // Enable the main category
                 game.disabledCategories = game.disabledCategories.filter((category) => category !== mainCategory);
               }
             } else {

@@ -32,17 +32,21 @@ glob("./data/locales/*", (err, languagePaths) => {
         .filter((language) => language !== "en");
     const files = fs.readdirSync(englishPath).filter((file) => file !== "commands.json");
     for (const file of files) {
+        console.log("Processing file:", file);
         const englishJson = JSON.parse(fs.readFileSync(`${englishPath}/${file}`, "utf8"));
         for (const language of languages) {
             const languageJson = JSON.parse(fs.readFileSync(`${getLanguagePath(language)}/${file}`, "utf8") || "{}");
             const differences = getDifferences(englishJson, languageJson);
-            fs.writeFileSync(`${englishPath}/new.json`, JSON.stringify(differences, null, 2));
-            const cmd = `npx i18n-auto-translation -k ${process.env.GOOGLE_TOKEN} -p "${englishPath}/new.json" -t ${language}`;
-            execSync(cmd);
-            const translatedJson = JSON.parse(fs.readFileSync(`${englishPath}/${language}.json`, "utf8"));
-            fs.writeFileSync(`${getLanguagePath(language)}/${file}`, JSON.stringify(_.defaultsDeep(languageJson, translatedJson), null, 2));
-            fs.unlinkSync(`${englishPath}/new.json`);
-            fs.unlinkSync(`${englishPath}/${language}.json`);
+            if (Object.keys(differences).length > 0) {
+                console.log("Applying changes in:", language);
+                fs.writeFileSync(`${englishPath}/new.json`, JSON.stringify(differences, null, 2));
+                const cmd = `npx i18n-auto-translation -k ${process.env.GOOGLE_TOKEN} -p "${englishPath}/new.json" -t ${language}`;
+                execSync(cmd);
+                const translatedJson = JSON.parse(fs.readFileSync(`${englishPath}/${language}.json`, "utf8"));
+                fs.writeFileSync(`${getLanguagePath(language)}/${file}`, JSON.stringify(_.defaultsDeep(languageJson, translatedJson), null, 2));
+                fs.unlinkSync(`${englishPath}/new.json`);
+                fs.unlinkSync(`${englishPath}/${language}.json`);
+            }
         }
     }
 });

@@ -162,7 +162,7 @@ exports.default = async (callbackQuery) => {
                     else {
                         if (categoryIndex >= 0) {
                             game.disabledCategories.splice(categoryIndex, 1);
-                            if (!subcategories.some((subcategory) => game.disabledCategories.includes(subcategory))) {
+                            if (game.disabledCategories.includes(mainCategory)) {
                                 game.disabledCategories = game.disabledCategories.filter((category) => category !== mainCategory);
                             }
                         }
