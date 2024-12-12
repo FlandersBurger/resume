@@ -4,6 +4,8 @@ import fs from "fs";
 
 export const filesRoute = Router();
 
+console.log(path.resolve(`images/google`));
+
 filesRoute.get("/:type/:folder", (req: Request, res: Response) => {
   if (["images", "sounds"].includes(req.params.type)) {
     fs.readdir(path.resolve(`${req.params.type}/${req.params.folder}`), (err, files) => {
