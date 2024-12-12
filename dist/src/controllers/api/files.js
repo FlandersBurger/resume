@@ -8,17 +8,15 @@ const express_1 = require("express");
 const path_1 = __importDefault(require("path"));
 const fs_1 = __importDefault(require("fs"));
 exports.filesRoute = (0, express_1.Router)();
-exports.filesRoute.get("/:type/:folder", (req, res) => {
+exports.filesRoute.get("/:type/:folder", async (req, res) => {
+    console.log(req.params);
     if (["images", "sounds"].includes(req.params.type)) {
-        fs_1.default.readdir(path_1.default.resolve(`${req.params.type}/${req.params.folder}`), (err, files) => {
-            if (err)
-                console.error(err);
-            if (err || !files || files.length === 0)
-                res.sendStatus(404);
-            else {
-                res.json(files.sort(() => Math.random() - 0.5));
-            }
-        });
+        const files = fs_1.default.readdirSync(path_1.default.resolve(`${req.params.type}/${req.params.folder}`));
+        if (!files || files.length === 0)
+            res.sendStatus(404);
+        else {
+            res.json(files.sort(() => Math.random() - 0.5));
+        }
     }
     else
         res.sendStatus(401);
