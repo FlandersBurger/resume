@@ -10,9 +10,9 @@ const fs_1 = __importDefault(require("fs"));
 exports.filesRoute = (0, express_1.Router)();
 exports.filesRoute.get("/:type/:folder", (req, res) => {
     if (["images", "sounds"].includes(req.params.type)) {
-        console.log(req.params.type, req.params.folder);
-        console.log(path_1.default.resolve(`${req.params.type}/${req.params.folder}`));
         fs_1.default.readdir(path_1.default.resolve(`${req.params.type}/${req.params.folder}`), (err, files) => {
+            if (err)
+                console.error(err);
             if (err || !files || files.length === 0)
                 res.sendStatus(404);
             else {
