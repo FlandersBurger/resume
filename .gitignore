@@ -1,6 +1,7 @@
 config.*
 keys
 temp
+resources
 
 # Logs
 logs
