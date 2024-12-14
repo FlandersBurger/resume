@@ -12,7 +12,7 @@ const moment_1 = __importDefault(require("moment"));
 const messages_1 = require("./messages");
 const lists_1 = require("./lists");
 const i18n_1 = __importDefault(require("../../../i18n"));
-const categories_1 = __importDefault(require("./categories"));
+const categories_1 = require("./categories");
 const emojis_1 = __importDefault(require("./emojis"));
 const bans_1 = require("./bans");
 const stats_1 = require("./stats");
@@ -21,7 +21,6 @@ const keyboards_1 = require("./keyboards");
 const telegram_1 = __importDefault(require("../../../connections/telegram"));
 const errors_1 = require("./errors");
 const languages_1 = require("./languages");
-const uniq_1 = __importDefault(require("lodash/uniq"));
 var CallbackDataType;
 (function (CallbackDataType) {
     CallbackDataType["Ban"] = "ban";
@@ -149,31 +148,7 @@ exports.default = async (callbackQuery) => {
                         return;
                     const mainCategory = callbackQuery.data.split(".")[0];
                     const categoryIndex = game.disabledCategories.indexOf(callbackQuery.data);
-                    const subcategories = categories_1.default[mainCategory].map((subcategory) => `${mainCategory}.${subcategory}`);
-                    if (Object.keys(categories_1.default).includes(callbackQuery.data)) {
-                        if (!subcategories.some((subcategory) => game.disabledCategories.includes(subcategory))) {
-                            game.disabledCategories.push(mainCategory);
-                            game.disabledCategories = game.disabledCategories.concat(subcategories);
-                        }
-                        else {
-                            game.disabledCategories = game.disabledCategories.filter((subcategory) => !subcategory.startsWith(mainCategory));
-                        }
-                    }
-                    else {
-                        if (categoryIndex >= 0) {
-                            game.disabledCategories.splice(categoryIndex, 1);
-                            if (game.disabledCategories.includes(mainCategory)) {
-                                game.disabledCategories = game.disabledCategories.filter((category) => category !== mainCategory);
-                            }
-                        }
-                        else {
-                            game.disabledCategories.push(callbackQuery.data);
-                            if (subcategories.every((subcategory) => game.disabledCategories.includes(subcategory))) {
-                                game.disabledCategories.push(mainCategory);
-                            }
-                        }
-                    }
-                    game.disabledCategories = (0, uniq_1.default)(game.disabledCategories);
+                    (0, categories_1.setDisabledCategories)(game, callbackQuery.data);
                     await game.save();
                     telegram_1.default.answerCallback(callbackQuery.callbackQueryId, `${(0, i18n_1.default)(game.settings.language, callbackQuery.data, { ns: "categories" })} -> ${categoryIndex >= 0 ? (0, i18n_1.default)(game.settings.language, "on") : (0, i18n_1.default)(game.settings.language, "off")}`);
                     telegram_1.default.queueEditKeyboard(game.telegramChannel, callbackQuery.id, (0, keyboards_1.subcategoriesKeyboard)(game, mainCategory));

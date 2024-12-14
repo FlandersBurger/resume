@@ -8,7 +8,7 @@ import auth from "@root/auth";
 import http from "http";
 
 import { emailRoute } from "@api/email";
-import { filesRoute } from "@api/files";
+import { quizzesRoute } from "@root/controllers/api/quizzes";
 import { gamesRoute } from "@api/games";
 import { postsRoute } from "@api/posts";
 import { staticRoute } from "@root/controllers/static";
@@ -40,10 +40,10 @@ app.use(json({ limit: "5mb" }));
 
 app.use(auth);
 app.use("/api/email", emailRoute);
-app.use("/api/quizzes", filesRoute);
 app.use("/api/games", gamesRoute);
 app.use("/api/users", usersRoute);
 app.use("/api/posts", postsRoute);
+app.use("/api/quizzes", quizzesRoute);
 
 app.use("/api/tenthings/categories", tenthingsCategoriesRoute);
 app.use("/api/tenthings/games", tenthingsGamesRoute);
