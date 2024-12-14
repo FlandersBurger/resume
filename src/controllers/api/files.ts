@@ -4,7 +4,7 @@ import fs from "fs";
 
 export const filesRoute = Router();
 
-filesRoute.get("/:type/folder/:folder", (req: Request, res: Response) => {
+filesRoute.get("/:type/:folder", (req: Request, res: Response) => {
   console.error(req.params);
   console.error(path.resolve(`${req.params.type}/${req.params.folder}`));
   if (["images", "sounds"].includes(req.params.type)) {

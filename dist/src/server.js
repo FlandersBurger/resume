@@ -38,7 +38,7 @@ const app = (0, express_1.default)();
 app.use((0, body_parser_1.json)({ limit: "5mb" }));
 app.use(auth_1.default);
 app.use("/api/email", email_1.emailRoute);
-app.use("/api/files", files_1.filesRoute);
+app.use("/api/quizzes", files_1.filesRoute);
 app.use("/api/games", games_1.gamesRoute);
 app.use("/api/users", users_1.usersRoute);
 app.use("/api/posts", posts_1.postsRoute);

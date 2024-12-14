@@ -40,7 +40,7 @@ app.use(json({ limit: "5mb" }));
 
 app.use(auth);
 app.use("/api/email", emailRoute);
-app.use("/api/files", filesRoute);
+app.use("/api/quizzes", filesRoute);
 app.use("/api/games", gamesRoute);
 app.use("/api/users", usersRoute);
 app.use("/api/posts", postsRoute);
