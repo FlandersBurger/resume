@@ -1,7 +1,5 @@
-angular.module('app')
-.controller('QuizLogosCtrl', function ($scope, FileSvc) {
-  FileSvc.getImages('logos')
-  .then(function(response) {
+angular.module("app").controller("QuizLogosCtrl", function ($scope, FileSvc) {
+  FileSvc.getQuizFiles("logos").then(function (response) {
     $scope.images = response.data;
   });
 });

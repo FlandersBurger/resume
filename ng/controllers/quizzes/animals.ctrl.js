@@ -1,7 +1,7 @@
 angular.module("app").controller("QuizAnimalsCtrl", function ($scope, FileSvc) {
   $scope.animals = [];
 
-  FileSvc.getSounds("animals").then(function (response) {
+  FileSvc.getQuizFiles("animals").then(function (response) {
     $scope.animals = _.shuffle(
       response.data.map((animal) => ({
         sound: animal,

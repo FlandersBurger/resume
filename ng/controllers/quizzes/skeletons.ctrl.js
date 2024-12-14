@@ -1,7 +1,7 @@
 angular.module("app").controller("QuizSkeletonsCtrl", function ($scope, FileSvc) {
   $scope.animals = [];
 
-  FileSvc.getImages("skeletons").then(function (response) {
+  FileSvc.getQuizFiles("skeletons").then(function (response) {
     $scope.animals = _.shuffle(
       response.data.map((animal) => ({
         image: animal,
