@@ -12,10 +12,10 @@ quizzesRoute.get("/:id", (req: Request, res: Response) => {
     case "logos":
     case "skeletons":
     case "movies":
-      folder = `../images/${req.params.id}`;
+      folder = __dirname + `/../../../images/${req.params.id}`;
       break;
     case "animals":
-      folder = `../sounds/${req.params.id}`;
+      folder = __dirname + `/../../../sounds/${req.params.id}`;
       break;
     default:
       return res.sendStatus(401);
