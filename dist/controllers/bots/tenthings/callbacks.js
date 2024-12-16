@@ -46,8 +46,6 @@ exports.default = async (callbackQuery) => {
     if (!game) {
         return;
     }
-    console.log(callbackQuery);
-    console.log(game.telegramChannel);
     let list;
     switch (callbackQuery.type) {
         case CallbackDataType.Vote:
@@ -99,7 +97,6 @@ exports.default = async (callbackQuery) => {
             }
             break;
         case CallbackDataType.StatOptions:
-            console.log(callbackQuery);
             if (await telegram_1.default.checkAdmin(game.telegramChannel, callbackQuery.from.id)) {
                 if (!game)
                     return;

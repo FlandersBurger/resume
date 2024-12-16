@@ -9,7 +9,6 @@ const path_1 = __importDefault(require("path"));
 const fs_1 = __importDefault(require("fs"));
 exports.quizzesRoute = (0, express_1.Router)();
 exports.quizzesRoute.get("/:id", (req, res) => {
-    console.error(req.params);
     let folder;
     switch (req.params.id) {
         case "google":

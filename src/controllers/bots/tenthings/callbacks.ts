@@ -67,8 +67,6 @@ export default async (callbackQuery: CallbackData) => {
   if (!game) {
     return;
   }
-  console.log(callbackQuery);
-  console.log(game.telegramChannel);
   let list: HydratedDocument<IList> | null;
   switch (callbackQuery.type) {
     case CallbackDataType.Vote:
@@ -123,7 +121,6 @@ export default async (callbackQuery: CallbackData) => {
       }
       break;
     case CallbackDataType.StatOptions:
-      console.log(callbackQuery);
       if (await bot.checkAdmin(game.telegramChannel, callbackQuery.from.id)) {
         if (!game) return;
         const text = i18n(game.settings.language, `stats.${callbackQuery.data}`);

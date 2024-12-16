@@ -5,7 +5,6 @@ import fs from "fs";
 export const quizzesRoute = Router();
 
 quizzesRoute.get("/:id", (req: Request, res: Response) => {
-  console.error(req.params);
   let folder;
   switch (req.params.id) {
     case "google":
