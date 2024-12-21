@@ -295,8 +295,8 @@ class TelegramBot {
             if (game.telegramChannel.chat > 0)
                 return true;
             const player = await (0, players_1.getPlayer)(game, user);
-            if (player && player.admin)
-                return true;
+            if (player && player.admin !== undefined)
+                return player.admin;
             const url = `${this.baseUrl}/getChatMember?chat_id=${game.telegramChannel.chat}&user_id=${user.id}`;
             try {
                 const response = await (0, http_client_1.default)().get(url);
@@ -304,8 +304,10 @@ class TelegramBot {
                     response.data &&
                     response.data.result &&
                     ["creator", "administrator"].includes(response.data.result.status);
-                player.admin = admin;
-                await player.save();
+                if (player) {
+                    player.admin = admin;
+                    await player.save();
+                }
                 return admin;
             }
             catch (error) {
