@@ -111,7 +111,7 @@ const evaluate = async (msg, game, isNew) => {
                     .join("\n"));
                 break;
             case Command.Stop:
-                if (await telegram_1.default.checkAdmin(game.telegramChannel, msg.from.id)) {
+                if (await telegram_1.default.checkAdmin(game, msg.from)) {
                     (0, maingame_1.deactivate)(game);
                 }
                 else {
@@ -239,7 +239,7 @@ const evaluate = async (msg, game, isNew) => {
                 break;
             case Command.Categories:
                 if (game.chat_id != parseInt(process.env.GROUP_CHAT || "")) {
-                    if (await telegram_1.default.checkAdmin(game.telegramChannel, msg.from.id)) {
+                    if (await telegram_1.default.checkAdmin(game, msg.from)) {
                         telegram_1.default.sendKeyboard(game.telegramChannel, `<b>${(0, i18n_1.default)(game.settings.language, "category")}</b>`, (0, keyboards_1.categoriesKeyboard)(game));
                     }
                     else {
@@ -249,7 +249,7 @@ const evaluate = async (msg, game, isNew) => {
                 break;
             case Command.Settings:
                 if (game.chat_id != parseInt(process.env.GROUP_CHAT || "")) {
-                    if (await telegram_1.default.checkAdmin(game.telegramChannel, msg.from.id)) {
+                    if (await telegram_1.default.checkAdmin(game, msg.from)) {
                         telegram_1.default.sendKeyboard(game.telegramChannel, `<b>${(0, i18n_1.default)(game.settings.language, "settings")}</b>`, (0, keyboards_1.settingsKeyboard)(game));
                     }
                     else {

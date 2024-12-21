@@ -11,6 +11,8 @@ import { parseSymbols, maskUrls } from "@root/utils/string-helpers";
 import { UserInput } from "@tenthings/messages";
 import moment, { Moment } from "moment";
 import { Command } from "@root/controllers/bots/tenthings/commands";
+import { IGame } from "@root/models/tenthings/game";
+import { getPlayer } from "@root/controllers/bots/tenthings/players";
 
 const BANNED_TELEGRAM_USERS = [1726294650, 6758829541];
 
@@ -338,23 +340,29 @@ class TelegramBot {
     }
   };
 
-  public checkAdmin = async (channel: Channel, userId: number) => {
-    if (userId === parseInt(process.env.MASTER_CHAT || "")) return true;
-    if (channel.chat > 0) return true;
-    const url = `${this.baseUrl}/getChatMember?chat_id=${channel.chat}&user_id=${userId}`;
+  public checkAdmin = async (game: IGame, user: TelegramUser) => {
+    if (user.id === parseInt(process.env.MASTER_CHAT || "")) return true;
+    if (game.telegramChannel.chat > 0) return true;
+    const player = await getPlayer(game, user);
+    if (player && player.admin) return true;
+    const url = `${this.baseUrl}/getChatMember?chat_id=${game.telegramChannel.chat}&user_id=${user.id}`;
     try {
       const response = await httpClient().get(url);
-      return (
+      const admin =
         response &&
         response.data &&
         response.data.result &&
-        ["creator", "administrator"].includes(response.data.result.status)
-      );
+        ["creator", "administrator"].includes(response.data.result.status);
+      if (player) {
+        player.admin = admin;
+        await player.save();
+      }
+      return admin;
     } catch (error: AxiosError | any) {
       if (error.response.data.description === "Bad Request: CHAT_ADMIN_REQUIRED") {
         return true;
       }
-      this.errorHandler(channel, "Check admin", error);
+      this.errorHandler(game.telegramChannel, "Check admin", error);
     }
   };
 

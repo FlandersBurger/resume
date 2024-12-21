@@ -13,6 +13,7 @@ const main_1 = require("../controllers/bots/tenthings/main");
 const string_helpers_1 = require("../utils/string-helpers");
 const moment_1 = __importDefault(require("moment"));
 const commands_1 = require("../controllers/bots/tenthings/commands");
+const players_1 = require("../controllers/bots/tenthings/players");
 const BANNED_TELEGRAM_USERS = [1726294650, 6758829541];
 const messageQueue = new bull_1.default("sendMessage", {
     redis: {
@@ -288,24 +289,30 @@ class TelegramBot {
                 this.errorHandler(channel, "Get chat member", error);
             }
         };
-        this.checkAdmin = async (channel, userId) => {
-            if (userId === parseInt(process.env.MASTER_CHAT || ""))
+        this.checkAdmin = async (game, user) => {
+            if (user.id === parseInt(process.env.MASTER_CHAT || ""))
                 return true;
-            if (channel.chat > 0)
+            if (game.telegramChannel.chat > 0)
                 return true;
-            const url = `${this.baseUrl}/getChatMember?chat_id=${channel.chat}&user_id=${userId}`;
+            const player = await (0, players_1.getPlayer)(game, user);
+            if (player && player.admin)
+                return true;
+            const url = `${this.baseUrl}/getChatMember?chat_id=${game.telegramChannel.chat}&user_id=${user.id}`;
             try {
                 const response = await (0, http_client_1.default)().get(url);
-                return (response &&
+                const admin = response &&
                     response.data &&
                     response.data.result &&
-                    ["creator", "administrator"].includes(response.data.result.status));
+                    ["creator", "administrator"].includes(response.data.result.status);
+                player.admin = admin;
+                await player.save();
+                return admin;
             }
             catch (error) {
                 if (error.response.data.description === "Bad Request: CHAT_ADMIN_REQUIRED") {
                     return true;
                 }
-                this.errorHandler(channel, "Check admin", error);
+                this.errorHandler(game.telegramChannel, "Check admin", error);
             }
         };
         this.sendKeyboard = async (channel, message, keyboard) => {

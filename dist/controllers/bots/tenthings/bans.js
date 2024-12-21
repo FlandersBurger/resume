@@ -11,8 +11,7 @@ const telegram_1 = __importDefault(require("../../../connections/telegram"));
 const errors_1 = require("./errors");
 const cache = {};
 const initiateBan = async (game, callbackQuery) => {
-    if (game.chat_id !== parseInt(process.env.GROUP_CHAT || "") ||
-        (await telegram_1.default.checkAdmin(game.telegramChannel, callbackQuery.from.id))) {
+    if (game.chat_id !== parseInt(process.env.GROUP_CHAT || "") || (await telegram_1.default.checkAdmin(game, callbackQuery.from))) {
         const foundList = await index_1.List.findOne({ _id: callbackQuery.data }).exec();
         if (!foundList) {
             return telegram_1.default.queueMessage(game.telegramChannel, (0, i18n_1.default)(game.settings.language, "warnings.unfoundList"));

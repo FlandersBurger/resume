@@ -121,7 +121,7 @@ export default async (callbackQuery: CallbackData) => {
       }
       break;
     case CallbackDataType.StatOptions:
-      if (await bot.checkAdmin(game.telegramChannel, callbackQuery.from.id)) {
+      if (await bot.checkAdmin(game, callbackQuery.from)) {
         if (!game) return;
         const text = i18n(game.settings.language, `stats.${callbackQuery.data}`);
         switch (callbackQuery.data) {
@@ -155,7 +155,7 @@ export default async (callbackQuery: CallbackData) => {
       break;
     case CallbackDataType.Category:
       if (game.chat_id != parseInt(process.env.GROUP_CHAT || "")) {
-        if (await bot.checkAdmin(game.telegramChannel, callbackQuery.from.id)) {
+        if (await bot.checkAdmin(game, callbackQuery.from)) {
           bot.queueEditKeyboard(
             game.telegramChannel,
             callbackQuery.id,
@@ -166,7 +166,7 @@ export default async (callbackQuery: CallbackData) => {
       break;
     case CallbackDataType.Subcategory:
       if (game.chat_id != parseInt(process.env.GROUP_CHAT || "")) {
-        if (await bot.checkAdmin(game.telegramChannel, callbackQuery.from.id)) {
+        if (await bot.checkAdmin(game, callbackQuery.from)) {
           if (!game || !callbackQuery.data) return;
           const mainCategory = callbackQuery.data.split(".")[0];
           const categoryIndex = game.disabledCategories.indexOf(callbackQuery.data);
@@ -187,7 +187,7 @@ export default async (callbackQuery: CallbackData) => {
       break;
     case CallbackDataType.Setting:
       if (game.chat_id !== parseInt(process.env.ADMIN_CHAT || "")) {
-        if (await bot.checkAdmin(game.telegramChannel, callbackQuery.from.id)) {
+        if (await bot.checkAdmin(game, callbackQuery.from)) {
           if (!game || !callbackQuery.data) return;
           if (callbackQuery.data === "langs") {
             const availableLanguages = await List.aggregate([
@@ -221,7 +221,7 @@ export default async (callbackQuery: CallbackData) => {
       }
       break;
     case CallbackDataType.TriviaLanguages:
-      if (await bot.checkAdmin(game.telegramChannel, callbackQuery.from.id)) {
+      if (await bot.checkAdmin(game, callbackQuery.from)) {
         if (!game || !callbackQuery.data) return;
         if (!isSupportedLanguage(callbackQuery.data)) return;
         const isSelected = game.settings.languages.includes(callbackQuery.data);
@@ -245,7 +245,7 @@ export default async (callbackQuery: CallbackData) => {
       }
       break;
     case CallbackDataType.BotLanguage:
-      if (await bot.checkAdmin(game.telegramChannel, callbackQuery.from.id)) {
+      if (await bot.checkAdmin(game, callbackQuery.from)) {
         if (!game || !callbackQuery.data) return;
         if (!isBotLanguage(callbackQuery.data)) return;
         game.settings.language = callbackQuery.data;

@@ -134,7 +134,7 @@ export const evaluate = async (msg: Message, game: HydratedDocument<IGame>, isNe
         );
         break;
       case Command.Stop:
-        if (await bot.checkAdmin(game.telegramChannel, msg.from.id)) {
+        if (await bot.checkAdmin(game, msg.from)) {
           deactivate(game);
         } else {
           adminOnly(game, player.first_name, msg.from);
@@ -289,7 +289,7 @@ export const evaluate = async (msg: Message, game: HydratedDocument<IGame>, isNe
         break;
       case Command.Categories:
         if (game.chat_id != parseInt(process.env.GROUP_CHAT || "")) {
-          if (await bot.checkAdmin(game.telegramChannel, msg.from.id)) {
+          if (await bot.checkAdmin(game, msg.from)) {
             bot.sendKeyboard(
               game.telegramChannel,
               `<b>${i18n(game.settings.language, "category")}</b>`,
@@ -302,7 +302,7 @@ export const evaluate = async (msg: Message, game: HydratedDocument<IGame>, isNe
         break;
       case Command.Settings:
         if (game.chat_id != parseInt(process.env.GROUP_CHAT || "")) {
-          if (await bot.checkAdmin(game.telegramChannel, msg.from.id)) {
+          if (await bot.checkAdmin(game, msg.from)) {
             bot.sendKeyboard(
               game.telegramChannel,
               `<b>${i18n(game.settings.language, "settings")}</b>`,

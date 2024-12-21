@@ -97,7 +97,7 @@ exports.default = async (callbackQuery) => {
             }
             break;
         case CallbackDataType.StatOptions:
-            if (await telegram_1.default.checkAdmin(game.telegramChannel, callbackQuery.from.id)) {
+            if (await telegram_1.default.checkAdmin(game, callbackQuery.from)) {
                 if (!game)
                     return;
                 const text = (0, i18n_1.default)(game.settings.language, `stats.${callbackQuery.data}`);
@@ -133,14 +133,14 @@ exports.default = async (callbackQuery) => {
             break;
         case CallbackDataType.Category:
             if (game.chat_id != parseInt(process.env.GROUP_CHAT || "")) {
-                if (await telegram_1.default.checkAdmin(game.telegramChannel, callbackQuery.from.id)) {
+                if (await telegram_1.default.checkAdmin(game, callbackQuery.from)) {
                     telegram_1.default.queueEditKeyboard(game.telegramChannel, callbackQuery.id, (0, keyboards_1.subcategoriesKeyboard)(game, callbackQuery.data));
                 }
             }
             break;
         case CallbackDataType.Subcategory:
             if (game.chat_id != parseInt(process.env.GROUP_CHAT || "")) {
-                if (await telegram_1.default.checkAdmin(game.telegramChannel, callbackQuery.from.id)) {
+                if (await telegram_1.default.checkAdmin(game, callbackQuery.from)) {
                     if (!game || !callbackQuery.data)
                         return;
                     const mainCategory = callbackQuery.data.split(".")[0];
@@ -159,7 +159,7 @@ exports.default = async (callbackQuery) => {
             break;
         case CallbackDataType.Setting:
             if (game.chat_id !== parseInt(process.env.ADMIN_CHAT || "")) {
-                if (await telegram_1.default.checkAdmin(game.telegramChannel, callbackQuery.from.id)) {
+                if (await telegram_1.default.checkAdmin(game, callbackQuery.from)) {
                     if (!game || !callbackQuery.data)
                         return;
                     if (callbackQuery.data === "langs") {
@@ -195,7 +195,7 @@ exports.default = async (callbackQuery) => {
             }
             break;
         case CallbackDataType.TriviaLanguages:
-            if (await telegram_1.default.checkAdmin(game.telegramChannel, callbackQuery.from.id)) {
+            if (await telegram_1.default.checkAdmin(game, callbackQuery.from)) {
                 if (!game || !callbackQuery.data)
                     return;
                 if (!(0, languages_1.isSupportedLanguage)(callbackQuery.data))
@@ -217,7 +217,7 @@ exports.default = async (callbackQuery) => {
             }
             break;
         case CallbackDataType.BotLanguage:
-            if (await telegram_1.default.checkAdmin(game.telegramChannel, callbackQuery.from.id)) {
+            if (await telegram_1.default.checkAdmin(game, callbackQuery.from)) {
                 if (!game || !callbackQuery.data)
                     return;
                 if (!(0, languages_1.isBotLanguage)(callbackQuery.data))

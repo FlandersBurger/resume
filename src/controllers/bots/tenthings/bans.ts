@@ -11,10 +11,7 @@ import { adminOnly } from "./errors";
 const cache: { [key: string]: number } = {};
 
 export const initiateBan = async (game: IGame, callbackQuery: CallbackData) => {
-  if (
-    game.chat_id !== parseInt(process.env.GROUP_CHAT || "") ||
-    (await bot.checkAdmin(game.telegramChannel, callbackQuery.from.id))
-  ) {
+  if (game.chat_id !== parseInt(process.env.GROUP_CHAT || "") || (await bot.checkAdmin(game, callbackQuery.from))) {
     const foundList = await List.findOne({ _id: callbackQuery.data }).exec();
     if (!foundList) {
       return bot.queueMessage(game.telegramChannel, i18n(game.settings.language, "warnings.unfoundList"));
