@@ -73,6 +73,9 @@ const gameSchema = new mongoose_1.Schema({
         updates: { type: Boolean, required: true, default: true },
         languages: [{ type: String, required: true, default: "EN" }],
         language: { type: String, required: true, default: "EN" },
+        skipDelay: { type: Number, required: true, default: 10 },
+        vetoDelay: { type: Number, required: true, default: 15 },
+        hintDelay: { type: Number, required: true, default: 10 },
     },
 }, { timestamps: true });
 gameSchema.virtual("telegramChannel").get(function () {

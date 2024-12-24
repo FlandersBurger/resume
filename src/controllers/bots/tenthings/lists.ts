@@ -12,7 +12,7 @@ import orderBy from "lodash/orderBy";
 import uniqBy from "lodash/uniqBy";
 import { likeListKeyboard } from "./keyboards";
 import i18n from "@root/i18n";
-import { parseSymbols } from "@root/utils/string-helpers";
+import { parseSymbols, removeSpecialCharacters } from "@root/utils/string-helpers";
 
 export const getRandomList = async (parameters: QueryOptions = {}): Promise<HydratedDocument<IList> | undefined> => {
   const count = await List.countDocuments(parameters).exec();
@@ -101,11 +101,12 @@ const sampleLists = async (query: QueryOptions<IList>, sampledLists: IList[]): P
 
 export const searchList = async (search: string, game: IGame): Promise<IList[]> => {
   const availableLanguages = getAvailableLanguages(game);
+  const sanitizedSearch = removeSpecialCharacters(search);
   let foundLists = await sampleLists(
     {
       categories: { $nin: game.disabledCategories },
       language: { $in: availableLanguages },
-      name: { $regex: search, $options: "i" },
+      name: { $regex: sanitizedSearch, $options: "i" },
     },
     [],
   );
@@ -120,7 +121,7 @@ export const searchList = async (search: string, game: IGame): Promise<IList[]> 
   );
   if (foundLists.length >= 10) return foundLists;
   foundLists = await sampleLists(
-    { language: { $in: availableLanguages }, name: { $regex: search, $options: "i" } },
+    { language: { $in: availableLanguages }, name: { $regex: sanitizedSearch, $options: "i" } },
     foundLists,
   );
   if (foundLists.length >= 10) return foundLists;

@@ -62,7 +62,7 @@ export const processHint = async (
         logHint(game.list._id);
         break;
     }
-    hintCache[game._id.toString()] = 10;
+    hintCache[game._id.toString()] = game.settings.hintDelay;
     hintCooldown(game._id.toString());
     await game.save();
   }

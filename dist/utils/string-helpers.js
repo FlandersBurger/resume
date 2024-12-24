@@ -3,14 +3,15 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.maskUrls = exports.parseSymbols = exports.removeHTML = exports.capitalize = exports.concealMiddle = exports.conceal = exports.removeAllButLetters = exports.removeDiacritics = void 0;
+exports.maskUrls = exports.parseSymbols = exports.removeHTML = exports.capitalize = exports.concealMiddle = exports.conceal = exports.removeAllButLetters = exports.removeSpecialCharacters = exports.removeDiacritics = void 0;
 const diacritics_1 = __importDefault(require("./diacritics"));
 const domains_1 = __importDefault(require("./domains"));
 const removeDiacritics = (str) => diacritics_1.default.reduce((result, diacritic) => result.replace(diacritic.letters, diacritic.base), str);
 exports.removeDiacritics = removeDiacritics;
 const SPECIAL_CHARACTERS = "\\\\/ !?@#$%^&*()_+:.{},;\\-'``’‘\"";
 const removeSpecialCharacters = (str) => str.replace(new RegExp(`[${SPECIAL_CHARACTERS}]`, "gi"), "");
-const removeAllButLetters = (str) => removeSpecialCharacters((0, exports.removeDiacritics)(str.toLowerCase()));
+exports.removeSpecialCharacters = removeSpecialCharacters;
+const removeAllButLetters = (str) => (0, exports.removeSpecialCharacters)((0, exports.removeDiacritics)(str.toLowerCase()));
 exports.removeAllButLetters = removeAllButLetters;
 const conceal = (str, extra = "") => str.replace(new RegExp(`[^${SPECIAL_CHARACTERS}${extra}]`, "gi"), "⁎");
 exports.conceal = conceal;

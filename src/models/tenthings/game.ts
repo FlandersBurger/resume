@@ -3,13 +3,16 @@ import db from "@root/db";
 import { IUser } from "@models/user";
 import { BotLanguage, SupportedLanguage } from "@root/controllers/bots/tenthings/languages";
 
-export interface IGameSettings extends Record<string, boolean | string[] | string> {
+export interface IGameSettings extends Record<string, boolean | string[] | string | number> {
   intro: boolean;
   sass: boolean;
   snubs: boolean;
   updates: boolean;
   languages: SupportedLanguage[];
   language: BotLanguage;
+  skipDelay: number; // How long a player has to be able to veto a list
+  vetoDelay: number; // How long a player has to wait before being able to skip again
+  hintDelay: number; // How long a player has to wait before being able to ask for a hint
 }
 
 export enum GameType {
@@ -141,6 +144,9 @@ const gameSchema = new Schema<IGame>(
       updates: { type: Boolean, required: true, default: true },
       languages: [{ type: String, required: true, default: "EN" }],
       language: { type: String, required: true, default: "EN" },
+      skipDelay: { type: Number, required: true, default: 10 },
+      vetoDelay: { type: Number, required: true, default: 15 },
+      hintDelay: { type: Number, required: true, default: 10 },
     },
   },
   { timestamps: true },

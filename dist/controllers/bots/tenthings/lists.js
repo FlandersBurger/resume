@@ -95,10 +95,11 @@ const sampleLists = async (query, sampledLists) => {
 };
 const searchList = async (search, game) => {
     const availableLanguages = getAvailableLanguages(game);
+    const sanitizedSearch = (0, string_helpers_1.removeSpecialCharacters)(search);
     let foundLists = await sampleLists({
         categories: { $nin: game.disabledCategories },
         language: { $in: availableLanguages },
-        name: { $regex: search, $options: "i" },
+        name: { $regex: sanitizedSearch, $options: "i" },
     }, []);
     if (foundLists.length >= 10)
         return foundLists;
@@ -109,7 +110,7 @@ const searchList = async (search, game) => {
     }, foundLists);
     if (foundLists.length >= 10)
         return foundLists;
-    foundLists = await sampleLists({ language: { $in: availableLanguages }, name: { $regex: search, $options: "i" } }, foundLists);
+    foundLists = await sampleLists({ language: { $in: availableLanguages }, name: { $regex: sanitizedSearch, $options: "i" } }, foundLists);
     if (foundLists.length >= 10)
         return foundLists;
     foundLists = await sampleLists({ language: { $in: availableLanguages }, $text: { $search: `"${search}"` } }, foundLists);

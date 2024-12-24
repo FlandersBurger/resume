@@ -202,6 +202,7 @@ export const evaluate = async (msg: Message, game: HydratedDocument<IGame>, isNe
           player.searches++;
           await player.save();
           console.log(`${game.chat_id} - Search for ${search}`);
+
           const foundLists = await searchList(search, game);
           if (foundLists.length > 0) {
             const keyboard = listsKeyboard(foundLists);

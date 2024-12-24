@@ -60,7 +60,7 @@ const processHint = async (game, player, type = game_1.GameType.MAINGAME) => {
                 (0, lists_1.logHint)(game.list._id);
                 break;
         }
-        exports.hintCache[game._id.toString()] = 10;
+        exports.hintCache[game._id.toString()] = game.settings.hintDelay;
         (0, exports.hintCooldown)(game._id.toString());
         await game.save();
     }

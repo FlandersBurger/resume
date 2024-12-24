@@ -6,7 +6,8 @@ export const removeDiacritics = (str: string): string =>
 
 const SPECIAL_CHARACTERS = "\\\\/ !?@#$%^&*()_+:.{},;\\-'``’‘\"";
 
-const removeSpecialCharacters = (str: string): string => str.replace(new RegExp(`[${SPECIAL_CHARACTERS}]`, "gi"), "");
+export const removeSpecialCharacters = (str: string): string =>
+  str.replace(new RegExp(`[${SPECIAL_CHARACTERS}]`, "gi"), "");
 
 export const removeAllButLetters = (str: string): string =>
   removeSpecialCharacters(removeDiacritics(str.toLowerCase()));
