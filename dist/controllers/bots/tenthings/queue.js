@@ -12,7 +12,7 @@ const getQueue = async () => {
     const webhook = await telegram_1.default.getWebhook();
     let message = `<b>Queue</b>\n`;
     message += `${guessCount} correct answers queued\n`;
-    message += `${outgoing} outgoing messages queued (max 30/sec)\n`;
+    message += `${outgoing} outgoing messages queued (max 25/sec)\n`;
     message += `${webhook.pending_update_count ?? 0} incoming messages pending in Telegram (max 100/sec)`;
     return message;
 };
