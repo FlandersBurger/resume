@@ -22,7 +22,7 @@ const messageQueue = new bull_1.default("sendMessage", {
         password: process.env.REDIS_PASSWORD,
     },
     limiter: {
-        max: 28,
+        max: 25,
         duration: 1000,
     },
 });
@@ -80,7 +80,7 @@ class TelegramBot {
                 else if (error.response.data.description.startsWith("Too Many Requests: retry after ")) {
                     if (!this.paused) {
                         this.paused = true;
-                        const timeout = parseInt(error.response.data.description.match(/retry after (\d+)/)[1]);
+                        const timeout = parseInt(error.response.data.description.match(/retry after (\d+)/)[1]) + 0.5;
                         this.timeoutUntil = (0, moment_1.default)().add(timeout, "seconds");
                         messageQueue.pause();
                         if (timeout > 100)
