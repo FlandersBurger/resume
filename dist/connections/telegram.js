@@ -22,8 +22,9 @@ const messageQueue = new bull_1.default("sendMessage", {
         password: process.env.REDIS_PASSWORD,
     },
     limiter: {
-        max: 25,
+        max: 10,
         duration: 1000,
+        groupKey: "chat",
     },
 });
 messageQueue.on("completed", function (job) {
@@ -181,7 +182,7 @@ class TelegramBot {
             }
         };
         this.queueMessage = async (channel, message) => {
-            messageQueue.add("", { channel, message, action: "sendMessage" }, {});
+            messageQueue.add("", { channel, message, action: "sendMessage", chat: channel.chat }, {});
             if (this.timeoutUntil && (0, moment_1.default)().isAfter(this.timeoutUntil)) {
                 this.resumeQueue();
             }
@@ -356,7 +357,7 @@ class TelegramBot {
             }
         };
         this.queueEditKeyboard = (channel, message_id, keyboard) => {
-            messageQueue.add("", { channel, message_id, action: "editKeyboard", keyboard }, {});
+            messageQueue.add("", { channel, message_id, action: "editKeyboard", chat: channel.chat, keyboard }, {});
         };
         this.answerCallback = async (callback_query_id, text) => {
             const url = `${this.baseUrl}/answerCallbackQuery?callback_query_id=${callback_query_id}&text=${text}`;

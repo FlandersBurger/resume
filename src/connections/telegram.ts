@@ -23,8 +23,9 @@ const messageQueue = new Queue("sendMessage", {
     password: process.env.REDIS_PASSWORD,
   },
   limiter: {
-    max: 25,
+    max: 10,
     duration: 1000,
+    groupKey: "chat",
   },
 });
 
@@ -231,7 +232,7 @@ class TelegramBot {
   };
 
   public queueMessage = async (channel: Channel, message: string) => {
-    messageQueue.add("", { channel, message, action: "sendMessage" }, {});
+    messageQueue.add("", { channel, message, action: "sendMessage", chat: channel.chat }, {});
     if (this.timeoutUntil && moment().isAfter(this.timeoutUntil)) {
       this.resumeQueue();
     }
@@ -402,7 +403,7 @@ class TelegramBot {
   };
 
   public queueEditKeyboard = (channel: Channel, message_id: string, keyboard: Keyboard) => {
-    messageQueue.add("", { channel, message_id, action: "editKeyboard", keyboard }, {});
+    messageQueue.add("", { channel, message_id, action: "editKeyboard", chat: channel.chat, keyboard }, {});
   };
 
   public answerCallback = async (callback_query_id: string, text: string) => {
