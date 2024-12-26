@@ -134,7 +134,7 @@ class TelegramBot {
           this.timeoutUntil = moment().add(timeout, "seconds");
           // messageQueue.pause();
           if (timeout > 100) this.notifyAdmin(`Pausing queue for ${timeout} seconds due to too many requests`);
-          else console.log(`Pausing queue for ${timeout} seconds due to too many requests`);
+          // else console.log(`Pausing queue for ${timeout} seconds due to too many requests`);
           // setTimeout(this.resumeQueue, timeout * 1000);
         }
         if (message) this.queueMessage(channel, message);
