@@ -22,9 +22,8 @@ const messageQueue = new bull_1.default("sendMessage", {
         password: process.env.REDIS_PASSWORD,
     },
     limiter: {
-        max: 10,
+        max: 25,
         duration: 1000,
-        groupKey: "chat",
     },
 });
 messageQueue.on("completed", function (job) {
