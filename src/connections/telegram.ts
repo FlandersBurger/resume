@@ -23,7 +23,7 @@ const messageQueue = new Queue("sendMessage", {
     password: process.env.REDIS_PASSWORD,
   },
   limiter: {
-    // max: 10,
+    max: 25,
     duration: 1000,
     // groupKey: "chat",
   },
