@@ -14,6 +14,7 @@ import { checkMinigame } from "./minigame";
 import { checkTinygame } from "./tinygame";
 import { getPlayer } from "./players";
 import { Message } from "./messages";
+import bot from "@root/connections/telegram";
 
 export type Guess = {
   msg: Message;
@@ -112,7 +113,12 @@ export const queueGuess = async (game: IGame, msg: Message) => {
 const queueingGuess = (guess: Guess) => guessQueue.add(guess);
 
 guessQueue.process(async ({ data }, done) => {
-  await processGuess(data);
+  try {
+    await processGuess(data);
+  } catch (err) {
+    bot.notifyAdmin(`Error in ProcessGuess`);
+    console.error(err);
+  }
   done();
 });
 

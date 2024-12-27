@@ -16,6 +16,7 @@ const maingame_1 = require("./maingame");
 const minigame_1 = require("./minigame");
 const tinygame_1 = require("./tinygame");
 const players_1 = require("./players");
+const telegram_1 = __importDefault(require("../../../connections/telegram"));
 const guessQueue = new bull_1.default("processGuess", {
     redis: {
         port: parseInt(process.env.REDIS_PORT || "6379"),
@@ -92,7 +93,13 @@ const queueGuess = async (game, msg) => {
 exports.queueGuess = queueGuess;
 const queueingGuess = (guess) => guessQueue.add(guess);
 guessQueue.process(async ({ data }, done) => {
-    await processGuess(data);
+    try {
+        await processGuess(data);
+    }
+    catch (err) {
+        telegram_1.default.notifyAdmin(`Error in ProcessGuess`);
+        console.error(err);
+    }
     done();
 });
 const processGuess = async (guess) => {
