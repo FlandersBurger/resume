@@ -176,7 +176,7 @@
             ></i>
           </th>
           <th ng-click="orderBy('upvotes')" class="hidden-sm visible-md visible-lg">
-            <i class="fas fa-thumbs-up" uib-tooltip="Upvotes"></i>
+            <i class="fas fa-thumbs-up text-success" uib-tooltip="Upvotes"></i>
             <i
               ng-if="order.field === 'upvotes'"
               class="fas"
@@ -184,7 +184,7 @@
             ></i>
           </th>
           <th ng-click="orderBy('downvotes')" class="hidden-sm visible-md visible-lg">
-            <i class="fas fa-thumbs-down" uib-tooltip="Downvotes"></i>
+            <i class="fas fa-thumbs-down text-danger" uib-tooltip="Downvotes"></i>
             <i
               ng-if="order.field === 'downvotes'"
               class="fas"
@@ -253,8 +253,8 @@
           </td>
           <td>{{list.answers}}</td>
           <td>{{list.language}}</td>
-          <td class="hidden-sm visible-md visible-lg">{{list.upvotes}}</td>
-          <td class="hidden-sm visible-md visible-lg">{{list.downvotes}}</td>
+          <td class="hidden-sm visible-md visible-lg"><span class="label label-success">{{list.upvotes}}</span></td>
+          <td class="hidden-sm visible-md visible-lg"><span class="label label-danger">{{list.downvotes}}</span></td>
           <td class="hidden-sm visible-md visible-lg">{{list.likeRatio.makePercentage(0)}}</td>
           <td class="hidden-sm visible-md visible-lg">{{list.plays}}</td>
           <td class="hidden-sm visible-md visible-lg">{{list.playRatio.makePercentage(0)}}</td>
