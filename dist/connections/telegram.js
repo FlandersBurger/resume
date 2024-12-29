@@ -60,6 +60,11 @@ class TelegramBot {
             this.telegramBotUser = data.result;
             this.introduceYourself();
             this.resumeQueue();
+            const bot = this;
+            messageQueue.on("failed", function (job, error) {
+                bot.notifyAdmin(`Error in message queue: ${job.data.message}`);
+                console.error(error);
+            });
         };
         this.errorHandler = (channel, source, error, message) => {
             const reason = error?.response?.data?.description;

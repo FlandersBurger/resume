@@ -374,3 +374,11 @@ export const getStreakMessage = (streak: number): string => {
     " ---"
   );
 };
+
+export const getDailyMessage = () => {
+  const messages = [
+    `Thanks for playing! I gotta say it warms my heart knowing the game is played widely and I want to keep it free.\nHowever, the game costs me around <i>$40/month</i> to host so if you\'re feeling generous and want to support Ten Things then please consider donating.\nYour gratitude won\'t go unnoticed :)\n\n\t - <a href="https://paypal.me/tenthingsgame">Paypal</a>\n`,
+    `Thanks for playing! I'm currently working on making a board game named Tipsy Island.\nSo if you like Ten Things, perhaps you would be interested in doing me the great honor of following the game on Facebook: <a href="https://www.facebook.com/tipsyislandgame">Tipsy Island</a>`,
+  ];
+  return messages[Math.floor(Math.random() * messages.length)];
+};

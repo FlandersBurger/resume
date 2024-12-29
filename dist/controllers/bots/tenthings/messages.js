@@ -26,7 +26,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getStreakMessage = exports.getPlayerStats = exports.getListStats = exports.getDifficultyMessage = exports.getFrequencyMessage = exports.getListMessage = exports.getSnubbedMessage = exports.getGuessedMessage = exports.getCategoriesMessage = exports.getLogicMessage = void 0;
+exports.getDailyMessage = exports.getStreakMessage = exports.getPlayerStats = exports.getListStats = exports.getDifficultyMessage = exports.getFrequencyMessage = exports.getListMessage = exports.getSnubbedMessage = exports.getGuessedMessage = exports.getCategoriesMessage = exports.getLogicMessage = void 0;
 const string_helpers_1 = require("../../../utils/string-helpers");
 const moment_1 = __importDefault(require("moment"));
 const MAXHINTS = 6;
@@ -384,4 +384,12 @@ const getStreakMessage = (streak) => {
         " ---");
 };
 exports.getStreakMessage = getStreakMessage;
+const getDailyMessage = () => {
+    const messages = [
+        `Thanks for playing! I gotta say it warms my heart knowing the game is played widely and I want to keep it free.\nHowever, the game costs me around <i>$40/month</i> to host so if you\'re feeling generous and want to support Ten Things then please consider donating.\nYour gratitude won\'t go unnoticed :)\n\n\t - <a href="https://paypal.me/tenthingsgame">Paypal</a>\n`,
+        `Thanks for playing! I'm currently working on making a board game named Tipsy Island.\nSo if you like Ten Things, perhaps you would be interested in doing me the great honor of following the game on Facebook: <a href="https://www.facebook.com/tipsyislandgame">Tipsy Island</a>`,
+    ];
+    return messages[Math.floor(Math.random() * messages.length)];
+};
+exports.getDailyMessage = getDailyMessage;
 //# sourceMappingURL=messages.js.map

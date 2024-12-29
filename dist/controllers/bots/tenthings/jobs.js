@@ -17,6 +17,7 @@ const minigame_1 = require("./minigame");
 const stats_1 = require("./stats");
 const backup = require("../../../scripts/backup-db");
 const index_1 = require("../../../models/index");
+const messages_1 = require("./messages");
 const resetDailyScore = () => {
     if ((0, moment_1.default)().utc().hour() === 1) {
         telegram_1.default.notifyAdmin(`Score Reset Triggered; ${(0, moment_1.default)().format("DD-MMM-YYYY hh:mm")}`);
@@ -47,11 +48,7 @@ const resetDailyScore = () => {
                 let message = `<b>${winners
                     .map((player) => (player.username ? `@${player.username}` : player.first_name))
                     .join(" & ")} won with ${highScore} points!</b>\n\n`;
-                message += `Thanks for playing! I gotta say it warms my heart knowing the game is played widely and I want to keep it free.\n`;
-                message += `However, the game costs me around <i>$40/month</i> to host so if you\'re feeling generous and want to support Ten Things then please consider donating.\n`;
-                message += `Your gratitude won\'t go unnoticed :)\n\n`;
-                message += `\t - <a href="https://paypal.me/tenthingsgame">Paypal</a>\n`;
-                message += `\t - Bitcoin Address: bc1qnr4y95d3w5rwahcypazpjdv33g8wupewmw6rpa3s2927qvgmduqsvcpgfs`;
+                message += (0, messages_1.getDailyMessage)();
                 telegram_1.default.queueMessage(game.telegramChannel, message);
                 await index_1.Player.updateMany({ game: game._id, scoreDaily: 0 }, { $set: { playStreak: 0 } });
                 await index_1.Player.updateMany({

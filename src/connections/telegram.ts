@@ -22,10 +22,6 @@ const messageQueue = new Queue("sendMessage", {
     host: "localhost",
     password: process.env.REDIS_PASSWORD,
   },
-  // limiter: {
-  //   max: 28,
-  //   duration: 1000,
-  // },
   limiter: {
     max: 20,
     duration: 60000,
@@ -116,6 +112,11 @@ class TelegramBot {
     this.telegramBotUser = data.result;
     this.introduceYourself();
     this.resumeQueue();
+    const bot = this;
+    messageQueue.on("failed", function (job: Job, error: any) {
+      bot.notifyAdmin(`Error in message queue: ${job.data.message}`);
+      console.error(error);
+    });
   };
 
   private errorHandler = (channel: Channel, source: string, error: any, message?: string) => {
