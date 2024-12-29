@@ -47,7 +47,7 @@ export const rateList = (game: IGame) => {
   );
 };
 
-const getAvailableLanguages = ({ settings }: { settings: IGameSettings }) =>
+const getAvailableLanguages = ({ settings }: { settings: IGameSettings }): string[] =>
   settings.languages && settings.languages.length > 0 ? settings.languages : ["EN"];
 
 export const selectList = async (game: IGame): Promise<HydratedDocument<IList>> => {

@@ -9,9 +9,9 @@ class MovieDb {
         this.getImage = async (query, type) => {
             const { data } = await (0, http_client_1.default)().get(`https://api.themoviedb.org/3/search/${type}?api_key=${this.token}&query=${encodeURIComponent(query)}`);
             try {
-                const posterPath = data.results[0].poster_path;
-                if (posterPath) {
-                    return `http://image.tmdb.org/t/p/w500${posterPath}`;
+                const imagePath = data.results[0].poster_path || data.results[0].profile_path;
+                if (imagePath) {
+                    return `http://image.tmdb.org/t/p/w500${imagePath}`;
                 }
             }
             catch (e) {
