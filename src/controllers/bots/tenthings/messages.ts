@@ -144,6 +144,8 @@ export const getListStats = (language: string, list: IList, requestor: string | 
   var message = "";
   message += requestor ? `<i>${i18n(language, "sentences.requestedBy", { requestor })}</i>\n` : "";
   message += `${i18n(language, "stats.misc", { something: list.name })}\n`;
+  message += `\t${i18n(language, "createdOn")}: ${moment(list.date).format("DD-MMM-YYYY")}\n`;
+  message += `\t${i18n(language, "modifiedOn")}: ${moment(list.modifyDate).format("DD-MMM-YYYY")}\n`;
   message += `\t${i18n(language, "score")}: ${makePercentage(getListScore(list))}\n`;
   message += `\t${i18n(language, "votes")}: ${list.votes.filter(({ vote }) => vote > 0).length} ${emojis.thumbsUp} / ${
     list.votes.filter(({ vote }) => vote < 0).length

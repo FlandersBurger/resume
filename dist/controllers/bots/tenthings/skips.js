@@ -30,6 +30,10 @@ const skipCooldown = (game, skipper) => {
     }
 };
 const processSkip = (game, skipper) => {
+    if (exports.vetoCache[game.chat_id]) {
+        delete exports.skipCache[game.chat_id];
+        return;
+    }
     if (game.chat_id < 0) {
         if (game.settings.skipDelay > 0) {
             if (exports.skipCache[game.chat_id] && exports.skipCache[game.chat_id].playerId !== skipper._id) {

@@ -156,6 +156,8 @@ const getListStats = (language, list, requestor) => {
     var message = "";
     message += requestor ? `<i>${(0, i18n_1.default)(language, "sentences.requestedBy", { requestor })}</i>\n` : "";
     message += `${(0, i18n_1.default)(language, "stats.misc", { something: list.name })}\n`;
+    message += `\t${(0, i18n_1.default)(language, "createdOn")}: ${(0, moment_1.default)(list.date).format("DD-MMM-YYYY")}\n`;
+    message += `\t${(0, i18n_1.default)(language, "modifiedOn")}: ${(0, moment_1.default)(list.modifyDate).format("DD-MMM-YYYY")}\n`;
     message += `\t${(0, i18n_1.default)(language, "score")}: ${(0, number_helpers_1.makePercentage)((0, lists_1.getListScore)(list))}\n`;
     message += `\t${(0, i18n_1.default)(language, "votes")}: ${list.votes.filter(({ vote }) => vote > 0).length} ${emojis_1.default.thumbsUp} / ${list.votes.filter(({ vote }) => vote < 0).length} ${emojis_1.default.thumbsDown}\n`;
     message += `\t${(0, i18n_1.default)(language, "values")}: ${list.values.length}\n`;

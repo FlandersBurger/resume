@@ -31,6 +31,10 @@ const skipCooldown = (game: IGame, skipper: IPlayer) => {
 };
 
 export const processSkip = (game: IGame, skipper: IPlayer) => {
+  if (vetoCache[game.chat_id]) {
+    delete skipCache[game.chat_id];
+    return;
+  }
   if (game.chat_id < 0) {
     if (game.settings.skipDelay > 0) {
       if (skipCache[game.chat_id] && skipCache[game.chat_id].playerId !== skipper._id) {
