@@ -312,9 +312,10 @@ angular
     };
 
     $scope.deleteValue = (item) => {
+      const valueToDelete = item.value;
       TenThingsSvc.deleteListValue($scope.selectedList, item).then(() => {
         $scope.selectedList.values = $scope.selectedList.values.filter((value) => value._id !== item._id);
-        $scope.toast(`"${item.value}" removed`);
+        $scope.toast(`"${valueToDelete}" removed`);
       });
     };
 
