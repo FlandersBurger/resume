@@ -22,7 +22,7 @@ export const getPlayer = async (game: IGame, from: TelegramUser | IPlayer) => {
 
 export const getPlayerName = (player: TelegramUser | IPlayer | IGameListValue["guesser"]) => {
   if (!player) return "Player 404";
-  return maskUrls(parseSymbols(player.username ? `@${player.username}` : player.first_name));
+  return maskUrls(parseSymbols(player.username ? player.username : player.first_name));
 };
 
 const createPlayer = async (game: IGame, from: Message["from"]) => {
