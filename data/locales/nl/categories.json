@@ -33,7 +33,8 @@
     "seasons": "Seizoenen",
     "streaming": "Streaming",
     "telenovelas": "Telenovelas",
-    "titles": "Titels"
+    "titles": "Titels",
+    "awards": "Prijzen"
   },
   "movies": {
     "name": "Films",
@@ -223,7 +224,8 @@
     "social_movements": "Sociale bewegingen",
     "tourism": "Toerisme",
     "transportation": "Vervoer",
-    "flags": "Vlaggen"
+    "flags": "Vlaggen",
+    "brands": "Merken"
   },
   "language": {
     "name": "Taal",

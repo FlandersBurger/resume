@@ -325,18 +325,17 @@ export default async (callbackQuery: CallbackData) => {
       bot.answerCallback(callbackQuery.callbackQueryId, "");
       break;
     case CallbackDataType.Values:
-      List.findOne({ _id: callbackQuery.data }).exec((_, list) => {
-        if (!list) {
-          bot.queueMessage(game.telegramChannel, "List not found");
-        } else {
-          bot.queueMessage(
-            game.telegramChannel,
-            list.values
-              .sort((a, b) => (a.value < b.value ? -1 : 1))
-              .reduce((message, item) => `${message}- ${item.value}\n`, `<b>${list.name}</b>\n`),
-          );
-        }
-      });
+      list = await List.findOne({ _id: callbackQuery.data });
+      if (!list) {
+        bot.queueMessage(game.telegramChannel, "List not found");
+      } else {
+        bot.queueMessage(
+          game.telegramChannel,
+          list.values
+            .sort((a, b) => (a.value < b.value ? -1 : 1))
+            .reduce((message, item) => `${message}- ${item.value}\n`, `<b>${list.name}</b>\n`),
+        );
+      }
       break;
     case CallbackDataType.Description:
       if (!game) return;

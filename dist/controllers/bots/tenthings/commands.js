@@ -22,7 +22,6 @@ const stats_1 = require("./stats");
 const keyboards_1 = require("./keyboards");
 const telegram_1 = __importDefault(require("../../../connections/telegram"));
 const suggestions_1 = require("./suggestions");
-const string_helpers_1 = require("../../../utils/string-helpers");
 const errors_1 = require("./errors");
 var Command;
 (function (Command) {
@@ -99,7 +98,7 @@ const evaluate = async (msg, game, isNew) => {
                 break;
             case Command.Intro:
                 telegram_1.default.queueMessage(game.telegramChannel, (0, i18n_1.default)(game.settings.language, "sentences.introduction", {
-                    name: player.first_name,
+                    name: (0, players_1.getPlayerName)(player),
                 }));
                 break;
             case Command.Logic:
@@ -115,7 +114,7 @@ const evaluate = async (msg, game, isNew) => {
                     (0, maingame_1.deactivate)(game);
                 }
                 else {
-                    (0, errors_1.adminOnly)(game, player.first_name, msg.from);
+                    (0, errors_1.adminOnly)(game, (0, players_1.getPlayerName)(player), msg.from);
                 }
                 break;
             case Command.Start:
@@ -169,7 +168,7 @@ const evaluate = async (msg, game, isNew) => {
             case Command.Search:
                 const search = msg.text;
                 if (game.pickedLists.length >= 10)
-                    return telegram_1.default.queueMessage(game.telegramChannel, `${(0, i18n_1.default)(game.settings.language, "sentences.queueFull", { name: (0, string_helpers_1.parseSymbols)(player.first_name) })}\n -> /lists`);
+                    return telegram_1.default.queueMessage(game.telegramChannel, `${(0, i18n_1.default)(game.settings.language, "sentences.queueFull", { name: (0, players_1.getPlayerName)(player) })}\n -> /lists`);
                 if (search) {
                     player.searches++;
                     await player.save();
@@ -182,12 +181,12 @@ const evaluate = async (msg, game, isNew) => {
                     else {
                         telegram_1.default.queueMessage(game.telegramChannel, (0, i18n_1.default)(game.settings.language, "sentences.noSearchResults", {
                             search,
-                            name: (0, string_helpers_1.parseSymbols)(player.first_name),
+                            name: (0, players_1.getPlayerName)(player),
                         }));
                     }
                 }
                 else {
-                    telegram_1.default.queueMessage(game.telegramChannel, (0, i18n_1.default)(game.settings.language, "sentences.emptySearch", { name: (0, string_helpers_1.parseSymbols)(player.first_name) }));
+                    telegram_1.default.queueMessage(game.telegramChannel, (0, i18n_1.default)(game.settings.language, "sentences.emptySearch", { name: (0, players_1.getPlayerName)(player) }));
                 }
                 break;
             case Command.Hint:
@@ -216,7 +215,7 @@ const evaluate = async (msg, game, isNew) => {
                 }
                 break;
             case Command.Me:
-                (0, stats_1.getStats)(game, `p_${msg.from.id}`, msg.from.first_name);
+                (0, stats_1.getStats)(game, `p_${msg.from.id}`, (0, players_1.getPlayerName)(msg.from));
                 break;
             case Command.Score:
                 telegram_1.default.queueMessage(game.telegramChannel, await (0, stats_1.getDailyScores)(game));
@@ -253,7 +252,7 @@ const evaluate = async (msg, game, isNew) => {
                         telegram_1.default.sendKeyboard(game.telegramChannel, `<b>${(0, i18n_1.default)(game.settings.language, "settings")}</b>`, (0, keyboards_1.settingsKeyboard)(game));
                     }
                     else {
-                        (0, errors_1.adminOnly)(game, player.first_name, msg.from);
+                        (0, errors_1.adminOnly)(game, (0, players_1.getPlayerName)(player), msg.from);
                     }
                 }
                 break;
@@ -296,13 +295,12 @@ const evaluate = async (msg, game, isNew) => {
                 break;
             case Command.Lists:
                 if (game.pickedLists.length > 0) {
-                    index_1.List.find({ _id: { $in: game.pickedLists } }).exec((_, upcomingLists) => {
-                        let message = `${(0, i18n_1.default)(game.settings.language, "sentences.upcomingLists")}\n`;
-                        for (const list of upcomingLists.slice(0, 10)) {
-                            message += `- ${list.name}\n`;
-                        }
-                        telegram_1.default.queueMessage(game.telegramChannel, message);
-                    });
+                    const upcomingLists = await index_1.List.find({ _id: { $in: game.pickedLists } });
+                    let message = `${(0, i18n_1.default)(game.settings.language, "sentences.upcomingLists")}\n`;
+                    for (const list of upcomingLists.slice(0, 10)) {
+                        message += `- ${list.name}\n`;
+                    }
+                    telegram_1.default.queueMessage(game.telegramChannel, message);
                 }
                 else {
                     telegram_1.default.queueMessage(game.telegramChannel, (0, i18n_1.default)(game.settings.language, "sentences.noUpcomingLists"));

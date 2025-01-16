@@ -11,6 +11,7 @@ import { getRandomList } from "./lists";
 import bot from "@root/connections/telegram";
 import i18n from "@root/i18n";
 import { parseSymbols } from "@root/utils/string-helpers";
+import { getPlayerName } from "./players";
 
 export const createTinygame = async (game: HydratedDocument<IGame>) => {
   const availableLanguages =
@@ -77,7 +78,7 @@ export const checkTinygame = async (
   let message = `${i18n(game.settings.language, "sentences.tinygameAnswered")} (${(guess.match.distance * 100).toFixed(
     0,
   )}%)\n`;
-  message += getGuessedMessage(game.settings.language, game.tinygame.answer, msg.from.first_name);
+  message += getGuessedMessage(game.settings.language, game.tinygame.answer, getPlayerName(msg.from));
   message += `\n<u>${player.scoreDaily - score} + ${i18n(game.settings.language, "point", {
     count: score,
   })}</u>`;

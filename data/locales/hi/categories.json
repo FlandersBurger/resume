@@ -33,7 +33,8 @@
     "seasons": "मौसम",
     "streaming": "स्ट्रीमिंग",
     "telenovelas": "टेलीनोवेलास",
-    "titles": "शीर्षक"
+    "titles": "शीर्षक",
+    "awards": "पुरस्कार"
   },
   "movies": {
     "name": "फिल्में",
@@ -223,7 +224,8 @@
     "social_movements": "सामाजिक आंदोलन",
     "tourism": "पर्यटन",
     "transportation": "परिवहन",
-    "flags": "झंडे"
+    "flags": "झंडे",
+    "brands": "ब्रांड्स"
   },
   "language": {
     "name": "भाषा",

@@ -33,7 +33,8 @@
     "seasons": "시즌",
     "streaming": "스트리밍",
     "telenovelas": "텔레노벨라",
-    "titles": "제목"
+    "titles": "제목",
+    "awards": "수상"
   },
   "movies": {
     "name": "영화",
@@ -223,7 +224,8 @@
     "social_movements": "사회 운동",
     "tourism": "관광",
     "transportation": "교통",
-    "flags": "플래그"
+    "flags": "플래그",
+    "brands": "브랜드"
   },
   "language": {
     "name": "언어",

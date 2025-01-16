@@ -224,7 +224,7 @@ exports.tenthingsListsRoute.delete("/:id", async (req, res) => {
         const list = await index_1.List.findOne({ _id: req.params.id });
         if (list) {
             if (res.locals.isAdmin || res.locals.user?._id.equals(list.creator.toString())) {
-                await index_1.List.findByIdAndRemove({ _id: req.params.id });
+                await index_1.List.findByIdAndDelete({ _id: req.params.id });
                 telegram_1.default.notifyAdmins(list.values
                     .sort((a, b) => (a.value < b.value ? -1 : 1))
                     .reduce((message, item) => `${message}- ${item.value}\n`, `<b>${list.name}</b>\ndeleted by ${res.locals.user.username}\n`));

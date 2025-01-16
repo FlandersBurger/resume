@@ -226,7 +226,7 @@ tenthingsListsRoute.delete("/:id", async (req: Request, res: Response) => {
     const list = await List.findOne({ _id: req.params.id });
     if (list) {
       if (res.locals.isAdmin || res.locals.user?._id.equals(list.creator.toString())) {
-        await List.findByIdAndRemove({ _id: req.params.id });
+        await List.findByIdAndDelete({ _id: req.params.id });
         bot.notifyAdmins(
           list.values
             .sort((a, b) => (a.value < b.value ? -1 : 1))

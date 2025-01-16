@@ -33,7 +33,8 @@
     "seasons": "مواسم",
     "streaming": "بث",
     "telenovelas": "مسلسلات",
-    "titles": "عناوين"
+    "titles": "عناوين",
+    "awards": "الجوائز"
   },
   "movies": {
     "name": "أفلام",
@@ -223,7 +224,8 @@
     "social_movements": "حركات اجتماعية",
     "tourism": "سياحة",
     "transportation": "نقل",
-    "flags": "الأعلام"
+    "flags": "الأعلام",
+    "brands": "العلامات التجارية"
   },
   "language": {
     "name": "لغة",

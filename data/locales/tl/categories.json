@@ -33,7 +33,8 @@
     "seasons": "Mga Season",
     "streaming": "Streaming",
     "telenovelas": "Mga Telenovela",
-    "titles": "Mga Pamagat"
+    "titles": "Mga Pamagat",
+    "awards": "Mga parangal"
   },
   "movies": {
     "name": "Mga Pelikula",
@@ -223,7 +224,8 @@
     "social_movements": "Mga Kilusang Panlipunan",
     "tourism": "Turismo",
     "transportation": "Transportasyon",
-    "flags": "Mga watawat"
+    "flags": "Mga watawat",
+    "brands": "Mga tatak"
   },
   "language": {
     "name": "Wika",

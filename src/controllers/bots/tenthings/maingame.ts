@@ -6,7 +6,7 @@ import some from "lodash/some";
 import { Game, List, Player } from "@models/index";
 import { IGame } from "@models/tenthings/game";
 import { IList } from "@models/tenthings/list";
-import { parseSymbols, maskUrls, removeHTML } from "@root/utils/string-helpers";
+import { parseSymbols } from "@root/utils/string-helpers";
 import { IUser } from "@models/user";
 import { IPlayer } from "@models/tenthings/player";
 import { Guess, getAnswerScore } from "./guesses";
@@ -19,6 +19,7 @@ import i18n from "@root/i18n";
 
 import bot from "@root/connections/telegram";
 import { getCategoryLabel } from "./categories";
+import { getPlayerName } from "./players";
 
 export const createMaingame = async (chat_id: number): Promise<HydratedDocument<IGame>> => {
   // const starredLists = await List.find({ starred: true }).select("_id");
@@ -297,7 +298,7 @@ export const sendMaingameMessage = async (game: IGame, long = true) => {
         str += "\n";
       } else {
         str += `\t${index + 1}: `;
-        str += `${parseSymbols(value)} - <i>${maskUrls(removeHTML(guesser.first_name))}</i>`;
+        str += `${parseSymbols(value)} - <i>${getPlayerName(guesser)}</i>`;
         str += "\n";
       }
     } else {
@@ -320,18 +321,11 @@ export const sendMaingameMessage = async (game: IGame, long = true) => {
 // ██    ██ ██    ██ ██           ██      ██ ██      ██   ██
 //  ██████   ██████  ███████ ███████ ███████ ███████ ██████
 
-const guessed = async (
-  game: IGame,
-  { scoreDaily, first_name }: IPlayer,
-  value: string,
-  blurb: string,
-  score: number,
-  accuracy: string,
-) => {
-  let message = getGuessedMessage(game.settings.language, parseSymbols(value), parseSymbols(first_name));
+const guessed = async (game: IGame, player: IPlayer, value: string, blurb: string, score: number, accuracy: string) => {
+  let message = getGuessedMessage(game.settings.language, parseSymbols(value), getPlayerName(player));
   message += getStreakMessage(game.streak.count);
   message += blurb;
-  message += `\n<u>${scoreDaily - score} + ${i18n(game.settings.language, "point", {
+  message += `\n<u>${player.scoreDaily - score} + ${i18n(game.settings.language, "point", {
     count: score,
   })} (${accuracy})</u>`;
   const answersLeft = game.list.values.filter(({ guesser }) => !guesser?.first_name);

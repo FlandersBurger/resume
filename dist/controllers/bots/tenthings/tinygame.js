@@ -13,6 +13,7 @@ const lists_1 = require("./lists");
 const telegram_1 = __importDefault(require("../../../connections/telegram"));
 const i18n_1 = __importDefault(require("../../../i18n"));
 const string_helpers_1 = require("../../../utils/string-helpers");
+const players_1 = require("./players");
 const createTinygame = async (game) => {
     const availableLanguages = game.settings.languages && game.settings.languages.length > 0 ? game.settings.languages : ["EN"];
     let list = await (0, lists_1.getRandomList)({
@@ -70,7 +71,7 @@ const checkTinygame = async (game, player, guess, msg) => {
     game.tinygame.plays++;
     await game.save();
     let message = `${(0, i18n_1.default)(game.settings.language, "sentences.tinygameAnswered")} (${(guess.match.distance * 100).toFixed(0)}%)\n`;
-    message += (0, messages_1.getGuessedMessage)(game.settings.language, game.tinygame.answer, msg.from.first_name);
+    message += (0, messages_1.getGuessedMessage)(game.settings.language, game.tinygame.answer, (0, players_1.getPlayerName)(msg.from));
     message += `\n<u>${player.scoreDaily - score} + ${(0, i18n_1.default)(game.settings.language, "point", {
         count: score,
     })}</u>`;

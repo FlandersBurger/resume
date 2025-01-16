@@ -2,7 +2,7 @@ import moment from "moment";
 import { Message } from "./messages";
 
 import bot from "@root/connections/telegram";
-import { parseSymbols } from "@root/utils/string-helpers";
+import { getPlayerName } from "./players";
 
 const cache: {
   [key: string]: {
@@ -16,7 +16,7 @@ export const checkSpam = (body: {
   callback_query?: { from: Message["from"]; message: Message };
 }) => {
   const from = body.message ? body.message.from.id : body.callback_query!.from.id;
-  const name = parseSymbols(body.message ? body.message.from.first_name : body.callback_query!.from.first_name);
+  const name = getPlayerName(body.message ? body.message.from : body.callback_query!.from);
   const chat = body.message ? body.message.chatId : body.callback_query!.message.chatId;
 
   if (cache[from]) {
@@ -29,18 +29,18 @@ export const checkSpam = (body: {
     } else if (cache[from].count <= 30) {
       cache[from].count++;
       if (cache[from].count === 20) {
-        bot.queueMessage({chat}, `You sure seem to be sending a lot of messages, ${name}. I'm keeping an eye on you`);
+        bot.queueMessage({ chat }, `You sure seem to be sending a lot of messages, ${name}. I'm keeping an eye on you`);
       } else if (cache[from].count === 30) {
         cache[from].lastMessage = moment();
         bot.queueMessage(
-          {chat},
+          { chat },
           `Ok, ${name}, calm down, I can't keep up.  Please stay silent for 10 seconds so I can process your stuff`,
         );
       }
     } else if (cache[from].count > 35) {
       cache[from].count++;
       if (cache[from].count === 35) {
-        bot.exportChatInviteLink({chat}).then((url: string | undefined) => {
+        bot.exportChatInviteLink({ chat }).then((url: string | undefined) => {
           bot.notifyAdmin(
             `Possible spammer: ${name} (${from}) in chat ${chat} ${
               chat == parseInt(process.env.GROUP_CHAT || "") ? " - The main chat!" : ""

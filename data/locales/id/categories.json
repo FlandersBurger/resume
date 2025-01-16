@@ -33,7 +33,8 @@
     "seasons": "Musim",
     "streaming": "Streaming",
     "telenovelas": "Telenovela",
-    "titles": "Judul"
+    "titles": "Judul",
+    "awards": "Penghargaan"
   },
   "movies": {
     "name": "Film",
@@ -223,7 +224,8 @@
     "social_movements": "Gerakan sosial",
     "tourism": "Pariwisata",
     "transportation": "Transportasi",
-    "flags": "Bendera"
+    "flags": "Bendera",
+    "brands": "Merek"
   },
   "language": {
     "name": "Bahasa",

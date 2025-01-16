@@ -25,6 +25,7 @@
     "name": "Television",
     "animation": "Animation",
     "anime": "Anime",
+    "awards": "Awards",
     "cast": "Cast",
     "characters": "Characters",
     "details": "Details",
@@ -210,6 +211,7 @@
   "society": {
     "name": "Society",
     "automotive": "Automotive",
+    "brands": "Brands",
     "business": "Business",
     "capitals": "Capitals",
     "cities": "Cities",

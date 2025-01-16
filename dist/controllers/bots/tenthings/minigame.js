@@ -14,6 +14,7 @@ const guesses_1 = require("./guesses");
 const messages_1 = require("./messages");
 const hints_1 = require("./hints");
 const string_helpers_1 = require("../../../utils/string-helpers");
+const players_1 = require("./players");
 const createMinigame = async (game) => {
     const availableLanguages = game.settings.languages && game.settings.languages.length > 0 ? game.settings.languages : ["EN"];
     let minigames = await getMinigames({
@@ -145,7 +146,7 @@ const checkMinigame = async (game, player, guess, msg) => {
     game.minigame.plays++;
     await game.save();
     let message = `${(0, i18n_1.default)(game.settings.language, "sentences.minigameAnswered")} (${(guess.match.distance * 100).toFixed(0)}%)\n`;
-    message += (0, messages_1.getGuessedMessage)(game.settings.language, game.minigame.answer, msg.from.first_name);
+    message += (0, messages_1.getGuessedMessage)(game.settings.language, game.minigame.answer, (0, players_1.getPlayerName)(msg.from));
     message += `\n<u>${player.scoreDaily - score} + ${(0, i18n_1.default)(game.settings.language, "point", {
         count: score,
     })}</u>`;

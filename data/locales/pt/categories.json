@@ -33,7 +33,8 @@
     "seasons": "Temporadas",
     "streaming": "Streaming",
     "telenovelas": "Telenovelas",
-    "titles": "Títulos"
+    "titles": "Títulos",
+    "awards": "Prêmios"
   },
   "movies": {
     "name": "Filmes",
@@ -223,7 +224,8 @@
     "social_movements": "Movimentos sociais",
     "tourism": "Turismo",
     "transportation": "Transporte",
-    "flags": "Bandeiras"
+    "flags": "Bandeiras",
+    "brands": "Marcas"
   },
   "language": {
     "name": "Língua",

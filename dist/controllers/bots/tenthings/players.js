@@ -20,7 +20,9 @@ const getPlayer = async (game, from) => {
 };
 exports.getPlayer = getPlayer;
 const getPlayerName = (player) => {
-    return player.username ? `@${player.username}` : (0, string_helpers_1.parseSymbols)(player.first_name);
+    if (!player)
+        return "Player 404";
+    return (0, string_helpers_1.maskUrls)((0, string_helpers_1.parseSymbols)(player.username ? `@${player.username}` : player.first_name));
 };
 exports.getPlayerName = getPlayerName;
 const createPlayer = async (game, from) => {

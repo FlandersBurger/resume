@@ -13,14 +13,13 @@ import { IList } from "@models/tenthings/list";
 
 import i18n from "@root/i18n";
 
-import { getPlayer } from "./players";
+import { getPlayer, getPlayerName } from "./players";
 import { getQueue } from "./queue";
 import { checkSkipper, processSkip, vetoSkip } from "./skips";
 import { getDailyScores, getStats } from "./stats";
 import { categoriesKeyboard, listsKeyboard, settingsKeyboard, statsKeyboard } from "./keyboards";
 import bot from "@root/connections/telegram";
 import { checkSuggestionProvided, sendSuggestion, sendSuggestionMessage } from "./suggestions";
-import { parseSymbols } from "@root/utils/string-helpers";
 import { adminOnly } from "./errors";
 
 export enum Command {
@@ -115,7 +114,7 @@ export const evaluate = async (msg: Message, game: HydratedDocument<IGame>, isNe
         bot.queueMessage(
           game.telegramChannel,
           i18n(game.settings.language, "sentences.introduction", {
-            name: player.first_name,
+            name: getPlayerName(player),
           }),
         );
         break;
@@ -137,7 +136,7 @@ export const evaluate = async (msg: Message, game: HydratedDocument<IGame>, isNe
         if (await bot.checkAdmin(game, msg.from)) {
           deactivate(game);
         } else {
-          adminOnly(game, player.first_name, msg.from);
+          adminOnly(game, getPlayerName(player), msg.from);
         }
         break;
       case Command.Start:
@@ -196,7 +195,7 @@ export const evaluate = async (msg: Message, game: HydratedDocument<IGame>, isNe
         if (game.pickedLists.length >= 10)
           return bot.queueMessage(
             game.telegramChannel,
-            `${i18n(game.settings.language, "sentences.queueFull", { name: parseSymbols(player.first_name) })}\n -> /lists`,
+            `${i18n(game.settings.language, "sentences.queueFull", { name: getPlayerName(player) })}\n -> /lists`,
           );
         if (search) {
           player.searches++;
@@ -219,14 +218,14 @@ export const evaluate = async (msg: Message, game: HydratedDocument<IGame>, isNe
               game.telegramChannel,
               i18n(game.settings.language, "sentences.noSearchResults", {
                 search,
-                name: parseSymbols(player.first_name),
+                name: getPlayerName(player),
               }),
             );
           }
         } else {
           bot.queueMessage(
             game.telegramChannel,
-            i18n(game.settings.language, "sentences.emptySearch", { name: parseSymbols(player.first_name) }),
+            i18n(game.settings.language, "sentences.emptySearch", { name: getPlayerName(player) }),
           );
         }
         break;
@@ -269,7 +268,7 @@ export const evaluate = async (msg: Message, game: HydratedDocument<IGame>, isNe
       break;
       */
       case Command.Me:
-        getStats(game, `p_${msg.from.id}`, msg.from.first_name);
+        getStats(game, `p_${msg.from.id}`, getPlayerName(msg.from));
         break;
       case Command.Score:
         bot.queueMessage(game.telegramChannel, await getDailyScores(game));
@@ -310,7 +309,7 @@ export const evaluate = async (msg: Message, game: HydratedDocument<IGame>, isNe
               settingsKeyboard(game),
             );
           } else {
-            adminOnly(game, player.first_name, msg.from);
+            adminOnly(game, getPlayerName(player), msg.from);
           }
         }
         break;
@@ -359,13 +358,12 @@ export const evaluate = async (msg: Message, game: HydratedDocument<IGame>, isNe
         break;
       case Command.Lists:
         if (game.pickedLists.length > 0) {
-          List.find({ _id: { $in: game.pickedLists } }).exec((_, upcomingLists) => {
-            let message = `${i18n(game.settings.language, "sentences.upcomingLists")}\n`;
-            for (const list of upcomingLists.slice(0, 10)) {
-              message += `- ${list.name}\n`;
-            }
-            bot.queueMessage(game.telegramChannel, message);
-          });
+          const upcomingLists = await List.find({ _id: { $in: game.pickedLists } });
+          let message = `${i18n(game.settings.language, "sentences.upcomingLists")}\n`;
+          for (const list of upcomingLists.slice(0, 10)) {
+            message += `- ${list.name}\n`;
+          }
+          bot.queueMessage(game.telegramChannel, message);
         } else {
           bot.queueMessage(game.telegramChannel, i18n(game.settings.language, "sentences.noUpcomingLists"));
         }

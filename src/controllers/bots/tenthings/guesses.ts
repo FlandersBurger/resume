@@ -12,7 +12,7 @@ import sass from "./sass";
 import { checkMaingame } from "./maingame";
 import { checkMinigame } from "./minigame";
 import { checkTinygame } from "./tinygame";
-import { getPlayer } from "./players";
+import { getPlayer, getPlayerName } from "./players";
 import { Message } from "./messages";
 import bot from "@root/connections/telegram";
 
@@ -142,17 +142,17 @@ const processGuess = async (guess: Guess) => {
   if (guess.match.type === GameType.MAINGAME) {
     await checkMaingame(game, player, guess, guess.msg);
     console.log(
-      `${guess.game} (${game.settings.language}) - ${game.list.name} for ${guess.match.value}: "${guess.msg.text}" by ${player.first_name}`,
+      `${guess.game} (${game.settings.language}) - ${game.list.name} for ${guess.match.value}: "${guess.msg.text}" by ${getPlayerName(player)}`,
     );
   } else if (guess.match.type === GameType.MINIGAME) {
     await checkMinigame(game, player, guess, guess.msg);
     console.log(
-      `${guess.game} (${game.settings.language}) - Minigame guess for ${game.minigame.answer}: "${guess.msg.text}" by ${player.first_name}`,
+      `${guess.game} (${game.settings.language}) - Minigame guess for ${game.minigame.answer}: "${guess.msg.text}" by ${getPlayerName(player)}`,
     );
   } else if (guess.match.type === GameType.TINYGAME) {
     await checkTinygame(game, player, guess, guess.msg);
     console.log(
-      `${guess.game} (${game.settings.language}) - Tinygame guess for ${game.tinygame.answer}: "${guess.msg.text}" by ${player.first_name}`,
+      `${guess.game} (${game.settings.language}) - Tinygame guess for ${game.tinygame.answer}: "${guess.msg.text}" by ${getPlayerName(player)}`,
     );
   }
 };

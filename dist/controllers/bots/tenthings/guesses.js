@@ -122,15 +122,15 @@ const processGuess = async (guess) => {
     }
     if (guess.match.type === game_1.GameType.MAINGAME) {
         await (0, maingame_1.checkMaingame)(game, player, guess, guess.msg);
-        console.log(`${guess.game} (${game.settings.language}) - ${game.list.name} for ${guess.match.value}: "${guess.msg.text}" by ${player.first_name}`);
+        console.log(`${guess.game} (${game.settings.language}) - ${game.list.name} for ${guess.match.value}: "${guess.msg.text}" by ${(0, players_1.getPlayerName)(player)}`);
     }
     else if (guess.match.type === game_1.GameType.MINIGAME) {
         await (0, minigame_1.checkMinigame)(game, player, guess, guess.msg);
-        console.log(`${guess.game} (${game.settings.language}) - Minigame guess for ${game.minigame.answer}: "${guess.msg.text}" by ${player.first_name}`);
+        console.log(`${guess.game} (${game.settings.language}) - Minigame guess for ${game.minigame.answer}: "${guess.msg.text}" by ${(0, players_1.getPlayerName)(player)}`);
     }
     else if (guess.match.type === game_1.GameType.TINYGAME) {
         await (0, tinygame_1.checkTinygame)(game, player, guess, guess.msg);
-        console.log(`${guess.game} (${game.settings.language}) - Tinygame guess for ${game.tinygame.answer}: "${guess.msg.text}" by ${player.first_name}`);
+        console.log(`${guess.game} (${game.settings.language}) - Tinygame guess for ${game.tinygame.answer}: "${guess.msg.text}" by ${(0, players_1.getPlayerName)(player)}`);
     }
 };
 const getAnswerScore = (hintCount, accuracy, playerCount = 1) => Math.round(((hints_1.MAX_HINTS - hintCount + playerCount) / (hints_1.MAX_HINTS + playerCount)) * 10 * accuracy);

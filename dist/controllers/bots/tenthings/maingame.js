@@ -18,6 +18,7 @@ const skips_1 = require("./skips");
 const i18n_1 = __importDefault(require("../../../i18n"));
 const telegram_1 = __importDefault(require("../../../connections/telegram"));
 const categories_1 = require("./categories");
+const players_1 = require("./players");
 const createMaingame = async (chat_id) => {
     const game = new index_1.Game({
         chat_id,
@@ -232,7 +233,7 @@ const sendMaingameMessage = async (game, long = true) => {
             }
             else {
                 str += `\t${index + 1}: `;
-                str += `${(0, string_helpers_1.parseSymbols)(value)} - <i>${(0, string_helpers_1.maskUrls)((0, string_helpers_1.removeHTML)(guesser.first_name))}</i>`;
+                str += `${(0, string_helpers_1.parseSymbols)(value)} - <i>${(0, players_1.getPlayerName)(guesser)}</i>`;
                 str += "\n";
             }
         }
@@ -250,11 +251,11 @@ const sendMaingameMessage = async (game, long = true) => {
     telegram_1.default.queueMessage(game.telegramChannel, message);
 };
 exports.sendMaingameMessage = sendMaingameMessage;
-const guessed = async (game, { scoreDaily, first_name }, value, blurb, score, accuracy) => {
-    let message = (0, messages_1.getGuessedMessage)(game.settings.language, (0, string_helpers_1.parseSymbols)(value), (0, string_helpers_1.parseSymbols)(first_name));
+const guessed = async (game, player, value, blurb, score, accuracy) => {
+    let message = (0, messages_1.getGuessedMessage)(game.settings.language, (0, string_helpers_1.parseSymbols)(value), (0, players_1.getPlayerName)(player));
     message += (0, messages_1.getStreakMessage)(game.streak.count);
     message += blurb;
-    message += `\n<u>${scoreDaily - score} + ${(0, i18n_1.default)(game.settings.language, "point", {
+    message += `\n<u>${player.scoreDaily - score} + ${(0, i18n_1.default)(game.settings.language, "point", {
         count: score,
     })} (${accuracy})</u>`;
     const answersLeft = game.list.values.filter(({ guesser }) => !guesser?.first_name);

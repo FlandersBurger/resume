@@ -18,6 +18,7 @@ const stats_1 = require("./stats");
 const backup = require("../../../scripts/backup-db");
 const index_1 = require("../../../models/index");
 const messages_1 = require("./messages");
+const players_1 = require("./players");
 const resetDailyScore = () => {
     if ((0, moment_1.default)().utc().hour() === 1) {
         telegram_1.default.notifyAdmin(`Score Reset Triggered; ${(0, moment_1.default)().format("DD-MMM-YYYY hh:mm")}`);
@@ -45,9 +46,7 @@ const resetDailyScore = () => {
                     .exec();
                 const highScore = players.reduce((highScore, { scoreDaily }) => (0, max_1.default)([highScore, scoreDaily]), 0);
                 let winners = players.filter((player) => player.scoreDaily === highScore);
-                let message = `<b>${winners
-                    .map((player) => (player.username ? `@${player.username}` : player.first_name))
-                    .join(" & ")} won with ${highScore} points!</b>\n\n`;
+                let message = `<b>${winners.map(players_1.getPlayerName).join(" & ")} won with ${highScore} points!</b>\n\n`;
                 message += (0, messages_1.getDailyMessage)();
                 telegram_1.default.queueMessage(game.telegramChannel, message);
                 await index_1.Player.updateMany({ game: game._id, scoreDaily: 0 }, { $set: { playStreak: 0 } });
@@ -264,7 +263,7 @@ const deleteStaleGames = () => {
         .then((staleGames) => {
         staleGames.forEach(async (game) => {
             await index_1.Player.deleteMany({ game: game._id }).exec();
-            await game.remove();
+            await game.deleteOne();
         });
         if (staleGames.length > 0)
             telegram_1.default.notifyAdmin(`${staleGames.length} stale games deleted`);

@@ -33,7 +33,8 @@
     "seasons": "Сезоны",
     "streaming": "Стриминг",
     "telenovelas": "Теленовеллы",
-    "titles": "Названия"
+    "titles": "Названия",
+    "awards": "Награды"
   },
   "movies": {
     "name": "Фильмы",
@@ -223,7 +224,8 @@
     "social_movements": "Социальные движения",
     "tourism": "Туризм",
     "transportation": "Транспорт",
-    "flags": "Флаги"
+    "flags": "Флаги",
+    "brands": "Бренды"
   },
   "language": {
     "name": "Язык",

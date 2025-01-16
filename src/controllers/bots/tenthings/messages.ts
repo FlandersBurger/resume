@@ -17,6 +17,7 @@ import { CallbackData } from "./callbacks";
 import { TelegramUser } from "@root/connections/telegram";
 import { getListScore } from "./lists";
 import { BotLanguage } from "./languages";
+import { getPlayerName } from "./players";
 
 export type UserInput = Message | CallbackData;
 export type Message = {
@@ -54,8 +55,8 @@ export const getGuessedMessage = (language: string, answer: string, guesser: str
 };
 export const getSnubbedMessage = (match: string, loser: IPlayer, winner: IGameListValue["guesser"]): string => {
   if (!winner) return "";
-  const loserName = parseSymbols(loser.first_name);
-  const winnerName = parseSymbols(winner.first_name);
+  const loserName = getPlayerName(loser);
+  const winnerName = getPlayerName(winner);
   const random = Math.floor(Math.random() * 9);
   if (loser.id != winner.id) {
     switch (random) {
@@ -168,7 +169,7 @@ export const getPlayerStats = (player: IPlayer, requestor: string | undefined): 
   if (!player) return "Trouble with you stats, skipper. Sorry!";
   var message = "";
   message += requestor ? `<i>Requested by ${requestor}</i>\n` : "";
-  message += "<b>Personal Stats for " + player.first_name + "</b>\n";
+  message += "<b>Personal Stats for " + getPlayerName(player) + "</b>\n";
   message += "Total Score: " + player.score + "\n";
   message += "High Score: " + player.highScore + "\n";
   message += "Average Score: " + Math.round(player.score / player.plays) + "\n";

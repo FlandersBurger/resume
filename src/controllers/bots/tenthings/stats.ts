@@ -11,6 +11,7 @@ import bot from "@root/connections/telegram";
 import i18n from "@root/i18n";
 import { makePercentage, makeReadable } from "@root/utils/number-helpers";
 import { parseSymbols } from "@root/utils/string-helpers";
+import { getPlayerName } from "./players";
 
 export const getScores = async (game: IGame, type: string) => {
   /*
@@ -30,8 +31,8 @@ export const getScores = async (game: IGame, type: string) => {
         .filter(({ present }) => present)
         .sort((player1, player2) => player2.highScore - player1.highScore)
         .slice(0, 10)
-        .forEach(({ first_name, highScore }, index) => {
-          str += `${index + 1}: ${parseSymbols(first_name)}: ${highScore}\n`;
+        .forEach((player, index) => {
+          str += `${index + 1}: ${getPlayerName(player)}: ${player.highScore}\n`;
         });
       bot.queueMessage(game.telegramChannel, str);
       break;
@@ -46,9 +47,9 @@ export const getScores = async (game: IGame, type: string) => {
             (player1.plays === 0 ? 0 : player1.wins / player1.plays),
         )
         .slice(0, 10)
-        .forEach(({ first_name, wins, plays }, index) => {
-          str += `${index + 1}: ${parseSymbols(first_name)}: ${wins}/${plays} (${
-            Math.round(plays === 0 ? 0 : (wins / plays) * 10000) / 100
+        .forEach((player, index) => {
+          str += `${index + 1}: ${getPlayerName(player)}: ${player.wins}/${player.plays} (${
+            Math.round(player.plays === 0 ? 0 : (player.wins / player.plays) * 10000) / 100
           }%)\n`;
         });
       bot.queueMessage(game.telegramChannel, str);
@@ -60,8 +61,8 @@ export const getScores = async (game: IGame, type: string) => {
         .filter(({ present }) => present)
         .sort((player1, player2) => player2.score - player1.score)
         .slice(0, 10)
-        .forEach(({ first_name, score }, index) => {
-          str += `${index + 1}: ${parseSymbols(first_name)}: ${score}\n`;
+        .forEach((player, index) => {
+          str += `${index + 1}: ${getPlayerName(player)}: ${player.score}\n`;
         });
       bot.queueMessage(game.telegramChannel, str);
       break;
@@ -76,8 +77,8 @@ export const getScores = async (game: IGame, type: string) => {
             (player1.plays === 0 ? 0 : player1.score / player1.plays),
         )
         .slice(0, 10)
-        .forEach(({ first_name, plays, score }, index) => {
-          str += `${index + 1}: ${parseSymbols(first_name)}: ${Math.round(plays === 0 ? 0 : score / plays)}\n`;
+        .forEach((player, index) => {
+          str += `${index + 1}: ${getPlayerName(player)}: ${Math.round(player.plays === 0 ? 0 : player.score / player.plays)}\n`;
         });
       bot.queueMessage(game.telegramChannel, str);
       break;
@@ -93,8 +94,8 @@ export const getDailyScores = async ({ _id, settings }: IGame, limit = 0) => {
     .sort((player1, player2) => player2.scoreDaily - player1.scoreDaily)
     .slice(0, limit ? limit : players.length)
     .reduce(
-      (str, { first_name, scoreDaily }, index) => {
-        str += `\t${index + 1}: ${parseSymbols(first_name)} - ${scoreDaily}\n`;
+      (str, player, index) => {
+        str += `\t${index + 1}: ${getPlayerName(player)} - ${player.scoreDaily}\n`;
         return str;
       },
       i18n(settings.language, `sentences.dailyScores${limit ? "WithLimit" : ""}`, { limit }) + `\n`,
@@ -104,10 +105,27 @@ export const getDailyScores = async ({ _id, settings }: IGame, limit = 0) => {
 
 export const getStats = async (game: IGame, data: string, requestor?: string) => {
   const [type, _id] = data.split("_");
+  let message = "";
   const players = await Player.find({ game: game._id, present: true, score: { $gt: 0 } }).exec();
   switch (type) {
     case "global":
-      Player.aggregate([
+      const result: {
+        overallHighScore: number;
+        overallTotalScore: number;
+        dailyHighScore: number;
+        dailyTotalScore: number;
+        answerStreak: number;
+        playStreak: number;
+        noHintStreak: number;
+        answers: number;
+        snubs: number;
+        hints: number;
+        skips: number;
+        suggestions: number;
+        searches: number;
+        minigamePlays: number;
+        tinygamePlays: number;
+      }[] = await Player.aggregate([
         { $match: { present: true } },
         {
           $group: {
@@ -129,56 +147,35 @@ export const getStats = async (game: IGame, data: string, requestor?: string) =>
             tinygamePlays: { $sum: "$tinygamePlays" },
           },
         },
-      ]).exec(
-        (
-          _,
-          result: {
-            overallHighScore: number;
-            overallTotalScore: number;
-            dailyHighScore: number;
-            dailyTotalScore: number;
-            answerStreak: number;
-            playStreak: number;
-            noHintStreak: number;
-            answers: number;
-            snubs: number;
-            hints: number;
-            skips: number;
-            suggestions: number;
-            searches: number;
-            minigamePlays: number;
-            tinygamePlays: number;
-          }[],
-        ) => {
-          const stats = result[0];
-          let message = "<b>Global Stats</b>\n";
-          message += requestor ? `<i>Requested by ${requestor}</i>\n` : "";
-          message += `Highest Overall Score: ${makeReadable(stats.overallHighScore)}\n`;
-          message += `Highest Score Today: ${makeReadable(stats.dailyHighScore)}\n`;
-          message += `Total Overall Score: ${makeReadable(stats.overallTotalScore)}\n`;
-          message += `Total Score Today: ${makeReadable(stats.dailyTotalScore)}\n`;
-          message += `Best Answer Streak: ${makeReadable(stats.answerStreak)}\n`;
-          message += `Best Play Streak: ${makeReadable(stats.playStreak)}\n`;
-          message += `Best No Hint Streak: ${makeReadable(stats.noHintStreak)}\n`;
-          message += `Answers Given: ${makeReadable(stats.answers)}\n`;
-          message += `Minigame Answers Given: ${makeReadable(stats.minigamePlays)}\n`;
-          message += `Tinygame Answers Given: ${makeReadable(stats.tinygamePlays)}\n`;
-          message += `Answer Snubs: ${makeReadable(stats.snubs)}\n`;
-          message += `Hints Asked: ${makeReadable(stats.hints)}\n`;
-          message += `Suggestions given: ${makeReadable(stats.suggestions)}\n`;
-          message += `Lists searched: ${makeReadable(stats.searches)}\n`;
-          message += `Lists Skipped: ${makeReadable(stats.skips)}\n`;
-          //message += `${allPlayers.filter(({scoreDaily}) => scoreDaily).length} out of ${allPlayers.filter(({present}) => present).length} players played today\n`;
-          //message += `Cycled through all lists ${games.reduce((count, {cycles}) => count + (cycles ? cycles : 0), 0)} times\n`;
-          message += "\n";
+      ]);
+      const stats = result[0];
+      message = "<b>Global Stats</b>\n";
+      message += requestor ? `<i>Requested by ${requestor}</i>\n` : "";
+      message += `Highest Overall Score: ${makeReadable(stats.overallHighScore)}\n`;
+      message += `Highest Score Today: ${makeReadable(stats.dailyHighScore)}\n`;
+      message += `Total Overall Score: ${makeReadable(stats.overallTotalScore)}\n`;
+      message += `Total Score Today: ${makeReadable(stats.dailyTotalScore)}\n`;
+      message += `Best Answer Streak: ${makeReadable(stats.answerStreak)}\n`;
+      message += `Best Play Streak: ${makeReadable(stats.playStreak)}\n`;
+      message += `Best No Hint Streak: ${makeReadable(stats.noHintStreak)}\n`;
+      message += `Answers Given: ${makeReadable(stats.answers)}\n`;
+      message += `Minigame Answers Given: ${makeReadable(stats.minigamePlays)}\n`;
+      message += `Tinygame Answers Given: ${makeReadable(stats.tinygamePlays)}\n`;
+      message += `Answer Snubs: ${makeReadable(stats.snubs)}\n`;
+      message += `Hints Asked: ${makeReadable(stats.hints)}\n`;
+      message += `Suggestions given: ${makeReadable(stats.suggestions)}\n`;
+      message += `Lists searched: ${makeReadable(stats.searches)}\n`;
+      message += `Lists Skipped: ${makeReadable(stats.skips)}\n`;
+      //message += `${allPlayers.filter(({scoreDaily}) => scoreDaily).length} out of ${allPlayers.filter(({present}) => present).length} players played today\n`;
+      //message += `Cycled through all lists ${games.reduce((count, {cycles}) => count + (cycles ? cycles : 0), 0)} times\n`;
+      message += "\n";
 
-          bot.queueMessage(game.telegramChannel, message);
-        },
-      );
+      bot.queueMessage(game.telegramChannel, message);
+
       break;
     case "g":
       const count = await List.countDocuments().exec();
-      let message = "<b>Game Stats</b>\n";
+      message = "<b>Game Stats</b>\n";
       message += requestor ? `<i>Requested by ${requestor}</i>\n` : "";
       message += `Started ${moment(game.date).format("DD-MMM-YYYY")}\n`;
       message += `Highest Overall Score: ${players.reduce(
@@ -235,17 +232,14 @@ export const getStats = async (game: IGame, data: string, requestor?: string) =>
       }
       break;
     case "l":
-      List.findOne({
+      const gameList = await List.findOne({
         _id: _id,
-      })
-        .populate("creator")
-        .exec((_, gameList) => {
-          if (!gameList) {
-            bot.queueMessage(game.telegramChannel, "List not found");
-          } else {
-            bot.queueMessage(game.telegramChannel, getListStats(game.settings.language, gameList, requestor));
-          }
-        });
+      }).populate("creator");
+      if (!gameList) {
+        bot.queueMessage(game.telegramChannel, "List not found");
+      } else {
+        bot.queueMessage(game.telegramChannel, getListStats(game.settings.language, gameList, requestor));
+      }
       break;
     case "mostskipped":
       listStats(game, "skips", "plays", 1, "Most Skipped Lists", "Skips / Amount played", 1, requestor);
@@ -523,7 +517,7 @@ const playerStats = async (
       const playerField: number = player[field] as number;
       const playerDivisor: number = (divisor ? (player[divisor] ? player[divisor] : 1) : 1) as number;
       const result = Math.round(((playerField * ratio) / playerDivisor) * 100) / 100;
-      message += `${index + 1}. ${parseSymbols(player.first_name)} (${divisor ? makePercentage(result, 0) : result})\n`;
+      message += `${index + 1}. ${getPlayerName(player)} (${divisor ? makePercentage(result, 0) : result})\n`;
     });
   bot.queueMessage(telegramChannel, message);
 };
@@ -541,22 +535,19 @@ const voteStats = async (
   title: string,
   requestor?: string,
 ) => {
-  List.aggregate([{ $unwind: "$votes" }, { $group: { _id: "$votes.voter", votes: { $sum: 1 } } }])
+  const voters = await List.aggregate([{ $unwind: "$votes" }, { $group: { _id: "$votes.voter", votes: { $sum: 1 } } }])
     .sort({ votes: sorter })
-    .limit(10)
-    .exec((err, voters) => {
-      if (err) console.error(err);
-      let message = `<b>${title}</b>\n`;
-      message = addRequestor(message, requestor);
-      let i = 1;
-      voters.forEach((voter) => {
-        const player = find(players, (player: IPlayer) => voter._id == player.id);
-        if (player) {
-          message += `${i++}. ${player.first_name} (${voter.votes})\n`;
-        }
-      });
-      bot.queueMessage(telegramChannel, message);
-    });
+    .limit(10);
+  let message = `<b>${title}</b>\n`;
+  message = addRequestor(message, requestor);
+  let i = 1;
+  voters.forEach((voter) => {
+    const player = find(players, (player: IPlayer) => voter._id == player.id);
+    if (player) {
+      message += `${i++}. ${getPlayerName(player)} (${voter.votes})\n`;
+    }
+  });
+  bot.queueMessage(telegramChannel, message);
 };
 
 //  ██████ ██████  ███████  █████  ████████  ██████  ██████      ███████ ████████  █████  ████████ ███████
@@ -652,26 +643,23 @@ const voteSentimentStats = async (
   title: string,
   requestor?: string,
 ) => {
-  List.aggregate([
+  const voters = await List.aggregate([
     { $match: { "votes.vote": sorter } },
     { $unwind: "$votes" },
     { $group: { _id: "$votes.voter", votes: { $sum: 1 } } },
   ])
     .sort({ votes: -sorter as SortOrder })
-    .limit(10)
-    .exec((err, voters) => {
-      if (err) console.error(err);
-      let message = `<b>${title}</b>\n`;
-      message += requestor ? `<i>Requested by ${requestor}</i>\n` : "";
-      let i = 1;
-      voters.forEach((voter) => {
-        const player = find(players, (player: IPlayer) => voter._id == player.id);
-        if (player) {
-          message += `${i++}. ${player.first_name} (${voter.votes})\n`;
-        }
-      });
-      bot.queueMessage(telegramChannel, message);
-    });
+    .limit(10);
+  let message = `<b>${title}</b>\n`;
+  message += requestor ? `<i>Requested by ${requestor}</i>\n` : "";
+  let i = 1;
+  voters.forEach((voter) => {
+    const player = find(players, (player: IPlayer) => voter._id == player.id);
+    if (player) {
+      message += `${i++}. ${getPlayerName(player)} (${voter.votes})\n`;
+    }
+  });
+  bot.queueMessage(telegramChannel, message);
 };
 
 //  ██████  ██       ██████  ██████   █████  ██          ███████ ████████  █████  ████████ ███████
@@ -681,13 +669,13 @@ const voteSentimentStats = async (
 //  ██████  ███████  ██████  ██████  ██   ██ ███████     ███████    ██    ██   ██    ██    ███████
 
 // @ts-ignore
-const tenThingsStats = (
+const tenThingsStats = async (
   game: IGame,
   sorter: { [key in keyof IPlayer]: SortOrder },
   field: keyof IPlayer,
   title: string,
 ) => {
-  Player.aggregate([
+  const players = await Player.aggregate([
     { $match: { game: game._id } },
     {
       $group: {
@@ -707,12 +695,9 @@ const tenThingsStats = (
     },
   ])
     .sort(sorter)
-    .limit(10)
-    .exec((err, players) => {
-      if (err) console.error(err);
-      let message = `<b>${title}</b>\n`;
-      players.forEach((player, index) => {
-        message += `${index + 1}. ${player.first_name} (${player[field]})\n`;
-      });
-    });
+    .limit(10);
+  let message = `<b>${title}</b>\n`;
+  players.forEach((player, index) => {
+    message += `${index + 1}. ${getPlayerName(player)} (${player[field]})\n`;
+  });
 };

@@ -37,6 +37,7 @@ const i18n_1 = __importStar(require("../../../i18n"));
 const emojis_1 = __importDefault(require("./emojis"));
 const lists_1 = require("./lists");
 const languages_1 = require("./languages");
+const players_1 = require("./players");
 const getLogicMessage = (language) => {
     const rules = (0, i18n_1.t_list)(language, "rules", { maxHints: MAXHINTS, returnObjects: true });
     return rules.reduce((message, rule, i) => `${message}${i + 1}: ${rule}\n`, "");
@@ -61,8 +62,8 @@ exports.getGuessedMessage = getGuessedMessage;
 const getSnubbedMessage = (match, loser, winner) => {
     if (!winner)
         return "";
-    const loserName = (0, string_helpers_1.parseSymbols)(loser.first_name);
-    const winnerName = (0, string_helpers_1.parseSymbols)(winner.first_name);
+    const loserName = (0, players_1.getPlayerName)(loser);
+    const winnerName = (0, players_1.getPlayerName)(winner);
     const random = Math.floor(Math.random() * 9);
     if (loser.id != winner.id) {
         switch (random) {
@@ -178,7 +179,7 @@ const getPlayerStats = (player, requestor) => {
         return "Trouble with you stats, skipper. Sorry!";
     var message = "";
     message += requestor ? `<i>Requested by ${requestor}</i>\n` : "";
-    message += "<b>Personal Stats for " + player.first_name + "</b>\n";
+    message += "<b>Personal Stats for " + (0, players_1.getPlayerName)(player) + "</b>\n";
     message += "Total Score: " + player.score + "\n";
     message += "High Score: " + player.highScore + "\n";
     message += "Average Score: " + Math.round(player.score / player.plays) + "\n";

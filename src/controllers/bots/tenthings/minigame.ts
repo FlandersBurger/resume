@@ -17,6 +17,7 @@ import { IMinigame } from "@models/tenthings/minigame";
 import { getGuessedMessage } from "./messages";
 import { getHint } from "./hints";
 import { parseSymbols } from "@root/utils/string-helpers";
+import { getPlayerName } from "./players";
 
 export const createMinigame = async (game: HydratedDocument<IGame>) => {
   const availableLanguages =
@@ -179,7 +180,7 @@ export const checkMinigame = async (
   let message = `${i18n(game.settings.language, "sentences.minigameAnswered")} (${(guess.match.distance * 100).toFixed(
     0,
   )}%)\n`;
-  message += getGuessedMessage(game.settings.language, game.minigame.answer, msg.from.first_name);
+  message += getGuessedMessage(game.settings.language, game.minigame.answer, getPlayerName(msg.from));
   message += `\n<u>${player.scoreDaily - score} + ${i18n(game.settings.language, "point", {
     count: score,
   })}</u>`;
