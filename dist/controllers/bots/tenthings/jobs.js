@@ -46,7 +46,7 @@ const resetDailyScore = () => {
                     .exec();
                 const highScore = players.reduce((highScore, { scoreDaily }) => (0, max_1.default)([highScore, scoreDaily]), 0);
                 let winners = players.filter((player) => player.scoreDaily === highScore);
-                let message = `<b>${winners.map(players_1.getPlayerName).join(" & ")} won with ${highScore} points!</b>\n\n`;
+                let message = `<b>${winners.map((winner) => (0, players_1.getPlayerName)(winner, true)).join(" & ")} won with ${highScore} points!</b>\n\n`;
                 message += (0, messages_1.getDailyMessage)();
                 telegram_1.default.queueMessage(game.telegramChannel, message);
                 await index_1.Player.updateMany({ game: game._id, scoreDaily: 0 }, { $set: { playStreak: 0 } });

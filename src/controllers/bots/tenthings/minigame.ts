@@ -180,7 +180,7 @@ export const checkMinigame = async (
   let message = `${i18n(game.settings.language, "sentences.minigameAnswered")} (${(guess.match.distance * 100).toFixed(
     0,
   )}%)\n`;
-  message += getGuessedMessage(game.settings.language, game.minigame.answer, getPlayerName(msg.from));
+  message += getGuessedMessage(game.settings.language, game.minigame.answer, getPlayerName(msg.from, true));
   message += `\n<u>${player.scoreDaily - score} + ${i18n(game.settings.language, "point", {
     count: score,
   })}</u>`;

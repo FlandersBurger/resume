@@ -322,7 +322,7 @@ export const sendMaingameMessage = async (game: IGame, long = true) => {
 //  ██████   ██████  ███████ ███████ ███████ ███████ ██████
 
 const guessed = async (game: IGame, player: IPlayer, value: string, blurb: string, score: number, accuracy: string) => {
-  let message = getGuessedMessage(game.settings.language, parseSymbols(value), getPlayerName(player));
+  let message = getGuessedMessage(game.settings.language, parseSymbols(value), getPlayerName(player, true));
   message += getStreakMessage(game.streak.count);
   message += blurb;
   message += `\n<u>${player.scoreDaily - score} + ${i18n(game.settings.language, "point", {

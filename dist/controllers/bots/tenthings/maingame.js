@@ -252,7 +252,7 @@ const sendMaingameMessage = async (game, long = true) => {
 };
 exports.sendMaingameMessage = sendMaingameMessage;
 const guessed = async (game, player, value, blurb, score, accuracy) => {
-    let message = (0, messages_1.getGuessedMessage)(game.settings.language, (0, string_helpers_1.parseSymbols)(value), (0, players_1.getPlayerName)(player));
+    let message = (0, messages_1.getGuessedMessage)(game.settings.language, (0, string_helpers_1.parseSymbols)(value), (0, players_1.getPlayerName)(player, true));
     message += (0, messages_1.getStreakMessage)(game.streak.count);
     message += blurb;
     message += `\n<u>${player.scoreDaily - score} + ${(0, i18n_1.default)(game.settings.language, "point", {

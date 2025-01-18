@@ -55,7 +55,7 @@ const resetDailyScore = () => {
               .exec();
             const highScore = players.reduce((highScore, { scoreDaily }) => max([highScore, scoreDaily]) as number, 0);
             let winners = players.filter((player) => player.scoreDaily === highScore);
-            let message = `<b>${winners.map(getPlayerName).join(" & ")} won with ${highScore} points!</b>\n\n`;
+            let message = `<b>${winners.map((winner) => getPlayerName(winner, true)).join(" & ")} won with ${highScore} points!</b>\n\n`;
             message += getDailyMessage();
             // message += `\t - Bitcoin Address: bc1qnr4y95d3w5rwahcypazpjdv33g8wupewmw6rpa3s2927qvgmduqsvcpgfs`;
             //'\n\nCome join us in the <a href="https://t.me/tenthings">Ten Things Supergroup</a>!'

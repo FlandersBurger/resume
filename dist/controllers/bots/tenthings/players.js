@@ -19,10 +19,10 @@ const getPlayer = async (game, from) => {
     return player;
 };
 exports.getPlayer = getPlayer;
-const getPlayerName = (player) => {
+const getPlayerName = (player, tagged = false) => {
     if (!player)
         return "Player 404";
-    return (0, string_helpers_1.maskUrls)((0, string_helpers_1.parseSymbols)(player.username ? player.username : player.first_name));
+    return player.username ? (tagged && "@") + player.username : (0, string_helpers_1.maskUrls)((0, string_helpers_1.parseSymbols)(player.first_name));
 };
 exports.getPlayerName = getPlayerName;
 const createPlayer = async (game, from) => {
