@@ -380,15 +380,15 @@ const delayKeyboard = (game, type) => {
         inline_keyboard: [
             [
                 getButton(`0${game.settings[type] === 0 ? ` ${emojis_1.default.on}` : ""}`, { type, id: "0" }),
-                getButton(`2${game.settings[type] === 0 ? ` ${emojis_1.default.on}` : ""}`, { type, id: "2" }),
-                getButton(`3${game.settings[type] === 0 ? ` ${emojis_1.default.on}` : ""}`, { type, id: "3" }),
-                getButton(`5${game.settings[type] === 0 ? ` ${emojis_1.default.on}` : ""}`, { type, id: "5" }),
+                getButton(`2${game.settings[type] === 2 ? ` ${emojis_1.default.on}` : ""}`, { type, id: "2" }),
+                getButton(`3${game.settings[type] === 3 ? ` ${emojis_1.default.on}` : ""}`, { type, id: "3" }),
+                getButton(`5${game.settings[type] === 5 ? ` ${emojis_1.default.on}` : ""}`, { type, id: "5" }),
             ],
             [
-                getButton(`10${game.settings[type] === 0 ? ` ${emojis_1.default.on}` : ""}`, { type, id: "10" }),
-                getButton(`15${game.settings[type] === 0 ? ` ${emojis_1.default.on}` : ""}`, { type, id: "15" }),
-                getButton(`20${game.settings[type] === 0 ? ` ${emojis_1.default.on}` : ""}`, { type, id: "20" }),
-                getButton(`30${game.settings[type] === 0 ? ` ${emojis_1.default.on}` : ""}`, { type, id: "30" }),
+                getButton(`10${game.settings[type] === 10 ? ` ${emojis_1.default.on}` : ""}`, { type, id: "10" }),
+                getButton(`15${game.settings[type] === 15 ? ` ${emojis_1.default.on}` : ""}`, { type, id: "15" }),
+                getButton(`20${game.settings[type] === 20 ? ` ${emojis_1.default.on}` : ""}`, { type, id: "20" }),
+                getButton(`30${game.settings[type] === 30 ? ` ${emojis_1.default.on}` : ""}`, { type, id: "30" }),
             ],
             [getButton(`⬅️ ${(0, i18n_1.default)(game.settings.language, "settings")}`, { type: callbacks_1.CallbackDataType.Setting, id: "settings" })],
         ],

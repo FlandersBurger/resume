@@ -410,15 +410,15 @@ export const delayKeyboard = (game: IGame, type: CallbackDataTypeDelay): Keyboar
     inline_keyboard: [
       [
         getButton(`0${game.settings[type] === 0 ? ` ${emojis.on}` : ""}`, { type, id: "0" }),
-        getButton(`2${game.settings[type] === 0 ? ` ${emojis.on}` : ""}`, { type, id: "2" }),
-        getButton(`3${game.settings[type] === 0 ? ` ${emojis.on}` : ""}`, { type, id: "3" }),
-        getButton(`5${game.settings[type] === 0 ? ` ${emojis.on}` : ""}`, { type, id: "5" }),
+        getButton(`2${game.settings[type] === 2 ? ` ${emojis.on}` : ""}`, { type, id: "2" }),
+        getButton(`3${game.settings[type] === 3 ? ` ${emojis.on}` : ""}`, { type, id: "3" }),
+        getButton(`5${game.settings[type] === 5 ? ` ${emojis.on}` : ""}`, { type, id: "5" }),
       ],
       [
-        getButton(`10${game.settings[type] === 0 ? ` ${emojis.on}` : ""}`, { type, id: "10" }),
-        getButton(`15${game.settings[type] === 0 ? ` ${emojis.on}` : ""}`, { type, id: "15" }),
-        getButton(`20${game.settings[type] === 0 ? ` ${emojis.on}` : ""}`, { type, id: "20" }),
-        getButton(`30${game.settings[type] === 0 ? ` ${emojis.on}` : ""}`, { type, id: "30" }),
+        getButton(`10${game.settings[type] === 10 ? ` ${emojis.on}` : ""}`, { type, id: "10" }),
+        getButton(`15${game.settings[type] === 15 ? ` ${emojis.on}` : ""}`, { type, id: "15" }),
+        getButton(`20${game.settings[type] === 20 ? ` ${emojis.on}` : ""}`, { type, id: "20" }),
+        getButton(`30${game.settings[type] === 30 ? ` ${emojis.on}` : ""}`, { type, id: "30" }),
       ],
       [getButton(`⬅️ ${i18n(game.settings.language, "settings")}`, { type: CallbackDataType.Setting, id: "settings" })],
     ],
