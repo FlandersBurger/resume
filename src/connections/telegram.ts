@@ -407,8 +407,9 @@ class TelegramBot {
     }
   };
 
-  public editMessage = async (channel: Channel, message_id: string, text: string) => {
+  public editMessage = async (channel: Channel, message_id: string, text: string, keyboard?: Keyboard) => {
     let url = `${this.baseUrl}/editMessageText?chat_id=${channel.chat}&message_id=${message_id}&text=${text}`;
+    if (keyboard) url += `&reply_markup=${JSON.stringify(keyboard)}`;
     try {
       await httpClient().get(encodeURI(url));
     } catch (error: AxiosError | any) {

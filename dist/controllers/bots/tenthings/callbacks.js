@@ -183,12 +183,10 @@ exports.default = async (callbackQuery) => {
                         telegram_1.default.queueEditKeyboard(game.telegramChannel, callbackQuery.id, (0, keyboards_1.categoriesKeyboard)(game));
                     }
                     else if (callbackQuery.data === "settings") {
-                        telegram_1.default.editMessage(game.telegramChannel, callbackQuery.id, (0, i18n_1.default)(game.settings.language, "settings"));
-                        telegram_1.default.queueEditKeyboard(game.telegramChannel, callbackQuery.id, (0, keyboards_1.settingsKeyboard)(game));
+                        telegram_1.default.editMessage(game.telegramChannel, callbackQuery.id, (0, i18n_1.default)(game.settings.language, "settings"), (0, keyboards_1.settingsKeyboard)(game));
                     }
                     else if (exports.callbackDateTypeDelays.includes(callbackQuery.data)) {
-                        telegram_1.default.editMessage(game.telegramChannel, callbackQuery.id, (0, i18n_1.default)(game.settings.language, callbackQuery.data));
-                        telegram_1.default.queueEditKeyboard(game.telegramChannel, callbackQuery.id, (0, keyboards_1.delayKeyboard)(game, callbackQuery.data));
+                        telegram_1.default.editMessage(game.telegramChannel, callbackQuery.id, (0, i18n_1.default)(game.settings.language, callbackQuery.data), (0, keyboards_1.delayKeyboard)(game, callbackQuery.data));
                     }
                     else {
                         console.log(`${callbackQuery.data} toggled for ${game._id}`);
@@ -355,8 +353,7 @@ exports.default = async (callbackQuery) => {
                 game.settings[callbackQuery.type] = parseInt(callbackQuery.data);
                 await game.save();
                 telegram_1.default.answerCallback(callbackQuery.callbackQueryId, `${(0, i18n_1.default)(game.settings.language, callbackQuery.type)} set to ${callbackQuery.data} seconds`);
-                telegram_1.default.editMessage(game.telegramChannel, callbackQuery.id, (0, i18n_1.default)(game.settings.language, "settings"));
-                telegram_1.default.queueEditKeyboard(game.telegramChannel, callbackQuery.id, (0, keyboards_1.settingsKeyboard)(game));
+                telegram_1.default.editMessage(game.telegramChannel, callbackQuery.id, (0, i18n_1.default)(game.settings.language, "settings"), (0, keyboards_1.settingsKeyboard)(game));
             }
     }
 };

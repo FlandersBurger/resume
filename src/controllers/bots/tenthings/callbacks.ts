@@ -214,16 +214,21 @@ export default async (callbackQuery: CallbackData) => {
           } else if (callbackQuery.data === "cats") {
             bot.queueEditKeyboard(game.telegramChannel, callbackQuery.id, categoriesKeyboard(game));
           } else if (callbackQuery.data === "settings") {
-            bot.editMessage(game.telegramChannel, callbackQuery.id, i18n(game.settings.language, "settings"));
-            bot.queueEditKeyboard(game.telegramChannel, callbackQuery.id, settingsKeyboard(game));
-          } else if (callbackDateTypeDelays.includes(callbackQuery.data as CallbackDataTypeDelay)) {
-            // if (game.chat_id < 0) {
-            bot.editMessage(game.telegramChannel, callbackQuery.id, i18n(game.settings.language, callbackQuery.data));
-            bot.queueEditKeyboard(
+            bot.editMessage(
               game.telegramChannel,
               callbackQuery.id,
+              i18n(game.settings.language, "settings"),
+              settingsKeyboard(game),
+            );
+          } else if (callbackDateTypeDelays.includes(callbackQuery.data as CallbackDataTypeDelay)) {
+            // if (game.chat_id < 0) {
+            bot.editMessage(
+              game.telegramChannel,
+              callbackQuery.id,
+              i18n(game.settings.language, callbackQuery.data),
               delayKeyboard(game, callbackQuery.data as CallbackDataTypeDelay),
             );
+
             // } else {
             //   bot.answerCallback(callbackQuery.callbackQueryId, "This setting doesn't apply in private chats");
             // }
@@ -402,8 +407,12 @@ export default async (callbackQuery: CallbackData) => {
           callbackQuery.callbackQueryId,
           `${i18n(game.settings.language, callbackQuery.type)} set to ${callbackQuery.data} seconds`,
         );
-        bot.editMessage(game.telegramChannel, callbackQuery.id, i18n(game.settings.language, "settings"));
-        bot.queueEditKeyboard(game.telegramChannel, callbackQuery.id, settingsKeyboard(game));
+        bot.editMessage(
+          game.telegramChannel,
+          callbackQuery.id,
+          i18n(game.settings.language, "settings"),
+          settingsKeyboard(game),
+        );
       }
   }
 };

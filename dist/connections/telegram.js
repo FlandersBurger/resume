@@ -361,8 +361,10 @@ class TelegramBot {
                 this.errorHandler(channel, "Edit keyboard", error);
             }
         };
-        this.editMessage = async (channel, message_id, text) => {
+        this.editMessage = async (channel, message_id, text, keyboard) => {
             let url = `${this.baseUrl}/editMessageText?chat_id=${channel.chat}&message_id=${message_id}&text=${text}`;
+            if (keyboard)
+                url += `&reply_markup=${JSON.stringify(keyboard)}`;
             try {
                 await (0, http_client_1.default)().get(encodeURI(url));
             }
