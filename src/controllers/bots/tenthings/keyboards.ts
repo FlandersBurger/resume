@@ -240,15 +240,15 @@ export const settingsKeyboard = ({ settings }: IGame): Keyboard => {
       [
         getButton(`${i18n(settings.language, "skipDelay")}: ${settings.skipDelay}s`, {
           type: CallbackDataType.Setting,
-          id: "sdelay",
+          id: "skipDelay",
         }),
         getButton(`${i18n(settings.language, "vetoDelay")}: ${settings.vetoDelay}s`, {
           type: CallbackDataType.Setting,
-          id: "vdelay",
+          id: "vetoDelay",
         }),
         getButton(`${i18n(settings.language, "hintDelay")}: ${settings.hintDelay}s`, {
           type: CallbackDataType.Setting,
-          id: "hdelay",
+          id: "hintDelay",
         }),
       ],
       [

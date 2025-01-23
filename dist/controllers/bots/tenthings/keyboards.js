@@ -222,15 +222,15 @@ const settingsKeyboard = ({ settings }) => {
             [
                 getButton(`${(0, i18n_1.default)(settings.language, "skipDelay")}: ${settings.skipDelay}s`, {
                     type: callbacks_1.CallbackDataType.Setting,
-                    id: "sdelay",
+                    id: "skipDelay",
                 }),
                 getButton(`${(0, i18n_1.default)(settings.language, "vetoDelay")}: ${settings.vetoDelay}s`, {
                     type: callbacks_1.CallbackDataType.Setting,
-                    id: "vdelay",
+                    id: "vetoDelay",
                 }),
                 getButton(`${(0, i18n_1.default)(settings.language, "hintDelay")}: ${settings.hintDelay}s`, {
                     type: callbacks_1.CallbackDataType.Setting,
-                    id: "hdelay",
+                    id: "hintDelay",
                 }),
             ],
             [
