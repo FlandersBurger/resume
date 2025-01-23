@@ -3,7 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.CallbackDataType = void 0;
+exports.callbackDateTypeDelays = exports.CallbackDataType = void 0;
 const index_1 = require("../../../models/index");
 const string_helpers_1 = require("../../../utils/string-helpers");
 const number_helpers_1 = require("../../../utils/number-helpers");
@@ -40,7 +40,15 @@ var CallbackDataType;
     CallbackDataType["TriviaLanguages"] = "langs";
     CallbackDataType["Values"] = "values";
     CallbackDataType["Vote"] = "vote";
+    CallbackDataType["SkipDelay"] = "skipDelay";
+    CallbackDataType["VetoDelay"] = "vetoDelay";
+    CallbackDataType["HintDelay"] = "hintDelay";
 })(CallbackDataType || (exports.CallbackDataType = CallbackDataType = {}));
+exports.callbackDateTypeDelays = [
+    CallbackDataType.SkipDelay,
+    CallbackDataType.VetoDelay,
+    CallbackDataType.HintDelay,
+];
 exports.default = async (callbackQuery) => {
     const game = await index_1.Game.findOne({ chat_id: callbackQuery.chatId });
     if (!game) {
@@ -175,7 +183,12 @@ exports.default = async (callbackQuery) => {
                         telegram_1.default.queueEditKeyboard(game.telegramChannel, callbackQuery.id, (0, keyboards_1.categoriesKeyboard)(game));
                     }
                     else if (callbackQuery.data === "settings") {
+                        telegram_1.default.editMessage(game.telegramChannel, callbackQuery.id, (0, i18n_1.default)(game.settings.language, "settings"));
                         telegram_1.default.queueEditKeyboard(game.telegramChannel, callbackQuery.id, (0, keyboards_1.settingsKeyboard)(game));
+                    }
+                    else if (exports.callbackDateTypeDelays.includes(callbackQuery.data)) {
+                        telegram_1.default.editMessage(game.telegramChannel, callbackQuery.id, (0, i18n_1.default)(game.settings.language, callbackQuery.data));
+                        telegram_1.default.queueEditKeyboard(game.telegramChannel, callbackQuery.id, (0, keyboards_1.delayKeyboard)(game, callbackQuery.data));
                     }
                     else {
                         console.log(`${callbackQuery.data} toggled for ${game._id}`);
@@ -333,6 +346,18 @@ exports.default = async (callbackQuery) => {
                 return;
             telegram_1.default.queueEditKeyboard(game.telegramChannel, callbackQuery.id, (0, keyboards_1.curateListKeyboard)(list));
             break;
+        case CallbackDataType.SkipDelay:
+        case CallbackDataType.VetoDelay:
+        case CallbackDataType.HintDelay:
+            if (await telegram_1.default.checkAdmin(game, callbackQuery.from)) {
+                if (!game || !callbackQuery.data)
+                    return;
+                game.settings[callbackQuery.type] = parseInt(callbackQuery.data);
+                await game.save();
+                telegram_1.default.answerCallback(callbackQuery.callbackQueryId, `${(0, i18n_1.default)(game.settings.language, callbackQuery.type)} set to ${callbackQuery.data} seconds`);
+                telegram_1.default.editMessage(game.telegramChannel, callbackQuery.id, (0, i18n_1.default)(game.settings.language, "settings"));
+                telegram_1.default.queueEditKeyboard(game.telegramChannel, callbackQuery.id, (0, keyboards_1.settingsKeyboard)(game));
+            }
     }
 };
 //# sourceMappingURL=callbacks.js.map

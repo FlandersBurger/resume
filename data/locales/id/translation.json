@@ -260,5 +260,8 @@
     "Jika lewatan dibatalkan, lewatan baru akan diabaikan selama 15 detik",
     "Setiap hari pada tengah malam (waktu universal) skor harian akan direset dan pemenang dicatat",
     "Spammer akan diabaikan sampai mereka diam setidaknya selama 10 detik"
-  ]
+  ],
+  "skipDelay": "Penundaan lewati",
+  "vetoDelay": "Penundaan veto",
+  "hintDelay": "Penundaan petunjuk"
 }

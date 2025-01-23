@@ -12,7 +12,7 @@ import { parseSymbols, capitalize } from "@root/utils/string-helpers";
 import i18n from "@root/i18n";
 import emojis from "./emojis";
 import { Keyboard, KeyboardButton, KeyboardCallbackButton } from "@root/connections/telegram";
-import { CallbackDataType } from "./callbacks";
+import { CallbackDataType, CallbackDataTypeDelay } from "./callbacks";
 
 const getButton = (
   text: string | string[],
@@ -238,6 +238,20 @@ export const settingsKeyboard = ({ settings }: IGame): Keyboard => {
         }),
       ],
       [
+        getButton(`${i18n(settings.language, "skipDelay")}: ${settings.skipDelay}s`, {
+          type: CallbackDataType.Setting,
+          id: "sdelay",
+        }),
+        getButton(`${i18n(settings.language, "vetoDelay")}: ${settings.vetoDelay}s`, {
+          type: CallbackDataType.Setting,
+          id: "vdelay",
+        }),
+        getButton(`${i18n(settings.language, "hintDelay")}: ${settings.hintDelay}s`, {
+          type: CallbackDataType.Setting,
+          id: "hdelay",
+        }),
+      ],
+      [
         getButton(`${i18n(settings.language, "category", { count: 0 })}`, {
           type: CallbackDataType.Setting,
           id: "cats",
@@ -390,3 +404,23 @@ export const curateListKeyboard = (list: IList): Keyboard => ({
     ],
   ],
 });
+
+export const delayKeyboard = (game: IGame, type: CallbackDataTypeDelay): Keyboard => {
+  return {
+    inline_keyboard: [
+      [
+        getButton(`0${game.settings[type] === 0 ? ` ${emojis.on}` : ""}`, { type, id: "0" }),
+        getButton(`2${game.settings[type] === 0 ? ` ${emojis.on}` : ""}`, { type, id: "2" }),
+        getButton(`3${game.settings[type] === 0 ? ` ${emojis.on}` : ""}`, { type, id: "3" }),
+        getButton(`5${game.settings[type] === 0 ? ` ${emojis.on}` : ""}`, { type, id: "5" }),
+      ],
+      [
+        getButton(`10${game.settings[type] === 0 ? ` ${emojis.on}` : ""}`, { type, id: "10" }),
+        getButton(`15${game.settings[type] === 0 ? ` ${emojis.on}` : ""}`, { type, id: "15" }),
+        getButton(`20${game.settings[type] === 0 ? ` ${emojis.on}` : ""}`, { type, id: "20" }),
+        getButton(`30${game.settings[type] === 0 ? ` ${emojis.on}` : ""}`, { type, id: "30" }),
+      ],
+      [getButton(`⬅️ ${i18n(game.settings.language, "settings")}`, { type: CallbackDataType.Setting, id: "settings" })],
+    ],
+  };
+};

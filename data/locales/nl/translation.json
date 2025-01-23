@@ -260,5 +260,8 @@
     "Als een skip wordt afgewezen, worden nieuwe skips genegeerd gedurende 15 seconden",
     "Elke dag om middernacht (universele tijd) worden de dagelijkse scores gereset en een winnaar geannonceerd",
     "Spammers worden genegeerd totdat ze ten minste 10 seconden stil zijn"
-  ]
+  ],
+  "skipDelay": "Skipvertraging",
+  "vetoDelay": "Vetovertraging",
+  "hintDelay": "Hintvertraging"
 }

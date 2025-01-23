@@ -26,7 +26,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.curateListKeyboard = exports.listsKeyboard = exports.likeListKeyboard = exports.confirmBanListKeyboard = exports.banListKeyboard = exports.languageKeyboard = exports.languagesKeyboard = exports.settingsKeyboard = exports.subcategoriesKeyboard = exports.categoriesKeyboard = exports.playerStatsKeyboard = exports.listStatsKeyboard = exports.statsKeyboard = void 0;
+exports.delayKeyboard = exports.curateListKeyboard = exports.listsKeyboard = exports.likeListKeyboard = exports.confirmBanListKeyboard = exports.banListKeyboard = exports.languageKeyboard = exports.languagesKeyboard = exports.settingsKeyboard = exports.subcategoriesKeyboard = exports.categoriesKeyboard = exports.playerStatsKeyboard = exports.listStatsKeyboard = exports.statsKeyboard = void 0;
 const some_1 = __importDefault(require("lodash/some"));
 const find_1 = __importDefault(require("lodash/find"));
 const concat_1 = __importDefault(require("lodash/concat"));
@@ -220,6 +220,20 @@ const settingsKeyboard = ({ settings }) => {
                 }),
             ],
             [
+                getButton(`${(0, i18n_1.default)(settings.language, "skipDelay")}: ${settings.skipDelay}s`, {
+                    type: callbacks_1.CallbackDataType.Setting,
+                    id: "sdelay",
+                }),
+                getButton(`${(0, i18n_1.default)(settings.language, "vetoDelay")}: ${settings.vetoDelay}s`, {
+                    type: callbacks_1.CallbackDataType.Setting,
+                    id: "vdelay",
+                }),
+                getButton(`${(0, i18n_1.default)(settings.language, "hintDelay")}: ${settings.hintDelay}s`, {
+                    type: callbacks_1.CallbackDataType.Setting,
+                    id: "hdelay",
+                }),
+            ],
+            [
                 getButton(`${(0, i18n_1.default)(settings.language, "category", { count: 0 })}`, {
                     type: callbacks_1.CallbackDataType.Setting,
                     id: "cats",
@@ -361,4 +375,24 @@ const curateListKeyboard = (list) => ({
     ],
 });
 exports.curateListKeyboard = curateListKeyboard;
+const delayKeyboard = (game, type) => {
+    return {
+        inline_keyboard: [
+            [
+                getButton(`0${game.settings[type] === 0 ? ` ${emojis_1.default.on}` : ""}`, { type, id: "0" }),
+                getButton(`2${game.settings[type] === 0 ? ` ${emojis_1.default.on}` : ""}`, { type, id: "2" }),
+                getButton(`3${game.settings[type] === 0 ? ` ${emojis_1.default.on}` : ""}`, { type, id: "3" }),
+                getButton(`5${game.settings[type] === 0 ? ` ${emojis_1.default.on}` : ""}`, { type, id: "5" }),
+            ],
+            [
+                getButton(`10${game.settings[type] === 0 ? ` ${emojis_1.default.on}` : ""}`, { type, id: "10" }),
+                getButton(`15${game.settings[type] === 0 ? ` ${emojis_1.default.on}` : ""}`, { type, id: "15" }),
+                getButton(`20${game.settings[type] === 0 ? ` ${emojis_1.default.on}` : ""}`, { type, id: "20" }),
+                getButton(`30${game.settings[type] === 0 ? ` ${emojis_1.default.on}` : ""}`, { type, id: "30" }),
+            ],
+            [getButton(`⬅️ ${(0, i18n_1.default)(game.settings.language, "settings")}`, { type: callbacks_1.CallbackDataType.Setting, id: "settings" })],
+        ],
+    };
+};
+exports.delayKeyboard = delayKeyboard;
 //# sourceMappingURL=keyboards.js.map

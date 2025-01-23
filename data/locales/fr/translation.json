@@ -260,5 +260,8 @@
     "Si un saut est opposé à un veto, les nouveaux sauts seront ignorés pendant 15 secondes",
     "Chaque jour à minuit (heure universelle), les scores quotidiens seront réinitialisés et un gagnant sera enregistré",
     "Les spammeurs seront ignorés jusqu'à ce qu'ils restent silencieux pendant au moins 10 secondes"
-  ]
+  ],
+  "skipDelay": "Délai de saut",
+  "vetoDelay": "Délai de veto",
+  "hintDelay": "Délai d'indice"
 }

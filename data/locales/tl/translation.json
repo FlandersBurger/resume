@@ -260,5 +260,6 @@
     "Kung binawi ang isang i-skip, ang mga bagong i-skip ay hindi papansinin sa loob ng 15 segundo",
     "Bawat araw sa hatinggabi (universal time), ang mga araw-araw na scores ay mareset at ang isang nanalo ay maitatala",
     "Ang mga nag-s-spam ay hindi papansinin hanggang sa maging tahimik sila ng hindi kukulangin sa 10 segundo"
-  ]
+  ],
+  "skipDelay": "Laktawan ang pagkaantala\n#___#\nPagkaantala ng veto\n#___#\nPahiwatig na pagkaantala"
 }

@@ -407,6 +407,15 @@ class TelegramBot {
     }
   };
 
+  public editMessage = async (channel: Channel, message_id: string, text: string) => {
+    let url = `${this.baseUrl}/editMessageText?chat_id=${channel.chat}&message_id=${message_id}&text=${text}`;
+    try {
+      await httpClient().get(encodeURI(url));
+    } catch (error: AxiosError | any) {
+      this.errorHandler(channel, "Edit message", error);
+    }
+  };
+
   public queueEditKeyboard = (channel: Channel, message_id: string, keyboard: Keyboard) => {
     messageQueue.add("", { channel, message_id, action: "editKeyboard", chat: channel.chat, keyboard }, {});
   };

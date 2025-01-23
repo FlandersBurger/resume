@@ -20,6 +20,7 @@ import { votersCache } from "./cache";
 import {
   categoriesKeyboard,
   curateListKeyboard,
+  delayKeyboard,
   languageKeyboard,
   languagesKeyboard,
   listStatsKeyboard,
@@ -60,7 +61,21 @@ export enum CallbackDataType {
   TriviaLanguages = "langs",
   Values = "values",
   Vote = "vote",
+  SkipDelay = "skipDelay",
+  VetoDelay = "vetoDelay",
+  HintDelay = "hintDelay",
 }
+
+export type CallbackDataTypeDelay =
+  | CallbackDataType.SkipDelay
+  | CallbackDataType.VetoDelay
+  | CallbackDataType.HintDelay;
+
+export const callbackDateTypeDelays: CallbackDataTypeDelay[] = [
+  CallbackDataType.SkipDelay,
+  CallbackDataType.VetoDelay,
+  CallbackDataType.HintDelay,
+];
 
 export default async (callbackQuery: CallbackData) => {
   const game: HydratedDocument<IGame> | null = await Game.findOne({ chat_id: callbackQuery.chatId });
@@ -199,7 +214,19 @@ export default async (callbackQuery: CallbackData) => {
           } else if (callbackQuery.data === "cats") {
             bot.queueEditKeyboard(game.telegramChannel, callbackQuery.id, categoriesKeyboard(game));
           } else if (callbackQuery.data === "settings") {
+            bot.editMessage(game.telegramChannel, callbackQuery.id, i18n(game.settings.language, "settings"));
             bot.queueEditKeyboard(game.telegramChannel, callbackQuery.id, settingsKeyboard(game));
+          } else if (callbackDateTypeDelays.includes(callbackQuery.data as CallbackDataTypeDelay)) {
+            // if (game.chat_id < 0) {
+            bot.editMessage(game.telegramChannel, callbackQuery.id, i18n(game.settings.language, callbackQuery.data));
+            bot.queueEditKeyboard(
+              game.telegramChannel,
+              callbackQuery.id,
+              delayKeyboard(game, callbackQuery.data as CallbackDataTypeDelay),
+            );
+            // } else {
+            //   bot.answerCallback(callbackQuery.callbackQueryId, "This setting doesn't apply in private chats");
+            // }
           } else {
             console.log(`${callbackQuery.data} toggled for ${game._id}`);
             game.settings[callbackQuery.data] = !game.settings[callbackQuery.data as keyof IGameSettings];
@@ -364,5 +391,19 @@ export default async (callbackQuery: CallbackData) => {
       if (!list) return;
       bot.queueEditKeyboard(game.telegramChannel, callbackQuery.id, curateListKeyboard(list));
       break;
+    case CallbackDataType.SkipDelay:
+    case CallbackDataType.VetoDelay:
+    case CallbackDataType.HintDelay:
+      if (await bot.checkAdmin(game, callbackQuery.from)) {
+        if (!game || !callbackQuery.data) return;
+        game.settings[callbackQuery.type] = parseInt(callbackQuery.data);
+        await game.save();
+        bot.answerCallback(
+          callbackQuery.callbackQueryId,
+          `${i18n(game.settings.language, callbackQuery.type)} set to ${callbackQuery.data} seconds`,
+        );
+        bot.editMessage(game.telegramChannel, callbackQuery.id, i18n(game.settings.language, "settings"));
+        bot.queueEditKeyboard(game.telegramChannel, callbackQuery.id, settingsKeyboard(game));
+      }
   }
 };

@@ -260,5 +260,8 @@
     "Wenn ein Überspringen abgelehnt wird, werden neue Überspringungen 15 Sekunden lang ignoriert.",
     "Jeden Tag um Mitternacht (Weltzeit) werden die Tagesergebnisse zurückgesetzt und ein Gewinner aufgezeichnet.",
     "Spammer werden ignoriert, bis sie mindestens 10 Sekunden lang still sind."
-  ]
+  ],
+  "skipDelay": "Verzögerung überspringen",
+  "vetoDelay": "Veto-Verzögerung",
+  "hintDelay": "Hinweis-Verzögerung"
 }

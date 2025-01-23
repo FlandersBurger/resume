@@ -260,5 +260,8 @@
     "Si se veta un salto, los nuevos saltos se ignorarán durante 15 segundos",
     "Todos los días a la medianoche (hora universal) se restablecerán los puntajes diarios y se registrará un ganador",
     "Se ignorará a los spammers hasta que permanezcan en silencio durante al menos 10 segundos"
-  ]
+  ],
+  "skipDelay": "Retraso de salto",
+  "vetoDelay": "Retraso de veto",
+  "hintDelay": "Retraso de sugerencia"
 }

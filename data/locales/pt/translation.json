@@ -260,5 +260,8 @@
     "Se um pulo for vetado, novos pulos serão ignorados por 15 segundos",
     "Todo dia à meia-noite (tempo universal), as pontuações diárias serão redefinidas e um vencedor registrado",
     "Spammers serão ignorados até ficarem em silêncio por pelo menos 10 segundos"
-  ]
+  ],
+  "skipDelay": "Atraso de pular",
+  "vetoDelay": "Atraso de veto",
+  "hintDelay": "Atraso de dica"
 }
