@@ -228,7 +228,10 @@
     "notGuessed": "لم يتم التخمين",
     "dailyScores": "<b>النتائج اليومية</b>",
     "topDailyScores": "<b>أعلى النتائج اليومية</b>",
-    "dailyScoresWithLimit": "<b>أعلى {{limit}} النتائج اليومية</b>"
+    "dailyScoresWithLimit": "<b>أعلى {{limit}} النتائج اليومية</b>",
+    "skipDelay": "الوقت المتبقي حتى يتم تخطي القائمة",
+    "vetoDelay": "الوقت المتبقي حتى يتم السماح بتخطي قائمة جديدة بعد رفضها",
+    "hintDelay": "الوقت المتبقي حتى يتم السماح بتلميح جديد"
   },
   "warnings": {
     "minimum1Category": "يجب أن يكون الحد الأدنى لفئة واحدة",
@@ -263,5 +266,6 @@
   ],
   "skipDelay": "تأخير التخطي",
   "vetoDelay": "تأخير النقض",
-  "hintDelay": "تأخير التلميح"
+  "hintDelay": "تأخير التلميح",
+  "triviaLangauges": "معلومات عامة عن اللغات"
 }

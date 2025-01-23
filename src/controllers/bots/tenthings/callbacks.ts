@@ -171,9 +171,10 @@ export default async (callbackQuery: CallbackData) => {
     case CallbackDataType.Category:
       if (game.chat_id != parseInt(process.env.GROUP_CHAT || "")) {
         if (await bot.checkAdmin(game, callbackQuery.from)) {
-          bot.queueEditKeyboard(
+          bot.queueEditMessage(
             game.telegramChannel,
             callbackQuery.id,
+            i18n(game.settings.language, `${callbackQuery.data}.name`, { ns: "categories" }),
             subcategoriesKeyboard(game, callbackQuery.data),
           );
         }
@@ -208,11 +209,26 @@ export default async (callbackQuery: CallbackData) => {
             const availableLanguages = await List.aggregate([
               { $group: { _id: "$language", count: { $sum: 1 } } },
             ]).exec();
-            bot.queueEditKeyboard(game.telegramChannel, callbackQuery.id, languagesKeyboard(game, availableLanguages));
+            bot.queueEditMessage(
+              game.telegramChannel,
+              callbackQuery.id,
+              i18n(game.settings.language, "triviaLangauges"),
+              languagesKeyboard(game, availableLanguages),
+            );
           } else if (callbackQuery.data === "lang") {
-            bot.queueEditKeyboard(game.telegramChannel, callbackQuery.id, languageKeyboard(game));
+            bot.queueEditMessage(
+              game.telegramChannel,
+              callbackQuery.id,
+              i18n(game.settings.language, "botLanguage"),
+              languageKeyboard(game),
+            );
           } else if (callbackQuery.data === "cats") {
-            bot.queueEditKeyboard(game.telegramChannel, callbackQuery.id, categoriesKeyboard(game));
+            bot.queueEditMessage(
+              game.telegramChannel,
+              callbackQuery.id,
+              i18n(game.settings.language, "category", { count: 0 }),
+              categoriesKeyboard(game),
+            );
           } else if (callbackQuery.data === "settings") {
             bot.editMessage(
               game.telegramChannel,
@@ -225,7 +241,7 @@ export default async (callbackQuery: CallbackData) => {
             bot.editMessage(
               game.telegramChannel,
               callbackQuery.id,
-              i18n(game.settings.language, callbackQuery.data),
+              `${i18n(game.settings.language, callbackQuery.data)}\n${i18n(game.settings.language, `sentences.${callbackQuery.data}`)}`,
               delayKeyboard(game, callbackQuery.data as CallbackDataTypeDelay),
             );
 

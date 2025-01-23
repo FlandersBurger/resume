@@ -228,7 +228,10 @@
     "notGuessed": "Nicht erraten",
     "dailyScores": "<b>Tagesergebnisse</b>",
     "topDailyScores": "<b>Top-Tagesergebnisse</b>",
-    "dailyScoresWithLimit": "<b>Top-Tagesergebnisse {{limit}}</b>"
+    "dailyScoresWithLimit": "<b>Top-Tagesergebnisse {{limit}}</b>",
+    "skipDelay": "Zeit bis zum Überspringen einer Liste",
+    "vetoDelay": "Zeit bis nach einem Veto ein erneutes Überspringen erlaubt ist",
+    "hintDelay": "Zeit bis ein neuer Hinweis erlaubt ist"
   },
   "warnings": {
     "minimum1Category": "Mindestens 1 Kategorie ist erforderlich",
@@ -263,5 +266,6 @@
   ],
   "skipDelay": "Verzögerung überspringen",
   "vetoDelay": "Veto-Verzögerung",
-  "hintDelay": "Hinweis-Verzögerung"
+  "hintDelay": "Hinweis-Verzögerung",
+  "triviaLangauges": "Trivia-Sprachen"
 }

@@ -261,5 +261,7 @@
     "Bawat araw sa hatinggabi (universal time), ang mga araw-araw na scores ay mareset at ang isang nanalo ay maitatala",
     "Ang mga nag-s-spam ay hindi papansinin hanggang sa maging tahimik sila ng hindi kukulangin sa 10 segundo"
   ],
-  "skipDelay": "Laktawan ang pagkaantala\n#___#\nPagkaantala ng veto\n#___#\nPahiwatig na pagkaantala"
+  "skipDelay": "Laktawan ang pagkaantala\n#___#\nPagkaantala ng veto\n#___#\nPahiwatig na pagkaantala",
+  "vetoDelay": "Pagkaantala ng veto\n#___#\nPahiwatig na pagkaantala\n#___#\nOras hanggang sa malaktawan ang isang listahan\n#___#\nOras hanggang ang isang bagong paglaktaw ay pinapayagan pagkatapos ma-veto\n#___#\nOras hanggang pinapayagan ang isang bagong pahiwatig",
+  "triviaLangauges": "Mga trivia na wika\n#___#\nPahiwatig na pagkaantala\n#___#\nOras hanggang sa malaktawan ang isang listahan\n#___#\nOras hanggang ang isang bagong paglaktaw ay pinapayagan pagkatapos ma-veto\n#___#\nOras hanggang pinapayagan ang isang bagong pahiwatig"
 }

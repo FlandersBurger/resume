@@ -361,8 +361,11 @@ class TelegramBot {
                 this.errorHandler(channel, "Edit keyboard", error);
             }
         };
-        this.editMessage = async (channel, message_id, text, keyboard) => {
-            let url = `${this.baseUrl}/editMessageText?chat_id=${channel.chat}&message_id=${message_id}&text=${text}`;
+        this.queueEditKeyboard = (channel, message_id, keyboard) => {
+            messageQueue.add("", { channel, message_id, action: "editMessage", chat: channel.chat, keyboard }, {});
+        };
+        this.editMessage = async (channel, message_id, message, keyboard) => {
+            let url = `${this.baseUrl}/editMessageText?chat_id=${channel.chat}&message_id=${message_id}&text=${message}`;
             if (keyboard)
                 url += `&reply_markup=${JSON.stringify(keyboard)}`;
             try {
@@ -372,8 +375,8 @@ class TelegramBot {
                 this.errorHandler(channel, "Edit message", error);
             }
         };
-        this.queueEditKeyboard = (channel, message_id, keyboard) => {
-            messageQueue.add("", { channel, message_id, action: "editKeyboard", chat: channel.chat, keyboard }, {});
+        this.queueEditMessage = (channel, message_id, message, keyboard) => {
+            messageQueue.add("", { channel, message_id, action: "editMessage", chat: channel.chat, message, keyboard }, {});
         };
         this.answerCallback = async (callback_query_id, text) => {
             const url = `${this.baseUrl}/answerCallbackQuery?callback_query_id=${callback_query_id}&text=${text}`;
@@ -546,6 +549,7 @@ var Actions;
 (function (Actions) {
     Actions["SendMessage"] = "sendMessage";
     Actions["EditKeyboard"] = "editKeyboard";
+    Actions["EditMessage"] = "editMessage";
 })(Actions || (Actions = {}));
 messageQueue.process(async ({ data, }) => {
     switch (data.action) {
@@ -554,6 +558,9 @@ messageQueue.process(async ({ data, }) => {
             break;
         case "editKeyboard":
             bot.editKeyboard(data.channel, data.message_id, data.keyboard);
+            break;
+        case "editMessage":
+            bot.editMessage(data.channel, data.message_id, data.message, data.keyboard);
             break;
         default:
             break;

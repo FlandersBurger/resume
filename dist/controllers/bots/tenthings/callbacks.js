@@ -142,7 +142,7 @@ exports.default = async (callbackQuery) => {
         case CallbackDataType.Category:
             if (game.chat_id != parseInt(process.env.GROUP_CHAT || "")) {
                 if (await telegram_1.default.checkAdmin(game, callbackQuery.from)) {
-                    telegram_1.default.queueEditKeyboard(game.telegramChannel, callbackQuery.id, (0, keyboards_1.subcategoriesKeyboard)(game, callbackQuery.data));
+                    telegram_1.default.queueEditMessage(game.telegramChannel, callbackQuery.id, (0, i18n_1.default)(game.settings.language, `${callbackQuery.data}.name`, { ns: "categories" }), (0, keyboards_1.subcategoriesKeyboard)(game, callbackQuery.data));
                 }
             }
             break;
@@ -174,19 +174,19 @@ exports.default = async (callbackQuery) => {
                         const availableLanguages = await index_1.List.aggregate([
                             { $group: { _id: "$language", count: { $sum: 1 } } },
                         ]).exec();
-                        telegram_1.default.queueEditKeyboard(game.telegramChannel, callbackQuery.id, (0, keyboards_1.languagesKeyboard)(game, availableLanguages));
+                        telegram_1.default.queueEditMessage(game.telegramChannel, callbackQuery.id, (0, i18n_1.default)(game.settings.language, "triviaLangauges"), (0, keyboards_1.languagesKeyboard)(game, availableLanguages));
                     }
                     else if (callbackQuery.data === "lang") {
-                        telegram_1.default.queueEditKeyboard(game.telegramChannel, callbackQuery.id, (0, keyboards_1.languageKeyboard)(game));
+                        telegram_1.default.queueEditMessage(game.telegramChannel, callbackQuery.id, (0, i18n_1.default)(game.settings.language, "botLanguage"), (0, keyboards_1.languageKeyboard)(game));
                     }
                     else if (callbackQuery.data === "cats") {
-                        telegram_1.default.queueEditKeyboard(game.telegramChannel, callbackQuery.id, (0, keyboards_1.categoriesKeyboard)(game));
+                        telegram_1.default.queueEditMessage(game.telegramChannel, callbackQuery.id, (0, i18n_1.default)(game.settings.language, "category", { count: 0 }), (0, keyboards_1.categoriesKeyboard)(game));
                     }
                     else if (callbackQuery.data === "settings") {
                         telegram_1.default.editMessage(game.telegramChannel, callbackQuery.id, (0, i18n_1.default)(game.settings.language, "settings"), (0, keyboards_1.settingsKeyboard)(game));
                     }
                     else if (exports.callbackDateTypeDelays.includes(callbackQuery.data)) {
-                        telegram_1.default.editMessage(game.telegramChannel, callbackQuery.id, (0, i18n_1.default)(game.settings.language, callbackQuery.data), (0, keyboards_1.delayKeyboard)(game, callbackQuery.data));
+                        telegram_1.default.editMessage(game.telegramChannel, callbackQuery.id, `${(0, i18n_1.default)(game.settings.language, callbackQuery.data)}\n${(0, i18n_1.default)(game.settings.language, `sentences.${callbackQuery.data}`)}`, (0, keyboards_1.delayKeyboard)(game, callbackQuery.data));
                     }
                     else {
                         console.log(`${callbackQuery.data} toggled for ${game._id}`);

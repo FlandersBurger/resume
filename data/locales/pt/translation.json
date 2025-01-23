@@ -228,7 +228,10 @@
     "notGuessed": "Não adivinhado",
     "dailyScores": "<b>Pontuações Diárias</b>",
     "topDailyScores": "<b>Top Pontuações Diárias</b>",
-    "dailyScoresWithLimit": "<b>Top {{limit}} Pontuações Diárias</b>"
+    "dailyScoresWithLimit": "<b>Top {{limit}} Pontuações Diárias</b>",
+    "skipDelay": "Tempo até que uma lista seja pulada",
+    "vetoDelay": "Tempo até que um novo pulo seja permitido após ser vetado",
+    "hintDelay": "Tempo até que uma nova dica seja permitida"
   },
   "warnings": {
     "minimum1Category": "É necessário pelo menos 1 categoria",
@@ -263,5 +266,6 @@
   ],
   "skipDelay": "Atraso de pular",
   "vetoDelay": "Atraso de veto",
-  "hintDelay": "Atraso de dica"
+  "hintDelay": "Atraso de dica",
+  "triviaLangauges": "Curiosidades sobre idiomas"
 }

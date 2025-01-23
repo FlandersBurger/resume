@@ -228,7 +228,10 @@
     "notGuessed": "अनुमान नहीं लगाया गया",
     "dailyScores": "<b>दैनिक स्कोर</b>",
     "topDailyScores": "<b>शीर्ष दैनिक स्कोर</b>",
-    "dailyScoresWithLimit": "<b>शीर्ष {{limit}} दैनिक स्कोर</b>"
+    "dailyScoresWithLimit": "<b>शीर्ष {{limit}} दैनिक स्कोर</b>",
+    "skipDelay": "सूची को छोड़े जाने तक का समय",
+    "vetoDelay": "वीटो किए जाने के बाद नई सूची को छोड़े जाने तक का समय",
+    "hintDelay": "नए संकेत को छोड़े जाने तक का समय"
   },
   "warnings": {
     "minimum1Category": "न्यूनतम 1 श्रेणी आवश्यक है",
@@ -263,5 +266,6 @@
   ],
   "skipDelay": "स्किप विलंब",
   "vetoDelay": "वीटो विलंब",
-  "hintDelay": "संकेत विलंब"
+  "hintDelay": "संकेत विलंब",
+  "triviaLangauges": "सामान्य ज्ञान भाषाएँ"
 }

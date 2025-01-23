@@ -228,7 +228,10 @@
     "notGuessed": "Belum ditebak",
     "dailyScores": "<b>Skor Harian</b>",
     "topDailyScores": "<b>Top Skor Harian</b>",
-    "dailyScoresWithLimit": "<b>Top {{limit}} Skor Harian</b>"
+    "dailyScoresWithLimit": "<b>Top {{limit}} Skor Harian</b>",
+    "skipDelay": "Waktu hingga daftar dilewati",
+    "vetoDelay": "Waktu hingga lompatan baru diizinkan setelah diveto",
+    "hintDelay": "Waktu hingga petunjuk baru diizinkan"
   },
   "warnings": {
     "minimum1Category": "Setidaknya 1 kategori diperlukan",
@@ -263,5 +266,6 @@
   ],
   "skipDelay": "Penundaan lewati",
   "vetoDelay": "Penundaan veto",
-  "hintDelay": "Penundaan petunjuk"
+  "hintDelay": "Penundaan petunjuk",
+  "triviaLangauges": "Bahasa Trivia"
 }

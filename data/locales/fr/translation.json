@@ -228,7 +228,10 @@
     "notGuessed": "Non deviné",
     "dailyScores": "<b>Scores quotidiens</b>",
     "topDailyScores": "<b>Meilleurs scores quotidiens</b>",
-    "dailyScoresWithLimit": "<b>Meilleurs {{limit}} scores quotidiens</b>"
+    "dailyScoresWithLimit": "<b>Meilleurs {{limit}} scores quotidiens</b>",
+    "skipDelay": "Temps avant qu'une liste soit ignorée",
+    "vetoDelay": "Temps avant qu'un nouveau saut soit autorisé après avoir été rejeté",
+    "hintDelay": "Temps avant qu'un nouvel indice soit autorisé"
   },
   "warnings": {
     "minimum1Category": "Un minimum d'une catégorie est requis",
@@ -263,5 +266,6 @@
   ],
   "skipDelay": "Délai de saut",
   "vetoDelay": "Délai de veto",
-  "hintDelay": "Délai d'indice"
+  "hintDelay": "Délai d'indice",
+  "triviaLangauges": "Anecdotes sur les langues"
 }

@@ -228,7 +228,10 @@
     "notGuessed": "추측하지 않음",
     "dailyScores": "<b>일일 점수</b>",
     "topDailyScores": "<b>최고 일일 점수</b>",
-    "dailyScoresWithLimit": "<b>최고 {{limit}}일일 점수</b>"
+    "dailyScoresWithLimit": "<b>최고 {{limit}}일일 점수</b>",
+    "skipDelay": "목록 건너뛰기까지 걸리는 시간",
+    "vetoDelay": "거부된 후 새로운 건너뛰기가 허용될 때까지 걸리는 시간",
+    "hintDelay": "새로운 힌트가 허용될 때까지 걸리는 시간"
   },
   "warnings": {
     "minimum1Category": "최소 1개 카테고리가 필요합니다.",
@@ -263,5 +266,6 @@
   ],
   "skipDelay": "스킵 지연",
   "vetoDelay": "거부 지연",
-  "hintDelay": "힌트 지연"
+  "hintDelay": "힌트 지연",
+  "triviaLangauges": "잡학 언어"
 }

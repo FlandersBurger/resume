@@ -6,6 +6,7 @@
   "language_one": "Language",
   "language_other": "Languages",
   "botLanguage": "Bot language",
+  "triviaLangauges": "Trivia languages",
   "plays": "Plays",
   "votes": "Votes",
   "snubs": "Snubs",
@@ -147,7 +148,10 @@
     "notGuessed": "Not guessed",
     "dailyScores": "<b>Daily Scores</b>",
     "topDailyScores": "<b>Top Daily Scores</b>",
-    "dailyScoresWithLimit": "<b>Top {{limit}} Daily Scores</b>"
+    "dailyScoresWithLimit": "<b>Top {{limit}} Daily Scores</b>",
+    "skipDelay": "Time until a list is skipped",
+    "vetoDelay": "Time until a new skip is allowed after being vetoed",
+    "hintDelay": "Time until a new hint is allowed"
   },
   "warnings": {
     "minimum1Category": "A minimum of 1 category is required",

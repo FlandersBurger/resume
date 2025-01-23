@@ -228,7 +228,10 @@
     "notGuessed": "Niet geraden",
     "dailyScores": "<b>Dagelijkse Scores</b>",
     "topDailyScores": "<b>Top Dagelijkse Scores</b>",
-    "dailyScoresWithLimit": "<b>Top {{limit}} Dagelijkse Scores</b>"
+    "dailyScoresWithLimit": "<b>Top {{limit}} Dagelijkse Scores</b>",
+    "skipDelay": "Tijd totdat een lijst wordt overgeslagen",
+    "vetoDelay": "Tijd totdat een nieuwe overslaan is toegestaan na veto",
+    "hintDelay": "Tijd totdat een nieuwe hint is toegestaan"
   },
   "warnings": {
     "minimum1Category": "Minimaal 1 categorie is vereist",
@@ -263,5 +266,6 @@
   ],
   "skipDelay": "Skipvertraging",
   "vetoDelay": "Vetovertraging",
-  "hintDelay": "Hintvertraging"
+  "hintDelay": "Hintvertraging",
+  "triviaLangauges": "Trivia-talen"
 }

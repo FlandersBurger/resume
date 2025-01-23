@@ -407,8 +407,13 @@ class TelegramBot {
     }
   };
 
-  public editMessage = async (channel: Channel, message_id: string, text: string, keyboard?: Keyboard) => {
-    let url = `${this.baseUrl}/editMessageText?chat_id=${channel.chat}&message_id=${message_id}&text=${text}`;
+  public queueEditKeyboard = (channel: Channel, message_id: string, keyboard: Keyboard) => {
+    messageQueue.add("", { channel, message_id, action: "editMessage", chat: channel.chat, keyboard }, {});
+  };
+
+
+  public editMessage = async (channel: Channel, message_id: string, message: string, keyboard?: Keyboard) => {
+    let url = `${this.baseUrl}/editMessageText?chat_id=${channel.chat}&message_id=${message_id}&text=${message}`;
     if (keyboard) url += `&reply_markup=${JSON.stringify(keyboard)}`;
     try {
       await httpClient().get(encodeURI(url));
@@ -417,8 +422,8 @@ class TelegramBot {
     }
   };
 
-  public queueEditKeyboard = (channel: Channel, message_id: string, keyboard: Keyboard) => {
-    messageQueue.add("", { channel, message_id, action: "editKeyboard", chat: channel.chat, keyboard }, {});
+  public queueEditMessage = (channel: Channel, message_id: string, message: string, keyboard: Keyboard) => {
+    messageQueue.add("", { channel, message_id, action: "editMessage", chat: channel.chat, message, keyboard }, {});
   };
 
   public answerCallback = async (callback_query_id: string, text: string) => {
@@ -594,6 +599,7 @@ const bot = new TelegramBot(process.env.TELEGRAM_TOKEN!);
 enum Actions {
   SendMessage = "sendMessage",
   EditKeyboard = "editKeyboard",
+  EditMessage = "editMessage",
 }
 
 messageQueue.process(
@@ -602,7 +608,8 @@ messageQueue.process(
   }: {
     data:
       | { channel: Channel; action: Actions.SendMessage; message: string }
-      | { channel: Channel; action: Actions.EditKeyboard; message_id: string; keyboard: Keyboard };
+      | { channel: Channel; action: Actions.EditKeyboard; message_id: string; keyboard: Keyboard }
+      | { channel: Channel; action: Actions.EditMessage; message_id: string; message: string; keyboard?: Keyboard };
   }) => {
     switch (data.action) {
       case "sendMessage":
@@ -610,6 +617,9 @@ messageQueue.process(
         break;
       case "editKeyboard":
         bot.editKeyboard(data.channel, data.message_id, data.keyboard!);
+        break;
+      case "editMessage":
+        bot.editMessage(data.channel, data.message_id, data.message, data.keyboard);
         break;
       default:
         break;

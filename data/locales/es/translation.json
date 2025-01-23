@@ -228,7 +228,10 @@
     "notGuessed": "No se adivinó",
     "dailyScores": "<b>Puntuaciones diarias</b>",
     "topDailyScores": "<b>Puntuaciones diarias más altas</b>",
-    "dailyScoresWithLimit": "<b>Puntuaciones diarias más altas {{limit}}</b>"
+    "dailyScoresWithLimit": "<b>Puntuaciones diarias más altas {{limit}}</b>",
+    "skipDelay": "Tiempo hasta que se omite una lista",
+    "vetoDelay": "Tiempo hasta que se permite un nuevo salto después de haber sido vetado",
+    "hintDelay": "Tiempo hasta que se permite una nueva pista"
   },
   "warnings": {
     "minimum1Category": "Se requiere un mínimo de 1 categoría",
@@ -263,5 +266,6 @@
   ],
   "skipDelay": "Retraso de salto",
   "vetoDelay": "Retraso de veto",
-  "hintDelay": "Retraso de sugerencia"
+  "hintDelay": "Retraso de sugerencia",
+  "triviaLangauges": "Curiosidades sobre idiomas"
 }
