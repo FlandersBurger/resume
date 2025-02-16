@@ -7,6 +7,7 @@ exports.adminOnly = exports.noTopic = exports.botMuted = exports.chatNotFound = 
 const index_1 = require("../../../models/index");
 const telegram_1 = __importDefault(require("../../../connections/telegram"));
 const i18n_1 = __importDefault(require("../../../i18n"));
+const players_1 = require("./players");
 const chatNotFound = async (chat_id) => {
     const inactiveGame = await index_1.Game.findOneAndUpdate({ chat_id }, { $set: { enabled: false } });
     if (inactiveGame) {
@@ -27,10 +28,20 @@ const noTopic = async (chat_id) => {
     await index_1.Game.findOneAndUpdate({ chat_id }, { $set: { topicId: null } });
 };
 exports.noTopic = noTopic;
-const adminOnly = async (game, name, additionalInfo) => {
-    if (game.chat_id === parseInt(process.env.GROUP_CHAT || ""))
-        telegram_1.default.notifyAdmin(`Admin warning triggered by ${JSON.stringify(additionalInfo)}`);
-    telegram_1.default.queueMessage(game.telegramChannel, (0, i18n_1.default)(game.settings.language, "warnings.adminFunction", { name }));
+const adminOnly = async (game, player) => {
+    player.infractions++;
+    if (player.infractions < 4) {
+        telegram_1.default.queueMessage(game.telegramChannel, `${(0, i18n_1.default)(game.settings.language, "warnings.adminFunction", { name: (0, players_1.getPlayerName)(player) })}\nID: ${player.id}`);
+    }
+    else if (player.infractions === 4) {
+        telegram_1.default.queueMessage(game.telegramChannel, `${(0, i18n_1.default)(game.settings.language, "warnings.abuse", { name: (0, players_1.getPlayerName)(player) })}\nID: ${player.id}`);
+    }
+    else {
+        telegram_1.default.queueMessage(game.telegramChannel, `${(0, i18n_1.default)(game.settings.language, "warnings.banned", { name: (0, players_1.getPlayerName)(player) })}\nID: ${player.id}`);
+        telegram_1.default.notifyAdmin(`Banned player: ${(0, players_1.getPlayerName)(player)}\nID: ${player.id}\nChat: https://belgocanadian.com/tenthings/${game.chat_id}`);
+        player.banned = true;
+    }
+    await player.save();
 };
 exports.adminOnly = adminOnly;
 //# sourceMappingURL=errors.js.map

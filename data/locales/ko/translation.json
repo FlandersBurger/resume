@@ -240,7 +240,9 @@
     "alreadyInQueue": "<b>{{list}}</b>, 이미 대기열에 있습니다. {{name}}",
     "unfoundList": "이 목록은 더 이상 존재하지 않습니다.",
     "corroborateBanBySamePlayer": "다른 사람에게 금지 확인을 요청하세요. {{name}}!",
-    "noSuggestion": "아무것도 제안하지 않았습니다, {{name}}"
+    "noSuggestion": "아무것도 제안하지 않았습니다, {{name}}",
+    "abuse": "{{name}}, 다시 이걸 남용하면 Ten Things에서 추방됩니다",
+    "banned": "{{name}}, Ten Things에서 추방됩니다. @FlandersBurger에 추방 해제를 청원하세요."
   },
   "stats": {
     "stats": "통계",

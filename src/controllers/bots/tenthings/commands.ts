@@ -73,6 +73,9 @@ export const evaluate = async (msg: Message, game: HydratedDocument<IGame>, isNe
   //bot.notifyAdmin(games[game.chat_id].list);
   const command = msg.command && translateCommand(game.settings.language, msg.command);
   let player = await getPlayer(game, msg.from);
+  if (!player || player.banned) {
+    return;
+  }
   if (!player.first_name) {
     console.error("msg without a first_name?");
     console.error(msg);
@@ -136,7 +139,7 @@ export const evaluate = async (msg: Message, game: HydratedDocument<IGame>, isNe
         if (await bot.checkAdmin(game, msg.from)) {
           deactivate(game);
         } else {
-          adminOnly(game, getPlayerName(player), msg.from);
+          adminOnly(game, player);
         }
         break;
       case Command.Start:
@@ -309,7 +312,7 @@ export const evaluate = async (msg: Message, game: HydratedDocument<IGame>, isNe
               settingsKeyboard(game),
             );
           } else {
-            adminOnly(game, getPlayerName(player), msg.from);
+            adminOnly(game, player);
           }
         }
         break;

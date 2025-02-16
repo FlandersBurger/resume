@@ -21,6 +21,7 @@ const keyboards_1 = require("./keyboards");
 const telegram_1 = __importDefault(require("../../../connections/telegram"));
 const errors_1 = require("./errors");
 const languages_1 = require("./languages");
+const players_1 = require("./players");
 var CallbackDataType;
 (function (CallbackDataType) {
     CallbackDataType["Ban"] = "ban";
@@ -52,6 +53,10 @@ exports.callbackDateTypeDelays = [
 exports.default = async (callbackQuery) => {
     const game = await index_1.Game.findOne({ chat_id: callbackQuery.chatId });
     if (!game) {
+        return;
+    }
+    const player = await (0, players_1.getPlayer)(game, callbackQuery.from);
+    if (!player || player.banned) {
         return;
     }
     let list;
@@ -161,7 +166,7 @@ exports.default = async (callbackQuery) => {
                 else {
                     if (!game)
                         return;
-                    (0, errors_1.adminOnly)(game, callbackQuery.from.name, callbackQuery.from);
+                    (0, errors_1.adminOnly)(game, player);
                 }
             }
             break;
@@ -201,7 +206,7 @@ exports.default = async (callbackQuery) => {
                 else {
                     if (!game)
                         return;
-                    (0, errors_1.adminOnly)(game, callbackQuery.from.name, callbackQuery.from);
+                    (0, errors_1.adminOnly)(game, player);
                 }
             }
             break;

@@ -240,7 +240,9 @@
     "alreadyInQueue": "<b>{{list}}</b> staat al in de wachtrij, {{name}}",
     "unfoundList": "Deze lijst bestaat niet meer",
     "corroborateBanBySamePlayer": "Laat iemand anders het verbod bevestigen, {{name}}!",
-    "noSuggestion": "Je hebt niets gesuggereerd, {{name}}"
+    "noSuggestion": "Je hebt niets gesuggereerd, {{name}}",
+    "abuse": "{{name}}, je wordt verbannen van Ten Things als je dit nogmaals misbruikt",
+    "banned": "{{name}}, je bent verbannen van Ten Things. Je kunt een petitie indienen aan @FlandersBurger"
   },
   "stats": {
     "stats": "Statistieken",

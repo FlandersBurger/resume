@@ -240,7 +240,9 @@
     "alreadyInQueue": "<b>{{list}}</b> ist bereits in der Warteschlange, {{name}}",
     "unfoundList": "Diese Liste existiert nicht mehr",
     "corroborateBanBySamePlayer": "Lassen Sie jemand anderen das Verbot bestätigen, {{name}}!",
-    "noSuggestion": "Sie haben nichts vorgeschlagen, {{name}}"
+    "noSuggestion": "Sie haben nichts vorgeschlagen, {{name}}",
+    "abuse": "{{name}}, du wirst von Ten Things verbannt, wenn du dies erneut missbrauchst",
+    "banned": "{{name}}, du bist von Ten Things verbannt. Du kannst gerne eine Aufhebung der Verbannung bei @FlandersBurger beantragen."
   },
   "stats": {
     "stats": "Statistiken",

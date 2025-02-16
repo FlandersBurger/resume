@@ -23,6 +23,7 @@ export interface IPlayer {
   snubs: number;
   skips: number;
   vetoes: number;
+  infractions: number;
   suggestions: number;
   searches: number;
   streak: number;
@@ -36,6 +37,7 @@ export interface IPlayer {
   minigamePlays: number;
   tinygamePlays: number;
   state: PlayerState;
+  banned: boolean;
 }
 
 let Player: { [key: string]: Model<IPlayer> } = {};
@@ -58,6 +60,7 @@ const playerSchema = new Schema<IPlayer>(
     snubs: { type: Number, required: false, default: 0 },
     skips: { type: Number, required: false, default: 0 },
     vetoes: { type: Number, required: false, default: 0 },
+    infractions: { type: Number, required: false, default: 0 },
     suggestions: { type: Number, required: false, default: 0 },
     searches: { type: Number, required: false, default: 0 },
     streak: { type: Number, required: false, default: 0 },
@@ -71,6 +74,7 @@ const playerSchema = new Schema<IPlayer>(
     minigamePlays: { type: Number, required: false, default: 0 },
     tinygamePlays: { type: Number, required: false, default: 0 },
     state: { type: String, required: false, default: null },
+    banned: { type: Boolean, required: false, default: false },
   },
   { timestamps: true },
 );

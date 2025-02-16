@@ -324,6 +324,9 @@ const parseQuery = (query) => {
             case "name":
                 Object.assign(params, { name: { $regex: query[key], $options: "i" } });
                 break;
+            case "creator":
+                Object.assign(params, { creator: query[key] });
+                break;
             case "categories":
             case "language":
                 const values = query[key].split(",");

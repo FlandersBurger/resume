@@ -156,6 +156,8 @@
   "warnings": {
     "minimum1Category": "A minimum of 1 category is required",
     "adminFunction": "Sorry {{name}}, this is a chat admin function",
+    "abuse": "{{name}}, you will be banned from Ten Things if you abuse this once again",
+    "banned": "{{name}}, you are banned from Ten Things. Feel free to petition an unban to @FlandersBurger",
     "fullQueue": "The queue already has the maximum of 10 lists, {{name}}",
     "alreadyInQueue": "<b>{{list}}</b> is already in the queue, {{name}}",
     "unfoundList": "This list no longer exists",

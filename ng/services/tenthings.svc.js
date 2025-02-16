@@ -12,6 +12,7 @@ angular.module("app").service("TenThingsSvc", function ($http) {
       (options.page ? `&page=${options.page}` : "") +
       (options.sortBy ? `&sort_by=${options.sortBy}` : "") +
       (options.orderBy ? `&order_by=${options.orderBy}` : "") +
+      // `&creator=5ae15f14b5f7883ff0497339` +
       (options.language && options.language.length > 0 ? `&language=${options.language.join(",")}` : "") +
       (options.categories && options.categories.length > 0 ? `&categories=${options.categories.join(",")}` : "") +
       (options.languageNot && options.languageNot.length > 0 ? `&!language=${options.languageNot.join(",")}` : "") +

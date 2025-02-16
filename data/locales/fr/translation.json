@@ -240,7 +240,9 @@
     "alreadyInQueue": "<b>{{list}}</b> est déjà dans la file d'attente, {{name}}",
     "unfoundList": "Cette liste n'existe plus",
     "corroborateBanBySamePlayer": "Demandez à quelqu'un d'autre de confirmer le bannissement, {{name}} !",
-    "noSuggestion": "Vous n'avez rien suggéré, {{name}}"
+    "noSuggestion": "Vous n'avez rien suggéré, {{name}}",
+    "abuse": "{{name}}, vous serez banni de Ten Things si vous abusez encore une fois de ce service",
+    "banned": "{{name}}, vous êtes banni de Ten Things. N'hésitez pas à demander une levée de bannissement à @FlandersBurger"
   },
   "stats": {
     "stats": "Statistiques",

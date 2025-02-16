@@ -31,6 +31,7 @@ import {
 import bot, { TelegramUser } from "@root/connections/telegram";
 import { adminOnly } from "./errors";
 import { isBotLanguage, isSupportedLanguage, SupportedLanguage } from "./languages";
+import { getPlayer } from "./players";
 
 export type CallbackData = {
   id: string;
@@ -80,6 +81,10 @@ export const callbackDateTypeDelays: CallbackDataTypeDelay[] = [
 export default async (callbackQuery: CallbackData) => {
   const game: HydratedDocument<IGame> | null = await Game.findOne({ chat_id: callbackQuery.chatId });
   if (!game) {
+    return;
+  }
+  const player = await getPlayer(game, callbackQuery.from);
+  if (!player || player.banned) {
     return;
   }
   let list: HydratedDocument<IList> | null;
@@ -197,7 +202,7 @@ export default async (callbackQuery: CallbackData) => {
           bot.queueEditKeyboard(game.telegramChannel, callbackQuery.id, subcategoriesKeyboard(game, mainCategory));
         } else {
           if (!game) return;
-          adminOnly(game, callbackQuery.from.name, callbackQuery.from);
+          adminOnly(game, player);
         }
       }
       break;
@@ -264,7 +269,7 @@ export default async (callbackQuery: CallbackData) => {
           }
         } else {
           if (!game) return;
-          adminOnly(game, callbackQuery.from.name, callbackQuery.from);
+          adminOnly(game, player);
         }
       }
       break;

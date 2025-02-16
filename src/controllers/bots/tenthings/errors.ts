@@ -2,6 +2,9 @@ import { Game, Player } from "@models/index";
 import bot from "@root/connections/telegram";
 import i18n from "@root/i18n";
 import { IGame } from "@root/models/tenthings/game";
+import { IPlayer } from "@root/models/tenthings/player";
+import { getPlayerName } from "./players";
+import { HydratedDocument } from "mongoose";
 
 export const chatNotFound = async (chat_id: number) => {
   const inactiveGame = await Game.findOneAndUpdate({ chat_id }, { $set: { enabled: false } });
@@ -23,8 +26,27 @@ export const noTopic = async (chat_id: number) => {
   await Game.findOneAndUpdate({ chat_id }, { $set: { topicId: null } });
 };
 
-export const adminOnly = async (game: IGame, name: string | undefined, additionalInfo: any) => {
-  if (game.chat_id === parseInt(process.env.GROUP_CHAT || ""))
-    bot.notifyAdmin(`Admin warning triggered by ${JSON.stringify(additionalInfo)}`);
-  bot.queueMessage(game.telegramChannel, i18n(game.settings.language, "warnings.adminFunction", { name }));
+export const adminOnly = async (game: IGame, player: HydratedDocument<IPlayer>) => {
+  player.infractions++;
+  if (player.infractions < 4) {
+    bot.queueMessage(
+      game.telegramChannel,
+      `${i18n(game.settings.language, "warnings.adminFunction", { name: getPlayerName(player) })}\nID: ${player.id}`,
+    );
+  } else if (player.infractions === 4) {
+    bot.queueMessage(
+      game.telegramChannel,
+      `${i18n(game.settings.language, "warnings.abuse", { name: getPlayerName(player) })}\nID: ${player.id}`,
+    );
+  } else {
+    bot.queueMessage(
+      game.telegramChannel,
+      `${i18n(game.settings.language, "warnings.banned", { name: getPlayerName(player) })}\nID: ${player.id}`,
+    );
+    bot.notifyAdmin(
+      `Banned player: ${getPlayerName(player)}\nID: ${player.id}\nChat: https://belgocanadian.com/tenthings/${game.chat_id}`,
+    );
+    player.banned = true;
+  }
+  await player.save();
 };

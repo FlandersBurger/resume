@@ -240,7 +240,9 @@
     "alreadyInQueue": "<b>{{list}}</b> موجودة بالفعل في قائمة الانتظار، {{name}}",
     "unfoundList": "لم تعد هذه القائمة موجود",
     "corroborateBanBySamePlayer": "اطلب من شخص آخر تأكيد الحظر، {{name}}!",
-    "noSuggestion": "لم تقترح أي شيء، {{name}}"
+    "noSuggestion": "لم تقترح أي شيء، {{name}}",
+    "abuse": "{{name}}، سيتم حظرك من Ten Things إذا أساءت استخدام هذا مرة أخرى",
+    "banned": "{{name}}، تم حظرك من Ten Things. لا تتردد في تقديم التماس إلى @FlandersBurger لرفع الحظر"
   },
   "stats": {
     "stats": "الإحصائيات",

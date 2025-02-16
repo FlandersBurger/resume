@@ -240,7 +240,9 @@
     "alreadyInQueue": "<b>{{list}}</b> já está na fila, {{name}}",
     "unfoundList": "Esta lista não existe mais",
     "corroborateBanBySamePlayer": "Peça a outra pessoa para confirmar a proibição, {{name}}!",
-    "noSuggestion": "Você não sugeriu nada, {{name}}"
+    "noSuggestion": "Você não sugeriu nada, {{name}}",
+    "abuse": "{{name}}, você será banido do Ten Things se abusar disso mais uma vez",
+    "banned": "{{name}}, você foi banido do Ten Things. Sinta-se à vontade para fazer uma petição para desbanir @FlandersBurger"
   },
   "stats": {
     "stats": "Estatísticas",

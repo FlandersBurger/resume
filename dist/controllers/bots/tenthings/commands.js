@@ -68,6 +68,9 @@ exports.translateCommand = translateCommand;
 const evaluate = async (msg, game, isNew) => {
     const command = msg.command && (0, exports.translateCommand)(game.settings.language, msg.command);
     let player = await (0, players_1.getPlayer)(game, msg.from);
+    if (!player || player.banned) {
+        return;
+    }
     if (!player.first_name) {
         console.error("msg without a first_name?");
         console.error(msg);
@@ -114,7 +117,7 @@ const evaluate = async (msg, game, isNew) => {
                     (0, maingame_1.deactivate)(game);
                 }
                 else {
-                    (0, errors_1.adminOnly)(game, (0, players_1.getPlayerName)(player), msg.from);
+                    (0, errors_1.adminOnly)(game, player);
                 }
                 break;
             case Command.Start:
@@ -252,7 +255,7 @@ const evaluate = async (msg, game, isNew) => {
                         telegram_1.default.sendKeyboard(game.telegramChannel, `<b>${(0, i18n_1.default)(game.settings.language, "settings")}</b>`, (0, keyboards_1.settingsKeyboard)(game));
                     }
                     else {
-                        (0, errors_1.adminOnly)(game, (0, players_1.getPlayerName)(player), msg.from);
+                        (0, errors_1.adminOnly)(game, player);
                     }
                 }
                 break;

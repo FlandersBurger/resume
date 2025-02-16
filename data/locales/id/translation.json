@@ -240,7 +240,9 @@
     "alreadyInQueue": "<b>{{list}}</b> sudah ada dalam antrian, {{name}}",
     "unfoundList": "Daftar ini tidak lagi ada",
     "corroborateBanBySamePlayer": "Dapatkan orang lain untuk mengonfirmasi pelarangan, {{name}}!",
-    "noSuggestion": "Kamu tidak menyarankan apa pun, {{name}}"
+    "noSuggestion": "Kamu tidak menyarankan apa pun, {{name}}",
+    "abuse": "{{name}}, Anda akan diblokir dari Ten Things jika Anda menyalahgunakan ini sekali lagi",
+    "banned": "{{name}}, Anda diblokir dari Ten Things. Jangan ragu untuk mengajukan petisi pembatalan pemblokiran ke @FlandersBurger"
   },
   "stats": {
     "stats": "Statistik",

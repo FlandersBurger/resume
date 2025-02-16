@@ -240,7 +240,9 @@
     "alreadyInQueue": "<b>{{list}}</b> уже в очереди, {{name}}",
     "unfoundList": "Этот список больше не существует",
     "corroborateBanBySamePlayer": "Попросите кого-нибудь еще подтвердить запрет, {{name}}!",
-    "noSuggestion": "Вы ничего не предложили, {{name}}"
+    "noSuggestion": "Вы ничего не предложили, {{name}}",
+    "abuse": "{{name}}, вы будете забанены в Ten Things, если вы снова будете этим злоупотреблять",
+    "banned": "{{name}}, вы забанены в Ten Things. Не стесняйтесь подать петицию о разбане @FlandersBurger"
   },
   "stats": {
     "stats": "Статистика",

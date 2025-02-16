@@ -7,6 +7,7 @@ import i18n from "@root/i18n";
 import { confirmBanListKeyboard } from "./keyboards";
 import bot from "@root/connections/telegram";
 import { adminOnly } from "./errors";
+import { getPlayer } from "./players";
 
 const cache: { [key: string]: number } = {};
 
@@ -35,7 +36,8 @@ export const initiateBan = async (game: IGame, callbackQuery: CallbackData) => {
       }
     }
   } else {
-    adminOnly(game, callbackQuery.from.name, callbackQuery.from);
+    const player = await getPlayer(game, callbackQuery.from);
+    adminOnly(game, player);
   }
 };
 
