@@ -17,7 +17,7 @@ angular.module("app").controller("AsteroidsCtrl", function ($location, $scope, G
   const powerups = {};
   const explosions = {};
   const map = {};
-  const spacepics = 10;
+  const spacepics = 3;
   let space = Math.floor(Math.random() * spacepics);
   const powerupTypes = [
     {
@@ -243,8 +243,8 @@ angular.module("app").controller("AsteroidsCtrl", function ($location, $scope, G
         spaceship.cannon.y +
         spaceship.cannon.y * Math.sin(((spaceship.rotation - 90) * Math.PI) / 180),
     ];
-    this.width = 9;
-    this.height = 15;
+    this.width = 40;
+    this.height = 40;
     this.angle = spaceship.angle;
     this.rotation = spaceship.rotation;
     this.speed = spaceship.speed + 500;
@@ -260,7 +260,7 @@ angular.module("app").controller("AsteroidsCtrl", function ($location, $scope, G
 
   function Asteroid(id) {
     this.id = id;
-    this.width = Math.random() * 50 + 20;
+    this.width = Math.random() * 50 + 50;
     this.height = this.width;
     this.position = getEntryPosition(this.width, this.height);
     this.angle = Math.random() * 360;
@@ -268,7 +268,7 @@ angular.module("app").controller("AsteroidsCtrl", function ($location, $scope, G
     this.rotationSpeed = Math.random() * 6 - 3;
     this.speed = Math.random() * 300 + 2;
     this.img = new Image();
-    this.img.src = "asteroids/asteroid" + (Math.round(Math.random() * 6) + 1) + ".png";
+    this.img.src = "asteroids/asteroid" + (Math.round(Math.random() * 4) + 1) + ".png";
 
     this.explode = function () {
       explosions[this.id] = new Explosion(this);
@@ -635,7 +635,7 @@ angular.module("app").controller("AsteroidsCtrl", function ($location, $scope, G
           ")",
       );
       ctx.fillStyle = gradient;
-      ctx.font = "60px Monoton";
+      ctx.font = "60px 'Jacquard 12'";
       ctx.fillText("Asteroids", canvas.width / 2 - ctx.measureText("Asteroids").width / 2, canvas.height / 2);
       ctx.font = "20px Aldrich";
       ctx.fillText(
