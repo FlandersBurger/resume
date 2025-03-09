@@ -312,6 +312,10 @@ const deleteStalePlayers = async () => {
     }).exec();
     telegram_1.default.notifyAdmin(`${results.deletedCount} stale players deleted`);
 };
+const unbanPlayers = async () => {
+    const unbannedPlayers = await index_1.Player.updateMany({ banned: true }, { $set: { banned: false, infractions: 0 } });
+    telegram_1.default.notifyAdmin(`${unbannedPlayers.matchedCount} players unbanned`);
+};
 let jobs = [];
 if (process.env.NODE_ENV === "production") {
     jobs.push(node_schedule_1.default.scheduleJob("Reset Daily Scores", "0 2 1 * * *", resetDailyScore));
@@ -320,6 +324,7 @@ if (process.env.NODE_ENV === "production") {
     jobs.push(node_schedule_1.default.scheduleJob("Deactivate Inactive Chats", "0 0 4 * * *", deactivateInactiveChats));
     jobs.push(node_schedule_1.default.scheduleJob("Delete Stale Players", "0 0 5 * * *", deleteStalePlayers));
     jobs.push(node_schedule_1.default.scheduleJob("Delete Stale Games", "0 0 6 * * *", deleteStaleGames));
+    jobs.push(node_schedule_1.default.scheduleJob("Unban Banned Players", "0 0 7 * * *", unbanPlayers));
 }
 jobs.push(node_schedule_1.default.scheduleJob("Backup Database", "0 0 21 * * *", backupDatabase));
 exports.default = jobs;

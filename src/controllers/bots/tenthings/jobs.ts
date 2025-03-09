@@ -439,6 +439,11 @@ const deleteStalePlayers = async () => {
   bot.notifyAdmin(`${results.deletedCount} stale players deleted`);
 };
 
+const unbanPlayers = async () => {
+  const unbannedPlayers = await Player.updateMany({ banned: true }, { $set: { banned: false, infractions: 0 } });
+  bot.notifyAdmin(`${unbannedPlayers.matchedCount} players unbanned`);
+};
+
 let jobs: Job[] = [];
 
 // ███████  ██████ ██   ██ ███████ ██████  ██    ██ ██      ███████
@@ -454,6 +459,7 @@ if (process.env.NODE_ENV === "production") {
   jobs.push(schedule.scheduleJob("Deactivate Inactive Chats", "0 0 4 * * *", deactivateInactiveChats));
   jobs.push(schedule.scheduleJob("Delete Stale Players", "0 0 5 * * *", deleteStalePlayers));
   jobs.push(schedule.scheduleJob("Delete Stale Games", "0 0 6 * * *", deleteStaleGames));
+  jobs.push(schedule.scheduleJob("Unban Banned Players", "0 0 7 * * *", unbanPlayers));
   // jobs.push(schedule.scheduleJob("Send New List Notice", "0 0 12 * * *", sendNewLists));
   // jobs.push(schedule.scheduleJob('0 30 12 * * *', sendUpdatedLists))
 }
