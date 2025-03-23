@@ -25,6 +25,10 @@ angular.module("app").service("TenThingsSvc", function ($http) {
     return $http.get(url);
   };
 
+  svc.getRandomList = () => {
+    return $http.post(`/api/tenthings/lists/random`);
+  };
+
   svc.searchLists = (name) => {
     return $http.get(`/api/tenthings/search/list-names/${name}`);
   };

@@ -1,0 +1,17 @@
+<div id="tenthings-page" class="col-md-12">
+  <h1>Ten Things</h1>
+  <h2>{{list.name}}</h2>
+  <input
+    class="form-control input-search"
+    type="search"
+    ng-model="guess"
+    ng-change="checkAnswer()"
+    placeholder="Guess"
+    ng-model-options="{ debounce: { 'default': 500, '*': 0 } }"
+  />
+  <ul class="list-group">
+    <li class="list-group-item" ng-repeat="item in list.values | filter: { guessed: true } | orderBy: '+value' ">
+      {{item.value}}
+    </li>
+  </ul>
+</div>

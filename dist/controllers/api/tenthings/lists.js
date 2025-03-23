@@ -38,6 +38,16 @@ exports.tenthingsListsRoute.get("/", async (req, res) => {
         res.json({ result: lists, nextPage: page + 1, count });
     }
 });
+exports.tenthingsListsRoute.post("/random", async (_, res) => {
+    if (!res.locals.isAuthorized)
+        res.sendStatus(401);
+    else {
+        const list = await (0, lists_1.getRandomList)({ starred: true });
+        if (!list)
+            res.sendStatus(404);
+        res.json(list);
+    }
+});
 exports.tenthingsListsRoute.get("/:id", async (req, res) => {
     if (!res.locals.isAuthorized)
         res.sendStatus(401);

@@ -17,7 +17,7 @@ import { IList, IListValue } from "@models/tenthings/list";
 import { List, User } from "@models/index";
 import { parseSymbols, removeAllButLetters } from "@root/utils/string-helpers";
 import { getListMessage } from "@tenthings/messages";
-import { getList, getListScore, mergeLists } from "@tenthings/lists";
+import { getList, getListScore, getRandomList, mergeLists } from "@tenthings/lists";
 import { curateListKeyboard } from "@tenthings/keyboards";
 import { every } from "lodash";
 
@@ -37,6 +37,15 @@ tenthingsListsRoute.get("/", async (req: QueryableRequest, res: Response) => {
       .populate("values.creator", "_id username displayName")
       .lean({ virtuals: true });
     res.json({ result: lists, nextPage: page + 1, count });
+  }
+});
+
+tenthingsListsRoute.post("/random", async (_: Request, res: Response) => {
+  if (!res.locals.isAuthorized) res.sendStatus(401);
+  else {
+    const list = await getRandomList({ starred: true });
+    if (!list) res.sendStatus(404);
+    res.json(list);
   }
 });
 

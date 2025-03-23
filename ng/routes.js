@@ -95,6 +95,11 @@ angular.module("app").config(function ($stateProvider, $urlRouterProvider, $urlS
       controller: "TenThingsStatsCtrl",
       templateUrl: "tenthings-stats.html",
     })
+    .state("tenthings-play", {
+      url: "/tenthings/play",
+      controller: "TenThingsPlayCtrl",
+      templateUrl: "tenthings-play.html",
+    })
     .state("quiz-google", {
       url: "/google",
       controller: "QuizGoogleCtrl",
