@@ -2,9 +2,21 @@ import { Request, Response, Router } from "express";
 const FuzzyMatching = require("fuzzy-matching");
 
 import { IUser } from "@models/user";
-import { User } from "@models/index";
+import { Game, User } from "@models/index";
+import { createMaingame, newRound } from "../bots/tenthings/maingame";
 
 export const gamesRoute = Router();
+
+gamesRoute.get("/tenthings", async (_: Request, res: Response) => {
+  let game = await Game.findOne({ platform: "web", chat_id: 1 }).populate("list.creator").select("-playedLists").exec();
+  if (!game) {
+    game = await createMaingame({ platform: "web", chat_id: 1 });
+  }
+  if (game.list.values.length === 0) {
+    newRound(game);
+  }
+  res.json(game);
+});
 
 gamesRoute.post("/:game/:userId/highscore", async (req: Request, res: Response) => {
   const user = await User.findOne({ _id: req.params.userId });

@@ -15,9 +15,10 @@ angular
 
     const getData = async () => {
       if ($scope.currentUser.admin) {
-        const { data: list } = await TenThingsSvc.getRandomList();
-        $scope.list = list;
-        $scope.values = _.sampleSize(list.values, 10);
+        const { data: game } = await GameSvc.getTenthings();
+        console.log("game", game);
+        $scope.list = game.list;
+        $scope.values = _.sampleSize(game.list.values, 10);
         console.log("list", $scope.list);
         console.log("value", $scope.values);
         $scope.$apply();

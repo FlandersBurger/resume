@@ -6,6 +6,8 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.GameType = void 0;
 const mongoose_1 = require("mongoose");
 const db_1 = __importDefault(require("../../db"));
+const web_1 = require("../../controllers/bots/tenthings/providers/web");
+const telegram_1 = require("../../controllers/bots/tenthings/providers/telegram");
 var GameType;
 (function (GameType) {
     GameType["MAINGAME"] = "maingame";
@@ -14,6 +16,7 @@ var GameType;
 })(GameType || (exports.GameType = GameType = {}));
 let Game = {};
 const gameSchema = new mongoose_1.Schema({
+    platform: { type: String, required: true, default: "telegram" },
     chat_id: { type: Number, required: true, unique: true },
     topicId: { type: Number, required: false },
     enabled: { type: Boolean, required: true, default: true },
@@ -78,6 +81,14 @@ const gameSchema = new mongoose_1.Schema({
         hintDelay: { type: Number, required: true, default: 10 },
     },
 }, { timestamps: true });
+gameSchema.virtual("provider").get(function () {
+    switch (this.platform) {
+        case "web":
+            return web_1.web;
+        default:
+            return telegram_1.telegram;
+    }
+});
 gameSchema.virtual("telegramChannel").get(function () {
     return { chat: this.chat_id, topic: this.topicId };
 });

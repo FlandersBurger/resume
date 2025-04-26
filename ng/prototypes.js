@@ -1,4 +1,4 @@
-var defaultDiacriticsRemovalMap = [
+const defaultDiacriticsRemovalMap = [
   {
     base: "A",
     letters:
@@ -353,7 +353,7 @@ var defaultDiacriticsRemovalMap = [
     letters: /[\u007A\u24E9\uFF5A\u017A\u1E91\u017C\u017E\u1E93\u1E95\u01B6\u0225\u0240\u2C6C\uA763]/g,
   },
 ];
-var domains = [
+const domains = [
   ".com",
   ".org",
   ".net",
@@ -615,6 +615,7 @@ Object.defineProperty(String.prototype, "removeDiacritics", {
 });
 
 const SPECIAL_CHARACTERS = "\\\\/ !?@#$%^&*()_+:.{},;\\-'``’‘\"";
+const VOWELS = "aeiouAEIOUàèìòùÀÈÌÒÙáéíóúýÁÉÍÓÚÝâêîôûÂÊÎÔÛãñõÃÑÕäëïöüÿÄËÏÖÜŸçÇßØøÅåÆæœ";
 
 Object.defineProperty(String.prototype, "removeSpecialCharacters", {
   value: function () {
@@ -631,6 +632,12 @@ Object.defineProperty(String.prototype, "removeAllButLetters", {
 Object.defineProperty(String.prototype, "conceal", {
   value: function (extra) {
     return this.replace(new RegExp(`[^${SPECIAL_CHARACTERS}${extra}]`, "gi"), "⁎");
+  },
+});
+
+Object.defineProperty(String.prototype, "concealMiddle", {
+  value: function (extra) {
+    return this.length < 3 ? this : this[0] + this.substring(1, this.length - 1).conceal(extra) + this[this.length - 1];
   },
 });
 

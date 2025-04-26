@@ -1,6 +1,10 @@
 angular.module("app").service("GameSvc", function ($http) {
   var svc = this;
 
+  svc.getTenthings = function () {
+    return $http.get("/api/games/tenthings");
+  };
+
   svc.getHighscore = function (game, user) {
     return $http.get("/api/games/" + game + "/" + user + "/highscore");
   };

@@ -19,9 +19,9 @@ const i18n_1 = __importDefault(require("../../../i18n"));
 const telegram_1 = __importDefault(require("../../../connections/telegram"));
 const categories_1 = require("./categories");
 const players_1 = require("./players");
-const createMaingame = async (chat_id) => {
+const createMaingame = async (platformSettings) => {
     const game = new index_1.Game({
-        chat_id,
+        ...platformSettings,
         settings: { languages: ["EN"] },
         pickedLists: ["5b444eeab1436b72a67aff8e"],
         disabledCategories: ["culture.adult"],
@@ -57,7 +57,7 @@ const newRound = async (currentGame) => {
     const game = await index_1.Game.findOne({
         _id: currentGame._id,
     })
-        .select("_id chat_id topicId telegramChannel playedLists list listsPlayed pickedLists cycles guessers hints disabledCategories settings")
+        .select("_id chat_id topicId provider playedLists list listsPlayed pickedLists cycles guessers hints disabledCategories settings")
         .populate("list.creator");
     if (!game)
         return console.log("Game not found");
@@ -92,16 +92,9 @@ const newRound = async (currentGame) => {
     hints_1.hintCache[game.id] = 3;
     (0, hints_1.hintCooldown)(game.id);
     game.guessers = [];
-    let message = (0, i18n_1.default)(game.settings.language, "sentences.newRound");
-    message += `\n${(0, i18n_1.default)(game.settings.language, "category", {
-        count: game.list.categories.length,
-    })}: `;
-    message += `<b>${(0, categories_1.getCategoryLabel)(game.settings.language, list)}</b>`;
-    telegram_1.default.queueMessage(game.telegramChannel, message);
+    game.provider.newRound(game, list);
     setTimeout(() => {
-        let message = `<b>${game.list.name}</b> (${game.list.answers}) ${(0, i18n_1.default)(game.settings.language, "sentences.createdBy", { creator: game.list.creator.username })}`;
-        message += game.list.description ? `\n<i>${(0, string_helpers_1.parseSymbols)(game.list.description)}</i>` : "";
-        telegram_1.default.queueMessage(game.telegramChannel, message);
+        game.provider.newList(game);
     }, 2000);
     game.playedLists.push(game.list._id);
     await game.save();

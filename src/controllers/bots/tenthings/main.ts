@@ -112,7 +112,7 @@ tenthingsBotRoute.post("/", async (req: Request, res: Response) => {
       .select("-playedLists")
       .exec();
     if (!existingGame) {
-      const newGame = await createMaingame(msg.chatId);
+      const newGame = await createMaingame({ chat_id: msg.chatId, platform: "telegram" });
       console.log(`New game created for ${msg.chatId}`);
       await evaluate(msg, newGame, true);
     } else {

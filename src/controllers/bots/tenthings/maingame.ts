@@ -4,7 +4,7 @@ import sampleSize from "lodash/sampleSize";
 import some from "lodash/some";
 
 import { Game, List, Player } from "@models/index";
-import { IGame } from "@models/tenthings/game";
+import { IGame, Platform } from "@models/tenthings/game";
 import { IList } from "@models/tenthings/list";
 import { parseSymbols } from "@root/utils/string-helpers";
 import { IUser } from "@models/user";
@@ -21,10 +21,14 @@ import bot from "@root/connections/telegram";
 import { getCategoryLabel } from "./categories";
 import { getPlayerName } from "./players";
 
-export const createMaingame = async (chat_id: number): Promise<HydratedDocument<IGame>> => {
+export const createMaingame = async (platformSettings: {
+  chat_id: number;
+  topicId?: number;
+  platform: Platform;
+}): Promise<HydratedDocument<IGame>> => {
   // const starredLists = await List.find({ starred: true }).select("_id");
   const game = new Game({
-    chat_id,
+    ...platformSettings,
     settings: { languages: ["EN"] },
     //pickedLists: starredLists.map(({ _id }) => _id),
     pickedLists: ["5b444eeab1436b72a67aff8e"], // Numbers 0-9
@@ -74,7 +78,7 @@ export const newRound = async (currentGame: IGame) => {
     _id: currentGame._id,
   })
     .select(
-      "_id chat_id topicId telegramChannel playedLists list listsPlayed pickedLists cycles guessers hints disabledCategories settings",
+      "_id chat_id topicId provider playedLists list listsPlayed pickedLists cycles guessers hints disabledCategories settings",
     )
     .populate("list.creator");
   if (!game) return console.log("Game not found");
@@ -108,20 +112,9 @@ export const newRound = async (currentGame: IGame) => {
   hintCache[game.id] = 3;
   hintCooldown(game.id);
   game.guessers = [];
-  let message = i18n(game.settings.language, "sentences.newRound");
-  message += `\n${i18n(game.settings.language, "category", {
-    count: game.list.categories.length,
-  })}: `;
-  message += `<b>${getCategoryLabel(game.settings.language, list)}</b>`;
-  bot.queueMessage(game.telegramChannel, message);
+  game.provider.newRound(game, list);
   setTimeout(() => {
-    let message = `<b>${game.list.name}</b> (${game.list.answers}) ${i18n(
-      game.settings.language,
-      "sentences.createdBy",
-      { creator: (game.list.creator as IUser).username },
-    )}`;
-    message += game.list.description ? `\n<i>${parseSymbols(game.list.description)}</i>` : "";
-    bot.queueMessage(game.telegramChannel, message);
+    game.provider.newList(game);
   }, 2000);
   game.playedLists.push(game.list._id);
   await game.save();
