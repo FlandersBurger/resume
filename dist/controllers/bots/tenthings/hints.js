@@ -13,7 +13,6 @@ const tinygame_1 = require("./tinygame");
 const lists_1 = require("./lists");
 const telegram_1 = __importDefault(require("../../../connections/telegram"));
 exports.MAX_HINTS = 6;
-const SPECIAL_CHARACTERS = "\\\\/ !?@#$%^&*()_+:.{},;\\-'``’‘\"<>";
 const VOWELS = "aeiouAEIOUàèìòùÀÈÌÒÙáéíóúýÁÉÍÓÚÝâêîôûÂÊÎÔÛãñõÃÑÕäëïöüÿÄËÏÖÜŸçÇßØøÅåÆæœ";
 exports.hintCache = {};
 const hintCooldown = (gameId) => {
@@ -126,7 +125,7 @@ const getHint = (hints, value) => {
 exports.getHint = getHint;
 const getMaxHints = () => exports.MAX_HINTS;
 exports.getMaxHints = getMaxHints;
-const getSpecialCharacters = () => SPECIAL_CHARACTERS;
+const getSpecialCharacters = () => string_helpers_1.SPECIAL_CHARACTERS;
 exports.getSpecialCharacters = getSpecialCharacters;
 function countLetters(str) {
     str = str.replace(/[^bcdfghjklmnpqrstvwxyz0123456789]/gi, "");

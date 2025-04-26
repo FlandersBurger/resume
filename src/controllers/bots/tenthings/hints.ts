@@ -1,7 +1,7 @@
 import { HydratedDocument } from "mongoose";
 import { GameType, IGame } from "@models/tenthings/game";
 import { IPlayer } from "@models/tenthings/player";
-import { parseSymbols, conceal, concealMiddle } from "@root/utils/string-helpers";
+import { parseSymbols, conceal, concealMiddle, SPECIAL_CHARACTERS } from "@root/utils/string-helpers";
 import uniq from "lodash/uniq";
 import { sendMaingameMessage } from "./maingame";
 import { sendMinigameMessage } from "./minigame";
@@ -10,7 +10,6 @@ import { logHint } from "./lists";
 import bot from "@root/connections/telegram";
 
 export const MAX_HINTS = 6;
-const SPECIAL_CHARACTERS = "\\\\/ !?@#$%^&*()_+:.{},;\\-'``’‘\"<>";
 const VOWELS = "aeiouAEIOUàèìòùÀÈÌÒÙáéíóúýÁÉÍÓÚÝâêîôûÂÊÎÔÛãñõÃÑÕäëïöüÿÄËÏÖÜŸçÇßØøÅåÆæœ";
 export const hintCache: { [key: string]: number } = {};
 

@@ -2,6 +2,17 @@ angular
   .module("app")
   //AngularJs can't have an arrow function here
   .controller("TenThingsPlayCtrl", function ($scope, TenThingsSvc, GameSvc) {
+    $scope.keyDown = (e) => {
+      switch (e.keyCode) {
+        // Enter
+        case 13:
+          $scope.checkAnswer();
+          break;
+        default:
+      }
+      // use e.keyCode
+    };
+
     const getData = async () => {
       if ($scope.currentUser.admin) {
         const { data: list } = await TenThingsSvc.getRandomList();
@@ -22,7 +33,7 @@ angular
         const index = $scope.values.findIndex(({ value }) => value === result.data.value);
         $scope.values[index].guessed = true;
       }
-      $scope.result = result.data;
+      $scope.guess = "";
       $scope.$apply();
     };
 
