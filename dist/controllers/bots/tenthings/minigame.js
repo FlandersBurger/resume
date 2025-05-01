@@ -3,18 +3,14 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.checkMinigame = exports.sendMinigameMessage = exports.updateMinigames = exports.createMinigame = void 0;
+exports.checkMinigame = exports.updateMinigames = exports.createMinigame = void 0;
 const moment_1 = __importDefault(require("moment"));
 const uniq_1 = __importDefault(require("lodash/uniq"));
 const sampleSize_1 = __importDefault(require("lodash/sampleSize"));
 const telegram_1 = __importDefault(require("../../../connections/telegram"));
-const i18n_1 = __importDefault(require("../../../i18n"));
 const index_1 = require("../../../models/index");
 const guesses_1 = require("./guesses");
-const messages_1 = require("./messages");
-const hints_1 = require("./hints");
 const string_helpers_1 = require("../../../utils/string-helpers");
-const players_1 = require("./players");
 const createMinigame = async (game) => {
     const availableLanguages = game.settings.languages && game.settings.languages.length > 0 ? game.settings.languages : ["EN"];
     let minigames = await getMinigames({
@@ -41,7 +37,7 @@ const createMinigame = async (game) => {
     game.minigame.hints = 0;
     game.minigame.date = (0, moment_1.default)().toDate();
     game.minigame.lists = (0, sampleSize_1.default)(minigame.lists, 10);
-    (0, exports.sendMinigameMessage)(game);
+    game.provider.miniGameMessage(game);
     try {
         await game.save();
     }
@@ -123,17 +119,7 @@ const getMinigames = async (parameters) => {
         minigames = await index_1.Minigame.find({}).lean();
     return minigames;
 };
-const sendMinigameMessage = (game) => {
-    let message = `<b>${(0, i18n_1.default)(game.settings.language, "sentences.findTheConnection")}</b>\n`;
-    message += game.minigame.lists.reduce((msg, list) => {
-        msg += `- ${list}\n`;
-        return msg;
-    }, "");
-    message += `\n<b>${(0, hints_1.getHint)(game.minigame.hints, game.minigame.answer)}</b>`;
-    telegram_1.default.queueMessage(game.telegramChannel, message);
-};
-exports.sendMinigameMessage = sendMinigameMessage;
-const checkMinigame = async (game, player, guess, msg) => {
+const checkMinigame = async (game, player, guess) => {
     if (guess.match.value !== game.minigame.answer)
         return;
     const score = (0, guesses_1.getAnswerScore)(game.minigame.hints, guess.match.distance);
@@ -145,12 +131,7 @@ const checkMinigame = async (game, player, guess, msg) => {
     await player.save();
     game.minigame.plays++;
     await game.save();
-    let message = `${(0, i18n_1.default)(game.settings.language, "sentences.minigameAnswered")} (${(guess.match.distance * 100).toFixed(0)}%)\n`;
-    message += (0, messages_1.getGuessedMessage)(game.settings.language, game.minigame.answer, (0, players_1.getPlayerName)(msg.from, true));
-    message += `\n<u>${player.scoreDaily - score} + ${(0, i18n_1.default)(game.settings.language, "point", {
-        count: score,
-    })}</u>`;
-    telegram_1.default.queueMessage(game.telegramChannel, message);
+    game.provider.miniGameGuessed(game, player, score, (guess.match.distance * 100).toFixed(0));
     setTimeout(() => {
         (0, exports.createMinigame)(game);
     }, 1000);

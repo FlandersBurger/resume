@@ -7,7 +7,7 @@ import maxBy from "lodash/maxBy";
 import max from "lodash/max";
 import uniqBy from "lodash/uniqBy";
 import uniq from "lodash/uniq";
-import { deactivate, sendMaingameMessage } from "./maingame";
+import { deactivate } from "./maingame";
 import { IGame } from "@models/tenthings/game";
 import { makeReadable } from "@root/utils/number-helpers";
 import { HydratedDocument } from "mongoose";
@@ -15,11 +15,8 @@ import { IPlayer } from "@models/tenthings/player";
 import { IStats } from "@models/tenthings/stats";
 import { IList } from "@models/tenthings/list";
 import { updateMinigames } from "./minigame";
-import { getDailyScores } from "./stats";
 const backup = require("@root/scripts/backup-db");
 import { Game, Player, Stats, List } from "@models/index";
-import { getDailyMessage } from "./messages";
-import { getPlayerName } from "./players";
 
 // ██████  ███████ ███████ ███████ ████████     ██████   █████  ██ ██      ██    ██     ███████  ██████  ██████  ██████  ███████
 // ██   ██ ██      ██      ██         ██        ██   ██ ██   ██ ██ ██       ██  ██      ██      ██      ██    ██ ██   ██ ██
@@ -45,7 +42,7 @@ const resetDailyScore = () => {
             .select("_id id")
             .exec();
           for (let game of games) {
-            bot.queueMessage(game.telegramChannel, await getDailyScores(game));
+            game.provider.dailyScores(game);
             const players: IPlayer[] = await Player.find({
               game: game._id,
               scoreDaily: { $gt: 0 },
@@ -55,11 +52,7 @@ const resetDailyScore = () => {
               .exec();
             const highScore = players.reduce((highScore, { scoreDaily }) => max([highScore, scoreDaily]) as number, 0);
             let winners = players.filter((player) => player.scoreDaily === highScore);
-            let message = `<b>${winners.map((winner) => getPlayerName(winner, true)).join(" & ")} won with ${highScore} points!</b>\n\n`;
-            message += getDailyMessage();
-            // message += `\t - Bitcoin Address: bc1qnr4y95d3w5rwahcypazpjdv33g8wupewmw6rpa3s2927qvgmduqsvcpgfs`;
-            //'\n\nCome join us in the <a href="https://t.me/tenthings">Ten Things Supergroup</a>!'
-            bot.queueMessage(game.telegramChannel, message);
+            game.provider.dailyWinners(game, winners, highScore);
             await Player.updateMany({ game: game._id, scoreDaily: 0 }, { $set: { playStreak: 0 } });
             await Player.updateMany(
               {
@@ -78,7 +71,7 @@ const resetDailyScore = () => {
             if (game.hints < 4) {
               game.hints = 4;
             }
-            sendMaingameMessage(game);
+            game.provider.mainGameMessage(game);
             game.save();
           }
           try {
@@ -295,6 +288,7 @@ const sendNewLists = () => {
         message += "\n<i>Switch off daily updates through /settings</i>";
         Game.find({
           "settings.updates": true,
+          platform: "telegram",
           enabled: true,
           listsPlayed: { $gt: 0 },
         })
@@ -336,6 +330,7 @@ const sendUpdatedLists = () => {
         message += "\n<i>Switch off daily updates through /settings</i>";
         Game.find({
           "settings.updates": true,
+          platform: "telegram",
           enabled: true,
           listsPlayed: { $gt: 0 },
         })

@@ -20,7 +20,7 @@ exports.default = async (game, text) => {
                 }
             }
             else {
-                telegram_1.default.queueMessage(game.telegramChannel, sassText);
+                game.provider.message(game, sassText);
             }
         }
     }

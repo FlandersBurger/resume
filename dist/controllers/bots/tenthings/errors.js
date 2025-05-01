@@ -31,13 +31,13 @@ exports.noTopic = noTopic;
 const adminOnly = async (game, player) => {
     player.infractions++;
     if (player.infractions < 4) {
-        telegram_1.default.queueMessage(game.telegramChannel, `${(0, i18n_1.default)(game.settings.language, "warnings.adminFunction", { name: (0, players_1.getPlayerName)(player) })}\nID: ${player.id}`);
+        game.provider.message(game, `${(0, i18n_1.default)(game.settings.language, "warnings.adminFunction", { name: (0, players_1.getPlayerName)(player) })}\nID: ${player.id}`);
     }
     else if (player.infractions === 4) {
-        telegram_1.default.queueMessage(game.telegramChannel, `${(0, i18n_1.default)(game.settings.language, "warnings.abuse", { name: (0, players_1.getPlayerName)(player) })}\nID: ${player.id}`);
+        game.provider.message(game, `${(0, i18n_1.default)(game.settings.language, "warnings.abuse", { name: (0, players_1.getPlayerName)(player) })}\nID: ${player.id}`);
     }
     else {
-        telegram_1.default.queueMessage(game.telegramChannel, `${(0, i18n_1.default)(game.settings.language, "warnings.banned", { name: (0, players_1.getPlayerName)(player) })}\nID: ${player.id}`);
+        game.provider.message(game, `${(0, i18n_1.default)(game.settings.language, "warnings.banned", { name: (0, players_1.getPlayerName)(player) })}\nID: ${player.id}`);
         telegram_1.default.notifyAdmin(`Banned player: ${(0, players_1.getPlayerName)(player)}\nID: ${player.id}\nChat: https://belgocanadian.com/tenthings/${game.chat_id}`);
         player.banned = true;
     }

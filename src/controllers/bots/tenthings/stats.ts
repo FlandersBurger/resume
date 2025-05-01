@@ -83,24 +83,8 @@ export const getScores = async (game: IGame, type: string) => {
       bot.queueMessage(game.telegramChannel, str);
       break;
     default:
-      getDailyScores(game).then((message) => bot.queueMessage(game.telegramChannel, message));
+      game.provider.dailyScores(game);
   }
-};
-
-export const getDailyScores = async ({ _id, settings }: IGame, limit = 0) => {
-  const players = await Player.find({ game: _id, scoreDaily: { $gt: 0 } }).exec();
-  const message = players
-    .filter(({ scoreDaily }) => scoreDaily)
-    .sort((player1, player2) => player2.scoreDaily - player1.scoreDaily)
-    .slice(0, limit ? limit : players.length)
-    .reduce(
-      (str, player, index) => {
-        str += `\t${index + 1}: ${getPlayerName(player)} - ${player.scoreDaily}\n`;
-        return str;
-      },
-      i18n(settings.language, `sentences.dailyScores${limit ? "WithLimit" : ""}`, { limit }) + `\n`,
-    );
-  return message;
 };
 
 export const getStats = async (game: IGame, data: string, requestor?: string) => {

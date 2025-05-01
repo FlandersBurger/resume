@@ -3,11 +3,7 @@ import { GameType, IGame } from "@models/tenthings/game";
 import { IPlayer } from "@models/tenthings/player";
 import { parseSymbols, conceal, concealMiddle, SPECIAL_CHARACTERS } from "@root/utils/string-helpers";
 import uniq from "lodash/uniq";
-import { sendMaingameMessage } from "./maingame";
-import { sendMinigameMessage } from "./minigame";
-import { sendTinygameMessage } from "./tinygame";
 import { logHint } from "./lists";
-import bot from "@root/connections/telegram";
 
 export const MAX_HINTS = 6;
 const VOWELS = "aeiouAEIOUàèìòùÀÈÌÒÙáéíóúýÁÉÍÓÚÝâêîôûÂÊÎÔÛãñõÃÑÕäëïöüÿÄËÏÖÜŸçÇßØøÅåÆæœ";
@@ -33,12 +29,9 @@ export const processHint = async (
     (type === GameType.MAINGAME && game.hints >= MAX_HINTS) ||
     (type !== GameType.MAINGAME && game[type].hints >= MAX_HINTS)
   ) {
-    bot.queueMessage(game.telegramChannel, "What? Another hint? I'm just gonna ignore that request");
+    game.provider.message(game, "What? Another hint? I'm just gonna ignore that request");
   } else if (hintCache[game._id.toString()] && hintCache[game._id.toString()] > 0) {
-    bot.queueMessage(
-      game.telegramChannel,
-      `Calm down with the hints, wait ${hintCache[game._id.toString()]} more seconds`,
-    );
+    game.provider.message(game, `Calm down with the hints, wait ${hintCache[game._id.toString()]} more seconds`);
   } else {
     if (player) {
       if (player.hints) player.hints++;
@@ -49,15 +42,15 @@ export const processHint = async (
     switch (type) {
       case GameType.MINIGAME:
         game.minigame.hints++;
-        sendMinigameMessage(game);
+        game.provider.miniGameMessage(game);
         break;
       case GameType.TINYGAME:
         game.tinygame.hints++;
-        sendTinygameMessage(game);
+        game.provider.tinyGameMessage(game);
         break;
       default:
         game.hints++;
-        sendMaingameMessage(game, false);
+        game.provider.mainGameMessage(game, false);
         logHint(game.list._id);
         break;
     }

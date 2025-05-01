@@ -25,7 +25,7 @@ const sendSuggestion = async (msg, game, player, command) => {
             if (command === commands_1.Command.Typo) {
                 message += `Current list: <a href="https://belgocanadian.com/tenthings?list=${game.list._id}">${(0, string_helpers_1.parseSymbols)(game.list.name)}</a>\n`;
             }
-            telegram_1.default.queueMessage(game.telegramChannel, `${message}Thank you, ${playerName}`);
+            game.provider.message(game, `${message}Thank you, ${playerName}`);
             message += `<i>${playerName}</i>`;
             telegram_1.default.notify(message);
             const chatLink = await telegram_1.default.getChat(game.telegramChannel);
@@ -50,22 +50,22 @@ const sendSuggestionMessage = async (game, player, command) => {
         case commands_1.Command.Suggestion:
             player.state = commands_1.Command.Suggestion;
             await player.save();
-            telegram_1.default.sendMessage(game.telegramChannel, `<b>SUGGESTION</b>\nPlease add your suggestion in your next message, ${playerName}!`);
+            game.provider.message(game, `<b>SUGGESTION</b>\nPlease add your suggestion in your next message, ${playerName}!`);
             break;
         case commands_1.Command.Feature:
             player.state = commands_1.Command.Feature;
             await player.save();
-            telegram_1.default.sendMessage(game.telegramChannel, `<b>FEATURE</b>\nPlease suggest your feature in your next message, ${playerName}!`);
+            game.provider.message(game, `<b>FEATURE</b>\nPlease suggest your feature in your next message, ${playerName}!`);
             break;
         case commands_1.Command.Typo:
             player.state = commands_1.Command.Typo;
             await player.save();
-            telegram_1.default.sendMessage(game.telegramChannel, `<b>TYPO</b>\nPlease let me know what the typo is in your next message, ${playerName}!\nMention the list name too if the typo is not part of: <i>"${(0, string_helpers_1.parseSymbols)(game.list.name)}"</i>`);
+            game.provider.message(game, `<b>TYPO</b>\nPlease let me know what the typo is in your next message, ${playerName}!\nMention the list name too if the typo is not part of: <i>"${(0, string_helpers_1.parseSymbols)(game.list.name)}"</i>`);
             break;
         case commands_1.Command.Bug:
             player.state = commands_1.Command.Bug;
             await player.save();
-            telegram_1.default.sendMessage(game.telegramChannel, `<b>BUG</b>\nPlease provide some details as to what went wrong in your next message, ${playerName}! Please let me know directly if it's an issue with your specific chat -> @FlandersBurger`);
+            game.provider.message(game, `<b>BUG</b>\nPlease provide some details as to what went wrong in your next message, ${playerName}! Please let me know directly if it's an issue with your specific chat -> @FlandersBurger`);
             break;
         default:
             break;

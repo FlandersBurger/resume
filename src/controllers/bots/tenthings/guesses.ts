@@ -145,12 +145,12 @@ const processGuess = async (guess: Guess) => {
       `${guess.game} (${game.settings.language}) - ${game.list.name} for ${guess.match.value}: "${guess.msg.text}" by ${getPlayerName(player)}`,
     );
   } else if (guess.match.type === GameType.MINIGAME) {
-    await checkMinigame(game, player, guess, guess.msg);
+    await checkMinigame(game, player, guess);
     console.log(
       `${guess.game} (${game.settings.language}) - Minigame guess for ${game.minigame.answer}: "${guess.msg.text}" by ${getPlayerName(player)}`,
     );
   } else if (guess.match.type === GameType.TINYGAME) {
-    await checkTinygame(game, player, guess, guess.msg);
+    await checkTinygame(game, player, guess);
     console.log(
       `${guess.game} (${game.settings.language}) - Tinygame guess for ${game.tinygame.answer}: "${guess.msg.text}" by ${getPlayerName(player)}`,
     );

@@ -3,15 +3,12 @@ import { List, Player } from "@models/index";
 import { IGame } from "@models/tenthings/game";
 import { IPlayer } from "@models/tenthings/player";
 import { HydratedDocument, Types } from "mongoose";
-import { parseSymbols } from "@root/utils/string-helpers";
 import { newRound } from "./maingame";
 import { getListScore } from "./lists";
 
 import bot from "@root/connections/telegram";
 import i18n from "@root/i18n";
 
-import { getDailyScores } from "./stats";
-import { banListKeyboard } from "./keyboards";
 import { getPlayerName } from "./players";
 
 export const skipCache: { [key: string]: { timer: number; playerId: Types.ObjectId } } = {};
@@ -41,10 +38,10 @@ export const processSkip = (game: IGame, skipper: IPlayer) => {
       if (skipCache[game.chat_id] && skipCache[game.chat_id].playerId !== skipper._id) {
         skipCache[game.chat_id].timer = 2;
       } else if (skipCache[game.chat_id] && skipCache[game.chat_id].playerId === skipper._id) {
-        bot.queueMessage(game.telegramChannel, i18n(game.settings.language, "sentences.skipDenial"));
+        game.provider.message(game, i18n(game.settings.language, "sentences.skipDenial"));
       } else {
-        bot.queueMessage(
-          game.telegramChannel,
+        game.provider.message(
+          game,
           i18n(game.settings.language, "sentences.skipConfirm", {
             list: game.list.name,
             skipDelay: game.settings.skipDelay,
@@ -76,25 +73,7 @@ const skipList = async (game: IGame, skipper: IPlayer) => {
       $inc: { skips: 1 },
     },
   );
-  let message = `${i18n(game.settings.language, "sentences.skippedList", {
-    list: game.list.name,
-  })}\n`;
-  message += game.list.values.reduce((str, { guesser, value }, index) => {
-    str += `\t${index + 1}: ${parseSymbols(value)} - <i>`;
-    if (!guesser || !guesser.first_name) {
-      str += i18n(game.settings.language, "sentences.notGuessed");
-    } else {
-      str += getPlayerName(guesser);
-    }
-    str += "</i>\n";
-    return str;
-  }, "");
-  bot.queueMessage(game.telegramChannel, message);
-  bot.sendKeyboard(
-    game.telegramChannel,
-    `Experimental feature to permanently ban list from game\nDo you want to ban "${game.list.name}"`,
-    banListKeyboard(game.settings.language, game.list),
-  );
+  game.provider.skipList(game);
   delete skipCache[game.chat_id];
   let foundList = await List.findOne({
     _id: game.list._id,
@@ -113,7 +92,7 @@ const skipList = async (game: IGame, skipper: IPlayer) => {
   } catch (err) {
     return bot.notifyAdmin(`Skip List Error:\n${err}`);
   }
-  bot.queueMessage(game.telegramChannel, await getDailyScores(game, 5));
+  game.provider.dailyScores(game, 5);
   if (game.pickedLists.find((list) => list._id.equals(game.list._id))) {
     game.pickedLists = game.pickedLists.filter((list) => !list._id.equals(game.list._id));
   }
@@ -136,8 +115,8 @@ export const checkSkipper = async (game: IGame, player: IPlayer) => {
         } else if (skippers[player.id].delay < 50) {
           skippers[player.id].lastSkipped = moment();
           skippers[player.id].delay += 10;
-          bot.queueMessage(
-            game.telegramChannel,
+          game.provider.message(
+            game,
             i18n(game.settings.language, "sentences.skipShortBan", {
               name: getPlayerName(player),
               delay: skippers[player.id].delay,
@@ -147,8 +126,8 @@ export const checkSkipper = async (game: IGame, player: IPlayer) => {
         } else if (skippers[player.id].delay < 60) {
           skippers[player.id].lastSkipped = moment();
           skippers[player.id].delay += 10;
-          bot.queueMessage(
-            game.telegramChannel,
+          game.provider.message(
+            game,
             i18n(game.settings.language, "sentences.skipBanThreat", {
               name: getPlayerName(player),
               delay: skippers[player.id].delay,
@@ -180,16 +159,16 @@ export const vetoSkip = async (game: IGame, player: HydratedDocument<IPlayer>) =
   if (skipCache[game.chat_id]) {
     delete skipCache[game.chat_id];
     vetoCache[game.chat_id] = moment();
-    bot.queueMessage(
-      game.telegramChannel,
+    game.provider.message(
+      game,
       i18n(game.settings.language, "sentences.skipVeto", {
         name: getPlayerName(player),
         vetoDelay: game.settings.vetoDelay,
       }),
     );
   } else {
-    bot.queueMessage(
-      game.telegramChannel,
+    game.provider.message(
+      game,
       i18n(game.settings.language, "sentences.skipNotFound", {
         name: getPlayerName(player),
       }),
@@ -200,8 +179,8 @@ export const vetoSkip = async (game: IGame, player: HydratedDocument<IPlayer>) =
 export const abortSkip = (game: IGame, player: IPlayer) => {
   delete skipCache[game.chat_id];
   vetoCache[game.chat_id] = moment();
-  bot.queueMessage(
-    game.telegramChannel,
+  game.provider.message(
+    game,
     i18n(game.settings.language, "sentences.skipAbort", {
       name: getPlayerName(player),
       vetoDelay: game.settings.vetoDelay,

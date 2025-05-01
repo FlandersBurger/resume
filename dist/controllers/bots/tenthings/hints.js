@@ -7,11 +7,7 @@ exports.getSpecialCharacters = exports.getMaxHints = exports.getHint = exports.p
 const game_1 = require("../../../models/tenthings/game");
 const string_helpers_1 = require("../../../utils/string-helpers");
 const uniq_1 = __importDefault(require("lodash/uniq"));
-const maingame_1 = require("./maingame");
-const minigame_1 = require("./minigame");
-const tinygame_1 = require("./tinygame");
 const lists_1 = require("./lists");
-const telegram_1 = __importDefault(require("../../../connections/telegram"));
 exports.MAX_HINTS = 6;
 const VOWELS = "aeiouAEIOUàèìòùÀÈÌÒÙáéíóúýÁÉÍÓÚÝâêîôûÂÊÎÔÛãñõÃÑÕäëïöüÿÄËÏÖÜŸçÇßØøÅåÆæœ";
 exports.hintCache = {};
@@ -30,10 +26,10 @@ exports.hintCooldown = hintCooldown;
 const processHint = async (game, player, type = game_1.GameType.MAINGAME) => {
     if ((type === game_1.GameType.MAINGAME && game.hints >= exports.MAX_HINTS) ||
         (type !== game_1.GameType.MAINGAME && game[type].hints >= exports.MAX_HINTS)) {
-        telegram_1.default.queueMessage(game.telegramChannel, "What? Another hint? I'm just gonna ignore that request");
+        game.provider.message(game, "What? Another hint? I'm just gonna ignore that request");
     }
     else if (exports.hintCache[game._id.toString()] && exports.hintCache[game._id.toString()] > 0) {
-        telegram_1.default.queueMessage(game.telegramChannel, `Calm down with the hints, wait ${exports.hintCache[game._id.toString()]} more seconds`);
+        game.provider.message(game, `Calm down with the hints, wait ${exports.hintCache[game._id.toString()]} more seconds`);
     }
     else {
         if (player) {
@@ -47,15 +43,15 @@ const processHint = async (game, player, type = game_1.GameType.MAINGAME) => {
         switch (type) {
             case game_1.GameType.MINIGAME:
                 game.minigame.hints++;
-                (0, minigame_1.sendMinigameMessage)(game);
+                game.provider.miniGameMessage(game);
                 break;
             case game_1.GameType.TINYGAME:
                 game.tinygame.hints++;
-                (0, tinygame_1.sendTinygameMessage)(game);
+                game.provider.tinyGameMessage(game);
                 break;
             default:
                 game.hints++;
-                (0, maingame_1.sendMaingameMessage)(game, false);
+                game.provider.mainGameMessage(game, false);
                 (0, lists_1.logHint)(game.list._id);
                 break;
         }

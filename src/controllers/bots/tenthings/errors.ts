@@ -29,18 +29,18 @@ export const noTopic = async (chat_id: number) => {
 export const adminOnly = async (game: IGame, player: HydratedDocument<IPlayer>) => {
   player.infractions++;
   if (player.infractions < 4) {
-    bot.queueMessage(
-      game.telegramChannel,
+    game.provider.message(
+      game,
       `${i18n(game.settings.language, "warnings.adminFunction", { name: getPlayerName(player) })}\nID: ${player.id}`,
     );
   } else if (player.infractions === 4) {
-    bot.queueMessage(
-      game.telegramChannel,
+    game.provider.message(
+      game,
       `${i18n(game.settings.language, "warnings.abuse", { name: getPlayerName(player) })}\nID: ${player.id}`,
     );
   } else {
-    bot.queueMessage(
-      game.telegramChannel,
+    game.provider.message(
+      game,
       `${i18n(game.settings.language, "warnings.banned", { name: getPlayerName(player) })}\nID: ${player.id}`,
     );
     bot.notifyAdmin(

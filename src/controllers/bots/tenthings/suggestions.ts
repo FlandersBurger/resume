@@ -31,7 +31,7 @@ export const sendSuggestion = async (
       if (command === Command.Typo) {
         message += `Current list: <a href="https://belgocanadian.com/tenthings?list=${game.list._id}">${parseSymbols(game.list.name)}</a>\n`;
       }
-      bot.queueMessage(game.telegramChannel, `${message}Thank you, ${playerName}`);
+      game.provider.message(game, `${message}Thank you, ${playerName}`);
       message += `<i>${playerName}</i>`;
       bot.notify(message);
       const chatLink = await bot.getChat(game.telegramChannel);
@@ -61,32 +61,26 @@ export const sendSuggestionMessage = async (game: IGame, player: HydratedDocumen
     case Command.Suggestion:
       player.state = Command.Suggestion;
       await player.save();
-      bot.sendMessage(
-        game.telegramChannel,
-        `<b>SUGGESTION</b>\nPlease add your suggestion in your next message, ${playerName}!`,
-      );
+      game.provider.message(game, `<b>SUGGESTION</b>\nPlease add your suggestion in your next message, ${playerName}!`);
       break;
     case Command.Feature:
       player.state = Command.Feature;
       await player.save();
-      bot.sendMessage(
-        game.telegramChannel,
-        `<b>FEATURE</b>\nPlease suggest your feature in your next message, ${playerName}!`,
-      );
+      game.provider.message(game, `<b>FEATURE</b>\nPlease suggest your feature in your next message, ${playerName}!`);
       break;
     case Command.Typo:
       player.state = Command.Typo;
       await player.save();
-      bot.sendMessage(
-        game.telegramChannel,
+      game.provider.message(
+        game,
         `<b>TYPO</b>\nPlease let me know what the typo is in your next message, ${playerName}!\nMention the list name too if the typo is not part of: <i>"${parseSymbols(game.list.name)}"</i>`,
       );
       break;
     case Command.Bug:
       player.state = Command.Bug;
       await player.save();
-      bot.sendMessage(
-        game.telegramChannel,
+      game.provider.message(
+        game,
         `<b>BUG</b>\nPlease provide some details as to what went wrong in your next message, ${playerName}! Please let me know directly if it's an issue with your specific chat -> @FlandersBurger`,
       );
       break;

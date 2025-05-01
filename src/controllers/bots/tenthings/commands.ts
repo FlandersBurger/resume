@@ -3,9 +3,9 @@ import { GameType, IGame } from "@models/tenthings/game";
 import { Game, List } from "@models/index";
 import { HydratedDocument, LeanDocument } from "mongoose";
 import { Message, getCategoriesMessage, getLogicMessage } from "./messages";
-import { deactivate, newRound, sendMaingameMessage } from "./maingame";
-import { createMinigame, sendMinigameMessage, updateMinigames } from "./minigame";
-import { createTinygame, sendTinygameMessage } from "./tinygame";
+import { deactivate, newRound } from "./maingame";
+import { createMinigame, updateMinigames } from "./minigame";
+import { createTinygame } from "./tinygame";
 import { processHint } from "./hints";
 import { queueGuess } from "./guesses";
 import { getRandomList, searchList } from "./lists";
@@ -16,7 +16,7 @@ import i18n from "@root/i18n";
 import { getPlayer, getPlayerName } from "./players";
 import { getQueue } from "./queue";
 import { checkSkipper, processSkip, vetoSkip } from "./skips";
-import { getDailyScores, getStats } from "./stats";
+import { getStats } from "./stats";
 import { categoriesKeyboard, listsKeyboard, settingsKeyboard, statsKeyboard } from "./keyboards";
 import bot from "@root/connections/telegram";
 import { checkSuggestionProvided, sendSuggestion, sendSuggestionMessage } from "./suggestions";
@@ -149,7 +149,7 @@ export const evaluate = async (msg: Message, game: HydratedDocument<IGame>, isNe
         }
       case Command.List:
         try {
-          sendMaingameMessage(game);
+          game.provider.mainGameMessage(game);
         } catch (e) {
           console.error(e);
         }
@@ -274,20 +274,20 @@ export const evaluate = async (msg: Message, game: HydratedDocument<IGame>, isNe
         getStats(game, `p_${msg.from.id}`, getPlayerName(msg.from));
         break;
       case Command.Score:
-        bot.queueMessage(game.telegramChannel, await getDailyScores(game));
+        game.provider.dailyScores(game);
         break;
       case Command.Minigame:
         if (!game.minigame.answer) {
           createMinigame(game);
         } else {
-          sendMinigameMessage(game);
+          game.provider.miniGameMessage(game);
         }
         break;
       case Command.Tinygame:
         if (!game.tinygame.answer) {
           createTinygame(game);
         } else {
-          sendTinygameMessage(game);
+          game.provider.tinyGameMessage(game);
         }
         break;
       case Command.Categories:

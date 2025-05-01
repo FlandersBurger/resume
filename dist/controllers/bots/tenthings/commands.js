@@ -127,7 +127,7 @@ const evaluate = async (msg, game, isNew) => {
                 }
             case Command.List:
                 try {
-                    (0, maingame_1.sendMaingameMessage)(game);
+                    game.provider.mainGameMessage(game);
                 }
                 catch (e) {
                     console.error(e);
@@ -221,14 +221,14 @@ const evaluate = async (msg, game, isNew) => {
                 (0, stats_1.getStats)(game, `p_${msg.from.id}`, (0, players_1.getPlayerName)(msg.from));
                 break;
             case Command.Score:
-                telegram_1.default.queueMessage(game.telegramChannel, await (0, stats_1.getDailyScores)(game));
+                game.provider.dailyScores(game);
                 break;
             case Command.Minigame:
                 if (!game.minigame.answer) {
                     (0, minigame_1.createMinigame)(game);
                 }
                 else {
-                    (0, minigame_1.sendMinigameMessage)(game);
+                    game.provider.miniGameMessage(game);
                 }
                 break;
             case Command.Tinygame:
@@ -236,7 +236,7 @@ const evaluate = async (msg, game, isNew) => {
                     (0, tinygame_1.createTinygame)(game);
                 }
                 else {
-                    (0, tinygame_1.sendTinygameMessage)(game);
+                    game.provider.tinyGameMessage(game);
                 }
                 break;
             case Command.Categories:

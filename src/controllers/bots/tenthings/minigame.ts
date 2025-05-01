@@ -4,20 +4,15 @@ import uniq from "lodash/uniq";
 import sampleSize from "lodash/sampleSize";
 
 import bot from "@root/connections/telegram";
-import i18n from "@root/i18n";
 
 import { List, Minigame } from "@models/index";
 import { IGame } from "@models/tenthings/game";
 import { Language } from "./languages";
 import { IList } from "@models/tenthings/list";
 import { IPlayer } from "@models/tenthings/player";
-import { Message } from "./messages";
 import { Guess, getAnswerScore } from "./guesses";
 import { IMinigame } from "@models/tenthings/minigame";
-import { getGuessedMessage } from "./messages";
-import { getHint } from "./hints";
 import { parseSymbols } from "@root/utils/string-helpers";
-import { getPlayerName } from "./players";
 
 export const createMinigame = async (game: HydratedDocument<IGame>) => {
   const availableLanguages =
@@ -53,7 +48,7 @@ export const createMinigame = async (game: HydratedDocument<IGame>) => {
   game.minigame.hints = 0;
   game.minigame.date = moment().toDate();
   game.minigame.lists = sampleSize(minigame.lists, 10);
-  sendMinigameMessage(game);
+  game.provider.miniGameMessage(game);
   try {
     await game.save();
   } catch (err) {
@@ -152,22 +147,7 @@ const getMinigames = async (parameters: QueryOptions): Promise<IMinigame[]> => {
 // Count the possible minigames
 // getMinigames({}).then((minigames) => console.log(minigames.length));
 
-export const sendMinigameMessage = (game: IGame) => {
-  let message = `<b>${i18n(game.settings.language, "sentences.findTheConnection")}</b>\n`;
-  message += game.minigame.lists.reduce((msg, list) => {
-    msg += `- ${list}\n`;
-    return msg;
-  }, "");
-  message += `\n<b>${getHint(game.minigame.hints, game.minigame.answer)}</b>`;
-  bot.queueMessage(game.telegramChannel, message);
-};
-
-export const checkMinigame = async (
-  game: HydratedDocument<IGame>,
-  player: HydratedDocument<IPlayer>,
-  guess: Guess,
-  msg: Message,
-) => {
+export const checkMinigame = async (game: HydratedDocument<IGame>, player: HydratedDocument<IPlayer>, guess: Guess) => {
   if (guess.match.value !== game.minigame.answer) return;
   const score: number = getAnswerScore(game.minigame.hints, guess.match.distance);
   player.score += score;
@@ -177,14 +157,7 @@ export const checkMinigame = async (
   await player.save();
   game.minigame.plays++;
   await game.save();
-  let message = `${i18n(game.settings.language, "sentences.minigameAnswered")} (${(guess.match.distance * 100).toFixed(
-    0,
-  )}%)\n`;
-  message += getGuessedMessage(game.settings.language, game.minigame.answer, getPlayerName(msg.from, true));
-  message += `\n<u>${player.scoreDaily - score} + ${i18n(game.settings.language, "point", {
-    count: score,
-  })}</u>`;
-  bot.queueMessage(game.telegramChannel, message);
+  game.provider.miniGameGuessed(game, player, score, (guess.match.distance * 100).toFixed(0));
   setTimeout(() => {
     createMinigame(game);
   }, 1000);

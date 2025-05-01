@@ -6,13 +6,10 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.abortSkip = exports.vetoSkip = exports.checkSkipper = exports.processSkip = exports.vetoCache = exports.skipCache = void 0;
 const moment_1 = __importDefault(require("moment"));
 const index_1 = require("../../../models/index");
-const string_helpers_1 = require("../../../utils/string-helpers");
 const maingame_1 = require("./maingame");
 const lists_1 = require("./lists");
 const telegram_1 = __importDefault(require("../../../connections/telegram"));
 const i18n_1 = __importDefault(require("../../../i18n"));
-const stats_1 = require("./stats");
-const keyboards_1 = require("./keyboards");
 const players_1 = require("./players");
 exports.skipCache = {};
 exports.vetoCache = {};
@@ -41,10 +38,10 @@ const processSkip = (game, skipper) => {
                 exports.skipCache[game.chat_id].timer = 2;
             }
             else if (exports.skipCache[game.chat_id] && exports.skipCache[game.chat_id].playerId === skipper._id) {
-                telegram_1.default.queueMessage(game.telegramChannel, (0, i18n_1.default)(game.settings.language, "sentences.skipDenial"));
+                game.provider.message(game, (0, i18n_1.default)(game.settings.language, "sentences.skipDenial"));
             }
             else {
-                telegram_1.default.queueMessage(game.telegramChannel, (0, i18n_1.default)(game.settings.language, "sentences.skipConfirm", {
+                game.provider.message(game, (0, i18n_1.default)(game.settings.language, "sentences.skipConfirm", {
                     list: game.list.name,
                     skipDelay: game.settings.skipDelay,
                 }));
@@ -72,22 +69,7 @@ const skipList = async (game, skipper) => {
         $set: { hintStreak: 0 },
         $inc: { skips: 1 },
     });
-    let message = `${(0, i18n_1.default)(game.settings.language, "sentences.skippedList", {
-        list: game.list.name,
-    })}\n`;
-    message += game.list.values.reduce((str, { guesser, value }, index) => {
-        str += `\t${index + 1}: ${(0, string_helpers_1.parseSymbols)(value)} - <i>`;
-        if (!guesser || !guesser.first_name) {
-            str += (0, i18n_1.default)(game.settings.language, "sentences.notGuessed");
-        }
-        else {
-            str += (0, players_1.getPlayerName)(guesser);
-        }
-        str += "</i>\n";
-        return str;
-    }, "");
-    telegram_1.default.queueMessage(game.telegramChannel, message);
-    telegram_1.default.sendKeyboard(game.telegramChannel, `Experimental feature to permanently ban list from game\nDo you want to ban "${game.list.name}"`, (0, keyboards_1.banListKeyboard)(game.settings.language, game.list));
+    game.provider.skipList(game);
     delete exports.skipCache[game.chat_id];
     let foundList = await index_1.List.findOne({
         _id: game.list._id,
@@ -108,7 +90,7 @@ const skipList = async (game, skipper) => {
     catch (err) {
         return telegram_1.default.notifyAdmin(`Skip List Error:\n${err}`);
     }
-    telegram_1.default.queueMessage(game.telegramChannel, await (0, stats_1.getDailyScores)(game, 5));
+    game.provider.dailyScores(game, 5);
     if (game.pickedLists.find((list) => list._id.equals(game.list._id))) {
         game.pickedLists = game.pickedLists.filter((list) => !list._id.equals(game.list._id));
     }
@@ -132,7 +114,7 @@ const checkSkipper = async (game, player) => {
                 else if (skippers[player.id].delay < 50) {
                     skippers[player.id].lastSkipped = (0, moment_1.default)();
                     skippers[player.id].delay += 10;
-                    telegram_1.default.queueMessage(game.telegramChannel, (0, i18n_1.default)(game.settings.language, "sentences.skipShortBan", {
+                    game.provider.message(game, (0, i18n_1.default)(game.settings.language, "sentences.skipShortBan", {
                         name: (0, players_1.getPlayerName)(player),
                         delay: skippers[player.id].delay,
                     }));
@@ -141,7 +123,7 @@ const checkSkipper = async (game, player) => {
                 else if (skippers[player.id].delay < 60) {
                     skippers[player.id].lastSkipped = (0, moment_1.default)();
                     skippers[player.id].delay += 10;
-                    telegram_1.default.queueMessage(game.telegramChannel, (0, i18n_1.default)(game.settings.language, "sentences.skipBanThreat", {
+                    game.provider.message(game, (0, i18n_1.default)(game.settings.language, "sentences.skipBanThreat", {
                         name: (0, players_1.getPlayerName)(player),
                         delay: skippers[player.id].delay,
                     }));
@@ -172,13 +154,13 @@ const vetoSkip = async (game, player) => {
     if (exports.skipCache[game.chat_id]) {
         delete exports.skipCache[game.chat_id];
         exports.vetoCache[game.chat_id] = (0, moment_1.default)();
-        telegram_1.default.queueMessage(game.telegramChannel, (0, i18n_1.default)(game.settings.language, "sentences.skipVeto", {
+        game.provider.message(game, (0, i18n_1.default)(game.settings.language, "sentences.skipVeto", {
             name: (0, players_1.getPlayerName)(player),
             vetoDelay: game.settings.vetoDelay,
         }));
     }
     else {
-        telegram_1.default.queueMessage(game.telegramChannel, (0, i18n_1.default)(game.settings.language, "sentences.skipNotFound", {
+        game.provider.message(game, (0, i18n_1.default)(game.settings.language, "sentences.skipNotFound", {
             name: (0, players_1.getPlayerName)(player),
         }));
     }
@@ -187,7 +169,7 @@ exports.vetoSkip = vetoSkip;
 const abortSkip = (game, player) => {
     delete exports.skipCache[game.chat_id];
     exports.vetoCache[game.chat_id] = (0, moment_1.default)();
-    telegram_1.default.queueMessage(game.telegramChannel, (0, i18n_1.default)(game.settings.language, "sentences.skipAbort", {
+    game.provider.message(game, (0, i18n_1.default)(game.settings.language, "sentences.skipAbort", {
         name: (0, players_1.getPlayerName)(player),
         vetoDelay: game.settings.vetoDelay,
     }));

@@ -3,7 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getStats = exports.getDailyScores = exports.getScores = void 0;
+exports.getStats = exports.getScores = void 0;
 const moment_1 = __importDefault(require("moment"));
 const find_1 = __importDefault(require("lodash/find"));
 const index_1 = require("../../../models/index");
@@ -69,23 +69,10 @@ const getScores = async (game, type) => {
             telegram_1.default.queueMessage(game.telegramChannel, str);
             break;
         default:
-            (0, exports.getDailyScores)(game).then((message) => telegram_1.default.queueMessage(game.telegramChannel, message));
+            game.provider.dailyScores(game);
     }
 };
 exports.getScores = getScores;
-const getDailyScores = async ({ _id, settings }, limit = 0) => {
-    const players = await index_1.Player.find({ game: _id, scoreDaily: { $gt: 0 } }).exec();
-    const message = players
-        .filter(({ scoreDaily }) => scoreDaily)
-        .sort((player1, player2) => player2.scoreDaily - player1.scoreDaily)
-        .slice(0, limit ? limit : players.length)
-        .reduce((str, player, index) => {
-        str += `\t${index + 1}: ${(0, players_1.getPlayerName)(player)} - ${player.scoreDaily}\n`;
-        return str;
-    }, (0, i18n_1.default)(settings.language, `sentences.dailyScores${limit ? "WithLimit" : ""}`, { limit }) + `\n`);
-    return message;
-};
-exports.getDailyScores = getDailyScores;
 const getStats = async (game, data, requestor) => {
     const [type, _id] = data.split("_");
     let message = "";

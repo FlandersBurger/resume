@@ -14,11 +14,8 @@ const uniq_1 = __importDefault(require("lodash/uniq"));
 const maingame_1 = require("./maingame");
 const number_helpers_1 = require("../../../utils/number-helpers");
 const minigame_1 = require("./minigame");
-const stats_1 = require("./stats");
 const backup = require("../../../scripts/backup-db");
 const index_1 = require("../../../models/index");
-const messages_1 = require("./messages");
-const players_1 = require("./players");
 const resetDailyScore = () => {
     if ((0, moment_1.default)().utc().hour() === 1) {
         telegram_1.default.notifyAdmin(`Score Reset Triggered; ${(0, moment_1.default)().format("DD-MMM-YYYY hh:mm")}`);
@@ -36,7 +33,7 @@ const resetDailyScore = () => {
                 .select("_id id")
                 .exec();
             for (let game of games) {
-                telegram_1.default.queueMessage(game.telegramChannel, await (0, stats_1.getDailyScores)(game));
+                game.provider.dailyScores(game);
                 const players = await index_1.Player.find({
                     game: game._id,
                     scoreDaily: { $gt: 0 },
@@ -46,9 +43,7 @@ const resetDailyScore = () => {
                     .exec();
                 const highScore = players.reduce((highScore, { scoreDaily }) => (0, max_1.default)([highScore, scoreDaily]), 0);
                 let winners = players.filter((player) => player.scoreDaily === highScore);
-                let message = `<b>${winners.map((winner) => (0, players_1.getPlayerName)(winner, true)).join(" & ")} won with ${highScore} points!</b>\n\n`;
-                message += (0, messages_1.getDailyMessage)();
-                telegram_1.default.queueMessage(game.telegramChannel, message);
+                game.provider.dailyWinners(game, winners, highScore);
                 await index_1.Player.updateMany({ game: game._id, scoreDaily: 0 }, { $set: { playStreak: 0 } });
                 await index_1.Player.updateMany({
                     game: game._id,
@@ -61,7 +56,7 @@ const resetDailyScore = () => {
                 if (game.hints < 4) {
                     game.hints = 4;
                 }
-                (0, maingame_1.sendMaingameMessage)(game);
+                game.provider.mainGameMessage(game);
                 game.save();
             }
             try {
@@ -206,6 +201,7 @@ const sendNewLists = () => {
             message += "\n<i>Switch off daily updates through /settings</i>";
             index_1.Game.find({
                 "settings.updates": true,
+                platform: "telegram",
                 enabled: true,
                 listsPlayed: { $gt: 0 },
             })
@@ -243,6 +239,7 @@ const sendUpdatedLists = () => {
             message += "\n<i>Switch off daily updates through /settings</i>";
             index_1.Game.find({
                 "settings.updates": true,
+                platform: "telegram",
                 enabled: true,
                 listsPlayed: { $gt: 0 },
             })

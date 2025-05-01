@@ -5,13 +5,7 @@ import { IGame } from "@models/tenthings/game";
 import { IListValue } from "@models/tenthings/list";
 import { IPlayer } from "@models/tenthings/player";
 import { Guess, getAnswerScore } from "./guesses";
-import { Message, getGuessedMessage } from "./messages";
-import { getHint } from "./hints";
 import { getRandomList } from "./lists";
-import bot from "@root/connections/telegram";
-import i18n from "@root/i18n";
-import { parseSymbols } from "@root/utils/string-helpers";
-import { getPlayerName } from "./players";
 
 export const createTinygame = async (game: HydratedDocument<IGame>) => {
   const availableLanguages =
@@ -40,7 +34,7 @@ export const createTinygame = async (game: HydratedDocument<IGame>) => {
   game.tinygame.hints = 1;
   game.tinygame.date = moment().toDate();
   game.tinygame.clues = tinygame.clues;
-  sendTinygameMessage(game);
+  game.provider.tinyGameMessage(game);
   try {
     await game.save();
   } catch (err) {
@@ -50,22 +44,7 @@ export const createTinygame = async (game: HydratedDocument<IGame>) => {
   return true;
 };
 
-export const sendTinygameMessage = (game: IGame) => {
-  let message = `<b>${i18n(game.settings.language, "sentences.findTheTitle")}</b>\n`;
-  message += game.tinygame.clues.reduce((msg, clue) => {
-    msg += `- ${parseSymbols(clue)}\n`;
-    return msg;
-  }, "");
-  message += `\n<b>${getHint(game.tinygame.hints, game.tinygame.answer)}</b>`;
-  bot.queueMessage(game.telegramChannel, message);
-};
-
-export const checkTinygame = async (
-  game: HydratedDocument<IGame>,
-  player: HydratedDocument<IPlayer>,
-  guess: Guess,
-  msg: Message,
-) => {
+export const checkTinygame = async (game: HydratedDocument<IGame>, player: HydratedDocument<IPlayer>, guess: Guess) => {
   if (guess.match.value !== game.tinygame.answer) return;
   const score = getAnswerScore(game.minigame.hints, guess.match.distance);
   player.score += score;
@@ -75,14 +54,7 @@ export const checkTinygame = async (
   await player.save();
   game.tinygame.plays++;
   await game.save();
-  let message = `${i18n(game.settings.language, "sentences.tinygameAnswered")} (${(guess.match.distance * 100).toFixed(
-    0,
-  )}%)\n`;
-  message += getGuessedMessage(game.settings.language, game.tinygame.answer, getPlayerName(msg.from, true));
-  message += `\n<u>${player.scoreDaily - score} + ${i18n(game.settings.language, "point", {
-    count: score,
-  })}</u>`;
-  bot.queueMessage(game.telegramChannel, message);
+  game.provider.tinyGameGuessed(game, player, score, (guess.match.distance * 100).toFixed(0));
   setTimeout(() => {
     createTinygame(game);
   }, 1000);

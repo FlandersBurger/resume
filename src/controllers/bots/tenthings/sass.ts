@@ -15,7 +15,7 @@ export default async (game: IGame, text: string) => {
           bot.sendPhoto(game.telegramChannel, sassText);
         }
       } else {
-        bot.queueMessage(game.telegramChannel, sassText);
+        game.provider.message(game, sassText);
       }
     }
   }
