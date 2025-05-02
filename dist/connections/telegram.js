@@ -7,15 +7,26 @@ const bull_1 = __importDefault(require("bull"));
 const i18n_1 = __importDefault(require("../i18n"));
 const queue_1 = __importDefault(require("../queue"));
 const http_client_1 = __importDefault(require("../http-client"));
-const errors_1 = require("../controllers/bots/tenthings/errors");
-const spam_1 = require("../controllers/bots/tenthings/spam");
-const main_1 = require("../controllers/bots/tenthings/main");
+const errors_1 = require("../controllers/bots/tenthings/providers/telegram/errors");
+const spam_1 = require("../controllers/bots/tenthings/providers/telegram/spam");
+const telegram_1 = require("../controllers/api/tenthings/telegram");
 const string_helpers_1 = require("../utils/string-helpers");
 const moment_1 = __importDefault(require("moment"));
-const commands_1 = require("../controllers/bots/tenthings/commands");
+const commands_1 = require("../controllers/bots/tenthings/providers/telegram/commands");
 const players_1 = require("../controllers/bots/tenthings/players");
 const BANNED_TELEGRAM_USERS = [1726294650, 6758829541];
-const messageQueue = new bull_1.default("sendMessage", {
+const globalQueue = new bull_1.default("sendMessage", {
+    redis: {
+        port: parseInt(process.env.REDIS_PORT || "6379"),
+        host: "localhost",
+        password: process.env.REDIS_PASSWORD,
+    },
+    limiter: {
+        max: 30,
+        duration: 1000,
+    },
+});
+const chatQueue = new bull_1.default("queueMessage", {
     redis: {
         port: parseInt(process.env.REDIS_PORT || "6379"),
         host: "localhost",
@@ -27,7 +38,10 @@ const messageQueue = new bull_1.default("sendMessage", {
         groupKey: "chat",
     },
 });
-messageQueue.on("completed", function (job) {
+globalQueue.on("completed", function (job) {
+    job.remove();
+});
+chatQueue.on("completed", function (job) {
     job.remove();
 });
 class TelegramBot {
@@ -61,8 +75,12 @@ class TelegramBot {
             this.introduceYourself();
             this.resumeQueue();
             const bot = this;
-            messageQueue.on("failed", function (job, error) {
-                bot.notifyAdmin(`Error in message queue: ${job.data.message}`);
+            globalQueue.on("failed", function (job, error) {
+                bot.notifyAdmin(`Error in global queue: ${job.data.message}`);
+                console.error(error);
+            });
+            chatQueue.on("failed", function (job, error) {
+                bot.notifyAdmin(`Error in chat queue: ${job.data.message}`);
                 console.error(error);
             });
         };
@@ -86,7 +104,7 @@ class TelegramBot {
                 else if (error.response.data.description.startsWith("Too Many Requests: retry after ")) {
                     if (!this.paused) {
                         this.paused = true;
-                        messageQueue.pause();
+                        globalQueue.pause();
                         const timeout = parseInt(error.response.data.description.match(/retry after (\d+)/)[1]);
                         this.timeoutUntil = (0, moment_1.default)().add(timeout, "seconds");
                         if (timeout > 100)
@@ -187,20 +205,20 @@ class TelegramBot {
             }
         };
         this.queueMessage = async (channel, message) => {
-            messageQueue.add("", { channel, message, action: "sendMessage", chat: channel.chat }, {});
+            chatQueue.add("", { channel, message, action: "sendMessage", chat: channel.chat }, {});
             if (this.timeoutUntil && (0, moment_1.default)().isAfter(this.timeoutUntil)) {
                 this.resumeQueue();
             }
         };
         this.resumeQueue = async () => {
-            if (await messageQueue.isPaused()) {
-                messageQueue.resume();
+            if (await globalQueue.isPaused()) {
+                globalQueue.resume();
                 this.paused = false;
                 this.timeoutUntil = undefined;
             }
         };
         this.getQueueCount = async () => {
-            return await messageQueue.count();
+            return await globalQueue.count();
         };
         this.kick = async (channel, userId, minutes) => {
             if (!minutes)
@@ -362,7 +380,7 @@ class TelegramBot {
             }
         };
         this.queueEditKeyboard = (channel, message_id, keyboard) => {
-            messageQueue.add("", { channel, message_id, action: "editMessage", chat: channel.chat, keyboard }, {});
+            chatQueue.add("", { channel, message_id, action: "editMessage", chat: channel.chat, keyboard }, {});
         };
         this.editMessage = async (channel, message_id, message, keyboard) => {
             let url = `${this.baseUrl}/editMessageText?chat_id=${channel.chat}&message_id=${message_id}&text=${message}`;
@@ -376,7 +394,7 @@ class TelegramBot {
             }
         };
         this.queueEditMessage = (channel, message_id, message, keyboard) => {
-            messageQueue.add("", { channel, message_id, action: "editMessage", chat: channel.chat, message, keyboard }, {});
+            chatQueue.add("", { channel, message_id, action: "editMessage", chat: channel.chat, message, keyboard }, {});
         };
         this.answerCallback = async (callback_query_id, text) => {
             const url = `${this.baseUrl}/answerCallbackQuery?callback_query_id=${callback_query_id}&text=${text}`;
@@ -443,22 +461,22 @@ class TelegramBot {
         });
         this.toDomainMessage = async (body) => {
             if (body.object === "page") {
-                return { messageType: main_1.MessageType.Ignore };
+                return { messageType: telegram_1.MessageType.Ignore };
             }
             if (body.message || body.callback_query) {
                 const from = this.toDomainUser(body.message ? body.message.from : body.callback_query.from);
                 if (from.id !== parseInt(process.env.MASTER_CHAT || "") && (await queue_1.default.get("pause")) === "true")
-                    return { messageType: main_1.MessageType.Ignore };
+                    return { messageType: telegram_1.MessageType.Ignore };
                 if (BANNED_TELEGRAM_USERS.indexOf(from.id) >= 0) {
-                    return { messageType: main_1.MessageType.Ignore };
+                    return { messageType: telegram_1.MessageType.Ignore };
                 }
                 if ((0, spam_1.checkSpam)(body)) {
-                    return { messageType: main_1.MessageType.Ignore };
+                    return { messageType: telegram_1.MessageType.Ignore };
                 }
                 if (body.callback_query) {
                     const data = JSON.parse(body.callback_query.data);
                     return {
-                        messageType: main_1.MessageType.Callback,
+                        messageType: telegram_1.MessageType.Callback,
                         message: {
                             from,
                             chatId: body.callback_query.message.chat.id,
@@ -473,7 +491,7 @@ class TelegramBot {
                 if (!body.message.text) {
                     if (body.message.group_chat_created) {
                         return {
-                            messageType: main_1.MessageType.NewGame,
+                            messageType: telegram_1.MessageType.NewGame,
                             message: {
                                 id: body.message.message_id,
                                 from,
@@ -486,7 +504,7 @@ class TelegramBot {
                     }
                     else if (body.message.left_chat_participant) {
                         return {
-                            messageType: main_1.MessageType.PlayerLeft,
+                            messageType: telegram_1.MessageType.PlayerLeft,
                             message: {
                                 id: body.message.message_id,
                                 from: { ...from, id: body.message.left_chat_participant.id },
@@ -500,7 +518,7 @@ class TelegramBot {
                     let command = body.message.text.substring(0, !body.message.text.includes(" ") ? body.message.text.length : body.message.text.indexOf(" "));
                     let text;
                     if (command.includes("@") && command.substring(command.indexOf("@") + 1) !== "TenThings_Bot") {
-                        return { messageType: main_1.MessageType.Ignore };
+                        return { messageType: telegram_1.MessageType.Ignore };
                     }
                     else if (command.includes("@") && command.substring(command.indexOf("@") + 1) === "TenThings_Bot") {
                         command = command.substring(0, command.indexOf("@"));
@@ -518,7 +536,7 @@ class TelegramBot {
                         text = body.message.text;
                     }
                     return {
-                        messageType: main_1.MessageType.Message,
+                        messageType: telegram_1.MessageType.Message,
                         message: {
                             id: body.message.message_id,
                             from,
@@ -538,7 +556,7 @@ class TelegramBot {
                     }
                 }
             }
-            return { messageType: main_1.MessageType.Ignore };
+            return { messageType: telegram_1.MessageType.Ignore };
         };
         this.baseUrl = `https://api.telegram.org/bot${token}`;
         this.init();
@@ -551,7 +569,10 @@ var Actions;
     Actions["EditKeyboard"] = "editKeyboard";
     Actions["EditMessage"] = "editMessage";
 })(Actions || (Actions = {}));
-messageQueue.process(async ({ data, }) => {
+chatQueue.process(async ({ data }) => {
+    globalQueue.add("", data, {});
+});
+globalQueue.process(async ({ data }) => {
     switch (data.action) {
         case "sendMessage":
             bot.sendMessage(data.channel, data.message);

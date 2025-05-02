@@ -1,10 +1,11 @@
 import { Model, Schema, Types } from "mongoose";
 import db from "@root/db";
 import { IUser } from "@models/user";
-import { BotLanguage, SupportedLanguage } from "@root/controllers/bots/tenthings/languages";
-import { web } from "@root/controllers/bots/tenthings/providers/web";
-import { telegram } from "@root/controllers/bots/tenthings/providers/telegram";
-import { Provider } from "@root/controllers/bots/tenthings/providers";
+import { IPlayer } from "@models/tenthings/player";
+import { web } from "@tenthings/providers/web";
+import { telegram } from "@tenthings/providers/telegram";
+import { Provider } from "@tenthings/providers";
+import { BotLanguage, SupportedLanguage } from "@tenthings/languages";
 
 export type Platform = "telegram" | "web";
 
@@ -29,12 +30,7 @@ export enum GameType {
 export interface IGameListValue {
   value: string;
   blurb: string;
-  guesser?: {
-    id: number;
-    first_name: string;
-    last_name?: string;
-    username?: string;
-  };
+  guesser?: IPlayer;
 }
 
 export interface IGameList {
@@ -60,9 +56,9 @@ export interface IGame {
   lastCycleDate: Date;
   lastPlayDate: Date;
   listsPlayed: number;
-  guessers: string[];
+  guessers: IPlayer[];
   streak: {
-    player: string;
+    player?: IPlayer;
     count: number;
   };
   disabledCategories: string[];
@@ -101,9 +97,9 @@ const gameSchema = new Schema<IGame>(
     lastCycleDate: { type: Date, required: true, default: Date.now },
     lastPlayDate: { type: Date, required: true, default: Date.now },
     listsPlayed: { type: Number, required: true, default: 0 },
-    guessers: [{ type: String, required: true }],
+    guessers: [{ type: Schema.Types.ObjectId, ref: "Player", required: true }],
     streak: {
-      player: { type: String, required: false },
+      player: { type: Schema.Types.ObjectId, ref: "Player", required: false },
       count: { type: Number, required: false },
     },
     disabledCategories: [String],
@@ -121,12 +117,7 @@ const gameSchema = new Schema<IGame>(
         {
           value: String,
           blurb: String,
-          guesser: {
-            id: { type: String, required: false },
-            first_name: { type: String, required: false },
-            last_name: { type: String, required: false },
-            username: { type: String, required: false },
-          },
+          guesser: { type: Schema.Types.ObjectId, ref: "Player", required: false },
         },
       ],
     },

@@ -18,7 +18,7 @@ import { List, User } from "@models/index";
 import { parseSymbols, removeAllButLetters } from "@root/utils/string-helpers";
 import { getListMessage } from "@tenthings/messages";
 import { getList, getListScore, getRandomList, mergeLists } from "@tenthings/lists";
-import { curateListKeyboard } from "@tenthings/keyboards";
+import { curateListKeyboard } from "@tenthings/providers/telegram/keyboards";
 import { every } from "lodash";
 
 export const tenthingsListsRoute = Router();

@@ -25,9 +25,9 @@ const gameSchema = new mongoose_1.Schema({
     lastCycleDate: { type: Date, required: true, default: Date.now },
     lastPlayDate: { type: Date, required: true, default: Date.now },
     listsPlayed: { type: Number, required: true, default: 0 },
-    guessers: [{ type: String, required: true }],
+    guessers: [{ type: mongoose_1.Schema.Types.ObjectId, ref: "Player", required: true }],
     streak: {
-        player: { type: String, required: false },
+        player: { type: mongoose_1.Schema.Types.ObjectId, ref: "Player", required: false },
         count: { type: Number, required: false },
     },
     disabledCategories: [String],
@@ -45,12 +45,7 @@ const gameSchema = new mongoose_1.Schema({
             {
                 value: String,
                 blurb: String,
-                guesser: {
-                    id: { type: String, required: false },
-                    first_name: { type: String, required: false },
-                    last_name: { type: String, required: false },
-                    username: { type: String, required: false },
-                },
+                guesser: { type: mongoose_1.Schema.Types.ObjectId, ref: "Player", required: false },
             },
         ],
     },

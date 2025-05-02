@@ -4,19 +4,34 @@ import Queue, { Job } from "bull";
 import i18n from "@root/i18n";
 import redis from "@root/queue";
 import httpClient from "@root/http-client";
-import { chatNotFound, botMuted, noTopic } from "@tenthings/errors";
-import { checkSpam } from "@tenthings/spam";
-import { MessageType } from "@tenthings/main";
+import { chatNotFound, botMuted, noTopic } from "@root/controllers/bots/tenthings/providers/telegram/errors";
+import { checkSpam } from "@root/controllers/bots/tenthings/providers/telegram/spam";
+import { MessageType } from "@root/controllers/api/tenthings/telegram";
 import { parseSymbols, maskUrls } from "@root/utils/string-helpers";
-import { UserInput } from "@tenthings/messages";
+import { Message } from "@tenthings/messages";
 import moment, { Moment } from "moment";
-import { Command } from "@root/controllers/bots/tenthings/commands";
+import { Command } from "@root/controllers/bots/tenthings/providers/telegram/commands";
 import { IGame } from "@root/models/tenthings/game";
 import { getPlayer } from "@root/controllers/bots/tenthings/players";
+import { CallbackData } from "@tenthings/providers/telegram/callbacks";
 
 const BANNED_TELEGRAM_USERS = [1726294650, 6758829541];
 
-const messageQueue = new Queue("sendMessage", {
+type UserInput = Message | CallbackData;
+
+const globalQueue = new Queue("sendMessage", {
+  redis: {
+    port: parseInt(process.env.REDIS_PORT || "6379"),
+    host: "localhost",
+    password: process.env.REDIS_PASSWORD,
+  },
+  limiter: {
+    max: 30,
+    duration: 1000,
+  },
+});
+
+const chatQueue = new Queue("queueMessage", {
   redis: {
     port: parseInt(process.env.REDIS_PORT || "6379"),
     host: "localhost",
@@ -29,7 +44,12 @@ const messageQueue = new Queue("sendMessage", {
   },
 });
 
-messageQueue.on("completed", function (job: Job) {
+globalQueue.on("completed", function (job: Job) {
+  //Job finished we remove it
+  job.remove();
+});
+
+chatQueue.on("completed", function (job: Job) {
   //Job finished we remove it
   job.remove();
 });
@@ -113,8 +133,12 @@ class TelegramBot {
     this.introduceYourself();
     this.resumeQueue();
     const bot = this;
-    messageQueue.on("failed", function (job: Job, error: any) {
-      bot.notifyAdmin(`Error in message queue: ${job.data.message}`);
+    globalQueue.on("failed", function (job: Job, error: any) {
+      bot.notifyAdmin(`Error in global queue: ${job.data.message}`);
+      console.error(error);
+    });
+    chatQueue.on("failed", function (job: Job, error: any) {
+      bot.notifyAdmin(`Error in chat queue: ${job.data.message}`);
       console.error(error);
     });
   };
@@ -136,7 +160,7 @@ class TelegramBot {
       } else if (error.response.data.description.startsWith("Too Many Requests: retry after ")) {
         if (!this.paused) {
           this.paused = true;
-          messageQueue.pause();
+          globalQueue.pause();
           const timeout = parseInt(error.response.data.description.match(/retry after (\d+)/)![1]);
           this.timeoutUntil = moment().add(timeout, "seconds");
           if (timeout > 100) this.notifyAdmin(`Pausing queue for ${timeout} seconds due to too many requests`);
@@ -237,22 +261,22 @@ class TelegramBot {
   };
 
   public queueMessage = async (channel: Channel, message: string) => {
-    messageQueue.add("", { channel, message, action: "sendMessage", chat: channel.chat }, {});
+    chatQueue.add("", { channel, message, action: "sendMessage", chat: channel.chat }, {});
     if (this.timeoutUntil && moment().isAfter(this.timeoutUntil)) {
       this.resumeQueue();
     }
   };
 
   public resumeQueue = async () => {
-    if (await messageQueue.isPaused()) {
-      messageQueue.resume();
+    if (await globalQueue.isPaused()) {
+      globalQueue.resume();
       this.paused = false;
       this.timeoutUntil = undefined;
     }
   };
 
   public getQueueCount = async (): Promise<number> => {
-    return await messageQueue.count();
+    return await globalQueue.count();
   };
 
   public kick = async (channel: Channel, userId: number, minutes: number) => {
@@ -408,9 +432,8 @@ class TelegramBot {
   };
 
   public queueEditKeyboard = (channel: Channel, message_id: string, keyboard: Keyboard) => {
-    messageQueue.add("", { channel, message_id, action: "editMessage", chat: channel.chat, keyboard }, {});
+    chatQueue.add("", { channel, message_id, action: "editMessage", chat: channel.chat, keyboard }, {});
   };
-
 
   public editMessage = async (channel: Channel, message_id: string, message: string, keyboard?: Keyboard) => {
     let url = `${this.baseUrl}/editMessageText?chat_id=${channel.chat}&message_id=${message_id}&text=${message}`;
@@ -423,7 +446,7 @@ class TelegramBot {
   };
 
   public queueEditMessage = (channel: Channel, message_id: string, message: string, keyboard: Keyboard) => {
-    messageQueue.add("", { channel, message_id, action: "editMessage", chat: channel.chat, message, keyboard }, {});
+    chatQueue.add("", { channel, message_id, action: "editMessage", chat: channel.chat, message, keyboard }, {});
   };
 
   public answerCallback = async (callback_query_id: string, text: string) => {
@@ -602,29 +625,29 @@ enum Actions {
   EditMessage = "editMessage",
 }
 
-messageQueue.process(
-  async ({
-    data,
-  }: {
-    data:
-      | { channel: Channel; action: Actions.SendMessage; message: string }
-      | { channel: Channel; action: Actions.EditKeyboard; message_id: string; keyboard: Keyboard }
-      | { channel: Channel; action: Actions.EditMessage; message_id: string; message: string; keyboard?: Keyboard };
-  }) => {
-    switch (data.action) {
-      case "sendMessage":
-        bot.sendMessage(data.channel, data.message);
-        break;
-      case "editKeyboard":
-        bot.editKeyboard(data.channel, data.message_id, data.keyboard!);
-        break;
-      case "editMessage":
-        bot.editMessage(data.channel, data.message_id, data.message, data.keyboard);
-        break;
-      default:
-        break;
-    }
-  },
-);
+type QueueData =
+  | { channel: Channel; action: Actions.SendMessage; message: string }
+  | { channel: Channel; action: Actions.EditKeyboard; message_id: string; keyboard: Keyboard }
+  | { channel: Channel; action: Actions.EditMessage; message_id: string; message: string; keyboard?: Keyboard };
+
+chatQueue.process(async ({ data }: { data: QueueData }) => {
+  globalQueue.add("", data, {});
+});
+
+globalQueue.process(async ({ data }: { data: QueueData }) => {
+  switch (data.action) {
+    case "sendMessage":
+      bot.sendMessage(data.channel, data.message);
+      break;
+    case "editKeyboard":
+      bot.editKeyboard(data.channel, data.message_id, data.keyboard!);
+      break;
+    case "editMessage":
+      bot.editMessage(data.channel, data.message_id, data.message, data.keyboard);
+      break;
+    default:
+      break;
+  }
+});
 
 export default bot;

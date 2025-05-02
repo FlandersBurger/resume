@@ -13,13 +13,11 @@ import { makePercentage } from "@root/utils/number-helpers";
 import { capitalize } from "@root/utils/string-helpers";
 import i18n, { t_list } from "@root/i18n";
 import emojis from "./emojis";
-import { CallbackData } from "./callbacks";
 import { TelegramUser } from "@root/connections/telegram";
 import { getListScore } from "./lists";
 import { BotLanguage } from "./languages";
 import { getPlayerName } from "./players";
 
-export type UserInput = Message | CallbackData;
 export type Message = {
   id: string;
   from: TelegramUser;
@@ -33,6 +31,7 @@ export const getLogicMessage = (language: string): string => {
   const rules = t_list(language, "rules", { maxHints: MAXHINTS, returnObjects: true });
   return rules.reduce((message: string, rule: string, i: number) => `${message}${i + 1}: ${rule}\n`, "");
 };
+
 export const getCategoriesMessage = (game: IGame): string => {
   return Object.keys(categories)
     .sort()
@@ -50,9 +49,11 @@ export const getCategoriesMessage = (game: IGame): string => {
     )
     .join("\n");
 };
+
 export const getGuessedMessage = (language: string, answer: string, guesser: string): string => {
   return `<b>${i18n(language, "sentences.guessedBy", { answer, guesser })}</b> `;
 };
+
 export const getSnubbedMessage = (match: string, loser: IPlayer, winner: IGameListValue["guesser"]): string => {
   if (!winner) return "";
   const loserName = getPlayerName(loser);

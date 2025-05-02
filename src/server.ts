@@ -8,7 +8,7 @@ import auth from "@root/auth";
 import http from "http";
 
 import { emailRoute } from "@api/email";
-import { quizzesRoute } from "@root/controllers/api/quizzes";
+import { quizzesRoute } from "@api/quizzes";
 import { gamesRoute } from "@api/games";
 import { postsRoute } from "@api/posts";
 import { staticRoute } from "@root/controllers/static";
@@ -21,7 +21,7 @@ import { tenthingsPlayersRoute } from "@api/tenthings/players";
 import { tenthingsStatsRoute } from "@api/tenthings/stats";
 import { tenthingsSearchRoute } from "@api/tenthings/search";
 import { usersRoute } from "@api/users";
-import { tenthingsBotRoute } from "@tenthings/main";
+import { tenthingsTelegramBotRoute } from "@api/tenthings/telegram";
 import { redisConnect, subscribe } from "@root/queue";
 import bot from "./connections/telegram";
 
@@ -54,7 +54,7 @@ app.use("/api/tenthings/players", tenthingsPlayersRoute);
 app.use("/api/tenthings/stats", tenthingsStatsRoute);
 app.use("/api/tenthings/search", tenthingsSearchRoute);
 
-app.use("/bots/tenthings", tenthingsBotRoute);
+app.use("/bots/tenthings", tenthingsTelegramBotRoute);
 
 app.use(staticRoute);
 

@@ -4,8 +4,9 @@ import { IGame, IGameListValue } from "@models/tenthings/game";
 import { IPlayer } from "@models/tenthings/player";
 import { parseSymbols, maskUrls } from "@root/utils/string-helpers";
 import { Message } from "./messages";
+import { HydratedDocument } from "mongoose";
 
-export const getPlayer = async (game: IGame, from: TelegramUser | IPlayer) => {
+export const getPlayer = async (game: IGame, from: TelegramUser | IPlayer): Promise<HydratedDocument<IPlayer>> => {
   let player = await Player.findOne({
     game: game._id,
     id: from.id,
@@ -20,12 +21,12 @@ export const getPlayer = async (game: IGame, from: TelegramUser | IPlayer) => {
   return player;
 };
 
-export const getPlayerName = (player: TelegramUser | IPlayer | IGameListValue["guesser"], tagged = false) => {
+export const getPlayerName = (player: TelegramUser | IPlayer | IGameListValue["guesser"], tagged = false): string => {
   if (!player) return "Player 404";
   return player.username ? (tagged ? "@" : "") + player.username : maskUrls(parseSymbols(player.first_name));
 };
 
-const createPlayer = async (game: IGame, from: Message["from"]) => {
+const createPlayer = async (game: IGame, from: Message["from"]): Promise<HydratedDocument<IPlayer>> => {
   if (!from.first_name) console.trace();
   const player = new Player({
     game: game._id,

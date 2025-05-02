@@ -9,7 +9,7 @@ import { IList } from "@models/tenthings/list";
 import { parseSymbols } from "@root/utils/string-helpers";
 import { IPlayer } from "@models/tenthings/player";
 import { Guess, getAnswerScore } from "./guesses";
-import { Message, getSnubbedMessage } from "./messages";
+import { getSnubbedMessage } from "./messages";
 import { hintCache, hintCooldown } from "./hints";
 import { getListScore, rateList, selectList } from "./lists";
 import { abortSkip, skipCache } from "./skips";
@@ -142,20 +142,15 @@ export const deactivate = (game: HydratedDocument<IGame>) => {
 // ██      ██   ██ ██      ██      ██  ██
 //  ██████ ██   ██ ███████  ██████ ██   ██
 
-export const checkMaingame = async (
-  game: HydratedDocument<IGame>,
-  player: HydratedDocument<IPlayer>,
-  guess: Guess,
-  msg: Message,
-) => {
+export const checkMaingame = async (game: HydratedDocument<IGame>, player: HydratedDocument<IPlayer>, guess: Guess) => {
   if (guess.list !== game.list._id) return;
   game.lastPlayDate = moment().toDate();
   player.lastPlayDate = moment().toDate();
   if (skipCache[game.chat_id]) {
     abortSkip(game, player);
   }
-  if (!some(game.guessers, (guesser: number) => guesser == msg.from.id)) {
-    game.guessers.push(`${msg.from.id}`);
+  if (!some(game.guessers, (guesser: IPlayer) => guesser._id == player._id)) {
+    game.guessers.push(player);
   }
   const match = game.list.values.find(({ value }) => value === guess.match.value);
   if (!player) {
@@ -163,7 +158,7 @@ export const checkMaingame = async (
     console.error(`Something wrong with this guess:\n${JSON.stringify(guess)}`);
   }
   if (match && !match.guesser?.first_name) {
-    match.guesser = msg.from;
+    match.guesser = player;
     player.answers++;
     const score = getAnswerScore(game.hints, guess.match.distance, game.guessers.length);
     const accuracy = `${(guess.match.distance * 100).toFixed(0)}%`;
@@ -172,9 +167,9 @@ export const checkMaingame = async (
     if (game.hints === 0) {
       player.hintStreak++;
     }
-    if (!game.streak || game.streak.player != player.id) {
+    if (!game.streak || game.streak.player?._id != player._id) {
       game.streak = {
-        player: player.id,
+        player,
         count: 1,
       };
     } else {

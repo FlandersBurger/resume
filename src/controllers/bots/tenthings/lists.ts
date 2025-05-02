@@ -10,7 +10,7 @@ import some from "lodash/some";
 import sampleSize from "lodash/sampleSize";
 import orderBy from "lodash/orderBy";
 import uniqBy from "lodash/uniqBy";
-import { likeListKeyboard } from "./keyboards";
+import { likeListKeyboard } from "@tenthings/providers/telegram/keyboards";
 import i18n from "@root/i18n";
 import { parseSymbols, removeSpecialCharacters } from "@root/utils/string-helpers";
 

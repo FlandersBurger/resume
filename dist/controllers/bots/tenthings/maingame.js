@@ -112,7 +112,7 @@ const deactivate = (game) => {
     }
 };
 exports.deactivate = deactivate;
-const checkMaingame = async (game, player, guess, msg) => {
+const checkMaingame = async (game, player, guess) => {
     if (guess.list !== game.list._id)
         return;
     game.lastPlayDate = (0, moment_1.default)().toDate();
@@ -120,8 +120,8 @@ const checkMaingame = async (game, player, guess, msg) => {
     if (skips_1.skipCache[game.chat_id]) {
         (0, skips_1.abortSkip)(game, player);
     }
-    if (!(0, some_1.default)(game.guessers, (guesser) => guesser == msg.from.id)) {
-        game.guessers.push(`${msg.from.id}`);
+    if (!(0, some_1.default)(game.guessers, (guesser) => guesser._id == player._id)) {
+        game.guessers.push(player);
     }
     const match = game.list.values.find(({ value }) => value === guess.match.value);
     if (!player) {
@@ -129,7 +129,7 @@ const checkMaingame = async (game, player, guess, msg) => {
         console.error(`Something wrong with this guess:\n${JSON.stringify(guess)}`);
     }
     if (match && !match.guesser?.first_name) {
-        match.guesser = msg.from;
+        match.guesser = player;
         player.answers++;
         const score = (0, guesses_1.getAnswerScore)(game.hints, guess.match.distance, game.guessers.length);
         const accuracy = `${(guess.match.distance * 100).toFixed(0)}%`;
@@ -138,9 +138,9 @@ const checkMaingame = async (game, player, guess, msg) => {
         if (game.hints === 0) {
             player.hintStreak++;
         }
-        if (!game.streak || game.streak.player != player.id) {
+        if (!game.streak || game.streak.player?._id != player._id) {
             game.streak = {
-                player: player.id,
+                player,
                 count: 1,
             };
         }

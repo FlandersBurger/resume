@@ -17,7 +17,6 @@ import { Message } from "./messages";
 import bot from "@root/connections/telegram";
 
 export type Guess = {
-  msg: Message;
   game: number;
   list: Types.ObjectId;
   player: IPlayer;
@@ -56,7 +55,6 @@ export const queueGuess = async (game: IGame, msg: Message) => {
   const correctMatch = find(values, ({ value }) => removeAllButLetters(value) === text);
   if (correctMatch) {
     queueingGuess({
-      msg,
       game: game.chat_id,
       list: game.list._id,
       player: await getPlayer(game, msg.from),
@@ -140,19 +138,19 @@ const processGuess = async (guess: Guess) => {
     return;
   }
   if (guess.match.type === GameType.MAINGAME) {
-    await checkMaingame(game, player, guess, guess.msg);
+    await checkMaingame(game, player, guess);
     console.log(
-      `${guess.game} (${game.settings.language}) - ${game.list.name} for ${guess.match.value}: "${guess.msg.text}" by ${getPlayerName(player)}`,
+      `${guess.game} (${game.settings.language}) - ${game.list.name} for ${guess.match.value}  by ${getPlayerName(player)}`,
     );
   } else if (guess.match.type === GameType.MINIGAME) {
     await checkMinigame(game, player, guess);
     console.log(
-      `${guess.game} (${game.settings.language}) - Minigame guess for ${game.minigame.answer}: "${guess.msg.text}" by ${getPlayerName(player)}`,
+      `${guess.game} (${game.settings.language}) - Minigame guess for ${game.minigame.answer} by ${getPlayerName(player)}`,
     );
   } else if (guess.match.type === GameType.TINYGAME) {
     await checkTinygame(game, player, guess);
     console.log(
-      `${guess.game} (${game.settings.language}) - Tinygame guess for ${game.tinygame.answer}: "${guess.msg.text}" by ${getPlayerName(player)}`,
+      `${guess.game} (${game.settings.language}) - Tinygame guess for ${game.tinygame.answer} by ${getPlayerName(player)}`,
     );
   }
 };

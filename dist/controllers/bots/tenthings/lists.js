@@ -11,7 +11,7 @@ const some_1 = __importDefault(require("lodash/some"));
 const sampleSize_1 = __importDefault(require("lodash/sampleSize"));
 const orderBy_1 = __importDefault(require("lodash/orderBy"));
 const uniqBy_1 = __importDefault(require("lodash/uniqBy"));
-const keyboards_1 = require("./keyboards");
+const keyboards_1 = require("./providers/telegram/keyboards");
 const i18n_1 = __importDefault(require("../../../i18n"));
 const string_helpers_1 = require("../../../utils/string-helpers");
 const getRandomList = async (parameters = {}) => {
