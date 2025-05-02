@@ -150,8 +150,8 @@ export const checkMaingame = async (game: HydratedDocument<IGame>, player: Hydra
     abortSkip(game, player);
   }
   if (!some(game.guessers, (guesser: IPlayer) => guesser._id == player._id)) {
-    if (game.guessers) game.guessers.push(player);
-    else game.guessers = [player];
+    if (game.guessers) game.guessers.push(player._id);
+    else game.guessers = [player._id];
   }
   const match = game.list.values.find(({ value }) => value === guess.match.value);
   if (!player) {
@@ -169,9 +169,9 @@ export const checkMaingame = async (game: HydratedDocument<IGame>, player: Hydra
       player.hintStreak++;
     }
     if (!game.streak || game.streak.player?._id != player._id) {
-      game.streak = { player, count: 1 };
+      game.streak = { player: player._id, count: 1 };
     } else {
-      game.streak = { player, count: game.streak.count++ };
+      game.streak.count++;
     }
     if (player.streak < game.streak.count) {
       player.streak = game.streak.count;

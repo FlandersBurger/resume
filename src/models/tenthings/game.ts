@@ -56,9 +56,9 @@ export interface IGame {
   lastCycleDate: Date;
   lastPlayDate: Date;
   listsPlayed: number;
-  guessers: IPlayer[];
+  guessers: Types.ObjectId[];
   streak: {
-    player?: IPlayer;
+    player?: Types.ObjectId;
     count: number;
   };
   disabledCategories: string[];

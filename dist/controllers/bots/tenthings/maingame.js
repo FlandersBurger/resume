@@ -122,9 +122,9 @@ const checkMaingame = async (game, player, guess) => {
     }
     if (!(0, some_1.default)(game.guessers, (guesser) => guesser._id == player._id)) {
         if (game.guessers)
-            game.guessers.push(player);
+            game.guessers.push(player._id);
         else
-            game.guessers = [player];
+            game.guessers = [player._id];
     }
     const match = game.list.values.find(({ value }) => value === guess.match.value);
     if (!player) {
@@ -142,16 +142,10 @@ const checkMaingame = async (game, player, guess) => {
             player.hintStreak++;
         }
         if (!game.streak || game.streak.player?._id != player._id) {
-            game.streak = {
-                player,
-                count: 1,
-            };
+            game.streak = { player: player._id, count: 1 };
         }
         else {
-            game.streak = {
-                player,
-                count: game.streak.count++,
-            };
+            game.streak.count++;
         }
         if (player.streak < game.streak.count) {
             player.streak = game.streak.count;
