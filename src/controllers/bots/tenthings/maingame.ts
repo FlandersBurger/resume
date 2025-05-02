@@ -150,8 +150,10 @@ export const checkMaingame = async (game: HydratedDocument<IGame>, player: Hydra
     abortSkip(game, player);
   }
   if (!some(game.guessers, (guesser: IPlayer) => guesser._id == player._id)) {
-    if (game.guessers) game.guessers.push(player._id);
-    else game.guessers = [player._id];
+    if (game.guessers) {
+      console.log(game.guessers);
+      game.guessers.push(player._id);
+    } else game.guessers = [player._id];
   }
   const match = game.list.values.find(({ value }) => value === guess.match.value);
   if (!player) {

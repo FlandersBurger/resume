@@ -121,8 +121,10 @@ const checkMaingame = async (game, player, guess) => {
         (0, skips_1.abortSkip)(game, player);
     }
     if (!(0, some_1.default)(game.guessers, (guesser) => guesser._id == player._id)) {
-        if (game.guessers)
+        if (game.guessers) {
+            console.log(game.guessers);
             game.guessers.push(player._id);
+        }
         else
             game.guessers = [player._id];
     }
