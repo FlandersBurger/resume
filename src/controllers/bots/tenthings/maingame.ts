@@ -1,5 +1,5 @@
 import moment from "moment";
-import { HydratedDocument } from "mongoose";
+import { HydratedDocument, Types } from "mongoose";
 import sampleSize from "lodash/sampleSize";
 import some from "lodash/some";
 
@@ -149,9 +149,9 @@ export const checkMaingame = async (game: HydratedDocument<IGame>, player: Hydra
   if (skipCache[game.chat_id]) {
     abortSkip(game, player);
   }
-  if (!some(game.guessers, (guesser: IPlayer) => guesser._id == player._id)) {
+  if (!some(game.guessers, (guesser: Types.ObjectId) => guesser == player._id)) {
     if (game.guessers) {
-      console.log(game.guessers);
+      game.guessers = game.guessers.filter((guesser: any) => typeof guesser !== "number");
       game.guessers.push(player._id);
     } else game.guessers = [player._id];
   }

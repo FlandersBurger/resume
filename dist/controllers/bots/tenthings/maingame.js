@@ -120,9 +120,9 @@ const checkMaingame = async (game, player, guess) => {
     if (skips_1.skipCache[game.chat_id]) {
         (0, skips_1.abortSkip)(game, player);
     }
-    if (!(0, some_1.default)(game.guessers, (guesser) => guesser._id == player._id)) {
+    if (!(0, some_1.default)(game.guessers, (guesser) => guesser == player._id)) {
         if (game.guessers) {
-            console.log(game.guessers);
+            game.guessers = game.guessers.filter((guesser) => typeof guesser !== "number");
             game.guessers.push(player._id);
         }
         else
