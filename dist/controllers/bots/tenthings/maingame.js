@@ -121,7 +121,10 @@ const checkMaingame = async (game, player, guess) => {
         (0, skips_1.abortSkip)(game, player);
     }
     if (!(0, some_1.default)(game.guessers, (guesser) => guesser._id == player._id)) {
-        game.guessers.push(player);
+        if (game.guessers)
+            game.guessers.push(player);
+        else
+            game.guessers = [player];
     }
     const match = game.list.values.find(({ value }) => value === guess.match.value);
     if (!player) {
@@ -145,7 +148,10 @@ const checkMaingame = async (game, player, guess) => {
             };
         }
         else {
-            game.streak.count++;
+            game.streak = {
+                player,
+                count: game.streak.count++,
+            };
         }
         if (player.streak < game.streak.count) {
             player.streak = game.streak.count;
