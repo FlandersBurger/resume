@@ -91,8 +91,6 @@ const newRound = async (currentGame) => {
         game.provider.newList(game);
     }, 2000);
     game.playedLists.push(game.list._id);
-    if (typeof game.streak.player === "number")
-        game.streak.player = undefined;
     await game.save();
     console.log(`${game.chat_id} - New round started -> "${list.name}"`);
 };

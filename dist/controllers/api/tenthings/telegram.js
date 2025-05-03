@@ -68,18 +68,24 @@ exports.tenthingsTelegramBotRoute.post("/", async (req, res) => {
             await (0, commands_1.evaluate)(msg, newGame, true);
         }
         else {
+            if (!(0, mongoose_1.isValidObjectId)(existingGame.streak.player)) {
+                console.log("resetting streaker");
+                existingGame.streak.player = undefined;
+            }
             if (!existingGame.enabled) {
-                if (!(0, mongoose_1.isValidObjectId)(existingGame.streak.player)) {
-                    console.log("resetting streaker");
-                    existingGame.streak.player = undefined;
-                }
                 if (msg.command && ["list", "start", "minigame", "tinygame"].includes(msg.command)) {
                     await (0, maingame_1.activate)(existingGame, true);
                     await (0, commands_1.evaluate)(msg, existingGame, false);
                 }
             }
             else {
-                await (0, commands_1.evaluate)(msg, existingGame, false);
+                if (existingGame.guessers.some((p) => !(0, mongoose_1.isValidObjectId)(p))) {
+                    console.log("resetting guesser");
+                    (0, maingame_1.newRound)(existingGame);
+                }
+                else {
+                    await (0, commands_1.evaluate)(msg, existingGame, false);
+                }
             }
         }
         if (!res.headersSent)

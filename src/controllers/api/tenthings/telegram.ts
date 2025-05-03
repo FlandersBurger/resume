@@ -1,7 +1,7 @@
 import { Router, Request, Response } from "express";
 import moment from "moment";
 import { Game, Player } from "@models/index";
-import { activate, createMaingame } from "@tenthings/maingame";
+import { activate, createMaingame, newRound } from "@tenthings/maingame";
 
 import bot from "@root/connections/telegram";
 import { getQueue } from "@tenthings/providers/telegram/queue";
@@ -118,17 +118,22 @@ tenthingsTelegramBotRoute.post("/", async (req: Request, res: Response) => {
       console.log(`New game created for ${msg.chatId}`);
       await evaluate(msg, newGame, true);
     } else {
+      if (!isValidObjectId(existingGame.streak.player)) {
+        console.log("resetting streaker");
+        existingGame.streak.player = undefined;
+      }
       if (!existingGame.enabled) {
-        if (!isValidObjectId(existingGame.streak.player)) {
-          console.log("resetting streaker");
-          existingGame.streak.player = undefined;
-        }
         if (msg.command && ["list", "start", "minigame", "tinygame"].includes(msg.command)) {
           await activate(existingGame, true);
           await evaluate(msg, existingGame, false);
         }
       } else {
-        await evaluate(msg, existingGame, false);
+        if (existingGame.guessers.some((p) => !isValidObjectId(p))) {
+          console.log("resetting guesser");
+          newRound(existingGame);
+        } else {
+          await evaluate(msg, existingGame, false);
+        }
       }
     }
     if (!res.headersSent) res.sendStatus(200);
