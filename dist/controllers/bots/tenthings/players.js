@@ -8,8 +8,10 @@ const getPlayer = async (game, from) => {
         game: game._id,
         id: from.id,
     }).exec();
-    if (!player)
+    if (!player) {
+        console.log(from);
         player = await createPlayer(game, from);
+    }
     else if (player && player.first_name) {
         player.first_name = player.first_name ? (0, string_helpers_1.maskUrls)(player.first_name) : "";
         player.last_name = player.last_name ? (0, string_helpers_1.maskUrls)(player.last_name) : "";

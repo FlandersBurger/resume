@@ -11,8 +11,10 @@ export const getPlayer = async (game: IGame, from: TelegramUser | IPlayer): Prom
     game: game._id,
     id: from.id,
   }).exec();
-  if (!player) player = await createPlayer(game, from as TelegramUser);
-  else if (player && player.first_name) {
+  if (!player) {
+    console.log(from);
+    player = await createPlayer(game, from as TelegramUser);
+  } else if (player && player.first_name) {
     player.first_name = player.first_name ? maskUrls(player.first_name) : "";
     player.last_name = player.last_name ? maskUrls(player.last_name) : "";
     player.username = player.username ? maskUrls(player.username) : "";
