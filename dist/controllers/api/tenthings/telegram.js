@@ -84,6 +84,8 @@ exports.tenthingsTelegramBotRoute.post("/", async (req, res) => {
                 }
                 catch (err) {
                     console.log("Resetting game: ", existingGame._id);
+                    if (!res.headersSent)
+                        res.sendStatus(200);
                     return (0, maingame_1.newRound)(existingGame);
                 }
                 await (0, commands_1.evaluate)(msg, existingGame, false);
