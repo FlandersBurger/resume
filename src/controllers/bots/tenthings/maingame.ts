@@ -42,9 +42,7 @@ export const createMaingame = async (platformSettings: {
 //  ██████ ██   ██ ███████  ██████ ██   ██     ██   ██  ██████   ██████  ██   ████ ██████
 
 export const checkRound = (game: IGame) => {
-  if (game.chat_id === 592503547) console.log(game.list.values.filter(({ guesser }) => !guesser).length);
   if (game.list.values.filter(({ guesser }) => !guesser).length === 0) {
-    console.log("the round has ended");
     setTimeout(async () => {
       game.provider.mainGameMessage(game);
       const foundList = await List.findOne({ _id: game.list._id }).exec();

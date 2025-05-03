@@ -147,6 +147,7 @@ export const telegram: Provider = {
     } else {
       message = `<b>${game.list.name}</b>\n`;
     }
+    if (game.chat_id === 592503547) console.log(game.list.values);
     message += game.list.values.reduce((str, { guesser, value }, index) => {
       if (long) {
         if (!guesser) {
