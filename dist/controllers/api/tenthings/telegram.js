@@ -13,6 +13,7 @@ const queue_1 = require("../../bots/tenthings/providers/telegram/queue");
 const callbacks_1 = __importDefault(require("../../bots/tenthings/providers/telegram/callbacks"));
 const commands_1 = require("../../bots/tenthings/providers/telegram/commands");
 const jobs_1 = __importDefault(require("../../bots/tenthings/jobs"));
+const mongoose_1 = require("mongoose");
 console.log(`Scheduled Jobs:\n${jobs_1.default
     .map((j) => ` - ${j.name}: ${moment_1.default.duration((0, moment_1.default)(new Date()).diff(j.nextInvocation())).humanize(true)}`)
     .join("\n")}`);
@@ -68,7 +69,7 @@ exports.tenthingsTelegramBotRoute.post("/", async (req, res) => {
         }
         else {
             if (!existingGame.enabled) {
-                if (typeof existingGame.streak.player === "number") {
+                if (!(0, mongoose_1.isValidObjectId)(existingGame.streak.player)) {
                     console.log("resetting streaker");
                     existingGame.streak.player = undefined;
                 }
