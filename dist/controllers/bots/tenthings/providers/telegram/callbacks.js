@@ -55,6 +55,17 @@ exports.default = async (callbackQuery) => {
     if (!game) {
         return;
     }
+    try {
+        await game.validate();
+    }
+    catch (err) {
+        game.guessers = [];
+        game.streak.player = undefined;
+        game.list.values = game.list.values.map((v) => ({ ...v, guesser: undefined }));
+        await game.save();
+        console.log("Game reset:", game._id);
+        return;
+    }
     const player = await (0, players_1.getPlayer)(game, callbackQuery.from);
     if (!player || player.banned) {
         return;
