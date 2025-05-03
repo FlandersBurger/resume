@@ -1,5 +1,5 @@
 import { HydratedDocument } from "mongoose";
-import { IGame, IGameListValue } from "@models/tenthings/game";
+import { IGame } from "@models/tenthings/game";
 import { IList } from "@models/tenthings/list";
 import { IPlayer } from "@models/tenthings/player";
 import { IUser } from "@models/user";
@@ -54,7 +54,7 @@ export const getGuessedMessage = (language: string, answer: string, guesser: str
   return `<b>${i18n(language, "sentences.guessedBy", { answer, guesser })}</b> `;
 };
 
-export const getSnubbedMessage = (match: string, loser: IPlayer, winner: IGameListValue["guesser"]): string => {
+export const getSnubbedMessage = (match: string, loser: IPlayer, winner: IPlayer): string => {
   if (!winner) return "";
   const loserName = getPlayerName(loser);
   const winnerName = getPlayerName(winner);

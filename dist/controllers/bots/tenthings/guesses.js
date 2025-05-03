@@ -102,7 +102,7 @@ guessQueue.process(async ({ data }, done) => {
     done();
 });
 const processGuess = async (guess) => {
-    const game = await index_1.Game.findOne({ chat_id: guess.game }).populate("list.creator");
+    const game = await index_1.Game.findOne({ chat_id: guess.game }).populate("list.creator").populate("list.values.guesser");
     if (!game) {
         console.error(`Game not found`);
         return console.error(guess);

@@ -30,7 +30,7 @@ export enum GameType {
 export interface IGameListValue {
   value: string;
   blurb: string;
-  guesser?: IPlayer;
+  guesser?: Types.ObjectId | IPlayer;
 }
 
 export interface IGameList {

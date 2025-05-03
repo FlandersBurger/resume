@@ -1,6 +1,6 @@
 import { TelegramUser } from "@root/connections/telegram";
 import { Player } from "@models/index";
-import { IGame, IGameListValue } from "@models/tenthings/game";
+import { IGame } from "@models/tenthings/game";
 import { IPlayer } from "@models/tenthings/player";
 import { parseSymbols, maskUrls } from "@root/utils/string-helpers";
 import { Message } from "./messages";
@@ -21,7 +21,7 @@ export const getPlayer = async (game: IGame, from: TelegramUser | IPlayer): Prom
   return player;
 };
 
-export const getPlayerName = (player: TelegramUser | IPlayer | IGameListValue["guesser"], tagged = false): string => {
+export const getPlayerName = (player: TelegramUser | IPlayer, tagged = false): string => {
   if (!player) return "Player 404";
   return player.username ? (tagged ? "@" : "") + player.username : maskUrls(parseSymbols(player.first_name));
 };

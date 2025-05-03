@@ -29,7 +29,7 @@ const createMaingame = async (platformSettings) => {
 };
 exports.createMaingame = createMaingame;
 const checkRound = (game) => {
-    if (game.list.values.filter(({ guesser }) => !guesser?.first_name).length === 0) {
+    if (game.list.values.filter(({ guesser }) => !guesser).length === 0) {
         setTimeout(async () => {
             game.provider.mainGameMessage(game);
             const foundList = await index_1.List.findOne({ _id: game.list._id }).exec();
@@ -53,7 +53,8 @@ const newRound = async (currentGame) => {
         _id: currentGame._id,
     })
         .select("_id chat_id topicId provider playedLists list listsPlayed pickedLists cycles guessers hints disabledCategories settings")
-        .populate("list.creator");
+        .populate("list.creator")
+        .populate("list.values.guesser");
     if (!game)
         return console.log("Game not found");
     let players = await index_1.Player.find({
@@ -122,7 +123,6 @@ const checkMaingame = async (game, player, guess) => {
     }
     if (!(0, some_1.default)(game.guessers, (guesser) => guesser == player._id)) {
         if (game.guessers) {
-            game.guessers = game.guessers.filter((guesser) => typeof guesser !== "number");
             game.guessers.push(player._id);
         }
         else
@@ -133,8 +133,8 @@ const checkMaingame = async (game, player, guess) => {
         telegram_1.default.notifyAdmin(`Something wrong with this guess:\n${JSON.stringify(guess)}`);
         console.error(`Something wrong with this guess:\n${JSON.stringify(guess)}`);
     }
-    if (match && !match.guesser?.first_name) {
-        match.guesser = player;
+    if (match && !match.guesser) {
+        match.guesser = player._id;
         player.answers++;
         const score = (0, guesses_1.getAnswerScore)(game.hints, guess.match.distance, game.guessers.length);
         const accuracy = `${(guess.match.distance * 100).toFixed(0)}%`;

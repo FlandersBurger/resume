@@ -24,6 +24,7 @@ const resetDailyScore = () => {
         })
             .select("chat_id topicId telegramChannel list date hints")
             .populate("list.creator")
+            .populate("list.values.guesser")
             .then(async (games) => {
             const dailyPlayers = await index_1.Player.find({
                 scoreDaily: { $gt: 0 },

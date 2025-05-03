@@ -42,7 +42,7 @@ export const createMaingame = async (platformSettings: {
 //  ██████ ██   ██ ███████  ██████ ██   ██     ██   ██  ██████   ██████  ██   ████ ██████
 
 export const checkRound = (game: IGame) => {
-  if (game.list.values.filter(({ guesser }) => !guesser?.first_name).length === 0) {
+  if (game.list.values.filter(({ guesser }) => !guesser).length === 0) {
     setTimeout(async () => {
       game.provider.mainGameMessage(game);
       const foundList = await List.findOne({ _id: game.list._id }).exec();
@@ -74,7 +74,8 @@ export const newRound = async (currentGame: IGame) => {
     .select(
       "_id chat_id topicId provider playedLists list listsPlayed pickedLists cycles guessers hints disabledCategories settings",
     )
-    .populate("list.creator");
+    .populate("list.creator")
+    .populate("list.values.guesser");
   if (!game) return console.log("Game not found");
   let players = await Player.find({
     game: currentGame._id,
@@ -151,7 +152,6 @@ export const checkMaingame = async (game: HydratedDocument<IGame>, player: Hydra
   }
   if (!some(game.guessers, (guesser: Types.ObjectId) => guesser == player._id)) {
     if (game.guessers) {
-      game.guessers = game.guessers.filter((guesser: any) => typeof guesser !== "number");
       game.guessers.push(player._id);
     } else game.guessers = [player._id];
   }
@@ -160,8 +160,8 @@ export const checkMaingame = async (game: HydratedDocument<IGame>, player: Hydra
     bot.notifyAdmin(`Something wrong with this guess:\n${JSON.stringify(guess)}`);
     console.error(`Something wrong with this guess:\n${JSON.stringify(guess)}`);
   }
-  if (match && !match.guesser?.first_name) {
-    match.guesser = player;
+  if (match && !match.guesser) {
+    match.guesser = player._id;
     player.answers++;
     const score = getAnswerScore(game.hints, guess.match.distance, game.guessers.length);
     const accuracy = `${(guess.match.distance * 100).toFixed(0)}%`;
@@ -191,7 +191,7 @@ export const checkMaingame = async (game: HydratedDocument<IGame>, player: Hydra
   } else if (match) {
     player.snubs++;
     if (game.settings.snubs) {
-      game.provider.message(game, getSnubbedMessage(parseSymbols(match.value), player, match.guesser));
+      game.provider.message(game, getSnubbedMessage(parseSymbols(match.value), player, match.guesser as IPlayer));
     }
   }
   try {

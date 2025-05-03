@@ -53,7 +53,7 @@ exports.telegram = {
         })}\n`;
         message += game.list.values.reduce((str, { guesser, value }, index) => {
             str += `\t${index + 1}: ${(0, string_helpers_1.parseSymbols)(value)} - <i>`;
-            if (!guesser || !guesser.first_name) {
+            if (!guesser) {
                 str += (0, i18n_1.default)(game.settings.language, "sentences.notGuessed");
             }
             else {
@@ -108,7 +108,7 @@ exports.telegram = {
         }
         message += game.list.values.reduce((str, { guesser, value }, index) => {
             if (long) {
-                if (!guesser?.first_name) {
+                if (!guesser) {
                     str += `\t<b>${index + 1}:</b> `;
                     str += `<b>${(0, hints_1.getHint)(game.hints, value)}</b>`;
                     str += "\n";
@@ -120,7 +120,7 @@ exports.telegram = {
                 }
             }
             else {
-                if (!guesser?.first_name) {
+                if (!guesser) {
                     str += "\t";
                     str += index + 1;
                     str += ": ";
@@ -174,11 +174,11 @@ const guessed = async (game, player, value, blurb, score, accuracy) => {
     message += `\n<u>${player.scoreDaily - score} + ${(0, i18n_1.default)(game.settings.language, "point", {
         count: score,
     })} (${accuracy})</u>`;
-    const answersLeft = game.list.values.filter(({ guesser }) => !guesser?.first_name);
+    const answersLeft = game.list.values.filter(({ guesser }) => !guesser);
     if (answersLeft.length > 0) {
         message += `\n<b>${game.list.name}</b>`;
         message += game.list.values.reduce((str, { guesser, value }, index) => {
-            if (!guesser?.first_name) {
+            if (!guesser) {
                 str += "\n\t";
                 str += index + 1;
                 str += ": ";

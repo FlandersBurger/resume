@@ -61,10 +61,10 @@ export const telegram: Provider = {
     })}\n`;
     message += game.list.values.reduce((str, { guesser, value }, index) => {
       str += `\t${index + 1}: ${parseSymbols(value)} - <i>`;
-      if (!guesser || !guesser.first_name) {
+      if (!guesser) {
         str += i18n(game.settings.language, "sentences.notGuessed");
       } else {
-        str += getPlayerName(guesser);
+        str += getPlayerName(guesser as IPlayer);
       }
       str += "</i>\n";
       return str;
@@ -149,17 +149,17 @@ export const telegram: Provider = {
     }
     message += game.list.values.reduce((str, { guesser, value }, index) => {
       if (long) {
-        if (!guesser?.first_name) {
+        if (!guesser) {
           str += `\t<b>${index + 1}:</b> `;
           str += `<b>${getHint(game.hints, value)}</b>`;
           str += "\n";
         } else {
           str += `\t${index + 1}: `;
-          str += `${parseSymbols(value)} - <i>${getPlayerName(guesser)}</i>`;
+          str += `${parseSymbols(value)} - <i>${getPlayerName(guesser as IPlayer)}</i>`;
           str += "\n";
         }
       } else {
-        if (!guesser?.first_name) {
+        if (!guesser) {
           str += "\t";
           str += index + 1;
           str += ": ";
@@ -220,11 +220,11 @@ const guessed = async (game: IGame, player: IPlayer, value: string, blurb: strin
   message += `\n<u>${player.scoreDaily - score} + ${i18n(game.settings.language, "point", {
     count: score,
   })} (${accuracy})</u>`;
-  const answersLeft = game.list.values.filter(({ guesser }) => !guesser?.first_name);
+  const answersLeft = game.list.values.filter(({ guesser }) => !guesser);
   if (answersLeft.length > 0) {
     message += `\n<b>${game.list.name}</b>`;
     message += game.list.values.reduce((str, { guesser, value }, index) => {
-      if (!guesser?.first_name) {
+      if (!guesser) {
         str += "\n\t";
         str += index + 1;
         str += ": ";
