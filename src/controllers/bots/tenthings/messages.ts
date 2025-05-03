@@ -1,47 +1,16 @@
-import { HydratedDocument } from "mongoose";
-import { IGame } from "@models/tenthings/game";
-import { IList } from "@models/tenthings/list";
 import { IPlayer } from "@models/tenthings/player";
-import { IUser } from "@models/user";
-import { parseSymbols } from "@root/utils/string-helpers";
 
-import moment from "moment";
-const MAXHINTS = 6;
-
-import categories, { getCategoryLabel } from "./categories";
-import { makePercentage } from "@root/utils/number-helpers";
-import { capitalize } from "@root/utils/string-helpers";
 import i18n, { t_list } from "@root/i18n";
-import emojis from "./emojis";
-import { getListScore } from "./lists";
-import { BotLanguage } from "./languages";
 import { getPlayerName } from "./players";
 
-export const getLogicMessage = (language: string): string => {
-  const rules = t_list(language, "rules", { maxHints: MAXHINTS, returnObjects: true });
-  return rules.reduce((message: string, rule: string, i: number) => `${message}${i + 1}: ${rule}\n`, "");
-};
+const MAXHINTS = 6;
 
-export const getCategoriesMessage = (game: IGame): string => {
-  return Object.keys(categories)
-    .sort()
-    .map(
-      (category) =>
-        `*${i18n(game.settings.language, category, { ns: "categories" })}*\n` +
-        categories[category]
-          .sort()
-          .map(
-            (subcategory) =>
-              ` - ${i18n(game.settings.language, `${category}.${subcategory}`, { ns: "categories" })}` +
-              `${game.disabledCategories.includes(`${category}.${subcategory}`) ? emojis.off : emojis.on}`,
-          )
-          .join("\n"),
-    )
-    .join("\n");
+export const getRules = (language: string): string[] => {
+  return t_list(language, "rules", { maxHints: MAXHINTS, returnObjects: true });
 };
 
 export const getGuessedMessage = (language: string, answer: string, guesser: string): string => {
-  return `<b>${i18n(language, "sentences.guessedBy", { answer, guesser })}</b> `;
+  return i18n(language, "sentences.guessedBy", { answer, guesser });
 };
 
 export const getSnubbedMessage = (match: string, loser: IPlayer, winner: IPlayer): string => {
@@ -97,15 +66,7 @@ export const getSnubbedMessage = (match: string, loser: IPlayer, winner: IPlayer
     }
   }
 };
-export const getListMessage = (list: HydratedDocument<IList> | IList): string => {
-  let msg = `<b>${list.name}</b> [${list.language}]\n`;
-  msg += `<i>by ${(list.creator as IUser).username}</i>\n`;
-  msg += `${list.description ? `${parseSymbols(list.description)}\n` : ""}`;
-  msg += ` - Categories: ${getCategoryLabel(BotLanguage.EN, list)}\n`;
-  msg += list.difficulty ? ` - Difficulty: ${getDifficultyMessage(list.difficulty)}\n` : "";
-  msg += list.frequency ? ` - Frequency: ${capitalize(getFrequencyMessage(list.frequency))} changes\n` : "";
-  return msg;
-};
+
 export const getFrequencyMessage = (frequency: number): string => {
   switch (frequency) {
     case 0:
@@ -131,53 +92,6 @@ export const getDifficultyMessage = (difficulty: number): string => {
     default:
       return "";
   }
-};
-export const getListStats = (language: string, list: IList, requestor: string | undefined): string => {
-  var message = "";
-  message += requestor ? `<i>${i18n(language, "sentences.requestedBy", { requestor })}</i>\n` : "";
-  message += `${i18n(language, "stats.misc", { something: list.name })}\n`;
-  message += `\t${i18n(language, "createdOn")}: ${moment(list.date).format("DD-MMM-YYYY")}\n`;
-  message += `\t${i18n(language, "modifiedOn")}: ${moment(list.modifyDate).format("DD-MMM-YYYY")}\n`;
-  message += `\t${i18n(language, "score")}: ${makePercentage(getListScore(list))}\n`;
-  message += `\t${i18n(language, "votes")}: ${list.votes.filter(({ vote }) => vote > 0).length} ${emojis.thumbsUp} / ${
-    list.votes.filter(({ vote }) => vote < 0).length
-  } ${emojis.thumbsDown}\n`;
-  message += `\t${i18n(language, "values")}: ${list.values.length}\n`;
-  message += `\t${i18n(language, "plays")}: ${list.plays} (${
-    list.plays ? makePercentage((list.plays - list.skips) / list.plays) : ""
-  })\n`;
-  message += `\t${i18n(language, "skips")}: ${list.skips}\n`;
-  message += `\t${i18n(language, "hints")}: ${list.hints}\n`;
-  if (requestor) {
-    if (list.plays)
-      message += `\t${i18n(language, "difficulty")}: ${makePercentage(list.hints / 6 / (list.plays - list.skips))}\n`;
-    message += `\t${i18n(language, "createdOn")}: ${moment(list.date).format("DD-MMM-YYYY")}\n`;
-    message += `\t${i18n(language, "modifiedOn")}: ${moment(list.modifyDate).format("DD-MMM-YYYY")}\n`;
-  }
-  return message;
-};
-export const getPlayerStats = (player: IPlayer, requestor: string | undefined): string => {
-  if (!player) return "Trouble with you stats, skipper. Sorry!";
-  var message = "";
-  message += requestor ? `<i>Requested by ${requestor}</i>\n` : "";
-  message += "<b>Personal Stats for " + getPlayerName(player) + "</b>\n";
-  message += "Total Score: " + player.score + "\n";
-  message += "High Score: " + player.highScore + "\n";
-  message += "Average Score: " + Math.round(player.score / player.plays) + "\n";
-  message += player.wins + " wins out of " + player.plays + " days played\n";
-  message += "Correct answers given: " + player.answers + "\n";
-  message += `Minigame Answers Given: ${player.minigamePlays}\n`;
-  message += "Correct answers snubbed: " + player.snubs + "\n";
-  message += "Hints asked: " + player.hints + "\n";
-  message += "Suggestions given: " + player.suggestions + "\n";
-  message += "Lists played: " + player.lists + "\n";
-  message += "Lists skipped: " + player.skips + "\n";
-  message += "Best answer streak: " + player.streak + "\n";
-  message += "Current play streak: " + player.playStreak + "\n";
-  message += "Best play streak: " + player.maxPlayStreak + "\n";
-  message += "Current no hint streak: " + player.hintStreak + "\n";
-  message += "Best no hint streak: " + player.maxHintStreak + "\n";
-  return message;
 };
 export const getStreakMessage = (streak: number): string => {
   let messages: string[] = [];
@@ -362,11 +276,7 @@ export const getStreakMessage = (streak: number): string => {
     default:
       messages = [];
   }
-  return (
-    "\n--- " +
-    (messages.length > 0 ? messages[Math.floor(Math.random() * messages.length)] : `Streak: ${streak}`) +
-    " ---"
-  );
+  return messages.length > 0 ? messages[Math.floor(Math.random() * messages.length)] : `Streak: ${streak}`;
 };
 
 export const getDailyMessage = () => {

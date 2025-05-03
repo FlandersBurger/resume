@@ -3,7 +3,7 @@ import { GameType, IGame } from "@models/tenthings/game";
 import { Game, List } from "@models/index";
 import { HydratedDocument, LeanDocument } from "mongoose";
 import { convertTelegramUserToPlayer, TelegramMessage } from "@tenthings/providers/telegram";
-import { getCategoriesMessage, getLogicMessage } from "@tenthings/messages";
+import { getRules } from "@tenthings/messages";
 import { deactivate, newRound } from "@tenthings/maingame";
 import { createMinigame, updateMinigames } from "@tenthings/minigame";
 import { createTinygame } from "@tenthings/tinygame";
@@ -15,17 +15,17 @@ import { IList } from "@models/tenthings/list";
 import i18n from "@root/i18n";
 
 import { getPlayerName } from "@tenthings/players";
-import { getQueue } from "@root/controllers/bots/tenthings/providers/telegram/queue";
+import { getQueue } from "@tenthings/providers/telegram/queue";
 import { checkSkipper, processSkip, vetoSkip } from "@tenthings/skips";
-import { getStats } from "@tenthings/stats";
+import { getStats } from "@tenthings/providers/telegram/stats";
 import { categoriesKeyboard, listsKeyboard, settingsKeyboard, statsKeyboard } from "./keyboards";
 import bot from "@root/connections/telegram";
 import {
   checkSuggestionProvided,
   sendSuggestion,
   sendSuggestionMessage,
-} from "@root/controllers/bots/tenthings/providers/telegram/suggestions";
-import { adminOnly } from "@root/controllers/bots/tenthings/providers/telegram/errors";
+} from "@tenthings/providers/telegram/suggestions";
+import { adminOnly } from "@tenthings/providers/telegram/errors";
 
 export enum Command {
   Start = "start",
@@ -127,7 +127,13 @@ export const evaluate = async (msg: TelegramMessage, game: HydratedDocument<IGam
         );
         break;
       case Command.Logic:
-        bot.queueMessage(game.telegramChannel, getLogicMessage(game.settings.language));
+        bot.queueMessage(
+          game.telegramChannel,
+          getRules(game.settings.language).reduce(
+            (message: string, rule: string, i: number) => `${message}${i + 1}: ${rule}\n`,
+            "",
+          ),
+        );
         break;
       case Command.Commands:
         bot.queueMessage(
@@ -298,7 +304,7 @@ export const evaluate = async (msg: TelegramMessage, game: HydratedDocument<IGam
               categoriesKeyboard(game),
             );
           } else {
-            bot.queueMessage(game.telegramChannel, getCategoriesMessage(game));
+            bot.queueMessage(game.telegramChannel, game.provider.categoriesMessage(game));
           }
         }
         break;

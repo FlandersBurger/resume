@@ -15,7 +15,7 @@ const i18n_1 = __importDefault(require("../../../../../i18n"));
 const categories_1 = require("../../categories");
 const emojis_1 = __importDefault(require("../../emojis"));
 const bans_1 = require("../../providers/telegram/bans");
-const stats_1 = require("../../stats");
+const stats_1 = require("../../providers/telegram/stats");
 const cache_1 = require("../../cache");
 const keyboards_1 = require("./keyboards");
 const telegram_1 = __importDefault(require("../../../../../connections/telegram"));
@@ -266,7 +266,7 @@ exports.default = async (callbackQuery) => {
                     .exec();
                 if (!list)
                     return;
-                let msg = (0, messages_1.getListMessage)(list);
+                let msg = game.provider.listMessage(list);
                 msg += ` - Created: ${(0, moment_1.default)(list.date).format("DD-MMM-YYYY")}\n`;
                 msg += ` - Modified: ${(0, moment_1.default)(list.modifyDate).format("DD-MMM-YYYY")}\n`;
                 msg += ` - Score: ${(0, number_helpers_1.makePercentage)(list.score)}\n`;

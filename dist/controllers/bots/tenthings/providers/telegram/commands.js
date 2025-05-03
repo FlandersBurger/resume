@@ -17,13 +17,13 @@ const guesses_1 = require("../../guesses");
 const lists_1 = require("../../lists");
 const i18n_1 = __importDefault(require("../../../../../i18n"));
 const players_1 = require("../../players");
-const queue_1 = require("../../../../../controllers/bots/tenthings/providers/telegram/queue");
+const queue_1 = require("../../providers/telegram/queue");
 const skips_1 = require("../../skips");
-const stats_1 = require("../../stats");
+const stats_1 = require("../../providers/telegram/stats");
 const keyboards_1 = require("./keyboards");
 const telegram_2 = __importDefault(require("../../../../../connections/telegram"));
-const suggestions_1 = require("../../../../../controllers/bots/tenthings/providers/telegram/suggestions");
-const errors_1 = require("../../../../../controllers/bots/tenthings/providers/telegram/errors");
+const suggestions_1 = require("../../providers/telegram/suggestions");
+const errors_1 = require("../../providers/telegram/errors");
 var Command;
 (function (Command) {
     Command["Start"] = "start";
@@ -106,7 +106,7 @@ const evaluate = async (msg, game, isNew) => {
                 }));
                 break;
             case Command.Logic:
-                telegram_2.default.queueMessage(game.telegramChannel, (0, messages_1.getLogicMessage)(game.settings.language));
+                telegram_2.default.queueMessage(game.telegramChannel, (0, messages_1.getRules)(game.settings.language).reduce((message, rule, i) => `${message}${i + 1}: ${rule}\n`, ""));
                 break;
             case Command.Commands:
                 telegram_2.default.queueMessage(game.telegramChannel, userCommands
@@ -239,7 +239,7 @@ const evaluate = async (msg, game, isNew) => {
                         telegram_2.default.sendKeyboard(game.telegramChannel, `<b>${(0, i18n_1.default)(game.settings.language, "category")}</b>`, (0, keyboards_1.categoriesKeyboard)(game));
                     }
                     else {
-                        telegram_2.default.queueMessage(game.telegramChannel, (0, messages_1.getCategoriesMessage)(game));
+                        telegram_2.default.queueMessage(game.telegramChannel, game.provider.categoriesMessage(game));
                     }
                 }
                 break;

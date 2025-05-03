@@ -16,4 +16,6 @@ export type Provider = {
   miniGameGuessed: (game: IGame, player: IPlayer, score: number, accuracy: string) => void;
   tinyGameMessage: (game: IGame) => void;
   tinyGameGuessed: (game: IGame, player: IPlayer, score: number, accuracy: string) => void;
+  listMessage: (list: IList) => string;
+  categoriesMessage: (game: IGame) => string;
 };

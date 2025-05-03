@@ -24,4 +24,6 @@ export const web: Provider = {
   miniGameGuessed: () => {},
   tinyGameMessage: () => {},
   tinyGameGuessed: () => {},
+  listMessage: () => "",
+  categoriesMessage: () => "",
 };

@@ -7,7 +7,7 @@ import { makePercentage } from "@root/utils/number-helpers";
 import find from "lodash/find";
 
 import moment from "moment";
-import { getDifficultyMessage, getFrequencyMessage, getListMessage } from "@tenthings/messages";
+import { getDifficultyMessage, getFrequencyMessage } from "@tenthings/messages";
 import { getListScore } from "@tenthings/lists";
 
 import i18n from "@root/i18n";
@@ -15,7 +15,7 @@ import i18n from "@root/i18n";
 import { setDisabledCategories } from "@tenthings/categories";
 import emojis from "@tenthings/emojis";
 import { initiateBan, processBan } from "@tenthings/providers/telegram/bans";
-import { getScores, getStats } from "@tenthings/stats";
+import { getScores, getStats } from "@tenthings/providers/telegram/stats";
 import { votersCache } from "@tenthings/cache";
 import {
   categoriesKeyboard,
@@ -327,7 +327,7 @@ export default async (callbackQuery: TelegramCallbackData) => {
           .populate("creator")
           .exec();
         if (!list) return;
-        let msg = getListMessage(list);
+        let msg = game.provider.listMessage(list);
         msg += ` - Created: ${moment(list.date).format("DD-MMM-YYYY")}\n`;
         msg += ` - Modified: ${moment(list.modifyDate).format("DD-MMM-YYYY")}\n`;
         msg += ` - Score: ${makePercentage(list.score)}\n`;

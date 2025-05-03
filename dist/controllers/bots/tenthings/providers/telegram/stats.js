@@ -3,16 +3,17 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getStats = exports.getScores = void 0;
+exports.getStats = exports.getListStats = exports.getScores = void 0;
 const moment_1 = __importDefault(require("moment"));
 const find_1 = __importDefault(require("lodash/find"));
-const index_1 = require("../../../models/index");
-const messages_1 = require("./messages");
-const telegram_1 = __importDefault(require("../../../connections/telegram"));
-const i18n_1 = __importDefault(require("../../../i18n"));
-const number_helpers_1 = require("../../../utils/number-helpers");
-const string_helpers_1 = require("../../../utils/string-helpers");
-const players_1 = require("./players");
+const index_1 = require("../../../../../models/index");
+const telegram_1 = __importDefault(require("../../../../../connections/telegram"));
+const i18n_1 = __importDefault(require("../../../../../i18n"));
+const number_helpers_1 = require("../../../../../utils/number-helpers");
+const string_helpers_1 = require("../../../../../utils/string-helpers");
+const players_1 = require("../../players");
+const lists_1 = require("../../lists");
+const emojis_1 = __importDefault(require("../../emojis"));
 const getScores = async (game, type) => {
     const players = await index_1.Player.find({ game: game._id }).exec();
     let str = "";
@@ -73,6 +74,51 @@ const getScores = async (game, type) => {
     }
 };
 exports.getScores = getScores;
+const getListStats = (language, list, requestor) => {
+    var message = "";
+    message += requestor ? `<i>${(0, i18n_1.default)(language, "sentences.requestedBy", { requestor })}</i>\n` : "";
+    message += `${(0, i18n_1.default)(language, "stats.misc", { something: list.name })}\n`;
+    message += `\t${(0, i18n_1.default)(language, "createdOn")}: ${(0, moment_1.default)(list.date).format("DD-MMM-YYYY")}\n`;
+    message += `\t${(0, i18n_1.default)(language, "modifiedOn")}: ${(0, moment_1.default)(list.modifyDate).format("DD-MMM-YYYY")}\n`;
+    message += `\t${(0, i18n_1.default)(language, "score")}: ${(0, number_helpers_1.makePercentage)((0, lists_1.getListScore)(list))}\n`;
+    message += `\t${(0, i18n_1.default)(language, "votes")}: ${list.votes.filter(({ vote }) => vote > 0).length} ${emojis_1.default.thumbsUp} / ${list.votes.filter(({ vote }) => vote < 0).length} ${emojis_1.default.thumbsDown}\n`;
+    message += `\t${(0, i18n_1.default)(language, "values")}: ${list.values.length}\n`;
+    message += `\t${(0, i18n_1.default)(language, "plays")}: ${list.plays} (${list.plays ? (0, number_helpers_1.makePercentage)((list.plays - list.skips) / list.plays) : ""})\n`;
+    message += `\t${(0, i18n_1.default)(language, "skips")}: ${list.skips}\n`;
+    message += `\t${(0, i18n_1.default)(language, "hints")}: ${list.hints}\n`;
+    if (requestor) {
+        if (list.plays)
+            message += `\t${(0, i18n_1.default)(language, "difficulty")}: ${(0, number_helpers_1.makePercentage)(list.hints / 6 / (list.plays - list.skips))}\n`;
+        message += `\t${(0, i18n_1.default)(language, "createdOn")}: ${(0, moment_1.default)(list.date).format("DD-MMM-YYYY")}\n`;
+        message += `\t${(0, i18n_1.default)(language, "modifiedOn")}: ${(0, moment_1.default)(list.modifyDate).format("DD-MMM-YYYY")}\n`;
+    }
+    return message;
+};
+exports.getListStats = getListStats;
+const getPlayerStats = (player, requestor) => {
+    if (!player)
+        return "Trouble with you stats, skipper. Sorry!";
+    var message = "";
+    message += requestor ? `<i>Requested by ${requestor}</i>\n` : "";
+    message += "<b>Personal Stats for " + (0, players_1.getPlayerName)(player) + "</b>\n";
+    message += "Total Score: " + player.score + "\n";
+    message += "High Score: " + player.highScore + "\n";
+    message += "Average Score: " + Math.round(player.score / player.plays) + "\n";
+    message += player.wins + " wins out of " + player.plays + " days played\n";
+    message += "Correct answers given: " + player.answers + "\n";
+    message += `Minigame Answers Given: ${player.minigamePlays}\n`;
+    message += "Correct answers snubbed: " + player.snubs + "\n";
+    message += "Hints asked: " + player.hints + "\n";
+    message += "Suggestions given: " + player.suggestions + "\n";
+    message += "Lists played: " + player.lists + "\n";
+    message += "Lists skipped: " + player.skips + "\n";
+    message += "Best answer streak: " + player.streak + "\n";
+    message += "Current play streak: " + player.playStreak + "\n";
+    message += "Best play streak: " + player.maxPlayStreak + "\n";
+    message += "Current no hint streak: " + player.hintStreak + "\n";
+    message += "Best no hint streak: " + player.maxHintStreak + "\n";
+    return message;
+};
 const getStats = async (game, data, requestor) => {
     const [type, _id] = data.split("_");
     let message = "";
@@ -157,7 +203,7 @@ const getStats = async (game, data, requestor) => {
                 telegram_1.default.queueMessage(game.telegramChannel, "Player not found");
             }
             else {
-                telegram_1.default.queueMessage(game.telegramChannel, (0, messages_1.getPlayerStats)(player, requestor));
+                telegram_1.default.queueMessage(game.telegramChannel, getPlayerStats(player, requestor));
             }
             break;
         case "l":
@@ -168,7 +214,7 @@ const getStats = async (game, data, requestor) => {
                 telegram_1.default.queueMessage(game.telegramChannel, "List not found");
             }
             else {
-                telegram_1.default.queueMessage(game.telegramChannel, (0, messages_1.getListStats)(game.settings.language, gameList, requestor));
+                telegram_1.default.queueMessage(game.telegramChannel, (0, exports.getListStats)(game.settings.language, gameList, requestor));
             }
             break;
         case "mostskipped":

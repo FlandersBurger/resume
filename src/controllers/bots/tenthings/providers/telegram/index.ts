@@ -1,18 +1,27 @@
 import i18n from "@root/i18n";
 import bot, { TelegramUser } from "@root/connections/telegram";
-import { getCategoryLabel } from "../../categories";
-import { maskUrls, parseSymbols } from "@root/utils/string-helpers";
+import categories, { getCategoryLabel } from "../../categories";
+import { capitalize, maskUrls, parseSymbols } from "@root/utils/string-helpers";
 import { IGame, IGameList, IGameListValue } from "@root/models/tenthings/game";
 import { IList } from "@root/models/tenthings/list";
 import { IUser } from "@root/models/user";
 import { Provider } from "..";
 import { IPlayer } from "@root/models/tenthings/player";
-import { getDailyMessage, getGuessedMessage, getListStats, getStreakMessage } from "@tenthings/messages";
+import {
+  getDailyMessage,
+  getDifficultyMessage,
+  getFrequencyMessage,
+  getGuessedMessage,
+  getStreakMessage,
+} from "@tenthings/messages";
 import { getPlayerName } from "@tenthings/players";
 import { getHint } from "@tenthings/hints";
 import { banListKeyboard } from "./keyboards";
 import { Player } from "@root/models";
 import { HydratedDocument } from "mongoose";
+import { BotLanguage } from "@tenthings/languages";
+import { getListStats } from "./stats";
+import emojis from "../../emojis";
 
 const getDailyScores = async ({ _id, settings }: IGame, limit = 0) => {
   const players = await Player.find({ game: _id, scoreDaily: { $gt: 0 } }).exec();
@@ -184,7 +193,7 @@ export const telegram: Provider = {
   },
   miniGameGuessed: (game: IGame, player: IPlayer, score: number, accuracy: string) => {
     let message = `${i18n(game.settings.language, "sentences.minigameAnswered")} (${accuracy}%)\n`;
-    message += getGuessedMessage(game.settings.language, game.minigame.answer, getPlayerName(player, true));
+    message += `<b>${getGuessedMessage(game.settings.language, game.minigame.answer, getPlayerName(player, true))}</b>`;
     message += `\n<u>${player.scoreDaily - score} + ${i18n(game.settings.language, "point", {
       count: score,
     })}</u>`;
@@ -201,11 +210,37 @@ export const telegram: Provider = {
   },
   tinyGameGuessed: (game: IGame, player: IPlayer, score: number, accuracy: string) => {
     let message = `${i18n(game.settings.language, "sentences.tinygameAnswered")} (${accuracy}%)\n`;
-    message += getGuessedMessage(game.settings.language, game.tinygame.answer, getPlayerName(player, true));
+    message += `<b>${getGuessedMessage(game.settings.language, game.tinygame.answer, getPlayerName(player, true))}</b>`;
     message += `\n<u>${player.scoreDaily - score} + ${i18n(game.settings.language, "point", {
       count: score,
     })}</u>`;
     bot.queueMessage(game.telegramChannel, message);
+  },
+  listMessage: (list: HydratedDocument<IList> | IList): string => {
+    let msg = `<b>${list.name}</b> [${list.language}]\n`;
+    msg += `<i>by ${(list.creator as IUser).username}</i>\n`;
+    msg += `${list.description ? `${parseSymbols(list.description)}\n` : ""}`;
+    msg += ` - Categories: ${getCategoryLabel(BotLanguage.EN, list)}\n`;
+    msg += list.difficulty ? ` - Difficulty: ${getDifficultyMessage(list.difficulty)}\n` : "";
+    msg += list.frequency ? ` - Frequency: ${capitalize(getFrequencyMessage(list.frequency))} changes\n` : "";
+    return msg;
+  },
+  categoriesMessage: (game: IGame): string => {
+    return Object.keys(categories)
+      .sort()
+      .map(
+        (category) =>
+          `*${i18n(game.settings.language, category, { ns: "categories" })}*\n` +
+          categories[category]
+            .sort()
+            .map(
+              (subcategory) =>
+                ` - ${i18n(game.settings.language, `${category}.${subcategory}`, { ns: "categories" })}` +
+                `${game.disabledCategories.includes(`${category}.${subcategory}`) ? emojis.off : emojis.on}`,
+            )
+            .join("\n"),
+      )
+      .join("\n");
   },
 };
 
@@ -216,8 +251,8 @@ export const telegram: Provider = {
 //  ██████   ██████  ███████ ███████ ███████ ███████ ██████
 
 const guessed = async (game: IGame, player: IPlayer, value: string, blurb: string, score: number, accuracy: string) => {
-  let message = getGuessedMessage(game.settings.language, parseSymbols(value), getPlayerName(player, true));
-  message += getStreakMessage(game.streak.count);
+  let message = `<b>${getGuessedMessage(game.settings.language, parseSymbols(value), getPlayerName(player, true))}</b>`;
+  message += "\n--- " + getStreakMessage(game.streak.count) + " ---\n";
   message += blurb;
   message += `\n<u>${player.scoreDaily - score} + ${i18n(game.settings.language, "point", {
     count: score,

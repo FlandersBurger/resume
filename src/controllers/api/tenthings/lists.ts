@@ -16,10 +16,10 @@ import Unsplash from "@root/connections/unsplash";
 import { IList, IListValue } from "@models/tenthings/list";
 import { List, User } from "@models/index";
 import { parseSymbols, removeAllButLetters } from "@root/utils/string-helpers";
-import { getListMessage } from "@tenthings/messages";
 import { getList, getListScore, getRandomList, mergeLists } from "@tenthings/lists";
 import { curateListKeyboard } from "@tenthings/providers/telegram/keyboards";
 import { every } from "lodash";
+import { telegram } from "@tenthings/providers/telegram";
 
 export const tenthingsListsRoute = Router();
 
@@ -156,7 +156,7 @@ tenthingsListsRoute.put("/:id", async (req: Request, res: Response) => {
       else {
         if (previousModifyDate < yesterday && !res.locals.isAdmin) {
           bot.notifyAdmins(
-            `<u>List Updated</u>\nUpdated by <i>${res.locals.user?.username}</i>\n${getListMessage(updatedList)}`,
+            `<u>List Updated</u>\nUpdated by <i>${res.locals.user?.username}</i>\n${telegram.listMessage(updatedList)}`,
             curateListKeyboard(list),
           );
         }
@@ -189,10 +189,10 @@ tenthingsListsRoute.post("/", async (req: Request, res: Response) => {
     else if (!list) res.sendStatus(500);
     else {
       if (!req.body.list._id) {
-        bot.notifyAdmins(`<u>List Created</u>\n${getListMessage(updatedList)}`, curateListKeyboard(updatedList));
+        bot.notifyAdmins(`<u>List Created</u>\n${telegram.listMessage(updatedList)}`, curateListKeyboard(updatedList));
       } else if (previousModifyDate < yesterday && !res.locals.isAdmin) {
         bot.notifyAdmins(
-          `<u>List Updated</u>\nUpdated by <i>${res.locals.user?.username}</i>\n${getListMessage(updatedList)}`,
+          `<u>List Updated</u>\nUpdated by <i>${res.locals.user?.username}</i>\n${telegram.listMessage(updatedList)}`,
           curateListKeyboard(list),
         );
       }
@@ -222,7 +222,7 @@ tenthingsListsRoute.post("/merge", async (req: Request, res: Response) => {
     else {
       res.json(updatedList);
       bot.notifyAdmins(
-        `<u>Lists Merged</u>\nUpdated by <i>${res.locals.user?.username}</i>\n${lists.reduce((result, list) => `${result} - ${parseSymbols(list.name)}\n`, "")}<b>→</b> ${getListMessage(updatedList)}`,
+        `<u>Lists Merged</u>\nUpdated by <i>${res.locals.user?.username}</i>\n${lists.reduce((result, list) => `${result} - ${parseSymbols(list.name)}\n`, "")}<b>→</b> ${telegram.listMessage(updatedList)}`,
         curateListKeyboard(updatedList),
       );
     }

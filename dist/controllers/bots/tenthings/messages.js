@@ -22,41 +22,17 @@ var __importStar = (this && this.__importStar) || function (mod) {
     __setModuleDefault(result, mod);
     return result;
 };
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getDailyMessage = exports.getStreakMessage = exports.getPlayerStats = exports.getListStats = exports.getDifficultyMessage = exports.getFrequencyMessage = exports.getListMessage = exports.getSnubbedMessage = exports.getGuessedMessage = exports.getCategoriesMessage = exports.getLogicMessage = void 0;
-const string_helpers_1 = require("../../../utils/string-helpers");
-const moment_1 = __importDefault(require("moment"));
-const MAXHINTS = 6;
-const categories_1 = __importStar(require("./categories"));
-const number_helpers_1 = require("../../../utils/number-helpers");
-const string_helpers_2 = require("../../../utils/string-helpers");
+exports.getDailyMessage = exports.getStreakMessage = exports.getDifficultyMessage = exports.getFrequencyMessage = exports.getSnubbedMessage = exports.getGuessedMessage = exports.getRules = void 0;
 const i18n_1 = __importStar(require("../../../i18n"));
-const emojis_1 = __importDefault(require("./emojis"));
-const lists_1 = require("./lists");
-const languages_1 = require("./languages");
 const players_1 = require("./players");
-const getLogicMessage = (language) => {
-    const rules = (0, i18n_1.t_list)(language, "rules", { maxHints: MAXHINTS, returnObjects: true });
-    return rules.reduce((message, rule, i) => `${message}${i + 1}: ${rule}\n`, "");
+const MAXHINTS = 6;
+const getRules = (language) => {
+    return (0, i18n_1.t_list)(language, "rules", { maxHints: MAXHINTS, returnObjects: true });
 };
-exports.getLogicMessage = getLogicMessage;
-const getCategoriesMessage = (game) => {
-    return Object.keys(categories_1.default)
-        .sort()
-        .map((category) => `*${(0, i18n_1.default)(game.settings.language, category, { ns: "categories" })}*\n` +
-        categories_1.default[category]
-            .sort()
-            .map((subcategory) => ` - ${(0, i18n_1.default)(game.settings.language, `${category}.${subcategory}`, { ns: "categories" })}` +
-            `${game.disabledCategories.includes(`${category}.${subcategory}`) ? emojis_1.default.off : emojis_1.default.on}`)
-            .join("\n"))
-        .join("\n");
-};
-exports.getCategoriesMessage = getCategoriesMessage;
+exports.getRules = getRules;
 const getGuessedMessage = (language, answer, guesser) => {
-    return `<b>${(0, i18n_1.default)(language, "sentences.guessedBy", { answer, guesser })}</b> `;
+    return (0, i18n_1.default)(language, "sentences.guessedBy", { answer, guesser });
 };
 exports.getGuessedMessage = getGuessedMessage;
 const getSnubbedMessage = (match, loser, winner) => {
@@ -115,16 +91,6 @@ const getSnubbedMessage = (match, loser, winner) => {
     }
 };
 exports.getSnubbedMessage = getSnubbedMessage;
-const getListMessage = (list) => {
-    let msg = `<b>${list.name}</b> [${list.language}]\n`;
-    msg += `<i>by ${list.creator.username}</i>\n`;
-    msg += `${list.description ? `${(0, string_helpers_1.parseSymbols)(list.description)}\n` : ""}`;
-    msg += ` - Categories: ${(0, categories_1.getCategoryLabel)(languages_1.BotLanguage.EN, list)}\n`;
-    msg += list.difficulty ? ` - Difficulty: ${(0, exports.getDifficultyMessage)(list.difficulty)}\n` : "";
-    msg += list.frequency ? ` - Frequency: ${(0, string_helpers_2.capitalize)((0, exports.getFrequencyMessage)(list.frequency))} changes\n` : "";
-    return msg;
-};
-exports.getListMessage = getListMessage;
 const getFrequencyMessage = (frequency) => {
     switch (frequency) {
         case 0:
@@ -153,52 +119,6 @@ const getDifficultyMessage = (difficulty) => {
     }
 };
 exports.getDifficultyMessage = getDifficultyMessage;
-const getListStats = (language, list, requestor) => {
-    var message = "";
-    message += requestor ? `<i>${(0, i18n_1.default)(language, "sentences.requestedBy", { requestor })}</i>\n` : "";
-    message += `${(0, i18n_1.default)(language, "stats.misc", { something: list.name })}\n`;
-    message += `\t${(0, i18n_1.default)(language, "createdOn")}: ${(0, moment_1.default)(list.date).format("DD-MMM-YYYY")}\n`;
-    message += `\t${(0, i18n_1.default)(language, "modifiedOn")}: ${(0, moment_1.default)(list.modifyDate).format("DD-MMM-YYYY")}\n`;
-    message += `\t${(0, i18n_1.default)(language, "score")}: ${(0, number_helpers_1.makePercentage)((0, lists_1.getListScore)(list))}\n`;
-    message += `\t${(0, i18n_1.default)(language, "votes")}: ${list.votes.filter(({ vote }) => vote > 0).length} ${emojis_1.default.thumbsUp} / ${list.votes.filter(({ vote }) => vote < 0).length} ${emojis_1.default.thumbsDown}\n`;
-    message += `\t${(0, i18n_1.default)(language, "values")}: ${list.values.length}\n`;
-    message += `\t${(0, i18n_1.default)(language, "plays")}: ${list.plays} (${list.plays ? (0, number_helpers_1.makePercentage)((list.plays - list.skips) / list.plays) : ""})\n`;
-    message += `\t${(0, i18n_1.default)(language, "skips")}: ${list.skips}\n`;
-    message += `\t${(0, i18n_1.default)(language, "hints")}: ${list.hints}\n`;
-    if (requestor) {
-        if (list.plays)
-            message += `\t${(0, i18n_1.default)(language, "difficulty")}: ${(0, number_helpers_1.makePercentage)(list.hints / 6 / (list.plays - list.skips))}\n`;
-        message += `\t${(0, i18n_1.default)(language, "createdOn")}: ${(0, moment_1.default)(list.date).format("DD-MMM-YYYY")}\n`;
-        message += `\t${(0, i18n_1.default)(language, "modifiedOn")}: ${(0, moment_1.default)(list.modifyDate).format("DD-MMM-YYYY")}\n`;
-    }
-    return message;
-};
-exports.getListStats = getListStats;
-const getPlayerStats = (player, requestor) => {
-    if (!player)
-        return "Trouble with you stats, skipper. Sorry!";
-    var message = "";
-    message += requestor ? `<i>Requested by ${requestor}</i>\n` : "";
-    message += "<b>Personal Stats for " + (0, players_1.getPlayerName)(player) + "</b>\n";
-    message += "Total Score: " + player.score + "\n";
-    message += "High Score: " + player.highScore + "\n";
-    message += "Average Score: " + Math.round(player.score / player.plays) + "\n";
-    message += player.wins + " wins out of " + player.plays + " days played\n";
-    message += "Correct answers given: " + player.answers + "\n";
-    message += `Minigame Answers Given: ${player.minigamePlays}\n`;
-    message += "Correct answers snubbed: " + player.snubs + "\n";
-    message += "Hints asked: " + player.hints + "\n";
-    message += "Suggestions given: " + player.suggestions + "\n";
-    message += "Lists played: " + player.lists + "\n";
-    message += "Lists skipped: " + player.skips + "\n";
-    message += "Best answer streak: " + player.streak + "\n";
-    message += "Current play streak: " + player.playStreak + "\n";
-    message += "Best play streak: " + player.maxPlayStreak + "\n";
-    message += "Current no hint streak: " + player.hintStreak + "\n";
-    message += "Best no hint streak: " + player.maxHintStreak + "\n";
-    return message;
-};
-exports.getPlayerStats = getPlayerStats;
 const getStreakMessage = (streak) => {
     let messages = [];
     switch (streak) {
@@ -382,9 +302,7 @@ const getStreakMessage = (streak) => {
         default:
             messages = [];
     }
-    return ("\n--- " +
-        (messages.length > 0 ? messages[Math.floor(Math.random() * messages.length)] : `Streak: ${streak}`) +
-        " ---");
+    return messages.length > 0 ? messages[Math.floor(Math.random() * messages.length)] : `Streak: ${streak}`;
 };
 exports.getStreakMessage = getStreakMessage;
 const getDailyMessage = () => {

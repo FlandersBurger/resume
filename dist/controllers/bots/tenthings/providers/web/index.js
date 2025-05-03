@@ -23,5 +23,7 @@ exports.web = {
     miniGameGuessed: () => { },
     tinyGameMessage: () => { },
     tinyGameGuessed: () => { },
+    listMessage: () => "",
+    categoriesMessage: () => "",
 };
 //# sourceMappingURL=index.js.map
