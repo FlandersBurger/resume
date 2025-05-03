@@ -79,7 +79,7 @@ exports.tenthingsTelegramBotRoute.post("/", async (req, res) => {
                 }
             }
             else {
-                if (existingGame.guessers.some((p) => !(0, mongoose_1.isValidObjectId)(p))) {
+                if (existingGame.guessers && existingGame.guessers.some((p) => !(0, mongoose_1.isValidObjectId)(p))) {
                     console.log("resetting guesser");
                     (0, maingame_1.newRound)(existingGame);
                 }

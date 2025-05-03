@@ -128,7 +128,7 @@ tenthingsTelegramBotRoute.post("/", async (req: Request, res: Response) => {
           await evaluate(msg, existingGame, false);
         }
       } else {
-        if (existingGame.guessers.some((p) => !isValidObjectId(p))) {
+        if (existingGame.guessers && existingGame.guessers.some((p) => !isValidObjectId(p))) {
           console.log("resetting guesser");
           newRound(existingGame);
         } else {
