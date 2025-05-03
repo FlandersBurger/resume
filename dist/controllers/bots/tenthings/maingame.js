@@ -29,7 +29,10 @@ const createMaingame = async (platformSettings) => {
 };
 exports.createMaingame = createMaingame;
 const checkRound = (game) => {
+    if (game.chat_id === 592503547)
+        console.log(game.list.values.filter(({ guesser }) => !guesser).length);
     if (game.list.values.filter(({ guesser }) => !guesser).length === 0) {
+        console.log("the round has ended");
         setTimeout(async () => {
             game.provider.mainGameMessage(game);
             const foundList = await index_1.List.findOne({ _id: game.list._id }).exec();
