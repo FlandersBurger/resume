@@ -106,6 +106,8 @@ exports.telegram = {
         else {
             message = `<b>${game.list.name}</b>\n`;
         }
+        if (game.chat_id === parseInt(process.env.MASTER_CHAT || ""))
+            console.log(message);
         message += game.list.values.reduce((str, { guesser, value }, index) => {
             if (long) {
                 if (!guesser?._id) {
@@ -120,7 +122,7 @@ exports.telegram = {
                 }
             }
             else {
-                if (!guesser) {
+                if (!guesser?._id) {
                     str += "\t";
                     str += index + 1;
                     str += ": ";
@@ -130,7 +132,8 @@ exports.telegram = {
             }
             return str;
         }, "");
-        console.log(message);
+        if (game.chat_id === parseInt(process.env.MASTER_CHAT || ""))
+            console.log(message);
         telegram_1.default.queueMessage(game.telegramChannel, message);
     },
     miniGameMessage: (game) => {

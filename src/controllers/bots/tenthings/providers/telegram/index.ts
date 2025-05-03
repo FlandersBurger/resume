@@ -147,6 +147,7 @@ export const telegram: Provider = {
     } else {
       message = `<b>${game.list.name}</b>\n`;
     }
+    if (game.chat_id === parseInt(process.env.MASTER_CHAT || "")) console.log(message);
     message += game.list.values.reduce((str, { guesser, value }, index) => {
       if (long) {
         if (!guesser?._id) {
@@ -159,7 +160,7 @@ export const telegram: Provider = {
           str += "\n";
         }
       } else {
-        if (!guesser) {
+        if (!guesser?._id) {
           str += "\t";
           str += index + 1;
           str += ": ";
@@ -169,7 +170,7 @@ export const telegram: Provider = {
       }
       return str;
     }, "");
-    console.log(message);
+    if (game.chat_id === parseInt(process.env.MASTER_CHAT || "")) console.log(message);
     bot.queueMessage(game.telegramChannel, message);
   },
   miniGameMessage: (game: IGame) => {

@@ -150,7 +150,7 @@ export const checkMaingame = async (game: HydratedDocument<IGame>, player: Hydra
   if (skipCache[game.chat_id]) {
     abortSkip(game, player);
   }
-  if (!some(game.guessers, (guesser: Types.ObjectId) => guesser == player._id)) {
+  if (!some(game.guessers, (guesser: Types.ObjectId) => guesser.equals(player._id))) {
     if (game.guessers) {
       game.guessers.push(player._id);
     } else game.guessers = [player._id];

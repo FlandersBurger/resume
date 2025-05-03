@@ -193,7 +193,6 @@ const evaluate = async (msg, game, isNew) => {
                 }
                 break;
             case Command.Hint:
-                console.log(game.list.values);
                 if (game.list.values.filter(({ guesser }) => guesser?._id).length !== 0) {
                     try {
                         (0, hints_1.processHint)(game, player);
