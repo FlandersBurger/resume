@@ -60,7 +60,10 @@ exports.default = async (callbackQuery) => {
     }
     catch (err) {
         game.guessers = [];
-        game.streak.player = undefined;
+        game.streak = {
+            player: undefined,
+            count: 0,
+        };
         game.list.values = game.list.values.map((v) => ({ ...v, guesser: undefined }));
         await game.save();
         console.log("Game reset:", game._id);
