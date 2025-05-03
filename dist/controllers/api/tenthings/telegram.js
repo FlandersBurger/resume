@@ -83,7 +83,7 @@ exports.tenthingsTelegramBotRoute.post("/", async (req, res) => {
                     await existingGame.validate();
                 }
                 catch (err) {
-                    console.log("resetting guesser");
+                    console.log("Resetting game: ", existingGame._id);
                     return (0, maingame_1.newRound)(existingGame);
                 }
                 await (0, commands_1.evaluate)(msg, existingGame, false);
