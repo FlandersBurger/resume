@@ -87,6 +87,15 @@ const newRound = async (currentGame) => {
     (0, hints_1.hintCooldown)(game.id);
     game.guessers = [];
     game.provider.newRound(game, list);
+    try {
+        await game.validate();
+    }
+    catch (err) {
+        game.streak = {
+            player: undefined,
+            count: 0,
+        };
+    }
     setTimeout(() => {
         game.provider.newList(game);
     }, 2000);

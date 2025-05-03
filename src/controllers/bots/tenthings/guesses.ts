@@ -120,7 +120,19 @@ guessQueue.process(async ({ data }, done) => {
   } catch (err) {
     const game = await Game.findOne({ chat_id: data.game });
     if (game) {
-      game.streak.player = undefined;
+      try {
+        await game.validate();
+      } catch (err) {
+        game.guessers = [];
+        game.streak = {
+          player: undefined,
+          count: 0,
+        };
+        game.list.values = game.list.values.map((v) => ({ ...v, guesser: undefined }));
+        await game.save();
+        console.log("Game reset:", game._id);
+        return;
+      }
       newRound(game);
     }
     bot.notifyAdmin(`Error in ProcessGuess`);
@@ -137,6 +149,20 @@ const processGuess = async (guess: Guess) => {
   if (!game) {
     console.error(`Game not found`);
     return console.error(guess);
+  } else {
+    try {
+      await game.validate();
+    } catch (err) {
+      game.guessers = [];
+      game.streak = {
+        player: undefined,
+        count: 0,
+      };
+      game.list.values = game.list.values.map((v) => ({ ...v, guesser: undefined }));
+      await game.save();
+      console.log("Game reset:", game._id);
+      return;
+    }
   }
   let player;
   try {
