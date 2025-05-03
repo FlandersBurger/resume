@@ -59,7 +59,7 @@ const newRound = async (currentGame) => {
         return console.log("Game not found");
     let players = await index_1.Player.find({
         game: currentGame._id,
-        id: { $in: game.guessers },
+        _id: { $in: game.guessers },
     }).exec();
     const list = await (0, lists_1.selectList)(game);
     if (game.pickedLists.length > 0) {
@@ -91,6 +91,8 @@ const newRound = async (currentGame) => {
         game.provider.newList(game);
     }, 2000);
     game.playedLists.push(game.list._id);
+    if (typeof game.streak.player === "number")
+        game.streak.player = undefined;
     await game.save();
     console.log(`${game.chat_id} - New round started -> "${list.name}"`);
 };

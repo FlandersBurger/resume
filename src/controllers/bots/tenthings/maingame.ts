@@ -79,7 +79,7 @@ export const newRound = async (currentGame: IGame) => {
   if (!game) return console.log("Game not found");
   let players = await Player.find({
     game: currentGame._id,
-    id: { $in: game.guessers },
+    _id: { $in: game.guessers },
   }).exec();
   const list: HydratedDocument<IList> = await selectList(game);
   if (game.pickedLists.length > 0) {
@@ -110,6 +110,7 @@ export const newRound = async (currentGame: IGame) => {
     game.provider.newList(game);
   }, 2000);
   game.playedLists.push(game.list._id);
+  if (typeof game.streak.player === "number") game.streak.player = undefined;
   await game.save();
   console.log(`${game.chat_id} - New round started -> "${list.name}"`);
 };
