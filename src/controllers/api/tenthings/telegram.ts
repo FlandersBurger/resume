@@ -1,13 +1,13 @@
 import { Router, Request, Response } from "express";
 import moment from "moment";
-import { Game, Player } from "@models/index";
-import { activate, createMaingame } from "@tenthings/maingame";
+// import { Game, Player } from "@models/index";
+// import { activate, createMaingame } from "@tenthings/maingame";
 
-import bot from "@root/connections/telegram";
+// import bot from "@root/connections/telegram";
 import { getQueue } from "@tenthings/providers/telegram/queue";
-import callbacks, { CallbackData } from "@tenthings/providers/telegram/callbacks";
-import { evaluate } from "@tenthings/providers/telegram/commands";
-import { Message } from "@tenthings/messages";
+// import callbacks, { CallbackData } from "@tenthings/providers/telegram/callbacks";
+// import { evaluate } from "@tenthings/providers/telegram/commands";
+// import { Message } from "@tenthings/messages";
 
 // DO NOT REMOVE jobs
 import jobs from "@tenthings/jobs";
@@ -79,69 +79,70 @@ bot.exportChatInviteLink('-1001394022777').then(function(chat) {
  ██      ██    ██      ██    ██    
  ██       ██████  ███████    ██    
 */
-tenthingsTelegramBotRoute.post("/", async (req: Request, res: Response) => {
-  const domainMessage = await bot.toDomainMessage(req.body);
-  switch (domainMessage.messageType) {
-    case MessageType.Ignore:
-      res.sendStatus(200);
-      return;
-    case MessageType.Callback:
-      await callbacks(domainMessage.message as CallbackData);
-      res.sendStatus(200);
-      return;
-    case MessageType.PlayerLeft:
-      const game = await Game.findOne({ chat_id: domainMessage.message!.chatId });
-      if (game) {
-        const player = await Player.findOne({ game: game._id, id: `${domainMessage.message!.from.id}` });
-        if (player) {
-          player.present = false;
-          player.save();
-        }
-      }
-      res.sendStatus(200);
-      return;
-    default:
-      break;
-  }
-  let msg: Message = domainMessage.message as Message;
-  if (!msg?.from?.id) {
-    if (!res.headersSent) res.sendStatus(200);
-  } else {
-    const existingGame = await Game.findOne({ chat_id: msg.chatId })
-      .populate("list.creator")
-      .populate("list.values.guesser")
-      .select("-playedLists")
-      .exec();
-    if (!existingGame) {
-      const newGame = await createMaingame({ chat_id: msg.chatId, platform: "telegram" });
-      console.log(`New game created for ${msg.chatId}`);
-      await evaluate(msg, newGame, true);
-    } else {
-      if (!existingGame.enabled) {
-        if (msg.command && ["list", "start", "minigame", "tinygame"].includes(msg.command)) {
-          await activate(existingGame, true);
-          await evaluate(msg, existingGame, false);
-        }
-      } else {
-        try {
-          await existingGame.validate();
-        } catch (err) {
-          existingGame.guessers = [];
-          existingGame.streak = {
-            player: undefined,
-            count: 0,
-          };
-          existingGame.list.values = existingGame.list.values.map((v) => ({ ...v, guesser: undefined }));
-          await existingGame.save();
-          console.log("Game reset:", existingGame._id);
-          if (!res.headersSent) res.sendStatus(200);
-          return;
-        }
-        await evaluate(msg, existingGame, false);
-      }
-    }
-    if (!res.headersSent) res.sendStatus(200);
-  }
+tenthingsTelegramBotRoute.post("/", async (_: Request, res: Response) => {
+  return res.sendStatus(200);
+  // const domainMessage = await bot.toDomainMessage(req.body);
+  // switch (domainMessage.messageType) {
+  //   case MessageType.Ignore:
+  //     res.sendStatus(200);
+  //     return;
+  //   case MessageType.Callback:
+  //     await callbacks(domainMessage.message as CallbackData);
+  //     res.sendStatus(200);
+  //     return;
+  //   case MessageType.PlayerLeft:
+  //     const game = await Game.findOne({ chat_id: domainMessage.message!.chatId });
+  //     if (game) {
+  //       const player = await Player.findOne({ game: game._id, id: `${domainMessage.message!.from.id}` });
+  //       if (player) {
+  //         player.present = false;
+  //         player.save();
+  //       }
+  //     }
+  //     res.sendStatus(200);
+  //     return;
+  //   default:
+  //     break;
+  // }
+  // let msg: Message = domainMessage.message as Message;
+  // if (!msg?.from?.id) {
+  //   if (!res.headersSent) res.sendStatus(200);
+  // } else {
+  //   const existingGame = await Game.findOne({ chat_id: msg.chatId })
+  //     .populate("list.creator")
+  //     .populate("list.values.guesser")
+  //     .select("-playedLists")
+  //     .exec();
+  //   if (!existingGame) {
+  //     const newGame = await createMaingame({ chat_id: msg.chatId, platform: "telegram" });
+  //     console.log(`New game created for ${msg.chatId}`);
+  //     await evaluate(msg, newGame, true);
+  //   } else {
+  //     if (!existingGame.enabled) {
+  //       if (msg.command && ["list", "start", "minigame", "tinygame"].includes(msg.command)) {
+  //         await activate(existingGame, true);
+  //         await evaluate(msg, existingGame, false);
+  //       }
+  //     } else {
+  //       try {
+  //         await existingGame.validate();
+  //       } catch (err) {
+  //         existingGame.guessers = [];
+  //         existingGame.streak = {
+  //           player: undefined,
+  //           count: 0,
+  //         };
+  //         existingGame.list.values = existingGame.list.values.map((v) => ({ ...v, guesser: undefined }));
+  //         await existingGame.save();
+  //         console.log("Game reset:", existingGame._id);
+  //         if (!res.headersSent) res.sendStatus(200);
+  //         return;
+  //       }
+  //       await evaluate(msg, existingGame, false);
+  //     }
+  //   }
+  //   if (!res.headersSent) res.sendStatus(200);
+  // }
 });
 
 tenthingsTelegramBotRoute.get("/", (req: Request, res: Response) => {
