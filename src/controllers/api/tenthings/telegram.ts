@@ -118,6 +118,10 @@ tenthingsTelegramBotRoute.post("/", async (req: Request, res: Response) => {
       await evaluate(msg, newGame, true);
     } else {
       if (!existingGame.enabled) {
+        if (typeof existingGame.streak.player === "number") {
+          console.log("resetting streaker");
+          existingGame.streak.player = undefined;
+        }
         if (msg.command && ["list", "start", "minigame", "tinygame"].includes(msg.command)) {
           await activate(existingGame, true);
           await evaluate(msg, existingGame, false);
