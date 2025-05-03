@@ -2,7 +2,8 @@ import moment from "moment";
 import { GameType, IGame } from "@models/tenthings/game";
 import { Game, List } from "@models/index";
 import { HydratedDocument, LeanDocument } from "mongoose";
-import { Message, getCategoriesMessage, getLogicMessage } from "@tenthings/messages";
+import { convertTelegramUserToPlayer, TelegramMessage } from "@tenthings/providers/telegram";
+import { getCategoriesMessage, getLogicMessage } from "@tenthings/messages";
 import { deactivate, newRound } from "@tenthings/maingame";
 import { createMinigame, updateMinigames } from "@tenthings/minigame";
 import { createTinygame } from "@tenthings/tinygame";
@@ -13,7 +14,7 @@ import { IList } from "@models/tenthings/list";
 
 import i18n from "@root/i18n";
 
-import { getPlayer, getPlayerName } from "@tenthings/players";
+import { getPlayerName } from "@tenthings/players";
 import { getQueue } from "@root/controllers/bots/tenthings/providers/telegram/queue";
 import { checkSkipper, processSkip, vetoSkip } from "@tenthings/skips";
 import { getStats } from "@tenthings/stats";
@@ -72,11 +73,11 @@ const userCommands = commands.filter(
 export const translateCommand = (language: string, key: string): Command | undefined =>
   commands.find((command) => command == i18n(language, key, { ns: "commands" }));
 
-export const evaluate = async (msg: Message, game: HydratedDocument<IGame>, isNew: boolean) => {
+export const evaluate = async (msg: TelegramMessage, game: HydratedDocument<IGame>, isNew: boolean) => {
   //bot.notifyAdmin(tenthings);
   //bot.notifyAdmin(games[game.chat_id].list);
   const command = msg.command && translateCommand(game.settings.language, msg.command);
-  let player = await getPlayer(game, msg.from);
+  let player = await convertTelegramUserToPlayer(game, msg.from);
   if (!player || player.banned) {
     return;
   }
@@ -269,7 +270,7 @@ export const evaluate = async (msg: Message, game: HydratedDocument<IGame>, isNe
       break;
       */
       case Command.Me:
-        getStats(game, `p_${msg.from.id}`, getPlayerName(msg.from));
+        getStats(game, `p_${msg.from.id}`, getPlayerName(player));
         break;
       case Command.Score:
         game.provider.dailyScores(game);
@@ -376,7 +377,7 @@ export const evaluate = async (msg: Message, game: HydratedDocument<IGame>, isNe
     if (game.lastPlayDate <= moment().subtract(30, "days").toDate()) {
       deactivate(game);
     } else if (game.enabled && game.chat_id != parseInt(process.env.ADMIN_CHAT || "")) {
-      queueGuess(game, msg);
+      queueGuess(game, player, msg.text);
     }
   }
 };

@@ -6,11 +6,10 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.checkSpam = void 0;
 const moment_1 = __importDefault(require("moment"));
 const telegram_1 = __importDefault(require("../../../../../connections/telegram"));
-const players_1 = require("../../players");
 const cache = {};
 const checkSpam = (body) => {
     const from = body.message ? body.message.from.id : body.callback_query.from.id;
-    const name = (0, players_1.getPlayerName)(body.message ? body.message.from : body.callback_query.from);
+    const name = body.message && body.message.from.username ? `@${body.message.from.username}` : body.message?.from.first_name;
     const chat = body.message ? body.message.chatId : body.callback_query.message.chatId;
     if (cache[from]) {
         if (cache[from].lastMessage < (0, moment_1.default)().subtract(10, "seconds")) {

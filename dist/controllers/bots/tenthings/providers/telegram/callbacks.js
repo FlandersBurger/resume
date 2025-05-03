@@ -3,7 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.callbackDateTypeDelays = exports.CallbackDataType = void 0;
+exports.callbackDateTypeDelays = exports.TelegramCallbackDataType = void 0;
 const index_1 = require("../../../../../models/index");
 const string_helpers_1 = require("../../../../../utils/string-helpers");
 const number_helpers_1 = require("../../../../../utils/number-helpers");
@@ -21,34 +21,34 @@ const keyboards_1 = require("./keyboards");
 const telegram_1 = __importDefault(require("../../../../../connections/telegram"));
 const errors_1 = require("../../../../../controllers/bots/tenthings/providers/telegram/errors");
 const languages_1 = require("../../languages");
-const players_1 = require("../../players");
-var CallbackDataType;
-(function (CallbackDataType) {
-    CallbackDataType["Ban"] = "ban";
-    CallbackDataType["BotLanguage"] = "lang";
-    CallbackDataType["Category"] = "cat";
-    CallbackDataType["Subcategory"] = "sub";
-    CallbackDataType["ConfirmBan"] = "cban";
-    CallbackDataType["Description"] = "desc";
-    CallbackDataType["Difficulty"] = "diff";
-    CallbackDataType["Frequency"] = "freq";
-    CallbackDataType["Pick"] = "pick";
-    CallbackDataType["Score"] = "score";
-    CallbackDataType["Setting"] = "setting";
-    CallbackDataType["Stats"] = "stat";
-    CallbackDataType["StatOptions"] = "stats";
-    CallbackDataType["Suggestion"] = "suggest";
-    CallbackDataType["TriviaLanguages"] = "langs";
-    CallbackDataType["Values"] = "values";
-    CallbackDataType["Vote"] = "vote";
-    CallbackDataType["SkipDelay"] = "skipDelay";
-    CallbackDataType["VetoDelay"] = "vetoDelay";
-    CallbackDataType["HintDelay"] = "hintDelay";
-})(CallbackDataType || (exports.CallbackDataType = CallbackDataType = {}));
+const _1 = require(".");
+var TelegramCallbackDataType;
+(function (TelegramCallbackDataType) {
+    TelegramCallbackDataType["Ban"] = "ban";
+    TelegramCallbackDataType["BotLanguage"] = "lang";
+    TelegramCallbackDataType["Category"] = "cat";
+    TelegramCallbackDataType["Subcategory"] = "sub";
+    TelegramCallbackDataType["ConfirmBan"] = "cban";
+    TelegramCallbackDataType["Description"] = "desc";
+    TelegramCallbackDataType["Difficulty"] = "diff";
+    TelegramCallbackDataType["Frequency"] = "freq";
+    TelegramCallbackDataType["Pick"] = "pick";
+    TelegramCallbackDataType["Score"] = "score";
+    TelegramCallbackDataType["Setting"] = "setting";
+    TelegramCallbackDataType["Stats"] = "stat";
+    TelegramCallbackDataType["StatOptions"] = "stats";
+    TelegramCallbackDataType["Suggestion"] = "suggest";
+    TelegramCallbackDataType["TriviaLanguages"] = "langs";
+    TelegramCallbackDataType["Values"] = "values";
+    TelegramCallbackDataType["Vote"] = "vote";
+    TelegramCallbackDataType["SkipDelay"] = "skipDelay";
+    TelegramCallbackDataType["VetoDelay"] = "vetoDelay";
+    TelegramCallbackDataType["HintDelay"] = "hintDelay";
+})(TelegramCallbackDataType || (exports.TelegramCallbackDataType = TelegramCallbackDataType = {}));
 exports.callbackDateTypeDelays = [
-    CallbackDataType.SkipDelay,
-    CallbackDataType.VetoDelay,
-    CallbackDataType.HintDelay,
+    TelegramCallbackDataType.SkipDelay,
+    TelegramCallbackDataType.VetoDelay,
+    TelegramCallbackDataType.HintDelay,
 ];
 exports.default = async (callbackQuery) => {
     const game = await index_1.Game.findOne({ chat_id: callbackQuery.chatId });
@@ -69,13 +69,13 @@ exports.default = async (callbackQuery) => {
         console.log("Game reset in callback:", game._id);
         return;
     }
-    const player = await (0, players_1.getPlayer)(game, callbackQuery.from);
+    const player = await (0, _1.convertTelegramUserToPlayer)(game, callbackQuery.from);
     if (!player || player.banned) {
         return;
     }
     let list;
     switch (callbackQuery.type) {
-        case CallbackDataType.Vote:
+        case TelegramCallbackDataType.Vote:
             let doVote = false;
             if (cache_1.votersCache[callbackQuery.from.id]) {
                 if (cache_1.votersCache[callbackQuery.from.id].lastVoted <
@@ -123,7 +123,7 @@ exports.default = async (callbackQuery) => {
                 }
             }
             break;
-        case CallbackDataType.StatOptions:
+        case TelegramCallbackDataType.StatOptions:
             if (await telegram_1.default.checkAdmin(game, callbackQuery.from)) {
                 if (!game)
                     return;
@@ -148,24 +148,24 @@ exports.default = async (callbackQuery) => {
                 }
             }
             break;
-        case CallbackDataType.Stats:
+        case TelegramCallbackDataType.Stats:
             telegram_1.default.answerCallback(callbackQuery.callbackQueryId, "");
             (0, stats_1.getStats)(game, callbackQuery.data, callbackQuery.from.name);
             break;
-        case CallbackDataType.Score:
+        case TelegramCallbackDataType.Score:
             if (callbackQuery.from.name === "^")
                 return "";
             telegram_1.default.answerCallback(callbackQuery.callbackQueryId, "Score");
             (0, stats_1.getScores)(game, callbackQuery.data);
             break;
-        case CallbackDataType.Category:
+        case TelegramCallbackDataType.Category:
             if (game.chat_id != parseInt(process.env.GROUP_CHAT || "")) {
                 if (await telegram_1.default.checkAdmin(game, callbackQuery.from)) {
                     telegram_1.default.queueEditMessage(game.telegramChannel, callbackQuery.id, (0, i18n_1.default)(game.settings.language, `${callbackQuery.data}.name`, { ns: "categories" }), (0, keyboards_1.subcategoriesKeyboard)(game, callbackQuery.data));
                 }
             }
             break;
-        case CallbackDataType.Subcategory:
+        case TelegramCallbackDataType.Subcategory:
             if (game.chat_id != parseInt(process.env.GROUP_CHAT || "")) {
                 if (await telegram_1.default.checkAdmin(game, callbackQuery.from)) {
                     if (!game || !callbackQuery.data)
@@ -184,7 +184,7 @@ exports.default = async (callbackQuery) => {
                 }
             }
             break;
-        case CallbackDataType.Setting:
+        case TelegramCallbackDataType.Setting:
             if (game.chat_id !== parseInt(process.env.ADMIN_CHAT || "")) {
                 if (await telegram_1.default.checkAdmin(game, callbackQuery.from)) {
                     if (!game || !callbackQuery.data)
@@ -224,7 +224,7 @@ exports.default = async (callbackQuery) => {
                 }
             }
             break;
-        case CallbackDataType.TriviaLanguages:
+        case TelegramCallbackDataType.TriviaLanguages:
             if (await telegram_1.default.checkAdmin(game, callbackQuery.from)) {
                 if (!game || !callbackQuery.data)
                     return;
@@ -246,7 +246,7 @@ exports.default = async (callbackQuery) => {
                 telegram_1.default.queueEditKeyboard(game.telegramChannel, callbackQuery.id, (0, keyboards_1.languagesKeyboard)(game, availableLanguages));
             }
             break;
-        case CallbackDataType.BotLanguage:
+        case TelegramCallbackDataType.BotLanguage:
             if (await telegram_1.default.checkAdmin(game, callbackQuery.from)) {
                 if (!game || !callbackQuery.data)
                     return;
@@ -259,7 +259,7 @@ exports.default = async (callbackQuery) => {
                 telegram_1.default.queueEditKeyboard(game.telegramChannel, callbackQuery.id, (0, keyboards_1.languageKeyboard)(game));
             }
             break;
-        case CallbackDataType.Pick:
+        case TelegramCallbackDataType.Pick:
             if (game.chat_id === parseInt(process.env.ADMIN_CHAT || "")) {
                 const list = await index_1.List.findOne({ _id: callbackQuery.data })
                     .populate("creator")
@@ -310,13 +310,13 @@ exports.default = async (callbackQuery) => {
                 }
             }
             break;
-        case CallbackDataType.Ban:
+        case TelegramCallbackDataType.Ban:
             if (!game)
                 return;
             (0, bans_1.initiateBan)(game, callbackQuery);
             telegram_1.default.answerCallback(callbackQuery.callbackQueryId, "");
             break;
-        case CallbackDataType.ConfirmBan:
+        case TelegramCallbackDataType.ConfirmBan:
             if (!game)
                 return;
             if (!game)
@@ -324,7 +324,7 @@ exports.default = async (callbackQuery) => {
             (0, bans_1.processBan)(game, callbackQuery);
             telegram_1.default.answerCallback(callbackQuery.callbackQueryId, "");
             break;
-        case CallbackDataType.Values:
+        case TelegramCallbackDataType.Values:
             list = await index_1.List.findOne({ _id: callbackQuery.data });
             if (!list) {
                 telegram_1.default.queueMessage(game.telegramChannel, "List not found");
@@ -335,7 +335,7 @@ exports.default = async (callbackQuery) => {
                     .reduce((message, item) => `${message}- ${item.value}\n`, `<b>${list.name}</b>\n`));
             }
             break;
-        case CallbackDataType.Description:
+        case TelegramCallbackDataType.Description:
             if (!game)
                 return;
             list = await index_1.List.findOne({ _id: callbackQuery.data }).exec();
@@ -343,7 +343,7 @@ exports.default = async (callbackQuery) => {
                 return;
             telegram_1.default.queueMessage(game.telegramChannel, `<b>${list.name}</b>\n${(0, i18n_1.default)(game.settings.language, "description")}:\n<i>${list.description || "N/A"}</i>`);
             break;
-        case CallbackDataType.Difficulty:
+        case TelegramCallbackDataType.Difficulty:
             const [difficultyString, difficultyListId] = callbackQuery.data.split("_");
             const difficulty = parseInt(difficultyString);
             await index_1.List.findOneAndUpdate({ _id: difficultyListId }, { difficulty });
@@ -353,7 +353,7 @@ exports.default = async (callbackQuery) => {
                 return;
             telegram_1.default.queueEditKeyboard(game.telegramChannel, callbackQuery.id, (0, keyboards_1.curateListKeyboard)(list));
             break;
-        case CallbackDataType.Frequency:
+        case TelegramCallbackDataType.Frequency:
             const [frequencyString, frequencyListId] = callbackQuery.data.split("_");
             const frequency = parseInt(frequencyString);
             await index_1.List.findOneAndUpdate({ _id: frequencyListId }, { frequency });
@@ -363,9 +363,9 @@ exports.default = async (callbackQuery) => {
                 return;
             telegram_1.default.queueEditKeyboard(game.telegramChannel, callbackQuery.id, (0, keyboards_1.curateListKeyboard)(list));
             break;
-        case CallbackDataType.SkipDelay:
-        case CallbackDataType.VetoDelay:
-        case CallbackDataType.HintDelay:
+        case TelegramCallbackDataType.SkipDelay:
+        case TelegramCallbackDataType.VetoDelay:
+        case TelegramCallbackDataType.HintDelay:
             if (await telegram_1.default.checkAdmin(game, callbackQuery.from)) {
                 if (!game || !callbackQuery.data)
                     return;

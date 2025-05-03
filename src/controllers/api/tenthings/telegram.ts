@@ -5,9 +5,9 @@ import { activate, createMaingame } from "@tenthings/maingame";
 
 import bot from "@root/connections/telegram";
 import { getQueue } from "@tenthings/providers/telegram/queue";
-import callbacks, { CallbackData } from "@tenthings/providers/telegram/callbacks";
+import callbacks, { TelegramCallbackData } from "@tenthings/providers/telegram/callbacks";
 import { evaluate } from "@tenthings/providers/telegram/commands";
-import { Message } from "@tenthings/messages";
+import { TelegramMessage } from "@tenthings/providers/telegram";
 
 // DO NOT REMOVE jobs
 import jobs from "@tenthings/jobs";
@@ -18,7 +18,7 @@ console.log(
     .join("\n")}`,
 );
 
-export enum MessageType {
+export enum TelegramMessageType {
   Callback = "callback",
   Command = "command",
   NewGame = "newGame",
@@ -82,14 +82,14 @@ bot.exportChatInviteLink('-1001394022777').then(function(chat) {
 tenthingsTelegramBotRoute.post("/", async (req: Request, res: Response) => {
   const domainMessage = await bot.toDomainMessage(req.body);
   switch (domainMessage.messageType) {
-    case MessageType.Ignore:
+    case TelegramMessageType.Ignore:
       res.sendStatus(200);
       return;
-    case MessageType.Callback:
-      await callbacks(domainMessage.message as CallbackData);
+    case TelegramMessageType.Callback:
+      await callbacks(domainMessage.message as TelegramCallbackData);
       res.sendStatus(200);
       return;
-    case MessageType.PlayerLeft:
+    case TelegramMessageType.PlayerLeft:
       const game = await Game.findOne({ chat_id: domainMessage.message!.chatId });
       if (game) {
         const player = await Player.findOne({ game: game._id, id: `${domainMessage.message!.from.id}` });
@@ -103,7 +103,7 @@ tenthingsTelegramBotRoute.post("/", async (req: Request, res: Response) => {
     default:
       break;
   }
-  let msg: Message = domainMessage.message as Message;
+  let msg: TelegramMessage = domainMessage.message as TelegramMessage;
   if (!msg?.from?.id) {
     if (!res.headersSent) res.sendStatus(200);
   } else {

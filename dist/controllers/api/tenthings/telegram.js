@@ -3,7 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.tenthingsTelegramBotRoute = exports.MessageType = void 0;
+exports.tenthingsTelegramBotRoute = exports.TelegramMessageType = void 0;
 const express_1 = require("express");
 const moment_1 = __importDefault(require("moment"));
 const index_1 = require("../../../models/index");
@@ -16,27 +16,27 @@ const jobs_1 = __importDefault(require("../../bots/tenthings/jobs"));
 console.log(`Scheduled Jobs:\n${jobs_1.default
     .map((j) => ` - ${j.name}: ${moment_1.default.duration((0, moment_1.default)(new Date()).diff(j.nextInvocation())).humanize(true)}`)
     .join("\n")}`);
-var MessageType;
-(function (MessageType) {
-    MessageType["Callback"] = "callback";
-    MessageType["Command"] = "command";
-    MessageType["NewGame"] = "newGame";
-    MessageType["PlayerLeft"] = "playerLeft";
-    MessageType["Message"] = "message";
-    MessageType["Ignore"] = "ignore";
-})(MessageType || (exports.MessageType = MessageType = {}));
+var TelegramMessageType;
+(function (TelegramMessageType) {
+    TelegramMessageType["Callback"] = "callback";
+    TelegramMessageType["Command"] = "command";
+    TelegramMessageType["NewGame"] = "newGame";
+    TelegramMessageType["PlayerLeft"] = "playerLeft";
+    TelegramMessageType["Message"] = "message";
+    TelegramMessageType["Ignore"] = "ignore";
+})(TelegramMessageType || (exports.TelegramMessageType = TelegramMessageType = {}));
 exports.tenthingsTelegramBotRoute = (0, express_1.Router)();
 exports.tenthingsTelegramBotRoute.post("/", async (req, res) => {
     const domainMessage = await telegram_1.default.toDomainMessage(req.body);
     switch (domainMessage.messageType) {
-        case MessageType.Ignore:
+        case TelegramMessageType.Ignore:
             res.sendStatus(200);
             return;
-        case MessageType.Callback:
+        case TelegramMessageType.Callback:
             await (0, callbacks_1.default)(domainMessage.message);
             res.sendStatus(200);
             return;
-        case MessageType.PlayerLeft:
+        case TelegramMessageType.PlayerLeft:
             const game = await index_1.Game.findOne({ chat_id: domainMessage.message.chatId });
             if (game) {
                 const player = await index_1.Player.findOne({ game: game._id, id: `${domainMessage.message.from.id}` });

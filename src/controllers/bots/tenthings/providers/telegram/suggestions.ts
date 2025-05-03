@@ -1,6 +1,6 @@
 import { parseSymbols, capitalize } from "@root/utils/string-helpers";
 import bot from "@root/connections/telegram";
-import { Message } from "@tenthings/messages";
+import { TelegramMessage } from "@tenthings/providers/telegram";
 import { IGame } from "@root/models/tenthings/game";
 import { HydratedDocument } from "mongoose";
 import { IPlayer } from "@root/models/tenthings/player";
@@ -9,7 +9,7 @@ import i18n from "@root/i18n";
 import { Command } from "./commands";
 
 export const sendSuggestion = async (
-  msg: Message,
+  msg: TelegramMessage,
   game: IGame,
   player: HydratedDocument<IPlayer>,
   command: Command,
@@ -42,7 +42,7 @@ export const sendSuggestion = async (
 };
 
 export const checkSuggestionProvided = (
-  msg: Message,
+  msg: TelegramMessage,
   game: IGame,
   player: HydratedDocument<IPlayer>,
   command: Command,

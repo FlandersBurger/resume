@@ -1,17 +1,17 @@
 import { HydratedDocument } from "mongoose";
 import { List } from "@models/index";
 import { IGame } from "@models/tenthings/game";
-import { CallbackData } from "./callbacks";
+import { TelegramCallbackData } from "./callbacks";
 
 import i18n from "@root/i18n";
 import { confirmBanListKeyboard } from "./keyboards";
 import bot from "@root/connections/telegram";
 import { adminOnly } from "@root/controllers/bots/tenthings/providers/telegram/errors";
-import { getPlayer } from "@tenthings/players";
+import { convertTelegramUserToPlayer } from ".";
 
 const cache: { [key: string]: number } = {};
 
-export const initiateBan = async (game: IGame, callbackQuery: CallbackData) => {
+export const initiateBan = async (game: IGame, callbackQuery: TelegramCallbackData) => {
   if (game.chat_id !== parseInt(process.env.GROUP_CHAT || "") || (await bot.checkAdmin(game, callbackQuery.from))) {
     const foundList = await List.findOne({ _id: callbackQuery.data }).exec();
     if (!foundList) {
@@ -36,12 +36,12 @@ export const initiateBan = async (game: IGame, callbackQuery: CallbackData) => {
       }
     }
   } else {
-    const player = await getPlayer(game, callbackQuery.from);
+    const player = await convertTelegramUserToPlayer(game, callbackQuery.from);
     if (player) adminOnly(game, player);
   }
 };
 
-export const processBan = (game: HydratedDocument<IGame>, callbackQuery: CallbackData) => {
+export const processBan = (game: HydratedDocument<IGame>, callbackQuery: TelegramCallbackData) => {
   if (!cache[`${game._id}-${callbackQuery.data}`]) {
     bot.deleteMessage(game.telegramChannel, callbackQuery.id);
   } else if (cache[`${game._id}-${callbackQuery.data}`] !== callbackQuery.from.id || game.chat_id > 0) {

@@ -6,18 +6,17 @@ import redis from "@root/queue";
 import httpClient from "@root/http-client";
 import { chatNotFound, botMuted, noTopic } from "@root/controllers/bots/tenthings/providers/telegram/errors";
 import { checkSpam } from "@root/controllers/bots/tenthings/providers/telegram/spam";
-import { MessageType } from "@root/controllers/api/tenthings/telegram";
+import { TelegramMessageType } from "@root/controllers/api/tenthings/telegram";
 import { parseSymbols, maskUrls } from "@root/utils/string-helpers";
-import { Message } from "@tenthings/messages";
 import moment, { Moment } from "moment";
 import { Command } from "@root/controllers/bots/tenthings/providers/telegram/commands";
 import { IGame } from "@root/models/tenthings/game";
-import { getPlayer } from "@root/controllers/bots/tenthings/players";
-import { CallbackData } from "@tenthings/providers/telegram/callbacks";
+import { TelegramCallbackData } from "@tenthings/providers/telegram/callbacks";
+import { convertTelegramUserToPlayer, TelegramMessage } from "@root/controllers/bots/tenthings/providers/telegram";
 
 const BANNED_TELEGRAM_USERS = [1726294650, 6758829541];
 
-type UserInput = Message | CallbackData;
+type UserInput = TelegramMessage | TelegramCallbackData;
 
 const globalQueue = new Queue("sendMessage", {
   redis: {
@@ -374,7 +373,7 @@ class TelegramBot {
   public checkAdmin = async (game: IGame, user: TelegramUser) => {
     if (user.id === parseInt(process.env.MASTER_CHAT || "")) return true;
     if (game.telegramChannel.chat > 0) return true;
-    const player = await getPlayer(game, user);
+    const player = await convertTelegramUserToPlayer(game, user);
     if (player && player.admin !== undefined) return player.admin;
     const url = `${this.baseUrl}/getChatMember?chat_id=${game.telegramChannel.chat}&user_id=${user.id}`;
     try {
@@ -517,24 +516,24 @@ class TelegramBot {
     name: maskUrls(from.username ? `@${from.username}` : `${from.first_name} ${from.last_name ? from.last_name : ""}`),
   });
 
-  public toDomainMessage = async (body: any): Promise<{ messageType: MessageType; message?: UserInput }> => {
+  public toDomainMessage = async (body: any): Promise<{ messageType: TelegramMessageType; message?: UserInput }> => {
     if (body.object === "page") {
-      return { messageType: MessageType.Ignore };
+      return { messageType: TelegramMessageType.Ignore };
     }
     if (body.message || body.callback_query) {
       const from = this.toDomainUser(body.message ? body.message.from : body.callback_query.from);
       if (from.id !== parseInt(process.env.MASTER_CHAT || "") && (await redis.get("pause")) === "true")
-        return { messageType: MessageType.Ignore };
+        return { messageType: TelegramMessageType.Ignore };
       if (BANNED_TELEGRAM_USERS.indexOf(from.id) >= 0) {
-        return { messageType: MessageType.Ignore };
+        return { messageType: TelegramMessageType.Ignore };
       }
       if (checkSpam(body)) {
-        return { messageType: MessageType.Ignore };
+        return { messageType: TelegramMessageType.Ignore };
       }
       if (body.callback_query) {
         const data = JSON.parse(body.callback_query.data);
         return {
-          messageType: MessageType.Callback,
+          messageType: TelegramMessageType.Callback,
           message: {
             from,
             chatId: body.callback_query.message.chat.id,
@@ -549,7 +548,7 @@ class TelegramBot {
       if (!body.message.text) {
         if (body.message.group_chat_created) {
           return {
-            messageType: MessageType.NewGame,
+            messageType: TelegramMessageType.NewGame,
             message: {
               id: body.message.message_id,
               from,
@@ -561,7 +560,7 @@ class TelegramBot {
           };
         } else if (body.message.left_chat_participant) {
           return {
-            messageType: MessageType.PlayerLeft,
+            messageType: TelegramMessageType.PlayerLeft,
             message: {
               id: body.message.message_id,
               from: { ...from, id: body.message.left_chat_participant.id },
@@ -577,7 +576,7 @@ class TelegramBot {
         );
         let text;
         if (command.includes("@") && command.substring(command.indexOf("@") + 1) !== "TenThings_Bot") {
-          return { messageType: MessageType.Ignore };
+          return { messageType: TelegramMessageType.Ignore };
         } else if (command.includes("@") && command.substring(command.indexOf("@") + 1) === "TenThings_Bot") {
           command = command.substring(0, command.indexOf("@"));
         }
@@ -591,7 +590,7 @@ class TelegramBot {
           text = body.message.text;
         }
         return {
-          messageType: MessageType.Message,
+          messageType: TelegramMessageType.Message,
           message: {
             id: body.message.message_id,
             from,
@@ -613,7 +612,7 @@ class TelegramBot {
         }
       }
     }
-    return { messageType: MessageType.Ignore };
+    return { messageType: TelegramMessageType.Ignore };
   };
 }
 

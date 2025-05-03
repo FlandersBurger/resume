@@ -31,9 +31,9 @@ import {
 import bot, { TelegramUser } from "@root/connections/telegram";
 import { adminOnly } from "@root/controllers/bots/tenthings/providers/telegram/errors";
 import { isBotLanguage, isSupportedLanguage, SupportedLanguage } from "@tenthings/languages";
-import { getPlayer } from "@tenthings/players";
+import { convertTelegramUserToPlayer } from ".";
 
-export type CallbackData = {
+export type TelegramCallbackData = {
   id: string;
   type: string;
   date: Date;
@@ -44,7 +44,7 @@ export type CallbackData = {
   data: string;
 };
 
-export enum CallbackDataType {
+export enum TelegramCallbackDataType {
   Ban = "ban",
   BotLanguage = "lang",
   Category = "cat",
@@ -67,18 +67,18 @@ export enum CallbackDataType {
   HintDelay = "hintDelay",
 }
 
-export type CallbackDataTypeDelay =
-  | CallbackDataType.SkipDelay
-  | CallbackDataType.VetoDelay
-  | CallbackDataType.HintDelay;
+export type TelegramCallbackDataTypeDelay =
+  | TelegramCallbackDataType.SkipDelay
+  | TelegramCallbackDataType.VetoDelay
+  | TelegramCallbackDataType.HintDelay;
 
-export const callbackDateTypeDelays: CallbackDataTypeDelay[] = [
-  CallbackDataType.SkipDelay,
-  CallbackDataType.VetoDelay,
-  CallbackDataType.HintDelay,
+export const callbackDateTypeDelays: TelegramCallbackDataTypeDelay[] = [
+  TelegramCallbackDataType.SkipDelay,
+  TelegramCallbackDataType.VetoDelay,
+  TelegramCallbackDataType.HintDelay,
 ];
 
-export default async (callbackQuery: CallbackData) => {
+export default async (callbackQuery: TelegramCallbackData) => {
   const game: HydratedDocument<IGame> | null = await Game.findOne({ chat_id: callbackQuery.chatId });
   if (!game) {
     return;
@@ -96,13 +96,13 @@ export default async (callbackQuery: CallbackData) => {
     console.log("Game reset in callback:", game._id);
     return;
   }
-  const player = await getPlayer(game, callbackQuery.from);
+  const player = await convertTelegramUserToPlayer(game, callbackQuery.from);
   if (!player || player.banned) {
     return;
   }
   let list: HydratedDocument<IList> | null;
   switch (callbackQuery.type) {
-    case CallbackDataType.Vote:
+    case TelegramCallbackDataType.Vote:
       let doVote = false;
       if (votersCache[callbackQuery.from.id]) {
         if (
@@ -153,7 +153,7 @@ export default async (callbackQuery: CallbackData) => {
         }
       }
       break;
-    case CallbackDataType.StatOptions:
+    case TelegramCallbackDataType.StatOptions:
       if (await bot.checkAdmin(game, callbackQuery.from)) {
         if (!game) return;
         const text = i18n(game.settings.language, `stats.${callbackQuery.data}`);
@@ -177,16 +177,16 @@ export default async (callbackQuery: CallbackData) => {
         }
       }
       break;
-    case CallbackDataType.Stats:
+    case TelegramCallbackDataType.Stats:
       bot.answerCallback(callbackQuery.callbackQueryId, "");
       getStats(game, callbackQuery.data, callbackQuery.from.name);
       break;
-    case CallbackDataType.Score:
+    case TelegramCallbackDataType.Score:
       if (callbackQuery.from.name === "^") return "";
       bot.answerCallback(callbackQuery.callbackQueryId, "Score");
       getScores(game, callbackQuery.data);
       break;
-    case CallbackDataType.Category:
+    case TelegramCallbackDataType.Category:
       if (game.chat_id != parseInt(process.env.GROUP_CHAT || "")) {
         if (await bot.checkAdmin(game, callbackQuery.from)) {
           bot.queueEditMessage(
@@ -198,7 +198,7 @@ export default async (callbackQuery: CallbackData) => {
         }
       }
       break;
-    case CallbackDataType.Subcategory:
+    case TelegramCallbackDataType.Subcategory:
       if (game.chat_id != parseInt(process.env.GROUP_CHAT || "")) {
         if (await bot.checkAdmin(game, callbackQuery.from)) {
           if (!game || !callbackQuery.data) return;
@@ -219,7 +219,7 @@ export default async (callbackQuery: CallbackData) => {
         }
       }
       break;
-    case CallbackDataType.Setting:
+    case TelegramCallbackDataType.Setting:
       if (game.chat_id !== parseInt(process.env.ADMIN_CHAT || "")) {
         if (await bot.checkAdmin(game, callbackQuery.from)) {
           if (!game || !callbackQuery.data) return;
@@ -254,13 +254,13 @@ export default async (callbackQuery: CallbackData) => {
               i18n(game.settings.language, "settings"),
               settingsKeyboard(game),
             );
-          } else if (callbackDateTypeDelays.includes(callbackQuery.data as CallbackDataTypeDelay)) {
+          } else if (callbackDateTypeDelays.includes(callbackQuery.data as TelegramCallbackDataTypeDelay)) {
             // if (game.chat_id < 0) {
             bot.editMessage(
               game.telegramChannel,
               callbackQuery.id,
               `${i18n(game.settings.language, callbackQuery.data)}\n${i18n(game.settings.language, `sentences.${callbackQuery.data}`)}`,
-              delayKeyboard(game, callbackQuery.data as CallbackDataTypeDelay),
+              delayKeyboard(game, callbackQuery.data as TelegramCallbackDataTypeDelay),
             );
 
             // } else {
@@ -286,7 +286,7 @@ export default async (callbackQuery: CallbackData) => {
         }
       }
       break;
-    case CallbackDataType.TriviaLanguages:
+    case TelegramCallbackDataType.TriviaLanguages:
       if (await bot.checkAdmin(game, callbackQuery.from)) {
         if (!game || !callbackQuery.data) return;
         if (!isSupportedLanguage(callbackQuery.data)) return;
@@ -310,7 +310,7 @@ export default async (callbackQuery: CallbackData) => {
         bot.queueEditKeyboard(game.telegramChannel, callbackQuery.id, languagesKeyboard(game, availableLanguages));
       }
       break;
-    case CallbackDataType.BotLanguage:
+    case TelegramCallbackDataType.BotLanguage:
       if (await bot.checkAdmin(game, callbackQuery.from)) {
         if (!game || !callbackQuery.data) return;
         if (!isBotLanguage(callbackQuery.data)) return;
@@ -321,7 +321,7 @@ export default async (callbackQuery: CallbackData) => {
         bot.queueEditKeyboard(game.telegramChannel, callbackQuery.id, languageKeyboard(game));
       }
       break;
-    case CallbackDataType.Pick:
+    case TelegramCallbackDataType.Pick:
       if (game.chat_id === parseInt(process.env.ADMIN_CHAT || "")) {
         const list: HydratedDocument<IList> | null = await List.findOne({ _id: callbackQuery.data })
           .populate("creator")
@@ -379,18 +379,18 @@ export default async (callbackQuery: CallbackData) => {
         }
       }
       break;
-    case CallbackDataType.Ban:
+    case TelegramCallbackDataType.Ban:
       if (!game) return;
       initiateBan(game, callbackQuery);
       bot.answerCallback(callbackQuery.callbackQueryId, "");
       break;
-    case CallbackDataType.ConfirmBan:
+    case TelegramCallbackDataType.ConfirmBan:
       if (!game) return;
       if (!game) return;
       processBan(game, callbackQuery);
       bot.answerCallback(callbackQuery.callbackQueryId, "");
       break;
-    case CallbackDataType.Values:
+    case TelegramCallbackDataType.Values:
       list = await List.findOne({ _id: callbackQuery.data });
       if (!list) {
         bot.queueMessage(game.telegramChannel, "List not found");
@@ -403,7 +403,7 @@ export default async (callbackQuery: CallbackData) => {
         );
       }
       break;
-    case CallbackDataType.Description:
+    case TelegramCallbackDataType.Description:
       if (!game) return;
       list = await List.findOne({ _id: callbackQuery.data }).exec();
       if (!list) return;
@@ -412,7 +412,7 @@ export default async (callbackQuery: CallbackData) => {
         `<b>${list.name}</b>\n${i18n(game.settings.language, "description")}:\n<i>${list.description || "N/A"}</i>`,
       );
       break;
-    case CallbackDataType.Difficulty:
+    case TelegramCallbackDataType.Difficulty:
       const [difficultyString, difficultyListId] = callbackQuery.data.split("_");
       const difficulty = parseInt(difficultyString);
       await List.findOneAndUpdate({ _id: difficultyListId }, { difficulty });
@@ -421,7 +421,7 @@ export default async (callbackQuery: CallbackData) => {
       if (!list) return;
       bot.queueEditKeyboard(game.telegramChannel, callbackQuery.id, curateListKeyboard(list));
       break;
-    case CallbackDataType.Frequency:
+    case TelegramCallbackDataType.Frequency:
       const [frequencyString, frequencyListId] = callbackQuery.data.split("_");
       const frequency = parseInt(frequencyString);
       await List.findOneAndUpdate({ _id: frequencyListId }, { frequency });
@@ -430,9 +430,9 @@ export default async (callbackQuery: CallbackData) => {
       if (!list) return;
       bot.queueEditKeyboard(game.telegramChannel, callbackQuery.id, curateListKeyboard(list));
       break;
-    case CallbackDataType.SkipDelay:
-    case CallbackDataType.VetoDelay:
-    case CallbackDataType.HintDelay:
+    case TelegramCallbackDataType.SkipDelay:
+    case TelegramCallbackDataType.VetoDelay:
+    case TelegramCallbackDataType.HintDelay:
       if (await bot.checkAdmin(game, callbackQuery.from)) {
         if (!game || !callbackQuery.data) return;
         game.settings[callbackQuery.type] = parseInt(callbackQuery.data);

@@ -123,7 +123,7 @@ const deactivate = (game) => {
 };
 exports.deactivate = deactivate;
 const checkMaingame = async (game, player, guess) => {
-    if (guess.list !== game.list._id)
+    if (guess.listId !== game.list._id)
         return;
     game.lastPlayDate = (0, moment_1.default)().toDate();
     player.lastPlayDate = (0, moment_1.default)().toDate();

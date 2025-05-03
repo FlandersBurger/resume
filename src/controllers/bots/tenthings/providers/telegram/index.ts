@@ -1,17 +1,18 @@
 import i18n from "@root/i18n";
-import bot from "@root/connections/telegram";
+import bot, { TelegramUser } from "@root/connections/telegram";
 import { getCategoryLabel } from "../../categories";
-import { parseSymbols } from "@root/utils/string-helpers";
+import { maskUrls, parseSymbols } from "@root/utils/string-helpers";
 import { IGame, IGameList, IGameListValue } from "@root/models/tenthings/game";
 import { IList } from "@root/models/tenthings/list";
 import { IUser } from "@root/models/user";
 import { Provider } from "..";
 import { IPlayer } from "@root/models/tenthings/player";
-import { getDailyMessage, getGuessedMessage, getListStats, getStreakMessage } from "../../messages";
-import { getPlayerName } from "../../players";
-import { getHint } from "../../hints";
+import { getDailyMessage, getGuessedMessage, getListStats, getStreakMessage } from "@tenthings/messages";
+import { getPlayerName } from "@tenthings/players";
+import { getHint } from "@tenthings/hints";
 import { banListKeyboard } from "./keyboards";
 import { Player } from "@root/models";
+import { HydratedDocument } from "mongoose";
 
 const getDailyScores = async ({ _id, settings }: IGame, limit = 0) => {
   const players = await Player.find({ game: _id, scoreDaily: { $gt: 0 } }).exec();
@@ -237,4 +238,42 @@ const guessed = async (game: IGame, player: IPlayer, value: string, blurb: strin
     message += `\n${i18n(game.settings.language, "sentences.roundOver")}`;
   }
   return bot.queueMessage(game.telegramChannel, message);
+};
+
+export type TelegramMessage = {
+  id: string;
+  from: TelegramUser;
+  command?: string;
+  text: string;
+  chatId: number;
+  topicId?: number;
+};
+
+export const convertTelegramUserToPlayer = async (
+  game: IGame,
+  from: TelegramUser,
+): Promise<HydratedDocument<IPlayer> | undefined> => {
+  let player = await Player.findOne({
+    game: game._id,
+    id: from.id,
+  }).exec();
+  if (!player) {
+    if (!from.first_name) {
+      console.error("Player has no first name", from);
+      return;
+    }
+    const player = new Player({
+      game: game._id,
+      ...from,
+    });
+    const savedPlayer = await player.save();
+    console.log(`${game.chat_id} - Player ${from.id} created`);
+    return savedPlayer;
+  } else if (player && player.first_name) {
+    player.first_name = player.first_name ? maskUrls(player.first_name) : "";
+    player.last_name = player.last_name ? maskUrls(player.last_name) : "";
+    player.username = player.username ? maskUrls(player.username) : "";
+    player.present = true;
+  }
+  return player;
 };

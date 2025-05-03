@@ -46,14 +46,14 @@ const statsKeyboard = () => {
     return {
         inline_keyboard: [
             [
-                getButton("List Stats", { type: callbacks_1.CallbackDataType.StatOptions, id: "list" }),
-                getButton("Player Stats", { type: callbacks_1.CallbackDataType.StatOptions, id: "player" }),
+                getButton("List Stats", { type: callbacks_1.TelegramCallbackDataType.StatOptions, id: "list" }),
+                getButton("Player Stats", { type: callbacks_1.TelegramCallbackDataType.StatOptions, id: "player" }),
             ],
             [
-                getButton("Global Stats", { type: callbacks_1.CallbackDataType.StatOptions, id: "global" }),
-                getButton("Game Stats", { type: callbacks_1.CallbackDataType.Stats, id: "g" }),
+                getButton("Global Stats", { type: callbacks_1.TelegramCallbackDataType.StatOptions, id: "global" }),
+                getButton("Game Stats", { type: callbacks_1.TelegramCallbackDataType.Stats, id: "g" }),
             ],
-            [getButton("Creator Stats", { type: callbacks_1.CallbackDataType.Stats, id: "c" })],
+            [getButton("Creator Stats", { type: callbacks_1.TelegramCallbackDataType.Stats, id: "c" })],
         ],
     };
 };
@@ -61,17 +61,17 @@ exports.statsKeyboard = statsKeyboard;
 const listStatsKeyboard = (game) => {
     return {
         inline_keyboard: [
-            [getButton(`"${game.list.name}"`, { type: callbacks_1.CallbackDataType.Stats, id: `l_${game.list._id}` })],
+            [getButton(`"${game.list.name}"`, { type: callbacks_1.TelegramCallbackDataType.Stats, id: `l_${game.list._id}` })],
             [
-                getButton("Most Skipped", { type: callbacks_1.CallbackDataType.Stats, id: "mostskipped" }),
-                getButton("Least Skipped", { type: callbacks_1.CallbackDataType.Stats, id: "leastskipped" }),
+                getButton("Most Skipped", { type: callbacks_1.TelegramCallbackDataType.Stats, id: "mostskipped" }),
+                getButton("Least Skipped", { type: callbacks_1.TelegramCallbackDataType.Stats, id: "leastskipped" }),
             ],
             [
-                getButton("Most Hints Asked", { type: callbacks_1.CallbackDataType.Stats, id: "mosthinted" }),
-                getButton("Least Hints Asked", { type: callbacks_1.CallbackDataType.Stats, id: "leasthinted" }),
+                getButton("Most Hints Asked", { type: callbacks_1.TelegramCallbackDataType.Stats, id: "mosthinted" }),
+                getButton("Least Hints Asked", { type: callbacks_1.TelegramCallbackDataType.Stats, id: "leasthinted" }),
             ],
             [
-                getButton("Most Played Lists", { type: callbacks_1.CallbackDataType.Stats, id: "mostplayed" }),
+                getButton("Most Played Lists", { type: callbacks_1.TelegramCallbackDataType.Stats, id: "mostplayed" }),
             ],
         ],
     };
@@ -81,52 +81,52 @@ const playerStatsKeyboard = () => {
     return {
         inline_keyboard: [
             [
-                getButton("My Stats", { type: callbacks_1.CallbackDataType.Stats, id: "p_" }),
-                getButton("Most Minigames Answered", { type: callbacks_1.CallbackDataType.Stats, id: "minigames" }),
+                getButton("My Stats", { type: callbacks_1.TelegramCallbackDataType.Stats, id: "p_" }),
+                getButton("Most Minigames Answered", { type: callbacks_1.TelegramCallbackDataType.Stats, id: "minigames" }),
             ],
             [
-                getButton("Daily Score", { type: callbacks_1.CallbackDataType.Score, id: "d" }),
-                getButton("Top Daily Score", { type: callbacks_1.CallbackDataType.Score, id: "td" }),
+                getButton("Daily Score", { type: callbacks_1.TelegramCallbackDataType.Score, id: "d" }),
+                getButton("Top Daily Score", { type: callbacks_1.TelegramCallbackDataType.Score, id: "td" }),
             ],
             [
-                getButton("Top Win Ratio", { type: callbacks_1.CallbackDataType.Score, id: "tr" }),
-                getButton("Top Overall Score", { type: callbacks_1.CallbackDataType.Score, id: "ts" }),
+                getButton("Top Win Ratio", { type: callbacks_1.TelegramCallbackDataType.Score, id: "tr" }),
+                getButton("Top Overall Score", { type: callbacks_1.TelegramCallbackDataType.Score, id: "ts" }),
             ],
             [
-                getButton("Top Average", { type: callbacks_1.CallbackDataType.Score, id: "ta" }),
-                getButton("Best No Hint Streak", { type: callbacks_1.CallbackDataType.Stats, id: "hstreak" }),
+                getButton("Top Average", { type: callbacks_1.TelegramCallbackDataType.Score, id: "ta" }),
+                getButton("Best No Hint Streak", { type: callbacks_1.TelegramCallbackDataType.Stats, id: "hstreak" }),
             ],
             [
-                getButton("Best Answer Streak", { type: callbacks_1.CallbackDataType.Stats, id: "astreak" }),
-                getButton("Best Play Streak", { type: callbacks_1.CallbackDataType.Stats, id: "pstreak" }),
+                getButton("Best Answer Streak", { type: callbacks_1.TelegramCallbackDataType.Stats, id: "astreak" }),
+                getButton("Best Play Streak", { type: callbacks_1.TelegramCallbackDataType.Stats, id: "pstreak" }),
             ],
             [
-                getButton("Most Skips Requested", { type: callbacks_1.CallbackDataType.Stats, id: "skippers" }),
-                getButton("Least Skips Requested", { type: callbacks_1.CallbackDataType.Stats, id: "unskippers" }),
+                getButton("Most Skips Requested", { type: callbacks_1.TelegramCallbackDataType.Stats, id: "skippers" }),
+                getButton("Least Skips Requested", { type: callbacks_1.TelegramCallbackDataType.Stats, id: "unskippers" }),
             ],
             [
-                getButton("Most Days Played", { type: callbacks_1.CallbackDataType.Stats, id: "plays" }),
-                getButton("Most Correct Answers", { type: callbacks_1.CallbackDataType.Stats, id: "answers" }),
+                getButton("Most Days Played", { type: callbacks_1.TelegramCallbackDataType.Stats, id: "plays" }),
+                getButton("Most Correct Answers", { type: callbacks_1.TelegramCallbackDataType.Stats, id: "answers" }),
             ],
             [
-                getButton("Most Snubs", { type: callbacks_1.CallbackDataType.Stats, id: "snubs" }),
-                getButton("Least Snubs", { type: callbacks_1.CallbackDataType.Stats, id: "unsnubs" }),
+                getButton("Most Snubs", { type: callbacks_1.TelegramCallbackDataType.Stats, id: "snubs" }),
+                getButton("Least Snubs", { type: callbacks_1.TelegramCallbackDataType.Stats, id: "unsnubs" }),
             ],
             [
-                getButton("Most Hints Asked", { type: callbacks_1.CallbackDataType.Stats, id: "hints" }),
-                getButton("Least Hints Asked", { type: callbacks_1.CallbackDataType.Stats, id: "unhints" }),
+                getButton("Most Hints Asked", { type: callbacks_1.TelegramCallbackDataType.Stats, id: "hints" }),
+                getButton("Least Hints Asked", { type: callbacks_1.TelegramCallbackDataType.Stats, id: "unhints" }),
             ],
             [
-                getButton("Most Wins", { type: callbacks_1.CallbackDataType.Stats, id: "wins" }),
-                getButton("Least Wins", { type: callbacks_1.CallbackDataType.Stats, id: "unwins" }),
+                getButton("Most Wins", { type: callbacks_1.TelegramCallbackDataType.Stats, id: "wins" }),
+                getButton("Least Wins", { type: callbacks_1.TelegramCallbackDataType.Stats, id: "unwins" }),
             ],
             [
-                getButton("Voted Most on Lists", { type: callbacks_1.CallbackDataType.Stats, id: "mostvoted" }),
-                getButton("Voted Least on Lists", { type: callbacks_1.CallbackDataType.Stats, id: "leastvoted" }),
+                getButton("Voted Most on Lists", { type: callbacks_1.TelegramCallbackDataType.Stats, id: "mostvoted" }),
+                getButton("Voted Least on Lists", { type: callbacks_1.TelegramCallbackDataType.Stats, id: "leastvoted" }),
             ],
             [
-                getButton("Voted Most Positively on Lists", { type: callbacks_1.CallbackDataType.Stats, id: "mostpositive" }),
-                getButton("Voted Most Negatively on Lists", { type: callbacks_1.CallbackDataType.Stats, id: "leastnegative" }),
+                getButton("Voted Most Positively on Lists", { type: callbacks_1.TelegramCallbackDataType.Stats, id: "mostpositive" }),
+                getButton("Voted Most Negatively on Lists", { type: callbacks_1.TelegramCallbackDataType.Stats, id: "leastnegative" }),
             ],
         ],
     };
@@ -142,7 +142,7 @@ const categoriesKeyboard = ({ settings, disabledCategories }) => {
             .reduce((result, category, i) => {
             const allSelected = !categories_1.default[category].some((subcategory) => disabledCategories.includes(`${category}.${subcategory}`));
             const noneSelected = categories_1.default[category].every((subcategory) => disabledCategories.includes(`${category}.${subcategory}`));
-            const button = getButton(`${(0, i18n_1.default)(settings.language, `${category}.name`, { ns: "categories" })}: ${allSelected ? emojis_1.default.green : noneSelected ? emojis_1.default.off : emojis_1.default.on}`, { type: callbacks_1.CallbackDataType.Category, id: category });
+            const button = getButton(`${(0, i18n_1.default)(settings.language, `${category}.name`, { ns: "categories" })}: ${allSelected ? emojis_1.default.green : noneSelected ? emojis_1.default.off : emojis_1.default.on}`, { type: callbacks_1.TelegramCallbackDataType.Category, id: category });
             if (i % 2 === 0) {
                 result.push([button]);
             }
@@ -150,7 +150,14 @@ const categoriesKeyboard = ({ settings, disabledCategories }) => {
                 result[result.length - 1].push(button);
             }
             return result;
-        }, []), [[getButton(`⬅️ ${(0, i18n_1.default)(settings.language, "settings")}`, { type: callbacks_1.CallbackDataType.Setting, id: "settings" })]]),
+        }, []), [
+            [
+                getButton(`⬅️ ${(0, i18n_1.default)(settings.language, "settings")}`, {
+                    type: callbacks_1.TelegramCallbackDataType.Setting,
+                    id: "settings",
+                }),
+            ],
+        ]),
     };
 };
 exports.categoriesKeyboard = categoriesKeyboard;
@@ -160,7 +167,7 @@ const subcategoriesKeyboard = ({ settings, disabledCategories }, category) => {
         inline_keyboard: (0, concat_1.default)([
             [
                 getButton(`${(0, i18n_1.default)(settings.language, allSelected ? "None" : "All")}`, {
-                    type: callbacks_1.CallbackDataType.Subcategory,
+                    type: callbacks_1.TelegramCallbackDataType.Subcategory,
                     id: category,
                 }),
             ],
@@ -170,7 +177,7 @@ const subcategoriesKeyboard = ({ settings, disabledCategories }, category) => {
             ? 1
             : -1)
             .reduce((result, subcategory, i) => {
-            const button = getButton(`${(0, i18n_1.default)(settings.language, `${category}.${subcategory}`, { ns: "categories" })}: ${disabledCategories.includes(`${category}.${subcategory}`) ? emojis_1.default.off : emojis_1.default.on}`, { type: callbacks_1.CallbackDataType.Subcategory, id: `${category}.${subcategory}` });
+            const button = getButton(`${(0, i18n_1.default)(settings.language, `${category}.${subcategory}`, { ns: "categories" })}: ${disabledCategories.includes(`${category}.${subcategory}`) ? emojis_1.default.off : emojis_1.default.on}`, { type: callbacks_1.TelegramCallbackDataType.Subcategory, id: `${category}.${subcategory}` });
             if (i % 2 === 0) {
                 result.push([button]);
             }
@@ -181,7 +188,7 @@ const subcategoriesKeyboard = ({ settings, disabledCategories }, category) => {
         }, []), [
             [
                 getButton(`⬅️ ${(0, i18n_1.default)(settings.language, "category", { count: 0 })}`, {
-                    type: callbacks_1.CallbackDataType.Setting,
+                    type: callbacks_1.TelegramCallbackDataType.Setting,
                     id: "cats",
                 }),
             ],
@@ -194,48 +201,48 @@ const settingsKeyboard = ({ settings }) => {
         inline_keyboard: [
             [
                 getButton(`${(0, i18n_1.default)(settings.language, "botLanguage")}: ${settings.language}`, {
-                    type: callbacks_1.CallbackDataType.Setting,
+                    type: callbacks_1.TelegramCallbackDataType.Setting,
                     id: "lang",
                 }),
-                getButton(`${(0, i18n_1.default)(settings.language, "language", { count: settings.languages.length })}: ${settings.languages.join(", ")}`, { type: callbacks_1.CallbackDataType.Setting, id: "langs" }),
+                getButton(`${(0, i18n_1.default)(settings.language, "language", { count: settings.languages.length })}: ${settings.languages.join(", ")}`, { type: callbacks_1.TelegramCallbackDataType.Setting, id: "langs" }),
             ],
             [
                 getButton(`${(0, i18n_1.default)(settings.language, "playerIntro")}: ${settings.intro ? emojis_1.default.on : emojis_1.default.off}`, {
-                    type: callbacks_1.CallbackDataType.Setting,
+                    type: callbacks_1.TelegramCallbackDataType.Setting,
                     id: "intro",
                 }),
                 getButton(`${(0, i18n_1.default)(settings.language, "sass")}: ${settings.sass ? emojis_1.default.on : emojis_1.default.off}`, {
-                    type: callbacks_1.CallbackDataType.Setting,
+                    type: callbacks_1.TelegramCallbackDataType.Setting,
                     id: "sass",
                 }),
             ],
             [
                 getButton(`${(0, i18n_1.default)(settings.language, "dailyUpdates")}: ${settings.updates ? emojis_1.default.on : emojis_1.default.off}`, {
-                    type: callbacks_1.CallbackDataType.Setting,
+                    type: callbacks_1.TelegramCallbackDataType.Setting,
                     id: "updates",
                 }),
                 getButton(`${(0, i18n_1.default)(settings.language, "snubs")}: ${settings.snubs ? emojis_1.default.on : emojis_1.default.off}`, {
-                    type: callbacks_1.CallbackDataType.Setting,
+                    type: callbacks_1.TelegramCallbackDataType.Setting,
                     id: "snubs",
                 }),
             ],
             [
                 getButton(`${(0, i18n_1.default)(settings.language, "skipDelay")}: ${settings.skipDelay}s`, {
-                    type: callbacks_1.CallbackDataType.Setting,
+                    type: callbacks_1.TelegramCallbackDataType.Setting,
                     id: "skipDelay",
                 }),
                 getButton(`${(0, i18n_1.default)(settings.language, "vetoDelay")}: ${settings.vetoDelay}s`, {
-                    type: callbacks_1.CallbackDataType.Setting,
+                    type: callbacks_1.TelegramCallbackDataType.Setting,
                     id: "vetoDelay",
                 }),
                 getButton(`${(0, i18n_1.default)(settings.language, "hintDelay")}: ${settings.hintDelay}s`, {
-                    type: callbacks_1.CallbackDataType.Setting,
+                    type: callbacks_1.TelegramCallbackDataType.Setting,
                     id: "hintDelay",
                 }),
             ],
             [
                 getButton(`${(0, i18n_1.default)(settings.language, "category", { count: 0 })}`, {
-                    type: callbacks_1.CallbackDataType.Setting,
+                    type: callbacks_1.TelegramCallbackDataType.Setting,
                     id: "cats",
                 }),
             ],
@@ -250,7 +257,7 @@ const languagesKeyboard = ({ settings }, availableLanguages) => {
             .filter((language) => (0, languages_1.isSupportedLanguage)(language.code))
             .sort()
             .reduce((result, language, i) => {
-            const button = getButton(`${settings.languages.includes(language.code) ? emojis_1.default.on : emojis_1.default.off} ${language.code} - ${language.native} (${(0, find_1.default)(availableLanguages, (availableLanguage) => availableLanguage._id === language.code).count})`, { type: callbacks_1.CallbackDataType.TriviaLanguages, id: language.code });
+            const button = getButton(`${settings.languages.includes(language.code) ? emojis_1.default.on : emojis_1.default.off} ${language.code} - ${language.native} (${(0, find_1.default)(availableLanguages, (availableLanguage) => availableLanguage._id === language.code).count})`, { type: callbacks_1.TelegramCallbackDataType.TriviaLanguages, id: language.code });
             if (i % 2 === 0) {
                 result.push([button]);
             }
@@ -258,7 +265,14 @@ const languagesKeyboard = ({ settings }, availableLanguages) => {
                 result[result.length - 1].push(button);
             }
             return result;
-        }, []), [[getButton(`⬅️ ${(0, i18n_1.default)(settings.language, "settings")}`, { type: callbacks_1.CallbackDataType.Setting, id: "settings" })]]),
+        }, []), [
+            [
+                getButton(`⬅️ ${(0, i18n_1.default)(settings.language, "settings")}`, {
+                    type: callbacks_1.TelegramCallbackDataType.Setting,
+                    id: "settings",
+                }),
+            ],
+        ]),
     };
 };
 exports.languagesKeyboard = languagesKeyboard;
@@ -268,7 +282,7 @@ const languageKeyboard = ({ settings }) => {
             .filter((language) => (0, languages_1.isBotLanguage)(language.code))
             .sort()
             .reduce((result, language, i) => {
-            const button = getButton(`${language.code} - ${language.native} ${settings.language === language.code ? emojis_1.default.green : ""}`, { type: callbacks_1.CallbackDataType.BotLanguage, id: language.code });
+            const button = getButton(`${language.code} - ${language.native} ${settings.language === language.code ? emojis_1.default.green : ""}`, { type: callbacks_1.TelegramCallbackDataType.BotLanguage, id: language.code });
             if (i % 2 === 0) {
                 result.push([button]);
             }
@@ -276,14 +290,26 @@ const languageKeyboard = ({ settings }) => {
                 result[result.length - 1].push(button);
             }
             return result;
-        }, []), [[getButton(`⬅️ ${(0, i18n_1.default)(settings.language, "settings")}`, { type: callbacks_1.CallbackDataType.Setting, id: "settings" })]]),
+        }, []), [
+            [
+                getButton(`⬅️ ${(0, i18n_1.default)(settings.language, "settings")}`, {
+                    type: callbacks_1.TelegramCallbackDataType.Setting,
+                    id: "settings",
+                }),
+            ],
+        ]),
     };
 };
 exports.languageKeyboard = languageKeyboard;
 const banListKeyboard = (language, list) => {
     return {
         inline_keyboard: [
-            [getButton((0, i18n_1.default)(language, "sentences.banListQuestion"), { type: callbacks_1.CallbackDataType.Ban, id: `${list._id}` })],
+            [
+                getButton((0, i18n_1.default)(language, "sentences.banListQuestion"), {
+                    type: callbacks_1.TelegramCallbackDataType.Ban,
+                    id: `${list._id}`,
+                }),
+            ],
         ],
     };
 };
@@ -291,7 +317,12 @@ exports.banListKeyboard = banListKeyboard;
 const confirmBanListKeyboard = (language, list) => {
     return {
         inline_keyboard: [
-            [getButton((0, i18n_1.default)(language, "sentences.banListCommand"), { type: callbacks_1.CallbackDataType.ConfirmBan, id: `${list._id}` })],
+            [
+                getButton((0, i18n_1.default)(language, "sentences.banListCommand"), {
+                    type: callbacks_1.TelegramCallbackDataType.ConfirmBan,
+                    id: `${list._id}`,
+                }),
+            ],
         ],
     };
 };
@@ -300,8 +331,8 @@ const likeListKeyboard = (game) => {
     return {
         inline_keyboard: [
             [
-                getButton(emojis_1.default.thumbsUp, { type: callbacks_1.CallbackDataType.Vote, id: `1_${game.list._id}` }),
-                getButton(emojis_1.default.thumbsDown, { type: callbacks_1.CallbackDataType.Vote, id: `-1_${game.list._id}` }),
+                getButton(emojis_1.default.thumbsUp, { type: callbacks_1.TelegramCallbackDataType.Vote, id: `1_${game.list._id}` }),
+                getButton(emojis_1.default.thumbsDown, { type: callbacks_1.TelegramCallbackDataType.Vote, id: `-1_${game.list._id}` }),
             ],
         ],
     };
@@ -313,7 +344,7 @@ const listsKeyboard = (lists) => ({
         .reduce((result, list) => {
         result.push([
             getButton((0, string_helpers_1.parseSymbols)(list.name.replace("&", "and")), {
-                type: callbacks_1.CallbackDataType.Pick,
+                type: callbacks_1.TelegramCallbackDataType.Pick,
                 id: `${list._id}`,
             }),
         ]);
@@ -325,48 +356,48 @@ const curateListKeyboard = (list) => ({
     inline_keyboard: [
         [
             getButton(`${emojis_1.default.thumbsUp} (${list.votes ? list.votes.filter(({ vote }) => vote > 0).length : 0})`, {
-                type: callbacks_1.CallbackDataType.Vote,
+                type: callbacks_1.TelegramCallbackDataType.Vote,
                 id: `1_${list._id}`,
             }),
             getButton(`${emojis_1.default.thumbsDown} (${list.votes ? list.votes.filter(({ vote }) => vote < 0).length : 0})`, {
-                type: callbacks_1.CallbackDataType.Vote,
+                type: callbacks_1.TelegramCallbackDataType.Vote,
                 id: `-1_${list._id}`,
             }),
             getButton(emojis_1.default.difficulty0 + (list.difficulty === 0 ? emojis_1.default.green : ""), {
-                type: callbacks_1.CallbackDataType.Difficulty,
+                type: callbacks_1.TelegramCallbackDataType.Difficulty,
                 id: `0_${list._id}`,
             }),
             getButton(emojis_1.default.difficulty1 + (list.difficulty === 1 ? emojis_1.default.green : ""), {
-                type: callbacks_1.CallbackDataType.Difficulty,
+                type: callbacks_1.TelegramCallbackDataType.Difficulty,
                 id: `1_${list._id}`,
             }),
             getButton(emojis_1.default.difficulty2 + (list.difficulty === 2 ? emojis_1.default.green : ""), {
-                type: callbacks_1.CallbackDataType.Difficulty,
+                type: callbacks_1.TelegramCallbackDataType.Difficulty,
                 id: `2_${list._id}`,
             }),
         ],
         [
             getButton((0, string_helpers_1.capitalize)((0, messages_1.getFrequencyMessage)(0)) + (list.frequency === 0 ? emojis_1.default.green : ""), {
-                type: callbacks_1.CallbackDataType.Frequency,
+                type: callbacks_1.TelegramCallbackDataType.Frequency,
                 id: `0_${list._id}`,
             }),
             getButton((0, string_helpers_1.capitalize)((0, messages_1.getFrequencyMessage)(1)) + (list.frequency === 1 ? emojis_1.default.green : ""), {
-                type: callbacks_1.CallbackDataType.Frequency,
+                type: callbacks_1.TelegramCallbackDataType.Frequency,
                 id: `1_${list._id}`,
             }),
             getButton((0, string_helpers_1.capitalize)((0, messages_1.getFrequencyMessage)(2)) + (list.frequency === 2 ? emojis_1.default.green : ""), {
-                type: callbacks_1.CallbackDataType.Frequency,
+                type: callbacks_1.TelegramCallbackDataType.Frequency,
                 id: `2_${list._id}`,
             }),
             getButton((0, string_helpers_1.capitalize)((0, messages_1.getFrequencyMessage)(3)) + (list.frequency === 3 ? emojis_1.default.green : ""), {
-                type: callbacks_1.CallbackDataType.Frequency,
+                type: callbacks_1.TelegramCallbackDataType.Frequency,
                 id: `3_${list._id}`,
             }),
         ],
         [
-            getButton("Values", { type: callbacks_1.CallbackDataType.Values, id: `${list._id}` }),
-            getButton("Stats", { type: callbacks_1.CallbackDataType.Stats, id: `l_${list._id}` }),
-            getButton("Desc", { type: callbacks_1.CallbackDataType.Description, id: `${list._id}` }),
+            getButton("Values", { type: callbacks_1.TelegramCallbackDataType.Values, id: `${list._id}` }),
+            getButton("Stats", { type: callbacks_1.TelegramCallbackDataType.Stats, id: `l_${list._id}` }),
+            getButton("Desc", { type: callbacks_1.TelegramCallbackDataType.Description, id: `${list._id}` }),
             {
                 text: "Curate",
                 url: `https://belgocanadian.com/tenthings?list=${list._id}`,
@@ -390,7 +421,12 @@ const delayKeyboard = (game, type) => {
                 getButton(`20${game.settings[type] === 20 ? ` ${emojis_1.default.on}` : ""}`, { type, id: "20" }),
                 getButton(`30${game.settings[type] === 30 ? ` ${emojis_1.default.on}` : ""}`, { type, id: "30" }),
             ],
-            [getButton(`⬅️ ${(0, i18n_1.default)(game.settings.language, "settings")}`, { type: callbacks_1.CallbackDataType.Setting, id: "settings" })],
+            [
+                getButton(`⬅️ ${(0, i18n_1.default)(game.settings.language, "settings")}`, {
+                    type: callbacks_1.TelegramCallbackDataType.Setting,
+                    id: "settings",
+                }),
+            ],
         ],
     };
 };

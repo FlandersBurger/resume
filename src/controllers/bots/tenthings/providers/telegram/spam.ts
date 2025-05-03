@@ -1,8 +1,7 @@
 import moment from "moment";
-import { Message } from "@tenthings/messages";
+import { TelegramMessage } from "@tenthings/providers/telegram";
 
 import bot from "@root/connections/telegram";
-import { getPlayerName } from "@tenthings/players";
 
 const cache: {
   [key: string]: {
@@ -12,11 +11,12 @@ const cache: {
 } = {};
 
 export const checkSpam = (body: {
-  message?: Message;
-  callback_query?: { from: Message["from"]; message: Message };
+  message?: TelegramMessage;
+  callback_query?: { from: TelegramMessage["from"]; message: TelegramMessage };
 }) => {
   const from = body.message ? body.message.from.id : body.callback_query!.from.id;
-  const name = getPlayerName(body.message ? body.message.from : body.callback_query!.from);
+  const name =
+    body.message && body.message.from.username ? `@${body.message.from.username}` : body.message?.from.first_name;
   const chat = body.message ? body.message.chatId : body.callback_query!.message.chatId;
 
   if (cache[from]) {

@@ -3,7 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.telegram = void 0;
+exports.convertTelegramUserToPlayer = exports.telegram = void 0;
 const i18n_1 = __importDefault(require("../../../../../i18n"));
 const telegram_1 = __importDefault(require("../../../../../connections/telegram"));
 const categories_1 = require("../../categories");
@@ -194,4 +194,31 @@ const guessed = async (game, player, value, blurb, score, accuracy) => {
     }
     return telegram_1.default.queueMessage(game.telegramChannel, message);
 };
+const convertTelegramUserToPlayer = async (game, from) => {
+    let player = await models_1.Player.findOne({
+        game: game._id,
+        id: from.id,
+    }).exec();
+    if (!player) {
+        if (!from.first_name) {
+            console.error("Player has no first name", from);
+            return;
+        }
+        const player = new models_1.Player({
+            game: game._id,
+            ...from,
+        });
+        const savedPlayer = await player.save();
+        console.log(`${game.chat_id} - Player ${from.id} created`);
+        return savedPlayer;
+    }
+    else if (player && player.first_name) {
+        player.first_name = player.first_name ? (0, string_helpers_1.maskUrls)(player.first_name) : "";
+        player.last_name = player.last_name ? (0, string_helpers_1.maskUrls)(player.last_name) : "";
+        player.username = player.username ? (0, string_helpers_1.maskUrls)(player.username) : "";
+        player.present = true;
+    }
+    return player;
+};
+exports.convertTelegramUserToPlayer = convertTelegramUserToPlayer;
 //# sourceMappingURL=index.js.map

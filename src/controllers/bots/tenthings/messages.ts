@@ -13,19 +13,9 @@ import { makePercentage } from "@root/utils/number-helpers";
 import { capitalize } from "@root/utils/string-helpers";
 import i18n, { t_list } from "@root/i18n";
 import emojis from "./emojis";
-import { TelegramUser } from "@root/connections/telegram";
 import { getListScore } from "./lists";
 import { BotLanguage } from "./languages";
 import { getPlayerName } from "./players";
-
-export type Message = {
-  id: string;
-  from: TelegramUser;
-  command?: string;
-  text: string;
-  chatId: number;
-  topicId?: number;
-};
 
 export const getLogicMessage = (language: string): string => {
   const rules = t_list(language, "rules", { maxHints: MAXHINTS, returnObjects: true });

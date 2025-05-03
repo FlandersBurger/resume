@@ -9,7 +9,7 @@ const i18n_1 = __importDefault(require("../../../../../i18n"));
 const keyboards_1 = require("./keyboards");
 const telegram_1 = __importDefault(require("../../../../../connections/telegram"));
 const errors_1 = require("../../../../../controllers/bots/tenthings/providers/telegram/errors");
-const players_1 = require("../../players");
+const _1 = require(".");
 const cache = {};
 const initiateBan = async (game, callbackQuery) => {
     if (game.chat_id !== parseInt(process.env.GROUP_CHAT || "") || (await telegram_1.default.checkAdmin(game, callbackQuery.from))) {
@@ -31,7 +31,7 @@ const initiateBan = async (game, callbackQuery) => {
         }
     }
     else {
-        const player = await (0, players_1.getPlayer)(game, callbackQuery.from);
+        const player = await (0, _1.convertTelegramUserToPlayer)(game, callbackQuery.from);
         if (player)
             (0, errors_1.adminOnly)(game, player);
     }

@@ -2,7 +2,7 @@ const FuzzyMatching = require("fuzzy-matching");
 import Queue, { Job } from "bull";
 import find from "lodash/find";
 
-import { Game } from "@models/index";
+import { Game, Player } from "@models/index";
 import { GameType, IGame } from "@models/tenthings/game";
 import { removeAllButLetters } from "@root/utils/string-helpers";
 import { Types } from "mongoose";
@@ -12,14 +12,13 @@ import sass from "./sass";
 import { checkMaingame, newRound } from "./maingame";
 import { checkMinigame } from "./minigame";
 import { checkTinygame } from "./tinygame";
-import { getPlayer, getPlayerName } from "./players";
-import { Message } from "./messages";
+import { getPlayerName } from "./players";
 import bot from "@root/connections/telegram";
 
 export type Guess = {
-  game: number;
-  list: Types.ObjectId;
-  player: IPlayer;
+  gameId: Types.ObjectId;
+  listId: Types.ObjectId;
+  playerId: Types.ObjectId;
   match: {
     type: GameType;
     value: string;
@@ -42,7 +41,7 @@ guessQueue.on("completed", function (job: Job) {
 
 export const getCount = () => guessQueue.count();
 
-export const queueGuess = async (game: IGame, msg: Message) => {
+export const queueGuess = async (game: IGame, player: IPlayer, answer: string) => {
   const values = [
     ...(game.minigame.answer ? [{ type: GameType.MINIGAME, value: game.minigame.answer }] : []),
     ...(game.tinygame.answer ? [{ type: GameType.TINYGAME, value: game.tinygame.answer }] : []),
@@ -51,15 +50,14 @@ export const queueGuess = async (game: IGame, msg: Message) => {
       .sort(({ guesser: a }, { guesser: b }) => (!!a?._id ? 1 : -Infinity) - (!!b?._id ? 1 : -Infinity))
       .map(({ value }) => ({ type: GameType.MAINGAME, value })),
   ];
-  const text = removeAllButLetters(msg.text);
-  const correctMatch = find(values, ({ value }) => removeAllButLetters(value) === text);
+  const truncatedAnswer = removeAllButLetters(answer);
+  const correctMatch = find(values, ({ value }) => removeAllButLetters(value) === truncatedAnswer);
   if (correctMatch) {
-    const player = await getPlayer(game, msg.from);
     if (player)
       queueingGuess({
-        game: game.chat_id,
-        list: game.list._id,
-        player,
+        gameId: game._id,
+        listId: game.list._id,
+        playerId: player._id,
         match: {
           ...correctMatch,
           distance: 1,
@@ -79,13 +77,14 @@ export const queueGuess = async (game: IGame, msg: Message) => {
         },
       );
     let found = false;
-    if (text.length / lengths.shortest > 0.75 && text.length / lengths.longest < 1.25) {
+    if (truncatedAnswer.length / lengths.shortest > 0.75 && truncatedAnswer.length / lengths.longest < 1.25) {
       const fuzzyMatch = new FuzzyMatching(values.map(({ value }) => removeAllButLetters(value)));
-      const matchedValue = fuzzyMatch.get(text, { min: 0.75 });
+      const matchedValue = fuzzyMatch.get(truncatedAnswer, { min: 0.75 });
       const guess = {
-        msg,
-        game: game.chat_id,
-        list: game.list._id,
+        answer: truncatedAnswer,
+        gameId: game._id,
+        playerId: player._id,
+        listId: game.list._id,
         match: matchedValue,
       };
       if (guess.match.distance >= 0.75) {
@@ -96,19 +95,17 @@ export const queueGuess = async (game: IGame, msg: Message) => {
         found = true;
         setTimeout(
           async () => {
-            const player = await getPlayer(game, msg.from);
             if (player)
               queueingGuess({
                 ...guess,
                 match,
-                player,
               });
           },
           (2000 / 0.25) * (1 - guess.match.distance),
         );
       }
     }
-    if (!found) sass(game, msg.text);
+    if (!found) sass(game, answer);
   }
 };
 
@@ -142,7 +139,7 @@ guessQueue.process(async ({ data }, done) => {
 });
 
 const processGuess = async (guess: Guess) => {
-  const game = await Game.findOne({ chat_id: guess.game })
+  const game = await Game.findOne({ _id: guess.gameId })
     .populate("list.creator")
     .populate("list.values.guesser")
     .populate("streak.player");
@@ -166,29 +163,29 @@ const processGuess = async (guess: Guess) => {
   }
   let player;
   try {
-    player = await getPlayer(game, guess.player);
+    player = await Player.findById(guess.playerId);
   } catch (err) {
     console.error(`Error with player in ProcessGuess`);
     console.error(guess);
   }
   if (!player) {
-    console.error(`Player not found for ${guess.player}`);
+    console.error(`Player not found for ${guess.playerId}`);
     return;
   }
   if (guess.match.type === GameType.MAINGAME) {
     await checkMaingame(game, player, guess);
     console.log(
-      `${guess.game} (${game.settings.language}) - ${game.list.name} for ${guess.match.value}  by ${getPlayerName(player)}`,
+      `${guess.gameId} (${game.settings.language}) - ${game.list.name} for ${guess.match.value}  by ${getPlayerName(player)}`,
     );
   } else if (guess.match.type === GameType.MINIGAME) {
     await checkMinigame(game, player, guess);
     console.log(
-      `${guess.game} (${game.settings.language}) - Minigame guess for ${game.minigame.answer} by ${getPlayerName(player)}`,
+      `${guess.gameId} (${game.settings.language}) - Minigame guess for ${game.minigame.answer} by ${getPlayerName(player)}`,
     );
   } else if (guess.match.type === GameType.TINYGAME) {
     await checkTinygame(game, player, guess);
     console.log(
-      `${guess.game} (${game.settings.language}) - Tinygame guess for ${game.tinygame.answer} by ${getPlayerName(player)}`,
+      `${guess.gameId} (${game.settings.language}) - Tinygame guess for ${game.tinygame.answer} by ${getPlayerName(player)}`,
     );
   }
 };

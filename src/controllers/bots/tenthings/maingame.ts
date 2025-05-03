@@ -152,7 +152,7 @@ export const deactivate = (game: HydratedDocument<IGame>) => {
 //  ██████ ██   ██ ███████  ██████ ██   ██
 
 export const checkMaingame = async (game: HydratedDocument<IGame>, player: HydratedDocument<IPlayer>, guess: Guess) => {
-  if (guess.list !== game.list._id) return;
+  if (guess.listId !== game.list._id) return;
   game.lastPlayDate = moment().toDate();
   player.lastPlayDate = moment().toDate();
   if (skipCache[game.chat_id]) {
