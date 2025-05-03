@@ -50,8 +50,12 @@ const processHint = async (game, player, type = game_1.GameType.MAINGAME) => {
                 game.provider.tinyGameMessage(game);
                 break;
             default:
+                if (game.chat_id === parseInt(process.env.MASTER_CHAT || ""))
+                    console.log("trying to send hint");
                 game.hints++;
                 game.provider.mainGameMessage(game, false);
+                if (game.chat_id === parseInt(process.env.MASTER_CHAT || ""))
+                    console.log("supposdely sent hint");
                 (0, lists_1.logHint)(game.list._id);
                 break;
         }
