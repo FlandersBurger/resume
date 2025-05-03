@@ -11,7 +11,6 @@ import { Message } from "@tenthings/messages";
 
 // DO NOT REMOVE jobs
 import jobs from "@tenthings/jobs";
-import { isValidObjectId } from "mongoose";
 
 console.log(
   `Scheduled Jobs:\n${jobs
@@ -118,10 +117,6 @@ tenthingsTelegramBotRoute.post("/", async (req: Request, res: Response) => {
       console.log(`New game created for ${msg.chatId}`);
       await evaluate(msg, newGame, true);
     } else {
-      if (existingGame.streak.player && !isValidObjectId(existingGame.streak.player)) {
-        console.log("resetting streaker:", existingGame.streak.player);
-        existingGame.streak.player = undefined;
-      }
       if (!existingGame.enabled) {
         if (msg.command && ["list", "start", "minigame", "tinygame"].includes(msg.command)) {
           await activate(existingGame, true);

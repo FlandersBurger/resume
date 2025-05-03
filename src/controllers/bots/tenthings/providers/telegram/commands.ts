@@ -237,7 +237,8 @@ export const evaluate = async (msg: Message, game: HydratedDocument<IGame>, isNe
         }
         break;
       case Command.Hint:
-        if (game.list.values.filter(({ guesser }) => guesser).length !== 0) {
+        console.log("Hint command received");
+        if (game.list.values.filter(({ guesser }) => guesser?._id).length !== 0) {
           try {
             processHint(game, player);
           } catch (e) {
