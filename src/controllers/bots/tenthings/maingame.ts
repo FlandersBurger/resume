@@ -42,7 +42,7 @@ export const createMaingame = async (platformSettings: {
 //  ██████ ██   ██ ███████  ██████ ██   ██     ██   ██  ██████   ██████  ██   ████ ██████
 
 export const checkRound = (game: IGame) => {
-  if (game.list.values.filter(({ guesser }) => !guesser?._id).length === 0) {
+  if (game.list.values.filter(({ guesser }) => !guesser).length === 0) {
     setTimeout(async () => {
       game.provider.mainGameMessage(game);
       const foundList = await List.findOne({ _id: game.list._id }).exec();

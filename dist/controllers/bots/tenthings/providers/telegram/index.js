@@ -108,7 +108,7 @@ exports.telegram = {
         }
         message += game.list.values.reduce((str, { guesser, value }, index) => {
             if (long) {
-                if (!guesser?._id) {
+                if (!guesser) {
                     str += `\t<b>${index + 1}:</b> `;
                     str += `<b>${(0, hints_1.getHint)(game.hints, value)}</b>`;
                     str += "\n";
@@ -120,7 +120,7 @@ exports.telegram = {
                 }
             }
             else {
-                if (!guesser?._id) {
+                if (!guesser) {
                     str += "\t";
                     str += index + 1;
                     str += ": ";
