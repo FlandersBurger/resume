@@ -113,7 +113,7 @@ guessQueue.process(async ({ data }, done) => {
                 };
                 game.list.values = game.list.values.map((v) => ({ ...v, guesser: undefined }));
                 await game.save();
-                console.log("Game reset:", game._id);
+                console.log("Game reset while processing guess queue:", game._id);
                 return;
             }
             (0, maingame_1.newRound)(game);
@@ -144,7 +144,7 @@ const processGuess = async (guess) => {
             };
             game.list.values = game.list.values.map((v) => ({ ...v, guesser: undefined }));
             await game.save();
-            console.log("Game reset:", game._id);
+            console.log("Game reset while processing guess:", game._id);
             return;
         }
     }
