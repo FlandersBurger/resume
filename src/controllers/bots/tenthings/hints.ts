@@ -25,6 +25,10 @@ export const processHint = async (
   player: HydratedDocument<IPlayer>,
   type: GameType = GameType.MAINGAME,
 ) => {
+  if (game.chat_id === parseInt(process.env.MASTER_CHAT || "")) {
+    console.log("supposedly sending hint");
+    console.log(game);
+  }
   if (
     (type === GameType.MAINGAME && game.hints >= MAX_HINTS) ||
     (type !== GameType.MAINGAME && game[type].hints >= MAX_HINTS)
@@ -49,10 +53,8 @@ export const processHint = async (
         game.provider.tinyGameMessage(game);
         break;
       default:
-        if (game.chat_id === parseInt(process.env.MASTER_CHAT || "")) console.log("trying to send hint");
         game.hints++;
         game.provider.mainGameMessage(game, false);
-        if (game.chat_id === parseInt(process.env.MASTER_CHAT || "")) console.log("supposdely sent hint");
         logHint(game.list._id);
         break;
     }

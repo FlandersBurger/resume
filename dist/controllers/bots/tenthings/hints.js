@@ -24,6 +24,10 @@ const hintCooldown = (gameId) => {
 };
 exports.hintCooldown = hintCooldown;
 const processHint = async (game, player, type = game_1.GameType.MAINGAME) => {
+    if (game.chat_id === parseInt(process.env.MASTER_CHAT || "")) {
+        console.log("supposedly sending hint");
+        console.log(game);
+    }
     if ((type === game_1.GameType.MAINGAME && game.hints >= exports.MAX_HINTS) ||
         (type !== game_1.GameType.MAINGAME && game[type].hints >= exports.MAX_HINTS)) {
         game.provider.message(game, "What? Another hint? I'm just gonna ignore that request");
@@ -50,12 +54,8 @@ const processHint = async (game, player, type = game_1.GameType.MAINGAME) => {
                 game.provider.tinyGameMessage(game);
                 break;
             default:
-                if (game.chat_id === parseInt(process.env.MASTER_CHAT || ""))
-                    console.log("trying to send hint");
                 game.hints++;
                 game.provider.mainGameMessage(game, false);
-                if (game.chat_id === parseInt(process.env.MASTER_CHAT || ""))
-                    console.log("supposdely sent hint");
                 (0, lists_1.logHint)(game.list._id);
                 break;
         }
