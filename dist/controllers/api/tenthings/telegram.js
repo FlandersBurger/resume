@@ -69,7 +69,7 @@ exports.tenthingsTelegramBotRoute.post("/", async (req, res) => {
         }
         else {
             if (!(0, mongoose_1.isValidObjectId)(existingGame.streak.player)) {
-                console.log("resetting streaker");
+                console.log("resetting streaker:", existingGame.streak.player);
                 existingGame.streak.player = undefined;
             }
             if (!existingGame.enabled) {
