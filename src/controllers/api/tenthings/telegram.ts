@@ -1,7 +1,7 @@
 import { Router, Request, Response } from "express";
 import moment from "moment";
 import { Game, Player } from "@models/index";
-import { activate, createMaingame, newRound } from "@tenthings/maingame";
+import { activate, createMaingame } from "@tenthings/maingame";
 
 import bot from "@root/connections/telegram";
 import { getQueue } from "@tenthings/providers/telegram/queue";
@@ -132,8 +132,9 @@ tenthingsTelegramBotRoute.post("/", async (req: Request, res: Response) => {
           await existingGame.validate();
         } catch (err) {
           console.log("Resetting game: ", existingGame._id);
+          console.log(err);
           if (!res.headersSent) res.sendStatus(200);
-          return newRound(existingGame);
+          return;
         }
         await evaluate(msg, existingGame, false);
       }
