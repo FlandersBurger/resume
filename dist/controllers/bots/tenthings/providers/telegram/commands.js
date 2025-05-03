@@ -193,15 +193,7 @@ const evaluate = async (msg, game, isNew) => {
                 }
                 break;
             case Command.Hint:
-                console.log(`${game.list.values.filter(({ guesser }) => guesser?._id).length !== 0} - Hint`);
-                if (game.list.values.filter(({ guesser }) => guesser?._id).length !== 0) {
-                    try {
-                        (0, hints_1.processHint)(game, player);
-                    }
-                    catch (e) {
-                        telegram_1.default.notifyAdmin(`Hint Error:\n${e}`);
-                    }
-                }
+                (0, hints_1.processHint)(game, player);
                 break;
             case Command.Minihint:
                 (0, hints_1.processHint)(game, player, game_1.GameType.MINIGAME);
