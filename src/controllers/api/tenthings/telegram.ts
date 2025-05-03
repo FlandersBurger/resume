@@ -118,7 +118,7 @@ tenthingsTelegramBotRoute.post("/", async (req: Request, res: Response) => {
       console.log(`New game created for ${msg.chatId}`);
       await evaluate(msg, newGame, true);
     } else {
-      if (!isValidObjectId(existingGame.streak.player)) {
+      if (existingGame.streak.player && !isValidObjectId(existingGame.streak.player)) {
         console.log("resetting streaker:", existingGame.streak.player);
         existingGame.streak.player = undefined;
       }
