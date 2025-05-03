@@ -37,7 +37,7 @@ export const initiateBan = async (game: IGame, callbackQuery: CallbackData) => {
     }
   } else {
     const player = await getPlayer(game, callbackQuery.from);
-    adminOnly(game, player);
+    if (player) adminOnly(game, player);
   }
 };
 

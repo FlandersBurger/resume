@@ -40,15 +40,17 @@ const queueGuess = async (game, msg) => {
     const text = (0, string_helpers_1.removeAllButLetters)(msg.text);
     const correctMatch = (0, find_1.default)(values, ({ value }) => (0, string_helpers_1.removeAllButLetters)(value) === text);
     if (correctMatch) {
-        queueingGuess({
-            game: game.chat_id,
-            list: game.list._id,
-            player: await (0, players_1.getPlayer)(game, msg.from),
-            match: {
-                ...correctMatch,
-                distance: 1,
-            },
-        });
+        const player = await (0, players_1.getPlayer)(game, msg.from);
+        if (player)
+            queueingGuess({
+                game: game.chat_id,
+                list: game.list._id,
+                player,
+                match: {
+                    ...correctMatch,
+                    distance: 1,
+                },
+            });
     }
     else {
         const lengths = values
@@ -77,11 +79,13 @@ const queueGuess = async (game, msg) => {
                 };
                 found = true;
                 setTimeout(async () => {
-                    queueingGuess({
-                        ...guess,
-                        match,
-                        player: await (0, players_1.getPlayer)(game, msg.from),
-                    });
+                    const player = await (0, players_1.getPlayer)(game, msg.from);
+                    if (player)
+                        queueingGuess({
+                            ...guess,
+                            match,
+                            player,
+                        });
                 }, (2000 / 0.25) * (1 - guess.match.distance));
             }
         }

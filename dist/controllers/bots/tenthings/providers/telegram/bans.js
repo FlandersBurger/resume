@@ -32,7 +32,8 @@ const initiateBan = async (game, callbackQuery) => {
     }
     else {
         const player = await (0, players_1.getPlayer)(game, callbackQuery.from);
-        (0, errors_1.adminOnly)(game, player);
+        if (player)
+            (0, errors_1.adminOnly)(game, player);
     }
 };
 exports.initiateBan = initiateBan;

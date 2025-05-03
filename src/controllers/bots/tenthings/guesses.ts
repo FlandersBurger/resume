@@ -54,15 +54,17 @@ export const queueGuess = async (game: IGame, msg: Message) => {
   const text = removeAllButLetters(msg.text);
   const correctMatch = find(values, ({ value }) => removeAllButLetters(value) === text);
   if (correctMatch) {
-    queueingGuess({
-      game: game.chat_id,
-      list: game.list._id,
-      player: await getPlayer(game, msg.from),
-      match: {
-        ...correctMatch,
-        distance: 1,
-      },
-    });
+    const player = await getPlayer(game, msg.from);
+    if (player)
+      queueingGuess({
+        game: game.chat_id,
+        list: game.list._id,
+        player,
+        match: {
+          ...correctMatch,
+          distance: 1,
+        },
+      });
   } else {
     const lengths = values
       .map(({ value }) => removeAllButLetters(value))
@@ -94,11 +96,13 @@ export const queueGuess = async (game: IGame, msg: Message) => {
         found = true;
         setTimeout(
           async () => {
-            queueingGuess({
-              ...guess,
-              match,
-              player: await getPlayer(game, msg.from),
-            });
+            const player = await getPlayer(game, msg.from);
+            if (player)
+              queueingGuess({
+                ...guess,
+                match,
+                player,
+              });
           },
           (2000 / 0.25) * (1 - guess.match.distance),
         );

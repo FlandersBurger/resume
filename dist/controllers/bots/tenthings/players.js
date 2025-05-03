@@ -9,8 +9,7 @@ const getPlayer = async (game, from) => {
         id: from.id,
     }).exec();
     if (!player) {
-        console.log(from);
-        player = await createPlayer(game, from);
+        return await createPlayer(game, from);
     }
     else if (player && player.first_name) {
         player.first_name = player.first_name ? (0, string_helpers_1.maskUrls)(player.first_name) : "";
@@ -28,8 +27,10 @@ const getPlayerName = (player, tagged = false) => {
 };
 exports.getPlayerName = getPlayerName;
 const createPlayer = async (game, from) => {
-    if (!from.first_name)
-        console.trace();
+    if (!from.first_name) {
+        console.error("Player has no first name", from);
+        return;
+    }
     const player = new index_1.Player({
         game: game._id,
         ...from,
