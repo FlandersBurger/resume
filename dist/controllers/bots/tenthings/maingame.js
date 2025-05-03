@@ -143,7 +143,7 @@ const checkMaingame = async (game, player, guess) => {
         console.error(`Something wrong with this guess:\n${JSON.stringify(guess)}`);
     }
     if (match && !match.guesser) {
-        match.guesser = player._id;
+        match.guesser = player;
         player.answers++;
         const score = (0, guesses_1.getAnswerScore)(game.hints, guess.match.distance, game.guessers.length);
         const accuracy = `${(guess.match.distance * 100).toFixed(0)}%`;
