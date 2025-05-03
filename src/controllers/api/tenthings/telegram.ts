@@ -136,6 +136,10 @@ tenthingsTelegramBotRoute.post("/", async (req: Request, res: Response) => {
           existingGame.list.values = existingGame.list.values.map((v) => ({ ...v, guesser: undefined }));
           await existingGame.save();
           console.log("Game reset:", existingGame._id);
+          const updatedGame = await Game.findOne({ chat_id: msg.chatId }).lean();
+          console.log(updatedGame);
+          console.log(updatedGame?.streak);
+          console.log(updatedGame?.list.values);
           if (!res.headersSent) res.sendStatus(200);
           return;
         }

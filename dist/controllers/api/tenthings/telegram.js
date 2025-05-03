@@ -88,6 +88,10 @@ exports.tenthingsTelegramBotRoute.post("/", async (req, res) => {
                     existingGame.list.values = existingGame.list.values.map((v) => ({ ...v, guesser: undefined }));
                     await existingGame.save();
                     console.log("Game reset:", existingGame._id);
+                    const updatedGame = await index_1.Game.findOne({ chat_id: msg.chatId }).lean();
+                    console.log(updatedGame);
+                    console.log(updatedGame?.streak);
+                    console.log(updatedGame?.list.values);
                     if (!res.headersSent)
                         res.sendStatus(200);
                     return;
