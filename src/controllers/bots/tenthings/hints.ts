@@ -56,6 +56,7 @@ export const processHint = async (
     }
     hintCache[game._id.toString()] = game.settings.hintDelay;
     hintCooldown(game._id.toString());
+    console.log("guessers:", game.guessers);
     await game.save();
   }
   return true;

@@ -93,7 +93,7 @@ export default async (callbackQuery: CallbackData) => {
     };
     game.list.values = game.list.values.map((v) => ({ ...v, guesser: undefined }));
     await game.save();
-    console.log("Game reset:", game._id);
+    console.log("Game reset in callback:", game._id);
     return;
   }
   const player = await getPlayer(game, callbackQuery.from);
