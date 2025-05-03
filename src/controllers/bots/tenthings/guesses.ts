@@ -48,7 +48,7 @@ export const queueGuess = async (game: IGame, msg: Message) => {
     ...(game.tinygame.answer ? [{ type: GameType.TINYGAME, value: game.tinygame.answer }] : []),
     ...game.list.values
       // sort by no guesser first to vet those before the others
-      .sort(({ guesser: a }, { guesser: b }) => (!!a ? 1 : -Infinity) - (!!b ? 1 : -Infinity))
+      .sort(({ guesser: a }, { guesser: b }) => (!!a?._id ? 1 : -Infinity) - (!!b?._id ? 1 : -Infinity))
       .map(({ value }) => ({ type: GameType.MAINGAME, value })),
   ];
   const text = removeAllButLetters(msg.text);

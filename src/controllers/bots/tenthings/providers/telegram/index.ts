@@ -149,7 +149,7 @@ export const telegram: Provider = {
     }
     message += game.list.values.reduce((str, { guesser, value }, index) => {
       if (long) {
-        if (!guesser) {
+        if (!guesser?._id) {
           str += `\t<b>${index + 1}:</b> `;
           str += `<b>${getHint(game.hints, value)}</b>`;
           str += "\n";
@@ -169,6 +169,7 @@ export const telegram: Provider = {
       }
       return str;
     }, "");
+    console.log(message);
     bot.queueMessage(game.telegramChannel, message);
   },
   miniGameMessage: (game: IGame) => {

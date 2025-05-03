@@ -108,7 +108,7 @@ exports.telegram = {
         }
         message += game.list.values.reduce((str, { guesser, value }, index) => {
             if (long) {
-                if (!guesser) {
+                if (!guesser?._id) {
                     str += `\t<b>${index + 1}:</b> `;
                     str += `<b>${(0, hints_1.getHint)(game.hints, value)}</b>`;
                     str += "\n";
@@ -130,6 +130,7 @@ exports.telegram = {
             }
             return str;
         }, "");
+        console.log(message);
         telegram_1.default.queueMessage(game.telegramChannel, message);
     },
     miniGameMessage: (game) => {

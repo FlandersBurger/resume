@@ -57,7 +57,6 @@ const processHint = async (game, player, type = game_1.GameType.MAINGAME) => {
         }
         exports.hintCache[game._id.toString()] = game.settings.hintDelay;
         (0, exports.hintCooldown)(game._id.toString());
-        console.log("guessers:", game.guessers);
         await game.save();
     }
     return true;
