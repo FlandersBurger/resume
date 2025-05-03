@@ -27,7 +27,7 @@ export const getPlayer = async (
 
 export const getPlayerName = (player: TelegramUser | IPlayer, tagged = false): string => {
   if (!player) return "Player 404";
-  return player.username ? (tagged ? "@" : "") + player.username : maskUrls(parseSymbols(player.first_name));
+  return player.username ? (tagged ? "@" : "") + player.username : maskUrls(parseSymbols(player.first_name ?? ""));
 };
 
 const createPlayer = async (game: IGame, from: Message["from"]): Promise<HydratedDocument<IPlayer> | undefined> => {
