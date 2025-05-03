@@ -96,13 +96,21 @@ guessQueue.process(async ({ data }, done) => {
         await processGuess(data);
     }
     catch (err) {
+        const game = await index_1.Game.findOne({ chat_id: data.game });
+        if (game) {
+            game.streak.player = undefined;
+            (0, maingame_1.newRound)(game);
+        }
         telegram_1.default.notifyAdmin(`Error in ProcessGuess`);
         console.error(err);
     }
     done();
 });
 const processGuess = async (guess) => {
-    const game = await index_1.Game.findOne({ chat_id: guess.game }).populate("list.creator").populate("list.values.guesser");
+    const game = await index_1.Game.findOne({ chat_id: guess.game })
+        .populate("list.creator")
+        .populate("list.values.guesser")
+        .populate("streak.player");
     if (!game) {
         console.error(`Game not found`);
         return console.error(guess);

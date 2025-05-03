@@ -9,7 +9,7 @@ import { Types } from "mongoose";
 import { IPlayer } from "@models/tenthings/player";
 import { MAX_HINTS } from "./hints";
 import sass from "./sass";
-import { checkMaingame } from "./maingame";
+import { checkMaingame, newRound } from "./maingame";
 import { checkMinigame } from "./minigame";
 import { checkTinygame } from "./tinygame";
 import { getPlayer, getPlayerName } from "./players";
@@ -114,6 +114,11 @@ guessQueue.process(async ({ data }, done) => {
   try {
     await processGuess(data);
   } catch (err) {
+    const game = await Game.findOne({ chat_id: data.game });
+    if (game) {
+      game.streak.player = undefined;
+      newRound(game);
+    }
     bot.notifyAdmin(`Error in ProcessGuess`);
     console.error(err);
   }
@@ -121,7 +126,10 @@ guessQueue.process(async ({ data }, done) => {
 });
 
 const processGuess = async (guess: Guess) => {
-  const game = await Game.findOne({ chat_id: guess.game }).populate("list.creator").populate("list.values.guesser");
+  const game = await Game.findOne({ chat_id: guess.game })
+    .populate("list.creator")
+    .populate("list.values.guesser")
+    .populate("streak.player");
   if (!game) {
     console.error(`Game not found`);
     return console.error(guess);
