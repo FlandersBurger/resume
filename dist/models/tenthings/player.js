@@ -8,6 +8,7 @@ const db_1 = __importDefault(require("../../db"));
 let Player = {};
 const playerSchema = new mongoose_1.Schema({
     game: { type: mongoose_1.Schema.Types.ObjectId, ref: "TenThings", required: true },
+    user: { type: mongoose_1.Schema.Types.ObjectId, ref: "User", required: false },
     id: { type: Number, required: true },
     first_name: { type: String, required: true },
     last_name: { type: String, required: false },

@@ -29,6 +29,7 @@ const users_1 = require("./controllers/api/users");
 const telegram_1 = require("./controllers/api/tenthings/telegram");
 const queue_1 = require("./queue");
 const telegram_2 = __importDefault(require("./connections/telegram"));
+const web_1 = require("./controllers/api/tenthings/web");
 const serviceAccount = require("../keys/resume-172205-firebase-adminsdk-r34t7-0028c702be.json");
 exports.firebase = firebase_admin_1.default.initializeApp({
     credential: firebase_admin_1.default.credential.cert(serviceAccount),
@@ -50,6 +51,7 @@ app.use("/api/tenthings/pause", pause_1.tenthingsPauseRoute);
 app.use("/api/tenthings/players", players_1.tenthingsPlayersRoute);
 app.use("/api/tenthings/stats", stats_1.tenthingsStatsRoute);
 app.use("/api/tenthings/search", search_1.tenthingsSearchRoute);
+app.use("/api/tenthings/web", web_1.tenthingsWebBotRoute);
 app.use("/bots/tenthings", telegram_1.tenthingsTelegramBotRoute);
 app.use(static_1.staticRoute);
 app.use((err, _req, res, _next) => {

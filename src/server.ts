@@ -24,6 +24,7 @@ import { usersRoute } from "@api/users";
 import { tenthingsTelegramBotRoute } from "@api/tenthings/telegram";
 import { redisConnect, subscribe } from "@root/queue";
 import bot from "./connections/telegram";
+import { tenthingsWebBotRoute } from "./controllers/api/tenthings/web";
 
 const serviceAccount = require("../keys/resume-172205-firebase-adminsdk-r34t7-0028c702be.json");
 
@@ -53,6 +54,7 @@ app.use("/api/tenthings/pause", tenthingsPauseRoute);
 app.use("/api/tenthings/players", tenthingsPlayersRoute);
 app.use("/api/tenthings/stats", tenthingsStatsRoute);
 app.use("/api/tenthings/search", tenthingsSearchRoute);
+app.use("/api/tenthings/web", tenthingsWebBotRoute);
 
 app.use("/bots/tenthings", tenthingsTelegramBotRoute);
 

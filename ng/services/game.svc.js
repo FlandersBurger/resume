@@ -1,8 +1,12 @@
 angular.module("app").service("GameSvc", function ($http) {
   var svc = this;
 
-  svc.getTenthings = function () {
-    return $http.get("/api/games/tenthings");
+  svc.getTenthings = function (id = 1) {
+    return $http.get("/api/tenthings/web/" + id);
+  };
+
+  svc.answerTenthings = function (id = 1, answer) {
+    return $http.post("/api/tenthings/web/" + id + "/answer", { answer });
   };
 
   svc.getHighscore = function (game, user) {

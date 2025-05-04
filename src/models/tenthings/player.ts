@@ -6,6 +6,7 @@ export type PlayerState = Command.Typo | Command.Bug | Command.Feature | Command
 
 export interface IPlayer {
   _id: Types.ObjectId;
+  user: Types.ObjectId;
   game: Types.ObjectId;
   id: number;
   first_name: string;
@@ -45,6 +46,7 @@ let Player: { [key: string]: Model<IPlayer> } = {};
 const playerSchema = new Schema<IPlayer>(
   {
     game: { type: Schema.Types.ObjectId, ref: "TenThings", required: true },
+    user: { type: Schema.Types.ObjectId, ref: "User", required: false },
     id: { type: Number, required: true },
     first_name: { type: String, required: true },
     last_name: { type: String, required: false },
