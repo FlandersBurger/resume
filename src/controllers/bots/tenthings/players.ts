@@ -1,5 +1,5 @@
 import { IPlayer } from "@models/tenthings/player";
-import { parseSymbols, maskUrls } from "@root/utils/string-helpers";
+import { parseSymbols, maskUrls } from "@utils/string-helpers";
 
 export const getPlayerName = (player: IPlayer, tagged = false): string => {
   if (!player) return "Player 404";

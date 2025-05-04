@@ -1,7 +1,7 @@
 import { HydratedDocument } from "mongoose";
 import { GameType, IGame } from "@models/tenthings/game";
 import { IPlayer } from "@models/tenthings/player";
-import { parseSymbols, conceal, concealMiddle, SPECIAL_CHARACTERS } from "@root/utils/string-helpers";
+import { parseSymbols, conceal, concealMiddle, SPECIAL_CHARACTERS } from "@utils/string-helpers";
 import uniq from "lodash/uniq";
 import { logHint } from "./lists";
 

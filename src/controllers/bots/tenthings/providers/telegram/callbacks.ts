@@ -2,7 +2,7 @@ import { HydratedDocument, Types } from "mongoose";
 import { Game, List } from "@models/index";
 import { IGame, IGameSettings } from "@models/tenthings/game";
 import { IList, IVote } from "@models/tenthings/list";
-import { capitalize, parseSymbols } from "@root/utils/string-helpers";
+import { capitalize, parseSymbols } from "@utils/string-helpers";
 import { makePercentage } from "@root/utils/number-helpers";
 import find from "lodash/find";
 

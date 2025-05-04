@@ -15,5 +15,4 @@ exports.tenthingsWebBotRoute.post("/:id/guess/:answer", async (req, res) => {
     const player = await (0, web_1.convertWebUserToPlayer)(game, res.locals.user);
     (0, guesses_1.queueGuess)(game, player, req.params.answer);
 });
-console.log("whatever");
 //# sourceMappingURL=web.js.map

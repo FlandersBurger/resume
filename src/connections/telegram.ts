@@ -7,7 +7,7 @@ import httpClient from "@root/http-client";
 import { chatNotFound, botMuted, noTopic } from "@root/controllers/bots/tenthings/providers/telegram/errors";
 import { checkSpam } from "@root/controllers/bots/tenthings/providers/telegram/spam";
 import { TelegramMessageType } from "@root/controllers/api/tenthings/telegram";
-import { parseSymbols, maskUrls } from "@root/utils/string-helpers";
+import { parseSymbols, maskUrls } from "@utils/string-helpers";
 import moment, { Moment } from "moment";
 import { Command } from "@root/controllers/bots/tenthings/providers/telegram/commands";
 import { IGame } from "@root/models/tenthings/game";

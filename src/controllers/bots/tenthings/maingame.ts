@@ -6,7 +6,7 @@ import some from "lodash/some";
 import { Game, List, Player } from "@models/index";
 import { IGame, Platform } from "@models/tenthings/game";
 import { IList } from "@models/tenthings/list";
-import { parseSymbols } from "@root/utils/string-helpers";
+import { parseSymbols } from "@utils/string-helpers";
 import { IPlayer } from "@models/tenthings/player";
 import { Guess, getAnswerScore } from "./guesses";
 import { getSnubbedMessage } from "./messages";

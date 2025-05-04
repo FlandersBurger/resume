@@ -9,7 +9,7 @@ import { IPlayer } from "@models/tenthings/player";
 import bot from "@root/connections/telegram";
 import i18n from "@root/i18n";
 import { makePercentage, makeReadable } from "@root/utils/number-helpers";
-import { parseSymbols } from "@root/utils/string-helpers";
+import { parseSymbols } from "@utils/string-helpers";
 import { getPlayerName } from "@tenthings/players";
 import { getListScore } from "@tenthings/lists";
 import emojis from "@tenthings/emojis";

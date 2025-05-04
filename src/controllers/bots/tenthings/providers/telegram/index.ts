@@ -1,7 +1,7 @@
 import i18n from "@root/i18n";
 import bot, { TelegramUser } from "@root/connections/telegram";
 import categories, { getCategoryLabel } from "../../categories";
-import { capitalize, maskUrls, parseSymbols } from "@root/utils/string-helpers";
+import { capitalize, maskUrls, parseSymbols } from "@utils/string-helpers";
 import { IGame, IGameList, IGameListValue } from "@root/models/tenthings/game";
 import { IList } from "@root/models/tenthings/list";
 import { IUser } from "@root/models/user";

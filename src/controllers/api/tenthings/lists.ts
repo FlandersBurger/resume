@@ -15,7 +15,7 @@ import Unsplash from "@root/connections/unsplash";
 
 import { IList, IListValue } from "@models/tenthings/list";
 import { List, User } from "@models/index";
-import { parseSymbols, removeAllButLetters } from "@root/utils/string-helpers";
+import { parseSymbols, removeAllButLetters } from "@utils/string-helpers";
 import { getList, getListScore, getRandomList, mergeLists } from "@tenthings/lists";
 import { curateListKeyboard } from "@tenthings/providers/telegram/keyboards";
 import { every } from "lodash";

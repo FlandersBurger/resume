@@ -12,7 +12,7 @@ import orderBy from "lodash/orderBy";
 import uniqBy from "lodash/uniqBy";
 import { likeListKeyboard } from "@tenthings/providers/telegram/keyboards";
 import i18n from "@root/i18n";
-import { parseSymbols, removeSpecialCharacters } from "@root/utils/string-helpers";
+import { parseSymbols, removeSpecialCharacters } from "@utils/string-helpers";
 
 export const getRandomList = async (parameters: QueryOptions = {}): Promise<HydratedDocument<IList> | undefined> => {
   const count = await List.countDocuments(parameters).exec();

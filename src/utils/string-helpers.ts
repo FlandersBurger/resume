@@ -1,5 +1,5 @@
-import diacritics, { Diacritic } from "./diacritics";
-import domains from "./domains";
+import diacritics, { Diacritic } from "@utils/diacritics";
+import domains from "@utils/domains";
 
 export const removeDiacritics = (str: string): string =>
   diacritics.reduce((result, diacritic: Diacritic) => result.replace(diacritic.letters, diacritic.base), str);

@@ -12,7 +12,7 @@ import { IList } from "@models/tenthings/list";
 import { IPlayer } from "@models/tenthings/player";
 import { Guess, getAnswerScore } from "./guesses";
 import { IMinigame } from "@models/tenthings/minigame";
-import { parseSymbols } from "@root/utils/string-helpers";
+import { parseSymbols } from "@utils/string-helpers";
 
 export const createMinigame = async (game: HydratedDocument<IGame>) => {
   const availableLanguages =

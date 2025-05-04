@@ -3,7 +3,7 @@ import { IList } from "@root/models/tenthings/list";
 import { Provider } from "..";
 import { IUser } from "@root/models/user";
 import { Player } from "@root/models";
-import { maskUrls } from "@root/utils/string-helpers";
+import { maskUrls } from "@utils/string-helpers";
 import { HydratedDocument } from "mongoose";
 import { IPlayer } from "@root/models/tenthings/player";
 

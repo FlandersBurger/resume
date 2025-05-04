@@ -14,7 +14,7 @@ import languages, {
   isBotLanguage,
 } from "@tenthings/languages";
 import { getFrequencyMessage } from "@tenthings/messages";
-import { parseSymbols, capitalize } from "@root/utils/string-helpers";
+import { parseSymbols, capitalize } from "@utils/string-helpers";
 import i18n from "@root/i18n";
 import emojis from "@tenthings/emojis";
 import { Keyboard, KeyboardButton, KeyboardCallbackButton } from "@root/connections/telegram";

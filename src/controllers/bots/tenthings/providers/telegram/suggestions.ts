@@ -1,4 +1,4 @@
-import { parseSymbols, capitalize } from "@root/utils/string-helpers";
+import { parseSymbols, capitalize } from "@utils/string-helpers";
 import bot from "@root/connections/telegram";
 import { TelegramMessage } from "@tenthings/providers/telegram";
 import { IGame } from "@root/models/tenthings/game";

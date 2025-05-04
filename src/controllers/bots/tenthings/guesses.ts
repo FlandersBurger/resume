@@ -4,7 +4,7 @@ import find from "lodash/find";
 
 import { Game, Player } from "@models/index";
 import { GameType, IGame } from "@models/tenthings/game";
-import { removeAllButLetters } from "@root/utils/string-helpers";
+import { removeAllButLetters } from "@utils/string-helpers";
 import { Types } from "mongoose";
 import { IPlayer } from "@models/tenthings/player";
 import { MAX_HINTS } from "./hints";
