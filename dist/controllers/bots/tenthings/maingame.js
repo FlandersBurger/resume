@@ -125,62 +125,64 @@ exports.deactivate = deactivate;
 const checkMaingame = async (game, player, guess) => {
     if (guess.listId !== game.list._id)
         return;
-    game.lastPlayDate = (0, moment_1.default)().toDate();
-    player.lastPlayDate = (0, moment_1.default)().toDate();
-    if (skips_1.skipCache[game.chat_id]) {
-        (0, skips_1.abortSkip)(game, player);
-    }
-    if (!(0, some_1.default)(game.guessers, (guesser) => guesser.equals(player._id))) {
-        if (game.guessers) {
-            game.guessers.push(player._id);
-        }
-        else
-            game.guessers = [player._id];
-    }
-    const match = game.list.values.find(({ value }) => value === guess.match.value);
-    if (!player) {
-        telegram_1.default.notifyAdmin(`Something wrong with this guess:\n${JSON.stringify(guess)}`);
-        console.error(`Something wrong with this guess:\n${JSON.stringify(guess)}`);
-    }
-    if (match && !match.guesser) {
-        match.guesser = player;
-        player.answers++;
-        const score = (0, guesses_1.getAnswerScore)(game.hints, guess.match.distance, game.guessers.length);
-        const accuracy = `${(guess.match.distance * 100).toFixed(0)}%`;
-        player.score += score;
-        player.scoreDaily += score;
-        if (game.hints === 0) {
-            player.hintStreak++;
-        }
-        if (!game.streak || game.streak.player?._id != player._id) {
-            game.streak = { player: player._id, count: 1 };
-        }
-        else {
-            game.streak.count++;
-        }
-        if (player.streak < game.streak.count) {
-            player.streak = game.streak.count;
-        }
-        if (player.scoreDaily > player.highScore) {
-            player.highScore = player.scoreDaily;
-        }
-        if (player.maxHintStreak < player.hintStreak) {
-            player.maxHintStreak = player.hintStreak;
-        }
-        game.provider.guessed(game, player, match, score, accuracy);
-        setTimeout(() => {
-            (0, exports.checkRound)(game);
-        }, 200);
-    }
-    else if (match) {
-        player.snubs++;
-        if (game.settings.snubs) {
-            game.provider.message(game, (0, messages_1.getSnubbedMessage)((0, string_helpers_1.parseSymbols)(match.value), player, match.guesser));
-        }
-    }
     try {
-        await player.save();
-        await game.save();
+        game.lastPlayDate = (0, moment_1.default)().toDate();
+        player.lastPlayDate = (0, moment_1.default)().toDate();
+        if (skips_1.skipCache[game.chat_id]) {
+            (0, skips_1.abortSkip)(game, player);
+        }
+        if (!(0, some_1.default)(game.guessers, (guesser) => guesser.equals(player._id))) {
+            if (game.guessers) {
+                game.guessers.push(player._id);
+            }
+            else
+                game.guessers = [player._id];
+        }
+        const match = game.list.values.find(({ value }) => value === guess.match.value);
+        if (!player) {
+            telegram_1.default.notifyAdmin(`Something wrong with this guess:\n${JSON.stringify(guess)}`);
+            console.error(`Something wrong with this guess:\n${JSON.stringify(guess)}`);
+        }
+        if (match && !match.guesser) {
+            match.guesser = player;
+            player.answers++;
+            const score = (0, guesses_1.getAnswerScore)(game.hints, guess.match.distance, game.guessers.length);
+            const accuracy = `${(guess.match.distance * 100).toFixed(0)}%`;
+            player.score += score;
+            player.scoreDaily += score;
+            if (game.hints === 0) {
+                player.hintStreak++;
+            }
+            if (!game.streak || game.streak.player?._id != player._id) {
+                game.streak = { player: player._id, count: 1 };
+            }
+            else {
+                game.streak.count++;
+            }
+            if (player.streak < game.streak.count) {
+                player.streak = game.streak.count;
+            }
+            if (player.scoreDaily > player.highScore) {
+                player.highScore = player.scoreDaily;
+            }
+            if (player.maxHintStreak < player.hintStreak) {
+                player.maxHintStreak = player.hintStreak;
+            }
+            await game.save();
+            await player.save();
+            game.provider.guessed(game, player, match, score, accuracy);
+            setTimeout(() => {
+                (0, exports.checkRound)(game);
+            }, 200);
+        }
+        else if (match) {
+            player.snubs++;
+            await game.save();
+            await player.save();
+            if (game.settings.snubs) {
+                game.provider.message(game, (0, messages_1.getSnubbedMessage)((0, string_helpers_1.parseSymbols)(match.value), player, match.guesser));
+            }
+        }
         return true;
     }
     catch (e) {

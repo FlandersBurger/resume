@@ -24,7 +24,7 @@ import { usersRoute } from "@api/users";
 import { tenthingsTelegramBotRoute } from "@api/tenthings/telegram";
 import { redisConnect, subscribe } from "@root/queue";
 import bot from "./connections/telegram";
-import { tenthingsWebBotRoute } from "./controllers/api/tenthings/web";
+import { tenthingsWebBotRoute } from "@api/tenthings/web";
 
 const serviceAccount = require("../keys/resume-172205-firebase-adminsdk-r34t7-0028c702be.json");
 
@@ -78,6 +78,12 @@ server.listen(port, async () => {
   //bot.setWebhook("tenthings");
   await subscribe("new_post", (post: any) => {
     websocketServer.broadcast("new_post", post);
+  });
+  await subscribe("tenthings_message", () => {
+    websocketServer.broadcast("tenthings_message", {
+      type: "tenthings_message",
+      data: "tenthings_message",
+    });
   });
 });
 

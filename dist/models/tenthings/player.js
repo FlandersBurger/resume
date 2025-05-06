@@ -9,7 +9,7 @@ let Player = {};
 const playerSchema = new mongoose_1.Schema({
     game: { type: mongoose_1.Schema.Types.ObjectId, ref: "TenThings", required: true },
     user: { type: mongoose_1.Schema.Types.ObjectId, ref: "User", required: false },
-    id: { type: Number, required: true },
+    id: { type: Number, required: false },
     first_name: { type: String, required: true },
     last_name: { type: String, required: false },
     username: { type: String, required: false },

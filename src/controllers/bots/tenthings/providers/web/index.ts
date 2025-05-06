@@ -1,3 +1,4 @@
+import redis from "@root/queue";
 import { IGame, IGameList } from "@root/models/tenthings/game";
 import { IList } from "@root/models/tenthings/list";
 import { Provider } from "..";
@@ -9,11 +10,13 @@ import { IPlayer } from "@root/models/tenthings/player";
 
 export const web: Provider = {
   message: () => {},
-  newRound: (game: IGame, list: IList | IGameList) => {
+  newRound: async (game: IGame, list: IList | IGameList) => {
     console.log("New round started", game._id, list.name);
+    await redis.publish("tenthings_message", "{}");
   },
   endOfRound: async (game: IGame, list: IList) => {
     console.log("Round ended", game._id, list.name);
+    await redis.publish("tenthings_message", "{}");
   },
   newList: (game: IGame) => {
     console.log("New list created", game.list.name);
@@ -23,7 +26,9 @@ export const web: Provider = {
   },
   dailyScores: () => {},
   dailyWinners: () => {},
-  guessed: () => {},
+  guessed: async () => {
+    await redis.publish("tenthings_message", "{}");
+  },
   mainGameMessage: () => {},
   miniGameMessage: () => {},
   miniGameGuessed: () => {},

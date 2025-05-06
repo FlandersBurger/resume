@@ -153,58 +153,60 @@ export const deactivate = (game: HydratedDocument<IGame>) => {
 
 export const checkMaingame = async (game: HydratedDocument<IGame>, player: HydratedDocument<IPlayer>, guess: Guess) => {
   if (guess.listId !== game.list._id) return;
-  game.lastPlayDate = moment().toDate();
-  player.lastPlayDate = moment().toDate();
-  if (skipCache[game.chat_id]) {
-    abortSkip(game, player);
-  }
-  if (!some(game.guessers, (guesser: Types.ObjectId) => guesser.equals(player._id))) {
-    if (game.guessers) {
-      game.guessers.push(player._id);
-    } else game.guessers = [player._id];
-  }
-  const match = game.list.values.find(({ value }) => value === guess.match.value);
-  if (!player) {
-    bot.notifyAdmin(`Something wrong with this guess:\n${JSON.stringify(guess)}`);
-    console.error(`Something wrong with this guess:\n${JSON.stringify(guess)}`);
-  }
-  if (match && !match.guesser) {
-    match.guesser = player;
-    player.answers++;
-    const score = getAnswerScore(game.hints, guess.match.distance, game.guessers.length);
-    const accuracy = `${(guess.match.distance * 100).toFixed(0)}%`;
-    player.score += score;
-    player.scoreDaily += score;
-    if (game.hints === 0) {
-      player.hintStreak++;
-    }
-    if (!game.streak || game.streak.player?._id != player._id) {
-      game.streak = { player: player._id, count: 1 };
-    } else {
-      game.streak.count++;
-    }
-    if (player.streak < game.streak.count) {
-      player.streak = game.streak.count;
-    }
-    if (player.scoreDaily > player.highScore) {
-      player.highScore = player.scoreDaily;
-    }
-    if (player.maxHintStreak < player.hintStreak) {
-      player.maxHintStreak = player.hintStreak;
-    }
-    game.provider.guessed(game, player, match, score, accuracy);
-    setTimeout(() => {
-      checkRound(game);
-    }, 200);
-  } else if (match) {
-    player.snubs++;
-    if (game.settings.snubs) {
-      game.provider.message(game, getSnubbedMessage(parseSymbols(match.value), player, match.guesser as IPlayer));
-    }
-  }
   try {
-    await player.save();
-    await game.save();
+    game.lastPlayDate = moment().toDate();
+    player.lastPlayDate = moment().toDate();
+    if (skipCache[game.chat_id]) {
+      abortSkip(game, player);
+    }
+    if (!some(game.guessers, (guesser: Types.ObjectId) => guesser.equals(player._id))) {
+      if (game.guessers) {
+        game.guessers.push(player._id);
+      } else game.guessers = [player._id];
+    }
+    const match = game.list.values.find(({ value }) => value === guess.match.value);
+    if (!player) {
+      bot.notifyAdmin(`Something wrong with this guess:\n${JSON.stringify(guess)}`);
+      console.error(`Something wrong with this guess:\n${JSON.stringify(guess)}`);
+    }
+    if (match && !match.guesser) {
+      match.guesser = player;
+      player.answers++;
+      const score = getAnswerScore(game.hints, guess.match.distance, game.guessers.length);
+      const accuracy = `${(guess.match.distance * 100).toFixed(0)}%`;
+      player.score += score;
+      player.scoreDaily += score;
+      if (game.hints === 0) {
+        player.hintStreak++;
+      }
+      if (!game.streak || game.streak.player?._id != player._id) {
+        game.streak = { player: player._id, count: 1 };
+      } else {
+        game.streak.count++;
+      }
+      if (player.streak < game.streak.count) {
+        player.streak = game.streak.count;
+      }
+      if (player.scoreDaily > player.highScore) {
+        player.highScore = player.scoreDaily;
+      }
+      if (player.maxHintStreak < player.hintStreak) {
+        player.maxHintStreak = player.hintStreak;
+      }
+      await game.save();
+      await player.save();
+      game.provider.guessed(game, player, match, score, accuracy);
+      setTimeout(() => {
+        checkRound(game);
+      }, 200);
+    } else if (match) {
+      player.snubs++;
+      await game.save();
+      await player.save();
+      if (game.settings.snubs) {
+        game.provider.message(game, getSnubbedMessage(parseSymbols(match.value), player, match.guesser as IPlayer));
+      }
+    }
     return true;
   } catch (e) {
     console.log(player);

@@ -1,7 +1,7 @@
 angular
   .module("app")
   //AngularJs can't have an arrow function here
-  .controller("TenThingsPlayCtrl", function ($scope, TenThingsSvc, GameSvc) {
+  .controller("TenThingsPlayCtrl", function ($scope, GameSvc) {
     $scope.keyDown = (e) => {
       switch (e.keyCode) {
         // Enter
@@ -26,17 +26,19 @@ angular
     };
 
     $scope.checkAnswer = async () => {
-      const result = await GameSvc.fuzzyMatch(
-        $scope.values.map(({ value }) => value),
-        $scope.guess,
-      );
-      if (result.data.value) {
-        const index = $scope.values.findIndex(({ value }) => value === result.data.value);
-        $scope.values[index].guessed = true;
-      }
+      await GameSvc.answerTenthings(undefined, $scope.guess);
       $scope.guess = "";
-      $scope.$apply();
+    };
+
+    $scope.getHint = async () => {
+      await GameSvc.getTenthingsHint();
     };
 
     $scope.$watch("currentUser", getData);
+
+    $scope.$on("ws:tenthings_message", function () {
+      $scope.$apply(function () {
+        getData();
+      });
+    });
   });

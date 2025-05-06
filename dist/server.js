@@ -70,6 +70,12 @@ server.listen(port, async () => {
     await (0, queue_1.subscribe)("new_post", (post) => {
         exports.websocketServer.broadcast("new_post", post);
     });
+    await (0, queue_1.subscribe)("tenthings_message", () => {
+        exports.websocketServer.broadcast("tenthings_message", {
+            type: "tenthings_message",
+            data: "tenthings_message",
+        });
+    });
 });
 process
     .on("unhandledRejection", (reason, p) => {

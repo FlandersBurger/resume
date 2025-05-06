@@ -1,15 +1,21 @@
 "use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.convertWebUserToPlayer = exports.web = void 0;
+const queue_1 = __importDefault(require("../../../../../queue"));
 const models_1 = require("../../../../../models");
 const string_helpers_1 = require("../../../../../utils/string-helpers");
 exports.web = {
     message: () => { },
-    newRound: (game, list) => {
+    newRound: async (game, list) => {
         console.log("New round started", game._id, list.name);
+        await queue_1.default.publish("tenthings_message", "{}");
     },
     endOfRound: async (game, list) => {
         console.log("Round ended", game._id, list.name);
+        await queue_1.default.publish("tenthings_message", "{}");
     },
     newList: (game) => {
         console.log("New list created", game.list.name);
@@ -19,7 +25,9 @@ exports.web = {
     },
     dailyScores: () => { },
     dailyWinners: () => { },
-    guessed: () => { },
+    guessed: async () => {
+        await queue_1.default.publish("tenthings_message", "{}");
+    },
     mainGameMessage: () => { },
     miniGameMessage: () => { },
     miniGameGuessed: () => { },
