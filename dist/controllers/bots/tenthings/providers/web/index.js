@@ -28,7 +28,9 @@ exports.web = {
     guessed: async () => {
         await queue_1.default.publish("tenthings_message", "{}");
     },
-    mainGameMessage: () => { },
+    mainGameMessage: async () => {
+        await queue_1.default.publish("tenthings_message", "{}");
+    },
     miniGameMessage: () => { },
     miniGameGuessed: () => { },
     tinyGameMessage: () => { },

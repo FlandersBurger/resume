@@ -29,7 +29,9 @@ export const web: Provider = {
   guessed: async () => {
     await redis.publish("tenthings_message", "{}");
   },
-  mainGameMessage: () => {},
+  mainGameMessage: async () => {
+    await redis.publish("tenthings_message", "{}");
+  },
   miniGameMessage: () => {},
   miniGameGuessed: () => {},
   tinyGameMessage: () => {},

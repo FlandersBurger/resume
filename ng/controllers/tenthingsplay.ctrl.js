@@ -18,7 +18,7 @@ angular
         const { data: game } = await GameSvc.getTenthings();
         console.log("game", game);
         $scope.list = game.list;
-        $scope.values = _.sampleSize(game.list.values, 10);
+        $scope.values = game.list.values;
         console.log("list", $scope.list);
         console.log("value", $scope.values);
         $scope.$apply();
