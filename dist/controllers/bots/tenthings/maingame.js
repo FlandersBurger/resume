@@ -56,7 +56,6 @@ const newRound = async (currentGame) => {
         .populate("list.values.guesser");
     if (!game)
         return console.log("Game not found");
-    console.log(game.provider.type);
     let players = await index_1.Player.find({
         game: currentGame._id,
         _id: { $in: game.guessers },
@@ -97,7 +96,6 @@ const newRound = async (currentGame) => {
         };
     }
     setTimeout(() => {
-        console.log(game.provider.type);
         game.provider.newList(game);
     }, 2000);
     game.playedLists.push(game.list._id);

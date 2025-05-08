@@ -17,6 +17,7 @@ export const web: Provider = {
   },
   newRound: (game: IGame, list: IList | IGameList) => {
     console.log("New round started", game._id, list.name);
+    publish("tenthings_message", { message: "A new round will start in 2 seconds" });
   },
   endOfRound: async (game: IGame, list: IList) => {
     console.log("Round ended", game._id, list.name);
@@ -28,7 +29,7 @@ export const web: Provider = {
   },
   skipList: (game: IGame) => {
     console.log("List skipped", game.list.name);
-    publish("tenthings_message", {});
+    publish("tenthings_message", { message: "List skipped" });
   },
   dailyScores: () => {},
   dailyWinners: () => {},
