@@ -79,11 +79,8 @@ server.listen(port, async () => {
   await subscribe("new_post", (post: any) => {
     websocketServer.broadcast("new_post", post);
   });
-  await subscribe("tenthings_message", () => {
-    websocketServer.broadcast("tenthings_message", {
-      type: "tenthings_message",
-      data: "tenthings_message",
-    });
+  await subscribe("tenthings_message", (message: any) => {
+    websocketServer.broadcast("tenthings_message", message);
   });
 });
 

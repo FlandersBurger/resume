@@ -13,6 +13,10 @@ angular.module("app").service("GameSvc", function ($http) {
     return $http.post("/api/tenthings/web/" + id + "/hint");
   };
 
+  svc.skipTenthingsList = function (id = 1) {
+    return $http.post("/api/tenthings/web/" + id + "/skip");
+  };
+
   svc.getHighscore = function (game, user) {
     return $http.get("/api/games/" + game + "/" + user + "/highscore");
   };

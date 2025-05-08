@@ -52,6 +52,7 @@ const getDailyScores = async ({ _id, settings }, limit = 0) => {
     return message;
 };
 exports.telegram = {
+    type: "telegram",
     message: (game, message) => {
         telegram_1.default.queueMessage(game.telegramChannel, message);
     },

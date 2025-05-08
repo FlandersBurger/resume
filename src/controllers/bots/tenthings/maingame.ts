@@ -71,12 +71,10 @@ export const newRound = async (currentGame: IGame) => {
   const game = await Game.findOne({
     _id: currentGame._id,
   })
-    .select(
-      "_id chat_id topicId provider playedLists list listsPlayed pickedLists cycles guessers hints disabledCategories settings",
-    )
     .populate("list.creator")
     .populate("list.values.guesser");
   if (!game) return console.log("Game not found");
+  console.log(game.provider.type);
   let players = await Player.find({
     game: currentGame._id,
     _id: { $in: game.guessers },
@@ -115,6 +113,7 @@ export const newRound = async (currentGame: IGame) => {
     };
   }
   setTimeout(() => {
+    console.log(game.provider.type);
     game.provider.newList(game);
   }, 2000);
   game.playedLists.push(game.list._id);

@@ -65,10 +65,14 @@ export const selectList = async (game: IGame): Promise<HydratedDocument<IList>> 
       return list;
     }
   } else {
+    const consistentParameters = {
+      categories: { $nin: game.disabledCategories },
+      ...(game.platform === "web" ? { starred: true } : {}),
+    };
     let list = await getRandomList({
       _id: { $nin: game.playedLists.concat(game.bannedLists ?? []) },
-      categories: { $nin: game.disabledCategories },
       language: { $in: availableLanguages },
+      ...consistentParameters,
     });
     if (!list) {
       game.playedLists = [];
@@ -77,14 +81,14 @@ export const selectList = async (game: IGame): Promise<HydratedDocument<IList>> 
       game.provider.message(game, i18n(game.settings.language, "sentences.allListsPlayed"));
       list = await getRandomList({
         _id: { $nin: game.bannedLists ?? [] },
-        categories: { $nin: game.disabledCategories },
         language: { $in: availableLanguages },
+        ...consistentParameters,
       });
       if (!list) {
         list = await getRandomList({
           _id: { $nin: game.bannedLists ?? [] },
-          categories: { $nin: game.disabledCategories },
           language: "EN",
+          ...consistentParameters,
         });
       }
     }

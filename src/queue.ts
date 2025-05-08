@@ -20,7 +20,7 @@ export const redisConnect = async () => {
   return client;
 };
 
-export const publish = async (topic: string, data: object): Promise<void> => {
+export const publish = async (topic: string, data?: object): Promise<void> => {
   await publisher.publish(topic, JSON.stringify(data));
 };
 

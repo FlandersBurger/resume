@@ -6,13 +6,19 @@
     <h5>Possible values: {{list.answers}}</h5>
   </div>
   <div>
-    <input
-      class="form-control input-search"
-      type="search"
-      ng-model="guess"
-      placeholder="Guess"
-      ng-keydown="keyDown($event)"
-    />
+    <div class="input-group">
+      <input
+        class="form-control input-search"
+        type="search"
+        ng-model="guess"
+        placeholder="Guess"
+        ng-keydown="keyDown($event)"
+      />
+      <span class="input-group-btn">
+        <button class="btn btn-default" ng-click="submitGuess()" ng-disabled="!guess">
+          Submit
+        </button>
+    </div>
     <div class="btn-group">
       <button class="btn btn-primary" ng-click="getHint()" ng-disabled="game.hints >= 6">Hint</button>
       <button class="btn btn-default" ng-click="skipList()" ng-if="list._id">Skip</button>

@@ -40,6 +40,7 @@ const getDailyScores = async ({ _id, settings }: IGame, limit = 0) => {
 };
 
 export const telegram: Provider = {
+  type: "telegram",
   message: (game: IGame, message: string) => {
     bot.queueMessage(game.telegramChannel, message);
   },

@@ -1,36 +1,44 @@
-import redis from "@root/queue";
-import { IGame, IGameList } from "@root/models/tenthings/game";
+import { publish } from "@root/queue";
+import { IGame, IGameList, IGameListValue } from "@root/models/tenthings/game";
 import { IList } from "@root/models/tenthings/list";
 import { Provider } from "..";
 import { IUser } from "@root/models/user";
 import { Player } from "@root/models";
-import { maskUrls } from "@utils/string-helpers";
+import { maskUrls, parseSymbols } from "@utils/string-helpers";
 import { HydratedDocument } from "mongoose";
 import { IPlayer } from "@root/models/tenthings/player";
+import { getGuessedMessage } from "../../messages";
+import { getPlayerName } from "../../players";
 
 export const web: Provider = {
-  message: () => {},
-  newRound: async (game: IGame, list: IList | IGameList) => {
+  type: "web",
+  message: async (_game: IGame, message) => {
+    await publish("tenthings_message", { message });
+  },
+  newRound: (game: IGame, list: IList | IGameList) => {
     console.log("New round started", game._id, list.name);
-    await redis.publish("tenthings_message", "{}");
   },
   endOfRound: async (game: IGame, list: IList) => {
     console.log("Round ended", game._id, list.name);
-    await redis.publish("tenthings_message", "{}");
+    await publish("tenthings_message", { message: "Round ended" });
   },
   newList: (game: IGame) => {
     console.log("New list created", game.list.name);
+    publish("tenthings_message", {});
   },
   skipList: (game: IGame) => {
     console.log("List skipped", game.list.name);
+    publish("tenthings_message", {});
   },
   dailyScores: () => {},
   dailyWinners: () => {},
-  guessed: async () => {
-    await redis.publish("tenthings_message", "{}");
+  guessed: (game: IGame, player: IPlayer, match: IGameListValue, ..._: any) => {
+    publish("tenthings_message", {
+      message: getGuessedMessage(game.settings.language, parseSymbols(match.value), getPlayerName(player, true)),
+    });
   },
-  mainGameMessage: async () => {
-    await redis.publish("tenthings_message", "{}");
+  mainGameMessage: () => {
+    publish("tenthings_message", {});
   },
   miniGameMessage: () => {},
   miniGameGuessed: () => {},

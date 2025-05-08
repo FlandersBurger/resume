@@ -14,30 +14,35 @@ angular
     };
 
     const getData = async () => {
-      if ($scope.currentUser.admin) {
+      if ($scope.currentUser?.admin) {
         const { data: game } = await GameSvc.getTenthings();
-        console.log("game", game);
         $scope.list = game.list;
         $scope.values = game.list.values;
-        console.log("list", $scope.list);
         console.log("value", $scope.values);
         $scope.$apply();
       }
     };
 
     $scope.checkAnswer = async () => {
-      await GameSvc.answerTenthings(undefined, $scope.guess);
+      const answer = $scope.guess;
       $scope.guess = "";
+      await GameSvc.answerTenthings(undefined, answer);
     };
 
     $scope.getHint = async () => {
       await GameSvc.getTenthingsHint();
     };
 
+    $scope.skipList = async () => {
+      await GameSvc.skipTenthingsList();
+    };
+
     $scope.$watch("currentUser", getData);
 
-    $scope.$on("ws:tenthings_message", function () {
+    $scope.$on("ws:tenthings_message", function (_, data) {
       $scope.$apply(function () {
+        console.log(data);
+        if (data.message) $scope.toast(data.message);
         getData();
       });
     });
