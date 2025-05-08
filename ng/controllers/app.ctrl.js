@@ -11,7 +11,7 @@ angular.module("app").controller("AppCtrl", function ($scope, LanguageSvc, UserS
   );
 
   $scope.toast = (message) => {
-    $mdToast.show($mdToast.simple().textContent(message).position("bottom right").hideDelay(3000));
+    $mdToast.show($mdToast.simple().textContent(message).position("top right").hideDelay(3000));
   };
   /*
     $(document).bind("keyup keydown", function(e){
