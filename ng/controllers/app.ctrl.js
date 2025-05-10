@@ -14,7 +14,7 @@ angular.module("app").controller("AppCtrl", function ($scope, LanguageSvc, UserS
     $mdToast.show(
       $mdToast
         .simple()
-        .parent(document.querySelectorAll(".page > div"))
+        .parent(document.querySelectorAll("#toast"))
         .textContent(message)
         .position("top right")
         .hideDelay(3000),
