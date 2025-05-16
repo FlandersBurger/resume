@@ -584,7 +584,8 @@ class TelegramBot {
         command = command.startsWith("/") ? command.replace("/", "") : undefined;
         if (command) {
           text = body.message.text.substring(command.length + 2, body.message.text.length);
-          if (parseInt(process.env.MASTER_CHAT ?? "") === body.message.from.id) console.log(command, text);
+          if (parseInt(process.env.MASTER_CHAT ?? "") === body.message.from.id)
+            console.log(body.message.chat.id, command, text);
           if (text === "TenThings_Bot") text = "";
         } else {
           text = body.message.text;
