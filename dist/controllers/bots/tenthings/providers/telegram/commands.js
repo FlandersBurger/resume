@@ -87,6 +87,14 @@ const evaluate = async (msg, game, isNew) => {
         (0, suggestions_1.sendSuggestion)(msg, game, player, player.state);
         return;
     }
+    try {
+        game.validate();
+    }
+    catch (e) {
+        console.error(e);
+        console.error("bad game", game._id);
+        return;
+    }
     if (isNew || game.list.values.length === 0) {
         await (0, maingame_1.newRound)(game);
     }

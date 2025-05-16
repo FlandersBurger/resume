@@ -102,6 +102,13 @@ export const evaluate = async (msg: TelegramMessage, game: HydratedDocument<IGam
   const flood = await floodChecker();
   if (flood) res.sendStatus(200);
   */
+  try {
+    game.validate();
+  } catch (e) {
+    console.error(e);
+    console.error("bad game", game._id);
+    return;
+  }
   if (isNew || game.list.values.length === 0) {
     await newRound(game);
   }
