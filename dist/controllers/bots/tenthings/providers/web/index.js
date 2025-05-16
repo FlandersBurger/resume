@@ -13,7 +13,6 @@ exports.web = {
     },
     newRound: (game, list) => {
         console.log("New round started", game._id, list.name);
-        (0, queue_1.publish)("tenthings_message", { message: "A new round will start in 2 seconds" });
     },
     endOfRound: async (game, list) => {
         console.log("Round ended", game._id, list.name);

@@ -90,6 +90,7 @@ const newRound = async (currentGame) => {
         await game.validate();
     }
     catch (err) {
+        console.error("Game validation error", err);
         game.streak = {
             player: undefined,
             count: 0,
@@ -108,6 +109,16 @@ const activate = async (game, save = false) => {
         game.lastPlayDate = (0, moment_1.default)().toDate();
         game.enabled = true;
         game.provider.message(game, "Ten Things started");
+        try {
+            await game.validate();
+        }
+        catch (err) {
+            console.error("Game validation error", err);
+            game.streak = {
+                player: undefined,
+                count: 0,
+            };
+        }
         if (save)
             await game.save();
     }
