@@ -112,6 +112,7 @@ tenthingsTelegramBotRoute.post("/", async (req: Request, res: Response) => {
       .populate("list.values.guesser")
       .select("-playedLists")
       .exec();
+
     if (!existingGame) {
       const newGame = await createMaingame({ chat_id: msg.chatId, platform: "telegram" });
       console.log(`New game created for ${msg.chatId}`);
@@ -126,12 +127,13 @@ tenthingsTelegramBotRoute.post("/", async (req: Request, res: Response) => {
         try {
           await existingGame.validate();
         } catch (err) {
+          console.log("Attemtping to reset game:", existingGame._id);
+          console.error(err);
           existingGame.streak = {
             player: undefined,
             count: 0,
           };
           await newRound(existingGame);
-          console.log("Game reset:", existingGame._id);
           if (!res.headersSent) res.sendStatus(200);
           return;
         }
