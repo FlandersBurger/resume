@@ -78,13 +78,11 @@ exports.tenthingsTelegramBotRoute.post("/", async (req, res) => {
                     await existingGame.validate();
                 }
                 catch (err) {
-                    existingGame.guessers = [];
                     existingGame.streak = {
                         player: undefined,
                         count: 0,
                     };
-                    existingGame.list.values = existingGame.list.values.map((v) => ({ ...v, guesser: undefined }));
-                    await existingGame.save();
+                    await (0, maingame_1.newRound)(existingGame);
                     console.log("Game reset:", existingGame._id);
                     if (!res.headersSent)
                         res.sendStatus(200);

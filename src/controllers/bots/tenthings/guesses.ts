@@ -120,13 +120,11 @@ guessQueue.process(async ({ data }, done) => {
       try {
         await game.validate();
       } catch (err) {
-        game.guessers = [];
         game.streak = {
           player: undefined,
           count: 0,
         };
-        game.list.values = game.list.values.map((v) => ({ ...v, guesser: undefined }));
-        await game.save();
+        await newRound(game);
         console.log("Game reset while processing guess queue:", game._id);
         return;
       }
@@ -150,13 +148,11 @@ const processGuess = async (guess: Guess) => {
     try {
       await game.validate();
     } catch (err) {
-      game.guessers = [];
       game.streak = {
         player: undefined,
         count: 0,
       };
-      game.list.values = game.list.values.map((v) => ({ ...v, guesser: undefined }));
-      await game.save();
+      await newRound(game);
       console.log("Game reset while processing guess:", game._id);
       return;
     }
