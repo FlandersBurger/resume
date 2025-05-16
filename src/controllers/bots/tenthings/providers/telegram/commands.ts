@@ -103,7 +103,7 @@ export const evaluate = async (msg: TelegramMessage, game: HydratedDocument<IGam
   if (flood) res.sendStatus(200);
   */
   try {
-    game.validate();
+    await game.validate();
   } catch (e) {
     console.error(e);
     console.error("bad game", game._id);

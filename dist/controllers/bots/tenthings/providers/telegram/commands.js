@@ -88,7 +88,7 @@ const evaluate = async (msg, game, isNew) => {
         return;
     }
     try {
-        game.validate();
+        await game.validate();
     }
     catch (e) {
         console.error(e);
