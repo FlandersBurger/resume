@@ -22,6 +22,7 @@ const telegram_1 = __importDefault(require("../../../../../connections/telegram"
 const errors_1 = require("../../../../../controllers/bots/tenthings/providers/telegram/errors");
 const languages_1 = require("../../languages");
 const _1 = require(".");
+const maingame_1 = require("../../maingame");
 var TelegramCallbackDataType;
 (function (TelegramCallbackDataType) {
     TelegramCallbackDataType["Ban"] = "ban";
@@ -64,8 +65,7 @@ exports.default = async (callbackQuery) => {
             player: undefined,
             count: 0,
         };
-        game.list.values = game.list.values.map((v) => ({ ...v, guesser: undefined }));
-        await game.save();
+        (0, maingame_1.newRound)(game);
         console.log("Game reset in callback:", game._id);
         return;
     }

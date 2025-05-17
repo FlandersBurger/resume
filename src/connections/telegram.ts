@@ -8,6 +8,7 @@ import { chatNotFound, botMuted, noTopic } from "@root/controllers/bots/tenthing
 import { checkSpam } from "@root/controllers/bots/tenthings/providers/telegram/spam";
 import { TelegramMessageType } from "@root/controllers/api/tenthings/telegram";
 import { parseSymbols, maskUrls } from "@utils/string-helpers";
+import bashColors from "@utils/bash-colors";
 import moment, { Moment } from "moment";
 import { Command } from "@root/controllers/bots/tenthings/providers/telegram/commands";
 import { IGame } from "@root/models/tenthings/game";
@@ -585,7 +586,7 @@ class TelegramBot {
         if (command) {
           text = body.message.text.substring(command.length + 2, body.message.text.length);
           if (parseInt(process.env.MASTER_CHAT ?? "") === body.message.from.id)
-            console.log(body.message.chat.id, command, text);
+            console.log(bashColors.RED, body.message.chat.id, command, text, bashColors.END);
           if (text === "TenThings_Bot") text = "";
         } else {
           text = body.message.text;

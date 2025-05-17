@@ -32,6 +32,7 @@ import bot, { TelegramUser } from "@root/connections/telegram";
 import { adminOnly } from "@root/controllers/bots/tenthings/providers/telegram/errors";
 import { isBotLanguage, isSupportedLanguage, SupportedLanguage } from "@tenthings/languages";
 import { convertTelegramUserToPlayer } from ".";
+import { newRound } from "../../maingame";
 
 export type TelegramCallbackData = {
   id: string;
@@ -91,8 +92,7 @@ export default async (callbackQuery: TelegramCallbackData) => {
       player: undefined,
       count: 0,
     };
-    game.list.values = game.list.values.map((v) => ({ ...v, guesser: undefined }));
-    await game.save();
+    newRound(game);
     console.log("Game reset in callback:", game._id);
     return;
   }
