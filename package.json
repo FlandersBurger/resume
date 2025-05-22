@@ -1,5 +1,6 @@
 {
   "name": "resume",
+  "type": "module",
   "scripts": {
     "build": "npm run bundle",
     "rebuild": "rimraf dist && npm run bundle",
