@@ -70,7 +70,7 @@ const server = http.createServer(app);
 export const websocketServer = new WebSocketServer(server);
 
 server.listen(port, async () => {
-  console.log("Server ", process.pid, " listening on", port);
+  console.log("Server", process.pid, "listening on", port);
   redisConnect();
   if (process.env.NODE_ENV === "production") {
     bot.notifyAdmin("<b>Started Ten Things</b>");

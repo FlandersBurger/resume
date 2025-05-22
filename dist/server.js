@@ -62,7 +62,7 @@ const port = process.env.PORT || 3000;
 const server = http_1.default.createServer(app);
 exports.websocketServer = new websockets_1.WebSocketServer(server);
 server.listen(port, async () => {
-    console.log("Server ", process.pid, " listening on", port);
+    console.log("Server", process.pid, "listening on", port);
     (0, queue_1.redisConnect)();
     if (process.env.NODE_ENV === "production") {
         telegram_2.default.notifyAdmin("<b>Started Ten Things</b>");

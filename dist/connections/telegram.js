@@ -14,6 +14,7 @@ const string_helpers_1 = require("../utils/string-helpers");
 const moment_1 = __importDefault(require("moment"));
 const commands_1 = require("../controllers/bots/tenthings/providers/telegram/commands");
 const telegram_2 = require("../controllers/bots/tenthings/providers/telegram");
+const chalk_1 = __importDefault(require("chalk"));
 const BANNED_TELEGRAM_USERS = [1726294650, 6758829541];
 const globalQueue = new bull_1.default("sendMessage", {
     redis: {
@@ -528,7 +529,7 @@ class TelegramBot {
                     if (command) {
                         text = body.message.text.substring(command.length + 2, body.message.text.length);
                         if (parseInt(process.env.MASTER_CHAT ?? "") === body.message.from.id)
-                            console.log(body.message.chat.id, command, text);
+                            console.log(chalk_1.default.blue(body.message.chat.id), command, text);
                         if (text === "TenThings_Bot")
                             text = "";
                     }

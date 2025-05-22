@@ -78,7 +78,7 @@ exports.tenthingsTelegramBotRoute.post("/", async (req, res) => {
                     await existingGame.validate();
                 }
                 catch (err) {
-                    console.log("Attemtping to reset game:", existingGame._id);
+                    console.log("Attempting to reset game:", existingGame._id);
                     console.error(err);
                     existingGame.streak = {
                         player: undefined,
