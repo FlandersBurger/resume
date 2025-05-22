@@ -1,6 +1,5 @@
 {
   "name": "resume",
-  "type": "module",
   "scripts": {
     "build": "npm run bundle",
     "rebuild": "rimraf dist && npm run bundle",
@@ -36,7 +35,6 @@
     "bootstrap": "^4.5.2",
     "bson": "^4.1.0",
     "bull": "^4.12.2",
-    "chalk": "^5.4.1",
     "chart.js": "^2.9.4",
     "dotenv": "^8.6.0",
     "express": "^4.19.2",
