@@ -1,13 +1,17 @@
 "use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.mongoDBs = void 0;
+const chalk_1 = __importDefault(require("chalk"));
 const mongoose_1 = require("mongoose");
 const tunnel_ssh_1 = require("tunnel-ssh");
 const connections = {};
 const connect = (db) => {
     connections[db.name] = (0, mongoose_1.createConnection)(db.url, {});
     connections[db.name].on("open", () => {
-        console.log(`DB ${db.name} connected`);
+        console.log(`DB ${chalk_1.default.green(db.name)} connected`);
     });
 };
 exports.mongoDBs = [
