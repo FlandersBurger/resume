@@ -11,10 +11,10 @@ const errors_1 = require("../controllers/bots/tenthings/providers/telegram/error
 const spam_1 = require("../controllers/bots/tenthings/providers/telegram/spam");
 const telegram_1 = require("../controllers/api/tenthings/telegram");
 const string_helpers_1 = require("../utils/string-helpers");
-const bash_colors_1 = __importDefault(require("../utils/bash-colors"));
 const moment_1 = __importDefault(require("moment"));
 const commands_1 = require("../controllers/bots/tenthings/providers/telegram/commands");
 const telegram_2 = require("../controllers/bots/tenthings/providers/telegram");
+const chalk_1 = __importDefault(require("chalk"));
 const BANNED_TELEGRAM_USERS = [1726294650, 6758829541];
 const globalQueue = new bull_1.default("sendMessage", {
     redis: {
@@ -529,7 +529,7 @@ class TelegramBot {
                     if (command) {
                         text = body.message.text.substring(command.length + 2, body.message.text.length);
                         if (parseInt(process.env.MASTER_CHAT ?? "") === body.message.from.id)
-                            console.log(bash_colors_1.default.RED, body.message.chat.id, command, text, bash_colors_1.default.END);
+                            console.log(chalk_1.default.blue(body.message.chat.id), command, text);
                         if (text === "TenThings_Bot")
                             text = "";
                     }

@@ -14,7 +14,7 @@ import { checkMinigame } from "./minigame";
 import { checkTinygame } from "./tinygame";
 import { getPlayerName } from "./players";
 import bot from "@root/connections/telegram";
-import bashColors from "@root/utils/bash-colors";
+import chalk from "chalk";
 
 export type Guess = {
   gameId: Types.ObjectId;
@@ -172,17 +172,17 @@ const processGuess = async (guess: Guess) => {
   if (guess.match.type === GameType.MAINGAME) {
     await checkMaingame(game, player, guess);
     console.log(
-      `${guess.gameId} (${game.settings.language}) - ${bashColors.LIGHT_CYAN}${game.list.name} ${bashColors.LIGHT_BLUE}${guess.match.value}${bashColors.END} by ${getPlayerName(player)}`,
+      `${guess.gameId} (${game.settings.language}) - ${chalk.cyan(game.list.name)} ${chalk.blueBright(guess.match.value)} by ${getPlayerName(player)}`,
     );
   } else if (guess.match.type === GameType.MINIGAME) {
     await checkMinigame(game, player, guess);
     console.log(
-      `${guess.gameId} (${game.settings.language}) -  ${bashColors.LIGHT_PURPLE}Minigame guess ${bashColors.LIGHT_BLUE}${game.minigame.answer}${bashColors.END} by ${getPlayerName(player)}`,
+      `${guess.gameId} (${game.settings.language}) - ${chalk.grey("Minigame")} ${chalk.blueBright(game.minigame.answer)} by ${getPlayerName(player)}`,
     );
   } else if (guess.match.type === GameType.TINYGAME) {
     await checkTinygame(game, player, guess);
     console.log(
-      `${guess.gameId} (${game.settings.language}) - ${bashColors.LIGHT_GRAY}Tinygame guess => ${bashColors.LIGHT_BLUE}${game.tinygame.answer}${bashColors.END} by ${getPlayerName(player)}`,
+      `${guess.gameId} (${game.settings.language}) - ${chalk.magenta("Tinygame")} ${chalk.blueBright(game.tinygame.answer)} by ${getPlayerName(player)}`,
     );
   }
 };

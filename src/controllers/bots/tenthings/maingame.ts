@@ -16,7 +16,7 @@ import { abortSkip, skipCache } from "./skips";
 import i18n from "@root/i18n";
 
 import bot from "@root/connections/telegram";
-import bashColors from "@root/utils/bash-colors";
+import chalk from "chalk";
 
 export const createMaingame = async (platformSettings: {
   chat_id: number;
@@ -118,7 +118,7 @@ export const newRound = async (currentGame: IGame) => {
   }, 2000);
   game.playedLists.push(game.list._id);
   await game.save();
-  console.log(`${game.chat_id} - New round started -> ${bashColors.CYAN}${list.name}${bashColors.END}`);
+  console.log(`${game.chat_id} - New round started -> ${chalk.cyan(list.name)}`);
 };
 
 //  █████   ██████ ████████ ██ ██    ██  █████  ████████ ███████

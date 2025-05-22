@@ -16,7 +16,7 @@ const lists_1 = require("./lists");
 const skips_1 = require("./skips");
 const i18n_1 = __importDefault(require("../../../i18n"));
 const telegram_1 = __importDefault(require("../../../connections/telegram"));
-const bash_colors_1 = __importDefault(require("../../../utils/bash-colors"));
+const chalk_1 = __importDefault(require("chalk"));
 const createMaingame = async (platformSettings) => {
     const game = new index_1.Game({
         ...platformSettings,
@@ -102,7 +102,7 @@ const newRound = async (currentGame) => {
     }, 2000);
     game.playedLists.push(game.list._id);
     await game.save();
-    console.log(`${game.chat_id} - New round started -> ${bash_colors_1.default.CYAN}${list.name}${bash_colors_1.default.END}`);
+    console.log(`${game.chat_id} - New round started -> ${chalk_1.default.cyan(list.name)}`);
 };
 exports.newRound = newRound;
 const activate = async (game, save = false) => {
