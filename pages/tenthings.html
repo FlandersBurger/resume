@@ -87,7 +87,7 @@
           typeahead-on-select="setSelectedList($item);"
         />
         <i class="fas fa-times clear-input" ng-click="search = '';getLists();"></i>
-        <div class="input-group-append">
+        <div class="input-group-append hidden-xs visible-sm visible-md visible-lg">
           <button
             class="btn"
             ng-class="{'btn-default': searchField !== 'all', 'btn-primary': searchField === 'all'}"
@@ -97,7 +97,7 @@
             <i class="fas fa-search"></i> All
           </button>
         </div>
-        <div class="input-group-append">
+        <div class="input-group-append hidden-xs visible-sm visible-md visible-lg">
           <button
             class="btn"
             ng-class="{'btn-default': searchField !== 'name', 'btn-primary': searchField === 'name'}"
@@ -167,7 +167,7 @@
             ></i>
           </th>
           <th><i class="fas fa-list-ol" uib-tooltip="Values"></i></th>
-          <th ng-click="orderBy('language')">
+          <th ng-click="orderBy('language')" class="hidden-xs visible-sm visible-md visible-lg">
             <i class="fas fa-language" uib-tooltip="Language"></i>
             <i
               ng-if="order.field === 'language'"
@@ -252,7 +252,7 @@
             {{formatDate(list.modifyDate)}}
           </td>
           <td>{{list.answers}}</td>
-          <td>{{list.language}}</td>
+          <td class="hidden-xs visible-sm visible-md visible-lg">{{list.language}}</td>
           <td class="hidden-sm visible-md visible-lg"><span class="label label-success">{{list.upvotes}}</span></td>
           <td class="hidden-sm visible-md visible-lg"><span class="label label-danger">{{list.downvotes}}</span></td>
           <td class="hidden-sm visible-md visible-lg">{{list.likeRatio.makePercentage(0)}}</td>
