@@ -21,20 +21,20 @@
       </div>
     </div>
     <div class="btn-group">
-      <button class="btn btn-primary" ng-click="getHint()" ng-disabled="game.hints >= 6">Hint</button>
+      <button class="btn btn-primary" ng-click="getHint()" ng-disabled="game.hints >= 6">Hint ({{game.hints}})</button>
       <button class="btn btn-default" ng-click="skipList()" ng-if="list._id">Skip</button>
-      <hr />
-      <ul class="list-group">
-        <li class="list-group-item" ng-class="{ 'guessed': item.guesser }" ng-repeat="item in values">
-          <div>
-            <h4>{{item.guesser ? item.value : item.maskedValue}}</h4>
-            <span class="label label-success" ng-if="item.guesser">
-              {{item.guesser.username ? item.guesser.username : item.guesser.first_name}}
-            </span>
-            <p ng-if="item.guesser">{{item.blurb}}</p>
-          </div>
-        </li>
-      </ul>
     </div>
+    <hr />
+    <ul class="list-group">
+      <li class="list-group-item" ng-class="{ 'guessed': item.guesser }" ng-repeat="item in values">
+        <div>
+          <h4>{{item.guesser ? item.value : item.maskedValue}}</h4>
+          <span class="label label-success" ng-if="item.guesser">
+            {{item.guesser.username ? item.guesser.username : item.guesser.first_name}}
+          </span>
+          <p ng-if="item.guesser">{{item.blurb}}</p>
+        </div>
+      </li>
+    </ul>
   </div>
 </div>

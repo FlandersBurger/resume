@@ -23,7 +23,7 @@ export const web: Provider = {
     await publish("tenthings_message", { message: "Round ended" });
   },
   newList: (game: IGame) => {
-    console.log("New list created", game.list.name);
+    console.log("New list picked", game.list.name);
     publish("tenthings_message", {});
   },
   skipList: (game: IGame) => {

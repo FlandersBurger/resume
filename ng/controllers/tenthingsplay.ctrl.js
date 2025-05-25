@@ -16,9 +16,10 @@ angular
     const getData = async () => {
       if ($scope.currentUser?.admin) {
         const { data: game } = await GameSvc.getTenthings();
+        $scope.game = game;
         $scope.list = game.list;
         $scope.values = game.list.values;
-        console.log("value", $scope.values);
+        console.log("game", game);
         $scope.$apply();
       }
     };
