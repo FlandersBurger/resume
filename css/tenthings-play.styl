@@ -4,13 +4,32 @@
 }
 
 #tenthings-page .list-group .list-group-item {
-  flex-basis: 50%;
+  flex-basis: 300px;
+  flex-grow: 0;
+  flex-shrink: 0;
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
-  align-items: left;
+  align-items: center;
   justify-content: center;
   padding: 0 15px;
+
+  .answer {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+  }
+
+  .blurb {
+    background-color: #40b61874;
+    border-radius: 5px;
+    padding: 5px;
+    margin-bottom: 10px;
+    text-align: center;
+    justify-content: space-around;
+  }
 }
 
 .guessed {

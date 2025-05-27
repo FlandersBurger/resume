@@ -67,7 +67,7 @@ const banList = async (game: HydratedDocument<IGame>, listId: string) => {
       list.bans++;
       await list.save();
       game.provider.message(game, i18n(game.settings.language, "sentences.listBanned", { list: list.name }));
-      console.log(`${game.chat_id} (${game.settings.language}) banned ${list.name}`);
+      console.log(`${game._id} (${game.settings.language}) banned ${list.name}`);
     }
   } else {
     game.provider.message(game, i18n(game.settings.language, "warnings.unfoundList"));

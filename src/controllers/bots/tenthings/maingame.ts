@@ -118,7 +118,7 @@ export const newRound = async (currentGame: IGame) => {
   }, 2000);
   game.playedLists.push(game.list._id);
   await game.save();
-  console.log(`${game.chat_id} - New round started -> ${chalk.cyan(list.name)}`);
+  console.log(`${game._id} - New round started -> ${chalk.cyan(list.name)}`);
 };
 
 //  █████   ██████ ████████ ██ ██    ██  █████  ████████ ███████

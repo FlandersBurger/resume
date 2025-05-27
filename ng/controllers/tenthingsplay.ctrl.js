@@ -17,8 +17,6 @@ angular
       if ($scope.currentUser?.admin) {
         const { data: game } = await GameSvc.getTenthings();
         $scope.game = game;
-        $scope.list = game.list;
-        $scope.values = game.list.values;
         console.log("game", game);
         $scope.$apply();
       }
@@ -32,10 +30,16 @@ angular
 
     $scope.getHint = async () => {
       await GameSvc.getTenthingsHint();
+      setTimeout(() => {
+        $("#main-game").trigger("focus");
+      });
     };
 
     $scope.skipList = async () => {
       await GameSvc.skipTenthingsList();
+      setTimeout(() => {
+        $("#main-game").trigger("focus");
+      });
     };
 
     $scope.$watch("currentUser", getData);

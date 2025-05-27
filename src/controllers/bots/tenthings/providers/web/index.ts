@@ -62,7 +62,7 @@ export const convertWebUserToPlayer = async (game: IGame, user: IUser): Promise<
       admin: user.admin,
     });
     const savedPlayer = await player.save();
-    console.log(`${game.chat_id} - Player ${user.username} created for web`);
+    console.log(`${game._id} - Player ${user.username} created for web`);
     return savedPlayer;
   } else if (player && player.first_name) {
     player.first_name = user.displayName ? maskUrls(user.displayName) : "";

@@ -303,7 +303,7 @@ export const convertTelegramUserToPlayer = async (
       ...from,
     });
     const savedPlayer = await player.save();
-    console.log(`${game.chat_id} - Player ${from.id} created`);
+    console.log(`${game._id} - Player ${from.id} created`);
     return savedPlayer;
   } else if (player && player.first_name) {
     player.first_name = player.first_name ? maskUrls(player.first_name) : "";

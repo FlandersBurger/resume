@@ -1,14 +1,16 @@
 <div id="tenthings-page" class="col-md-12">
   <h1>Ten Things</h1>
-  <h2>{{list.name}}</h2>
+  <h2>{{game.list.name}}</h2>
   <div ng-if="list._id">
-    <h5>By {{list.creator.username}}</h5>
-    <h5>Possible values: {{list.answers}}</h5>
+    <p>{{game.list.description}}</p>
+    <h5>By {{game.list.creator.username}}</h5>
+    <h5>Possible values: {{game.list.answers}}</h5>
   </div>
   <div>
     <div class="input-group play-buttons">
       <input
         class="form-control input-search"
+        id="maingame-guess"
         type="search"
         ng-model="guess"
         placeholder="Guess"
@@ -22,18 +24,18 @@
     </div>
     <div class="btn-group">
       <button class="btn btn-primary" ng-click="getHint()" ng-disabled="game.hints >= 6">Hint ({{game.hints}})</button>
-      <button class="btn btn-default" ng-click="skipList()" ng-if="list._id">Skip</button>
+      <button class="btn btn-default" ng-click="skipList()" ng-if="game.list._id">Skip</button>
     </div>
     <hr />
     <ul class="list-group">
-      <li class="list-group-item" ng-class="{ 'guessed': item.guesser }" ng-repeat="item in values">
-        <div>
+      <li class="list-group-item" ng-class="{ 'guessed': item.guesser }" ng-repeat="item in game.list.values">
+        <div class="answer">
           <h4>{{item.guesser ? item.value : item.maskedValue}}</h4>
           <span class="label label-success" ng-if="item.guesser">
             {{item.guesser.username ? item.guesser.username : item.guesser.first_name}}
           </span>
-          <p ng-if="item.guesser">{{item.blurb}}</p>
         </div>
+        <div class="blurb" ng-if="item.guesser && item.blurb">{{item.blurb}}</div>
       </li>
     </ul>
   </div>
