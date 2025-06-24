@@ -31,11 +31,19 @@
       <li class="list-group-item" ng-class="{ 'guessed': item.guesser }" ng-repeat="item in game.list.values">
         <div class="answer">
           <h4>{{item.guesser ? item.value : item.maskedValue}}</h4>
+          <div class="blurb" ng-if="item.guesser && item.blurb && item.blurbType !== 'text">
+            <a href="">
+              <img ng-src="{{item.blurb}}" ng-if="item.blurbType === 'image'" />
+              <i class="fab fa-youtube" ng-if="item.blurbType === 'youtube'"></i>
+              <i class="fab fa-spotify" ng-if="item.blurbType === 'spotify'"></i>
+              <i class="fas fa-link" ng-if="item.blurbType === 'link'"></i>
+            </a>
+          </div>
           <span class="label label-success" ng-if="item.guesser">
             {{item.guesser.username ? item.guesser.username : item.guesser.first_name}}
           </span>
         </div>
-        <div class="blurb" ng-if="item.guesser && item.blurb">{{item.blurb}}</div>
+        <div class="blurb" ng-if="item.guesser && item.blurb && item.blurbType === 'text">{{item.blurb}}</div>
       </li>
     </ul>
   </div>
