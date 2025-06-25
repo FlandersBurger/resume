@@ -184,7 +184,7 @@ const evaluate = async (msg, game, isNew) => {
                 if (search) {
                     player.searches++;
                     await player.save();
-                    console.log(`${game.chat_id} - Search for ${search}`);
+                    console.log(`${game._id} - Search for ${search}`);
                     const foundLists = await (0, lists_1.searchList)(search, game);
                     if (foundLists.length > 0) {
                         const keyboard = (0, keyboards_1.listsKeyboard)(foundLists);

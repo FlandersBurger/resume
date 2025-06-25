@@ -19,7 +19,7 @@ exports.web = {
         await (0, queue_1.publish)("tenthings_message", { message: "Round ended" });
     },
     newList: (game) => {
-        console.log("New list created", game.list.name);
+        console.log("New list picked", game.list.name);
         (0, queue_1.publish)("tenthings_message", {});
     },
     skipList: (game) => {
@@ -57,7 +57,7 @@ const convertWebUserToPlayer = async (game, user) => {
             admin: user.admin,
         });
         const savedPlayer = await player.save();
-        console.log(`${game.chat_id} - Player ${user.username} created for web`);
+        console.log(`${game._id} - Player ${user.username} created for web`);
         return savedPlayer;
     }
     else if (player && player.first_name) {

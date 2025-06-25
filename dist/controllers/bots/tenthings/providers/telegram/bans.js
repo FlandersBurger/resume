@@ -63,7 +63,7 @@ const banList = async (game, listId) => {
             list.bans++;
             await list.save();
             game.provider.message(game, (0, i18n_1.default)(game.settings.language, "sentences.listBanned", { list: list.name }));
-            console.log(`${game.chat_id} (${game.settings.language}) banned ${list.name}`);
+            console.log(`${game._id} (${game.settings.language}) banned ${list.name}`);
         }
     }
     else {

@@ -102,7 +102,7 @@ const newRound = async (currentGame) => {
     }, 2000);
     game.playedLists.push(game.list._id);
     await game.save();
-    console.log(`${game.chat_id} - New round started -> ${chalk_1.default.cyan(list.name)}`);
+    console.log(`${game._id} - New round started -> ${chalk_1.default.cyan(list.name)}`);
 };
 exports.newRound = newRound;
 const activate = async (game, save = false) => {
@@ -165,6 +165,8 @@ const checkMaingame = async (game, player, guess) => {
                 player.hintStreak++;
             }
             if (!game.streak || game.streak.player?._id != player._id) {
+                if (game.chat_id === parseInt(process.env.ADMIN_CHAT || ""))
+                    console.log(game, player);
                 game.streak = { player: player._id, count: 1 };
             }
             else {
