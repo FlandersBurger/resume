@@ -190,7 +190,6 @@ export const checkMaingame = async (game: HydratedDocument<IGame>, player: Hydra
       if (!game.streak || game.streak.player?._id != player._id) {
         game.streak = { player: player._id, count: 1 };
       } else {
-        if (game.chat_id === parseInt(process.env.ADMIN_CHAT || "")) console.log(game, player);
         game.streak.count++;
       }
       if (player.streak < game.streak.count) {
@@ -204,6 +203,7 @@ export const checkMaingame = async (game: HydratedDocument<IGame>, player: Hydra
       }
       await game.save();
       await player.save();
+      if (game.chat_id === parseInt(process.env.MASTER_CHAT || "")) console.log(game, player);
       game.provider.guessed(game, player, match, score, accuracy);
       setTimeout(() => {
         checkRound(game);
