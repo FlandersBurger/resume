@@ -46,7 +46,7 @@ export const createTinygame = async (game: HydratedDocument<IGame>) => {
 
 export const checkTinygame = async (game: HydratedDocument<IGame>, player: HydratedDocument<IPlayer>, guess: Guess) => {
   if (guess.match.value !== game.tinygame.answer) return;
-  const score = getAnswerScore(game.minigame.hints, guess.match.distance);
+  const score = getAnswerScore(game.tinygame.hints, guess.match.distance);
   player.score += score;
   player.scoreDaily += score;
   if (game.tinygame.hints === 0) player.hintStreak++;

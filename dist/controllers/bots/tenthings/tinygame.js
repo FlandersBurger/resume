@@ -45,7 +45,7 @@ exports.createTinygame = createTinygame;
 const checkTinygame = async (game, player, guess) => {
     if (guess.match.value !== game.tinygame.answer)
         return;
-    const score = (0, guesses_1.getAnswerScore)(game.minigame.hints, guess.match.distance);
+    const score = (0, guesses_1.getAnswerScore)(game.tinygame.hints, guess.match.distance);
     player.score += score;
     player.scoreDaily += score;
     if (game.tinygame.hints === 0)
