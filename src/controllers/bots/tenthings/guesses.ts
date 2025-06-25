@@ -172,17 +172,17 @@ const processGuess = async (guess: Guess) => {
   if (guess.match.type === GameType.MAINGAME) {
     await checkMaingame(game, player, guess);
     console.log(
-      `${guess.gameId} (${game.settings.language}) - ${chalk.cyan(game.list.name)} ${chalk.blueBright(guess.match.value)} by ${getPlayerName(player)}`,
+      `${guess.gameId} (${game.settings.language}) - ${chalk.cyan(game.list.name)} "${chalk.blueBright(guess.match.value)}" by ${getPlayerName(player)}`,
     );
   } else if (guess.match.type === GameType.MINIGAME) {
     await checkMinigame(game, player, guess);
     console.log(
-      `${guess.gameId} (${game.settings.language}) - ${chalk.grey("Minigame")} ${chalk.blueBright(game.minigame.answer)} by ${getPlayerName(player)}`,
+      `${guess.gameId} (${game.settings.language}) - ${chalk.grey("Minigame")} "${chalk.blueBright(game.minigame.answer)}" by ${getPlayerName(player)}`,
     );
   } else if (guess.match.type === GameType.TINYGAME) {
     await checkTinygame(game, player, guess);
     console.log(
-      `${guess.gameId} (${game.settings.language}) - ${chalk.magenta("Tinygame")} ${chalk.blueBright(game.tinygame.answer)} by ${getPlayerName(player)}`,
+      `${guess.gameId} (${game.settings.language}) - ${chalk.magenta("Tinygame")} "${chalk.blueBright(game.tinygame.answer)}" by ${getPlayerName(player)}`,
     );
   }
 };
