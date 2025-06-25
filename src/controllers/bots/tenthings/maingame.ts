@@ -188,9 +188,9 @@ export const checkMaingame = async (game: HydratedDocument<IGame>, player: Hydra
         player.hintStreak++;
       }
       if (!game.streak || game.streak.player?._id != player._id) {
-        if (game.chat_id === parseInt(process.env.ADMIN_CHAT || "")) console.log(game, player);
         game.streak = { player: player._id, count: 1 };
       } else {
+        if (game.chat_id === parseInt(process.env.ADMIN_CHAT || "")) console.log(game, player);
         game.streak.count++;
       }
       if (player.streak < game.streak.count) {
