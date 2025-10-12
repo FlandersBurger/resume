@@ -8,7 +8,7 @@ const diacritics_1 = __importDefault(require("./diacritics"));
 const domains_1 = __importDefault(require("./domains"));
 const removeDiacritics = (str) => diacritics_1.default.reduce((result, diacritic) => result.replace(diacritic.letters, diacritic.base), str);
 exports.removeDiacritics = removeDiacritics;
-exports.SPECIAL_CHARACTERS = "\\\\/ !?@#$%^&*()_+:.{},;\\-'``’‘\"";
+exports.SPECIAL_CHARACTERS = "\\\\/ !?@#$%^&*()_+:.{},;\\-'``’‘\"—";
 const removeSpecialCharacters = (str) => str.replace(new RegExp(`[${exports.SPECIAL_CHARACTERS}]`, "gi"), "");
 exports.removeSpecialCharacters = removeSpecialCharacters;
 const removeAllButLetters = (str) => (0, exports.removeSpecialCharacters)((0, exports.removeDiacritics)(str.toLowerCase()));
