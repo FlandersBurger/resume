@@ -4,7 +4,7 @@ import domains from "@utils/domains";
 export const removeDiacritics = (str: string): string =>
   diacritics.reduce((result, diacritic: Diacritic) => result.replace(diacritic.letters, diacritic.base), str);
 
-export const SPECIAL_CHARACTERS = "\\\\/ !?@#$%^&*()_+:.{},;\\-'``’‘\"";
+export const SPECIAL_CHARACTERS = "\\\\/ !?@#$%^&*()_+:.{},;\\-'``’‘\"—";
 
 export const removeSpecialCharacters = (str: string): string =>
   str.replace(new RegExp(`[${SPECIAL_CHARACTERS}]`, "gi"), "");
