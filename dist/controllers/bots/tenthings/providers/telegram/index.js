@@ -207,7 +207,7 @@ exports.telegram = {
     categoriesMessage: (game) => {
         return Object.keys(categories_1.default)
             .sort()
-            .map((category) => `*${(0, i18n_1.default)(game.settings.language, category, { ns: "categories" })}*\n` +
+            .map((category) => `*${(0, i18n_1.default)(game.settings.language, `${category}.name`, { ns: "categories" })}*\n` +
             categories_1.default[category]
                 .sort()
                 .map((subcategory) => ` - ${(0, i18n_1.default)(game.settings.language, `${category}.${subcategory}`, { ns: "categories" })}` +

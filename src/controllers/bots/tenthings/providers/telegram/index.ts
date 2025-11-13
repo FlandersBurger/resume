@@ -231,7 +231,7 @@ export const telegram: Provider = {
       .sort()
       .map(
         (category) =>
-          `*${i18n(game.settings.language, category, { ns: "categories" })}*\n` +
+          `*${i18n(game.settings.language, `${category}.name`, { ns: "categories" })}*\n` +
           categories[category]
             .sort()
             .map(
