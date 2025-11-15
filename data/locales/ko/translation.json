@@ -208,7 +208,6 @@
     "banListQuestion": "금지 목록?",
     "banListCommand": "금지 목록!",
     "confirmBan": "금지 목록 \"{{list}}\"을 확인하셨나요?",
-    "corroborateBan": "누군가 \"{{list}}\"을 금지하는 데 동의하셨나요?",
     "alreadyBannedList": "\"{{list}}\"은 이미 금지되었습니다!",
     "listBanned": "\"{{list}}\" 차단됨!",
     "banNotFound": "차단 요청을 찾을 수 없습니다. {{name}}",
@@ -231,7 +230,8 @@
     "dailyScoresWithLimit": "<b>최고 {{limit}}일일 점수</b>",
     "skipDelay": "목록 건너뛰기까지 걸리는 시간",
     "vetoDelay": "거부된 후 새로운 건너뛰기가 허용될 때까지 걸리는 시간",
-    "hintDelay": "새로운 힌트가 허용될 때까지 걸리는 시간"
+    "hintDelay": "새로운 힌트가 허용될 때까지 걸리는 시간",
+    "corroborateBan": "누군가 {{user}}이 목록 \"{{list}}\"을 금지하는 데 동의하시나요?"
   },
   "warnings": {
     "minimum1Category": "최소 1개 카테고리가 필요합니다.",

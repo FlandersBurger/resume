@@ -26,6 +26,7 @@ const initiateBan = async (game, callbackQuery) => {
             if (foundList) {
                 telegram_1.default.sendKeyboard(game.telegramChannel, (0, i18n_1.default)(game.settings.language, `sentences.${game.chat_id > 0 ? "confirmBan" : "corroborateBan"}`, {
                     list: foundList.name,
+                    user: callbackQuery.from.name ?? callbackQuery.from.username ?? "Unknown",
                 }), (0, keyboards_1.confirmBanListKeyboard)(game.settings.language, foundList));
             }
         }

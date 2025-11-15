@@ -208,7 +208,6 @@
     "banListQuestion": "Liste de bannissement ?",
     "banListCommand": "Liste de bannissement !",
     "confirmBan": "Confirmez-vous le bannissement de la liste « {{list}} » ?",
-    "corroborateBan": "Quelqu'un accepte-t-il de bannir la liste « {{list}} » ?",
     "alreadyBannedList": "« {{list}} » est déjà banni !",
     "listBanned": "« {{list}} » banni !",
     "banNotFound": "Je ne trouve pas de demande de bannissement, {{name}}",
@@ -231,7 +230,8 @@
     "dailyScoresWithLimit": "<b>Meilleurs {{limit}} scores quotidiens</b>",
     "skipDelay": "Temps avant qu'une liste soit ignorée",
     "vetoDelay": "Temps avant qu'un nouveau saut soit autorisé après avoir été rejeté",
-    "hintDelay": "Temps avant qu'un nouvel indice soit autorisé"
+    "hintDelay": "Temps avant qu'un nouvel indice soit autorisé",
+    "corroborateBan": "Quelqu'un est-il d'accord avec {{user}} pour interdire la liste \"{{list}}\"?"
   },
   "warnings": {
     "minimum1Category": "Un minimum d'une catégorie est requis",

@@ -208,7 +208,6 @@
     "banListQuestion": "¿Lista de baneos?",
     "banListCommand": "¡Lista de baneos!",
     "confirmBan": "¿Confirmas banear la lista \"{{list}}\"?",
-    "corroborateBan": "¿Alguien está de acuerdo con banear la lista \"{{list}}\"?",
     "alreadyBannedList": "¡\"{{list}}\" ya está baneado!",
     "listBanned": "\"{{list}}\" baneado!",
     "banNotFound": "No puedo encontrar una solicitud de ban, {{name}}",
@@ -231,7 +230,8 @@
     "dailyScoresWithLimit": "<b>Puntuaciones diarias más altas {{limit}}</b>",
     "skipDelay": "Tiempo hasta que se omite una lista",
     "vetoDelay": "Tiempo hasta que se permite un nuevo salto después de haber sido vetado",
-    "hintDelay": "Tiempo hasta que se permite una nueva pista"
+    "hintDelay": "Tiempo hasta que se permite una nueva pista",
+    "corroborateBan": "¿Alguien está de acuerdo con {{user}} en prohibir la lista \"{{list}}\"?"
   },
   "warnings": {
     "minimum1Category": "Se requiere un mínimo de 1 categoría",

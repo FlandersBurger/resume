@@ -30,6 +30,7 @@ export const initiateBan = async (game: IGame, callbackQuery: TelegramCallbackDa
           game.telegramChannel,
           i18n(game.settings.language, `sentences.${game.chat_id > 0 ? "confirmBan" : "corroborateBan"}`, {
             list: foundList.name,
+            user: callbackQuery.from.name ?? callbackQuery.from.username ?? "Unknown",
           }),
           confirmBanListKeyboard(game.settings.language, foundList),
         );

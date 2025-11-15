@@ -208,7 +208,6 @@
     "banListQuestion": "Sperrliste?",
     "banListCommand": "Sperrliste!",
     "confirmBan": "Bestätigen Sie die Sperrliste \"{{list}}\"?",
-    "corroborateBan": "Stimmt jemand der Sperrliste \"{{list}}\" zu?",
     "alreadyBannedList": "\"{{list}}\" ist bereits gesperrt!",
     "listBanned": "\"{{list}}\" gesperrt!",
     "banNotFound": "Ich kann keine Sperranfrage finden, {{name}}",
@@ -231,7 +230,8 @@
     "dailyScoresWithLimit": "<b>Top-Tagesergebnisse {{limit}}</b>",
     "skipDelay": "Zeit bis zum Überspringen einer Liste",
     "vetoDelay": "Zeit bis nach einem Veto ein erneutes Überspringen erlaubt ist",
-    "hintDelay": "Zeit bis ein neuer Hinweis erlaubt ist"
+    "hintDelay": "Zeit bis ein neuer Hinweis erlaubt ist",
+    "corroborateBan": "Stimmt jemand {{user}} der Sperrliste \"{{list}}\" zu?"
   },
   "warnings": {
     "minimum1Category": "Mindestens 1 Kategorie ist erforderlich",

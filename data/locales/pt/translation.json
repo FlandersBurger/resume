@@ -208,7 +208,6 @@
     "banListQuestion": "Banir lista?",
     "banListCommand": "Banir lista!",
     "confirmBan": "Você confirma o banimento da lista \"{{list}}\"?",
-    "corroborateBan": "Alguém concorda com o banimento da lista \"{{list}}\"?",
     "alreadyBannedList": "\"{{list}}\" já está banida!",
     "listBanned": "\"{{list}}\" banida!",
     "banNotFound": "Não consigo encontrar um pedido de proibição, {{name}}",
@@ -231,7 +230,8 @@
     "dailyScoresWithLimit": "<b>Top {{limit}} Pontuações Diárias</b>",
     "skipDelay": "Tempo até que uma lista seja pulada",
     "vetoDelay": "Tempo até que um novo pulo seja permitido após ser vetado",
-    "hintDelay": "Tempo até que uma nova dica seja permitida"
+    "hintDelay": "Tempo até que uma nova dica seja permitida",
+    "corroborateBan": "Alguém concorda com {{user}} para banir a lista \"{{list}}\"?"
   },
   "warnings": {
     "minimum1Category": "É necessário pelo menos 1 categoria",

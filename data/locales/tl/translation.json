@@ -208,7 +208,6 @@
     "banListQuestion": "I-ban ang listahan?",
     "banListCommand": "I-ban ang listahan!",
     "confirmBan": "Kumpirmahin mo ba ang pagbaban ng listahan \"{{list}}\"?",
-    "corroborateBan": "Mayroon bang sumasang-ayon sa pagbaban ng listahan \"{{list}}\"?",
     "alreadyBannedList": "\"{{list}}\" ay mayroon nang ban!",
     "listBanned": "Binalaan na ang \"{{list}}\"!",
     "banNotFound": "Hindi ko mahanap ang kahilingan ng ban, {{name}}",
@@ -228,7 +227,9 @@
     "notGuessed": "Hindi natantiya",
     "dailyScores": "<b>Araw-araw na mga Scores</b>",
     "topDailyScores": "<b>Top Araw-araw na mga Scores</b>",
-    "dailyScoresWithLimit": "<b>Top {{limit}} Araw-araw na mga Scores</b>"
+    "dailyScoresWithLimit": "<b>Top {{limit}} Araw-araw na mga Scores</b>",
+    "skipDelay": "Oras hanggang sa malaktawan ang isang listahan\n#___#\nOras hanggang ang isang bagong paglaktaw ay pinapayagan pagkatapos ma-veto\n#___#\nOras hanggang pinapayagan ang isang bagong pahiwatig\n#___#\n{{name}}, maba-ban ka sa Ten Things kung aabuso mo ito muli\n#___#\n{{name}}, pinagbawalan ka sa Ten Things. Huwag mag-atubiling magpetisyon ng unban sa @FlandersBurger",
+    "corroborateBan": "May sumasang-ayon ba sa {{user}} sa pagbabawal sa listahang \"{{list}}\"?\n#___#\nOras hanggang ang isang bagong paglaktaw ay pinapayagan pagkatapos ma-veto\n#___#\nOras hanggang pinapayagan ang isang bagong pahiwatig\n#___#\n{{name}}, ikaw ay pagbabawalan mula sa Sampung Bagay kung muli mo itong aabuso\n#___#\n{{name}}, pinagbawalan ka sa Ten Things. Huwag mag-atubiling magpetisyon ng unban sa @FlandersBurger"
   },
   "warnings": {
     "minimum1Category": "Kinakailangan ng hindi kukulangin sa 1 kategorya",

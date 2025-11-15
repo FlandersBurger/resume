@@ -208,7 +208,6 @@
     "banListQuestion": "Lijst verbannen?",
     "banListCommand": "Lijst verbannen!",
     "confirmBan": "Bevestig je het verbannen van lijst \"{{list}}\"?",
-    "corroborateBan": "Is er iemand die het eens is met het verbannen van lijst \"{{list}}\"?",
     "alreadyBannedList": "\"{{list}}\" is al verbannen!",
     "listBanned": "\"{{list}}\" verbannen!",
     "banNotFound": "Ik kan geen verbodsverzoek vinden, {{name}}",
@@ -231,7 +230,8 @@
     "dailyScoresWithLimit": "<b>Top {{limit}} Dagelijkse Scores</b>",
     "skipDelay": "Tijd totdat een lijst wordt overgeslagen",
     "vetoDelay": "Tijd totdat een nieuwe overslaan is toegestaan na veto",
-    "hintDelay": "Tijd totdat een nieuwe hint is toegestaan"
+    "hintDelay": "Tijd totdat een nieuwe hint is toegestaan",
+    "corroborateBan": "Is iemand het eens met {{user}} wat betreft de banlijst \"{{list}}\"?"
   },
   "warnings": {
     "minimum1Category": "Minimaal 1 categorie is vereist",

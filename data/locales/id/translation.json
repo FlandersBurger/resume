@@ -208,7 +208,6 @@
     "banListQuestion": "Larang daftar?",
     "banListCommand": "Larang daftar!",
     "confirmBan": "Apakah Anda mengonfirmasi pelarangan daftar \"{{list}}\"?",
-    "corroborateBan": "Ada yang setuju untuk melarang daftar \"{{list}}\"?",
     "alreadyBannedList": "\"{{list}}\" sudah dilarang!",
     "listBanned": "\"{{list}}\" dilarang!",
     "banNotFound": "Saya tidak bisa menemukan permintaan larangan, {{name}}",
@@ -231,7 +230,8 @@
     "dailyScoresWithLimit": "<b>Top {{limit}} Skor Harian</b>",
     "skipDelay": "Waktu hingga daftar dilewati",
     "vetoDelay": "Waktu hingga lompatan baru diizinkan setelah diveto",
-    "hintDelay": "Waktu hingga petunjuk baru diizinkan"
+    "hintDelay": "Waktu hingga petunjuk baru diizinkan",
+    "corroborateBan": "Apakah ada yang setuju dengan {{user}} untuk melarang daftar \"{{list}}\"?"
   },
   "warnings": {
     "minimum1Category": "Setidaknya 1 kategori diperlukan",

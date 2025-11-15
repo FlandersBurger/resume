@@ -208,7 +208,6 @@
     "banListQuestion": "قائمة الحظر؟",
     "banListCommand": "قائمة الحظر!",
     "confirmBan": "هل تؤكد حظر القائمة \"{{list}}\"؟",
-    "corroborateBan": "هل يوافق شخص ما على حظر القائمة \"{{list}}\"؟",
     "alreadyBannedList": "\"{{list}}\" محظور بالفعل!",
     "listBanned": "\"{{list}}\" محظور!",
     "banNotFound": "لا يمكنني العثور على طلب حظر، {{name}}",
@@ -231,7 +230,8 @@
     "dailyScoresWithLimit": "<b>أعلى {{limit}} النتائج اليومية</b>",
     "skipDelay": "الوقت المتبقي حتى يتم تخطي القائمة",
     "vetoDelay": "الوقت المتبقي حتى يتم السماح بتخطي قائمة جديدة بعد رفضها",
-    "hintDelay": "الوقت المتبقي حتى يتم السماح بتلميح جديد"
+    "hintDelay": "الوقت المتبقي حتى يتم السماح بتلميح جديد",
+    "corroborateBan": "هل يتفق أحد مع {{user}} بشأن حظر القائمة \"{{list}}\"؟"
   },
   "warnings": {
     "minimum1Category": "يجب أن يكون الحد الأدنى لفئة واحدة",
