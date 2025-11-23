@@ -64,11 +64,11 @@ usersRoute.post("/authenticate", async (req: Request, res: Response) => {
   if (!isAcceptedAuth(authType)) {
     return res.sendStatus(401);
   }
-  let foundUser, uid, telegramId;
+  let existingUser, uid, telegramId;
   if (authType === "firebase") {
     const decodedToken = await firebase.auth().verifyIdToken(user.idToken);
     uid = decodedToken.uid;
-    foundUser = await User.findOne({
+    existingUser = await User.findOne({
       uid,
     });
   } else {
@@ -82,17 +82,14 @@ usersRoute.post("/authenticate", async (req: Request, res: Response) => {
     const hmac = crypto.createHmac("sha256", hmacKey).update(checkString).digest("hex");
 
     if (hmac !== user.idToken) {
-      console.log(hmac, hmacKey, user.idToken, checkString);
       return res.sendStatus(401);
-    } else {
-      return res.sendStatus(200);
     }
     telegramId = user.telegramId;
-    foundUser = await User.findOne({
+    existingUser = await User.findOne({
       telegramId,
     });
   }
-  if (!foundUser) {
+  if (!existingUser) {
     const newUser = new User({
       username: user.username ?? user.displayName,
       displayName: user.displayName,
@@ -107,11 +104,11 @@ usersRoute.post("/authenticate", async (req: Request, res: Response) => {
     const token = jwt.encode({ userid: user.id }, process.env.SECRET!);
     return res.json(token);
   } else {
-    if (foundUser.banned) {
+    if (existingUser.banned) {
       return res.sendStatus(403);
     }
-    console.log(foundUser.username + " authenticated with " + authType);
-    const token = jwt.encode({ userid: foundUser.id }, process.env.SECRET!);
+    console.log(existingUser.username + " authenticated with " + authType);
+    const token = jwt.encode({ userid: existingUser.id }, process.env.SECRET!);
     return res.json(token);
   }
 });

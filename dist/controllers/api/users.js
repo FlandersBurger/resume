@@ -66,11 +66,11 @@ exports.usersRoute.post("/authenticate", async (req, res) => {
     if (!isAcceptedAuth(authType)) {
         return res.sendStatus(401);
     }
-    let foundUser, uid, telegramId;
+    let existingUser, uid, telegramId;
     if (authType === "firebase") {
         const decodedToken = await server_1.firebase.auth().verifyIdToken(user.idToken);
         uid = decodedToken.uid;
-        foundUser = await index_1.User.findOne({
+        existingUser = await index_1.User.findOne({
             uid,
         });
     }
@@ -84,18 +84,14 @@ exports.usersRoute.post("/authenticate", async (req, res) => {
         const hmacKey = crypto_1.default.createHash("sha256").update(process.env.TELEGRAM_TOKEN).digest();
         const hmac = crypto_1.default.createHmac("sha256", hmacKey).update(checkString).digest("hex");
         if (hmac !== user.idToken) {
-            console.log(hmac, hmacKey, user.idToken, checkString);
             return res.sendStatus(401);
         }
-        else {
-            return res.sendStatus(200);
-        }
         telegramId = user.telegramId;
-        foundUser = await index_1.User.findOne({
+        existingUser = await index_1.User.findOne({
             telegramId,
         });
     }
-    if (!foundUser) {
+    if (!existingUser) {
         const newUser = new index_1.User({
             username: user.username ?? user.displayName,
             displayName: user.displayName,
@@ -111,11 +107,11 @@ exports.usersRoute.post("/authenticate", async (req, res) => {
         return res.json(token);
     }
     else {
-        if (foundUser.banned) {
+        if (existingUser.banned) {
             return res.sendStatus(403);
         }
-        console.log(foundUser.username + " authenticated with " + authType);
-        const token = jwt_simple_1.default.encode({ userid: foundUser.id }, process.env.SECRET);
+        console.log(existingUser.username + " authenticated with " + authType);
+        const token = jwt_simple_1.default.encode({ userid: existingUser.id }, process.env.SECRET);
         return res.json(token);
     }
 });
