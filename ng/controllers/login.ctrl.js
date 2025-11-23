@@ -38,6 +38,7 @@ angular.module("app").controller("LoginCtrl", function ($scope, $location, UserS
             .auth()
             .currentUser.getIdToken(true)
             .then(function (idToken) {
+              console.log("ID Token:", idToken);
               UserSvc.authenticate({
                 authType: "firebase",
                 displayName: currentUser.displayName,
@@ -90,6 +91,7 @@ angular.module("app").controller("LoginCtrl", function ($scope, $location, UserS
       // Other config options...
     });
   }
+  console.log("Starting login UI");
 
   startUI();
 });
