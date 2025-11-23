@@ -5,12 +5,14 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.usersRoute = void 0;
 const express_1 = require("express");
+const crypto_1 = __importDefault(require("crypto"));
 const bcryptjs_1 = __importDefault(require("bcryptjs"));
 const jwt_simple_1 = __importDefault(require("jwt-simple"));
 const server_1 = require("../../server");
 const index_1 = require("../../models/index");
 const telegram_1 = __importDefault(require("../../connections/telegram"));
 exports.usersRoute = (0, express_1.Router)();
+const isAcceptedAuth = (authType = "") => ["telegram", "firebase"].includes(authType);
 exports.usersRoute.get("/", (_, res) => {
     if (!res.locals.isAuthorized)
         res.sendStatus(401);
@@ -60,33 +62,61 @@ exports.usersRoute.post("/", async (req, res) => {
     res.sendStatus(201);
 });
 exports.usersRoute.post("/authenticate", async (req, res) => {
-    var user = req.body.user;
-    const decodedToken = await server_1.firebase.auth().verifyIdToken(user.idToken);
-    console.log(decodedToken);
-    var uid = decodedToken.uid;
-    console.log(uid);
-    const foundUser = await index_1.User.findOne({
-        uid: uid,
-        banned: false,
-    });
+    const { authType, data, ...user } = req.body.user;
+    if (!isAcceptedAuth(authType)) {
+        return res.sendStatus(401);
+    }
+    let foundUser, uid, telegramId;
+    if (authType === "firebase") {
+        const decodedToken = await server_1.firebase.auth().verifyIdToken(user.idToken);
+        uid = decodedToken.uid;
+        foundUser = await index_1.User.findOne({
+            uid,
+        });
+    }
+    else {
+        const secret_key = crypto_1.default.createHash("sha256").update(process.env.TELEGRAM_TOKEN).digest("hex");
+        const checkString = Object.keys(data)
+            .filter((k) => k !== "hash")
+            .sort()
+            .filter((k) => data[k])
+            .map((k) => `${k}=${data[k]}`)
+            .join("\n");
+        const hmac = crypto_1.default.createHmac("sha256", secret_key).update(checkString).digest("hex");
+        if (hmac != user.idToken) {
+            console.log(hmac, user.idToken, data);
+            return res.sendStatus(401);
+        }
+        else {
+            return res.sendStatus(200);
+        }
+        telegramId = user.telegramId;
+        foundUser = await index_1.User.findOne({
+            telegramId,
+        });
+    }
     if (!foundUser) {
-        var newUser = new index_1.User({
-            username: user.displayName,
+        const newUser = new index_1.User({
+            username: user.username ?? user.displayName,
             displayName: user.displayName,
             email: user.email,
             photoUrl: user.photoUrl,
             emailVerified: user.emailVerified,
-            uid: uid,
+            uid,
+            telegramId,
         });
         await newUser.save();
-        telegram_1.default.notifyAdmin("New user registered: " + user.displayName);
+        telegram_1.default.notifyAdmin(`New user registered with ${authType}: ` + user.displayName);
         const token = jwt_simple_1.default.encode({ userid: user.id }, process.env.SECRET);
-        res.json(token);
+        return res.json(token);
     }
     else {
-        console.log(foundUser.username + " authenticated");
+        if (foundUser.banned) {
+            return res.sendStatus(403);
+        }
+        console.log(foundUser.username + " authenticated with " + authType);
         const token = jwt_simple_1.default.encode({ userid: foundUser.id }, process.env.SECRET);
-        res.json(token);
+        return res.json(token);
     }
 });
 exports.usersRoute.get("/:id/login", async (req, res) => {

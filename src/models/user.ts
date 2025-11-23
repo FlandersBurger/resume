@@ -24,6 +24,7 @@ export interface IUser {
   highscore: {
     asteroids: number;
   };
+  telegramId: number;
 }
 
 let User: { [key: string]: Model<IUser> } = {};
@@ -46,6 +47,7 @@ const userSchema = new Schema<IUser>(
     photoURL: { type: String, required: false },
     emailVerified: { type: Boolean, required: false },
     uid: { type: String, required: false },
+    telegramId: { type: Number, required: false },
     birthDate: { type: Date, required: false },
     flags: [{ type: String, required: false }],
     highscore: {

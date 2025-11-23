@@ -23,6 +23,7 @@ const userSchema = new mongoose_1.Schema({
     photoURL: { type: String, required: false },
     emailVerified: { type: Boolean, required: false },
     uid: { type: String, required: false },
+    telegramId: { type: Number, required: false },
     birthDate: { type: Date, required: false },
     flags: [{ type: String, required: false }],
     highscore: {

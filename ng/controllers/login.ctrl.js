@@ -7,6 +7,28 @@ angular.module("app").controller("LoginCtrl", function ($scope, $location, UserS
     startUI();
   });
 
+  function loginSuccessful(response) {
+    $scope.$emit("login", response.data);
+    $("#modal-login").modal("hide");
+    //$location.path('/');
+  }
+
+  function loginFailed() {
+    $scope.toast("Login Failed");
+  }
+
+  $scope.telegramLogin = function (user) {
+    UserSvc.authenticate({
+      authType: "telegram",
+      displayName: user.first_name + (user.last_name ? " " + user.last_name : ""),
+      username: user.username,
+      telegramId: user.id,
+      photoURL: user.photo_url,
+      idToken: user.hash,
+      data: user,
+    }).then(loginSuccessful, loginFailed);
+  };
+
   function startUI() {
     ui.start("#firebaseui-auth-container", {
       callbacks: {
@@ -17,21 +39,14 @@ angular.module("app").controller("LoginCtrl", function ($scope, $location, UserS
             .currentUser.getIdToken(true)
             .then(function (idToken) {
               UserSvc.authenticate({
+                authType: "firebase",
                 displayName: currentUser.displayName,
                 email: currentUser.email,
                 photoURL: currentUser.photoURL,
                 emailVerified: currentUser.emailVerified,
                 idToken: idToken,
-              }).then(
-                function (response) {
-                  $scope.$emit("login", response.data);
-                  $("#modal-login").modal("hide");
-                  //$location.path('/');
-                },
-                function () {
-                  $scope.toast("Login Failed");
-                },
-              );
+                data: currentUser,
+              }).then(loginSuccessful, loginFailed);
               // ...
             })
             .catch(function (error) {

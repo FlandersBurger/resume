@@ -1,5 +1,6 @@
 import { Router, Request, Response, QueryableRequest } from "express";
 
+import crypto from "crypto";
 import bcrypt from "bcryptjs";
 import jwt from "jwt-simple";
 import { firebase } from "@root/server";
@@ -8,6 +9,9 @@ import { User } from "@models/index";
 import bot from "@root/connections/telegram";
 
 export const usersRoute = Router();
+
+type AuthType = "telegram" | "firebase";
+const isAcceptedAuth = (authType: string = ""): authType is AuthType => ["telegram", "firebase"].includes(authType);
 
 usersRoute.get("/", (_: Request, res: Response) => {
   if (!res.locals.isAuthorized) res.sendStatus(401);
@@ -56,32 +60,59 @@ usersRoute.post("/", async (req: Request, res: Response) => {
 });
 
 usersRoute.post("/authenticate", async (req: Request, res: Response) => {
-  var user = req.body.user;
-  const decodedToken = await firebase.auth().verifyIdToken(user.idToken);
-  console.log(decodedToken);
-  var uid = decodedToken.uid;
-  console.log(uid);
-  const foundUser = await User.findOne({
-    uid: uid,
-    banned: false,
-  });
+  const { authType, data, ...user } = req.body.user;
+  if (!isAcceptedAuth(authType)) {
+    return res.sendStatus(401);
+  }
+  let foundUser, uid, telegramId;
+  if (authType === "firebase") {
+    const decodedToken = await firebase.auth().verifyIdToken(user.idToken);
+    uid = decodedToken.uid;
+    foundUser = await User.findOne({
+      uid,
+    });
+  } else {
+    const secret_key = crypto.createHash("sha256").update(process.env.TELEGRAM_TOKEN!).digest("hex");
+
+    const checkString = Object.keys(data)
+      .filter((k) => k !== "hash")
+      .sort()
+      .filter((k) => data[k])
+      .map((k) => `${k}=${data[k]}`)
+      .join("\n");
+    const hmac = crypto.createHmac("sha256", secret_key).update(checkString).digest("hex");
+    if (hmac != user.idToken) {
+      console.log(hmac, user.idToken, data);
+      return res.sendStatus(401);
+    } else {
+      return res.sendStatus(200);
+    }
+    telegramId = user.telegramId;
+    foundUser = await User.findOne({
+      telegramId,
+    });
+  }
   if (!foundUser) {
-    var newUser = new User({
-      username: user.displayName,
+    const newUser = new User({
+      username: user.username ?? user.displayName,
       displayName: user.displayName,
       email: user.email,
       photoUrl: user.photoUrl,
       emailVerified: user.emailVerified,
-      uid: uid,
+      uid,
+      telegramId,
     });
     await newUser.save();
-    bot.notifyAdmin("New user registered: " + user.displayName);
+    bot.notifyAdmin(`New user registered with ${authType}: ` + user.displayName);
     const token = jwt.encode({ userid: user.id }, process.env.SECRET!);
-    res.json(token);
+    return res.json(token);
   } else {
-    console.log(foundUser.username + " authenticated");
+    if (foundUser.banned) {
+      return res.sendStatus(403);
+    }
+    console.log(foundUser.username + " authenticated with " + authType);
     const token = jwt.encode({ userid: foundUser.id }, process.env.SECRET!);
-    res.json(token);
+    return res.json(token);
   }
 });
 
