@@ -6,10 +6,6 @@ angular.module("app").controller("LoginCtrl", function ($scope, $location, UserS
     ui.reset();
     startUI();
   });
-  $("#telegram-login-TenThings_Bot").on("load", function () {
-    // Change the background color of an element with id="myElement" inside the iframe
-    $(".tgme_widget_login_button").text("Sign in with Telegram");
-  });
 
   function loginSuccessful(response) {
     $scope.$emit("login", response.data);
@@ -31,6 +27,7 @@ angular.module("app").controller("LoginCtrl", function ($scope, $location, UserS
       idToken: user.hash,
       data: user,
     }).then(loginSuccessful, loginFailed);
+    $scope.$apply();
   };
 
   function startUI() {

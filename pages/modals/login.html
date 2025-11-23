@@ -13,17 +13,16 @@
             async
             src="https://telegram.org/js/telegram-widget.js?22"
             data-telegram-login="TenThings_Bot"
+            data-userpic="false"
+            data-radius="0"
             data-size="large"
             data-onauth="onTelegramAuth(user)"
-            data-request-access="write"
           ></script>
           <script type="text/javascript">
             function onTelegramAuth(user) {
               var element = document.getElementById("modal-login");
               var scope = angular.element(element).scope();
               scope.telegramLogin(user);
-              console.log("user:", user);
-              alert("Experimental telegram login successful! Functionality to be implemented.");
             }
           </script>
         </div>
