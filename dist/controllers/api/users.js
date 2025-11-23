@@ -75,16 +75,21 @@ exports.usersRoute.post("/authenticate", async (req, res) => {
         });
     }
     else {
-        const secret_key = crypto_1.default.createHash("sha256").update(process.env.TELEGRAM_TOKEN).digest("hex");
         const checkString = Object.keys(data)
             .filter((k) => k !== "hash")
             .sort()
             .filter((k) => data[k])
             .map((k) => `${k}=${data[k]}`)
             .join("\n");
-        const hmac = crypto_1.default.createHmac("sha256", secret_key).update(checkString).digest("hex");
-        if (hmac != user.idToken) {
-            console.log(hmac, user.idToken, data);
+        const hmacKey = crypto_1.default
+            .createHmac("sha256", "WebAppData")
+            .update(Buffer.from(process.env.TELEGRAM_TOKEN, "utf8"))
+            .digest();
+        const hmac = crypto_1.default.createHmac("sha256", hmacKey);
+        hmac.update(checkString);
+        const computedHash = hmac.digest();
+        if (crypto_1.default.timingSafeEqual(computedHash, user.idToken)) {
+            console.log(hmac, user.idToken, checkString);
             return res.sendStatus(401);
         }
         else {
