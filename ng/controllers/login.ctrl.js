@@ -7,6 +7,8 @@ angular.module("app").controller("LoginCtrl", function ($scope, $location, UserS
     startUI();
   });
 
+  document.getElementsByClassName("tgme_widget_login_button")[0].innerHTML = "Sign in with Telegram";
+
   function loginSuccessful(response) {
     $scope.$emit("login", response.data);
     $("#modal-login").modal("hide");
