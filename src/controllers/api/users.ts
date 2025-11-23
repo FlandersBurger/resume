@@ -78,11 +78,11 @@ usersRoute.post("/authenticate", async (req: Request, res: Response) => {
       .filter((k) => data[k])
       .map((k) => `${k}=${data[k]}`)
       .join("\n");
-    const hmacKey = crypto.createHash("sha256").update(process.env.TELEGRAM_TOKEN!.trim()).digest();
-    const hmac = crypto.createHmac("sha256", hmacKey.toString()).update(checkString).digest("hex");
+    const hmacKey: crypto.BinaryLike = crypto.createHash("sha256").update(process.env.TELEGRAM_TOKEN!).digest();
+    const hmac = crypto.createHmac("sha256", process.env.TELEGRAM_TOKEN!).update(checkString).digest("hex");
 
     if (hmac !== user.idToken) {
-      console.log(hmac, user.idToken, checkString);
+      console.log(hmac, hmacKey, user.idToken, checkString);
       return res.sendStatus(401);
     } else {
       return res.sendStatus(200);
