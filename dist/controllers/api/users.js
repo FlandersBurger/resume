@@ -81,8 +81,8 @@ exports.usersRoute.post("/authenticate", async (req, res) => {
             .filter((k) => data[k])
             .map((k) => `${k}=${data[k]}`)
             .join("\n");
-        const hmacKey = crypto_1.default.createHmac("sha256", "WebAppData").update(process.env.TELEGRAM_TOKEN).digest();
-        const hmac = crypto_1.default.createHmac("sha256", hmacKey.toString()).update(checkString).digest("hex");
+        const hmacKey = crypto_1.default.createHmac("sha256", "WebAppData").update(process.env.TELEGRAM_TOKEN).digest("hex");
+        const hmac = crypto_1.default.createHmac("sha256", hmacKey).update(checkString).digest("hex");
         if (hmac !== user.idToken) {
             console.log(hmac, user.idToken, checkString);
             return res.sendStatus(401);
