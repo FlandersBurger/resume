@@ -1,7 +1,7 @@
 angular
   .module("app")
   //AngularJs can't have an arrow function here
-  .controller("TenThingsCtrl", function ($scope, $sce, $location, TenThingsSvc) {
+  .controller("TenThingsCtrl", function ($scope, $sce, $location, TenThingsSvc, UserSvc) {
     let page = 1;
     $scope.lists = [];
     $scope.search = "";
@@ -191,6 +191,18 @@ angular
         $scope.lists = lists;
         $scope.$apply();
       });
+    };
+
+    $scope.linkTelegram = (data) => {
+      UserSvc.linkTelegram($scope.currentUser._id, data).then(
+        () => {
+          $scope.toast("Telegram account linked");
+          $scope.getUser();
+        },
+        () => {
+          $scope.toast("Telegram account linking failed");
+        },
+      );
     };
 
     $scope.setLanguageFilter = (language) => {

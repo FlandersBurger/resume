@@ -1,12 +1,11 @@
 import { Router, Request, Response, QueryableRequest } from "express";
 
-import crypto from "crypto";
 import bcrypt from "bcryptjs";
 import jwt from "jwt-simple";
 import { firebase } from "@root/server";
 
-import { User } from "@models/index";
-import bot from "@root/connections/telegram";
+import { Player, User } from "@models/index";
+import bot, { verifyTelegramUser } from "@root/connections/telegram";
 
 export const usersRoute = Router();
 
@@ -72,16 +71,7 @@ usersRoute.post("/authenticate", async (req: Request, res: Response) => {
       uid,
     });
   } else {
-    const checkString = Object.keys(data)
-      .filter((k) => k !== "hash")
-      .sort()
-      .filter((k) => data[k])
-      .map((k) => `${k}=${data[k]}`)
-      .join("\n");
-    const hmacKey = crypto.createHash("sha256").update(process.env.TELEGRAM_TOKEN!).digest();
-    const hmac = crypto.createHmac("sha256", hmacKey).update(checkString).digest("hex");
-
-    if (hmac !== user.idToken) {
+    if (verifyTelegramUser(data)) {
       return res.sendStatus(401);
     }
     telegramId = user.telegramId;
@@ -136,6 +126,26 @@ usersRoute.post("/:id/verification", async (req: Request, res: Response) => {
     }
   } else {
     res.sendStatus(401);
+  }
+});
+
+usersRoute.post("/:id/telegram", async (req: Request, res: Response) => {
+  if (checkUser(req.params.id, res)) {
+    const data = req.body;
+    if (verifyTelegramUser(data)) {
+      res.sendStatus(401);
+    } else {
+      const user = await User.findOne({ _id: res.locals.user._id });
+      if (!user) res.sendStatus(400);
+      else {
+        user.telegramId = data.id;
+        await user.save();
+        await Player.updateMany({ id: data.id }, { $set: { user: user._id } });
+        console.log(user.username + " linked their Telegram account");
+        bot.notifyAdmin(user.username + " linked their Telegram account (ID: " + user._id + ")");
+        res.sendStatus(200);
+      }
+    }
   }
 });
 

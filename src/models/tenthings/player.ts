@@ -77,6 +77,7 @@ const playerSchema = new Schema<IPlayer>(
     tinygamePlays: { type: Number, required: false, default: 0 },
     state: { type: String, required: false, default: null },
     banned: { type: Boolean, required: false, default: false },
+    admin: { type: Boolean, required: false, default: false },
   },
   { timestamps: true },
 );

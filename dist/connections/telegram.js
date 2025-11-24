@@ -3,6 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.verifyTelegramUser = void 0;
 const bull_1 = __importDefault(require("bull"));
 const i18n_1 = __importDefault(require("../i18n"));
 const queue_1 = __importDefault(require("../queue"));
@@ -15,6 +16,7 @@ const moment_1 = __importDefault(require("moment"));
 const commands_1 = require("../controllers/bots/tenthings/providers/telegram/commands");
 const telegram_2 = require("../controllers/bots/tenthings/providers/telegram");
 const chalk_1 = __importDefault(require("chalk"));
+const crypto_1 = __importDefault(require("crypto"));
 const BANNED_TELEGRAM_USERS = [1726294650, 6758829541];
 const globalQueue = new bull_1.default("sendMessage", {
     redis: {
@@ -45,6 +47,18 @@ globalQueue.on("completed", function (job) {
 chatQueue.on("completed", function (job) {
     job.remove();
 });
+const verifyTelegramUser = (data) => {
+    const checkString = Object.keys(data)
+        .filter((k) => k !== "hash")
+        .sort()
+        .filter((k) => data[k])
+        .map((k) => `${k}=${data[k]}`)
+        .join("\n");
+    const hmacKey = crypto_1.default.createHash("sha256").update(process.env.TELEGRAM_TOKEN).digest();
+    const hmac = crypto_1.default.createHmac("sha256", hmacKey).update(checkString).digest("hex");
+    return hmac !== data.hash;
+};
+exports.verifyTelegramUser = verifyTelegramUser;
 class TelegramBot {
     constructor(token) {
         this.muteReasons = [

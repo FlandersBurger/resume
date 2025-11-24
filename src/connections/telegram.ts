@@ -14,6 +14,7 @@ import { IGame } from "@root/models/tenthings/game";
 import { TelegramCallbackData } from "@tenthings/providers/telegram/callbacks";
 import { convertTelegramUserToPlayer, TelegramMessage } from "@root/controllers/bots/tenthings/providers/telegram";
 import chalk from "chalk";
+import crypto from "crypto";
 
 const BANNED_TELEGRAM_USERS = [1726294650, 6758829541];
 
@@ -93,6 +94,19 @@ export type Channel = {
 };
 
 type ReplyMarkup = Keyboard;
+
+export const verifyTelegramUser = (data: any): boolean => {
+  const checkString = Object.keys(data)
+    .filter((k) => k !== "hash")
+    .sort()
+    .filter((k) => data[k])
+    .map((k) => `${k}=${data[k]}`)
+    .join("\n");
+  const hmacKey = crypto.createHash("sha256").update(process.env.TELEGRAM_TOKEN!).digest();
+  const hmac = crypto.createHmac("sha256", hmacKey).update(checkString).digest("hex");
+
+  return hmac !== data.hash;
+};
 
 class TelegramBot {
   private baseUrl: string;

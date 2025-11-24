@@ -6,6 +6,27 @@
     <a href="https://t.me/joinchat/I1Di-1MXGXkjhgNPXi6Vfg" target="_blank">Ten Things Telegram Bot</a>
   </div>
   <div ng-show="loggedIn">
+    <div ng-show="!currentUser.telegramId" class="well well-sm">
+      Link your Telegram account:
+      <div>
+        <script
+          async
+          src="https://telegram.org/js/telegram-widget.js?22"
+          data-telegram-login="TenThings_Bot"
+          data-userpic="false"
+          data-radius="2"
+          data-size="large"
+          data-onauth="onTelegramAuth(user)"
+        ></script>
+        <script type="text/javascript">
+          function onTelegramAuth(user) {
+            var element = document.getElementById("tenthings-page");
+            var scope = angular.element(element).scope();
+            scope.linkTelegram(user);
+          }
+        </script>
+      </div>
+    </div>
     <div class="btn-toolbar">
       <div class="btn-group btn-group-justified visible-xs hidden-sm hidden-md hidden-lg">
         <div class="btn-group" role="group">

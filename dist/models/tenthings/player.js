@@ -39,6 +39,7 @@ const playerSchema = new mongoose_1.Schema({
     tinygamePlays: { type: Number, required: false, default: 0 },
     state: { type: String, required: false, default: null },
     banned: { type: Boolean, required: false, default: false },
+    admin: { type: Boolean, required: false, default: false },
 }, { timestamps: true });
 playerSchema.index({ game: 1, id: 1 });
 for (const name in db_1.default) {

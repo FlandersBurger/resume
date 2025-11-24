@@ -1,16 +1,38 @@
 "use strict";
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    var desc = Object.getOwnPropertyDescriptor(m, k);
+    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
+      desc = { enumerable: true, get: function() { return m[k]; } };
+    }
+    Object.defineProperty(o, k2, desc);
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
+    Object.defineProperty(o, "default", { enumerable: true, value: v });
+}) : function(o, v) {
+    o["default"] = v;
+});
+var __importStar = (this && this.__importStar) || function (mod) {
+    if (mod && mod.__esModule) return mod;
+    var result = {};
+    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
+    __setModuleDefault(result, mod);
+    return result;
+};
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.usersRoute = void 0;
 const express_1 = require("express");
-const crypto_1 = __importDefault(require("crypto"));
 const bcryptjs_1 = __importDefault(require("bcryptjs"));
 const jwt_simple_1 = __importDefault(require("jwt-simple"));
 const server_1 = require("../../server");
 const index_1 = require("../../models/index");
-const telegram_1 = __importDefault(require("../../connections/telegram"));
+const telegram_1 = __importStar(require("../../connections/telegram"));
 exports.usersRoute = (0, express_1.Router)();
 const isAcceptedAuth = (authType = "") => ["telegram", "firebase"].includes(authType);
 exports.usersRoute.get("/", (_, res) => {
@@ -75,15 +97,7 @@ exports.usersRoute.post("/authenticate", async (req, res) => {
         });
     }
     else {
-        const checkString = Object.keys(data)
-            .filter((k) => k !== "hash")
-            .sort()
-            .filter((k) => data[k])
-            .map((k) => `${k}=${data[k]}`)
-            .join("\n");
-        const hmacKey = crypto_1.default.createHash("sha256").update(process.env.TELEGRAM_TOKEN).digest();
-        const hmac = crypto_1.default.createHmac("sha256", hmacKey).update(checkString).digest("hex");
-        if (hmac !== user.idToken) {
+        if ((0, telegram_1.verifyTelegramUser)(data)) {
             return res.sendStatus(401);
         }
         telegramId = user.telegramId;
@@ -141,6 +155,27 @@ exports.usersRoute.post("/:id/verification", async (req, res) => {
     }
     else {
         res.sendStatus(401);
+    }
+});
+exports.usersRoute.post("/:id/telegram", async (req, res) => {
+    if (checkUser(req.params.id, res)) {
+        const data = req.body;
+        if ((0, telegram_1.verifyTelegramUser)(data)) {
+            res.sendStatus(401);
+        }
+        else {
+            const user = await index_1.User.findOne({ _id: res.locals.user._id });
+            if (!user)
+                res.sendStatus(400);
+            else {
+                user.telegramId = data.id;
+                await user.save();
+                await index_1.Player.updateMany({ id: data.id }, { $set: { user: user._id } });
+                console.log(user.username + " linked their Telegram account");
+                telegram_1.default.notifyAdmin(user.username + " linked their Telegram account (ID: " + user._id + ")");
+                res.sendStatus(200);
+            }
+        }
     }
 });
 exports.usersRoute.post("/:id", async (req, res) => {

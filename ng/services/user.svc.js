@@ -29,8 +29,14 @@ angular.module("app").service("UserSvc", function ($http) {
       });
   };
 
-  svc.login = function (user) {
-    return $http.get("/api/users/" + user + "/login").then(function (response) {
+  svc.linkTelegram = function (userId, telegramData) {
+    return $http.post(`/api/users/${userId}/telegram`, telegramData).then(function () {
+      return svc.getUser();
+    });
+  };
+
+  svc.login = function (userId) {
+    return $http.get("/api/users/" + userId + "/login").then(function (response) {
       window.localStorage.token = response.data;
       return svc.setToken(response.data);
     });
@@ -46,22 +52,22 @@ angular.module("app").service("UserSvc", function ($http) {
       });
   };
 
-  svc.checkPassword = function (user, password) {
-    return $http.post("/api/users/" + user + "/verification", {
+  svc.checkPassword = function (userId, password) {
+    return $http.post("/api/users/" + userId + "/verification", {
       password: password,
     });
   };
 
-  svc.changePassword = function (user, oldPassword, newPassword) {
-    return $http.post("/api/users/" + user + "/password", {
+  svc.changePassword = function (userId, oldPassword, newPassword) {
+    return $http.post("/api/users/" + userId + "/password", {
       oldPassword: oldPassword,
       newPassword: newPassword,
     });
   };
 
-  svc.changeUsername = function (user, newUsername) {
+  svc.changeUsername = function (userId, newUsername) {
     return $http
-      .post("/api/users/" + user + "/username", {
+      .post("/api/users/" + userId + "/username", {
         newUsername: newUsername,
       })
       .then(function () {
