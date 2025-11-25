@@ -336,8 +336,6 @@ class TelegramBot {
             if (game.telegramChannel.chat > 0)
                 return true;
             const player = await (0, telegram_2.convertTelegramUserToPlayer)(game, user);
-            if (player && player.admin !== undefined)
-                return player.admin;
             const url = `${this.baseUrl}/getChatMember?chat_id=${game.telegramChannel.chat}&user_id=${user.id}`;
             try {
                 const response = await (0, http_client_1.default)().get(url);

@@ -104,9 +104,9 @@ const evaluate = async (msg, game, isNew) => {
         }
         switch (command) {
             case Command.Error:
+                game.provider.message(game, "Please let me know directly if it's an issue with your specific chat -> @FlandersBurger");
                 const chatLink = await telegram_2.default.exportChatInviteLink(game.telegramChannel);
                 telegram_2.default.notifyAdmins(`Error reported in ${game.chat_id}: \n${msg.text}\n\n${chatLink}`);
-                game.provider.message(game, "Please let me know directly if it's an issue with your specific chat -> @FlandersBurger");
                 break;
             case Command.Intro:
                 telegram_2.default.queueMessage(game.telegramChannel, (0, i18n_1.default)(game.settings.language, "sentences.introduction", {
