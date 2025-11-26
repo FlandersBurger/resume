@@ -339,6 +339,7 @@ class TelegramBot {
             const url = `${this.baseUrl}/getChatMember?chat_id=${game.telegramChannel.chat}&user_id=${user.id}`;
             try {
                 const response = await (0, http_client_1.default)().get(url);
+                console.log("Checking admin for", user.username, "in", game.chat_id, "->", response.data.result);
                 const admin = response &&
                     response.data &&
                     response.data.result &&
