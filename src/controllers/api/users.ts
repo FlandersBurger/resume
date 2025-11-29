@@ -212,7 +212,7 @@ usersRoute.post("/:id/username", async (req: Request, res: Response) => {
   }
 });
 
-function checkUser(user: string, res: Response) {
+export function checkUser(user: string, res: Response) {
   if (!res.locals.user?._id) return false;
   return user === res.locals.user._id.toString();
 }

@@ -1,10 +1,11 @@
 {
   "name": "resume",
   "scripts": {
-    "build": "npm run bundle",
     "rebuild": "rimraf dist && npm run bundle",
-    "bundle": "tsc -p . && tsc-alias",
-    "dev": "tsx watch src/server.ts",
+    "bundle": "tsc -p src/. && tsc-alias",
+    "build": "tsc && tsc-alias",
+    "watch": "concurrently --kill-others \"tsc -w -p src/.\" \"tsc-alias -w\" \"npm run dev\"",
+    "dev": "tsx src/server.ts",
     "start": "npm run build -- -w",
     "translate": "cd src/scripts && node i18n-scanner.js"
   },

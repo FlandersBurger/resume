@@ -12,6 +12,7 @@ import { quizzesRoute } from "@api/quizzes";
 import { gamesRoute } from "@api/games";
 import { postsRoute } from "@api/posts";
 import { staticRoute } from "@root/controllers/static";
+import { telegramRoute } from "@api/telegram";
 import { tenthingsCategoriesRoute } from "@api/tenthings/categories";
 import { tenthingsGamesRoute } from "@api/tenthings/games";
 import { tenthingsLanguagesRoute } from "@api/tenthings/languages";
@@ -45,6 +46,7 @@ app.use("/api/games", gamesRoute);
 app.use("/api/users", usersRoute);
 app.use("/api/posts", postsRoute);
 app.use("/api/quizzes", quizzesRoute);
+app.use("/api/telegram", telegramRoute);
 
 app.use("/api/tenthings/categories", tenthingsCategoriesRoute);
 app.use("/api/tenthings/games", tenthingsGamesRoute);

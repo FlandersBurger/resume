@@ -17,6 +17,7 @@ const quizzes_1 = require("./controllers/api/quizzes");
 const games_1 = require("./controllers/api/games");
 const posts_1 = require("./controllers/api/posts");
 const static_1 = require("./controllers/static");
+const telegram_1 = require("./controllers/api/telegram");
 const categories_1 = require("./controllers/api/tenthings/categories");
 const games_2 = require("./controllers/api/tenthings/games");
 const languages_1 = require("./controllers/api/tenthings/languages");
@@ -26,9 +27,9 @@ const players_1 = require("./controllers/api/tenthings/players");
 const stats_1 = require("./controllers/api/tenthings/stats");
 const search_1 = require("./controllers/api/tenthings/search");
 const users_1 = require("./controllers/api/users");
-const telegram_1 = require("./controllers/api/tenthings/telegram");
+const telegram_2 = require("./controllers/api/tenthings/telegram");
 const queue_1 = require("./queue");
-const telegram_2 = __importDefault(require("./connections/telegram"));
+const telegram_3 = __importDefault(require("./connections/telegram"));
 const web_1 = require("./controllers/api/tenthings/web");
 const serviceAccount = require("../keys/resume-172205-firebase-adminsdk-r34t7-0028c702be.json");
 exports.firebase = firebase_admin_1.default.initializeApp({
@@ -43,6 +44,7 @@ app.use("/api/games", games_1.gamesRoute);
 app.use("/api/users", users_1.usersRoute);
 app.use("/api/posts", posts_1.postsRoute);
 app.use("/api/quizzes", quizzes_1.quizzesRoute);
+app.use("/api/telegram", telegram_1.telegramRoute);
 app.use("/api/tenthings/categories", categories_1.tenthingsCategoriesRoute);
 app.use("/api/tenthings/games", games_2.tenthingsGamesRoute);
 app.use("/api/tenthings/languages", languages_1.tenthingsLanguagesRoute);
@@ -52,7 +54,7 @@ app.use("/api/tenthings/players", players_1.tenthingsPlayersRoute);
 app.use("/api/tenthings/stats", stats_1.tenthingsStatsRoute);
 app.use("/api/tenthings/search", search_1.tenthingsSearchRoute);
 app.use("/api/tenthings/web", web_1.tenthingsWebBotRoute);
-app.use("/bots/tenthings", telegram_1.tenthingsTelegramBotRoute);
+app.use("/bots/tenthings", telegram_2.tenthingsTelegramBotRoute);
 app.use(static_1.staticRoute);
 app.use((err, _req, res, _next) => {
     console.error(err.stack);
@@ -65,7 +67,7 @@ server.listen(port, async () => {
     console.log("Server", process.pid, "listening on", port);
     (0, queue_1.redisConnect)();
     if (process.env.NODE_ENV === "production") {
-        telegram_2.default.notifyAdmin("<b>Started Ten Things</b>");
+        telegram_3.default.notifyAdmin("<b>Started Ten Things</b>");
     }
     await (0, queue_1.subscribe)("new_post", (post) => {
         exports.websocketServer.broadcast("new_post", post);

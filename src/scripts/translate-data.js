@@ -1,6 +1,6 @@
 process.chdir("../../");
 require("dotenv").config();
-const removeDiacritics = require("../../dist/utils/string-helpers").removeDiacritics;
+const removeDiacritics = require("../../src/utils/string-helpers").removeDiacritics;
 const fs = require("fs");
 const execSync = require("child_process").execSync;
 const args = process.argv.slice(2);

@@ -26,7 +26,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.usersRoute = void 0;
+exports.checkUser = exports.usersRoute = void 0;
 const express_1 = require("express");
 const bcryptjs_1 = __importDefault(require("bcryptjs"));
 const jwt_simple_1 = __importDefault(require("jwt-simple"));
@@ -252,4 +252,5 @@ function checkUser(user, res) {
         return false;
     return user === res.locals.user._id.toString();
 }
+exports.checkUser = checkUser;
 //# sourceMappingURL=users.js.map
