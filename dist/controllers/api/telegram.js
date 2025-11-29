@@ -29,6 +29,18 @@ const models_1 = require("../../models");
 const express_1 = require("express");
 const users_1 = require("./users");
 exports.telegramRoute = (0, express_1.Router)();
+exports.telegramRoute.get("/:id/games", async (req, res) => {
+    if ((0, users_1.checkUser)(req.params.id, res)) {
+        const user = await models_1.User.findOne({ _id: res.locals.user._id });
+        if (!user?.telegramId)
+            res.sendStatus(400);
+        else {
+            const players = await models_1.Player.find({ id: user.telegramId });
+            const games = await models_1.Game.find({ _id: players.map((p) => p.game._id) }).sort({ createdAt: -1 });
+            res.json(games);
+        }
+    }
+});
 exports.telegramRoute.post("/:id/link", async (req, res) => {
     if ((0, users_1.checkUser)(req.params.id, res)) {
         const data = req.body;

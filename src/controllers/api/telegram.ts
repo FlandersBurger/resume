@@ -1,9 +1,21 @@
 import bot, { verifyTelegramUser } from "@root/connections/telegram";
-import { Player, User } from "@root/models";
+import { Game, Player, User } from "@root/models";
 import { Router, Request, Response } from "express";
 import { checkUser } from "./users";
 
 export const telegramRoute = Router();
+
+telegramRoute.get("/:id/games", async (req: Request, res: Response) => {
+  if (checkUser(req.params.id, res)) {
+    const user = await User.findOne({ _id: res.locals.user._id });
+    if (!user?.telegramId) res.sendStatus(400);
+    else {
+      const players = await Player.find({ id: user.telegramId });
+      const games = await Game.find({ _id: players.map((p) => p.game._id) }).sort({ createdAt: -1 });
+      res.json(games);
+    }
+  }
+});
 
 telegramRoute.post("/:id/link", async (req: Request, res: Response) => {
   if (checkUser(req.params.id, res)) {

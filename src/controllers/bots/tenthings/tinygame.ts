@@ -51,6 +51,7 @@ export const checkTinygame = async (game: HydratedDocument<IGame>, player: Hydra
   player.scoreDaily += score;
   if (game.tinygame.hints === 0) player.hintStreak++;
   player.tinygamePlays++;
+  if (player.infractions > 0) player.infractions--;
   await player.save();
   game.tinygame.plays++;
   await game.save();

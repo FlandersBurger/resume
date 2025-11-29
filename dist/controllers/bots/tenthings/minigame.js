@@ -128,6 +128,8 @@ const checkMinigame = async (game, player, guess) => {
     if (game.minigame.hints === 0)
         player.hintStreak++;
     player.minigamePlays++;
+    if (player.infractions > 0)
+        player.infractions--;
     await player.save();
     game.minigame.plays++;
     await game.save();

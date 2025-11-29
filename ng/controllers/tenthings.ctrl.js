@@ -131,6 +131,15 @@ angular
       }
       $scope.search = $location.search().search || "";
       $scope.getLists();
+      TelegramSvc.getGames($scope.currentUser._id).then(
+        ({ data }) => {
+          $scope.telegramGames = data;
+          console.log(data);
+        },
+        () => {
+          $scope.telegramGames = [];
+        },
+      );
     };
 
     $scope.searchLists = async (viewValue) => {

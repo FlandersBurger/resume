@@ -51,6 +51,8 @@ const checkTinygame = async (game, player, guess) => {
     if (game.tinygame.hints === 0)
         player.hintStreak++;
     player.tinygamePlays++;
+    if (player.infractions > 0)
+        player.infractions--;
     await player.save();
     game.tinygame.plays++;
     await game.save();

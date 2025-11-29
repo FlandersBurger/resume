@@ -30,10 +30,10 @@ const noTopic = async (chat_id) => {
 exports.noTopic = noTopic;
 const adminOnly = async (game, player) => {
     player.infractions++;
-    if (player.infractions < 4) {
+    if (player.infractions < 9) {
         game.provider.message(game, `${(0, i18n_1.default)(game.settings.language, "warnings.adminFunction", { name: (0, players_1.getPlayerName)(player) })}\nID: ${player.id}`);
     }
-    else if (player.infractions === 4) {
+    else if (player.infractions === 9) {
         game.provider.message(game, `${(0, i18n_1.default)(game.settings.language, "warnings.abuse", { name: (0, players_1.getPlayerName)(player) })}\nID: ${player.id}`);
     }
     else {

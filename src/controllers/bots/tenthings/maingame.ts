@@ -201,6 +201,7 @@ export const checkMaingame = async (game: HydratedDocument<IGame>, player: Hydra
       if (player.maxHintStreak < player.hintStreak) {
         player.maxHintStreak = player.hintStreak;
       }
+      if (player.infractions > 0) player.infractions--;
       await game.save();
       await player.save();
       game.provider.guessed(game, player, match, score, accuracy);

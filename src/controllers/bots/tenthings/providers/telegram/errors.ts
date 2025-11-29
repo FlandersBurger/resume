@@ -28,12 +28,12 @@ export const noTopic = async (chat_id: number) => {
 
 export const adminOnly = async (game: IGame, player: HydratedDocument<IPlayer>) => {
   player.infractions++;
-  if (player.infractions < 4) {
+  if (player.infractions < 9) {
     game.provider.message(
       game,
       `${i18n(game.settings.language, "warnings.adminFunction", { name: getPlayerName(player) })}\nID: ${player.id}`,
     );
-  } else if (player.infractions === 4) {
+  } else if (player.infractions === 9) {
     game.provider.message(
       game,
       `${i18n(game.settings.language, "warnings.abuse", { name: getPlayerName(player) })}\nID: ${player.id}`,
