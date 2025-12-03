@@ -412,6 +412,7 @@ const updatePlayStreak = () => {
           if (player.lastPlayDate <= moment().subtract(1, "days").toDate()) {
             player.playStreak = 0;
           }
+          player.pickedLists = [];
         }
         player.save();
       });

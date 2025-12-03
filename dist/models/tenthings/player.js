@@ -40,6 +40,7 @@ const playerSchema = new mongoose_1.Schema({
     state: { type: String, required: false, default: null },
     banned: { type: Boolean, required: false, default: false },
     admin: { type: Boolean, required: false, default: false },
+    pickedLists: [{ type: mongoose_1.Schema.Types.ObjectId, ref: "List" }],
 }, { timestamps: true });
 playerSchema.index({ game: 1, id: 1 });
 for (const name in db_1.default) {

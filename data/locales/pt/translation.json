@@ -242,7 +242,8 @@
     "corroborateBanBySamePlayer": "Peça a outra pessoa para confirmar a proibição, {{name}}!",
     "noSuggestion": "Você não sugeriu nada, {{name}}",
     "abuse": "{{name}}, você será banido do Ten Things se abusar disso mais uma vez",
-    "banned": "{{name}}, você foi banido do Ten Things. Sinta-se à vontade para fazer uma petição para desbanir @FlandersBurger"
+    "banned": "{{name}}, você foi banido do Ten Things. Sinta-se à vontade para fazer uma petição para desbanir @FlandersBurger",
+    "alreadyRequested": "{{name}}, você já solicitou esta lista hoje"
   },
   "stats": {
     "stats": "Estatísticas",

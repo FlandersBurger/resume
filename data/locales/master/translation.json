@@ -69,127 +69,43 @@
     "Transportation": "Transportation"
   },
   "commands": {
-    "start": {
-      "name": "start",
-      "description": "Start the game"
-    },
-    "commands": {
-      "name": "commands",
-      "description": "List of commands"
-    },
-    "list": {
-      "name": "list",
-      "description": "List the guessed answers in the current round"
-    },
-    "hint": {
-      "name": "hint",
-      "description": "Get a hint"
-    },
-    "skip": {
-      "name": "skip",
-      "description": "Skip the current round"
-    },
-    "veto": {
-      "name": "veto",
-      "description": "Veto the skip"
-    },
-    "minigame": {
-      "name": "minigame",
-      "description": "Reverse trivia question"
-    },
-    "minihint": {
-      "name": "minihint",
-      "description": "Get a hint for minigame"
-    },
-    "miniskip": {
-      "name": "miniskip",
-      "description": "Skip the current minigame"
-    },
-    "tinygame": {
-      "name": "tinygame",
-      "description": "Guess the list"
-    },
-    "tinyhint": {
-      "name": "tinyhint",
-      "description": "Get a hint for tinygame"
-    },
-    "tinyskip": {
-      "name": "tinyskip",
-      "description": "Skip the current tinygame"
-    },
-    "score": {
-      "name": "score",
-      "description": "Daily score standing"
-    },
-    "stats": {
-      "name": "stats",
-      "description": "Statistics on the game"
-    },
-    "me": {
-      "name": "me",
-      "description": "My stats"
-    },
-    "intro": {
-      "name": "intro",
-      "description": "What am I?"
-    },
-    "logic": {
-      "name": "logic",
-      "description": "An explanation of the logic used"
-    },
-    "settings": {
-      "name": "settings",
-      "description": "Bot behaviour settings (Admin Only)"
-    },
+    "start": { "name": "start", "description": "Start the game" },
+    "commands": { "name": "commands", "description": "List of commands" },
+    "list": { "name": "list", "description": "List the guessed answers in the current round" },
+    "hint": { "name": "hint", "description": "Get a hint" },
+    "skip": { "name": "skip", "description": "Skip the current round" },
+    "veto": { "name": "veto", "description": "Veto the skip" },
+    "minigame": { "name": "minigame", "description": "Reverse trivia question" },
+    "minihint": { "name": "minihint", "description": "Get a hint for minigame" },
+    "miniskip": { "name": "miniskip", "description": "Skip the current minigame" },
+    "tinygame": { "name": "tinygame", "description": "Guess the list" },
+    "tinyhint": { "name": "tinyhint", "description": "Get a hint for tinygame" },
+    "tinyskip": { "name": "tinyskip", "description": "Skip the current tinygame" },
+    "score": { "name": "score", "description": "Daily score standing" },
+    "stats": { "name": "stats", "description": "Statistics on the game" },
+    "me": { "name": "me", "description": "My stats" },
+    "intro": { "name": "intro", "description": "What am I?" },
+    "logic": { "name": "logic", "description": "An explanation of the logic used" },
+    "settings": { "name": "settings", "description": "Bot behaviour settings (Admin Only)" },
     "categories": {
       "name": "categories",
       "description": "Select which categories to include (Admin Only)"
     },
-    "typo": {
-      "name": "typo",
-      "description": "Report a typo in the current list"
-    },
-    "bug": {
-      "name": "bug",
-      "description": "Report a bug with the bot"
-    },
-    "feature": {
-      "name": "feature",
-      "description": "Recommend a new feature for the bot"
-    },
-    "suggest": {
-      "name": "suggest",
-      "description": "Suggest a new feature for the bot"
-    },
-    "error": {
-      "name": "error",
-      "description": "Report an error with the bot"
-    },
-    "search": {
-      "name": "search",
-      "description": "Search lists to queue"
-    },
-    "lists": {
-      "name": "lists",
-      "description": "See queued lists"
-    },
-    "stop": {
-      "name": "stop",
-      "description": "Switch me off"
-    },
-    "ping": {
-      "name": "ping",
-      "description": "pong"
-    },
-    "queue": {
-      "name": "queue",
-      "description": "Where's the bot stuck?"
-    }
+    "typo": { "name": "typo", "description": "Report a typo in the current list" },
+    "bug": { "name": "bug", "description": "Report a bug with the bot" },
+    "feature": { "name": "feature", "description": "Recommend a new feature for the bot" },
+    "suggest": { "name": "suggest", "description": "Suggest a new feature for the bot" },
+    "error": { "name": "error", "description": "Report an error with the bot" },
+    "search": { "name": "search", "description": "Search lists to queue" },
+    "lists": { "name": "lists", "description": "See queued lists" },
+    "stop": { "name": "stop", "description": "Switch me off" },
+    "ping": { "name": "ping", "description": "pong" },
+    "queue": { "name": "queue", "description": "Where's the bot stuck?" }
   },
   "sentences": {
     "likeList": "Did you like <b>{{list}}</b>?",
-    "likesList": " 👍 {{name}} likes <b>{{list}}</b> ({{score}})",
-    "dislikesList": " 👎 {{name}} dislikes <b>{{list}}</b> ({{score}})",
+    "likesList": " \ud83d\udc4d {{name}} likes <b>{{list}}</b> ({{score}})",
+    "dislikesList": " \ud83d\udc4e {{name}} dislikes <b>{{list}}</b> ({{score}})",
     "queueList": "<b>Which list would you like to queue?</b>",
     "curateList": "<b>Which list would you like to curate?</b>",
     "queueFull": "The queue already has the maximum of 10 lists, {{name}}.",
@@ -240,14 +156,14 @@
   "warnings": {
     "minimum1Category": "A minimum of 1 category is required",
     "adminFunction": "Sorry {{name}}, this is a chat admin function",
-    "abuse": "{{name}}, you will be banned from Ten Things if you abuse this once again",
+    "abuse": "{{name}}, you will be banned from Ten Things if you abuse the bot once again",
     "banned": "{{name}}, you are banned from Ten Things until the end of the day. Feel free to petition an unban to @FlandersBurger",
     "fullQueue": "The queue already has the maximum of 10 lists, {{name}}",
+    "alreadyRequested": "{{name}}, you already requested this list today",
     "alreadyInQueue": "<b>{{list}}</b> is already in the queue, {{name}}",
     "unfoundList": "This list no longer exists",
     "corroborateBanBySamePlayer": "Get someone else to confirm the ban, {{name}}!",
-    "noSuggestion": "You didn't suggest anything, {{name}}",
-    "alreadyRequested": "{{name}}, you already requested this list today"
+    "noSuggestion": "You didn't suggest anything, {{name}}"
   },
   "stats": {
     "stats": "Stats",

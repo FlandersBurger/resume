@@ -242,7 +242,8 @@
     "corroborateBanBySamePlayer": "Lassen Sie jemand anderen das Verbot bestätigen, {{name}}!",
     "noSuggestion": "Sie haben nichts vorgeschlagen, {{name}}",
     "abuse": "{{name}}, du wirst von Ten Things verbannt, wenn du dies erneut missbrauchst",
-    "banned": "{{name}}, du bist von Ten Things verbannt. Du kannst gerne eine Aufhebung der Verbannung bei @FlandersBurger beantragen."
+    "banned": "{{name}}, du bist von Ten Things verbannt. Du kannst gerne eine Aufhebung der Verbannung bei @FlandersBurger beantragen.",
+    "alreadyRequested": "{{name}}, Sie haben diese Liste bereits heute angefordert."
   },
   "stats": {
     "stats": "Statistiken",

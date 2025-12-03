@@ -242,7 +242,8 @@
     "corroborateBanBySamePlayer": "Dapatkan orang lain untuk mengonfirmasi pelarangan, {{name}}!",
     "noSuggestion": "Kamu tidak menyarankan apa pun, {{name}}",
     "abuse": "{{name}}, Anda akan diblokir dari Ten Things jika Anda menyalahgunakan ini sekali lagi",
-    "banned": "{{name}}, Anda diblokir dari Ten Things. Jangan ragu untuk mengajukan petisi pembatalan pemblokiran ke @FlandersBurger"
+    "banned": "{{name}}, Anda diblokir dari Ten Things. Jangan ragu untuk mengajukan petisi pembatalan pemblokiran ke @FlandersBurger",
+    "alreadyRequested": "{{name}}, kamu sudah meminta daftar ini hari ini"
   },
   "stats": {
     "stats": "Statistik",

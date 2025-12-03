@@ -242,7 +242,8 @@
     "corroborateBanBySamePlayer": "اطلب من شخص آخر تأكيد الحظر، {{name}}!",
     "noSuggestion": "لم تقترح أي شيء، {{name}}",
     "abuse": "{{name}}، سيتم حظرك من Ten Things إذا أساءت استخدام هذا مرة أخرى",
-    "banned": "{{name}}، تم حظرك من Ten Things. لا تتردد في تقديم التماس إلى @FlandersBurger لرفع الحظر"
+    "banned": "{{name}}، تم حظرك من Ten Things. لا تتردد في تقديم التماس إلى @FlandersBurger لرفع الحظر",
+    "alreadyRequested": "{{name}}، لقد طلبت هذه القائمة بالفعل اليوم"
   },
   "stats": {
     "stats": "الإحصائيات",

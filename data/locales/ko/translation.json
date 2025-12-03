@@ -242,7 +242,8 @@
     "corroborateBanBySamePlayer": "다른 사람에게 금지 확인을 요청하세요. {{name}}!",
     "noSuggestion": "아무것도 제안하지 않았습니다, {{name}}",
     "abuse": "{{name}}, 다시 이걸 남용하면 Ten Things에서 추방됩니다",
-    "banned": "{{name}}, Ten Things에서 추방됩니다. @FlandersBurger에 추방 해제를 청원하세요."
+    "banned": "{{name}}, Ten Things에서 추방됩니다. @FlandersBurger에 추방 해제를 청원하세요.",
+    "alreadyRequested": "{{name}}님, 오늘 이미 이 목록을 요청하셨습니다."
   },
   "stats": {
     "stats": "통계",

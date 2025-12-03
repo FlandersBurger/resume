@@ -344,6 +344,16 @@ export default async (callbackQuery: TelegramCallbackData) => {
             game.telegramChannel,
             i18n(game.settings.language, "warnings.fullQueue", { name: callbackQuery.from.name }),
           );
+        if (player.pickedLists.find((pickedListId: Types.ObjectId) => pickedListId.toString() === callbackQuery.data)) {
+          player.infractions++;
+          player.save();
+          return bot.queueMessage(
+            game.telegramChannel,
+            i18n(game.settings.language, "warnings.alreadyRequested", {
+              name: callbackQuery.from.name,
+            }),
+          );
+        }
         const list = await List.findOne({ _id: callbackQuery.data }).exec();
         if (!list) return bot.queueMessage(game.telegramChannel, i18n(game.settings.language, "warnings.unfoundList"));
         const foundList = find(game.pickedLists, (pickedListId: Types.ObjectId) => pickedListId === list._id);
@@ -356,6 +366,8 @@ export default async (callbackQuery: TelegramCallbackData) => {
             }),
           );
         } else {
+          player.pickedLists.push(list._id);
+          player.save();
           game.pickedLists.push(list._id);
           if (find(game.bannedLists, (bannedListId: Types.ObjectId) => bannedListId === list._id)) {
             game.bannedLists = game.bannedLists.filter((bannedListId: Types.ObjectId) => bannedListId !== list._id);

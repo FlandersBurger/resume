@@ -238,7 +238,9 @@
     "alreadyInQueue": "Ang <b>{{list}}</b> ay nasa pila na, {{name}}",
     "unfoundList": "Ang listahang ito ay hindi na umiiral",
     "corroborateBanBySamePlayer": "Kumuha ng ibang tao upang kumpirmahin ang ban, {{name}}!",
-    "noSuggestion": "Wala kang iminungkahing anuman, {{name}}"
+    "noSuggestion": "Wala kang iminungkahing anuman, {{name}}",
+    "abuse": "{{name}}, maba-ban ka sa Ten Things kung aabuso mo muli ang bot",
+    "alreadyRequested": "{{name}}, hiniling mo na ang listahang ito ngayon"
   },
   "stats": {
     "stats": "Estadistika",

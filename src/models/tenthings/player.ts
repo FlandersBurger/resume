@@ -39,6 +39,7 @@ export interface IPlayer {
   tinygamePlays: number;
   state: PlayerState;
   banned: boolean;
+  pickedLists: Types.ObjectId[];
 }
 
 let Player: { [key: string]: Model<IPlayer> } = {};
@@ -78,6 +79,7 @@ const playerSchema = new Schema<IPlayer>(
     state: { type: String, required: false, default: null },
     banned: { type: Boolean, required: false, default: false },
     admin: { type: Boolean, required: false, default: false },
+    pickedLists: [{ type: Schema.Types.ObjectId, ref: "List" }],
   },
   { timestamps: true },
 );
