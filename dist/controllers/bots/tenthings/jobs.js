@@ -137,15 +137,7 @@ const updateDailyStats = async (games, totalPlayers, uniquePlayers) => {
     message += `52W low unique: ${yearStats.min.uniquePlayers} on ${(0, moment_1.default)(yearStats.min.date).format("DD-MMM-YYYY")}\n`;
     message += `${(0, number_helpers_1.makeReadable)(listStats[0].plays - base.listsPlayed)} lists played\n`;
     message += `${(0, number_helpers_1.makeReadable)(listStats[0].votes - base.votes)} list votes given\n`;
-    message += `${(0, number_helpers_1.makeReadable)(playerStats[0].skips - base.skips)} lists skipped\n`;
-    message += `${(0, number_helpers_1.makeReadable)(playerStats[0].answers - base.answers)} answers given\n`;
-    message += `${(0, number_helpers_1.makeReadable)(playerStats[0].snubs - base.snubs)} answers snubbed\n`;
-    message += `${(0, number_helpers_1.makeReadable)(playerStats[0].minigamePlays - base.minigamePlays)} minigame answers given\n`;
-    message += `${(0, number_helpers_1.makeReadable)(playerStats[0].tinygamePlays - base.tinygamePlays)} tinygame answers given\n`;
-    message += `${(0, number_helpers_1.makeReadable)(playerStats[0].hints - base.hints)} hints asked\n`;
-    message += `${(0, number_helpers_1.makeReadable)(playerStats[0].score - base.score)} points scored overall\n`;
-    message += `${(0, number_helpers_1.makeReadable)(playerStats[0].suggestions - base.suggestions)} suggestions given\n`;
-    message += `${(0, number_helpers_1.makeReadable)(playerStats[0].searches - base.searches)} lists searched\n`;
+    message += ` High score ${(0, number_helpers_1.makeReadable)(playerStats[0].highScore)}\n`;
     telegram_1.default.notifyAdmins(message);
     telegram_1.default.notifyAdmin(message);
     telegram_1.default.notifyCosmicForce(message);
@@ -170,6 +162,7 @@ const updateDailyStats = async (games, totalPlayers, uniquePlayers) => {
         await dailyStats.save();
         telegram_1.default.notifyAdmin("Daily Stats Updated!");
         base.listsPlayed = listStats[0].plays;
+        base.votes = listStats[0].votes;
         base.hints = playerStats[0].hints;
         base.score = playerStats[0].score;
         base.answers = playerStats[0].answers;
@@ -177,7 +170,6 @@ const updateDailyStats = async (games, totalPlayers, uniquePlayers) => {
         base.skips = playerStats[0].skips;
         base.suggestions = playerStats[0].suggestions;
         base.searches = playerStats[0].searches;
-        base.votes = listStats[0].votes;
         base.minigamePlays = playerStats[0].minigamePlays;
         base.tinygamePlays = playerStats[0].tinygamePlays;
         await base.save();
@@ -270,7 +262,7 @@ const deleteStaleGames = () => {
 const deactivateInactiveChats = () => {
     index_1.Game.find({
         _id: { $nin: [process.env.MASTER_CHAT, process.env.ADMIN_CHAT, process.env.GROUP_CHAT] },
-        lastPlayDate: { $lt: (0, moment_1.default)().subtract(30, "days") },
+        lastPlayDate: { $lt: (0, moment_1.default)().subtract(90, "days") },
         enabled: true,
     })
         .select("chat_id topicId telegramChannel enabled settings")
