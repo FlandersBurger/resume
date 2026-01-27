@@ -6,7 +6,7 @@ import { activate, createMaingame, newRound } from "@tenthings/maingame";
 import bot from "@root/connections/telegram";
 import { getQueue } from "@tenthings/providers/telegram/queue";
 import callbacks, { TelegramCallbackData } from "@tenthings/providers/telegram/callbacks";
-import { evaluate } from "@tenthings/providers/telegram/commands";
+import { Command, evaluate, translateCommand } from "@tenthings/providers/telegram/commands";
 import { TelegramMessage } from "@tenthings/providers/telegram";
 
 // DO NOT REMOVE jobs
@@ -119,9 +119,18 @@ tenthingsTelegramBotRoute.post("/", async (req: Request, res: Response) => {
       await evaluate(msg, newGame, true);
     } else {
       if (!existingGame.enabled) {
-        if (msg.command && ["list", "start", "minigame", "tinygame"].includes(msg.command)) {
-          await activate(existingGame, true);
-          await evaluate(msg, existingGame, false);
+        if (msg.command) {
+          const command = translateCommand(existingGame.settings.language, msg.command);
+          if (
+            (command &&
+              [Command.List, Command.Start, Command.Minigame, Command.Tinygame, Command.Hint, Command.Skip].includes(
+                command,
+              )) ||
+            ["list", "start", "minigame", "tinygame", "hint", "skip"].includes(msg.command)
+          ) {
+            await activate(existingGame, true);
+            await evaluate(msg, existingGame, false);
+          }
         }
       } else {
         try {

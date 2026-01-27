@@ -68,9 +68,14 @@ exports.tenthingsTelegramBotRoute.post("/", async (req, res) => {
         }
         else {
             if (!existingGame.enabled) {
-                if (msg.command && ["list", "start", "minigame", "tinygame"].includes(msg.command)) {
-                    await (0, maingame_1.activate)(existingGame, true);
-                    await (0, commands_1.evaluate)(msg, existingGame, false);
+                if (msg.command) {
+                    const command = (0, commands_1.translateCommand)(existingGame.settings.language, msg.command);
+                    if ((command &&
+                        [commands_1.Command.List, commands_1.Command.Start, commands_1.Command.Minigame, commands_1.Command.Tinygame, commands_1.Command.Hint, commands_1.Command.Skip].includes(command)) ||
+                        ["list", "start", "minigame", "tinygame", "hint", "skip"].includes(msg.command)) {
+                        await (0, maingame_1.activate)(existingGame, true);
+                        await (0, commands_1.evaluate)(msg, existingGame, false);
+                    }
                 }
             }
             else {
