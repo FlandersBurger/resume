@@ -137,7 +137,7 @@ const updateDailyStats = async (games, totalPlayers, uniquePlayers) => {
     message += `52W low unique: ${yearStats.min.uniquePlayers} on ${(0, moment_1.default)(yearStats.min.date).format("DD-MMM-YYYY")}\n`;
     message += `${(0, number_helpers_1.makeReadable)(listStats[0].plays - base.listsPlayed)} lists played\n`;
     message += `${(0, number_helpers_1.makeReadable)(listStats[0].votes - base.votes)} list votes given\n`;
-    message += ` High score ${(0, number_helpers_1.makeReadable)(playerStats[0].highScore)}\n`;
+    message += `High score ${(0, number_helpers_1.makeReadable)(playerStats[0].highScore)}\n`;
     telegram_1.default.notifyAdmins(message);
     telegram_1.default.notifyAdmin(message);
     telegram_1.default.notifyCosmicForce(message);

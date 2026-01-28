@@ -4,7 +4,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.evaluate = exports.translateCommand = exports.Command = void 0;
-const moment_1 = __importDefault(require("moment"));
 const game_1 = require("../../../../../models/tenthings/game");
 const index_1 = require("../../../../../models/index");
 const telegram_1 = require("../../providers/telegram");
@@ -316,10 +315,7 @@ const evaluate = async (msg, game, isNew) => {
         }
     }
     else {
-        if (game.lastPlayDate <= (0, moment_1.default)().subtract(30, "days").toDate()) {
-            (0, maingame_1.deactivate)(game);
-        }
-        else if (game.enabled && game.chat_id != parseInt(process.env.ADMIN_CHAT || "")) {
+        if (game.enabled && game.chat_id != parseInt(process.env.ADMIN_CHAT || "")) {
             (0, guesses_1.queueGuess)(game, player, msg.text);
         }
     }

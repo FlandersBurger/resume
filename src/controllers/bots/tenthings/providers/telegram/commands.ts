@@ -387,9 +387,7 @@ export const evaluate = async (msg: TelegramMessage, game: HydratedDocument<IGam
         break;
     }
   } else {
-    if (game.lastPlayDate <= moment().subtract(30, "days").toDate()) {
-      deactivate(game);
-    } else if (game.enabled && game.chat_id != parseInt(process.env.ADMIN_CHAT || "")) {
+    if (game.enabled && game.chat_id != parseInt(process.env.ADMIN_CHAT || "")) {
       queueGuess(game, player, msg.text);
     }
   }
