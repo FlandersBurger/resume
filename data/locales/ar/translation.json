@@ -180,6 +180,10 @@
     "queue": {
       "name": "queue",
       "description": "أين توقف الروبوت؟"
+    },
+    "help": {
+      "name": "مساعدة",
+      "description": "قائمة الأوامر"
     }
   },
   "sentences": {

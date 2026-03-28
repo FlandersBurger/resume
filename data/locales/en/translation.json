@@ -184,6 +184,10 @@
     "queue": {
       "name": "queue",
       "description": "Where's the bot stuck?"
+    },
+    "help": {
+      "name": "help",
+      "description": "List of commands"
     }
   },
   "sentences": {

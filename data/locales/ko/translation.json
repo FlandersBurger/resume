@@ -180,6 +180,10 @@
     "queue": {
       "name": "queue",
       "description": "봇이 어디에 갇혔나요?"
+    },
+    "help": {
+      "name": "도움말",
+      "description": "명령어 목록"
     }
   },
   "sentences": {

@@ -180,6 +180,10 @@
     "queue": {
       "name": "queue",
       "description": "Di mana bot macet?"
+    },
+    "help": {
+      "name": "bantuan",
+      "description": "Daftar perintah"
     }
   },
   "sentences": {

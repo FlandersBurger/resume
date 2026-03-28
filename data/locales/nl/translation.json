@@ -180,6 +180,10 @@
     "queue": {
       "name": "queue",
       "description": "Waar zit de bot vast?"
+    },
+    "help": {
+      "name": "help",
+      "description": "Lijst met commando's"
     }
   },
   "sentences": {

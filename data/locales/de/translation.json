@@ -180,6 +180,10 @@
     "queue": {
       "name": "warteschlange",
       "description": "Wo steckt der Bot fest?"
+    },
+    "help": {
+      "name": "Hilfe",
+      "description": "Befehlsliste"
     }
   },
   "sentences": {

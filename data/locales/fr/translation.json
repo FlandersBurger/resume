@@ -180,6 +180,10 @@
     "queue": {
       "name": "queue",
       "description": "Où est bloqué le bot ?"
+    },
+    "help": {
+      "name": "Aide",
+      "description": "Liste des commandes"
     }
   },
   "sentences": {

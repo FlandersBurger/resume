@@ -180,6 +180,10 @@
     "queue": {
       "name": "queue",
       "description": "बॉट कहाँ अटक गया है?"
+    },
+    "help": {
+      "name": "सहायता",
+      "description": "आदेशों की सूची"
     }
   },
   "sentences": {

@@ -71,6 +71,7 @@
   "commands": {
     "start": { "name": "start", "description": "Start the game" },
     "commands": { "name": "commands", "description": "List of commands" },
+    "help": { "name": "help", "description": "List of commands" },
     "list": { "name": "list", "description": "List the guessed answers in the current round" },
     "hint": { "name": "hint", "description": "Get a hint" },
     "skip": { "name": "skip", "description": "Skip the current round" },

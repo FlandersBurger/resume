@@ -180,6 +180,10 @@
     "queue": {
       "name": "pila",
       "description": "Saan na-stuck ang bot?"
+    },
+    "help": {
+      "name": "tulong",
+      "description": "Listahan ng mga utos"
     }
   },
   "sentences": {

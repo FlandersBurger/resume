@@ -180,6 +180,10 @@
     "queue": {
       "name": "queue",
       "description": "Где застрял бот?"
+    },
+    "help": {
+      "name": "помощь",
+      "description": "Список команд"
     }
   },
   "sentences": {

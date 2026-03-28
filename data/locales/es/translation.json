@@ -180,6 +180,10 @@
     "queue": {
       "name": "cola",
       "description": "¿Dónde está atascado el bot?"
+    },
+    "help": {
+      "name": "Ayuda",
+      "description": "Lista de comandos"
     }
   },
   "sentences": {

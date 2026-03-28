@@ -1,4 +1,3 @@
-import moment from "moment";
 import { GameType, IGame } from "@models/tenthings/game";
 import { Game, List } from "@models/index";
 import { HydratedDocument, LeanDocument } from "mongoose";
@@ -28,41 +27,42 @@ import {
 import { adminOnly } from "@tenthings/providers/telegram/errors";
 
 export enum Command {
-  Start = "start",
-  List = "list",
+  Bug = "bug",
+  Categories = "categories",
+  Check = "check",
+  Commands = "commands",
+  Error = "error",
+  Feature = "feature",
+  Flush = "flush",
+  Hello = "hello",
+  Help = "help",
   Hint = "hint",
-  Skip = "skip",
-  Veto = "veto",
+  Intro = "intro",
+  List = "list",
+  Lists = "lists",
+  Logic = "logic",
+  Me = "me",
   Minigame = "minigame",
+  Minigames = "minigames",
   Minihint = "minihint",
   Miniskip = "miniskip",
+  Notify = "notify",
+  Ping = "ping",
+  Queue = "queue",
+  Resume = "resume",
+  Score = "score",
+  Search = "search",
+  Settings = "settings",
+  Skip = "skip",
+  Start = "start",
+  Stats = "stats",
+  Stop = "stop",
+  Suggestion = "suggest",
   Tinygame = "tinygame",
   Tinyhint = "tinyhint",
   Tinyskip = "tinyskip",
-  Score = "score",
-  Stats = "stats",
-  Me = "me",
-  Intro = "intro",
-  Logic = "logic",
-  Settings = "settings",
-  Categories = "categories",
   Typo = "typo",
-  Bug = "bug",
-  Feature = "feature",
-  Suggestion = "suggest",
-  Error = "error",
-  Search = "search",
-  Lists = "lists",
-  Stop = "stop",
-  Commands = "commands",
-  Notify = "notify",
-  Check = "check",
-  Flush = "flush",
-  Minigames = "minigames",
-  Ping = "ping",
-  Hello = "hello",
-  Queue = "queue",
-  Resume = "resume",
+  Veto = "veto",
 }
 
 const commands: Command[] = Object.values(Command);
@@ -143,6 +143,7 @@ export const evaluate = async (msg: TelegramMessage, game: HydratedDocument<IGam
         );
         break;
       case Command.Commands:
+      case Command.Help:
         bot.queueMessage(
           game.telegramChannel,
           userCommands
