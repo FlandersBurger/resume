@@ -10,6 +10,7 @@ var BotLanguage;
     BotLanguage["FR"] = "FR";
     BotLanguage["HI"] = "HI";
     BotLanguage["ID"] = "ID";
+    BotLanguage["JA"] = "JA";
     BotLanguage["KO"] = "KO";
     BotLanguage["NL"] = "NL";
     BotLanguage["PT"] = "PT";

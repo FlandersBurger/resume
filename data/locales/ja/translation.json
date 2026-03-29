@@ -1,0 +1,278 @@
+{
+  "settings": "設定",
+  "playerIntro": "プレイヤー紹介",
+  "sass": "生意気な態度",
+  "dailyUpdates": "毎日の更新",
+  "language_one": "言語",
+  "language_other": "言語一覧",
+  "botLanguage": "ボット言語",
+  "triviaLangauges": "トリビア言語",
+  "plays": "プレイ回数",
+  "votes": "投票数",
+  "snubs": "無視数",
+  "hints": "ヒント",
+  "skips": "スキップ数",
+  "skipDelay": "スキップ遅延時間",
+  "vetoDelay": "拒否遅延時間",
+  "hintDelay": "ヒント遅延時間",
+  "values": "値",
+  "score": "スコア",
+  "difficulty": "難易度",
+  "createdOn": "作成日",
+  "modifiedOn": "最終更新日",
+  "on": "オン",
+  "off": "オフ",
+  "and": "および",
+  "description": "説明",
+  "point_one": "{{count}} ポイント",
+  "point_other": "{{count}}ポイント",
+  "category_one": "カテゴリー",
+  "category_other": "カテゴリー",
+  "categories": {
+    "Adult": "大人向け",
+    "Albums": "アルバム",
+    "Animation": "アニメーション",
+    "Anime/Manga": "アニメ・マンガ",
+    "Art": "アート",
+    "Biology": "生物学",
+    "Business": "ビジネス",
+    "Celebrities": "有名人",
+    "Chemistry": "化学",
+    "Culture": "文化",
+    "Entertainment": "エンターテイメント",
+    "Food and Drink": "食べ物と飲み物",
+    "Funny": "おもしろいもの",
+    "Gaming": "ゲーム",
+    "Geography": "地理",
+    "History": "歴史",
+    "Internet": "インターネット",
+    "K-drama": "Kドラマ",
+    "K-pop": "K-POP",
+    "Language": "言語",
+    "Literature": "文学",
+    "Lyrics": "歌詞",
+    "Mathematics": "数学",
+    "Medicine": "医学",
+    "Misc": "その他",
+    "Movies": "映画",
+    "Music": "音楽",
+    "Nature": "自然",
+    "Objects": "物体",
+    "Politics": "政治",
+    "Religion": "宗教",
+    "Science": "科学",
+    "Society": "社会",
+    "Sports": "スポーツ",
+    "Technology": "テクノロジー",
+    "Telenovelas": "テレノベラ（メロドラマ）",
+    "Television": "テレビ",
+    "Transportation": "交通機関"
+  },
+  "commands": {
+    "start": {
+      "name": "開始",
+      "description": "ゲームを開始"
+    },
+    "commands": {
+      "name": "コマンド",
+      "description": "コマンド一覧"
+    },
+    "help": {
+      "name": "ヘルプ",
+      "description": "コマンド一覧"
+    },
+    "list": {
+      "name": "リスト",
+      "description": "現在のラウンドの推測回答を一覧表示"
+    },
+    "hint": {
+      "name": "ヒント",
+      "description": "ヒントを取得"
+    },
+    "skip": {
+      "name": "スキップ",
+      "description": "現在のラウンドをスキップ"
+    },
+    "veto": {
+      "name": "拒否",
+      "description": "拒否権を行使スキップ"
+    },
+    "minigame": {
+      "name": "ミニゲーム",
+      "description": "逆トリビアクイズ"
+    },
+    "minihint": {
+      "name": "ミニヒント",
+      "description": "ミニゲームのヒントを見る"
+    },
+    "miniskip": {
+      "name": "ミニスキップ",
+      "description": "現在のミニゲームをスキップ"
+    },
+    "tinygame": {
+      "name": "タイニーゲーム",
+      "description": "リストを当てよう"
+    },
+    "tinyhint": {
+      "name": "タイニーヒント",
+      "description": "タイニーゲームのヒントを見る"
+    },
+    "tinyskip": {
+      "name": "タイニースキップ",
+      "description": "現在のタイニーゲームをスキップ"
+    },
+    "score": {
+      "name": "スコア",
+      "description": "デイリースコアランキング"
+    },
+    "stats": {
+      "name": "統計情報",
+      "description": "ゲームの統計情報"
+    },
+    "me": {
+      "name": "私",
+      "description": "私の統計情報"
+    },
+    "intro": {
+      "name": "イントロ",
+      "description": "私は何者？"
+    },
+    "logic": {
+      "name": "ロジック",
+      "description": "使用されているロジックの説明"
+    },
+    "settings": {
+      "name": "設定",
+      "description": "ボットの動作設定（管理者のみ）"
+    },
+    "categories": {
+      "name": "カテゴリ",
+      "description": "含めるカテゴリを選択（管理者のみ）"
+    },
+    "typo": {
+      "name": "タイプミス",
+      "description": "現在のリストのタイプミスを報告する"
+    },
+    "bug": {
+      "name": "バグ",
+      "description": "ボットのバグを報告する"
+    },
+    "feature": {
+      "name": "機能",
+      "description": "ボットの新機能を提案する"
+    },
+    "suggest": {
+      "name": "提案する",
+      "description": "ボットの新機能を提案する"
+    },
+    "error": {
+      "name": "エラー",
+      "description": "ボットのエラーを報告する"
+    },
+    "search": {
+      "name": "検索",
+      "description": "検索リストをキューに追加する"
+    },
+    "lists": {
+      "name": "リスト",
+      "description": "キューに追加したリストを表示する"
+    },
+    "stop": {
+      "name": "停止",
+      "description": "ボットをオフにする"
+    },
+    "ping": {
+      "name": "ping",
+      "description": "pong"
+    },
+    "queue": {
+      "name": "キュー",
+      "description": "ボットはどこで停止していますか？"
+    }
+  },
+  "sentences": {
+    "likeList": "<b>{{list}}</b>は気に入りましたか？",
+    "likesList": "👍 {{name}} は <b>{{list}}</b> ({{score}}) を気に入っています",
+    "dislikesList": "👎 {{name}} は <b>{{list}}</b> ({{score}}) を気に入っていません",
+    "queueList": "<b>どのリストをキューに追加しますか？</b>",
+    "curateList": "<b>どのリストをキュレーションしますか？</b>",
+    "queueFull": "キューには既に最大10個のリストがあります、{{name}}。",
+    "noSearchResults": "<b>\"{{search}}\"</b>, {{name}} に該当するリストは見つかりませんでした。\n\nよりシンプルな検索クエリを使用すると、より良い結果が得られます。",
+    "emptySearch": "何も検索していません、{{name}}。 /search コマンドの後にメッセージを追加してください。",
+    "upcomingLists": "<b>今後のリスト</b>",
+    "noUpcomingLists": "キューに登録されているリストはありません。リストを探すには、/search [メッセージ] コマンドを使用してください。",
+    "skippedList": "<b>{{list}}</b> スキップされたリスト！",
+    "skipConfirm": "<b>{{list}}</b> を {{skipDelay}} 秒後にスキップします。\n\nキャンセルするには /veto と入力するか、他の人に /skip と入力してもらって確定してください。",
+    "skipDenial": "スキップリクエストを他の人に確認してもらいましょう！\n\n\n\nスキップリクエストを他の人に確認してもらいましょう！",
+    "skipVeto": "{{name}} によりスキップが拒否されました\n{{vetoDelay}} 秒間スキップできません",
+    "skipAbort": "{{name}} が正解したためスキップが拒否されました\n{{vetoDelay}} 秒間スキップできません",
+    "skipNotFound": "スキップリクエストが見つかりません、{{name}}",
+    "skipShortBan": "{{name}} は{{delay}} 秒間スキップ禁止です",
+    "skipBanThreat": "{{delay}} 秒以内に再度スキップした場合、{{name}} 1時間スキップ禁止となります",
+    "skipLongBan": "{{name}} は1時間スキップ禁止です",
+    "addedList": "「{{list}}」が追加されました",
+    "addedListToQueue": "<b>{{list}}</b> がキューに追加されました、{{name}}。\nキューを表示するには /lists と入力してください",
+    "addOwnList": "https://belgocanadian.com/tenthings で独自のリストを追加できます",
+    "banListQuestion": "禁止リスト？",
+    "banListCommand": "禁止リスト！",
+    "confirmBan": "禁止リスト「{{list}}」の承認はできますか？",
+    "corroborateBan": "{{user}}さんの「{{list}}」の禁止に賛成する人はいますか？",
+    "alreadyBannedList": "「{{list}}」は既に禁止されています！",
+    "listBanned": "「{{list}}」は禁止されています！",
+    "banNotFound": "禁止申請が見つかりません、{{name}}さん",
+    "inactivity": "寝ています。起こすには /list または /start と入力してください。\n30日間操作がないと寝ます。",
+    "introduction": "こんにちは、{{name}}さん。\n「Ten Things」は、テーマが提示され、そのテーマに関連するあらゆることに答えるゲームです。\n\n/commands と入力すると、私に質問できるすべての項目が表示されます。\n独自のリストを追加したい場合は、https://belgocanadian.com/tenthings にアクセスしてください。\n楽しんでください！",
+    "suggestionNoted": "ご提案を承りました",
+    "findTheConnection": "関連性を見つけてください",
+    "minigameAnswered": "ミニゲームの答えが当てられました！",
+    "findTheTitle": "リストのタイトルを見つけてください",
+    "tinygameAnswered": "ミニゲームの答えが当てられました！",
+    "roundOver": "ラウンド終了",
+    "newRound": "2秒後に新しいラウンドが始まります",
+    "allListsPlayed": "すべてのリストがプレイされました。新しいサイクルが始まります。",
+    "createdBy": "作成者：{{creator}}",
+    "requestedBy": "リクエスト者：{{requestor}}",
+    "guessedBy": "{{guesser}} が{{answer}}を獲得",
+    "notGuessed": "正解なし",
+    "dailyScores": "<b>デイリースコア</b>",
+    "topDailyScores": "<b>デイリースコア上位</b>",
+    "dailyScoresWithLimit": "<b>デイリースコア上位{{limit}}</b>",
+    "skipDelay": "リストがスキップされるまでの時間",
+    "vetoDelay": "拒否された後、再度スキップが許可されるまでの時間",
+    "hintDelay": "新しいヒントが許可されるまでの時間"
+  },
+  "warnings": {
+    "minimum1Category": "最低1つのカテゴリが必要です",
+    "adminFunction": "申し訳ありません、{{name}}、これはチャット管理者の機能です",
+    "abuse": "{{name}}、ボットを再度悪用した場合、Ten Thingsから追放されます",
+    "banned": "{{name}}、本日終了までTen Thingsから追放されました。 @FlandersBurger にアカウント停止解除を申請してください。",
+    "fullQueue": "キューには既に最大10件のリストが登録されています。{{name}}",
+    "alreadyRequested": "{{name}}、このリストは本日既にリクエスト済みです。",
+    "alreadyInQueue": "<b>{{list}}</b> は既にキューに登録されています。{{name}}",
+    "unfoundList": "このリストは既に存在しません。",
+    "corroborateBanBySamePlayer": "他の人にアカウント停止の確認を依頼してください。{{name}}！\n\n\n\n（※※※※※※※）\n\n（※",
+    "noSuggestion": "何も提案してくれなかったね、{{name}}"
+  },
+  "stats": {
+    "stats": "統計情報",
+    "list": "リスト統計情報",
+    "player": "プレイヤー統計情報",
+    "global": "全体統計情報",
+    "game": "ゲーム統計情報",
+    "misc": "<b>{{something}}</b> の統計情報"
+  },
+  "rules": [
+    "正解率が100%の場合、即座に正解者にポイントが与えられます。",
+    "正解率が75%を超える場合、より良い回答が提供されない限り、（正解率の2倍）秒後に正解者にポイントが与えられます。",
+    "正解判定では、英数字以外の記号と大文字・小文字は無視されます。",
+    "獲得ポイント = (最大ヒント数 {{maxHints}} - 質問されたヒント数 + 現在のプレイヤー数) / (最大ヒント数 {{maxHints}} + 現在のプレイヤー数) × 正解率 × 10",
+    "ヒントは、最初の文字、最後の文字、母音、残りの文字の順に表示されます。残りは出現頻度の低い文字から高い文字の順に表示されます。",
+    "ヒントを求める間隔は10秒です。",
+    "2人のプレイヤーが/skipコマンドでリストをスキップすると、リストはスキップされます。",
+    "1人のプレイヤーのみがリストをスキップした場合、リストがスキップされるまで10秒のクールダウンが発生します。",
+    "スキップは、/veto と入力するか、正解を入力することで誰でもキャンセルできます。",
+    "スキップが拒否された場合、新しいスキップは15秒間無視されます。",
+    "毎日午前0時（協定世界時）に、その日のスコアがリセットされ、勝者が記録されます。",
+    "スパム投稿者は、少なくとも10秒間沈黙するまで無視されます。"
+  ]
+}

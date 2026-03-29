@@ -17,6 +17,7 @@ export enum BotLanguage {
   FR = "FR",
   HI = "HI",
   ID = "ID",
+  JA = "JA",
   KO = "KO",
   NL = "NL",
   PT = "PT",
