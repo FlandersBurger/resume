@@ -26,5 +26,6 @@
   "listas": "lists",
   "parar": "stop",
   "comandos": "commands",
-  "fila": "queue"
+  "fila": "queue",
+  "ajuda": "help"
 }

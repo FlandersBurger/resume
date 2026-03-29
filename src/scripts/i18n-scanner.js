@@ -29,14 +29,25 @@ const getDifferences = (obj1, obj2) => {
   return result;
 };
 
+const swapKeysAndValues = (obj) => Object.fromEntries(Object.entries(obj).map(([key, value]) => [value, key]));
+
+const getSwappedDifferences = (obj1, obj2) => {
+  const swapped1 = swapKeysAndValues(obj1);
+  const swapped2 = swapKeysAndValues(obj2);
+  return getDifferences(swapped1, swapped2);
+};
+
 glob("./data/locales/*", (err, languagePaths) => {
   const languages = languagePaths.filter((path) => path !== masterPath).map((path) => path.substring(path.length - 2));
-  const files = fs.readdirSync(englishPath).filter((file) => file !== "commands.json");
+  const files = fs.readdirSync(englishPath); //.filter((file) => file !== "commands.json");
   for (const file of files) {
+    const isCommandsFile = file === "commands.json";
     console.log("Processing file:", file);
     const englishJson = JSON.parse(fs.readFileSync(`${englishPath}/${file}`, "utf8"));
     const masterJson = JSON.parse(fs.readFileSync(`${masterPath}/${file}`, "utf8"));
-    const differences = getDifferences(masterJson, englishJson);
+    const differences = isCommandsFile
+      ? getSwappedDifferences(masterJson, englishJson)
+      : getDifferences(masterJson, englishJson);
     console.log(differences);
     if (Object.keys(differences).length > 0) {
       for (const language of languages) {
@@ -49,7 +60,11 @@ glob("./data/locales/*", (err, languagePaths) => {
           const translatedJson = JSON.parse(fs.readFileSync(`${masterPath}/${language}.json`, "utf8"));
           fs.writeFileSync(
             `${getLanguagePath(language)}/${file}`,
-            JSON.stringify(_.defaultsDeep(languageJson, translatedJson), null, 2),
+            JSON.stringify(
+              _.defaultsDeep(languageJson, isCommandsFile ? swapKeysAndValues(translatedJson) : translatedJson),
+              null,
+              2,
+            ),
           );
           fs.unlinkSync(`${masterPath}/new.json`);
           fs.unlinkSync(`${masterPath}/${language}.json`);

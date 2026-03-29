@@ -26,5 +26,6 @@
   "daftarberikutnya": "lists",
   "berhenti": "stop",
   "perintah": "commands",
-  "antrian": "queue"
+  "antrian": "queue",
+  "membantu": "help"
 }

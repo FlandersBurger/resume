@@ -26,5 +26,6 @@
   "listes": "lists",
   "arreter": "stop",
   "commandes": "commands",
-  "file": "queue"
+  "file": "queue",
+  "aide": "help"
 }

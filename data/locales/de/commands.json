@@ -26,5 +26,6 @@
   "listen": "lists",
   "stopp": "stop",
   "befehle": "commands",
-  "warteschlange": "queue"
+  "warteschlange": "queue",
+  "helfen": "help"
 }

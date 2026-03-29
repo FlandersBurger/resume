@@ -26,5 +26,6 @@
   "mgalistahan": "lists",
   "itigil": "stop",
   "mgautos": "commands",
-  "pila": "queue"
+  "pila": "queue",
+  "tulong": "help"
 }

@@ -31,5 +31,6 @@
   "minijuegos": "minigames",
   "ping": "ping",
   "hola": "hello",
-  "cola": "queue"
+  "cola": "queue",
+  "ayuda": "help"
 }
