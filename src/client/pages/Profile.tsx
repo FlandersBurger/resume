@@ -18,7 +18,7 @@ export default function Profile() {
     if (currentUser) {
       setBirthDate(currentUser.birthDate ? new Date(currentUser.birthDate).toISOString().slice(0, 10) : "");
       // stored values may be "flag-be" (old format) or bare "be" — normalise to ISO code
-      setFlags((currentUser.flags ?? []).map((f) => f.startsWith("flag-") ? f.slice(5) : f));
+      setFlags((currentUser.flags ?? []).map((f) => (f.startsWith("flag-") ? f.slice(5) : f)));
     }
   }, [currentUser]);
 
@@ -26,7 +26,7 @@ export default function Profile() {
     fetch("/flags.json")
       .then((r) => r.json())
       .then((data: Record<string, string>) =>
-        setAllCountries(Object.entries(data).map(([code, name]) => ({ code, name })))
+        setAllCountries(Object.entries(data).map(([code, name]) => ({ code, name }))),
       )
       .catch(() => {});
   }, []);
@@ -63,9 +63,7 @@ export default function Profile() {
   const countryName = (code: string) => allCountries.find((c) => c.code === code)?.name ?? code;
 
   const filteredCountries = flagSearch
-    ? allCountries.filter(
-        (c) => c.name.toLowerCase().includes(flagSearch.toLowerCase()) && !flags.includes(c.code)
-      )
+    ? allCountries.filter((c) => c.name.toLowerCase().includes(flagSearch.toLowerCase()) && !flags.includes(c.code))
     : [];
 
   if (!currentUser) return <h1 className="text-danger">You are not logged in</h1>;
@@ -141,10 +139,25 @@ export default function Profile() {
         <label>Countries</label>
         <div style={{ display: "flex", flexWrap: "wrap", gap: 6, marginBottom: 6 }}>
           {flags.map((code) => (
-            <span key={code} className="label label-default" style={{ display: "flex", alignItems: "center", gap: 4, padding: "4px 8px", fontSize: 13 }}>
+            <span
+              key={code}
+              className="label label-default"
+              style={{ display: "flex", alignItems: "center", gap: 4, padding: "4px 8px", fontSize: 13 }}
+            >
               <img src={`/flags/${code}.png`} alt={code} style={{ width: 20, height: 14, objectFit: "cover" }} />
               {countryName(code)}
-              <button type="button" onClick={() => handleRemoveFlag(code)} style={{ background: "none", border: "none", cursor: "pointer", padding: 0, marginLeft: 4, lineHeight: 1 }}>
+              <button
+                type="button"
+                onClick={() => handleRemoveFlag(code)}
+                style={{
+                  background: "none",
+                  border: "none",
+                  cursor: "pointer",
+                  padding: 0,
+                  marginLeft: 4,
+                  lineHeight: 1,
+                }}
+              >
                 <i className="fa fa-times" />
               </button>
             </span>
@@ -156,16 +169,33 @@ export default function Profile() {
             type="text"
             placeholder="Add a country..."
             value={flagSearch}
-            onChange={(e) => { setFlagSearch(e.target.value); setFlagDropdownOpen(true); }}
+            onChange={(e) => {
+              setFlagSearch(e.target.value);
+              setFlagDropdownOpen(true);
+            }}
             onFocus={() => setFlagDropdownOpen(true)}
             onBlur={() => setTimeout(() => setFlagDropdownOpen(false), 150)}
           />
           {flagDropdownOpen && filteredCountries.length > 0 && (
-            <ul className="dropdown-menu" style={{ display: "block", width: "100%", maxHeight: 200, overflowY: "auto" }}>
+            <ul
+              className="dropdown-menu"
+              style={{ display: "block", width: "100%", maxHeight: 200, overflowY: "auto" }}
+            >
               {filteredCountries.slice(0, 32).map((c) => (
                 <li key={c.code}>
-                  <a href="#" onMouseDown={(e) => { e.preventDefault(); handleAddFlag(c.code); }} style={{ display: "flex", alignItems: "center", gap: 8 }}>
-                    <img src={`/flags/${c.code}.png`} alt={c.code} style={{ width: 20, height: 14, objectFit: "cover" }} />
+                  <a
+                    href="#"
+                    onMouseDown={(e) => {
+                      e.preventDefault();
+                      handleAddFlag(c.code);
+                    }}
+                    style={{ display: "flex", alignItems: "center", gap: 8 }}
+                  >
+                    <img
+                      src={`/flags/${c.code}.png`}
+                      alt={c.code}
+                      style={{ width: 20, height: 14, objectFit: "cover" }}
+                    />
                     {c.name}
                   </a>
                 </li>
