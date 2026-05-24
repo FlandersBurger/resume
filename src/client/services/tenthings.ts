@@ -10,6 +10,22 @@ export interface TenThingsList {
   creator: { _id: string; username: string };
   values: TenThingsValue[];
   isDynamic?: boolean;
+  starred?: boolean;
+  date?: string;
+  modifyDate?: string;
+  plays?: number;
+  playRatio?: number;
+  upvotes?: number;
+  downvotes?: number;
+  likeRatio?: number;
+  bans?: number;
+  skips?: number;
+  picks?: number;
+  hints?: number;
+  score?: number;
+  calculatedDifficulty?: number;
+  difficulty?: number;
+  frequency?: number;
 }
 
 export interface TenThingsValue {
@@ -19,6 +35,14 @@ export interface TenThingsValue {
   blurb?: string;
   blurbType?: string;
   guesser?: { username?: string; first_name?: string };
+  creator?: { _id: string; username: string };
+  date?: string;
+}
+
+export interface Language {
+  code: string;
+  name: string;
+  native: string;
 }
 
 export interface GetListsOptions {
@@ -46,8 +70,10 @@ export async function getLists(options: GetListsOptions = {}) {
   if (options.categoriesNot?.length) params.append("!categories", options.categoriesNot.join(","));
   if (options.search) params.append("search", options.search);
   if (options.name) params.append("name", options.name);
-  const { data } = await http.get<TenThingsList[]>(`/api/tenthings/lists?${params}`);
-  return data;
+  const { data } = await http.get<{ result: TenThingsList[]; count: number; nextPage: number }>(
+    `/api/tenthings/lists?${params}`,
+  );
+  return { lists: data.result, count: data.count };
 }
 
 export async function getList(id: string) {
@@ -69,6 +95,11 @@ export async function deleteList(id: string) {
   await http.delete(`/api/tenthings/lists/${id}`);
 }
 
+export async function getBlurbs(id: string, type: string) {
+  const res = await http.post(`/api/tenthings/lists/${id}/blurbs/${type}`);
+  return res.data as TenThingsList;
+}
+
 export async function mergeLists(ids: string[]) {
   await http.post("/api/tenthings/lists/merge", { lists: ids });
 }
@@ -83,13 +114,19 @@ export async function searchLists(name: string) {
   return data;
 }
 
+export interface CategoryOption {
+  value: string;
+  label: string;
+  subcategories?: CategoryOption[];
+}
+
 export async function getCategories() {
-  const { data } = await http.get<string[]>("/api/tenthings/categories");
+  const { data } = await http.get<CategoryOption[]>("/api/tenthings/categories");
   return data;
 }
 
 export async function getLanguages() {
-  const { data } = await http.get<string[]>("/api/tenthings/languages");
+  const { data } = await http.get<Language[]>("/api/tenthings/languages");
   return data;
 }
 
@@ -124,11 +161,16 @@ export async function getPlayStats() {
 }
 
 export async function getListLanguageStats() {
-  const { data } = await http.get("/api/tenthings/stats/language");
-  return data;
+  const { data } = await http.get("/api/tenthings/stats/languages");
+  return data as { _id: { language: string; year: number }; count: number }[];
 }
 
 export async function getGameStats() {
-  const { data } = await http.get("/api/tenthings/stats/game");
-  return data;
+  const { data } = await http.get("/api/tenthings/stats/games");
+  return data as { _id: { language: string; year: number }; count: number }[];
+}
+
+export async function getListCategoryStats() {
+  const { data } = await http.get("/api/tenthings/stats/categories");
+  return data as { _id: string; count: number }[];
 }

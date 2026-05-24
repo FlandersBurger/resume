@@ -30,6 +30,7 @@ exports.staticRoute = void 0;
 const express_1 = __importStar(require("express"));
 const path_1 = __importDefault(require("path"));
 exports.staticRoute = (0, express_1.Router)();
+exports.staticRoute.use(express_1.default.static(path_1.default.resolve(__dirname, "../../dist/client")));
 exports.staticRoute.use(express_1.default.static(__dirname + "/../../assets"));
 exports.staticRoute.use(express_1.default.static(__dirname + "/../../resources"));
 exports.staticRoute.use(express_1.default.static(__dirname + "/../../images"));
@@ -37,6 +38,8 @@ exports.staticRoute.use(express_1.default.static(__dirname + "/../../sounds"));
 exports.staticRoute.use(express_1.default.static(__dirname + "/../../pages"));
 exports.staticRoute.use(express_1.default.static(__dirname + "/../../data"));
 exports.staticRoute.get("/*", function (_, res) {
-    res.sendFile(path_1.default.resolve(__dirname + "/../../index.html"));
+    const reactIndex = path_1.default.resolve(__dirname, "../../dist/client/index.html");
+    const angularIndex = path_1.default.resolve(__dirname + "/../../index.html");
+    res.sendFile(require("fs").existsSync(reactIndex) ? reactIndex : angularIndex);
 });
 //# sourceMappingURL=static.js.map

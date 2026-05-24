@@ -2,7 +2,7 @@ export default function Home() {
   return (
     <div id="home-page">
       <h1>Laurent Debacker</h1>
-      <h2>Full Stack Developer - DB Admin</h2>
+      <h2>Full Stack Developer</h2>
       <h4>Born and raised in Belgium, in Canada since 2006, Canadian since 2015</h4>
       <table className="table">
         <tbody>

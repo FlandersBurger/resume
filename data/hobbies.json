@@ -5,8 +5,8 @@
     "images": [
       {
         "name": "Write Modern Web Apps with the MEAN Stack",
-        "file":"mean.jpg",
-        "url":"https://github.com/dickeyxxx/mean-sample"
+        "file": "mean.jpg",
+        "url": "https://github.com/dickeyxxx/mean-sample"
       },
       {
         "name": "Oryx and Crake",
@@ -192,6 +192,41 @@
         "name": "The City & The City",
         "file": "cityandcity.jpg",
         "url": "https://www.goodreads.com/book/show/4703581-the-city-the-city"
+      },
+      {
+        "name": "Project Hail Mary",
+        "file": "projecthailmary.jpg",
+        "url": "https://www.goodreads.com/book/show/54493401-project-hail-mary"
+      },
+      {
+        "name": "The Many Deaths of Laila Starr",
+        "file": "manydeathsoflailastarr.jpg",
+        "url": "https://www.goodreads.com/book/show/58673883-the-many-deaths-of-laila-starr"
+      },
+      {
+        "name": "The Night Eaters, Vol. 1",
+        "file": "thenighteaters.jpg",
+        "url": "https://www.goodreads.com/book/show/60656255-the-night-eaters-vol-1"
+      },
+      {
+        "name": "I Am Legend",
+        "file": "iamlegend.jpg",
+        "url": "https://www.goodreads.com/book/show/14064.I_Am_Legend"
+      },
+      {
+        "name": "Children of Time",
+        "file": "childrenoftime.jpg",
+        "url": "https://www.goodreads.com/book/show/25499718-children-of-time"
+      },
+      {
+        "name": "Dungeon Crawler Carl",
+        "file": "dungeoncrawlercarl.jpg",
+        "url": "https://www.goodreads.com/book/show/56791389-dungeon-crawler-carl"
+      },
+      {
+        "name": "Uzumaki",
+        "file": "uzumaki.jpg",
+        "url": "https://www.goodreads.com/book/show/17837762-uzumaki"
       }
     ]
   },
@@ -232,10 +267,6 @@
         "file": "dirk.jpg"
       },
       {
-        "name": "House of Cards",
-        "file": "houseofcards.jpg"
-      },
-      {
         "name": "Breaking Bad",
         "file": "breakingbad.jpg"
       },
@@ -270,6 +301,66 @@
       {
         "name": "Halt & Catch Fire",
         "file": "haltcatchfire.jpg"
+      },
+      {
+        "name": "Invincible",
+        "file": "invincible.jpg"
+      },
+      {
+        "name": "The Boys",
+        "file": "theboys.jpg"
+      },
+      {
+        "name": "Slow Horses",
+        "file": "slowhorses.jpg"
+      },
+      {
+        "name": "Andor",
+        "file": "andor.jpg"
+      },
+      {
+        "name": "Severance",
+        "file": "severance.jpg"
+      },
+      {
+        "name": "What We Do in the Shadows",
+        "file": "whatwedointheshadows.jpg"
+      },
+      {
+        "name": "The Legend of Vox Machina",
+        "file": "legendofvoxmachina.jpg"
+      },
+      {
+        "name": "Arcane",
+        "file": "arcane.jpg"
+      },
+      {
+        "name": "Barry",
+        "file": "barry.jpg"
+      },
+      {
+        "name": "Ted Lasso",
+        "file": "tedlasso.jpg"
+      },
+      {
+        "name": "Reservation Dogs",
+        "file": "reservationdogs.jpg"
+      },
+      {
+        "name": "Watchmen",
+        "file": "watchmen.jpg"
+      },
+      {
+        "name": "Fleabag",
+        "file": "fleabag.jpg"
+      },
+      {
+        "name": "Alien: Earth",
+        "file": "alienearth.jpg"
+      },
+      {
+        "name": "Dan Da Dan",
+        "file": "dandadan.jpg"
       }
     ]
   },
@@ -279,28 +370,28 @@
     "images": [
       {
         "name": "Code Wars",
-        "file":"codewars.png",
-        "url":"https://www.codewars.com/users/FlandersBurger"
+        "file": "codewars.png",
+        "url": "https://www.codewars.com/users/FlandersBurger"
       },
       {
         "name": "Coursera",
-        "file":"coursera.png",
-        "url":"https://www.coursera.org/user/i/cea3a8541018b7bbbf2adcd192c59aab"
+        "file": "coursera.png",
+        "url": "https://www.coursera.org/user/i/cea3a8541018b7bbbf2adcd192c59aab"
       },
       {
         "name": "Udemy",
-        "file":"udemy.png",
-        "url":"https://www.udemy.com/user/laurent-debacker/"
+        "file": "udemy.png",
+        "url": "https://www.udemy.com/user/laurent-debacker/"
       },
       {
         "name": "Wikipedia",
-        "file":"wiki.png",
-        "url":"https://en.wikipedia.org/wiki/User:Ldebacker"
+        "file": "wiki.png",
+        "url": "https://en.wikipedia.org/wiki/User:Ldebacker"
       },
       {
         "name": "JS Fiddle",
-        "file":"jsfiddle.png",
-        "url":"https://jsfiddle.net/user/BelgoCanadian/fiddles/"
+        "file": "jsfiddle.png",
+        "url": "https://jsfiddle.net/user/BelgoCanadian/fiddles/"
       },
       {
         "name": "Reddit",
@@ -352,7 +443,6 @@
         "file": "steam.jpg",
         "url": "http://steamcommunity.com/profiles/76561198053906137/"
       }
-
     ]
   },
   {

@@ -16,7 +16,7 @@ import Bubbles from "./pages/Bubbles";
 import Asteroids from "./pages/Asteroids";
 import Lemmings from "./pages/Lemmings";
 import Lists from "./pages/Lists";
-import TenThings from "./pages/TenThings";
+import TenThingsLists from "./pages/tenthings/TenThingsLists";
 import TenThingsGame from "./pages/TenThingsGame";
 import TenThingsPlay from "./pages/TenThingsPlay";
 import TenThingsAdmin from "./pages/TenThingsAdmin";
@@ -24,16 +24,31 @@ import TenThingsStats from "./pages/TenThingsStats";
 import QuizGoogle from "./pages/quizzes/QuizGoogle";
 import QuizLogos from "./pages/quizzes/QuizLogos";
 import QuizAnimals from "./pages/quizzes/QuizAnimals";
+import QuizFlags from "./pages/quizzes/QuizFlags";
 import QuizMovies from "./pages/quizzes/QuizMovies";
 import QuizSkeletons from "./pages/quizzes/QuizSkeletons";
+import Print from "./pages/Print";
 import NotFound from "./pages/NotFound";
 import "./styles/app.css";
+import { useEffect } from "react";
+import { useApp } from "./context/AppContext";
+
+function BootstrapTheme() {
+  const { themeCounter } = useApp();
+  useEffect(() => {
+    const link = document.getElementById("bootstrap-theme") as HTMLLinkElement | null;
+    if (link) link.href = `/bootstrap${themeCounter}.min.css`;
+  }, [themeCounter]);
+  return null;
+}
 
 export default function App() {
   return (
     <AppProvider>
+      <BootstrapTheme />
       <Navbar />
       <ToastContainer />
+      <Print />
       <div className="container page">
         <Routes>
           <Route path="/" element={<Navigate to="/home" replace />} />
@@ -51,7 +66,7 @@ export default function App() {
           <Route path="/asteroids" element={<Asteroids />} />
           <Route path="/lemmings" element={<Lemmings />} />
           <Route path="/lists" element={<Lists />} />
-          <Route path="/tenthings" element={<TenThings />} />
+          <Route path="/tenthings" element={<TenThingsLists />} />
           <Route path="/tenthings/:gameId" element={<TenThingsGame />} />
           <Route path="/tenthings-play" element={<TenThingsPlay />} />
           <Route path="/tenthings-admin" element={<TenThingsAdmin />} />
@@ -59,6 +74,7 @@ export default function App() {
           <Route path="/google" element={<QuizGoogle />} />
           <Route path="/logos" element={<QuizLogos />} />
           <Route path="/animals" element={<QuizAnimals />} />
+          <Route path="/flags" element={<QuizFlags />} />
           <Route path="/movies" element={<QuizMovies />} />
           <Route path="/skeletons" element={<QuizSkeletons />} />
           <Route path="*" element={<NotFound />} />

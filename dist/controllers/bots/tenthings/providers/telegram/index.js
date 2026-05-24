@@ -27,16 +27,16 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.convertTelegramUserToPlayer = exports.telegram = void 0;
-const i18n_1 = __importDefault(require("../../../../../i18n"));
-const telegram_1 = __importDefault(require("../../../../../connections/telegram"));
+const i18n_1 = __importDefault(require("@root/i18n"));
+const telegram_1 = __importDefault(require("@root/connections/telegram"));
 const categories_1 = __importStar(require("../../categories"));
-const string_helpers_1 = require("../../../../../utils/string-helpers");
-const messages_1 = require("../../messages");
-const players_1 = require("../../players");
-const hints_1 = require("../../hints");
+const string_helpers_1 = require("@utils/string-helpers");
+const messages_1 = require("@tenthings/messages");
+const players_1 = require("@tenthings/players");
+const hints_1 = require("@tenthings/hints");
 const keyboards_1 = require("./keyboards");
-const models_1 = require("../../../../../models");
-const languages_1 = require("../../languages");
+const models_1 = require("@root/models");
+const languages_1 = require("@tenthings/languages");
 const stats_1 = require("./stats");
 const emojis_1 = __importDefault(require("../../emojis"));
 const getDailyScores = async ({ _id, settings }, limit = 0) => {

@@ -5,11 +5,11 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.abortSkip = exports.vetoSkip = exports.checkSkipper = exports.processSkip = exports.vetoCache = exports.skipCache = void 0;
 const moment_1 = __importDefault(require("moment"));
-const index_1 = require("../../../models/index");
+const index_1 = require("@models/index");
 const maingame_1 = require("./maingame");
 const lists_1 = require("./lists");
-const telegram_1 = __importDefault(require("../../../connections/telegram"));
-const i18n_1 = __importDefault(require("../../../i18n"));
+const telegram_1 = __importDefault(require("@root/connections/telegram"));
+const i18n_1 = __importDefault(require("@root/i18n"));
 const players_1 = require("./players");
 exports.skipCache = {};
 exports.vetoCache = {};

@@ -7,10 +7,10 @@ exports.checkMinigame = exports.updateMinigames = exports.createMinigame = void 
 const moment_1 = __importDefault(require("moment"));
 const uniq_1 = __importDefault(require("lodash/uniq"));
 const sampleSize_1 = __importDefault(require("lodash/sampleSize"));
-const telegram_1 = __importDefault(require("../../../connections/telegram"));
-const index_1 = require("../../../models/index");
+const telegram_1 = __importDefault(require("@root/connections/telegram"));
+const index_1 = require("@models/index");
 const guesses_1 = require("./guesses");
-const string_helpers_1 = require("../../../utils/string-helpers");
+const string_helpers_1 = require("@utils/string-helpers");
 const createMinigame = async (game) => {
     const availableLanguages = game.settings.languages && game.settings.languages.length > 0 ? game.settings.languages : ["EN"];
     let minigames = await getMinigames({

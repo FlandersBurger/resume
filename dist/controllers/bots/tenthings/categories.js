@@ -6,7 +6,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.setDisabledCategories = exports.getCategoryLabel = void 0;
 const path_1 = require("path");
 const fs_1 = __importDefault(require("fs"));
-const i18n_1 = __importDefault(require("../../../i18n"));
+const i18n_1 = __importDefault(require("@root/i18n"));
 const lodash_1 = require("lodash");
 const getCategoryLabel = (lng, list) => {
     if (!list.categories || list.categories.length === 0)

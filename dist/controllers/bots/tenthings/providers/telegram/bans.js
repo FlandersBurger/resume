@@ -4,11 +4,11 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.processBan = exports.initiateBan = void 0;
-const index_1 = require("../../../../../models/index");
-const i18n_1 = __importDefault(require("../../../../../i18n"));
+const index_1 = require("@models/index");
+const i18n_1 = __importDefault(require("@root/i18n"));
 const keyboards_1 = require("./keyboards");
-const telegram_1 = __importDefault(require("../../../../../connections/telegram"));
-const errors_1 = require("../../../../../controllers/bots/tenthings/providers/telegram/errors");
+const telegram_1 = __importDefault(require("@root/connections/telegram"));
+const errors_1 = require("@root/controllers/bots/tenthings/providers/telegram/errors");
 const _1 = require(".");
 const cache = {};
 const initiateBan = async (game, callbackQuery) => {

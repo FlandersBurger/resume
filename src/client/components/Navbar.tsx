@@ -1,8 +1,33 @@
 import { Link, useNavigate } from "react-router-dom";
 import { useApp } from "../context/AppContext";
+import { useState, useEffect, useRef } from "react";
+
+function Dropdown({ label, children }: { label: React.ReactNode; children: React.ReactNode }) {
+  const [open, setOpen] = useState(false);
+  const ref = useRef<HTMLLIElement>(null);
+
+  useEffect(() => {
+    const handler = (e: MouseEvent) => {
+      if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false);
+    };
+    document.addEventListener("mousedown", handler);
+    return () => document.removeEventListener("mousedown", handler);
+  }, []);
+
+  return (
+    <li ref={ref} className={`dropdown${open ? " open" : ""}`}>
+      <a className="dropdown-toggle" role="button" style={{ cursor: "pointer" }} onClick={() => setOpen((o) => !o)}>
+        {label}
+      </a>
+      <ul className="dropdown-menu" onClick={() => setOpen(false)}>
+        {children}
+      </ul>
+    </li>
+  );
+}
 
 export function Navbar() {
-  const { currentUser, themeCounter, flipTheme, logout } = useApp();
+  const { currentUser, logout } = useApp();
   const navigate = useNavigate();
 
   return (
@@ -25,56 +50,124 @@ export function Navbar() {
         </div>
         <div className="collapse navbar-collapse" id="navbar-collapse">
           <ul className="nav navbar-nav">
-            <li><Link to="/home">Home</Link></li>
-            <li><Link to="/experience">Experience</Link></li>
-            <li><Link to="/skills">Skills</Link></li>
-            <li><Link to="/hobbies">Hobbies</Link></li>
-            <li><Link to="/contact">Contact</Link></li>
-            {currentUser && <li><Link to="/posts">Chat</Link></li>}
-            <li className="dropdown">
-              <a className="dropdown-toggle" data-toggle="dropdown" role="button">
-                Games <span className="caret" />
-              </a>
-              <ul className="dropdown-menu">
-                <li><Link to="/asteroids">Asteroids</Link></li>
-                <li><Link to="/bubbles">Bubbles</Link></li>
-                <li><Link to="/charades">Charades</Link></li>
-                <li><Link to="/workout">Workout</Link></li>
-                <li><Link to="/lemmings">Lemmings</Link></li>
-              </ul>
+            <li>
+              <Link to="/experience">Experience</Link>
             </li>
-            <li className="dropdown">
-              <a className="dropdown-toggle" data-toggle="dropdown" role="button">
-                Quizzes <span className="caret" />
-              </a>
-              <ul className="dropdown-menu">
-                <li><Link to="/google">Google</Link></li>
-                <li><Link to="/logos">Logos</Link></li>
-                <li><Link to="/animals">Animals</Link></li>
-                <li><Link to="/movies">Movies</Link></li>
-                <li><Link to="/skeletons">Skeletons</Link></li>
-              </ul>
+            <li>
+              <Link to="/skills">Skills</Link>
             </li>
-            <li><Link to="/tenthings">Ten Things</Link></li>
-            <li><Link to="/lists">Lists</Link></li>
+            <Dropdown label="Contact">
+              <li>
+                <Link to="/contact">Contact</Link>
+              </li>
+              {currentUser && (
+                <li>
+                  <Link to="/posts">Chat</Link>
+                </li>
+              )}
+            </Dropdown>
+            <Dropdown label="Doodles">
+              <li>
+                <Link to="/hobbies">Hobbies</Link>
+              </li>
+              <li>
+                <Link to="/asteroids">Asteroids</Link>
+              </li>
+              <li>
+                <Link to="/bubbles">Bubbles</Link>
+              </li>
+              <li>
+                <Link to="/charades">Charades</Link>
+              </li>
+              <li>
+                <Link to="/workout">Workout</Link>
+              </li>
+              <li>
+                <Link to="/lemmings">Lemmings</Link>
+              </li>
+            </Dropdown>
+            <Dropdown label="Quizzes">
+              <li>
+                <Link to="/google">Google</Link>
+              </li>
+              <li>
+                <Link to="/logos">Logos</Link>
+              </li>
+              <li>
+                <Link to="/animals">Animals</Link>
+              </li>
+              <li>
+                <Link to="/flags">Flags</Link>
+              </li>
+              <li>
+                <Link to="/movies">Movies</Link>
+              </li>
+              <li>
+                <Link to="/skeletons">Skeletons</Link>
+              </li>
+            </Dropdown>
+            {currentUser?.admin ? (
+              <Dropdown label="Ten Things">
+                <li>
+                  <Link to="/tenthings">Lists</Link>
+                </li>
+                <li>
+                  <Link to="/tenthings-play">Play</Link>
+                </li>
+                <li>
+                  <Link to="/tenthings-stats">Stats</Link>
+                </li>
+                <li>
+                  <Link to="/tenthings-admin">Admin</Link>
+                </li>
+              </Dropdown>
+            ) : (
+              <li>
+                <Link to="/tenthings">Ten Things</Link>
+              </li>
+            )}
           </ul>
           <ul className="nav navbar-nav navbar-right">
             <li>
-              <a onClick={flipTheme} style={{ cursor: "pointer" }} title="Flip theme">
-                <i className="fa fa-paint-brush" />
+              <a style={{ cursor: "pointer" }} title="Print resume" onClick={() => window.print()}>
+                <i className="fa fa-print" />
               </a>
             </li>
             {currentUser ? (
-              <>
-                <li><Link to="/profile">{currentUser.username}</Link></li>
+              <Dropdown
+                label={
+                  currentUser.photoURL ? (
+                    <img
+                      src={currentUser.photoURL}
+                      alt={currentUser.username}
+                      className="img-circle img-profile"
+                      style={{ height: 34, width: 34, marginTop: -7, marginBottom: -7 }}
+                    />
+                  ) : (
+                    <i className="fa fa-user" />
+                  )
+                }
+              >
                 <li>
-                  <a onClick={() => { logout(); navigate("/home"); }} style={{ cursor: "pointer" }}>
+                  <Link to="/profile">Profile</Link>
+                </li>
+                <li role="separator" className="divider" />
+                <li>
+                  <a
+                    style={{ cursor: "pointer" }}
+                    onClick={() => {
+                      logout();
+                      navigate("/home");
+                    }}
+                  >
                     Logout
                   </a>
                 </li>
-              </>
+              </Dropdown>
             ) : (
-              <li><Link to="/login">Login</Link></li>
+              <li>
+                <Link to="/login">Login</Link>
+              </li>
             )}
           </ul>
         </div>

@@ -2,69 +2,71 @@ import { useEffect, useState } from "react";
 
 interface HobbyImage {
   file: string;
+  name?: string;
   url?: string;
 }
 
 interface Hobby {
   name: string;
+  icon?: string;
   images?: HobbyImage[];
 }
 
 export default function Hobbies() {
   const [hobbies, setHobbies] = useState<Hobby[]>([]);
-  const [selectedHobby, setSelectedHobby] = useState<Hobby | null>(null);
-  const [selectorVisible, setSelectorVisible] = useState(false);
-  const [hover, setHover] = useState(false);
+  const [selected, setSelected] = useState<Hobby | null>(null);
 
   useEffect(() => {
     fetch("/hobbies.json")
       .then((r) => r.json())
       .then((data: Hobby[]) => {
-        setHobbies(data);
-        const first = data.find((h) => h.images && h.images.length > 0);
-        if (first) setSelectedHobby(first);
+        const withImages = data.filter((h) => h.images && h.images.length > 0);
+        const shuffled = withImages.map((h) => ({
+          ...h,
+          images: [...(h.images ?? [])].sort(() => Math.random() - 0.5),
+        }));
+        setHobbies(shuffled);
+        setSelected(shuffled[0] ?? null);
       });
   }, []);
 
-  const showHobby = (h: Hobby) => !!(h.images && h.images.length > 0);
-
   return (
-    <>
-      <div id="images">
-        {selectedHobby?.images?.map((image, i) => (
-          <a key={i} href={image.url} target="_blank" rel="noreferrer">
-            <img src={`/hobbies/${selectedHobby.name.toLowerCase()}/${image.file}`} alt={image.file} />
-          </a>
+    <div id="hobbies-page">
+      <div style={{ display: "flex", gap: 8, flexWrap: "wrap", marginBottom: 24 }}>
+        {hobbies.map((hobby) => (
+          <button
+            key={hobby.name}
+            onClick={() => setSelected(hobby)}
+            className={`btn btn-lg ${selected?.name === hobby.name ? "btn-primary" : "btn-default"}`}
+            style={{ flex: "1 1 auto", minWidth: 100 }}
+          >
+            {hobby.icon && <i className={`fa ${hobby.icon}`} style={{ marginRight: 8 }} />}
+            {hobby.name}
+          </button>
         ))}
       </div>
-      <div id="hobbies-page">
-        <div id="hobby-selector-container" className="col-xs-12">
-          {!selectorVisible && (
-            <div id="hobby-toggler" className="col-xs-12" onClick={() => setSelectorVisible(true)}>
-              <i
-                className={`fa fa-4x ${hover ? "fa-arrow-down" : "fa-bars"}`}
-                aria-hidden="true"
-                onMouseEnter={() => setHover(true)}
-                onMouseLeave={() => setHover(false)}
-              />
+
+      {selected && (
+        <div className="row">
+          {selected.images?.map((image, i) => (
+            <div key={i} className="col-lg-2 col-md-3 col-sm-4 col-xs-6" style={{ marginBottom: 16 }}>
+              <a href={image.url} target="_blank" rel="noreferrer" style={{ display: "block" }}>
+                <img
+                  src={`/hobbies/${selected.name.toLowerCase()}/${image.file}`}
+                  alt={image.name ?? image.file}
+                  className="img-responsive img-rounded"
+                  style={{ width: "100%", aspectRatio: "1", objectFit: "cover" }}
+                />
+              </a>
+              {image.name && (
+                <p style={{ fontSize: "0.8em", textAlign: "center", marginTop: 4, wordBreak: "break-word" }}>
+                  {image.name}
+                </p>
+              )}
             </div>
-          )}
-          {selectorVisible && (
-            <div id="hobby-selector" className="col-xs-12">
-              {hobbies.filter(showHobby).map((hobby) => (
-                <div key={hobby.name} className="col-lg-2 col-md-3 col-sm-3 col-xs-6 hobby-panel">
-                  <div
-                    className={`hobby${selectedHobby === hobby ? " hobby-current" : ""}`}
-                    onClick={() => { setSelectedHobby(hobby); setSelectorVisible(false); }}
-                  >
-                    <h3>{hobby.name}</h3>
-                  </div>
-                </div>
-              ))}
-            </div>
-          )}
+          ))}
         </div>
-      </div>
-    </>
+      )}
+    </div>
   );
 }

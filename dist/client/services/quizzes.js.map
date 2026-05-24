@@ -1,0 +1,1 @@
+{"version":3,"file":"quizzes.js","sourceRoot":"","sources":["../../../src/client/services/quizzes.ts"],"names":[],"mappings":";;;;;;AAAA,kDAA0B;AAEnB,KAAK,UAAU,YAAY,CAAC,IAAY;IAC7C,MAAM,EAAE,IAAI,EAAE,GAAG,MAAM,cAAI,CAAC,GAAG,CAAW,gBAAgB,IAAI,EAAE,CAAC,CAAC;IAClE,OAAO,IAAI,CAAC;AACd,CAAC;AAHD,oCAGC"}

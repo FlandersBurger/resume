@@ -1,7 +1,12 @@
 import http from "./http";
 
-export interface Task { name: string }
-export interface Category { name: string; tasks: Task[] }
+export interface Task {
+  name: string;
+}
+export interface Category {
+  name: string;
+  tasks: Task[];
+}
 
 export async function getCategories(): Promise<Category[]> {
   const { data } = await http.get<Category[]>("/api/categories");

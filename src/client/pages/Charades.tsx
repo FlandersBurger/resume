@@ -9,7 +9,9 @@ export default function Charades() {
   const [word, setWord] = useState("");
 
   useEffect(() => {
-    fetch("/charades.json").then((r) => r.json()).then(setCharades);
+    fetch("/charades.json")
+      .then((r) => r.json())
+      .then(setCharades);
   }, []);
 
   const selectWord = (category: string) => {
@@ -22,12 +24,7 @@ export default function Charades() {
       <h1>Charades Generator</h1>
       <div className="btn-group btn-group-lg">
         {Object.keys(charades).map((key) => (
-          <button
-            key={key}
-            type="button"
-            className="btn btn-primary"
-            onClick={() => selectWord(key)}
-          >
+          <button key={key} type="button" className="btn btn-primary" onClick={() => selectWord(key)}>
             {key.charAt(0).toUpperCase() + key.slice(1)}
           </button>
         ))}

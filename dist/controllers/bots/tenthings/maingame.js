@@ -7,15 +7,15 @@ exports.checkMaingame = exports.deactivate = exports.activate = exports.newRound
 const moment_1 = __importDefault(require("moment"));
 const sampleSize_1 = __importDefault(require("lodash/sampleSize"));
 const some_1 = __importDefault(require("lodash/some"));
-const index_1 = require("../../../models/index");
-const string_helpers_1 = require("../../../utils/string-helpers");
+const index_1 = require("@models/index");
+const string_helpers_1 = require("@utils/string-helpers");
 const guesses_1 = require("./guesses");
 const messages_1 = require("./messages");
 const hints_1 = require("./hints");
 const lists_1 = require("./lists");
 const skips_1 = require("./skips");
-const i18n_1 = __importDefault(require("../../../i18n"));
-const telegram_1 = __importDefault(require("../../../connections/telegram"));
+const i18n_1 = __importDefault(require("@root/i18n"));
+const telegram_1 = __importDefault(require("@root/connections/telegram"));
 const chalk_1 = __importDefault(require("chalk"));
 const createMaingame = async (platformSettings) => {
     const game = new index_1.Game({

@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import { getGame, updateGameCategory, getCategories } from "../api/tenthings";
-import { getUsers } from "../api/users";
+import { getGame, updateGameCategory, getCategories } from "../services/tenthings";
+import { getUsers } from "../services/users";
 import { useApp } from "../context/AppContext";
 
 export default function TenThingsGame() {
@@ -14,11 +14,7 @@ export default function TenThingsGame() {
   useEffect(() => {
     const load = async () => {
       if (!currentUser?.admin || !gameId) return;
-      const [usersData, cats, gameData] = await Promise.all([
-        getUsers(),
-        getCategories(),
-        getGame(gameId),
-      ]);
+      const [usersData, cats, gameData] = await Promise.all([getUsers(), getCategories(), getGame(gameId)]);
       setUsers(usersData.filter((u: any) => !u.admin));
       setCategories(cats);
       setGame(gameData);

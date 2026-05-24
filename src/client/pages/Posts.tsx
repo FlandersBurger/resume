@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { fetchPosts, createPost, getPost, Post } from "../api/posts";
+import { fetchPosts, createPost, getPost, Post } from "../services/posts";
 import { useApp } from "../context/AppContext";
 import { useWebSocket } from "../hooks/useWebSocket";
 
@@ -36,8 +36,12 @@ export default function Posts() {
       <br />
       <div className="form-group">
         <div className="input-group">
-          <input value={postBody} onChange={(e) => setPostBody(e.target.value)}
-            className="form-control" placeholder="Post" />
+          <input
+            value={postBody}
+            onChange={(e) => setPostBody(e.target.value)}
+            className="form-control"
+            placeholder="Post"
+          />
           <span className="input-group-btn">
             <button onClick={handleAddPost} className="btn btn-default" disabled={!loggedIn}>
               <i className="fa fa-lg fa-envelope" />
@@ -45,8 +49,13 @@ export default function Posts() {
           </span>
         </div>
         {loggedIn && (
-          <input type="text" value={searchText} onChange={(e) => setSearchText(e.target.value)}
-            className="form-control" placeholder="Search" />
+          <input
+            type="text"
+            value={searchText}
+            onChange={(e) => setSearchText(e.target.value)}
+            className="form-control"
+            placeholder="Search"
+          />
         )}
       </div>
       {!loggedIn && <h2>Please login to see the chat and post</h2>}
@@ -54,8 +63,7 @@ export default function Posts() {
         <ul className="list-group">
           {filtered.map((post) => (
             <li key={post._id} className="list-group-item">
-              <strong>{post.poster ? post.poster.username : post.username}:</strong>{" "}
-              <span>{post.body}</span>
+              <strong>{post.poster ? post.poster.username : post.username}:</strong> <span>{post.body}</span>
             </li>
           ))}
         </ul>

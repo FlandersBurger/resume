@@ -1,9 +1,9 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.convertWebUserToPlayer = exports.web = void 0;
-const queue_1 = require("../../../../../queue");
-const models_1 = require("../../../../../models");
-const string_helpers_1 = require("../../../../../utils/string-helpers");
+const queue_1 = require("@root/queue");
+const models_1 = require("@root/models");
+const string_helpers_1 = require("@utils/string-helpers");
 const messages_1 = require("../../messages");
 const players_1 = require("../../players");
 exports.web = {
@@ -28,13 +28,13 @@ exports.web = {
     },
     dailyScores: () => { },
     dailyWinners: () => { },
-    guessed: (game, player, match, ..._) => {
-        (0, queue_1.publish)("tenthings_message", {
+    guessed: async (game, player, match, ..._) => {
+        await (0, queue_1.publish)("tenthings_message", {
             message: (0, messages_1.getGuessedMessage)(game.settings.language, (0, string_helpers_1.parseSymbols)(match.value), (0, players_1.getPlayerName)(player, true)),
         });
     },
-    mainGameMessage: () => {
-        (0, queue_1.publish)("tenthings_message", {});
+    mainGameMessage: async () => {
+        await (0, queue_1.publish)("tenthings_message", {});
     },
     miniGameMessage: () => { },
     miniGameGuessed: () => { },

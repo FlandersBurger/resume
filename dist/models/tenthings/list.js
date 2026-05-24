@@ -5,8 +5,8 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const mongoose_1 = require("mongoose");
 const mongoose_lean_virtuals_1 = __importDefault(require("mongoose-lean-virtuals"));
-const db_1 = __importDefault(require("../../db"));
-const languages_1 = require("../../controllers/bots/tenthings/languages");
+const db_1 = __importDefault(require("@root/db"));
+const languages_1 = require("@tenthings/languages");
 let List = {};
 const listValueSchema = new mongoose_1.Schema({
     value: { type: String, default: "", required: true },

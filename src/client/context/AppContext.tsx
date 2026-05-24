@@ -1,5 +1,7 @@
-import { createContext, useContext, useReducer, useCallback, ReactNode } from "react";
+import { createContext, useContext, useReducer, useCallback, ReactNode, useEffect } from "react";
 import axios from "axios";
+import { firebaseSignOut } from "../services/firebase";
+import { getUser } from "../services/users";
 
 export interface User {
   _id: string;
@@ -8,7 +10,7 @@ export interface User {
   admin?: boolean;
   telegramId?: string;
   birthDate?: string;
-  flags?: { name: string; flag: string }[];
+  flags?: string[];
 }
 
 interface Toast {
@@ -24,7 +26,7 @@ interface AppState {
 
 type Action =
   | { type: "SET_USER"; user: User | null }
-  | { type: "ADD_TOAST"; message: string }
+  | { type: "ADD_TOAST"; id: number; message: string }
   | { type: "REMOVE_TOAST"; id: number }
   | { type: "FLIP_THEME" };
 
@@ -32,10 +34,8 @@ function reducer(state: AppState, action: Action): AppState {
   switch (action.type) {
     case "SET_USER":
       return { ...state, currentUser: action.user };
-    case "ADD_TOAST": {
-      const id = Date.now();
-      return { ...state, toasts: [...state.toasts, { id, message: action.message }] };
-    }
+    case "ADD_TOAST":
+      return { ...state, toasts: [...state.toasts, { id: action.id, message: action.message }] };
     case "REMOVE_TOAST":
       return { ...state, toasts: state.toasts.filter((t) => t.id !== action.id) };
     case "FLIP_THEME":
@@ -66,7 +66,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
 
   const toast = useCallback((message: string) => {
     const id = Date.now();
-    dispatch({ type: "ADD_TOAST", message });
+    dispatch({ type: "ADD_TOAST", id, message });
     setTimeout(() => dispatch({ type: "REMOVE_TOAST", id }), 3000);
   }, []);
 
@@ -82,13 +82,19 @@ export function AppProvider({ children }: { children: ReactNode }) {
     window.localStorage.clear();
     delete axios.defaults.headers.common["X-Auth"];
     dispatch({ type: "SET_USER", user: null });
+    firebaseSignOut().catch(() => {});
   }, []);
 
-  return (
-    <AppContext.Provider value={{ ...state, toast, setUser, flipTheme, logout }}>
-      {children}
-    </AppContext.Provider>
-  );
+  useEffect(() => {
+    const token = window.localStorage.getItem("token");
+    if (token) {
+      getUser()
+        .then((user) => dispatch({ type: "SET_USER", user }))
+        .catch(() => window.localStorage.removeItem("token"));
+    }
+  }, []);
+
+  return <AppContext.Provider value={{ ...state, toast, setUser, flipTheme, logout }}>{children}</AppContext.Provider>;
 }
 
 export function useApp() {

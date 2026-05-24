@@ -7,15 +7,16 @@ export function useWebSocket(handlers: Record<string, MessageHandler>) {
   const handlersRef = useRef(handlers);
   handlersRef.current = handlers;
 
-  const connect = useCallback(() => {
+  const connect = useCallback((activeRef: { current: boolean }) => {
     const protocol = window.location.protocol === "https:" ? "wss:" : "ws:";
-    const ws = new WebSocket(`${protocol}//${window.location.host}`);
+    const ws = new WebSocket(`${protocol}//${window.location.host}/ws`);
 
     ws.onopen = () => console.log("WebSocket connected");
 
     ws.onclose = () => {
+      if (!activeRef.current) return;
       console.log("WebSocket closed. Reconnecting...");
-      setTimeout(connect, 1000);
+      setTimeout(() => connect(activeRef), 1000);
     };
 
     ws.onerror = (e) => console.error("WebSocket error", e);
@@ -34,8 +35,10 @@ export function useWebSocket(handlers: Record<string, MessageHandler>) {
   }, []);
 
   useEffect(() => {
-    connect();
+    const activeRef = { current: true };
+    connect(activeRef);
     return () => {
+      activeRef.current = false;
       connectionRef.current?.close();
     };
   }, [connect]);

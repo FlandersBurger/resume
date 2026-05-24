@@ -1,6 +1,7 @@
 /* ===================== BASE / LAYOUT ===================== */
 body {
   min-width: 300px;
+  overflow-x: hidden;
 }
 
 .navbar {
@@ -13,7 +14,7 @@ body {
 
 .container .page,
 .page {
-  margin-top: 80px;
+  margin-top: 55px;
 }
 
 .loading {
@@ -40,7 +41,21 @@ hr {
   }
 }
 
+@media screen {
+  #print-content {
+    display: none;
+  }
+}
+
 @media print {
+  .navbar, .container.page, #toast {
+    display: none !important;
+  }
+
+  #print-content {
+    display: block !important;
+  }
+
   @page {
     margin: 16mm 12mm;
   }
@@ -94,7 +109,9 @@ hr {
 .social-media:hover span {
   opacity: 1;
   width: 90px;
-  transition: width 0.4s, opacity 0.5s ease-out;
+  transition:
+    width 0.4s,
+    opacity 0.5s ease-out;
 }
 
 /* ===================== MISC COMPONENTS ===================== */
@@ -114,6 +131,30 @@ hr {
 
 #loading-icon {
   display: none;
+}
+
+/* ===================== SKILLS PAGE OVERRIDES ===================== */
+#skills-page .skill-selector {
+  border-right: 2px solid #ddd;
+  border-radius: 4px 0 0 4px;
+  padding-left: 12px !important;
+}
+
+/* Fade at the bottom to hint more content below */
+#skills-page .skill-selector-wrap {
+  position: relative;
+}
+
+#skills-page .skill-selector-wrap::after {
+  content: "";
+  pointer-events: none;
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 8px;
+  height: 48px;
+  background: linear-gradient(to bottom, transparent, rgba(255, 255, 255, 0.9));
+  border-radius: 0 0 0 4px;
 }
 
 /* ===================== CHECKBOX MENU ===================== */
@@ -151,7 +192,29 @@ hr {
   background-color: #b8b8ff;
 }
 
-/* ===================== TOAST ===================== */
+/* ===================== LIST ROW TOOLTIP ===================== */
+.list-row-tooltip {
+  position: fixed;
+  background: #333;
+  color: #fff;
+  padding: 8px 12px;
+  border-radius: 6px;
+  font-size: 0.85em;
+  max-width: 320px;
+  z-index: 9000;
+  pointer-events: none;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.35);
+  white-space: pre-wrap;
+}
+
+.list-row-tooltip-arrow {
+  position: absolute;
+  top: -10px;
+  left: 12px;
+  border: 5px solid transparent;
+  border-bottom-color: #333;
+}
+
 #toast {
   position: fixed;
   bottom: 10px;
@@ -159,6 +222,7 @@ hr {
   right: 10px;
   width: 350px;
   z-index: 10000;
+  pointer-events: none;
 }
 
 /* ===================== HOME ===================== */
@@ -321,7 +385,7 @@ hr {
   overflow-x: hidden;
   right: -100%;
   width: 95%;
-  transition: right 0.2s ease-out;
+  transition: right 0.3s ease-in-out;
   background-color: white;
   z-index: 100;
   border: solid;
@@ -339,6 +403,21 @@ hr {
   align-content: center;
   justify-content: space-between;
   align-items: center;
+  position: sticky;
+  top: 0;
+  background: white;
+  z-index: 10;
+  padding-top: 10px;
+}
+
+.edit-list-panel .input-group {
+  position: relative;
+  z-index: 5;
+}
+
+.edit-list-panel .btn-toolbar {
+  position: relative;
+  z-index: 4;
 }
 
 #overlay {
@@ -404,7 +483,7 @@ td:hover {
 }
 
 .input-search {
-  width: -webkit-fill-available;
+  min-width: 0;
   height: unset;
 }
 
@@ -421,6 +500,12 @@ td:hover {
   height: 43px;
   overflow: hidden;
   text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.input-cell textarea:focus {
+  overflow: visible;
+  white-space: pre-wrap;
 }
 
 .input-cell > * {
@@ -454,6 +539,82 @@ td.delete-column:hover {
   color: darkred;
 }
 
+/* ===================== TENTHINGS PLAY ===================== */
+#tenthings-play-page .list-group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  padding: 0;
+}
+
+#tenthings-play-page .list-group .list-group-item {
+  flex-basis: 280px;
+  flex-grow: 1;
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  align-items: center;
+  justify-content: center;
+  padding: 8px 12px;
+  border-radius: 4px;
+  transition: background-color 0.3s;
+}
+
+#tenthings-play-page .list-group .list-group-item.guessed {
+  background-color: #d4edda;
+}
+
+#tenthings-play-page .list-group .answer {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  gap: 8px;
+}
+
+#tenthings-play-page .list-group .answer h4 {
+  margin: 0;
+  font-size: 15px;
+}
+
+#tenthings-play-page .blurb {
+  background-color: rgba(64, 182, 24, 0.25);
+  border-radius: 5px;
+  padding: 5px 10px;
+  margin-bottom: 4px;
+  text-align: center;
+  width: 100%;
+  font-size: 13px;
+}
+
+#tenthings-play-page .blurb img {
+  max-width: 100%;
+  max-height: 120px;
+  border-radius: 4px;
+}
+
+#tenthings-play-page .play-buttons {
+  display: flex;
+  flex-direction: row;
+  margin-bottom: 8px;
+}
+
+#tenthings-play-page .play-progress {
+  height: 8px;
+  border-radius: 4px;
+  background: #e9ecef;
+  margin-bottom: 12px;
+  overflow: hidden;
+}
+
+#tenthings-play-page .play-progress-bar {
+  height: 100%;
+  background: #28a745;
+  transition: width 0.4s ease;
+}
+
 /* ===================== QUIZ ===================== */
 .quiz-image-grid img {
   width: 100%;
@@ -470,9 +631,11 @@ td.delete-column:hover {
   display: flex;
   flex-direction: column;
   gap: 8px;
+  pointer-events: none;
 }
 
 .toast-item {
+  pointer-events: auto;
   background: #333;
   color: #fff;
   padding: 12px 20px;

@@ -52,8 +52,7 @@ export default function Bubbles() {
         ctx.arc(bubble.x, bubble.y, bubble.radius, 0, 2 * Math.PI);
         ctx.fillStyle = colors[Math.round((colors.length * bubble.radius) / bubble.maxRadius)];
         ctx.fill();
-        ctx.strokeStyle =
-          colors[colors.length - Math.round((colors.length * bubble.radius) / bubble.maxRadius)];
+        ctx.strokeStyle = colors[colors.length - Math.round((colors.length * bubble.radius) / bubble.maxRadius)];
         ctx.lineWidth = (bubble.circumference * bubble.radius) / bubble.maxRadius;
         ctx.stroke();
       });
@@ -82,11 +81,5 @@ export default function Bubbles() {
     };
   }, []);
 
-  return (
-    <canvas
-      ref={canvasRef}
-      id="bubbles-page"
-      style={{ position: "fixed", top: 0, left: 0, zIndex: -1 }}
-    />
-  );
+  return <canvas ref={canvasRef} id="bubbles-page" style={{ position: "fixed", top: 0, left: 0, zIndex: -1 }} />;
 }

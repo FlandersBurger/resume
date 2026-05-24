@@ -3,11 +3,13 @@ import http, { setAuthToken, clearAuthToken } from "./http";
 export interface User {
   _id: string;
   username: string;
+  displayName?: string;
+  photoURL?: string;
   email?: string;
   admin?: boolean;
   telegramId?: string;
   birthDate?: string;
-  flags?: { name: string; flag: string }[];
+  flags?: string[];
 }
 
 export async function getUser(): Promise<User> {
@@ -20,7 +22,7 @@ export async function getUsers(): Promise<User[]> {
   return data;
 }
 
-export async function toggleBan(id: string) {
+export async function toggleBan(id: string): Promise<void> {
   await http.post(`/api/users/ban/${id}`);
 }
 

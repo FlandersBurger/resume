@@ -1,7 +1,9 @@
 import { useEffect, useState } from "react";
-import { getCategories, addCategory, addTask, Category } from "../api/categories";
+import { getCategories, addCategory, addTask, Category } from "../services/categories";
 
-interface SelectedTask { name: string }
+interface SelectedTask {
+  name: string;
+}
 
 export default function Lists() {
   const [categories, setCategories] = useState<Category[]>([]);
@@ -16,7 +18,9 @@ export default function Lists() {
     getCategories().then((cats) => setCategories(cats));
   };
 
-  useEffect(() => { init(); }, []);
+  useEffect(() => {
+    init();
+  }, []);
 
   const handleSelectCategory = (category: Category) => {
     setSelectedCategory(category);
@@ -136,11 +140,7 @@ export default function Lists() {
             </div>
           </form>
           {filteredTasks.map((task) => (
-            <button
-              key={task.name}
-              className="btn btn-default choice"
-              onClick={() => handleSelectTask(task)}
-            >
+            <button key={task.name} className="btn btn-default choice" onClick={() => handleSelectTask(task)}>
               {task.name}
             </button>
           ))}
@@ -152,11 +152,7 @@ export default function Lists() {
           <hr />
           <h2>Prioritize these:</h2>
           {selectedTasks.map((task) => (
-            <button
-              key={task.name}
-              className="btn btn-primary choice"
-              onClick={() => handleUnselectTask(task)}
-            >
+            <button key={task.name} className="btn btn-primary choice" onClick={() => handleUnselectTask(task)}>
               {task.name}
             </button>
           ))}

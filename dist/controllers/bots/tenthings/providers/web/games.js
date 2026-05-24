@@ -1,9 +1,9 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.getGameWithHints = exports.getWebGame = void 0;
-const models_1 = require("../../../../../models");
-const maingame_1 = require("../../maingame");
-const hints_1 = require("../../hints");
+const models_1 = require("@root/models");
+const maingame_1 = require("@tenthings/maingame");
+const hints_1 = require("@tenthings/hints");
 const getWebGame = async (chat_id = 1) => {
     let game = await models_1.Game.findOne({ platform: "web", chat_id })
         .populate("list.creator")
@@ -12,7 +12,8 @@ const getWebGame = async (chat_id = 1) => {
     if (!game) {
         game = await (0, maingame_1.createMaingame)({ platform: "web", chat_id });
     }
-    if (game.list.values.length === 0) {
+    const valuesLeft = game.list.values.filter(({ guesser }) => !guesser).length;
+    if (game.list.values.length === 0 || valuesLeft === 0) {
         (0, maingame_1.newRound)(game);
     }
     return game;

@@ -3,7 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-const http_client_1 = __importDefault(require("../http-client"));
+const http_client_1 = __importDefault(require("@root/http-client"));
 const parseString = require("xml2js").parseStringPromise;
 class GoodReads {
     constructor(token) {

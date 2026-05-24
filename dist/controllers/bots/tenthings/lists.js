@@ -5,15 +5,15 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.mergeLists = exports.getList = exports.logHint = exports.searchList = exports.selectList = exports.rateList = exports.getListScore = exports.getRandomList = void 0;
 const moment_1 = __importDefault(require("moment"));
-const telegram_1 = __importDefault(require("../../../connections/telegram"));
-const index_1 = require("../../../models/index");
+const telegram_1 = __importDefault(require("@root/connections/telegram"));
+const index_1 = require("@models/index");
 const some_1 = __importDefault(require("lodash/some"));
 const sampleSize_1 = __importDefault(require("lodash/sampleSize"));
 const orderBy_1 = __importDefault(require("lodash/orderBy"));
 const uniqBy_1 = __importDefault(require("lodash/uniqBy"));
-const keyboards_1 = require("./providers/telegram/keyboards");
-const i18n_1 = __importDefault(require("../../../i18n"));
-const string_helpers_1 = require("../../../utils/string-helpers");
+const keyboards_1 = require("@tenthings/providers/telegram/keyboards");
+const i18n_1 = __importDefault(require("@root/i18n"));
+const string_helpers_1 = require("@utils/string-helpers");
 const getRandomList = async (parameters = {}) => {
     const count = await index_1.List.countDocuments(parameters).exec();
     if (count === 0)

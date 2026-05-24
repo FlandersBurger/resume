@@ -7,7 +7,7 @@
     "percentage": "80",
     "category": "frameworks",
     "since": 2015,
-    "description": "AngularJS was my goto front-end framework for a long time. This website is built with AngularJS. The crown-jewel of my AngularJS experience is found at <a href='https://npgcloud.com/company/ip_demo' target='_blank'>https://npgcloud.com</a>, a web app where high profile customers such as Hudson Bay Company, 7-Eleven and Best Buy go to design and print their name badges and <a href='https://design.imprintplus.com' target='_blank'>https://design.imprintplus.com</a>, a web app based on NPG cloud but embedded into an e-store. Both these apps were entirely written by me from concept to execution.",
+    "description": "AngularJS was my goto front-end framework for a long time. This website was originally built with AngularJS before I ported it over to ReactJS. The crown-jewel of my AngularJS experience is found at <a href='https://npgcloud.com/company/ip_demo' target='_blank'>https://npgcloud.com</a>, a web app where high profile customers such as Hudson Bay Company, 7-Eleven and Best Buy go to design and print their name badges and <a href='https://design.imprintplus.com' target='_blank'>https://design.imprintplus.com</a>, a web app based on NPG cloud but embedded into an e-store. Both these apps were entirely written by me from concept to execution.",
     "tldr": "",
     "image": "angular.png"
   },
@@ -19,7 +19,7 @@
     "percentage": "90",
     "category": "frameworks",
     "since": 2021,
-    "description": "I learned React during my tenure at VINN. Having previous knowledge with of the AngularJs framework definitely helped in developing my skills with React. I've been especially fond of Redux and Material UI to use in conjunction with the framework.",
+    "description": "I learned React during my tenure at VINN, and have since ported this entire website from AngularJS to ReactJS. Having previous knowledge of the AngularJS framework definitely helped in developing my skills with React. I've been especially fond of Redux and Material UI to use in conjunction with the framework.",
     "tldr": "",
     "image": "react.png"
   },

@@ -7,16 +7,16 @@ exports.getAnswerScore = exports.queueGuess = exports.getCount = void 0;
 const FuzzyMatching = require("fuzzy-matching");
 const bull_1 = __importDefault(require("bull"));
 const find_1 = __importDefault(require("lodash/find"));
-const index_1 = require("../../../models/index");
-const game_1 = require("../../../models/tenthings/game");
-const string_helpers_1 = require("../../../utils/string-helpers");
+const index_1 = require("@models/index");
+const game_1 = require("@models/tenthings/game");
+const string_helpers_1 = require("@utils/string-helpers");
 const hints_1 = require("./hints");
 const sass_1 = __importDefault(require("./sass"));
 const maingame_1 = require("./maingame");
 const minigame_1 = require("./minigame");
 const tinygame_1 = require("./tinygame");
 const players_1 = require("./players");
-const telegram_1 = __importDefault(require("../../../connections/telegram"));
+const telegram_1 = __importDefault(require("@root/connections/telegram"));
 const chalk_1 = __importDefault(require("chalk"));
 const guessQueue = new bull_1.default("processGuess", {
     redis: {

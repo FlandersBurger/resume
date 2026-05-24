@@ -54,22 +54,30 @@ function JobSection({ job, skills }: { job: Job; skills: Skill[] }) {
       </div>
       <div className="col-md-10 col-sm-9 col-xs-8 job-title">
         <h2>{job.company}</h2>
-        <h4>{job.title} ~ {getTimeSpan(job)}</h4>
+        <h4>
+          {job.title} ~ {getTimeSpan(job)}
+        </h4>
       </div>
       <div className="col-md-10 col-sm-9 col-xs-12 col-md-offset-2 col-sm-offset-3 job-body">
-        {(job.projects?.length || job.responsibilities?.length) ? (
+        {job.projects?.length || job.responsibilities?.length ? (
           <ul className="nav nav-pills">
             <li className={tab === "story" ? "active" : ""}>
-              <a onClick={() => setTab("story")} style={{ cursor: "pointer" }}>Story</a>
+              <a onClick={() => setTab("story")} style={{ cursor: "pointer" }}>
+                Story
+              </a>
             </li>
             {job.projects && job.projects.length > 0 && (
               <li className={tab === "projects" ? "active" : ""}>
-                <a onClick={() => setTab("projects")} style={{ cursor: "pointer" }}>Projects</a>
+                <a onClick={() => setTab("projects")} style={{ cursor: "pointer" }}>
+                  Projects
+                </a>
               </li>
             )}
             {job.responsibilities && job.responsibilities.length > 0 && (
               <li className={tab === "responsibilities" ? "active" : ""}>
-                <a onClick={() => setTab("responsibilities")} style={{ cursor: "pointer" }}>Responsibilities</a>
+                <a onClick={() => setTab("responsibilities")} style={{ cursor: "pointer" }}>
+                  Responsibilities
+                </a>
               </li>
             )}
           </ul>
@@ -82,7 +90,11 @@ function JobSection({ job, skills }: { job: Job; skills: Skill[] }) {
             {job.projects.map((project, i) => (
               <div key={i}>
                 <h4>{project.name}</h4>
-                {project.url && <a href={project.url} target="_blank" rel="noreferrer">{project.url}</a>}
+                {project.url && (
+                  <a href={project.url} target="_blank" rel="noreferrer">
+                    {project.url}
+                  </a>
+                )}
                 {project.description && (
                   <p dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(project.description) }} />
                 )}
@@ -130,7 +142,9 @@ export default function Experience() {
   const [skills, setSkills] = useState<Skill[]>([]);
 
   useEffect(() => {
-    fetch("/experience.json").then((r) => r.json()).then(setJobs);
+    fetch("/experience.json")
+      .then((r) => r.json())
+      .then(setJobs);
     fetch("/skills.json")
       .then((r) => r.json())
       .then((data: Skill[]) => setSkills(data.filter((s) => s.enabled)));

@@ -1,4 +1,4 @@
-import { ImageQuiz } from "./QuizBase";
+import { FuzzyImageQuiz } from "./QuizBase";
 export default function QuizGoogle() {
-  return <ImageQuiz name="google" title="Google Doodles" />;
+  return <FuzzyImageQuiz name="google" title="Google Doodles" />;
 }

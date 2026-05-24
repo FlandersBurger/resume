@@ -1,4 +1,4 @@
-import { GuessQuiz } from "./QuizBase";
+import { FuzzyImageQuiz } from "./QuizBase";
 export default function QuizLogos() {
-  return <GuessQuiz name="logos" title="Logo Quiz" />;
+  return <FuzzyImageQuiz name="logos" title="Pixelated Logos" />;
 }

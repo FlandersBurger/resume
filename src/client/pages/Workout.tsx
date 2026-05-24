@@ -77,7 +77,12 @@ export default function Workout() {
     else startWorkout();
   };
 
-  useEffect(() => () => { if (intervalRef.current) clearInterval(intervalRef.current); }, []);
+  useEffect(
+    () => () => {
+      if (intervalRef.current) clearInterval(intervalRef.current);
+    },
+    [],
+  );
 
   return (
     <div id="workout-page">
@@ -114,11 +119,9 @@ export default function Workout() {
           {exercise.name} ({progress()})
         </h2>
       )}
-      {exercise.split && !rest && typeof timer === "number" && (
-        <h2>{timer < timeExercising / 2 ? "Right" : "Left"}</h2>
-      )}
+      {exercise.split && !rest && typeof timer === "number" && <h2>{timer < timeExercising / 2 ? "Right" : "Left"}</h2>}
       {!rest && timeRemaining > 0 && exercise.name && (
-        <img className="img-div" src={`/exercises/${exercise.name}.gif`} alt={exercise.name} />
+        <img className="img-div" src={`/exercises/${encodeURIComponent(exercise.name)}.gif`} alt={exercise.name} />
       )}
     </div>
   );

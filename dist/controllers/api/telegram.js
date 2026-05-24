@@ -24,8 +24,8 @@ var __importStar = (this && this.__importStar) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.telegramRoute = void 0;
-const telegram_1 = __importStar(require("../../connections/telegram"));
-const models_1 = require("../../models");
+const telegram_1 = __importStar(require("@root/connections/telegram"));
+const models_1 = require("@root/models");
 const express_1 = require("express");
 const users_1 = require("./users");
 exports.telegramRoute = (0, express_1.Router)();

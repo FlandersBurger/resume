@@ -1,7 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.getPlayerName = void 0;
-const string_helpers_1 = require("../../../utils/string-helpers");
+const string_helpers_1 = require("@utils/string-helpers");
 const getPlayerName = (player, tagged = false) => {
     if (!player)
         return "Player 404";

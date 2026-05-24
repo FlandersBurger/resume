@@ -3,7 +3,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.gamesRoute = void 0;
 const express_1 = require("express");
 const FuzzyMatching = require("fuzzy-matching");
-const models_1 = require("../../models");
+const models_1 = require("@root/models");
 exports.gamesRoute = (0, express_1.Router)();
 exports.gamesRoute.post("/:game/:userId/highscore", async (req, res) => {
     const user = await models_1.User.findOne({ _id: req.params.userId });

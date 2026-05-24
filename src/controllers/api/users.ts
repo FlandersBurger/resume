@@ -22,7 +22,7 @@ usersRoute.get("/all", async (req: QueryableRequest, res: Response) => {
   else {
     const page = parseInt(req.query.page ?? 1);
     const users = await User.find({})
-      .select("-gender -flags -highscore")
+      .select("-gender -highscore")
       .limit(parseInt(req.query.limit) || 0)
       .skip(parseInt(req.query.limit) * (page - 1) || 0);
     res.json(users);
@@ -84,18 +84,22 @@ usersRoute.post("/authenticate", async (req: Request, res: Response) => {
       username: user.username ?? user.displayName,
       displayName: user.displayName,
       email: user.email,
-      photoUrl: user.photoUrl,
+      photoURL: user.photoURL,
       emailVerified: user.emailVerified,
       uid,
       telegramId,
     });
     await newUser.save();
     bot.notifyAdmin(`New user registered with ${authType}: ` + user.displayName);
-    const token = jwt.encode({ userid: user.id }, process.env.SECRET!);
+    const token = jwt.encode({ userid: newUser.id }, process.env.SECRET!);
     return res.json(token);
   } else {
     if (existingUser.banned) {
       return res.sendStatus(403);
+    }
+    if (user.photoURL && existingUser.photoURL !== user.photoURL) {
+      existingUser.photoURL = user.photoURL;
+      await existingUser.save();
     }
     console.log(existingUser.username + " authenticated with " + authType);
     const token = jwt.encode({ userid: existingUser.id }, process.env.SECRET!);
@@ -156,8 +160,12 @@ usersRoute.post("/:id", async (req: Request, res: Response) => {
       const user = await User.findOne({ _id: res.locals.user._id });
       if (!user || user.banned) res.sendStatus(401);
       else {
-        user.gender = req.body.user.gender;
-        user.flags = req.body.user.flags;
+        if (req.body.user.gender !== undefined) user.gender = req.body.user.gender;
+        if (req.body.user.flags !== undefined) {
+          user.flags = req.body.user.flags;
+          user.markModified("flags");
+        }
+        if (req.body.user.birthDate) user.birthDate = req.body.user.birthDate;
         await user.save();
         console.log(user.username + " updated their profile");
         res.sendStatus(200);

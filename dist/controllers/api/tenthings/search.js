@@ -1,7 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.tenthingsSearchRoute = void 0;
-const models_1 = require("../../../models");
+const models_1 = require("@root/models");
 const express_1 = require("express");
 exports.tenthingsSearchRoute = (0, express_1.Router)();
 exports.tenthingsSearchRoute.get("/list-names/:name", (req, res) => {
