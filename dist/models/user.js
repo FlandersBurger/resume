@@ -1,22 +1,25 @@
 "use strict";
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
+var __importDefault =
+  (this && this.__importDefault) ||
+  function (mod) {
+    return mod && mod.__esModule ? mod : { default: mod };
+  };
 Object.defineProperty(exports, "__esModule", { value: true });
 const mongoose_1 = require("mongoose");
 const db_1 = __importDefault(require("@root/db"));
 let User = {};
-const userSchema = new mongoose_1.Schema({
+const userSchema = new mongoose_1.Schema(
+  {
     username: { type: String, required: true },
     password: { type: String, required: false, select: false },
     admin: { type: Boolean, required: false, default: false },
     banned: { type: Boolean, required: false, default: false },
     gender: {
-        sex: { type: Number, required: false, default: 100 },
-        identity: { type: Number, required: false, default: 100 },
-        expression: { type: Number, required: false, default: 100 },
-        sexualAttraction: { type: Number, required: false, default: 100 },
-        romanticAttraction: { type: Number, required: false, default: 100 },
+      sex: { type: Number, required: false, default: 100 },
+      identity: { type: Number, required: false, default: 100 },
+      expression: { type: Number, required: false, default: 100 },
+      sexualAttraction: { type: Number, required: false, default: 100 },
+      romanticAttraction: { type: Number, required: false, default: 100 },
     },
     displayName: { type: String, required: false },
     email: { type: String, required: false },
@@ -27,11 +30,13 @@ const userSchema = new mongoose_1.Schema({
     birthDate: { type: Date, required: false },
     flags: [{ type: String, required: false }],
     highscore: {
-        asteroids: { type: Number, required: false, default: 0 },
+      asteroids: { type: Number, required: false, default: 0 },
     },
-}, { timestamps: true });
+  },
+  { timestamps: true },
+);
 for (const name in db_1.default) {
-    User[name] = db_1.default[name].model("User", userSchema);
+  User[name] = db_1.default[name].model("User", userSchema);
 }
 exports.default = (database = "master") => User[database];
 //# sourceMappingURL=user.js.map

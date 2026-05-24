@@ -48,7 +48,9 @@ hr {
 }
 
 @media print {
-  .navbar, .container.page, #toast {
+  .navbar,
+  .container.page,
+  #toast {
     display: none !important;
   }
 
@@ -133,11 +135,109 @@ hr {
   display: none;
 }
 
-/* ===================== SKILLS PAGE OVERRIDES ===================== */
+/* ===================== SKILLS ===================== */
+#skills-page {
+  width: 100%;
+}
+
 #skills-page .skill-selector {
-  border-right: 2px solid #ddd;
-  border-radius: 4px 0 0 4px;
-  padding-left: 12px !important;
+  column-gap: 0px;
+  margin-left: -20px;
+  line-height: 0;
+  display: flex;
+  flex-direction: column;
+  height: calc(100vh - 70px);
+  overflow-y: scroll;
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+#skills-page .skill-selector::-webkit-scrollbar {
+  display: none;
+}
+
+#skills-page .skill-display {
+  height: calc(100vh - 5px);
+}
+
+#skills-page .selected-skill {
+  margin: 0 auto;
+  text-align: center;
+  max-width: 150px;
+  max-height: 150px;
+}
+
+#skills-page .highlighted-skill > div {
+  background-color: #777 !important;
+}
+
+#skills-page .highlighted-skill .selectable-skill-percentage {
+  background-color: #CCC !important;
+}
+
+#skills-page .selected-skill img {
+  max-width: 150px;
+}
+
+#skills-page .selectable-skill p {
+  display: flex;
+  z-index: 1;
+  align-items: center;
+  margin: 0;
+}
+
+#skills-page .selectable-skill .hovered-skill {
+  display: none;
+}
+
+#skills-page .selectable-skill .unhovered-skill {
+  display: flex;
+}
+
+#skills-page .selectable-skill:hover .hovered-skill {
+  display: flex;
+}
+
+#skills-page .selectable-skill:hover .unhovered-skill {
+  display: none;
+}
+
+#skills-page .selectable-skill img {
+  max-height: 70px;
+  max-width: 70px;
+  padding: 10px;
+  width: 100%;
+  position: relative;
+}
+
+#skills-page .selectable-skill {
+  width: 100%;
+  padding: 0;
+  border-radius: 10px;
+}
+
+#skills-page .selectable-skill > div {
+  display: flex;
+  background-color: #CCCCCC;
+  padding: 0;
+  border-radius: 10px;
+  margin: 4px;
+}
+
+#skills-page .selectable-skill-percentage {
+  background-color: #777777;
+  border-radius: 10px;
+  height: 100%;
+  position: absolute;
+  top: 0;
+}
+
+#skills-page .selectable-skill:hover > div {
+  background-color: #ddd;
+}
+
+#skills-page .selectable-skill:hover .selectable-skill-percentage {
+  background-color: #888;
 }
 
 /* Fade at the bottom to hint more content below */
@@ -231,30 +331,68 @@ hr {
 }
 
 /* ===================== EXPERIENCE ===================== */
-#experience-page .job-header {
-  display: flex;
-  align-items: center;
-  gap: 8px;
+#experience-page {
+  padding-bottom: 100px;
 }
 
-#experience-page .job-logo {
-  max-height: 40px;
-  max-width: 80px;
+#experience-page p.story {
+  padding: 8px;
 }
 
-/* ===================== SKILLS ===================== */
-#skills-page .skill-selector {
-  list-style: none;
-  padding: 0;
+#experience-page .list-group {
+  padding: 8px;
 }
 
-#skills-page .skill-selector li {
+#experience-page .job-section {
+  min-height: 100px;
+  margin: 10px;
+}
+
+#experience-page .job-image {
+  min-width: 90px;
+  box-shadow: 5px 5px 5px #888;
+  border-radius: 7px;
+  border: 1px solid #ddd;
+  background-color: #fff;
+  padding: 5px;
+}
+
+@media (max-width: 768px) {
+  #experience-page .job-image {
+    margin-top: 10px;
+    text-align: center;
+  }
+
+  #experience-page .job-image img {
+    max-height: 80px;
+  }
+}
+
+@media (min-width: 768px) {
+  #experience-page .job-image {
+    margin-top: 20px;
+  }
+
+  #experience-page .job-image img {
+    width: 100%;
+  }
+}
+
+#experience-page .project-skill {
+  float: left;
   cursor: pointer;
-  padding: 4px 8px;
+  max-width: 70px;
 }
 
-#skills-page .skill-selector li.active {
-  font-weight: bold;
+#experience-page .project-skill-image {
+  max-height: 30px;
+  padding-right: 8px;
+  padding-top: 4px;
+  padding-bottom: 4px;
+}
+
+#experience-page .project-skill-image:hover {
+  transform: scale(1.2);
 }
 
 /* ===================== HOBBIES ===================== */
@@ -616,10 +754,34 @@ td.delete-column:hover {
 }
 
 /* ===================== QUIZ ===================== */
-.quiz-image-grid img {
-  width: 100%;
-  border-radius: 4px;
-  margin-bottom: 8px;
+.quiz-page {
+  margin: 5px auto;
+  padding-bottom: 50px;
+}
+
+.quiz-photos-page .panel {
+  display: inline-flex;
+  flex-direction: column;
+  text-align: center;
+  vertical-align: top;
+  margin: 4px;
+  width: 320px;
+}
+
+.quiz-photos-page .panel-body {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+}
+
+.quiz-photos-page .panel-body img {
+  width: 300px;
+  height: 200px;
+  object-fit: contain;
+  object-position: center;
+  background: #f5f5f5;
 }
 
 /* ===================== TOAST CONTAINER ===================== */

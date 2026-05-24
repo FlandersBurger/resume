@@ -34,8 +34,14 @@ export default function Print() {
   const [jobs, setJobs] = useState<Job[]>([]);
 
   useEffect(() => {
-    fetch("/skills.json").then((r) => r.json()).then(setSkills).catch(() => {});
-    fetch("/experience.json").then((r) => r.json()).then(setJobs).catch(() => {});
+    fetch("/skills.json")
+      .then((r) => r.json())
+      .then(setSkills)
+      .catch(() => {});
+    fetch("/experience.json")
+      .then((r) => r.json())
+      .then(setJobs)
+      .catch(() => {});
   }, []);
 
   const enabledSkills = skills
@@ -49,8 +55,7 @@ export default function Print() {
       <hr />
       <div className="col-xs-12">
         <h5>
-          This resume was automatically generated using ReactJs and NodeJs on my website:{" "}
-          <b>belgocanadian.com</b>
+          This resume was automatically generated using ReactJs and NodeJs on my website: <b>belgocanadian.com</b>
           <br />I would recommend going there to experience this resume differently :)
         </h5>
       </div>
@@ -98,7 +103,9 @@ export default function Print() {
           </div>
         ))}
       </div>
-      <div className="col-xs-12"><br /></div>
+      <div className="col-xs-12">
+        <br />
+      </div>
       <hr />
       <h3>Experience</h3>
       {jobs.map((job) => (
@@ -109,11 +116,13 @@ export default function Print() {
           <p>{job.story}</p>
           {job.responsibilities && job.responsibilities.length > 0 && (
             <ul className="list-group">
-              {[...job.responsibilities].sort((a, b) => a.name.localeCompare(b.name)).map((r) => (
-                <li key={r.name} className="list-group-item">
-                  <strong>{r.name}:</strong> {r.description}
-                </li>
-              ))}
+              {[...job.responsibilities]
+                .sort((a, b) => a.name.localeCompare(b.name))
+                .map((r) => (
+                  <li key={r.name} className="list-group-item">
+                    <strong>{r.name}:</strong> {r.description}
+                  </li>
+                ))}
             </ul>
           )}
           <hr />

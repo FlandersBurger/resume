@@ -52,13 +52,14 @@ function JobSection({ job, skills }: { job: Job; skills: Skill[] }) {
           <img src={`/experience/${job.image}`} alt={job.company} />
         </div>
       </div>
-      <div className="col-md-10 col-sm-9 col-xs-8 job-title">
-        <h2>{job.company}</h2>
-        <h4>
-          {job.title} ~ {getTimeSpan(job)}
-        </h4>
-      </div>
-      <div className="col-md-10 col-sm-9 col-xs-12 col-md-offset-2 col-sm-offset-3 job-body">
+      <div className="col-md-10 col-sm-9 col-xs-8">
+        <div className="job-title">
+          <h2>{job.company}</h2>
+          <h4>
+            {job.title} ~ {getTimeSpan(job)}
+          </h4>
+        </div>
+        <div className="job-body">
         {job.projects?.length || job.responsibilities?.length ? (
           <ul className="nav nav-pills">
             <li className={tab === "story" ? "active" : ""}>
@@ -132,6 +133,7 @@ function JobSection({ job, skills }: { job: Job; skills: Skill[] }) {
               ))}
           </ul>
         )}
+      </div>
       </div>
     </div>
   );
