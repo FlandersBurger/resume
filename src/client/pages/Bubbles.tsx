@@ -29,7 +29,7 @@ export default function Bubbles() {
 
     const resize = () => {
       canvas.width = window.innerWidth;
-      canvas.height = window.innerHeight - (canvas.width <= 768 ? 55 : 56);
+      canvas.height = window.innerHeight;
     };
 
     const makeBubble = (): Bubble => ({

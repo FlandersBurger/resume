@@ -421,12 +421,7 @@ hr {
 
 /* ===================== ASTEROIDS ===================== */
 #asteroids-page {
-  margin-top: -30px;
-  margin-left: -15px;
-  height: 100%;
-  background-size: cover;
-  background-color: #111;
-  overflow-x: hidden;
+  background-color: transparent;
 }
 
 #asteroids-page h1 {

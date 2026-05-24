@@ -103,8 +103,8 @@ export default function Asteroids() {
     });
 
     function resizeCanvas() {
-      canvas.width = window.innerWidth - 1;
-      canvas.height = window.innerHeight - (canvas.width <= 768 ? 50 : 59);
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
     }
 
     function getEntryPosition(width: number, height: number): [number, number] {
@@ -498,13 +498,17 @@ export default function Asteroids() {
         position: "fixed",
         top: 0,
         left: 0,
-        width: "100%",
-        height: "100%",
+        width: "100vw",
+        height: "100vh",
         backgroundImage: `url(asteroids/space${spaceIndex}.jpg)`,
         backgroundSize: "cover",
       }}
     >
-      <canvas ref={canvasRef} id="asteroids-page" style={{ width: "100%", height: "100%", backgroundColor: "#111" }} />
+      <canvas
+        ref={canvasRef}
+        id="asteroids-page"
+        style={{ display: "block", position: "absolute", top: 0, left: 0, width: "100%", height: "100%" }}
+      />
       <div style={{ position: "fixed", top: 10, right: 20, color: "#fff", fontSize: 24 }}>
         Score: {score} | High: {highscore}
       </div>

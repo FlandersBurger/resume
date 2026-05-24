@@ -34,7 +34,7 @@ export default function Lemmings() {
 
     function resizeCanvas() {
       canvas.width = window.innerWidth;
-      canvas.height = window.innerHeight - (canvas.width <= 768 ? 50 : 105);
+      canvas.height = window.innerHeight;
     }
 
     function makeLemming(initAction: string) {
