@@ -275,10 +275,6 @@
         "file": "orangeblack.jpg"
       },
       {
-        "name": "Master of None",
-        "file": "masterofnone.jpg"
-      },
-      {
         "name": "Archer",
         "file": "archer.jpg"
       },
@@ -361,6 +357,30 @@
       {
         "name": "Dan Da Dan",
         "file": "dandadan.jpg"
+      },
+      {
+        "name": "The Afterparty",
+        "file": "theafterparty.jpg"
+      },
+      {
+        "name": "Widow's Bay",
+        "file": "widowsbay.jpg"
+      },
+      {
+        "name": "Big Mistakes",
+        "file": "bigmistakes.jpg"
+      },
+      {
+        "name": "Yellowjackets",
+        "file": "yellowjackets.jpg"
+      },
+      {
+        "name": "Catastrophe",
+        "file": "catastrophe.jpg"
+      },
+      {
+        "name": "Down Cemetery Road",
+        "file": "downcemeteryroad.jpg"
       }
     ]
   },

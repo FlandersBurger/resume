@@ -56,6 +56,7 @@ export default function App() {
           <Route path="/experience" element={<Experience />} />
           <Route path="/skills" element={<Skills />} />
           <Route path="/hobbies" element={<Hobbies />} />
+          <Route path="/hobbies/:hobby" element={<Hobbies />} />
           <Route path="/contact" element={<Contact />} />
           <Route path="/posts" element={<Posts />} />
           <Route path="/profile" element={<Profile />} />
