@@ -28,13 +28,13 @@ exports.web = {
     },
     dailyScores: () => { },
     dailyWinners: () => { },
-    guessed: (game, player, match, ..._) => {
-        (0, queue_1.publish)("tenthings_message", {
+    guessed: async (game, player, match, ..._) => {
+        await (0, queue_1.publish)("tenthings_message", {
             message: (0, messages_1.getGuessedMessage)(game.settings.language, (0, string_helpers_1.parseSymbols)(match.value), (0, players_1.getPlayerName)(player, true)),
         });
     },
-    mainGameMessage: () => {
-        (0, queue_1.publish)("tenthings_message", {});
+    mainGameMessage: async () => {
+        await (0, queue_1.publish)("tenthings_message", {});
     },
     miniGameMessage: () => { },
     miniGameGuessed: () => { },

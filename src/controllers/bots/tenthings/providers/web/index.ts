@@ -32,13 +32,13 @@ export const web: Provider = {
   },
   dailyScores: () => {},
   dailyWinners: () => {},
-  guessed: (game: IGame, player: IPlayer, match: IGameListValue, ..._: any) => {
-    publish("tenthings_message", {
+  guessed: async (game: IGame, player: IPlayer, match: IGameListValue, ..._: any) => {
+    await publish("tenthings_message", {
       message: getGuessedMessage(game.settings.language, parseSymbols(match.value), getPlayerName(player, true)),
     });
   },
-  mainGameMessage: () => {
-    publish("tenthings_message", {});
+  mainGameMessage: async () => {
+    await publish("tenthings_message", {});
   },
   miniGameMessage: () => {},
   miniGameGuessed: () => {},

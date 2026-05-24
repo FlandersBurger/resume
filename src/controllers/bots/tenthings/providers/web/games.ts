@@ -12,7 +12,8 @@ export const getWebGame = async (chat_id: number = 1): Promise<HydratedDocument<
   if (!game) {
     game = await createMaingame({ platform: "web", chat_id });
   }
-  if (game.list.values.length === 0) {
+  const valuesLeft = game.list.values.filter(({ guesser }: any) => !guesser).length;
+  if (game.list.values.length === 0 || valuesLeft === 0) {
     newRound(game);
   }
   return game;

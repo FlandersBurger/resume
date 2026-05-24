@@ -12,7 +12,8 @@ const getWebGame = async (chat_id = 1) => {
     if (!game) {
         game = await (0, maingame_1.createMaingame)({ platform: "web", chat_id });
     }
-    if (game.list.values.length === 0) {
+    const valuesLeft = game.list.values.filter(({ guesser }) => !guesser).length;
+    if (game.list.values.length === 0 || valuesLeft === 0) {
         (0, maingame_1.newRound)(game);
     }
     return game;

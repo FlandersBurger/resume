@@ -38,7 +38,6 @@ export enum SupportedLanguage {
   PT = "PT",
   RU = "RU",
   TL = "TL",
-
   IT = "IT",
   JA = "JA",
   LA = "LA",

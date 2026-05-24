@@ -47,7 +47,7 @@ exports.usersRoute.get("/all", async (req, res) => {
     else {
         const page = parseInt(req.query.page ?? 1);
         const users = await index_1.User.find({})
-            .select("-gender -flags -highscore")
+            .select("-gender -highscore")
             .limit(parseInt(req.query.limit) || 0)
             .skip(parseInt(req.query.limit) * (page - 1) || 0);
         res.json(users);
@@ -110,19 +110,23 @@ exports.usersRoute.post("/authenticate", async (req, res) => {
             username: user.username ?? user.displayName,
             displayName: user.displayName,
             email: user.email,
-            photoUrl: user.photoUrl,
+            photoURL: user.photoURL,
             emailVerified: user.emailVerified,
             uid,
             telegramId,
         });
         await newUser.save();
         telegram_1.default.notifyAdmin(`New user registered with ${authType}: ` + user.displayName);
-        const token = jwt_simple_1.default.encode({ userid: user.id }, process.env.SECRET);
+        const token = jwt_simple_1.default.encode({ userid: newUser.id }, process.env.SECRET);
         return res.json(token);
     }
     else {
         if (existingUser.banned) {
             return res.sendStatus(403);
+        }
+        if (user.photoURL && existingUser.photoURL !== user.photoURL) {
+            existingUser.photoURL = user.photoURL;
+            await existingUser.save();
         }
         console.log(existingUser.username + " authenticated with " + authType);
         const token = jwt_simple_1.default.encode({ userid: existingUser.id }, process.env.SECRET);
@@ -187,8 +191,14 @@ exports.usersRoute.post("/:id", async (req, res) => {
             if (!user || user.banned)
                 res.sendStatus(401);
             else {
-                user.gender = req.body.user.gender;
-                user.flags = req.body.user.flags;
+                if (req.body.user.gender !== undefined)
+                    user.gender = req.body.user.gender;
+                if (req.body.user.flags !== undefined) {
+                    user.flags = req.body.user.flags;
+                    user.markModified("flags");
+                }
+                if (req.body.user.birthDate)
+                    user.birthDate = req.body.user.birthDate;
                 await user.save();
                 console.log(user.username + " updated their profile");
                 res.sendStatus(200);
