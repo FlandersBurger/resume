@@ -57,6 +57,7 @@ exports.staticRoute.use(express_1.default.static(__dirname + "/../../sounds"));
 exports.staticRoute.use(express_1.default.static(__dirname + "/../../data"));
 exports.staticRoute.get("/*", function (_, res) {
   const reactIndex = path_1.default.resolve(__dirname, "../../dist/client/index.html");
-  res.sendFile(reactIndex);
+  const angularIndex = path_1.default.resolve(__dirname + "/../../index.html");
+  res.sendFile(require("fs").existsSync(reactIndex) ? reactIndex : angularIndex);
 });
 //# sourceMappingURL=static.js.map
