@@ -172,7 +172,7 @@ hr {
 }
 
 #skills-page .highlighted-skill .selectable-skill-percentage {
-  background-color: #CCC !important;
+  background-color: #ccc !important;
 }
 
 #skills-page .selected-skill img {
@@ -218,7 +218,7 @@ hr {
 
 #skills-page .selectable-skill > div {
   display: flex;
-  background-color: #CCCCCC;
+  background-color: #cccccc;
   padding: 0;
   border-radius: 10px;
   margin: 4px;
