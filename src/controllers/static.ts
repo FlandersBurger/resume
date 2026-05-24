@@ -3,7 +3,7 @@ import path from "path";
 export const staticRoute = Router();
 
 staticRoute.use(express.static(path.resolve(__dirname, "../../dist/client")));
-staticRoute.use(express.static(__dirname + "/../../assets"));
+staticRoute.use(express.static(__dirname + "/../../data"));
 staticRoute.use(express.static(__dirname + "/../../resources"));
 staticRoute.use(express.static(__dirname + "/../../images"));
 staticRoute.use(express.static(__dirname + "/../../sounds"));

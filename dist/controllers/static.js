@@ -31,7 +31,7 @@ const express_1 = __importStar(require("express"));
 const path_1 = __importDefault(require("path"));
 exports.staticRoute = (0, express_1.Router)();
 exports.staticRoute.use(express_1.default.static(path_1.default.resolve(__dirname, "../../dist/client")));
-exports.staticRoute.use(express_1.default.static(__dirname + "/../../assets"));
+exports.staticRoute.use(express_1.default.static(__dirname + "/../../data"));
 exports.staticRoute.use(express_1.default.static(__dirname + "/../../resources"));
 exports.staticRoute.use(express_1.default.static(__dirname + "/../../images"));
 exports.staticRoute.use(express_1.default.static(__dirname + "/../../sounds"));
