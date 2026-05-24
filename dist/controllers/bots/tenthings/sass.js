@@ -4,8 +4,8 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const moment_1 = __importDefault(require("moment"));
-const telegram_1 = __importDefault(require("@root/connections/telegram"));
-const http_client_1 = __importDefault(require("@root/http-client"));
+const telegram_1 = __importDefault(require("../../../connections/telegram"));
+const http_client_1 = __importDefault(require("../../../http-client"));
 exports.default = async (game, text) => {
     if (game.settings.sass && game.enabled) {
         const sassText = await sass(text);

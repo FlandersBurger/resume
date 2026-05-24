@@ -4,8 +4,8 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.maskUrls = exports.parseSymbols = exports.removeHTML = exports.capitalize = exports.concealMiddle = exports.conceal = exports.removeAllButLetters = exports.removeSpecialCharacters = exports.SPECIAL_CHARACTERS = exports.removeDiacritics = void 0;
-const diacritics_1 = __importDefault(require("@utils/diacritics"));
-const domains_1 = __importDefault(require("@utils/domains"));
+const diacritics_1 = __importDefault(require("./diacritics"));
+const domains_1 = __importDefault(require("./domains"));
 const removeDiacritics = (str) => diacritics_1.default.reduce((result, diacritic) => result.replace(diacritic.letters, diacritic.base), str);
 exports.removeDiacritics = removeDiacritics;
 exports.SPECIAL_CHARACTERS = "\\\\/ !?@#$%^&*()_+:.{},;\\-'``’‘\"—";

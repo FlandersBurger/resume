@@ -31,12 +31,12 @@ const some_1 = __importDefault(require("lodash/some"));
 const find_1 = __importDefault(require("lodash/find"));
 const concat_1 = __importDefault(require("lodash/concat"));
 const shuffle_1 = __importDefault(require("lodash/shuffle"));
-const categories_1 = __importDefault(require("@tenthings/categories"));
-const languages_1 = __importStar(require("@tenthings/languages"));
-const messages_1 = require("@tenthings/messages");
-const string_helpers_1 = require("@utils/string-helpers");
-const i18n_1 = __importDefault(require("@root/i18n"));
-const emojis_1 = __importDefault(require("@tenthings/emojis"));
+const categories_1 = __importDefault(require("../../categories"));
+const languages_1 = __importStar(require("../../languages"));
+const messages_1 = require("../../messages");
+const string_helpers_1 = require("../../../../../utils/string-helpers");
+const i18n_1 = __importDefault(require("../../../../../i18n"));
+const emojis_1 = __importDefault(require("../../emojis"));
 const callbacks_1 = require("./callbacks");
 const getButton = (text, callbackData) => ({
     text: text,

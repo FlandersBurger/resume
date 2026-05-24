@@ -2,8 +2,8 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.tenthingsGamesRoute = void 0;
 const express_1 = require("express");
-const index_1 = require("@models/index");
-const categories_1 = require("@root/controllers/bots/tenthings/categories");
+const index_1 = require("../../../models/index");
+const categories_1 = require("../../../controllers/bots/tenthings/categories");
 exports.tenthingsGamesRoute = (0, express_1.Router)();
 exports.tenthingsGamesRoute.get("/", async (req, res) => {
     if (!res.locals.isAdmin)

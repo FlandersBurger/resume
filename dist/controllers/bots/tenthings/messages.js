@@ -24,7 +24,7 @@ var __importStar = (this && this.__importStar) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.getDailyMessage = exports.getStreakMessage = exports.getDifficultyMessage = exports.getFrequencyMessage = exports.getSnubbedMessage = exports.getGuessedMessage = exports.getRules = void 0;
-const i18n_1 = __importStar(require("@root/i18n"));
+const i18n_1 = __importStar(require("../../../i18n"));
 const players_1 = require("./players");
 const MAXHINTS = 6;
 const getRules = (language) => {
