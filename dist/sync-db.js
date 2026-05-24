@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-const index_1 = require("@models/index");
+const index_1 = require("./models/index");
 const srcJoke = index_1.Joke;
 const dstJoke = index_1.JokeBackup;
 const srcList = index_1.List;

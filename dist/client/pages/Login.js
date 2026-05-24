@@ -100,26 +100,6 @@ function Login() {
       <h2>{isRegister ? "Register" : "Login"}</h2>
 
       <div id="firebaseui-auth-container"/>
-
-      <div style={{ textAlign: "center", marginBottom: 16, color: "#888" }}>— or —</div>
-
-      <form onSubmit={handleSubmit}>
-        <div className="form-group">
-          <input className="form-control" type="text" placeholder="Username" value={username} onChange={(e) => setUsername(e.target.value)} required/>
-        </div>
-        <div className="form-group">
-          <input className="form-control" type="password" placeholder="Password" value={password} onChange={(e) => setPassword(e.target.value)} required/>
-        </div>
-        <button type="submit" className="btn btn-default btn-block">
-          {isRegister ? "Create Account" : "Login"}
-        </button>
-      </form>
-      <p style={{ marginTop: 12 }}>
-        {isRegister ? "Already have an account? " : "Don't have an account? "}
-        <a onClick={() => setIsRegister(!isRegister)} style={{ cursor: "pointer" }}>
-          {isRegister ? "Login" : "Register"}
-        </a>
-      </p>
     </div>);
 }
 exports.default = Login;

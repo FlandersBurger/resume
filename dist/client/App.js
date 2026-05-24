@@ -32,6 +32,7 @@ const QuizAnimals_1 = __importDefault(require("./pages/quizzes/QuizAnimals"));
 const QuizFlags_1 = __importDefault(require("./pages/quizzes/QuizFlags"));
 const QuizMovies_1 = __importDefault(require("./pages/quizzes/QuizMovies"));
 const QuizSkeletons_1 = __importDefault(require("./pages/quizzes/QuizSkeletons"));
+const Print_1 = __importDefault(require("./pages/Print"));
 const NotFound_1 = __importDefault(require("./pages/NotFound"));
 require("./styles/app.css");
 const react_1 = require("react");
@@ -50,6 +51,7 @@ function App() {
       <BootstrapTheme />
       <Navbar_1.Navbar />
       <ToastContainer_1.ToastContainer />
+      <Print_1.default />
       <div className="container page">
         <react_router_dom_1.Routes>
           <react_router_dom_1.Route path="/" element={<react_router_dom_1.Navigate to="/home" replace/>}/>

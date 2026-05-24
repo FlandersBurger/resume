@@ -30,9 +30,9 @@ exports.checkUser = exports.usersRoute = void 0;
 const express_1 = require("express");
 const bcryptjs_1 = __importDefault(require("bcryptjs"));
 const jwt_simple_1 = __importDefault(require("jwt-simple"));
-const server_1 = require("@root/server");
-const index_1 = require("@models/index");
-const telegram_1 = __importStar(require("@root/connections/telegram"));
+const server_1 = require("../../server");
+const index_1 = require("../../models/index");
+const telegram_1 = __importStar(require("../../connections/telegram"));
 exports.usersRoute = (0, express_1.Router)();
 const isAcceptedAuth = (authType = "") => ["telegram", "firebase"].includes(authType);
 exports.usersRoute.get("/", (_, res) => {
@@ -191,7 +191,8 @@ exports.usersRoute.post("/:id", async (req, res) => {
             if (!user || user.banned)
                 res.sendStatus(401);
             else {
-                if (req.body.user.gender !== undefined) user.gender = req.body.user.gender;
+                if (req.body.user.gender !== undefined)
+                    user.gender = req.body.user.gender;
                 if (req.body.user.flags !== undefined) {
                     user.flags = req.body.user.flags;
                     user.markModified("flags");

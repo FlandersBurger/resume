@@ -1,9 +1,9 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.convertWebUserToPlayer = exports.web = void 0;
-const queue_1 = require("@root/queue");
-const models_1 = require("@root/models");
-const string_helpers_1 = require("@utils/string-helpers");
+const queue_1 = require("../../../../../queue");
+const models_1 = require("../../../../../models");
+const string_helpers_1 = require("../../../../../utils/string-helpers");
 const messages_1 = require("../../messages");
 const players_1 = require("../../players");
 exports.web = {

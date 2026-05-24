@@ -1,11 +1,11 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.tenthingsWebBotRoute = void 0;
-const guesses_1 = require("@root/controllers/bots/tenthings/guesses");
-const hints_1 = require("@root/controllers/bots/tenthings/hints");
-const web_1 = require("@root/controllers/bots/tenthings/providers/web");
-const games_1 = require("@root/controllers/bots/tenthings/providers/web/games");
-const skips_1 = require("@root/controllers/bots/tenthings/skips");
+const guesses_1 = require("../../../controllers/bots/tenthings/guesses");
+const hints_1 = require("../../../controllers/bots/tenthings/hints");
+const web_1 = require("../../../controllers/bots/tenthings/providers/web");
+const games_1 = require("../../../controllers/bots/tenthings/providers/web/games");
+const skips_1 = require("../../../controllers/bots/tenthings/skips");
 const express_1 = require("express");
 exports.tenthingsWebBotRoute = (0, express_1.Router)();
 exports.tenthingsWebBotRoute.get("/:id", async (req, res) => {

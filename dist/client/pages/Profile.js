@@ -37,8 +37,8 @@ function Profile() {
             });
             setUser(updated);
         }
-        catch {
-            toast("Failed to update profile");
+        catch (err) {
+            toast("Failed to update profile: " + (err?.response?.status ?? err?.message ?? "unknown error"));
         }
     };
     const handleAddFlag = (code) => {

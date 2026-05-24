@@ -4,9 +4,9 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.adminOnly = exports.noTopic = exports.botMuted = exports.chatNotFound = void 0;
-const index_1 = require("@models/index");
-const telegram_1 = __importDefault(require("@root/connections/telegram"));
-const i18n_1 = __importDefault(require("@root/i18n"));
+const index_1 = require("../../../../../models/index");
+const telegram_1 = __importDefault(require("../../../../../connections/telegram"));
+const i18n_1 = __importDefault(require("../../../../../i18n"));
 const players_1 = require("../../players");
 const chatNotFound = async (chat_id) => {
     const inactiveGame = await index_1.Game.findOneAndUpdate({ chat_id }, { $set: { enabled: false } });

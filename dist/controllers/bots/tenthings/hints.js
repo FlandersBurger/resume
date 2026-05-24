@@ -4,8 +4,8 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.getSpecialCharacters = exports.getMaxHints = exports.getHint = exports.processHint = exports.hintCooldown = exports.hintCache = exports.MAX_HINTS = void 0;
-const game_1 = require("@models/tenthings/game");
-const string_helpers_1 = require("@utils/string-helpers");
+const game_1 = require("../../../models/tenthings/game");
+const string_helpers_1 = require("../../../utils/string-helpers");
 const uniq_1 = __importDefault(require("lodash/uniq"));
 const lists_1 = require("./lists");
 exports.MAX_HINTS = 6;

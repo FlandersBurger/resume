@@ -5,8 +5,8 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.postsRoute = void 0;
 const express_1 = require("express");
-const queue_1 = __importDefault(require("@root/queue"));
-const index_1 = require("@models/index");
+const queue_1 = __importDefault(require("../../queue"));
+const index_1 = require("../../models/index");
 exports.postsRoute = (0, express_1.Router)();
 exports.postsRoute.get("/", async (_, res) => {
     const posts = await index_1.Post.find().populate("poster", "username").sort("-date");

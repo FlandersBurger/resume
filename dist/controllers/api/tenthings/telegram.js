@@ -6,13 +6,13 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.tenthingsTelegramBotRoute = exports.TelegramMessageType = void 0;
 const express_1 = require("express");
 const moment_1 = __importDefault(require("moment"));
-const index_1 = require("@models/index");
-const maingame_1 = require("@tenthings/maingame");
-const telegram_1 = __importDefault(require("@root/connections/telegram"));
-const queue_1 = require("@tenthings/providers/telegram/queue");
-const callbacks_1 = __importDefault(require("@tenthings/providers/telegram/callbacks"));
-const commands_1 = require("@tenthings/providers/telegram/commands");
-const jobs_1 = __importDefault(require("@tenthings/jobs"));
+const index_1 = require("../../../models/index");
+const maingame_1 = require("../../bots/tenthings/maingame");
+const telegram_1 = __importDefault(require("../../../connections/telegram"));
+const queue_1 = require("../../bots/tenthings/providers/telegram/queue");
+const callbacks_1 = __importDefault(require("../../bots/tenthings/providers/telegram/callbacks"));
+const commands_1 = require("../../bots/tenthings/providers/telegram/commands");
+const jobs_1 = __importDefault(require("../../bots/tenthings/jobs"));
 console.log(`Scheduled Jobs:\n${jobs_1.default
     .map((j) => ` - ${j.name}: ${moment_1.default.duration((0, moment_1.default)(new Date()).diff(j.nextInvocation())).humanize(true)}`)
     .join("\n")}`);

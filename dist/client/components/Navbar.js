@@ -47,9 +47,6 @@ function Navbar() {
             <li>
               <react_router_dom_1.Link to="/skills">Skills</react_router_dom_1.Link>
             </li>
-            <li>
-              <react_router_dom_1.Link to="/hobbies">Hobbies</react_router_dom_1.Link>
-            </li>
             <Dropdown label="Contact">
               <li>
                 <react_router_dom_1.Link to="/contact">Contact</react_router_dom_1.Link>
@@ -58,7 +55,10 @@ function Navbar() {
                   <react_router_dom_1.Link to="/posts">Chat</react_router_dom_1.Link>
                 </li>)}
             </Dropdown>
-            <Dropdown label="Games">
+            <Dropdown label="Doodles">
+              <li>
+                <react_router_dom_1.Link to="/hobbies">Hobbies</react_router_dom_1.Link>
+              </li>
               <li>
                 <react_router_dom_1.Link to="/asteroids">Asteroids</react_router_dom_1.Link>
               </li>
@@ -113,6 +113,11 @@ function Navbar() {
               </li>)}
           </ul>
           <ul className="nav navbar-nav navbar-right">
+            <li>
+              <a style={{ cursor: "pointer" }} title="Print resume" onClick={() => window.print()}>
+                <i className="fa fa-print"/>
+              </a>
+            </li>
             {currentUser ? (<Dropdown label={currentUser.photoURL ? (<img src={currentUser.photoURL} alt={currentUser.username} className="img-circle img-profile" style={{ height: 34, width: 34, marginTop: -7, marginBottom: -7 }}/>) : (<i className="fa fa-user"/>)}>
                 <li>
                   <react_router_dom_1.Link to="/profile">Profile</react_router_dom_1.Link>

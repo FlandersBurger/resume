@@ -4,10 +4,10 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.sendSuggestionMessage = exports.checkSuggestionProvided = exports.sendSuggestion = void 0;
-const string_helpers_1 = require("@utils/string-helpers");
-const telegram_1 = __importDefault(require("@root/connections/telegram"));
-const players_1 = require("@tenthings/players");
-const i18n_1 = __importDefault(require("@root/i18n"));
+const string_helpers_1 = require("../../../../../utils/string-helpers");
+const telegram_1 = __importDefault(require("../../../../../connections/telegram"));
+const players_1 = require("../../players");
+const i18n_1 = __importDefault(require("../../../../../i18n"));
 const commands_1 = require("./commands");
 const sendSuggestion = async (msg, game, player, command) => {
     if (game && player) {
