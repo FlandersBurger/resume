@@ -268,7 +268,7 @@ export default function TenThingsLists() {
       {!currentUser && <p className="text-danger">You have to be logged in to edit lists</p>}
 
       <div className="row">
-        <div className={selectedList ? "col-md-5" : "col-md-12"}>
+        <div className="col-md-12">
           <ListTable
             lists={lists}
             count={count}
@@ -337,7 +337,7 @@ export default function TenThingsLists() {
         </div>
 
         {editorMounted && selectedList && (
-          <div className="col-md-7">
+          <div>
             <ListEditor
               list={selectedList}
               active={editorVisible}
