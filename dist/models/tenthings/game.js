@@ -19,6 +19,7 @@ const gameSchema = new mongoose_1.Schema({
     platform: { type: String, required: true, default: "telegram" },
     chat_id: { type: Number, required: true, unique: true },
     topicId: { type: Number, required: false },
+    discordChannelId: { type: String, required: false, unique: true, sparse: true },
     enabled: { type: Boolean, required: true, default: true },
     hints: { type: Number, required: true, default: 0 },
     cycles: { type: Number, required: true, default: 0 },
@@ -80,12 +81,16 @@ gameSchema.virtual("provider").get(function () {
     switch (this.platform) {
         case "web":
             return web_1.web;
+        case "discord":
         default:
             return telegram_1.telegram;
     }
 });
 gameSchema.virtual("telegramChannel").get(function () {
     return { chat: this.chat_id, topic: this.topicId };
+});
+gameSchema.virtual("discordChannel").get(function () {
+    return { channelId: this.discordChannelId || "" };
 });
 gameSchema.index({ chat_id: 1 });
 for (const name in db_1.default) {

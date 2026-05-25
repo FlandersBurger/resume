@@ -4,10 +4,11 @@ import { IUser } from "@models/user";
 import { IPlayer } from "@models/tenthings/player";
 import { web } from "@tenthings/providers/web";
 import { telegram } from "@tenthings/providers/telegram";
+// import { discord } from "@tenthings/providers/discord";
 import { Provider } from "@tenthings/providers";
 import { BotLanguage, SupportedLanguage } from "@tenthings/languages";
 
-export type Platform = "telegram" | "web";
+export type Platform = "telegram" | "web" | "discord";
 
 export interface IGameSettings extends Record<string, boolean | string[] | string | number> {
   intro: boolean;
@@ -49,6 +50,8 @@ export interface IGame {
   chat_id: number;
   topicId?: number;
   telegramChannel: { chat: number; topic?: number };
+  discordChannelId?: string;
+  discordChannel: { channelId: string };
   provider: Provider;
   enabled: boolean;
   hints: number;
@@ -91,6 +94,7 @@ const gameSchema = new Schema<IGame>(
     platform: { type: String, required: true, default: "telegram" },
     chat_id: { type: Number, required: true, unique: true },
     topicId: { type: Number, required: false },
+    discordChannelId: { type: String, required: false, unique: true, sparse: true },
     enabled: { type: Boolean, required: true, default: true },
     hints: { type: Number, required: true, default: 0 },
     cycles: { type: Number, required: true, default: 0 },
@@ -155,6 +159,8 @@ gameSchema.virtual("provider").get(function () {
   switch (this.platform) {
     case "web":
       return web;
+    case "discord":
+    // return discord;
     default:
       return telegram;
   }
@@ -162,6 +168,10 @@ gameSchema.virtual("provider").get(function () {
 
 gameSchema.virtual("telegramChannel").get(function () {
   return { chat: this.chat_id, topic: this.topicId };
+});
+
+gameSchema.virtual("discordChannel").get(function () {
+  return { channelId: this.discordChannelId || "" };
 });
 
 gameSchema.index({ chat_id: 1 });

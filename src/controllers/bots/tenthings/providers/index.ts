@@ -4,6 +4,7 @@ import { IPlayer } from "@root/models/tenthings/player";
 
 export type Provider = {
   type: "web" | "telegram" | "discord";
+
   message: (game: IGame, message: string) => void;
   newRound: (game: IGame, list: IList | IGameList) => void;
   endOfRound: (game: IGame, list: IList) => Promise<void>;

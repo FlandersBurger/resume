@@ -24,6 +24,7 @@ import { tenthingsStatsRoute } from "@api/tenthings/stats";
 import { tenthingsSearchRoute } from "@api/tenthings/search";
 import { usersRoute } from "@api/users";
 import { tenthingsTelegramBotRoute } from "@api/tenthings/telegram";
+// import { initDiscordBot } from "@api/tenthings/discord";
 import { redisConnect, subscribe } from "@root/queue";
 import bot from "./connections/telegram";
 import { tenthingsWebBotRoute } from "@api/tenthings/web";
@@ -79,7 +80,7 @@ server.listen(port, async () => {
   if (process.env.NODE_ENV === "production") {
     bot.notifyAdmin("<b>Started Ten Things</b>");
   }
-  //bot.setWebhook("tenthings");
+  // initDiscordBot();
   await subscribe("new_post", (post: any) => {
     websocketServer.broadcast("new_post", post);
   });

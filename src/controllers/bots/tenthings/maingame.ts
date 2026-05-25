@@ -22,6 +22,7 @@ export const createMaingame = async (platformSettings: {
   chat_id: number;
   topicId?: number;
   platform: Platform;
+  discordChannelId?: string;
 }): Promise<HydratedDocument<IGame>> => {
   // const starredLists = await List.find({ starred: true }).select("_id");
   const game = new Game({
