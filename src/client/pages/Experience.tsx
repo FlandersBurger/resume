@@ -157,18 +157,24 @@ export default function Experience() {
     <>
       <Helmet>
         <title>Work Experience — Laurent Debacker</title>
-        <meta name="description" content="Full work history of Laurent Debacker: companies, roles, projects and responsibilities across a career in full stack development." />
+        <meta
+          name="description"
+          content="Full work history of Laurent Debacker: companies, roles, projects and responsibilities across a career in full stack development."
+        />
         <meta property="og:title" content="Work Experience — Laurent Debacker" />
-        <meta property="og:description" content="Full work history of Laurent Debacker: companies, roles, projects and responsibilities across a career in full stack development." />
+        <meta
+          property="og:description"
+          content="Full work history of Laurent Debacker: companies, roles, projects and responsibilities across a career in full stack development."
+        />
         <meta property="og:url" content="https://belgocanadian.com/experience" />
         <link rel="canonical" href="https://belgocanadian.com/experience" />
       </Helmet>
-    <div id="experience-page">
-      <h1>Experience</h1>
-      {jobs.map((job) => (
-        <JobSection key={job.code} job={job} skills={skills} />
-      ))}
-    </div>
+      <div id="experience-page">
+        <h1>Experience</h1>
+        {jobs.map((job) => (
+          <JobSection key={job.code} job={job} skills={skills} />
+        ))}
+      </div>
     </>
   );
 }

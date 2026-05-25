@@ -39,7 +39,10 @@ export default function Hobbies() {
     <div id="hobbies-page">
       <Helmet>
         <title>Hobbies — Laurent Debacker</title>
-        <meta name="description" content="Hobbies and interests of Laurent Debacker: binge-watching, gaming, reading, surfing, and travelling." />
+        <meta
+          name="description"
+          content="Hobbies and interests of Laurent Debacker: binge-watching, gaming, reading, surfing, and travelling."
+        />
         <meta property="og:title" content="Hobbies — Laurent Debacker" />
         <meta property="og:url" content="https://belgocanadian.com/hobbies" />
         <link rel="canonical" href="https://belgocanadian.com/hobbies" />
@@ -48,7 +51,10 @@ export default function Hobbies() {
         {hobbies.map((hobby) => (
           <button
             key={hobby.name}
-            onClick={() => { setSelected(hobby); navigate(`/hobbies/${hobby.name.toLowerCase()}`); }}
+            onClick={() => {
+              setSelected(hobby);
+              navigate(`/hobbies/${hobby.name.toLowerCase()}`);
+            }}
             className={`btn btn-lg ${selected?.name === hobby.name ? "btn-primary" : "btn-default"}`}
             style={{ flex: "1 1 auto", minWidth: 100 }}
           >
@@ -70,7 +76,15 @@ export default function Hobbies() {
                   style={{ width: "100%", aspectRatio: "1", objectFit: "cover" }}
                 />
               </a>
-              <p style={{ fontSize: "0.8em", textAlign: "center", marginTop: 4, wordBreak: "break-word", minHeight: "2.4em" }}>
+              <p
+                style={{
+                  fontSize: "0.8em",
+                  textAlign: "center",
+                  marginTop: 4,
+                  wordBreak: "break-word",
+                  minHeight: "2.4em",
+                }}
+              >
                 {image.name ?? ""}
               </p>
             </div>

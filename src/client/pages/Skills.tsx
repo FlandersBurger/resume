@@ -77,9 +77,15 @@ export default function Skills() {
   const helmetNode = (
     <Helmet>
       <title>Technical Skills — Laurent Debacker</title>
-      <meta name="description" content="Technical skills of Laurent Debacker: programming languages, frameworks, databases, and tools used across full stack development projects." />
+      <meta
+        name="description"
+        content="Technical skills of Laurent Debacker: programming languages, frameworks, databases, and tools used across full stack development projects."
+      />
       <meta property="og:title" content="Technical Skills — Laurent Debacker" />
-      <meta property="og:description" content="Technical skills of Laurent Debacker: programming languages, frameworks, databases, and tools." />
+      <meta
+        property="og:description"
+        content="Technical skills of Laurent Debacker: programming languages, frameworks, databases, and tools."
+      />
       <meta property="og:url" content="https://belgocanadian.com/skills" />
       <link rel="canonical" href="https://belgocanadian.com/skills" />
     </Helmet>

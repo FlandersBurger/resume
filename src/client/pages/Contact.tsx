@@ -33,9 +33,15 @@ export default function Contact() {
     <div id="contact-page">
       <Helmet>
         <title>Contact — Laurent Debacker</title>
-        <meta name="description" content="Get in touch with Laurent Debacker — available for full stack development opportunities in Canada and remotely." />
+        <meta
+          name="description"
+          content="Get in touch with Laurent Debacker — available for full stack development opportunities in Canada and remotely."
+        />
         <meta property="og:title" content="Contact — Laurent Debacker" />
-        <meta property="og:description" content="Get in touch with Laurent Debacker — available for full stack development opportunities." />
+        <meta
+          property="og:description"
+          content="Get in touch with Laurent Debacker — available for full stack development opportunities."
+        />
         <meta property="og:url" content="https://belgocanadian.com/contact" />
         <link rel="canonical" href="https://belgocanadian.com/contact" />
       </Helmet>

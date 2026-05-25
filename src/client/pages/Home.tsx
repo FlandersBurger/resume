@@ -6,9 +6,15 @@ export default function Home() {
     <div id="home-page">
       <Helmet>
         <title>Laurent Debacker — Full Stack Developer</title>
-        <meta name="description" content="Personal resume of Laurent Debacker, a Full Stack Developer based in Duncan, BC, Canada. Belgian-born, Canadian since 2015, fluent in 5 languages." />
+        <meta
+          name="description"
+          content="Personal resume of Laurent Debacker, a Full Stack Developer based in Duncan, BC, Canada. Belgian-born, Canadian since 2015, fluent in 5 languages."
+        />
         <meta property="og:title" content="Laurent Debacker — Full Stack Developer" />
-        <meta property="og:description" content="Personal resume of Laurent Debacker, a Full Stack Developer based in Duncan, BC, Canada." />
+        <meta
+          property="og:description"
+          content="Personal resume of Laurent Debacker, a Full Stack Developer based in Duncan, BC, Canada."
+        />
         <meta property="og:url" content="https://belgocanadian.com/home" />
         <meta property="og:type" content="profile" />
         <link rel="canonical" href="https://belgocanadian.com/home" />
