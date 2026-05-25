@@ -13,6 +13,8 @@ interface Props {
   isAdmin: boolean;
   hasMore: boolean;
   canAddList: boolean;
+  canViewCreator?: boolean;
+  canOpenEditor?: boolean;
   filterCount?: number;
   categoryOptions?: CategoryOption[];
   languageOptions?: Language[];
@@ -43,6 +45,8 @@ export function ListTable({
   isAdmin,
   hasMore,
   canAddList,
+  canViewCreator = true,
+  canOpenEditor = true,
   filterCount = 0,
   categoryOptions = [],
   languageOptions = [],
@@ -321,7 +325,7 @@ export function ListTable({
               style={{ cursor: "pointer" }}
               onClick={() => handleSort("creator")}
             >
-              Creator{sortIcon("creator")}
+              {canViewCreator && <>Creator{sortIcon("creator")}</>}
             </th>
             <th
               className="hidden-xs visible-sm visible-md visible-lg"
@@ -405,7 +409,7 @@ export function ListTable({
             <tr
               key={list._id}
               className={highlightedIds.includes(list._id) ? "success" : ""}
-              style={{ cursor: "pointer" }}
+              style={{ cursor: canOpenEditor ? "pointer" : "default" }}
               onMouseEnter={
                 list.description
                   ? (e) => setTooltip({ text: list.description!, x: e.clientX, y: e.clientY })
@@ -436,39 +440,39 @@ export function ListTable({
                   <i className={list.starred ? "fas fa-star" : "far fa-star"} style={{ cursor: "pointer" }} />
                 </td>
               )}
-              <td onClick={() => onSelect(list)}>{list.name}</td>
-              <td className="hidden-sm visible-md visible-lg" onClick={() => onSelect(list)}>
+              <td onClick={() => canOpenEditor && onSelect(list)}>{list.name}</td>
+              <td className="hidden-sm visible-md visible-lg" onClick={() => canOpenEditor && onSelect(list)}>
                 {getCategoryLabel(list.categories)}
               </td>
-              <td className="hidden-sm hidden-md visible-lg" onClick={() => onSelect(list)}>
-                {list.creator.username}
+              <td className="hidden-sm hidden-md visible-lg" onClick={() => canOpenEditor && onSelect(list)}>
+                {canViewCreator ? list.creator?.username : null}
               </td>
-              <td className="hidden-xs visible-sm visible-md visible-lg" onClick={() => onSelect(list)}>
+              <td className="hidden-xs visible-sm visible-md visible-lg" onClick={() => canOpenEditor && onSelect(list)}>
                 {fmt(list.date)}
               </td>
-              <td className="hidden-sm hidden-md visible-lg" onClick={() => onSelect(list)}>
+              <td className="hidden-sm hidden-md visible-lg" onClick={() => canOpenEditor && onSelect(list)}>
                 {fmt(list.modifyDate)}
               </td>
-              <td onClick={() => onSelect(list)}>{list.answers}</td>
-              <td className="hidden-xs visible-sm visible-md visible-lg" onClick={() => onSelect(list)}>
+              <td onClick={() => canOpenEditor && onSelect(list)}>{list.answers}</td>
+              <td className="hidden-xs visible-sm visible-md visible-lg" onClick={() => canOpenEditor && onSelect(list)}>
                 {list.language}
               </td>
-              <td className="hidden-sm visible-md visible-lg" onClick={() => onSelect(list)}>
+              <td className="hidden-sm visible-md visible-lg" onClick={() => canOpenEditor && onSelect(list)}>
                 {list.upvotes != null && <span className="label label-success">{list.upvotes}</span>}
               </td>
-              <td className="hidden-sm visible-md visible-lg" onClick={() => onSelect(list)}>
+              <td className="hidden-sm visible-md visible-lg" onClick={() => canOpenEditor && onSelect(list)}>
                 {list.downvotes != null && <span className="label label-danger">{list.downvotes}</span>}
               </td>
-              <td className="hidden-sm visible-md visible-lg" onClick={() => onSelect(list)}>
+              <td className="hidden-sm visible-md visible-lg" onClick={() => canOpenEditor && onSelect(list)}>
                 {pct(list.likeRatio)}
               </td>
-              <td className="hidden-sm visible-md visible-lg" onClick={() => onSelect(list)}>
+              <td className="hidden-sm visible-md visible-lg" onClick={() => canOpenEditor && onSelect(list)}>
                 {list.plays ?? ""}
               </td>
-              <td className="hidden-sm visible-md visible-lg" onClick={() => onSelect(list)}>
+              <td className="hidden-sm visible-md visible-lg" onClick={() => canOpenEditor && onSelect(list)}>
                 {pct(list.playRatio)}
               </td>
-              <td className="hidden-sm visible-md visible-lg" onClick={() => onSelect(list)}>
+              <td className="hidden-sm visible-md visible-lg" onClick={() => canOpenEditor && onSelect(list)}>
                 {list.bans ?? ""}
               </td>
               {isAdmin && (

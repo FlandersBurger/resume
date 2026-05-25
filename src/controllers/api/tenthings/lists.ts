@@ -24,20 +24,21 @@ import { telegram } from "@tenthings/providers/telegram";
 export const tenthingsListsRoute = Router();
 
 tenthingsListsRoute.get("/", async (req: QueryableRequest, res: Response) => {
-  if (!res.locals.isAuthorized) res.sendStatus(401);
-  else {
-    const page = parseInt(req.query.page ?? 1);
-    const query = parseQuery(req.query);
-    const count = await List.countDocuments(query);
-    const lists: LeanDocument<IList>[] = await List.find(query)
-      .limit(parseInt(req.query.limit) || 0)
-      .skip(parseInt(req.query.limit) * (page - 1) || 0)
-      .sort({ [req.query.sort_by ?? "date"]: parseInt(req.query.order_by ?? -1) as SortOrder })
-      .populate("creator", "_id username displayName")
-      .populate("values.creator", "_id username displayName")
-      .lean({ virtuals: true });
-    res.json({ result: lists, nextPage: page + 1, count });
-  }
+  const authorized = !!res.locals.isAuthorized;
+  const page = parseInt(req.query.page ?? 1);
+  const query = parseQuery(req.query);
+  const count = await List.countDocuments(query);
+  const lists: LeanDocument<IList>[] = await List.find(query)
+    .limit(parseInt(req.query.limit) || 0)
+    .skip(parseInt(req.query.limit) * (page - 1) || 0)
+    .sort({ [req.query.sort_by ?? "date"]: parseInt(req.query.order_by ?? -1) as SortOrder })
+    .populate(authorized ? "creator" : "", authorized ? "_id username displayName" : "")
+    .populate(authorized ? "values.creator" : "", authorized ? "_id username displayName" : "")
+    .lean({ virtuals: true });
+  const result = authorized
+    ? lists
+    : lists.map(({ creator: _c, values: _v, ...rest }) => rest);
+  res.json({ result, nextPage: page + 1, count });
 });
 
 tenthingsListsRoute.post("/random", async (_: Request, res: Response) => {
@@ -50,14 +51,19 @@ tenthingsListsRoute.post("/random", async (_: Request, res: Response) => {
 });
 
 tenthingsListsRoute.get("/:id", async (req: Request, res: Response) => {
-  if (!res.locals.isAuthorized) res.sendStatus(401);
-  else if (req.params.id === "names") {
+  const authorized = !!res.locals.isAuthorized;
+  if (req.params.id === "names") {
+    if (!authorized) return res.sendStatus(401);
     const listNames = await List.find({}).select("_id name").lean();
     res.json(listNames);
   } else {
     const list = await getList(new Types.ObjectId(req.params.id));
-    if (!list) res.sendStatus(404);
-    else res.json(list);
+    if (!list) return res.sendStatus(404);
+    if (!authorized) {
+      const { values: _v, creator: _c, ...publicList } = list as any;
+      return res.json(publicList);
+    }
+    res.json(list);
   }
 });
 

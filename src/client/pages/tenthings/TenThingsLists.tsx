@@ -274,13 +274,17 @@ export default function TenThingsLists() {
       <h1>Ten Things</h1>
 
       <div className="well well-sm">
-        Works with the{" "}
-        <a href="https://t.me/joinchat/I1Di-1MXGXkjhgNPXi6Vfg" target="_blank" rel="noreferrer">
-          Ten Things Telegram Bot
-        </a>
+        <p>
+          <strong>Ten Things</strong> is a daily trivia game played by thousands of people on{" "}
+          <a href="https://t.me/joinchat/I1Di-1MXGXkjhgNPXi6Vfg" target="_blank" rel="noreferrer">
+            Telegram
+          </a>
+          . Each round, players race to name ten things in a category — from countries in Europe to Oscar-winning films.
+          Browse the list library below, or log in to contribute your own lists to the game.
+        </p>
       </div>
 
-      {!currentUser && <p className="text-danger">You have to be logged in to edit lists</p>}
+      {!currentUser && <p className="text-muted">Log in to create and edit lists.</p>}
 
       <div className="row">
         <div className="col-md-12">
@@ -294,6 +298,8 @@ export default function TenThingsLists() {
             isAdmin={!!currentUser?.admin}
             hasMore={hasMore}
             canAddList={!!currentUser}
+            canViewCreator={!!currentUser}
+            canOpenEditor={!!currentUser}
             filterCount={languageFilter.length + categoryFilter.length}
             categoryOptions={categoryOptions}
             languageOptions={languageOptions}
