@@ -11,6 +11,13 @@ const pages = [
   { path: "/hobbies", priority: "0.7", changefreq: "monthly" },
   { path: "/contact", priority: "0.8", changefreq: "yearly" },
   { path: "/posts", priority: "0.6", changefreq: "weekly" },
+  { path: "/tenthings", priority: "0.9", changefreq: "daily" },
+  { path: "/google", priority: "0.7", changefreq: "monthly" },
+  { path: "/logos", priority: "0.7", changefreq: "monthly" },
+  { path: "/movies", priority: "0.7", changefreq: "monthly" },
+  { path: "/flags", priority: "0.7", changefreq: "monthly" },
+  { path: "/animals", priority: "0.7", changefreq: "monthly" },
+  { path: "/skeletons", priority: "0.7", changefreq: "monthly" },
 ];
 
 sitemapRoute.get("/sitemap.xml", (_req: Request, res: Response) => {

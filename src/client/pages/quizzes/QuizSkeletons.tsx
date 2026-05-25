@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { Helmet } from "react-helmet-async";
 import { getQuizFiles } from "../../services/quizzes";
 
 function shuffle<T>(arr: T[]): T[] {
@@ -36,6 +37,16 @@ export default function QuizSkeletons() {
 
   return (
     <div className="quiz-page quiz-photos-page">
+      <Helmet>
+        <title>Animal Skeletons Quiz — belgocanadian.com</title>
+        <meta
+          name="description"
+          content="Can you identify animals from their skeletons? Test your biology knowledge in this unique visual quiz."
+        />
+        <meta property="og:title" content="Animal Skeletons Quiz" />
+        <meta property="og:url" content="https://belgocanadian.com/skeletons" />
+        <link rel="canonical" href="https://belgocanadian.com/skeletons" />
+      </Helmet>
       <h1>Animal Skeletons</h1>
       {animals.map((animal, i) => {
         const panelClass = !animal.guess

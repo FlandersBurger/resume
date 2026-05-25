@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react";
+import { Helmet } from "react-helmet-async";
 import { getQuizFiles } from "../../services/quizzes";
 import { fuzzyMatch } from "../../services/games";
 
@@ -6,9 +7,10 @@ interface ImageQuizProps {
   name: string;
   title: string;
   labelsUrl?: string;
+  description?: string;
 }
 
-export function ImageQuiz({ name, title }: ImageQuizProps) {
+export function ImageQuiz({ name, title, description }: ImageQuizProps) {
   const [files, setFiles] = useState<string[]>([]);
 
   useEffect(() => {
@@ -17,6 +19,14 @@ export function ImageQuiz({ name, title }: ImageQuizProps) {
 
   return (
     <div className="quiz-page quiz-photos-page">
+      <Helmet>
+        <title>{title} Quiz — belgocanadian.com</title>
+        <meta name="description" content={description ?? `Test your knowledge with the ${title} quiz.`} />
+        <meta property="og:title" content={`${title} Quiz`} />
+        <meta property="og:description" content={description ?? `Test your knowledge with the ${title} quiz.`} />
+        <meta property="og:url" content={`https://belgocanadian.com/${name}`} />
+        <link rel="canonical" href={`https://belgocanadian.com/${name}`} />
+      </Helmet>
       <h1>{title}</h1>
       {files.map((file, i) => (
         <div key={i} className="panel panel-default">
@@ -144,7 +154,7 @@ interface FuzzyItem {
   matchedLabel: string | null;
 }
 
-export function FuzzyImageQuiz({ name, title, labelsUrl }: ImageQuizProps) {
+export function FuzzyImageQuiz({ name, title, labelsUrl, description }: ImageQuizProps) {
   const [items, setItems] = useState<FuzzyItem[]>([]);
   const [fuzzyValues, setFuzzyValues] = useState<string[]>([]);
   const [aliasToLabel, setAliasToLabel] = useState<Record<string, string>>({});
@@ -206,6 +216,14 @@ export function FuzzyImageQuiz({ name, title, labelsUrl }: ImageQuizProps) {
 
   return (
     <div className="quiz-page quiz-photos-page">
+      <Helmet>
+        <title>{title} Quiz — belgocanadian.com</title>
+        <meta name="description" content={description ?? `Test your knowledge with the ${title} quiz.`} />
+        <meta property="og:title" content={`${title} Quiz`} />
+        <meta property="og:description" content={description ?? `Test your knowledge with the ${title} quiz.`} />
+        <meta property="og:url" content={`https://belgocanadian.com/${name}`} />
+        <link rel="canonical" href={`https://belgocanadian.com/${name}`} />
+      </Helmet>
       <h1>{title}</h1>
       {items.map((item, i) => {
         const panelClass =

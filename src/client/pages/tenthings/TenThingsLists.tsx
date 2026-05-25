@@ -1,5 +1,6 @@
 import { useEffect, useState, useCallback, useRef } from "react";
 import { useSearchParams } from "react-router-dom";
+import { Helmet } from "react-helmet-async";
 import {
   getLists,
   getList,
@@ -256,6 +257,20 @@ export default function TenThingsLists() {
 
   return (
     <div id="tenthings-page">
+      <Helmet>
+        <title>Ten Things — Trivia Lists for the Telegram Bot</title>
+        <meta
+          name="description"
+          content="Browse and manage thousands of trivia lists powering the Ten Things Telegram bot. Play the daily trivia game with friends on Telegram."
+        />
+        <meta property="og:title" content="Ten Things — Trivia Lists for the Telegram Bot" />
+        <meta
+          property="og:description"
+          content="Browse and manage thousands of trivia lists powering the Ten Things Telegram bot. Play the daily trivia game with friends on Telegram."
+        />
+        <meta property="og:url" content="https://belgocanadian.com/tenthings" />
+        <link rel="canonical" href="https://belgocanadian.com/tenthings" />
+      </Helmet>
       <h1>Ten Things</h1>
 
       <div className="well well-sm">
