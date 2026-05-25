@@ -515,9 +515,7 @@ export default function Asteroids() {
         backgroundSize: "cover",
       }}
     >
-      <AsteroidsCanvas
-        ref={canvasRef}
-      />
+      <AsteroidsCanvas ref={canvasRef} />
       <div style={{ position: "fixed", top: 10, right: 20, color: "#fff", fontSize: 24 }}>
         Score: {score} | High: {highscore}
       </div>

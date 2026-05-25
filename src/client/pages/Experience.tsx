@@ -28,11 +28,15 @@ const JobImageBox = styled.div`
   @media (max-width: 768px) {
     margin-top: 10px;
     text-align: center;
-    img { max-height: 80px; }
+    img {
+      max-height: 80px;
+    }
   }
   @media (min-width: 768px) {
     margin-top: 20px;
-    img { width: 100%; }
+    img {
+      width: 100%;
+    }
   }
 `;
 

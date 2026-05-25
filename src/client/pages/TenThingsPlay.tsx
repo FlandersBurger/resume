@@ -51,7 +51,10 @@ const AnswerRow = styled.div`
   justify-content: space-between;
   width: 100%;
   gap: 8px;
-  h4 { margin: 0; font-size: 15px; }
+  h4 {
+    margin: 0;
+    font-size: 15px;
+  }
 `;
 
 const Blurb = styled.div`

@@ -324,10 +324,7 @@ const ValueRow = memo(
             />
           )}
         </ImageCell>
-        <DeleteColumn
-          $canDelete={canDelete && !readOnly}
-          onClick={() => canDelete && !readOnly && onRemove(index)}
-        >
+        <DeleteColumn $canDelete={canDelete && !readOnly} onClick={() => canDelete && !readOnly && onRemove(index)}>
           <i className="fas fa-trash" />
         </DeleteColumn>
       </tr>
@@ -731,68 +728,68 @@ export function ListEditor({
 
       {/* Values table */}
       <EditorTableContainer>
-      <table className="table table-striped">
-        <thead>
-          <tr>
-            <th className="col-1 hidden-xs hidden-sm visible-md visible-lg">
-              <i className="fas fa-user" title="Creator" />
-            </th>
-            <th className="col-1 hidden-xs hidden-sm visible-md visible-lg">
-              <i className="fas fa-calendar" title="Date added" />
-            </th>
-            <th className="col-4">Answer</th>
-            <th className="col-5">Blurb</th>
-            <th className="col-1 hidden-xs hidden-sm visible-md visible-lg" style={{ width: 36 }}>
-              <i className="fas fa-link" />
-            </th>
-            <th className="col-1">
-              <i className="fas fa-toolbox" />
-            </th>
-          </tr>
-        </thead>
-        <tbody>
-          {/* New item row */}
-          {!readOnly && list.name && list.categories.length > 0 && (
+        <table className="table table-striped">
+          <thead>
             <tr>
-              <td className="hidden-xs hidden-sm visible-md visible-lg" />
-              <td className="hidden-xs hidden-sm visible-md visible-lg" />
-              <InputCell>
-                <AutoTextarea
-                  value={newItem.value}
-                  placeholder={`New answer (${list.values.length + 1})`}
-                  onChange={(v) => setNewItem({ ...newItem, value: v })}
-                />
-              </InputCell>
-              <InputCell>
-                <AutoTextarea
-                  value={newItem.blurb}
-                  placeholder={`Display after guessing ${newItem.value || "new answer"} (Can be a URL)`}
-                  onChange={(v) => setNewItem({ ...newItem, blurb: v })}
-                />
-              </InputCell>
-              <td colSpan={2}>
-                <button className="btn btn-sm btn-default" onClick={addValue} disabled={!newItem.value}>
-                  <i className="fas fa-plus" />
-                </button>
-              </td>
+              <th className="col-1 hidden-xs hidden-sm visible-md visible-lg">
+                <i className="fas fa-user" title="Creator" />
+              </th>
+              <th className="col-1 hidden-xs hidden-sm visible-md visible-lg">
+                <i className="fas fa-calendar" title="Date added" />
+              </th>
+              <th className="col-4">Answer</th>
+              <th className="col-5">Blurb</th>
+              <th className="col-1 hidden-xs hidden-sm visible-md visible-lg" style={{ width: 36 }}>
+                <i className="fas fa-link" />
+              </th>
+              <th className="col-1">
+                <i className="fas fa-toolbox" />
+              </th>
             </tr>
-          )}
+          </thead>
+          <tbody>
+            {/* New item row */}
+            {!readOnly && list.name && list.categories.length > 0 && (
+              <tr>
+                <td className="hidden-xs hidden-sm visible-md visible-lg" />
+                <td className="hidden-xs hidden-sm visible-md visible-lg" />
+                <InputCell>
+                  <AutoTextarea
+                    value={newItem.value}
+                    placeholder={`New answer (${list.values.length + 1})`}
+                    onChange={(v) => setNewItem({ ...newItem, value: v })}
+                  />
+                </InputCell>
+                <InputCell>
+                  <AutoTextarea
+                    value={newItem.blurb}
+                    placeholder={`Display after guessing ${newItem.value || "new answer"} (Can be a URL)`}
+                    onChange={(v) => setNewItem({ ...newItem, blurb: v })}
+                  />
+                </InputCell>
+                <td colSpan={2}>
+                  <button className="btn btn-sm btn-default" onClick={addValue} disabled={!newItem.value}>
+                    <i className="fas fa-plus" />
+                  </button>
+                </td>
+              </tr>
+            )}
 
-          {/* Existing items */}
-          {list.values.map((v, i) => (
-            <ValueRow
-              key={v._id?.toString() || i}
-              v={v}
-              index={i}
-              readOnly={readOnly}
-              total={list.values.length}
-              onUpdate={updateValue}
-              onRemove={removeValue}
-              onBlurbClick={setSelectedItem}
-            />
-          ))}
-        </tbody>
-      </table>
+            {/* Existing items */}
+            {list.values.map((v, i) => (
+              <ValueRow
+                key={v._id?.toString() || i}
+                v={v}
+                index={i}
+                readOnly={readOnly}
+                total={list.values.length}
+                onUpdate={updateValue}
+                onRemove={removeValue}
+                onBlurbClick={setSelectedItem}
+              />
+            ))}
+          </tbody>
+        </table>
       </EditorTableContainer>
     </EditListPanel>
   );

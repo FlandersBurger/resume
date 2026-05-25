@@ -62,7 +62,8 @@ const HomeInfoItem = styled.div`
   padding: 10px 16px;
   border-radius: 8px;
   background: rgba(128, 128, 128, 0.08);
-  .fa, .fab {
+  .fa,
+  .fab {
     font-size: 1.1em;
     width: 20px;
     text-align: center;
@@ -82,7 +83,7 @@ const HomeNavBtn = styled(Link)`
 
 export default function Home() {
   return (
-      <HomePage>
+    <HomePage>
       <Helmet>
         <title>Laurent Debacker — Full Stack Developer</title>
         <meta

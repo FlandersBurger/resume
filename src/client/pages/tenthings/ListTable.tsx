@@ -330,204 +330,206 @@ export function ListTable({
 
       <ListsTableWrapper>
         <table className="table table-striped table-hover">
-        <thead>
-          <tr>
-            {isAdmin && <th style={{ width: 24 }} />}
-            {isAdmin && (
-              <th style={{ width: 24 }}>
-                <i className="fas fa-star-half-alt" />
+          <thead>
+            <tr>
+              {isAdmin && <th style={{ width: 24 }} />}
+              {isAdmin && (
+                <th style={{ width: 24 }}>
+                  <i className="fas fa-star-half-alt" />
+                </th>
+              )}
+              <th style={{ cursor: "pointer" }} onClick={() => handleSort("name")}>
+                Name{" "}
+                <span style={{ fontWeight: "lighter", fontSize: "small" }}>
+                  ({lists.length}/{count})
+                </span>
+                {sortIcon("name")}
               </th>
-            )}
-            <th style={{ cursor: "pointer" }} onClick={() => handleSort("name")}>
-              Name{" "}
-              <span style={{ fontWeight: "lighter", fontSize: "small" }}>
-                ({lists.length}/{count})
-              </span>
-              {sortIcon("name")}
-            </th>
-            <th
-              className="hidden-sm visible-md visible-lg"
-              style={{ cursor: "pointer" }}
-              onClick={() => handleSort("categories")}
-            >
-              Categories{sortIcon("categories")}
-            </th>
-            <th
-              className="hidden-sm hidden-md visible-lg"
-              style={{ cursor: "pointer" }}
-              onClick={() => handleSort("creator")}
-            >
-              {canViewCreator && <>Creator{sortIcon("creator")}</>}
-            </th>
-            <th
-              className="hidden-xs visible-sm visible-md visible-lg"
-              style={{ cursor: "pointer" }}
-              onClick={() => handleSort("date")}
-            >
-              Created{sortIcon("date")}
-            </th>
-            <th
-              className="hidden-sm hidden-md visible-lg"
-              style={{ cursor: "pointer" }}
-              onClick={() => handleSort("modifyDate")}
-            >
-              Updated{sortIcon("modifyDate")}
-            </th>
-            <th style={{ cursor: "pointer" }} onClick={() => handleSort("answers")}>
-              <i className="fas fa-list-ol" title="Values" />
-              {sortIcon("answers")}
-            </th>
-            <th
-              className="hidden-xs visible-sm visible-md visible-lg"
-              style={{ cursor: "pointer" }}
-              onClick={() => handleSort("language")}
-            >
-              <i className="fas fa-language" title="Language" />
-              {sortIcon("language")}
-            </th>
-            <th
-              className="hidden-sm visible-md visible-lg"
-              style={{ cursor: "pointer" }}
-              onClick={() => handleSort("upvotes")}
-            >
-              <i className="fas fa-thumbs-up text-success" title="Upvotes" />
-              {sortIcon("upvotes")}
-            </th>
-            <th
-              className="hidden-sm visible-md visible-lg"
-              style={{ cursor: "pointer" }}
-              onClick={() => handleSort("downvotes")}
-            >
-              <i className="fas fa-thumbs-down text-danger" title="Downvotes" />
-              {sortIcon("downvotes")}
-            </th>
-            <th
-              className="hidden-sm visible-md visible-lg"
-              style={{ cursor: "pointer" }}
-              onClick={() => handleSort("likeRatio")}
-            >
-              <i className="fas fa-heart" title="Like Ratio" />
-              {sortIcon("likeRatio")}
-            </th>
-            <th
-              className="hidden-sm visible-md visible-lg"
-              style={{ cursor: "pointer" }}
-              onClick={() => handleSort("plays")}
-            >
-              <i className="fas fa-play" title="Plays" />
-              {sortIcon("plays")}
-            </th>
-            <th
-              className="hidden-sm visible-md visible-lg"
-              style={{ cursor: "pointer" }}
-              onClick={() => handleSort("playRatio")}
-            >
-              <i className="fas fa-percentage" title="Play Ratio" />
-              {sortIcon("playRatio")}
-            </th>
-            <th
-              className="hidden-sm visible-md visible-lg"
-              style={{ cursor: "pointer" }}
-              onClick={() => handleSort("bans")}
-            >
-              <i className="fas fa-ban" title="Bans" />
-              {sortIcon("bans")}
-            </th>
-            {isAdmin && <th className="hidden-xs visible-sm visible-md visible-lg" style={{ width: 32 }} />}
-          </tr>
-        </thead>
-        <tbody>
-          {sortedLists.map((list) => (
-            <tr
-              key={list._id}
-              className={highlightedIds.includes(list._id) ? "success" : ""}
-              style={{ cursor: canOpenEditor ? "pointer" : "default" }}
-              onMouseEnter={
-                list.description
-                  ? (e) => setTooltip({ text: list.description!, x: e.clientX, y: e.clientY })
-                  : undefined
-              }
-              onMouseMove={
-                list.description ? (e) => setTooltip((t) => (t ? { ...t, x: e.clientX, y: e.clientY } : t)) : undefined
-              }
-              onMouseLeave={list.description ? () => setTooltip(null) : undefined}
-            >
-              {isAdmin && (
-                <td
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    onToggleHighlight(list._id);
-                  }}
-                >
-                  <i className={highlightedIds.includes(list._id) ? "fas fa-check-square" : "far fa-square"} />
-                </td>
-              )}
-              {isAdmin && (
-                <td
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    onFavorite?.(list);
-                  }}
-                >
-                  <i className={list.starred ? "fas fa-star" : "far fa-star"} style={{ cursor: "pointer" }} />
-                </td>
-              )}
-              <td onClick={() => canOpenEditor && onSelect(list)}>{list.name}</td>
-              <td className="hidden-sm visible-md visible-lg" onClick={() => canOpenEditor && onSelect(list)}>
-                {getCategoryLabel(list.categories)}
-              </td>
-              <td className="hidden-sm hidden-md visible-lg" onClick={() => canOpenEditor && onSelect(list)}>
-                {canViewCreator ? list.creator?.username : null}
-              </td>
-              <td
-                className="hidden-xs visible-sm visible-md visible-lg"
-                onClick={() => canOpenEditor && onSelect(list)}
+              <th
+                className="hidden-sm visible-md visible-lg"
+                style={{ cursor: "pointer" }}
+                onClick={() => handleSort("categories")}
               >
-                {fmt(list.date)}
-              </td>
-              <td className="hidden-sm hidden-md visible-lg" onClick={() => canOpenEditor && onSelect(list)}>
-                {fmt(list.modifyDate)}
-              </td>
-              <td onClick={() => canOpenEditor && onSelect(list)}>{list.answers}</td>
-              <td
-                className="hidden-xs visible-sm visible-md visible-lg"
-                onClick={() => canOpenEditor && onSelect(list)}
+                Categories{sortIcon("categories")}
+              </th>
+              <th
+                className="hidden-sm hidden-md visible-lg"
+                style={{ cursor: "pointer" }}
+                onClick={() => handleSort("creator")}
               >
-                {list.language}
-              </td>
-              <td className="hidden-sm visible-md visible-lg" onClick={() => canOpenEditor && onSelect(list)}>
-                {list.upvotes != null && <span className="label label-success">{list.upvotes}</span>}
-              </td>
-              <td className="hidden-sm visible-md visible-lg" onClick={() => canOpenEditor && onSelect(list)}>
-                {list.downvotes != null && <span className="label label-danger">{list.downvotes}</span>}
-              </td>
-              <td className="hidden-sm visible-md visible-lg" onClick={() => canOpenEditor && onSelect(list)}>
-                {pct(list.likeRatio)}
-              </td>
-              <td className="hidden-sm visible-md visible-lg" onClick={() => canOpenEditor && onSelect(list)}>
-                {list.plays ?? ""}
-              </td>
-              <td className="hidden-sm visible-md visible-lg" onClick={() => canOpenEditor && onSelect(list)}>
-                {pct(list.playRatio)}
-              </td>
-              <td className="hidden-sm visible-md visible-lg" onClick={() => canOpenEditor && onSelect(list)}>
-                {list.bans ?? ""}
-              </td>
-              {isAdmin && (
+                {canViewCreator && <>Creator{sortIcon("creator")}</>}
+              </th>
+              <th
+                className="hidden-xs visible-sm visible-md visible-lg"
+                style={{ cursor: "pointer" }}
+                onClick={() => handleSort("date")}
+              >
+                Created{sortIcon("date")}
+              </th>
+              <th
+                className="hidden-sm hidden-md visible-lg"
+                style={{ cursor: "pointer" }}
+                onClick={() => handleSort("modifyDate")}
+              >
+                Updated{sortIcon("modifyDate")}
+              </th>
+              <th style={{ cursor: "pointer" }} onClick={() => handleSort("answers")}>
+                <i className="fas fa-list-ol" title="Values" />
+                {sortIcon("answers")}
+              </th>
+              <th
+                className="hidden-xs visible-sm visible-md visible-lg"
+                style={{ cursor: "pointer" }}
+                onClick={() => handleSort("language")}
+              >
+                <i className="fas fa-language" title="Language" />
+                {sortIcon("language")}
+              </th>
+              <th
+                className="hidden-sm visible-md visible-lg"
+                style={{ cursor: "pointer" }}
+                onClick={() => handleSort("upvotes")}
+              >
+                <i className="fas fa-thumbs-up text-success" title="Upvotes" />
+                {sortIcon("upvotes")}
+              </th>
+              <th
+                className="hidden-sm visible-md visible-lg"
+                style={{ cursor: "pointer" }}
+                onClick={() => handleSort("downvotes")}
+              >
+                <i className="fas fa-thumbs-down text-danger" title="Downvotes" />
+                {sortIcon("downvotes")}
+              </th>
+              <th
+                className="hidden-sm visible-md visible-lg"
+                style={{ cursor: "pointer" }}
+                onClick={() => handleSort("likeRatio")}
+              >
+                <i className="fas fa-heart" title="Like Ratio" />
+                {sortIcon("likeRatio")}
+              </th>
+              <th
+                className="hidden-sm visible-md visible-lg"
+                style={{ cursor: "pointer" }}
+                onClick={() => handleSort("plays")}
+              >
+                <i className="fas fa-play" title="Plays" />
+                {sortIcon("plays")}
+              </th>
+              <th
+                className="hidden-sm visible-md visible-lg"
+                style={{ cursor: "pointer" }}
+                onClick={() => handleSort("playRatio")}
+              >
+                <i className="fas fa-percentage" title="Play Ratio" />
+                {sortIcon("playRatio")}
+              </th>
+              <th
+                className="hidden-sm visible-md visible-lg"
+                style={{ cursor: "pointer" }}
+                onClick={() => handleSort("bans")}
+              >
+                <i className="fas fa-ban" title="Bans" />
+                {sortIcon("bans")}
+              </th>
+              {isAdmin && <th className="hidden-xs visible-sm visible-md visible-lg" style={{ width: 32 }} />}
+            </tr>
+          </thead>
+          <tbody>
+            {sortedLists.map((list) => (
+              <tr
+                key={list._id}
+                className={highlightedIds.includes(list._id) ? "success" : ""}
+                style={{ cursor: canOpenEditor ? "pointer" : "default" }}
+                onMouseEnter={
+                  list.description
+                    ? (e) => setTooltip({ text: list.description!, x: e.clientX, y: e.clientY })
+                    : undefined
+                }
+                onMouseMove={
+                  list.description
+                    ? (e) => setTooltip((t) => (t ? { ...t, x: e.clientX, y: e.clientY } : t))
+                    : undefined
+                }
+                onMouseLeave={list.description ? () => setTooltip(null) : undefined}
+              >
+                {isAdmin && (
+                  <td
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      onToggleHighlight(list._id);
+                    }}
+                  >
+                    <i className={highlightedIds.includes(list._id) ? "fas fa-check-square" : "far fa-square"} />
+                  </td>
+                )}
+                {isAdmin && (
+                  <td
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      onFavorite?.(list);
+                    }}
+                  >
+                    <i className={list.starred ? "fas fa-star" : "far fa-star"} style={{ cursor: "pointer" }} />
+                  </td>
+                )}
+                <td onClick={() => canOpenEditor && onSelect(list)}>{list.name}</td>
+                <td className="hidden-sm visible-md visible-lg" onClick={() => canOpenEditor && onSelect(list)}>
+                  {getCategoryLabel(list.categories)}
+                </td>
+                <td className="hidden-sm hidden-md visible-lg" onClick={() => canOpenEditor && onSelect(list)}>
+                  {canViewCreator ? list.creator?.username : null}
+                </td>
                 <td
                   className="hidden-xs visible-sm visible-md visible-lg"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    onDeleteList?.(list);
-                  }}
+                  onClick={() => canOpenEditor && onSelect(list)}
                 >
-                  <i className="fas fa-trash-alt delete" style={{ cursor: "pointer" }} />
+                  {fmt(list.date)}
                 </td>
-              )}
-            </tr>
-          ))}
-        </tbody>
-      </table>
+                <td className="hidden-sm hidden-md visible-lg" onClick={() => canOpenEditor && onSelect(list)}>
+                  {fmt(list.modifyDate)}
+                </td>
+                <td onClick={() => canOpenEditor && onSelect(list)}>{list.answers}</td>
+                <td
+                  className="hidden-xs visible-sm visible-md visible-lg"
+                  onClick={() => canOpenEditor && onSelect(list)}
+                >
+                  {list.language}
+                </td>
+                <td className="hidden-sm visible-md visible-lg" onClick={() => canOpenEditor && onSelect(list)}>
+                  {list.upvotes != null && <span className="label label-success">{list.upvotes}</span>}
+                </td>
+                <td className="hidden-sm visible-md visible-lg" onClick={() => canOpenEditor && onSelect(list)}>
+                  {list.downvotes != null && <span className="label label-danger">{list.downvotes}</span>}
+                </td>
+                <td className="hidden-sm visible-md visible-lg" onClick={() => canOpenEditor && onSelect(list)}>
+                  {pct(list.likeRatio)}
+                </td>
+                <td className="hidden-sm visible-md visible-lg" onClick={() => canOpenEditor && onSelect(list)}>
+                  {list.plays ?? ""}
+                </td>
+                <td className="hidden-sm visible-md visible-lg" onClick={() => canOpenEditor && onSelect(list)}>
+                  {pct(list.playRatio)}
+                </td>
+                <td className="hidden-sm visible-md visible-lg" onClick={() => canOpenEditor && onSelect(list)}>
+                  {list.bans ?? ""}
+                </td>
+                {isAdmin && (
+                  <td
+                    className="hidden-xs visible-sm visible-md visible-lg"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      onDeleteList?.(list);
+                    }}
+                  >
+                    <i className="fas fa-trash-alt delete" style={{ cursor: "pointer" }} />
+                  </td>
+                )}
+              </tr>
+            ))}
+          </tbody>
+        </table>
       </ListsTableWrapper>
 
       {loading && (

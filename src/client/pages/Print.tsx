@@ -138,7 +138,9 @@ const PrJobResponsibilities = styled.ul`
   margin: 0;
   padding-left: 14pt;
   font-size: 8.5pt;
-  li { margin-bottom: 1.5pt; }
+  li {
+    margin-bottom: 1.5pt;
+  }
 `;
 
 const PrLangs = styled.div`
