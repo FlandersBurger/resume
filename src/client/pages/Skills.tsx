@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import DOMPurify from "dompurify";
+import { Helmet } from "react-helmet-async";
 
 interface Skill {
   code: string;
@@ -73,6 +74,17 @@ export default function Skills() {
   const [selectedSkill, setSelectedSkill] = useState<Skill | null>(null);
   const [projects, setProjects] = useState<Project[]>([]);
 
+  const helmetNode = (
+    <Helmet>
+      <title>Technical Skills — Laurent Debacker</title>
+      <meta name="description" content="Technical skills of Laurent Debacker: programming languages, frameworks, databases, and tools used across full stack development projects." />
+      <meta property="og:title" content="Technical Skills — Laurent Debacker" />
+      <meta property="og:description" content="Technical skills of Laurent Debacker: programming languages, frameworks, databases, and tools." />
+      <meta property="og:url" content="https://belgocanadian.com/skills" />
+      <link rel="canonical" href="https://belgocanadian.com/skills" />
+    </Helmet>
+  );
+
   useEffect(() => {
     fetch("/skills.json")
       .then((r) => r.json())
@@ -97,6 +109,7 @@ export default function Skills() {
 
   return (
     <div id="skills-page">
+      {helmetNode}
       <h1>Skills</h1>
       <div className="skill-selector-wrap col-xs-3" style={{ padding: 0 }}>
         <div className="skill-selector">

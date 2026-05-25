@@ -1,8 +1,44 @@
 import { Link } from "react-router-dom";
+import { Helmet } from "react-helmet-async";
 
 export default function Home() {
   return (
     <div id="home-page">
+      <Helmet>
+        <title>Laurent Debacker — Full Stack Developer</title>
+        <meta name="description" content="Personal resume of Laurent Debacker, a Full Stack Developer based in Duncan, BC, Canada. Belgian-born, Canadian since 2015, fluent in 5 languages." />
+        <meta property="og:title" content="Laurent Debacker — Full Stack Developer" />
+        <meta property="og:description" content="Personal resume of Laurent Debacker, a Full Stack Developer based in Duncan, BC, Canada." />
+        <meta property="og:url" content="https://belgocanadian.com/home" />
+        <meta property="og:type" content="profile" />
+        <link rel="canonical" href="https://belgocanadian.com/home" />
+        <script type="application/ld+json">{`
+          {
+            "@context": "https://schema.org",
+            "@type": "Person",
+            "name": "Laurent Debacker",
+            "jobTitle": "Full Stack Developer",
+            "url": "https://belgocanadian.com/home",
+            "image": "https://belgocanadian.com/profile.jpg",
+            "address": {
+              "@type": "PostalAddress",
+              "addressLocality": "Duncan",
+              "addressRegion": "BC",
+              "addressCountry": "CA"
+            },
+            "alumniOf": {
+              "@type": "EducationalOrganization",
+              "name": "Bachelor of Computer Science"
+            },
+            "knowsLanguage": ["French", "English", "Dutch", "German", "West Flemish"],
+            "sameAs": [
+              "https://www.linkedin.com/in/laurent-debacker-1633a916",
+              "https://github.com/FlandersBurger",
+              "https://www.instagram.com/flandersburger/"
+            ]
+          }
+        `}</script>
+      </Helmet>
       <div className="home-hero">
         <img src="/profile.jpg" alt="Laurent Debacker" className="home-avatar" />
         <div className="home-hero-text">

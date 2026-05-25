@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
+import { Helmet } from "react-helmet-async";
 
 interface HobbyImage {
   file: string;
@@ -36,6 +37,13 @@ export default function Hobbies() {
 
   return (
     <div id="hobbies-page">
+      <Helmet>
+        <title>Hobbies — Laurent Debacker</title>
+        <meta name="description" content="Hobbies and interests of Laurent Debacker: binge-watching, gaming, reading, surfing, and travelling." />
+        <meta property="og:title" content="Hobbies — Laurent Debacker" />
+        <meta property="og:url" content="https://belgocanadian.com/hobbies" />
+        <link rel="canonical" href="https://belgocanadian.com/hobbies" />
+      </Helmet>
       <div style={{ display: "flex", gap: 8, flexWrap: "wrap", marginBottom: 24 }}>
         {hobbies.map((hobby) => (
           <button

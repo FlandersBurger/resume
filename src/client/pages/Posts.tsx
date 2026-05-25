@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { fetchPosts, createPost, getPost, Post } from "../services/posts";
 import { useApp } from "../context/AppContext";
 import { useWebSocket } from "../hooks/useWebSocket";
+import { Helmet } from "react-helmet-async";
 
 export default function Posts() {
   const { currentUser } = useApp();
@@ -33,6 +34,13 @@ export default function Posts() {
 
   return (
     <div className="container">
+      <Helmet>
+        <title>Posts — Laurent Debacker</title>
+        <meta name="description" content="Personal posts and updates by Laurent Debacker." />
+        <meta property="og:title" content="Posts — Laurent Debacker" />
+        <meta property="og:url" content="https://belgocanadian.com/posts" />
+        <link rel="canonical" href="https://belgocanadian.com/posts" />
+      </Helmet>
       <br />
       <div className="form-group">
         <div className="input-group">

@@ -17,6 +17,7 @@ const quizzes_1 = require("./controllers/api/quizzes");
 const games_1 = require("./controllers/api/games");
 const posts_1 = require("./controllers/api/posts");
 const static_1 = require("./controllers/static");
+const sitemap_1 = require("./controllers/sitemap");
 const telegram_1 = require("./controllers/api/telegram");
 const categories_1 = require("./controllers/api/tenthings/categories");
 const games_2 = require("./controllers/api/tenthings/games");
@@ -55,6 +56,7 @@ app.use("/api/tenthings/stats", stats_1.tenthingsStatsRoute);
 app.use("/api/tenthings/search", search_1.tenthingsSearchRoute);
 app.use("/api/tenthings/web", web_1.tenthingsWebBotRoute);
 app.use("/bots/tenthings", telegram_2.tenthingsTelegramBotRoute);
+app.use(sitemap_1.sitemapRoute);
 app.use(static_1.staticRoute);
 app.use((err, _req, res, _next) => {
     console.error(err.stack);

@@ -12,6 +12,7 @@ import { quizzesRoute } from "@api/quizzes";
 import { gamesRoute } from "@api/games";
 import { postsRoute } from "@api/posts";
 import { staticRoute } from "@root/controllers/static";
+import { sitemapRoute } from "@root/controllers/sitemap";
 import { telegramRoute } from "@api/telegram";
 import { tenthingsCategoriesRoute } from "@api/tenthings/categories";
 import { tenthingsGamesRoute } from "@api/tenthings/games";
@@ -60,6 +61,7 @@ app.use("/api/tenthings/web", tenthingsWebBotRoute);
 
 app.use("/bots/tenthings", tenthingsTelegramBotRoute);
 
+app.use(sitemapRoute);
 app.use(staticRoute);
 
 app.use((err: Error, _req: Request, res: Response, _next: NextFunction) => {

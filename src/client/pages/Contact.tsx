@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { sendEmail } from "../services/email";
 import { useApp } from "../context/AppContext";
+import { Helmet } from "react-helmet-async";
 
 const OPTIONS = [
   { name: "Spam", text: "I am a spam bot and automatically check the first option I find!" },
@@ -30,6 +31,14 @@ export default function Contact() {
 
   return (
     <div id="contact-page">
+      <Helmet>
+        <title>Contact — Laurent Debacker</title>
+        <meta name="description" content="Get in touch with Laurent Debacker — available for full stack development opportunities in Canada and remotely." />
+        <meta property="og:title" content="Contact — Laurent Debacker" />
+        <meta property="og:description" content="Get in touch with Laurent Debacker — available for full stack development opportunities." />
+        <meta property="og:url" content="https://belgocanadian.com/contact" />
+        <link rel="canonical" href="https://belgocanadian.com/contact" />
+      </Helmet>
       <h2>Contact</h2>
       {sent && (
         <h4>Thanks for dropping a line, I usually read my mails the same day unless I happen to be on holiday :)</h4>
