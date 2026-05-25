@@ -447,14 +447,20 @@ export function ListTable({
               <td className="hidden-sm hidden-md visible-lg" onClick={() => canOpenEditor && onSelect(list)}>
                 {canViewCreator ? list.creator?.username : null}
               </td>
-              <td className="hidden-xs visible-sm visible-md visible-lg" onClick={() => canOpenEditor && onSelect(list)}>
+              <td
+                className="hidden-xs visible-sm visible-md visible-lg"
+                onClick={() => canOpenEditor && onSelect(list)}
+              >
                 {fmt(list.date)}
               </td>
               <td className="hidden-sm hidden-md visible-lg" onClick={() => canOpenEditor && onSelect(list)}>
                 {fmt(list.modifyDate)}
               </td>
               <td onClick={() => canOpenEditor && onSelect(list)}>{list.answers}</td>
-              <td className="hidden-xs visible-sm visible-md visible-lg" onClick={() => canOpenEditor && onSelect(list)}>
+              <td
+                className="hidden-xs visible-sm visible-md visible-lg"
+                onClick={() => canOpenEditor && onSelect(list)}
+              >
                 {list.language}
               </td>
               <td className="hidden-sm visible-md visible-lg" onClick={() => canOpenEditor && onSelect(list)}>

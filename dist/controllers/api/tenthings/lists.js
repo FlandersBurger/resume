@@ -33,9 +33,7 @@ exports.tenthingsListsRoute.get("/", async (req, res) => {
         .populate(authorized ? "creator" : "", authorized ? "_id username displayName" : "")
         .populate(authorized ? "values.creator" : "", authorized ? "_id username displayName" : "")
         .lean({ virtuals: true });
-    const result = authorized
-        ? lists
-        : lists.map(({ creator: _c, values: _v, ...rest }) => rest);
+    const result = authorized ? lists : lists.map(({ creator: _c, values: _v, ...rest }) => rest);
     res.json({ result, nextPage: page + 1, count });
 });
 exports.tenthingsListsRoute.post("/random", async (_, res) => {
