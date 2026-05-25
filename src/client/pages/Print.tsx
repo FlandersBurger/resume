@@ -29,7 +29,17 @@ function getTimeSpan(job: Job) {
   return `${start} – ${end}`;
 }
 
-const CATEGORY_ORDER = ["frontend", "backend", "programming", "databases", "platforms", "tools", "monitoring", "ai", "languages"];
+const CATEGORY_ORDER = [
+  "frontend",
+  "backend",
+  "programming",
+  "databases",
+  "platforms",
+  "tools",
+  "monitoring",
+  "ai",
+  "languages",
+];
 
 export default function Print() {
   const [skills, setSkills] = useState<Skill[]>([]);
@@ -49,8 +59,7 @@ export default function Print() {
   const enabledSkills = skills
     .filter((s) => s.type === "skill" && (s.enabled === true || s.enabled === "true"))
     .sort(
-      (a, b) =>
-        CATEGORY_ORDER.indexOf(a.category) - CATEGORY_ORDER.indexOf(b.category) || b.percentage - a.percentage,
+      (a, b) => CATEGORY_ORDER.indexOf(a.category) - CATEGORY_ORDER.indexOf(b.category) || b.percentage - a.percentage,
     );
 
   const skillsByCategory = enabledSkills.reduce(

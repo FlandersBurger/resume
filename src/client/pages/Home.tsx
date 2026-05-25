@@ -8,7 +8,9 @@ export default function Home() {
         <div className="home-hero-text">
           <h1>Laurent Debacker</h1>
           <h2>Full Stack Developer</h2>
-          <p className="home-tagline">Born and raised in Belgium &middot; In Canada since 2006 &middot; Canadian since 2015</p>
+          <p className="home-tagline">
+            Born and raised in Belgium &middot; In Canada since 2006 &middot; Canadian since 2015
+          </p>
         </div>
       </div>
 
@@ -23,7 +25,12 @@ export default function Home() {
         </div>
         <div className="home-info-item">
           <i className="fa fa-language" />
-          <span>Français &middot; English &middot; Nederlands &middot; Deutsch &middot; <a href="https://en.wikipedia.org/wiki/West_Flemish" target="_blank" rel="noreferrer">West-Vlams</a></span>
+          <span>
+            Français &middot; English &middot; Nederlands &middot; Deutsch &middot;{" "}
+            <a href="https://en.wikipedia.org/wiki/West_Flemish" target="_blank" rel="noreferrer">
+              West-Vlams
+            </a>
+          </span>
         </div>
         <div className="home-info-item">
           <i className="fa fa-hashtag" />
@@ -58,4 +65,3 @@ export default function Home() {
     </div>
   );
 }
-
