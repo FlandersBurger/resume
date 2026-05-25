@@ -1,6 +1,18 @@
 import { Link, useNavigate } from "react-router-dom";
+import styled from "styled-components";
 import { useApp } from "../context/AppContext";
 import { useState, useEffect, useRef } from "react";
+
+const NavbarToggle = styled.button`
+  .navbar-default & {
+    border-color: #fff;
+    color: #fff;
+  }
+`;
+
+const ProfileImg = styled.img`
+  max-height: 40px;
+`;
 
 function Dropdown({ label, children }: { label: React.ReactNode; children: React.ReactNode }) {
   const [open, setOpen] = useState(false);
@@ -34,7 +46,7 @@ export function Navbar() {
     <nav className="navbar navbar-default navbar-fixed-top">
       <div className="container-fluid">
         <div className="navbar-header">
-          <button
+          <NavbarToggle
             type="button"
             className="navbar-toggle collapsed"
             data-toggle="collapse"
@@ -43,7 +55,7 @@ export function Navbar() {
             <span className="icon-bar" />
             <span className="icon-bar" />
             <span className="icon-bar" />
-          </button>
+          </NavbarToggle>
           <Link className="navbar-brand" to="/home">
             Resume
           </Link>
@@ -141,10 +153,10 @@ export function Navbar() {
               <Dropdown
                 label={
                   currentUser.photoURL ? (
-                    <img
+                    <ProfileImg
                       src={currentUser.photoURL}
                       alt={currentUser.username}
-                      className="img-circle img-profile"
+                      className="img-circle"
                       style={{ height: 34, width: 34, marginTop: -7, marginBottom: -7 }}
                     />
                   ) : (

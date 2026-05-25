@@ -1,6 +1,15 @@
 import { useEffect, useState } from "react";
+import styled from "styled-components";
 import { useNavigate, useParams } from "react-router-dom";
 import { Helmet } from "react-helmet-async";
+
+const HobbiesPage = styled.div``;
+
+const HobbyImage = styled.img`
+  width: 100%;
+  border-radius: 4px;
+  margin-bottom: 8px;
+`;
 
 interface HobbyImage {
   file: string;
@@ -36,7 +45,7 @@ export default function Hobbies() {
   }, []);
 
   return (
-    <div id="hobbies-page">
+    <HobbiesPage>
       <Helmet>
         <title>Hobbies — Laurent Debacker</title>
         <meta
@@ -69,11 +78,11 @@ export default function Hobbies() {
           {selected.images?.map((image, i) => (
             <div key={i} style={{ display: "flex", flexDirection: "column" }}>
               <a href={image.url} target="_blank" rel="noreferrer" style={{ display: "block" }}>
-                <img
+                <HobbyImage
                   src={`/hobbies/${selected.name.toLowerCase()}/${image.file}`}
                   alt={image.name ?? image.file}
                   className="img-rounded"
-                  style={{ width: "100%", aspectRatio: "1", objectFit: "cover" }}
+                  style={{ aspectRatio: "1", objectFit: "cover" }}
                 />
               </a>
               <p
@@ -91,6 +100,6 @@ export default function Hobbies() {
           ))}
         </div>
       )}
-    </div>
+    </HobbiesPage>
   );
 }

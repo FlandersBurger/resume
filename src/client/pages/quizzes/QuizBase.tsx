@@ -1,7 +1,36 @@
 import { useEffect, useRef, useState } from "react";
+import styled from "styled-components";
 import { Helmet } from "react-helmet-async";
 import { getQuizFiles } from "../../services/quizzes";
 import { fuzzyMatch } from "../../services/games";
+
+const QuizPage = styled.div`
+  margin: 5px auto;
+  padding-bottom: 50px;
+`;
+
+const QuizPhotoPanel = styled.div`
+  display: inline-flex;
+  flex-direction: column;
+  text-align: center;
+  vertical-align: top;
+  margin: 4px;
+  width: 320px;
+  .panel-body {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    img {
+      width: 300px;
+      height: 200px;
+      object-fit: contain;
+      object-position: center;
+      background: #f5f5f5;
+    }
+  }
+`;
 
 interface ImageQuizProps {
   name: string;
@@ -18,7 +47,7 @@ export function ImageQuiz({ name, title, description }: ImageQuizProps) {
   }, [name]);
 
   return (
-    <div className="quiz-page quiz-photos-page">
+    <QuizPage>
       <Helmet>
         <title>{title} Quiz — belgocanadian.com</title>
         <meta name="description" content={description ?? `Test your knowledge with the ${title} quiz.`} />
@@ -29,14 +58,14 @@ export function ImageQuiz({ name, title, description }: ImageQuizProps) {
       </Helmet>
       <h1>{title}</h1>
       {files.map((file, i) => (
-        <div key={i} className="panel panel-default">
+        <QuizPhotoPanel key={i} className="panel panel-default">
           <div className="panel-heading">{i + 1}</div>
           <div className="panel-body">
             <img className="img-responsive img-rounded" src={`/${name}/${file}`} alt={file.replace(/\.[^.]+$/, "")} />
           </div>
-        </div>
+        </QuizPhotoPanel>
       ))}
-    </div>
+    </QuizPage>
   );
 }
 
@@ -215,7 +244,7 @@ export function FuzzyImageQuiz({ name, title, labelsUrl, description }: ImageQui
   const score = items.filter((it) => it.state === "correct").length;
 
   return (
-    <div className="quiz-page quiz-photos-page">
+    <QuizPage className="quiz-photos-page">
       <Helmet>
         <title>{title} Quiz — belgocanadian.com</title>
         <meta name="description" content={description ?? `Test your knowledge with the ${title} quiz.`} />
@@ -229,7 +258,7 @@ export function FuzzyImageQuiz({ name, title, labelsUrl, description }: ImageQui
         const panelClass =
           item.state === "correct" ? "panel-success" : item.state === "wrong" ? "panel-danger" : "panel-default";
         return (
-          <div key={i} className={`panel ${panelClass}`}>
+          <QuizPhotoPanel key={i} className={`panel ${panelClass}`}>
             <div className="panel-heading">{i + 1}</div>
             <div className="panel-body">
               <img
@@ -285,7 +314,7 @@ export function FuzzyImageQuiz({ name, title, labelsUrl, description }: ImageQui
                 </p>
               )}
             </div>
-          </div>
+          </QuizPhotoPanel>
         );
       })}
       {answered === items.length && items.length > 0 && (
@@ -293,6 +322,6 @@ export function FuzzyImageQuiz({ name, title, labelsUrl, description }: ImageQui
           {score} / {items.length}
         </h1>
       )}
-    </div>
+    </QuizPage>
   );
 }

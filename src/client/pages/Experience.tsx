@@ -1,6 +1,56 @@
 import { useEffect, useState } from "react";
 import DOMPurify from "dompurify";
+import styled from "styled-components";
 import { Helmet } from "react-helmet-async";
+
+const ExperiencePage = styled.div`
+  padding-bottom: 100px;
+  p.story {
+    padding: 8px;
+  }
+  .list-group {
+    padding: 8px;
+  }
+`;
+
+const JobRow = styled.div`
+  min-height: 100px;
+  margin: 10px;
+`;
+
+const JobImageBox = styled.div`
+  min-width: 90px;
+  box-shadow: 5px 5px 5px #888;
+  border-radius: 7px;
+  border: 1px solid #ddd;
+  background-color: #fff;
+  padding: 5px;
+  @media (max-width: 768px) {
+    margin-top: 10px;
+    text-align: center;
+    img { max-height: 80px; }
+  }
+  @media (min-width: 768px) {
+    margin-top: 20px;
+    img { width: 100%; }
+  }
+`;
+
+const ProjectSkill = styled.div`
+  float: left;
+  cursor: pointer;
+  max-width: 70px;
+`;
+
+const ProjectSkillImage = styled.img`
+  max-height: 30px;
+  padding-right: 8px;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  &:hover {
+    transform: scale(1.2);
+  }
+`;
 
 interface Skill {
   code: string;
@@ -47,11 +97,11 @@ function JobSection({ job, skills }: { job: Job; skills: Skill[] }) {
   const getSkill = (code: string) => skills.find((s) => s.code === code);
 
   return (
-    <div className="job-section row">
+    <JobRow className="row">
       <div className="col-md-2 col-sm-3 col-xs-4 job-header">
-        <div className="job-image">
+        <JobImageBox>
           <img src={`/experience/${job.image}`} alt={job.company} />
-        </div>
+        </JobImageBox>
       </div>
       <div className="col-md-10 col-sm-9 col-xs-8">
         <div className="job-title">
@@ -111,9 +161,9 @@ function JobSection({ job, skills }: { job: Job; skills: Skill[] }) {
                       const skill = getSkill(skillCode);
                       if (!skill) return null;
                       return (
-                        <div key={skillCode} className="project-skill" title={skill.name}>
-                          <img className="project-skill-image" src={`/skills/${skill.image}`} alt={skill.name} />
-                        </div>
+                        <ProjectSkill key={skillCode} title={skill.name}>
+                          <ProjectSkillImage src={`/skills/${skill.image}`} alt={skill.name} />
+                        </ProjectSkill>
                       );
                     })}
                   </div>
@@ -136,7 +186,7 @@ function JobSection({ job, skills }: { job: Job; skills: Skill[] }) {
           )}
         </div>
       </div>
-    </div>
+    </JobRow>
   );
 }
 
@@ -169,12 +219,12 @@ export default function Experience() {
         <meta property="og:url" content="https://belgocanadian.com/experience" />
         <link rel="canonical" href="https://belgocanadian.com/experience" />
       </Helmet>
-      <div id="experience-page">
+      <ExperiencePage>
         <h1>Experience</h1>
         {jobs.map((job) => (
           <JobSection key={job.code} job={job} skills={skills} />
         ))}
-      </div>
+      </ExperiencePage>
     </>
   );
 }

@@ -46,6 +46,7 @@
     "react-router-dom": "^7.15.1",
     "redis": "^4.6.13",
     "rimraf": "^5.0.10",
+    "styled-components": "^6.4.2",
     "tunnel-ssh": "^5.1.2",
     "ws": "^7.5.10",
     "xml2js": "^0.6.2"
@@ -68,6 +69,7 @@
     "@types/react": "^19.2.15",
     "@types/react-dom": "^19.2.3",
     "@types/sequelize": "^4.28.20",
+    "@types/styled-components": "^5.1.36",
     "@types/tunnel-ssh": "^5.0.4",
     "@types/ws": "^8.5.10",
     "@vitejs/plugin-react": "^4.7.0",

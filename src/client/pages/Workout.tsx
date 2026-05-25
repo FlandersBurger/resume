@@ -1,4 +1,15 @@
 import { useEffect, useRef, useState } from "react";
+import styled from "styled-components";
+
+const WorkoutPage = styled.div`
+  text-align: center;
+  margin: 80px auto;
+`;
+
+const ExerciseImg = styled.img`
+  max-width: 500px;
+  max-height: 200px;
+`;
 
 const exercises = [
   { name: "Jumping Jacks", split: false },
@@ -85,7 +96,7 @@ export default function Workout() {
   );
 
   return (
-    <div id="workout-page">
+    <WorkoutPage>
       <div className="well well-lg">
         <div className="input-group">
           <span className="input-group-addon">Exercise Time</span>
@@ -121,8 +132,8 @@ export default function Workout() {
       )}
       {exercise.split && !rest && typeof timer === "number" && <h2>{timer < timeExercising / 2 ? "Right" : "Left"}</h2>}
       {!rest && timeRemaining > 0 && exercise.name && (
-        <img className="img-div" src={`/exercises/${encodeURIComponent(exercise.name)}.gif`} alt={exercise.name} />
+        <ExerciseImg src={`/exercises/${encodeURIComponent(exercise.name)}.gif`} alt={exercise.name} />
       )}
-    </div>
+    </WorkoutPage>
   );
 }

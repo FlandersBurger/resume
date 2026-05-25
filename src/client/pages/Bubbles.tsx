@@ -1,4 +1,12 @@
 import { useEffect, useRef } from "react";
+import styled from "styled-components";
+
+const BubblesCanvas = styled.canvas`
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: -1;
+`;
 
 const colors = ["#ffc300", "#ff5733", "#c70039", "#900c3e", "#571845"];
 
@@ -81,5 +89,5 @@ export default function Bubbles() {
     };
   }, []);
 
-  return <canvas ref={canvasRef} id="bubbles-page" style={{ position: "fixed", top: 0, left: 0, zIndex: -1 }} />;
+  return <BubblesCanvas ref={canvasRef} />;
 }

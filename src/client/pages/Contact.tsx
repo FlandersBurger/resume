@@ -1,7 +1,15 @@
 import { useState } from "react";
+import styled from "styled-components";
 import { sendEmail } from "../services/email";
 import { useApp } from "../context/AppContext";
 import { Helmet } from "react-helmet-async";
+
+const ContactPage = styled.div``;
+
+const ContactForm = styled.form`
+  max-width: 600px;
+  margin: auto;
+`;
 
 const OPTIONS = [
   { name: "Spam", text: "I am a spam bot and automatically check the first option I find!" },
@@ -30,7 +38,7 @@ export default function Contact() {
   };
 
   return (
-    <div id="contact-page">
+    <ContactPage>
       <Helmet>
         <title>Contact — Laurent Debacker</title>
         <meta
@@ -50,7 +58,7 @@ export default function Contact() {
         <h4>Thanks for dropping a line, I usually read my mails the same day unless I happen to be on holiday :)</h4>
       )}
       {!sent && (
-        <form className="form-horizontal" onSubmit={handleSend}>
+        <ContactForm className="form-horizontal" onSubmit={handleSend}>
           <div className="form-group">
             <label className="col-sm-2 control-label">Name</label>
             <div className="col-sm-10">
@@ -124,8 +132,8 @@ export default function Contact() {
               </button>
             </div>
           </div>
-        </form>
+        </ContactForm>
       )}
-    </div>
+    </ContactPage>
   );
 }

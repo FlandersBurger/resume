@@ -1,9 +1,88 @@
 import { Link } from "react-router-dom";
+import styled from "styled-components";
 import { Helmet } from "react-helmet-async";
+
+const HomePage = styled.div`
+  max-width: 700px;
+  margin: 40px auto;
+  padding: 0 16px;
+`;
+
+const HomeHero = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 32px;
+  margin-bottom: 36px;
+  @media (max-width: 600px) {
+    flex-direction: column;
+    text-align: center;
+  }
+`;
+
+const HomeAvatar = styled.img`
+  width: 160px;
+  height: 160px;
+  border-radius: 50%;
+  object-fit: cover;
+  object-position: center top;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.35);
+  flex-shrink: 0;
+`;
+
+const HomeHeroText = styled.div`
+  h1 {
+    margin: 0 0 4px;
+    font-size: 2.4em;
+  }
+  h2 {
+    margin: 0 0 8px;
+    font-size: 1.3em;
+    font-weight: 400;
+    opacity: 0.75;
+  }
+`;
+
+const HomeTagline = styled.p`
+  margin: 0;
+  font-size: 0.9em;
+  opacity: 0.6;
+`;
+
+const HomeInfo = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-bottom: 36px;
+`;
+
+const HomeInfoItem = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 10px 16px;
+  border-radius: 8px;
+  background: rgba(128, 128, 128, 0.08);
+  .fa, .fab {
+    font-size: 1.1em;
+    width: 20px;
+    text-align: center;
+    opacity: 0.7;
+  }
+`;
+
+const HomeNav = styled.div`
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+`;
+
+const HomeNavBtn = styled(Link)`
+  flex: 1 1 auto;
+`;
 
 export default function Home() {
   return (
-    <div id="home-page">
+      <HomePage>
       <Helmet>
         <title>Laurent Debacker — Full Stack Developer</title>
         <meta
@@ -45,27 +124,27 @@ export default function Home() {
           }
         `}</script>
       </Helmet>
-      <div className="home-hero">
-        <img src="/profile.jpg" alt="Laurent Debacker" className="home-avatar" />
-        <div className="home-hero-text">
+      <HomeHero>
+        <HomeAvatar src="/profile.jpg" alt="Laurent Debacker" />
+        <HomeHeroText>
           <h1>Laurent Debacker</h1>
           <h2>Full Stack Developer</h2>
-          <p className="home-tagline">
+          <HomeTagline>
             Born and raised in Belgium &middot; In Canada since 2006 &middot; Canadian since 2015
-          </p>
-        </div>
-      </div>
+          </HomeTagline>
+        </HomeHeroText>
+      </HomeHero>
 
-      <div className="home-info">
-        <div className="home-info-item">
+      <HomeInfo>
+        <HomeInfoItem>
           <i className="fa fa-certificate" />
           <span>Bachelor of Computer Science</span>
-        </div>
-        <div className="home-info-item">
+        </HomeInfoItem>
+        <HomeInfoItem>
           <i className="fa fa-map-marker" />
           <span>Duncan, BC</span>
-        </div>
-        <div className="home-info-item">
+        </HomeInfoItem>
+        <HomeInfoItem>
           <i className="fa fa-language" />
           <span>
             Français &middot; English &middot; Nederlands &middot; Deutsch &middot;{" "}
@@ -73,8 +152,8 @@ export default function Home() {
               West-Vlams
             </a>
           </span>
-        </div>
-        <div className="home-info-item">
+        </HomeInfoItem>
+        <HomeInfoItem>
           <i className="fa fa-hashtag" />
           <span>
             <a href="https://www.linkedin.com/in/laurent-debacker-1633a916" target="_blank" rel="noreferrer">
@@ -87,23 +166,23 @@ export default function Home() {
               <i className="fab fa-instagram fa-lg" />
             </a>
           </span>
-        </div>
-      </div>
+        </HomeInfoItem>
+      </HomeInfo>
 
-      <div className="home-nav">
-        <Link to="/experience" className="btn btn-default home-nav-btn">
+      <HomeNav>
+        <HomeNavBtn to="/experience" className="btn btn-default">
           <i className="fa fa-briefcase" /> Experience
-        </Link>
-        <Link to="/skills" className="btn btn-default home-nav-btn">
+        </HomeNavBtn>
+        <HomeNavBtn to="/skills" className="btn btn-default">
           <i className="fa fa-code" /> Skills
-        </Link>
-        <Link to="/hobbies" className="btn btn-default home-nav-btn">
+        </HomeNavBtn>
+        <HomeNavBtn to="/hobbies" className="btn btn-default">
           <i className="fa fa-heart" /> Hobbies
-        </Link>
-        <Link to="/contact" className="btn btn-default home-nav-btn">
+        </HomeNavBtn>
+        <HomeNavBtn to="/contact" className="btn btn-default">
           <i className="fa fa-envelope" /> Contact
-        </Link>
-      </div>
-    </div>
+        </HomeNavBtn>
+      </HomeNav>
+    </HomePage>
   );
 }

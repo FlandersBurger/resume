@@ -1,5 +1,6 @@
 import { useEffect, useState, useCallback, useRef } from "react";
 import { useSearchParams } from "react-router-dom";
+import styled from "styled-components";
 import { Helmet } from "react-helmet-async";
 import {
   getLists,
@@ -18,6 +19,20 @@ import { useApp } from "../../context/AppContext";
 import { ListTable } from "./ListTable";
 import { ListEditor } from "./ListEditor";
 import { DeleteListsModal } from "./DeleteListsModal";
+
+const Overlay = styled.div<{ $visible: boolean }>`
+  position: fixed;
+  width: 100%;
+  height: 100%;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  z-index: 99;
+  cursor: pointer;
+  display: ${({ $visible }) => ($visible ? "block" : "none")};
+`;
 
 export default function TenThingsLists() {
   const { currentUser, toast } = useApp();
@@ -261,12 +276,12 @@ export default function TenThingsLists() {
         <title>Ten Things — Trivia Lists for the Telegram Bot</title>
         <meta
           name="description"
-          content="Browse and manage thousands of trivia lists powering the Ten Things Telegram bot. Play the daily trivia game with friends on Telegram."
+          content="Browse and manage hundreds of trivia lists powering the Ten Things Telegram bot. Play the daily trivia game with friends on Telegram."
         />
         <meta property="og:title" content="Ten Things — Trivia Lists for the Telegram Bot" />
         <meta
           property="og:description"
-          content="Browse and manage thousands of trivia lists powering the Ten Things Telegram bot. Play the daily trivia game with friends on Telegram."
+          content="Browse and manage hundreds of trivia lists powering the Ten Things Telegram bot. Play the daily trivia game with friends on Telegram."
         />
         <meta property="og:url" content="https://belgocanadian.com/tenthings" />
         <link rel="canonical" href="https://belgocanadian.com/tenthings" />
@@ -275,7 +290,7 @@ export default function TenThingsLists() {
 
       <div className="well well-sm">
         <p>
-          <strong>Ten Things</strong> is a daily trivia game played by thousands of people on{" "}
+          <strong>Ten Things</strong> is a daily trivia game played by hundreds of people on{" "}
           <a href="https://t.me/joinchat/I1Di-1MXGXkjhgNPXi6Vfg" target="_blank" rel="noreferrer">
             Telegram
           </a>
@@ -375,9 +390,7 @@ export default function TenThingsLists() {
         )}
       </div>
 
-      {editorMounted && (
-        <div id="overlay" onClick={handleClose} style={{ display: editorVisible ? "block" : "none" }} />
-      )}
+      {editorMounted && <Overlay $visible={editorVisible} onClick={handleClose} />}
 
       {deleteModalLists.length > 0 && (
         <DeleteListsModal lists={deleteModalLists} onConfirm={confirmDelete} onCancel={() => setDeleteModalLists([])} />

@@ -1,5 +1,113 @@
 import { useState, useRef, memo, useCallback, useEffect } from "react";
+import styled from "styled-components";
 import { TenThingsList, TenThingsValue, Language, CategoryOption, getBlurbs } from "../../services/tenthings";
+import { TenThingsTableContainer } from "./SharedStyles";
+
+const EditListPanel = styled.div<{ $active?: boolean }>`
+  top: 50px;
+  position: fixed;
+  height: calc(100% - 50px);
+  overflow-y: scroll;
+  overflow-x: hidden;
+  right: ${({ $active }) => ($active ? "0" : "-100%")};
+  width: 95%;
+  transition: right 0.3s ease-in-out;
+  background-color: white;
+  z-index: 100;
+  border: solid;
+  border-color: black;
+  padding: 0 20px 20px;
+`;
+
+const EditListPanelHeader = styled.div`
+  display: flex;
+  flex-direction: row;
+  align-content: center;
+  justify-content: space-between;
+  align-items: center;
+  position: sticky;
+  top: 0;
+  background: white;
+  z-index: 10;
+  padding-top: 10px;
+  .input-group {
+    position: relative;
+    z-index: 5;
+  }
+  .btn-toolbar {
+    position: relative;
+    z-index: 4;
+  }
+`;
+
+const BtnToolbar = styled.div`
+  margin: 0 5px 0 -5px;
+  > div {
+    margin-top: 3px;
+  }
+`;
+
+const BtnIcon = styled.button`
+  padding: 10px;
+  img {
+    max-width: 20px;
+    max-height: 20px;
+  }
+`;
+
+const EditorTableContainer = styled(TenThingsTableContainer)``;
+
+const InputCell = styled.td`
+  && {
+    padding: 0 5px 0 0 !important;
+    text-overflow: ellipsis;
+  }
+  textarea {
+    height: 43px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    &:focus {
+      overflow: visible;
+      white-space: pre-wrap;
+    }
+  }
+  > * {
+    background-color: transparent;
+    border: none;
+    box-shadow: none;
+    white-space: nowrap;
+    &:focus {
+      border: none;
+      box-shadow: none;
+      white-space: wrap;
+    }
+  }
+`;
+
+const ImageCell = styled.td`
+  && {
+    padding: 0 !important;
+  }
+  img {
+    margin: 5px;
+    width: 40px;
+    max-height: 33px;
+  }
+`;
+
+const IconColumn = styled.td`
+  && {
+    width: 30px;
+  }
+`;
+
+const DeleteColumn = styled.td<{ $canDelete?: boolean }>`
+  cursor: ${({ $canDelete }) => ($canDelete ? "pointer" : "default")};
+  &:hover {
+    color: ${({ $canDelete }) => ($canDelete ? "darkred" : "inherit")};
+  }
+`;
 
 const OBJECT_CATEGORIES = ["culture", "nature", "misc", "society", "sports"];
 
@@ -166,13 +274,13 @@ const ValueRow = memo(
     const canDelete = total > 10;
     return (
       <tr>
-        <td className="hidden-xs hidden-sm visible-md visible-lg icon-column" title={v.creator?.username}>
+        <IconColumn className="hidden-xs hidden-sm visible-md visible-lg" title={v.creator?.username}>
           <i className="fas fa-user" />
-        </td>
-        <td className="hidden-xs hidden-sm visible-md visible-lg icon-column" title={fmt(v.date)}>
+        </IconColumn>
+        <IconColumn className="hidden-xs hidden-sm visible-md visible-lg" title={fmt(v.date)}>
           <i className="fas fa-calendar" />
-        </td>
-        <td className="input-cell">
+        </IconColumn>
+        <InputCell>
           {readOnly ? (
             <span>{v.value}</span>
           ) : (
@@ -185,8 +293,8 @@ const ValueRow = memo(
               }}
             />
           )}
-        </td>
-        <td className="input-cell">
+        </InputCell>
+        <InputCell>
           {readOnly ? (
             <span>{v.blurb ?? ""}</span>
           ) : (
@@ -199,8 +307,8 @@ const ValueRow = memo(
               }}
             />
           )}
-        </td>
-        <td className="image-cell" style={{ width: 36 }} onClick={() => v.blurb && onBlurbClick(v)}>
+        </InputCell>
+        <ImageCell style={{ width: 36 }} onClick={() => v.blurb && onBlurbClick(v)}>
           {v.blurb && (
             <img
               src={
@@ -215,13 +323,13 @@ const ValueRow = memo(
               }}
             />
           )}
-        </td>
-        <td
-          className={canDelete ? "delete-column" : "disabled-column"}
+        </ImageCell>
+        <DeleteColumn
+          $canDelete={canDelete && !readOnly}
           onClick={() => canDelete && !readOnly && onRemove(index)}
         >
           <i className="fas fa-trash" />
-        </td>
+        </DeleteColumn>
       </tr>
     );
   },
@@ -339,13 +447,13 @@ export function ListEditor({
   const canDelete = list.values.length > 10 && list._id !== "new";
 
   return (
-    <div className={`edit-list-panel${active ? " active" : ""}`}>
+    <EditListPanel $active={active}>
       {selectedItem && <BlurbModal item={selectedItem} onClose={() => setSelectedItem(null)} />}
       {/* Header */}
-      <div className="edit-list-panel-header">
+      <EditListPanelHeader>
         <h1>{list.name || "N/A"}</h1>
         <i className="fas fa-times fa-3x" style={{ cursor: "pointer" }} onClick={onClose} />
-      </div>
+      </EditListPanelHeader>
 
       {/* Stats */}
       {list.creator && (
@@ -464,7 +572,7 @@ export function ListEditor({
       <br />
 
       {/* Toolbar */}
-      <div className="btn-toolbar" role="toolbar">
+      <BtnToolbar role="toolbar">
         {/* Language dropdown */}
         <div ref={langRef} className={`dropdown btn-group${showLanguages ? " open" : ""}`}>
           <button
@@ -545,10 +653,10 @@ export function ListEditor({
         {/* Difficulty */}
         <div className="btn-group" role="group">
           {difficultyIcons.map((d, i) => (
-            <button
+            <BtnIcon
               key={i}
               type="button"
-              className={`btn btn-icon ${list.difficulty === i ? "btn-primary" : "btn-default"}`}
+              className={`btn ${list.difficulty === i ? "btn-primary" : "btn-default"}`}
               title={d.title}
               disabled={readOnly}
               onClick={() => {
@@ -558,17 +666,17 @@ export function ListEditor({
               }}
             >
               <i className={`fas ${d.icon}`} />
-            </button>
+            </BtnIcon>
           ))}
         </div>
 
         {/* Frequency */}
         <div className="btn-group" role="group">
           {frequencyIcons.map((f, i) => (
-            <button
+            <BtnIcon
               key={i}
               type="button"
-              className={`btn btn-icon ${list.frequency === i ? "btn-primary" : "btn-default"}`}
+              className={`btn ${list.frequency === i ? "btn-primary" : "btn-default"}`}
               title={f.title}
               disabled={readOnly}
               onClick={() => {
@@ -578,7 +686,7 @@ export function ListEditor({
               }}
             >
               <i className={`fas ${f.icon}`} />
-            </button>
+            </BtnIcon>
           ))}
         </div>
 
@@ -617,11 +725,12 @@ export function ListEditor({
             </button>
           </div>
         )}
-      </div>
+      </BtnToolbar>
 
       <hr />
 
       {/* Values table */}
+      <EditorTableContainer>
       <table className="table table-striped">
         <thead>
           <tr>
@@ -647,20 +756,20 @@ export function ListEditor({
             <tr>
               <td className="hidden-xs hidden-sm visible-md visible-lg" />
               <td className="hidden-xs hidden-sm visible-md visible-lg" />
-              <td className="input-cell">
+              <InputCell>
                 <AutoTextarea
                   value={newItem.value}
                   placeholder={`New answer (${list.values.length + 1})`}
                   onChange={(v) => setNewItem({ ...newItem, value: v })}
                 />
-              </td>
-              <td className="input-cell">
+              </InputCell>
+              <InputCell>
                 <AutoTextarea
                   value={newItem.blurb}
                   placeholder={`Display after guessing ${newItem.value || "new answer"} (Can be a URL)`}
                   onChange={(v) => setNewItem({ ...newItem, blurb: v })}
                 />
-              </td>
+              </InputCell>
               <td colSpan={2}>
                 <button className="btn btn-sm btn-default" onClick={addValue} disabled={!newItem.value}>
                   <i className="fas fa-plus" />
@@ -684,6 +793,7 @@ export function ListEditor({
           ))}
         </tbody>
       </table>
-    </div>
+      </EditorTableContainer>
+    </EditListPanel>
   );
 }

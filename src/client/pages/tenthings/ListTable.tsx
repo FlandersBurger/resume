@@ -1,6 +1,37 @@
 import { useState } from "react";
 import { createPortal } from "react-dom";
+import styled from "styled-components";
 import { TenThingsList, CategoryOption, Language } from "../../services/tenthings";
+import { TenThingsTableContainer } from "./SharedStyles";
+
+const ListRowTooltip = styled.div`
+  position: fixed;
+  background: #333;
+  color: #fff;
+  padding: 8px 12px;
+  border-radius: 6px;
+  font-size: 0.85em;
+  max-width: 320px;
+  z-index: 9000;
+  pointer-events: none;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.35);
+  white-space: pre-wrap;
+`;
+
+const ListRowTooltipArrow = styled.div`
+  position: absolute;
+  top: -10px;
+  left: 12px;
+  border: 5px solid transparent;
+  border-bottom-color: #333;
+`;
+
+const ListsTableWrapper = styled(TenThingsTableContainer)`
+  tr:hover {
+    font-weight: bold;
+    cursor: pointer;
+  }
+`;
 
 interface Props {
   lists: TenThingsList[];
@@ -159,10 +190,10 @@ export function ListTable({
     <div>
       {tooltip &&
         createPortal(
-          <div className="list-row-tooltip" style={{ left: tooltip.x + 12, top: tooltip.y + 16 }}>
-            <div className="list-row-tooltip-arrow" />
+          <ListRowTooltip style={{ left: tooltip.x + 12, top: tooltip.y + 16 }}>
+            <ListRowTooltipArrow />
             {tooltip.text}
-          </div>,
+          </ListRowTooltip>,
           document.body,
         )}
       {/* Toolbar */}
@@ -297,7 +328,8 @@ export function ListTable({
         </div>
       )}
 
-      <table className="table table-striped table-hover" id="table-lists">
+      <ListsTableWrapper>
+        <table className="table table-striped table-hover">
         <thead>
           <tr>
             {isAdmin && <th style={{ width: 24 }} />}
@@ -496,6 +528,7 @@ export function ListTable({
           ))}
         </tbody>
       </table>
+      </ListsTableWrapper>
 
       {loading && (
         <div style={{ textAlign: "center", padding: 12 }}>

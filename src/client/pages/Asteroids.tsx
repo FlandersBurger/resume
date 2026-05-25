@@ -1,4 +1,15 @@
 import { useEffect, useRef, useState } from "react";
+import styled from "styled-components";
+
+const AsteroidsCanvas = styled.canvas`
+  background-color: transparent;
+  display: block;
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+`;
 
 const spacepics = 10;
 
@@ -504,10 +515,8 @@ export default function Asteroids() {
         backgroundSize: "cover",
       }}
     >
-      <canvas
+      <AsteroidsCanvas
         ref={canvasRef}
-        id="asteroids-page"
-        style={{ display: "block", position: "absolute", top: 0, left: 0, width: "100%", height: "100%" }}
       />
       <div style={{ position: "fixed", top: 10, right: 20, color: "#fff", fontSize: 24 }}>
         Score: {score} | High: {highscore}

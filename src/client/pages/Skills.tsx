@@ -1,6 +1,83 @@
 import { useEffect, useRef, useState } from "react";
 import DOMPurify from "dompurify";
+import styled from "styled-components";
 import { Helmet } from "react-helmet-async";
+
+const SkillsPage = styled.div`
+  width: 100%;
+`;
+
+const SkillSelectorWrap = styled.div`
+  position: relative;
+`;
+
+const SkillSelector = styled.div`
+  column-gap: 0;
+  margin-left: 0;
+  line-height: 0;
+  display: flex;
+  flex-direction: column;
+  height: calc(100vh - 120px);
+  overflow-y: scroll;
+  overflow-x: hidden;
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+  &::-webkit-scrollbar {
+    display: none;
+  }
+`;
+
+const SelectableSkill = styled.div<{ $highlighted?: boolean }>`
+  width: 100%;
+  padding: 0;
+  border-radius: 8px;
+  cursor: pointer;
+  &:hover .skill-item-inner {
+    background-color: #333;
+  }
+  ${({ $highlighted }) =>
+    $highlighted &&
+    `
+    .skill-item-inner { background-color: #444 !important; }
+    .skill-percentage-bar { background-color: rgba(255,255,255,0.9); }
+  `}
+`;
+
+const SkillItem = styled.div`
+  display: flex;
+  align-items: center;
+  position: relative;
+  background-color: #222;
+  border-radius: 8px;
+  margin: 4px;
+  width: calc(100% - 8px);
+  padding-bottom: 4px;
+  box-sizing: border-box;
+  img {
+    max-height: 42px;
+    max-width: 42px;
+    padding: 6px;
+    flex-shrink: 0;
+    filter: drop-shadow(0 0 3px rgba(255, 255, 255, 0.5));
+  }
+`;
+
+const SkillLabel = styled.p`
+  margin: 0;
+  font-size: 0.85em;
+  font-weight: 500;
+  color: #fff;
+`;
+
+const SkillPercentageBar = styled.div<{ $width: number }>`
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  height: 3px;
+  width: ${({ $width }) => $width}%;
+  background-color: rgba(255, 255, 255, 0.5);
+  border-radius: 0 0 8px 8px;
+`;
 
 interface Skill {
   code: string;
@@ -114,33 +191,33 @@ export default function Skills() {
   const filteredProjects = selectedSkill ? projects.filter((p) => p.skills?.includes(selectedSkill.code)) : [];
 
   return (
-    <div id="skills-page">
+    <SkillsPage>
       {helmetNode}
       <h1>Skills</h1>
-      <div className="skill-selector-wrap col-xs-3" style={{ padding: 0 }}>
-        <div className="skill-selector">
+      <SkillSelectorWrap className="col-xs-3" style={{ padding: 0 }}>
+        <SkillSelector>
           {Object.entries(categories).map(([categoryName, categorySkills]) => (
             <div key={categoryName}>
               <h3 className="hidden-xs">{categoryName}</h3>
               {[...categorySkills]
                 .sort((a, b) => b.percentage - a.percentage)
                 .map((skill) => (
-                  <div
+                  <SelectableSkill
                     key={skill.code}
-                    className={`selectable-skill${selectedSkill?.code === skill.code ? " highlighted-skill" : ""}`}
+                    $highlighted={selectedSkill?.code === skill.code}
                     onClick={() => setSelectedSkill(skill)}
                   >
-                    <div className="skill-item">
+                    <SkillItem className="skill-item-inner">
                       <img src={`/skills/${skill.image}`} alt={skill.name} />
-                      <p className="skill-label">{skill.name}</p>
-                      <div className="selectable-skill-percentage" style={{ width: `${skill.percentage}%` }} />
-                    </div>
-                  </div>
+                      <SkillLabel>{skill.name}</SkillLabel>
+                      <SkillPercentageBar className="skill-percentage-bar" $width={skill.percentage} />
+                    </SkillItem>
+                  </SelectableSkill>
                 ))}
             </div>
           ))}
-        </div>
-      </div>
+        </SkillSelector>
+      </SkillSelectorWrap>
       <div className="skill-display col-xs-9">
         {selectedSkill && (
           <>
@@ -168,6 +245,6 @@ export default function Skills() {
           </>
         )}
       </div>
-    </div>
+    </SkillsPage>
   );
 }

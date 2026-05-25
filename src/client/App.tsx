@@ -1,7 +1,11 @@
 import { Routes, Route, Navigate } from "react-router-dom";
+import { createGlobalStyle } from "styled-components";
 import { AppProvider } from "./context/AppContext";
 import { Navbar } from "./components/Navbar";
 import { ToastContainer } from "./components/ToastContainer";
+import Print from "./pages/Print";
+import NotFound from "./pages/NotFound";
+import { useEffect } from "react";
 import Home from "./pages/Home";
 import Experience from "./pages/Experience";
 import Skills from "./pages/Skills";
@@ -27,10 +31,75 @@ import QuizAnimals from "./pages/quizzes/QuizAnimals";
 import QuizFlags from "./pages/quizzes/QuizFlags";
 import QuizMovies from "./pages/quizzes/QuizMovies";
 import QuizSkeletons from "./pages/quizzes/QuizSkeletons";
-import Print from "./pages/Print";
-import NotFound from "./pages/NotFound";
-import "./styles/app.css";
-import { useEffect } from "react";
+
+const GlobalStyle = createGlobalStyle`
+  body {
+    min-width: 300px;
+    overflow-x: hidden;
+  }
+  .navbar {
+    z-index: 100000;
+  }
+  .container {
+    width: 100%;
+  }
+  .container .page,
+  .page {
+    margin-top: 55px;
+  }
+  .loading {
+    position: fixed;
+    left: 50%;
+    top: 50%;
+  }
+  hr {
+    clear: both;
+  }
+  .modal {
+    top: 50px;
+  }
+  .print {
+    display: none;
+  }
+  @media (max-width: 768px) {
+    #footer {
+      display: none;
+    }
+  }
+  @media screen {
+    #print-content {
+      display: none;
+    }
+  }
+  @media print {
+    .navbar,
+    .container.page,
+    #toast {
+      display: none !important;
+    }
+    #print-content {
+      display: block !important;
+    }
+    @page {
+      margin: 14mm 12mm;
+    }
+    thead,
+    tfoot {
+      display: none !important;
+    }
+    header,
+    footer {
+      display: none;
+    }
+    .print {
+      display: block !important;
+      -webkit-print-color-adjust: exact;
+    }
+    .display {
+      display: none !important;
+    }
+  }
+`;
 import { useApp } from "./context/AppContext";
 
 function BootstrapTheme() {
@@ -45,6 +114,7 @@ function BootstrapTheme() {
 export default function App() {
   return (
     <AppProvider>
+      <GlobalStyle />
       <BootstrapTheme />
       <Navbar />
       <ToastContainer />

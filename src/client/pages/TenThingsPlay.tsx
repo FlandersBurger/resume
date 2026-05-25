@@ -1,7 +1,73 @@
 import { useEffect, useState, useRef } from "react";
+import styled from "styled-components";
 import { getTenthings, answerTenthings, getTenthingsHint, skipTenthingsList } from "../services/games";
 import { useApp } from "../context/AppContext";
 import { useWebSocket } from "../hooks/useWebSocket";
+
+const TenThingsPlayPage = styled.div``;
+
+const PlayProgress = styled.div`
+  height: 8px;
+  border-radius: 4px;
+  background: #e9ecef;
+  margin-bottom: 12px;
+  overflow: hidden;
+`;
+
+const PlayProgressBar = styled.div<{ $width: number }>`
+  height: 100%;
+  width: ${({ $width }) => $width}%;
+  background: #28a745;
+  transition: width 0.4s ease;
+`;
+
+const PlayListGroup = styled.ul`
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  padding: 0;
+  list-style: none;
+`;
+
+const PlayListGroupItem = styled.li<{ $guessed?: boolean }>`
+  flex-basis: 280px;
+  flex-grow: 1;
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  align-items: center;
+  justify-content: center;
+  padding: 8px 12px;
+  border-radius: 4px;
+  transition: background-color 0.3s;
+  ${({ $guessed }) => $guessed && `background-color: #d4edda;`}
+`;
+
+const AnswerRow = styled.div`
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  gap: 8px;
+  h4 { margin: 0; font-size: 15px; }
+`;
+
+const Blurb = styled.div`
+  background-color: rgba(64, 182, 24, 0.25);
+  border-radius: 5px;
+  padding: 5px 10px;
+  margin-bottom: 4px;
+  text-align: center;
+  width: 100%;
+  font-size: 13px;
+  img {
+    max-width: 100%;
+    max-height: 120px;
+    border-radius: 4px;
+  }
+`;
 
 interface GameValue {
   _id: string;
@@ -107,7 +173,7 @@ export default function TenThingsPlay() {
   const progress = total > 0 ? (guessedCount / total) * 100 : 0;
 
   return (
-    <div id="tenthings-play-page" className="page container-fluid">
+    <TenThingsPlayPage className="page container-fluid">
       {/* Header */}
       <div style={{ display: "flex", alignItems: "baseline", gap: 12, marginBottom: 4 }}>
         <h2 style={{ margin: 0 }}>{game?.list?.name ?? "Loading..."}</h2>
@@ -132,9 +198,9 @@ export default function TenThingsPlay() {
 
       {/* Progress bar */}
       {total > 0 && (
-        <div className="play-progress">
-          <div className="play-progress-bar" style={{ width: `${progress}%` }} />
-        </div>
+        <PlayProgress>
+          <PlayProgressBar $width={progress} />
+        </PlayProgress>
       )}
 
       {/* Input */}
@@ -169,11 +235,10 @@ export default function TenThingsPlay() {
         )}
       </div>
 
-      {/* Values grid */}
-      <ul className="list-group">
+      <PlayListGroup>
         {values.map((item) => (
-          <li key={item._id} className={`list-group-item${item.guesser ? " guessed" : ""}`}>
-            <div className="answer">
+          <PlayListGroupItem key={item._id} $guessed={!!item.guesser}>
+            <AnswerRow>
               <h4>{item.guesser ? item.value : item.maskedValue}</h4>
               <div style={{ display: "flex", alignItems: "center", gap: 6, flexShrink: 0 }}>
                 {item.guesser && item.blurb && item.blurbType !== "text" && (
@@ -188,16 +253,16 @@ export default function TenThingsPlay() {
                   <span className="label label-success">{item.guesser.username || item.guesser.first_name}</span>
                 )}
               </div>
-            </div>
+            </AnswerRow>
             {item.guesser && item.blurb && item.blurbType === "image" && (
-              <div className="blurb">
+              <Blurb>
                 <img src={item.blurb} alt={item.value} />
-              </div>
+              </Blurb>
             )}
-            {item.guesser && item.blurb && item.blurbType === "text" && <div className="blurb">{item.blurb}</div>}
-          </li>
+            {item.guesser && item.blurb && item.blurbType === "text" && <Blurb>{item.blurb}</Blurb>}
+          </PlayListGroupItem>
         ))}
-      </ul>
-    </div>
+      </PlayListGroup>
+    </TenThingsPlayPage>
   );
 }
