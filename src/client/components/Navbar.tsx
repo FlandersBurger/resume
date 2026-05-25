@@ -56,16 +56,20 @@ export function Navbar() {
             <li>
               <Link to="/skills">Skills</Link>
             </li>
-            <Dropdown label="Contact">
-              <li>
-                <Link to="/contact">Contact</Link>
-              </li>
-              {currentUser && (
+            {currentUser ? (
+              <Dropdown label="Contact">
+                <li>
+                  <Link to="/contact">Contact</Link>
+                </li>
                 <li>
                   <Link to="/posts">Chat</Link>
                 </li>
-              )}
-            </Dropdown>
+              </Dropdown>
+            ) : (
+              <li>
+                <Link to="/contact">Contact</Link>
+              </li>
+            )}
             <Dropdown label="Doodles">
               <li>
                 <Link to="/hobbies">Hobbies</Link>

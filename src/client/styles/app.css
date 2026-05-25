@@ -59,7 +59,7 @@ hr {
   }
 
   @page {
-    margin: 16mm 12mm;
+    margin: 14mm 12mm;
   }
 
   thead,
@@ -79,6 +79,173 @@ hr {
 
   .display {
     display: none !important;
+  }
+
+  /* ── Print layout ── */
+  #print-content {
+    font-family: "Georgia", serif;
+    font-size: 10pt;
+    color: #111;
+    line-height: 1.45;
+  }
+
+  .pr-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    border-bottom: 2.5pt solid #2c5f8a;
+    padding-bottom: 8pt;
+    margin-bottom: 10pt;
+  }
+
+  .pr-name {
+    font-size: 22pt;
+    font-weight: 700;
+    margin: 0 0 2pt;
+    color: #1a1a1a;
+  }
+
+  .pr-title {
+    font-size: 12pt;
+    font-weight: 400;
+    margin: 0;
+    color: #2c5f8a;
+  }
+
+  .pr-header-right {
+    text-align: right;
+    font-size: 8.5pt;
+    color: #444;
+    line-height: 1.6;
+  }
+
+  .pr-section-title {
+    font-size: 11pt;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: #2c5f8a;
+    border-bottom: 1pt solid #2c5f8a;
+    margin: 10pt 0 5pt;
+    padding-bottom: 2pt;
+  }
+
+  .pr-summary {
+    margin: 0 0 4pt;
+    font-size: 9.5pt;
+  }
+
+  /* Skills */
+  .pr-skills-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 6pt 14pt;
+  }
+
+  .pr-skill-category-name {
+    font-size: 7.5pt;
+    font-weight: 700;
+    text-transform: uppercase;
+    color: #888;
+    letter-spacing: 0.06em;
+    margin-bottom: 3pt;
+  }
+
+  .pr-skill-row {
+    display: flex;
+    align-items: center;
+    gap: 4pt;
+    margin-bottom: 2.5pt;
+  }
+
+  .pr-skill-name {
+    flex: 0 0 90pt;
+    font-size: 8.5pt;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .pr-skill-bar-bg {
+    flex: 1;
+    height: 5pt;
+    background: #e0e0e0;
+    border-radius: 3pt;
+    overflow: hidden;
+  }
+
+  .pr-skill-bar-fill {
+    height: 100%;
+    background: #2c5f8a;
+    border-radius: 3pt;
+    print-color-adjust: exact;
+    -webkit-print-color-adjust: exact;
+  }
+
+  /* Jobs */
+  .pr-job {
+    margin-bottom: 8pt;
+    page-break-inside: avoid;
+  }
+
+  .pr-job-header {
+    display: flex;
+    align-items: baseline;
+    gap: 6pt;
+    margin-bottom: 2pt;
+  }
+
+  .pr-job-company {
+    font-weight: 700;
+    font-size: 10pt;
+  }
+
+  .pr-job-title {
+    font-size: 9.5pt;
+    color: #2c5f8a;
+  }
+
+  .pr-job-dates {
+    margin-left: auto;
+    font-size: 8.5pt;
+    color: #666;
+  }
+
+  .pr-job-story {
+    margin: 0 0 3pt;
+    font-size: 9pt;
+  }
+
+  .pr-job-responsibilities {
+    margin: 0;
+    padding-left: 14pt;
+    font-size: 8.5pt;
+  }
+
+  .pr-job-responsibilities li {
+    margin-bottom: 1.5pt;
+  }
+
+  /* Languages */
+  .pr-langs {
+    display: flex;
+    gap: 12pt;
+    flex-wrap: wrap;
+  }
+
+  .pr-lang-item {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .pr-lang-name {
+    font-weight: 700;
+    font-size: 9pt;
+  }
+
+  .pr-lang-level {
+    font-size: 8pt;
+    color: #666;
   }
 }
 
@@ -140,14 +307,19 @@ hr {
   width: 100%;
 }
 
+#skills-page .skill-selector-wrap {
+  position: relative;
+}
+
 #skills-page .skill-selector {
   column-gap: 0px;
-  margin-left: -20px;
+  margin-left: 0;
   line-height: 0;
   display: flex;
   flex-direction: column;
-  height: calc(100vh - 70px);
+  height: calc(100vh - 120px);
   overflow-y: scroll;
+  overflow-x: hidden;
   -ms-overflow-style: none;
   scrollbar-width: none;
 }
@@ -157,7 +329,6 @@ hr {
 }
 
 #skills-page .skill-display {
-  height: calc(100vh - 5px);
 }
 
 #skills-page .selected-skill {
@@ -179,83 +350,66 @@ hr {
   max-width: 150px;
 }
 
-#skills-page .selectable-skill p {
+#skills-page .selectable-skill .skill-item {
   display: flex;
-  z-index: 1;
   align-items: center;
+  position: relative;
+  background-color: #222;
+  border-radius: 8px;
+  margin: 4px;
+  width: calc(100% - 8px);
+  padding-bottom: 4px;
+  box-sizing: border-box;
+}
+
+#skills-page .selectable-skill:hover .skill-item {
+  background-color: #333;
+}
+
+#skills-page .highlighted-skill .skill-item {
+  background-color: #444 !important;
+}
+
+#skills-page .skill-label {
   margin: 0;
-}
-
-#skills-page .selectable-skill .hovered-skill {
-  display: none;
-}
-
-#skills-page .selectable-skill .unhovered-skill {
-  display: flex;
-}
-
-#skills-page .selectable-skill:hover .hovered-skill {
-  display: flex;
-}
-
-#skills-page .selectable-skill:hover .unhovered-skill {
-  display: none;
+  font-size: 0.85em;
+  font-weight: 500;
+  color: #fff;
 }
 
 #skills-page .selectable-skill img {
-  max-height: 70px;
-  max-width: 70px;
-  padding: 10px;
-  width: 100%;
-  position: relative;
+  max-height: 42px;
+  max-width: 42px;
+  padding: 6px;
+  flex-shrink: 0;
+  filter: drop-shadow(0 0 3px rgba(255, 255, 255, 0.5));
 }
 
 #skills-page .selectable-skill {
   width: 100%;
   padding: 0;
-  border-radius: 10px;
-}
-
-#skills-page .selectable-skill > div {
-  display: flex;
-  background-color: #cccccc;
-  padding: 0;
-  border-radius: 10px;
-  margin: 4px;
+  border-radius: 8px;
+  cursor: pointer;
 }
 
 #skills-page .selectable-skill-percentage {
-  background-color: #777777;
-  border-radius: 10px;
-  height: 100%;
-  position: absolute;
-  top: 0;
-}
-
-#skills-page .selectable-skill:hover > div {
-  background-color: #ddd;
-}
-
-#skills-page .selectable-skill:hover .selectable-skill-percentage {
-  background-color: #888;
-}
-
-/* Fade at the bottom to hint more content below */
-#skills-page .skill-selector-wrap {
-  position: relative;
-}
-
-#skills-page .skill-selector-wrap::after {
-  content: "";
-  pointer-events: none;
   position: absolute;
   bottom: 0;
   left: 0;
-  right: 8px;
-  height: 48px;
-  background: linear-gradient(to bottom, transparent, rgba(255, 255, 255, 0.9));
-  border-radius: 0 0 0 4px;
+  height: 3px;
+  background-color: rgba(255, 255, 255, 0.5);
+  border-radius: 0 0 8px 8px;
 }
+
+#skills-page .highlighted-skill .selectable-skill-percentage {
+  background-color: rgba(255, 255, 255, 0.9);
+}
+
+#skills-page .selectable-skill:hover .selectable-skill-percentage {
+  background-color: rgba(255, 255, 255, 0.7);
+}
+
+/* Fade at the bottom hint removed */
 
 /* ===================== CHECKBOX MENU ===================== */
 .checkbox-menu li label {
@@ -327,7 +481,85 @@ hr {
 
 /* ===================== HOME ===================== */
 #home-page {
+  max-width: 700px;
+  margin: 40px auto;
+  padding: 0 16px;
+}
+
+.home-hero {
+  display: flex;
+  align-items: center;
+  gap: 32px;
+  margin-bottom: 36px;
+}
+
+.home-avatar {
+  width: 160px;
+  height: 160px;
+  border-radius: 50%;
+  object-fit: cover;
+  object-position: center top;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.35);
+  flex-shrink: 0;
+}
+
+.home-hero-text h1 {
+  margin: 0 0 4px;
+  font-size: 2.4em;
+}
+
+.home-hero-text h2 {
+  margin: 0 0 8px;
+  font-size: 1.3em;
+  font-weight: 400;
+  opacity: 0.75;
+}
+
+.home-tagline {
+  margin: 0;
+  font-size: 0.9em;
+  opacity: 0.6;
+}
+
+.home-info {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-bottom: 36px;
+}
+
+.home-info-item {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 10px 16px;
+  border-radius: 8px;
+  background: rgba(128, 128, 128, 0.08);
+}
+
+.home-info-item .fa,
+.home-info-item .fab {
+  font-size: 1.1em;
+  width: 20px;
   text-align: center;
+  opacity: 0.7;
+}
+
+.home-nav {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.home-nav-btn {
+  flex: 1 1 auto;
+}
+
+@media (max-width: 600px) {
+  .home-hero {
+    flex-direction: column;
+    text-align: center;
+  }
 }
 
 /* ===================== EXPERIENCE ===================== */

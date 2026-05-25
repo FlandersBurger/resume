@@ -39,12 +39,12 @@ function DoughnutChart({ percentage, image }: { percentage: number; image: strin
     ctx.clearRect(0, 0, size, size);
     ctx.beginPath();
     ctx.arc(cx, cy, r, 0, 2 * Math.PI);
-    ctx.strokeStyle = "#eee";
+    ctx.strokeStyle = "#ddd";
     ctx.lineWidth = lineW;
     ctx.stroke();
     ctx.beginPath();
     ctx.arc(cx, cy, r, start, end);
-    ctx.strokeStyle = "#337ab7";
+    ctx.strokeStyle = "#333";
     ctx.lineWidth = lineW;
     ctx.stroke();
   }, [percentage]);
@@ -111,21 +111,10 @@ export default function Skills() {
                     className={`selectable-skill${selectedSkill?.code === skill.code ? " highlighted-skill" : ""}`}
                     onClick={() => setSelectedSkill(skill)}
                   >
-                    <div className="col-xs-10 unhovered-skill">
-                      <div className="selectable-skill-percentage" style={{ width: `${skill.percentage}%` }}>
-                        <p style={{ margin: 0 }}>
-                          <br />
-                        </p>
-                      </div>
-                      <div>
-                        <img src={`/skills/${skill.image}`} alt={skill.name} />
-                      </div>
-                    </div>
-                    <div className="col-xs-10 hovered-skill">
-                      <div>
-                        <img src={`/skills/${skill.image}`} alt={skill.name} />
-                      </div>
-                      <p className="hidden-xs">{skill.name}</p>
+                    <div className="skill-item">
+                      <img src={`/skills/${skill.image}`} alt={skill.name} />
+                      <p className="skill-label">{skill.name}</p>
+                      <div className="selectable-skill-percentage" style={{ width: `${skill.percentage}%` }} />
                     </div>
                   </div>
                 ))}

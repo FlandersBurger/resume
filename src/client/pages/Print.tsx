@@ -25,9 +25,11 @@ interface Job {
 
 function getTimeSpan(job: Job) {
   const start = new Date(job.startDate).getFullYear();
-  const end = job.endDate ? new Date(job.endDate).getFullYear() : "Today";
-  return `${start} - ${end}`;
+  const end = job.endDate ? new Date(job.endDate).getFullYear() : "Present";
+  return `${start} – ${end}`;
 }
+
+const CATEGORY_ORDER = ["frontend", "backend", "programming", "databases", "platforms", "tools", "monitoring", "ai", "languages"];
 
 export default function Print() {
   const [skills, setSkills] = useState<Skill[]>([]);
@@ -46,88 +48,103 @@ export default function Print() {
 
   const enabledSkills = skills
     .filter((s) => s.type === "skill" && (s.enabled === true || s.enabled === "true"))
-    .sort((a, b) => a.category.localeCompare(b.category) || b.percentage - a.percentage);
+    .sort(
+      (a, b) =>
+        CATEGORY_ORDER.indexOf(a.category) - CATEGORY_ORDER.indexOf(b.category) || b.percentage - a.percentage,
+    );
+
+  const skillsByCategory = enabledSkills.reduce(
+    (acc, s) => {
+      if (!acc[s.category]) acc[s.category] = [];
+      acc[s.category].push(s);
+      return acc;
+    },
+    {} as Record<string, Skill[]>,
+  );
 
   return (
     <div id="print-content">
-      <h1>Laurent Debacker</h1>
-      <h2>Full Stack Web Developer</h2>
-      <hr />
-      <div className="col-xs-12">
-        <h5>
-          This resume was automatically generated using ReactJs and NodeJs on my website: <b>belgocanadian.com</b>
-          <br />I would recommend going there to experience this resume differently :)
-        </h5>
-      </div>
-      <hr />
-      <div className="row">
-        <div className="col-xs-6" style={{ marginTop: -20 }}>
-          <h4>Details</h4>
-          <ul>
-            <li>Mail: debackerlaurent@gmail.com</li>
-            <li>Home: 250-597-0595</li>
-            <li>Mobile: 604-505-9305</li>
-            <li>Location: Duncan, BC</li>
-            <li>Pronouns: He/Him</li>
-          </ul>
+      {/* ── Header ── */}
+      <div className="pr-header">
+        <div className="pr-header-left">
+          <h1 className="pr-name">Laurent Debacker</h1>
+          <h2 className="pr-title">Full Stack Developer</h2>
         </div>
-        <div className="col-xs-6" style={{ marginTop: -20 }}>
-          <h4>Languages</h4>
-          <ul>
-            <li>West-Flemish - Mother Tongue</li>
-            <li>Dutch - Fluent</li>
-            <li>English - Fluent</li>
-            <li>French - Professional</li>
-            <li>German - Conversational</li>
-          </ul>
+        <div className="pr-header-right">
+          <div>debackerlaurent@gmail.com</div>
+          <div>604-505-9305</div>
+          <div>Duncan, BC, Canada</div>
+          <div>belgocanadian.com</div>
+          <div>linkedin.com/in/laurent-debacker-1633a916</div>
         </div>
       </div>
-      <hr />
-      <h3>Skills</h3>
-      <div style={{ display: "flex", flexWrap: "wrap" }}>
-        {enabledSkills.map((skill) => (
-          <div key={skill.name} style={{ width: "33.33%", display: "flex", alignItems: "center", marginBottom: 4 }}>
-            <div style={{ width: "58%", paddingRight: 4 }}>{skill.name}</div>
-            <div style={{ width: "42%", backgroundColor: "#cccccc", borderRadius: 10, overflow: "hidden" }}>
-              <div
-                style={{
-                  width: `${skill.percentage}%`,
-                  backgroundColor: "#777777",
-                  borderRadius: 10,
-                  paddingLeft: 6,
-                }}
-              >
-                <p style={{ margin: 0, fontSize: 11, color: "#fff" }}>{skill.since}</p>
+
+      {/* ── Summary ── */}
+      <div className="pr-section-title">Summary</div>
+      <p className="pr-summary">
+        Full Stack Developer with 15+ years of experience building web applications across diverse industries.
+        Comfortable across the full stack — from database design to pixel-perfect UIs. Passionate about clean,
+        maintainable code and shipping products people enjoy using.
+      </p>
+
+      {/* ── Skills ── */}
+      <div className="pr-section-title">Skills</div>
+      <div className="pr-skills-grid">
+        {Object.entries(skillsByCategory).map(([category, catSkills]) => (
+          <div key={category} className="pr-skill-category">
+            <div className="pr-skill-category-name">{category}</div>
+            {catSkills.map((skill) => (
+              <div key={skill.name} className="pr-skill-row">
+                <span className="pr-skill-name">{skill.name}</span>
+                <div className="pr-skill-bar-bg">
+                  <div className="pr-skill-bar-fill" style={{ width: `${skill.percentage}%` }} />
+                </div>
               </div>
-            </div>
+            ))}
           </div>
         ))}
       </div>
-      <div className="col-xs-12">
-        <br />
-      </div>
-      <hr />
-      <h3>Experience</h3>
+
+      {/* ── Experience ── */}
+      <div className="pr-section-title">Experience</div>
       {jobs.map((job) => (
-        <div key={job.company} style={{ marginBottom: 20 }}>
-          <h4>
-            {job.company} - {job.title} ~ {getTimeSpan(job)}
-          </h4>
-          <p>{job.story}</p>
+        <div key={job.company} className="pr-job">
+          <div className="pr-job-header">
+            <span className="pr-job-company">{job.company}</span>
+            <span className="pr-job-title">{job.title}</span>
+            <span className="pr-job-dates">{getTimeSpan(job)}</span>
+          </div>
+          <p className="pr-job-story">{job.story}</p>
           {job.responsibilities && job.responsibilities.length > 0 && (
-            <ul className="list-group">
+            <ul className="pr-job-responsibilities">
               {[...job.responsibilities]
                 .sort((a, b) => a.name.localeCompare(b.name))
                 .map((r) => (
-                  <li key={r.name} className="list-group-item">
+                  <li key={r.name}>
                     <strong>{r.name}:</strong> {r.description}
                   </li>
                 ))}
             </ul>
           )}
-          <hr />
         </div>
       ))}
+
+      {/* ── Languages ── */}
+      <div className="pr-section-title">Languages</div>
+      <div className="pr-langs">
+        {[
+          { lang: "West-Flemish", level: "Mother tongue" },
+          { lang: "Dutch", level: "Fluent" },
+          { lang: "English", level: "Fluent" },
+          { lang: "French", level: "Professional" },
+          { lang: "German", level: "Conversational" },
+        ].map(({ lang, level }) => (
+          <div key={lang} className="pr-lang-item">
+            <span className="pr-lang-name">{lang}</span>
+            <span className="pr-lang-level">{level}</span>
+          </div>
+        ))}
+      </div>
     </div>
   );
 }
