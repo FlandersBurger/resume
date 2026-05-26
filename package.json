@@ -10,7 +10,8 @@
     "translate": "cd src/scripts && node i18n-scanner.js",
     "client:dev": "vite",
     "client:build": "vite build",
-    "client:preview": "vite preview"
+    "client:preview": "vite preview",
+    "prepare": "husky"
   },
   "dependencies": {
     "asn1": "^0.2.6",
@@ -53,6 +54,9 @@
     "tunnel-ssh": "^5.1.2",
     "ws": "^7.5.10",
     "xml2js": "^0.6.2"
+  },
+  "lint-staged": {
+    "*.{ts,tsx,js,jsx,json,css,md}": "prettier --write"
   },
   "devDependencies": {
     "@swc/core": "^1.4.12",
