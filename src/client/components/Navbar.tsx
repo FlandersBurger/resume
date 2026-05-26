@@ -39,7 +39,7 @@ function Dropdown({ label, children }: { label: React.ReactNode; children: React
 }
 
 export function Navbar() {
-  const { currentUser, logout } = useApp();
+  const { currentUser, logout, openLogin, loginLoading } = useApp();
   const navigate = useNavigate();
 
   return (
@@ -182,7 +182,9 @@ export function Navbar() {
               </Dropdown>
             ) : (
               <li>
-                <Link to="/login">Login</Link>
+                <a style={{ cursor: loginLoading ? "default" : "pointer" }} onClick={loginLoading ? undefined : openLogin}>
+                  {loginLoading ? <i className="fa fa-spinner fa-spin" /> : "Login"}
+                </a>
               </li>
             )}
           </ul>

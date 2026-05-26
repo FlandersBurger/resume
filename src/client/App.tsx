@@ -14,6 +14,7 @@ import Contact from "./pages/Contact";
 import Posts from "./pages/Posts";
 import Profile from "./pages/Profile";
 import Login from "./pages/Login";
+import LoginModal from "./components/LoginModal";
 import Workout from "./pages/Workout";
 import Charades from "./pages/Charades";
 import Bubbles from "./pages/Bubbles";
@@ -118,6 +119,7 @@ export default function App() {
       <BootstrapTheme />
       <Navbar />
       <ToastContainer />
+      <LoginModal />
       <Print />
       <div className="container page">
         <Routes>
@@ -130,7 +132,7 @@ export default function App() {
           <Route path="/contact" element={<Contact />} />
           <Route path="/posts" element={<Posts />} />
           <Route path="/profile" element={<Profile />} />
-          <Route path="/login" element={<Login />} />
+          <Route path="/login" element={<Navigate to="/home" replace />} />
           <Route path="/workout" element={<Workout />} />
           <Route path="/charades" element={<Charades />} />
           <Route path="/bubbles" element={<Bubbles />} />
