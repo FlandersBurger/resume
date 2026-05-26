@@ -2523,7 +2523,9 @@ Please change the parent <Route path="${I}"> to <Route path="${I==="/"?"*":`${I}
   margin: 0;
   padding-left: 14pt;
   font-size: 8.5pt;
-  li { margin-bottom: 1.5pt; }
+  li {
+    margin-bottom: 1.5pt;
+  }
 `,k6=Ce.div`
   display: flex;
   gap: 12pt;
@@ -2585,7 +2587,8 @@ Please change the parent <Route path="${I}"> to <Route path="${I==="/"?"*":`${I}
   padding: 10px 16px;
   border-radius: 8px;
   background: rgba(128, 128, 128, 0.08);
-  .fa, .fab {
+  .fa,
+  .fab {
     font-size: 1.1em;
     width: 20px;
     text-align: center;
@@ -2645,11 +2648,15 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
   @media (max-width: 768px) {
     margin-top: 10px;
     text-align: center;
-    img { max-height: 80px; }
+    img {
+      max-height: 80px;
+    }
   }
   @media (min-width: 768px) {
     margin-top: 20px;
-    img { width: 100%; }
+    img {
+      width: 100%;
+    }
   }
 `,xU=Ce.div`
   float: left;
@@ -3000,7 +3007,10 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
   justify-content: space-between;
   width: 100%;
   gap: 8px;
-  h4 { margin: 0; font-size: 15px; }
+  h4 {
+    margin: 0;
+    font-size: 15px;
+  }
 `,lT=Ce.div`
   background-color: rgba(64, 182, 24, 0.25);
   border-radius: 5px;
