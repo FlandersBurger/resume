@@ -34,7 +34,10 @@ export function useFirebaseUI(containerId: string, active: boolean, onSuccess?: 
                 toast("Logged in");
                 setLoginLoading(false);
               })
-              .catch(() => { setLoginLoading(false); toast("Login failed"); });
+              .catch(() => {
+                setLoginLoading(false);
+                toast("Login failed");
+              });
           });
           return false;
         },

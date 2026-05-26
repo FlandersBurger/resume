@@ -182,7 +182,10 @@ export function Navbar() {
               </Dropdown>
             ) : (
               <li>
-                <a style={{ cursor: loginLoading ? "default" : "pointer" }} onClick={loginLoading ? undefined : openLogin}>
+                <a
+                  style={{ cursor: loginLoading ? "default" : "pointer" }}
+                  onClick={loginLoading ? undefined : openLogin}
+                >
                   {loginLoading ? <i className="fa fa-spinner fa-spin" /> : "Login"}
                 </a>
               </li>

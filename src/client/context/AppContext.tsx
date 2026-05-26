@@ -105,7 +105,24 @@ export function AppProvider({ children }: { children: ReactNode }) {
     }
   }, []);
 
-  return <AppContext.Provider value={{ ...state, showLogin, loginLoading, setLoginLoading, toast, setUser, flipTheme, logout, openLogin, closeLogin }}>{children}</AppContext.Provider>;
+  return (
+    <AppContext.Provider
+      value={{
+        ...state,
+        showLogin,
+        loginLoading,
+        setLoginLoading,
+        toast,
+        setUser,
+        flipTheme,
+        logout,
+        openLogin,
+        closeLogin,
+      }}
+    >
+      {children}
+    </AppContext.Provider>
+  );
 }
 
 export function useApp() {
