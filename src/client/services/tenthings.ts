@@ -151,7 +151,12 @@ export async function getGame(id: string) {
 }
 
 export async function updateGameCategory(gameId: string, category: string) {
-  const { data } = await http.post(`/api/tenthings/games/${gameId}/categories`, { category });
+  const { data } = await http.post(`/api/tenthings/games/${gameId}/category/${encodeURIComponent(category)}`);
+  return data;
+}
+
+export async function updateGameSettings(gameId: string, settings: any) {
+  const { data } = await http.put(`/api/tenthings/games/${gameId}/settings`, settings);
   return data;
 }
 

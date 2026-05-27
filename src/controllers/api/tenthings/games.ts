@@ -46,3 +46,12 @@ tenthingsGamesRoute.post("/:id/category/:category", async (req: Request, res: Re
     }
   }
 });
+
+tenthingsGamesRoute.put("/:id/settings", async (req: Request, res: Response) => {
+  if (!res.locals.isAdmin) return res.sendStatus(401);
+  const game = await Game.findOne({ chat_id: req.params.id });
+  if (!game) return res.sendStatus(404);
+  game.settings = { ...game.settings, ...req.body };
+  await game.save();
+  return res.json(game.settings);
+});

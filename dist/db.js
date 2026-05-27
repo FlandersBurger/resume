@@ -43,7 +43,9 @@ exports.mongoDBs = [
 exports.mongoDBs.forEach(async (db) => {
     connect(db);
     if (db.tunnel) {
-        await (0, tunnel_ssh_1.createTunnel)({ autoClose: true }, { host: "127.0.0.1", port: 27017 }, db.tunnel, { dstPort: 27017 });
+        await (0, tunnel_ssh_1.createTunnel)({ reconnectOnError: true, autoClose: true }, { host: "127.0.0.1", port: 27017 }, db.tunnel, {
+            dstPort: 27017,
+        });
         console.log(`DB tunnel created for DB ${db.name}`);
     }
 });

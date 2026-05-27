@@ -4,5 +4,5 @@
     "outDir": "../dist",
     "rootDir": "./"
   },
-  "exclude": ["client"]
+  "exclude": ["client", "__tests__"]
 }

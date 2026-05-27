@@ -44,7 +44,7 @@ tenthingsListsRoute.post("/random", async (_: Request, res: Response) => {
   else {
     const list = await getRandomList({ starred: true });
     if (!list) res.sendStatus(404);
-    res.json(list);
+    else res.json(list);
   }
 });
 
@@ -53,15 +53,15 @@ tenthingsListsRoute.get("/:id", async (req: Request, res: Response) => {
   if (req.params.id === "names") {
     if (!authorized) return res.sendStatus(401);
     const listNames = await List.find({}).select("_id name").lean();
-    res.json(listNames);
+    return res.json(listNames);
+  }
+  const list = await getList(new Types.ObjectId(req.params.id));
+  if (!list) return res.sendStatus(404);
+  else if (!authorized) {
+    const { values: _v, creator: _c, ...publicList } = list as any;
+    return res.json(publicList);
   } else {
-    const list = await getList(new Types.ObjectId(req.params.id));
-    if (!list) return res.sendStatus(404);
-    if (!authorized) {
-      const { values: _v, creator: _c, ...publicList } = list as any;
-      return res.json(publicList);
-    }
-    res.json(list);
+    return res.json(list);
   }
 });
 

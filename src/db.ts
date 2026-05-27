@@ -52,7 +52,9 @@ export const mongoDBs: Db[] = [
 mongoDBs.forEach(async (db: Db) => {
   connect(db);
   if (db.tunnel) {
-    await createTunnel({ autoClose: true }, { host: "127.0.0.1", port: 27017 }, db.tunnel, { dstPort: 27017 });
+    await createTunnel({ reconnectOnError: true, autoClose: true }, { host: "127.0.0.1", port: 27017 }, db.tunnel, {
+      dstPort: 27017,
+    });
     console.log(`DB tunnel created for DB ${db.name}`);
   }
 });

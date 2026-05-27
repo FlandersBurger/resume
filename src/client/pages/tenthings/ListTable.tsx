@@ -277,7 +277,7 @@ export function ListTable({
                         onLanguageFilterChange?.(next);
                       }}
                     >
-                      {lang.code}
+                      {lang.native || lang.name || lang.code}
                     </button>
                   );
                 })}

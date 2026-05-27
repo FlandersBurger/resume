@@ -95,8 +95,12 @@ export default function TenThingsLists() {
   );
 
   useEffect(() => {
-    getCategories().then(setCategoryOptions);
-    getLanguages().then(setLanguageOptions);
+    getCategories()
+      .then(setCategoryOptions)
+      .catch(() => setCategoryOptions([]));
+    getLanguages()
+      .then(setLanguageOptions)
+      .catch(() => setLanguageOptions([]));
   }, []);
 
   const fetchLists = useCallback(
