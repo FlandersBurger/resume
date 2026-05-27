@@ -122,21 +122,6 @@ export default function TenThingsPlay() {
     loadGame();
   }, [currentUser]);
 
-  // Poll every 5s to keep all tabs in sync
-  useEffect(() => {
-    const interval = setInterval(() => loadGameRef.current(), 5000);
-    return () => clearInterval(interval);
-  }, []);
-
-  // Poll faster (every 2s) when the game is complete waiting for a new round
-  useEffect(() => {
-    const values = game?.list?.values ?? [];
-    const complete = values.length > 0 && values.every((v) => v.guesser);
-    if (!complete) return;
-    const interval = setInterval(loadGame, 2000);
-    return () => clearInterval(interval);
-  }, [game]);
-
   const handleCheckAnswer = async () => {
     if (!guess.trim()) return;
     const answer = guess;
