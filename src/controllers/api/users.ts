@@ -12,6 +12,28 @@ export const usersRoute = Router();
 type AuthType = "telegram" | "firebase";
 const isAcceptedAuth = (authType: string = ""): authType is AuthType => ["telegram", "firebase"].includes(authType);
 
+/**
+ * Normalize flags to an array of strings (country codes).
+ * Handles both array of strings and array of objects with flag properties.
+ */
+const normalizeFlagArray = (flags: any): string[] => {
+  if (!Array.isArray(flags)) return [];
+  return flags
+    .map((f) => {
+      if (typeof f === "string") {
+        // Handle legacy "flag-XX" format or bare "XX"
+        return f.startsWith("flag-") ? f.slice(5) : f;
+      }
+      // Handle object format like { flag: "flag-ph", name: "Philippines" }
+      if (typeof f === "object" && f !== null && f.flag) {
+        const flagStr = String(f.flag);
+        return flagStr.startsWith("flag-") ? flagStr.slice(5) : flagStr;
+      }
+      return null;
+    })
+    .filter((f): f is string => f !== null);
+};
+
 usersRoute.get("/", (_: Request, res: Response) => {
   if (!res.locals.isAuthorized) res.sendStatus(401);
   else res.json(res.locals.user);
@@ -59,7 +81,7 @@ usersRoute.post("/", async (req: Request, res: Response) => {
 });
 
 usersRoute.post("/authenticate", async (req: Request, res: Response) => {
-  const { authType, data, ...user } = req.body.user;
+  const { authType, data, flags, ...user } = req.body.user;
   if (!isAcceptedAuth(authType)) {
     return res.sendStatus(401);
   }
@@ -88,6 +110,7 @@ usersRoute.post("/authenticate", async (req: Request, res: Response) => {
       emailVerified: user.emailVerified,
       uid,
       telegramId,
+      flags: [], // Initialize with empty array
     });
     await newUser.save();
     bot.notifyAdmin(`New user registered with ${authType}: ` + user.displayName);
@@ -162,7 +185,7 @@ usersRoute.post("/:id", async (req: Request, res: Response) => {
       else {
         if (req.body.user.gender !== undefined) user.gender = req.body.user.gender;
         if (req.body.user.flags !== undefined) {
-          user.flags = req.body.user.flags;
+          user.flags = normalizeFlagArray(req.body.user.flags);
           user.markModified("flags");
         }
         if (req.body.user.birthDate) user.birthDate = req.body.user.birthDate;
