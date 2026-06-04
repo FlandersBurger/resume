@@ -41,6 +41,7 @@ function Dropdown({ label, children }: { label: React.ReactNode; children: React
 export function Navbar() {
   const { currentUser, logout, openLogin, loginLoading } = useApp();
   const navigate = useNavigate();
+  const [mobileOpen, setMobileOpen] = useState(false);
 
   return (
     <nav className="navbar navbar-default navbar-fixed-top">
@@ -48,9 +49,8 @@ export function Navbar() {
         <div className="navbar-header">
           <NavbarToggle
             type="button"
-            className="navbar-toggle collapsed"
-            data-toggle="collapse"
-            data-target="#navbar-collapse"
+            className={`navbar-toggle${mobileOpen ? "" : " collapsed"}`}
+            onClick={() => setMobileOpen((o) => !o)}
           >
             <span className="icon-bar" />
             <span className="icon-bar" />
@@ -60,7 +60,11 @@ export function Navbar() {
             Resume
           </Link>
         </div>
-        <div className="collapse navbar-collapse" id="navbar-collapse">
+        <div
+          className={`navbar-collapse${mobileOpen ? " in" : " collapse"}`}
+          id="navbar-collapse"
+          onClick={() => setMobileOpen(false)}
+        >
           <ul className="nav navbar-nav">
             <li>
               <Link to="/experience">Experience</Link>

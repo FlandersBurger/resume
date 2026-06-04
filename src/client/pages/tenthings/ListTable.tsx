@@ -26,6 +26,35 @@ const ListRowTooltipArrow = styled.div`
   border-bottom-color: #333;
 `;
 
+const Toolbar = styled.div`
+  display: flex;
+  margin-bottom: 8px;
+
+  .toolbar-actions {
+    display: flex;
+    flex: 0 0 auto;
+  }
+
+  .toolbar-search {
+    display: flex;
+    flex: 1 1 auto;
+    min-width: 0;
+  }
+
+  @media (max-width: 767px) {
+    flex-wrap: wrap;
+
+    .toolbar-actions {
+      width: 100%;
+      margin-bottom: 4px;
+    }
+
+    .toolbar-search {
+      width: 100%;
+    }
+  }
+`;
+
 const ListsTableWrapper = styled(TenThingsTableContainer)`
   tr:hover {
     font-weight: bold;
@@ -197,65 +226,69 @@ export function ListTable({
           document.body,
         )}
       {/* Toolbar */}
-      <div className="btn-group btn-block" style={{ display: "flex", flexWrap: "wrap", marginBottom: 8 }}>
-        {canAddList && (
-          <button className="btn btn-default" onClick={onAddList}>
-            <i className="far fa-sparkles" /> New list
+      <Toolbar>
+        <div className="toolbar-actions btn-group">
+          {canAddList && (
+            <button className="btn btn-default" onClick={onAddList}>
+              <i className="far fa-sparkles" /> New list
+            </button>
+          )}
+          {isAdmin && onMerge && (
+            <button className="btn btn-primary" onClick={onMerge} title="Edit selected lists">
+              <i className="far fa-edit" /> ({highlightedCount})
+            </button>
+          )}
+          {isAdmin && onMerge && (
+            <button className="btn btn-info" onClick={onMerge} title="Merge selected lists">
+              <i className="far fa-code-merge" /> ({highlightedCount})
+            </button>
+          )}
+          {isAdmin && onDeleteHighlighted && (
+            <button className="btn btn-danger" onClick={onDeleteHighlighted} title="Delete selected lists">
+              <i className="fas fa-trash-alt" /> ({highlightedCount})
+            </button>
+          )}
+          <button
+            className={`btn ${showFilters || filterCount > 0 ? "btn-primary" : "btn-default"}`}
+            title="Filter"
+            onClick={() => setShowFilters((v) => !v)}
+          >
+            <i className="fas fa-filter" /> {filterCount > 0 ? `(${filterCount})` : ""}
           </button>
-        )}
-        {isAdmin && onMerge && (
-          <button className="btn btn-primary" onClick={onMerge} title="Edit selected lists">
-            <i className="far fa-edit" /> ({highlightedCount})
+        </div>
+        <div className="toolbar-search btn-group">
+          <input
+            className="form-control"
+            type="search"
+            placeholder="Search"
+            value={search}
+            onChange={(e) => onSearchChange(e.target.value, searchField)}
+            style={{ flex: 1, minWidth: 0 }}
+          />
+          {search && (
+            <button className="btn btn-default" onClick={() => onSearchChange("", searchField)}>
+              <i className="fas fa-times" />
+            </button>
+          )}
+          <button
+            className={`btn ${searchField === "all" ? "btn-primary" : "btn-default"}`}
+            onClick={() => handleSearchField("all")}
+            title="Search in names, blurbs and values"
+          >
+            <i className="fas fa-search" /> All
           </button>
-        )}
-        {isAdmin && onMerge && (
-          <button className="btn btn-info" onClick={onMerge} title="Merge selected lists">
-            <i className="far fa-code-merge" /> ({highlightedCount})
+          <button
+            className={`btn ${searchField === "name" ? "btn-primary" : "btn-default"}`}
+            onClick={() => handleSearchField("name")}
+            title="Search only in list names"
+          >
+            <i className="fas fa-search" /> Name
           </button>
-        )}
-        {isAdmin && onDeleteHighlighted && (
-          <button className="btn btn-danger" onClick={onDeleteHighlighted} title="Delete selected lists">
-            <i className="fas fa-trash-alt" /> ({highlightedCount})
+          <button className="btn btn-default" onClick={onRefresh} title="Refresh">
+            <i className={`fas fa-sync${loading ? " fa-spin" : ""}`} />
           </button>
-        )}
-        <button
-          className={`btn ${showFilters || filterCount > 0 ? "btn-primary" : "btn-default"}`}
-          title="Filter"
-          onClick={() => setShowFilters((v) => !v)}
-        >
-          <i className="fas fa-filter" /> {filterCount > 0 ? `(${filterCount})` : ""}
-        </button>
-        <input
-          className="form-control"
-          type="search"
-          placeholder="Search"
-          value={search}
-          onChange={(e) => onSearchChange(e.target.value, searchField)}
-          style={{ flex: 1, minWidth: 0 }}
-        />
-        {search && (
-          <button className="btn btn-default" onClick={() => onSearchChange("", searchField)}>
-            <i className="fas fa-times" />
-          </button>
-        )}
-        <button
-          className={`btn ${searchField === "all" ? "btn-primary" : "btn-default"}`}
-          onClick={() => handleSearchField("all")}
-          title="Search in names, blurbs and values"
-        >
-          <i className="fas fa-search" /> All
-        </button>
-        <button
-          className={`btn ${searchField === "name" ? "btn-primary" : "btn-default"}`}
-          onClick={() => handleSearchField("name")}
-          title="Search only in list names"
-        >
-          <i className="fas fa-search" /> Name
-        </button>
-        <button className="btn btn-default" onClick={onRefresh} title="Refresh">
-          <i className={`fas fa-sync${loading ? " fa-spin" : ""}`} />
-        </button>
-      </div>
+        </div>
+      </Toolbar>
 
       {showFilters && (
         <div className="panel panel-default" style={{ marginBottom: 8 }}>

@@ -293,7 +293,7 @@ export default function TenThingsLists() {
       </Helmet>
       <h1>Ten Things</h1>
 
-      <div className="well well-sm">
+      <div className="well well-sm hidden-xs">
         <p>
           <strong>Ten Things</strong> is a daily trivia game played by hundreds of people on{" "}
           <a href="https://t.me/joinchat/I1Di-1MXGXkjhgNPXi6Vfg" target="_blank" rel="noreferrer">
