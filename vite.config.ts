@@ -52,6 +52,11 @@ const serveStaticDirs = (): import("vite").Plugin => {
 export default defineConfig({
   root: "src/client",
   plugins: [react(), serveStaticDirs()],
+  resolve: {
+    alias: {
+      "@utils": path.resolve(__dirname, "src/utils"),
+    },
+  },
   build: {
     outDir: path.resolve(__dirname, "dist/client"),
     emptyOutDir: true,

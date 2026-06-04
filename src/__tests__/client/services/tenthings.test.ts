@@ -90,7 +90,10 @@ describe("createList", () => {
   it("POSTs to /api/tenthings/lists with user and list", async () => {
     mockHttp.post.mockResolvedValueOnce({ data: sampleList });
     const result = await createList("u1", { name: "Capitals" });
-    expect(mockHttp.post).toHaveBeenCalledWith("/api/tenthings/lists", { user: "u1", list: { name: "Capitals" } });
+    expect(mockHttp.post).toHaveBeenCalledWith("/api/tenthings/lists", {
+      user: "u1",
+      list: { name: "Capitals", values: [] },
+    });
     expect(result).toEqual(sampleList);
   });
 });

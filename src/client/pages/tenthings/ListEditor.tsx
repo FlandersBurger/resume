@@ -1,6 +1,7 @@
 import { useState, useRef, memo, useCallback, useEffect } from "react";
 import styled from "styled-components";
 import { TenThingsList, TenThingsValue, Language, CategoryOption, getBlurbs } from "../../services/tenthings";
+import { removeAllButLetters } from "@utils/string-helpers";
 import { TenThingsTableContainer } from "./SharedStyles";
 
 const EditListPanel = styled.div<{ $active?: boolean }>`
@@ -199,14 +200,18 @@ function AutoTextarea({
   value,
   onChange,
   onBlur,
+  onKeyDown,
   placeholder,
   disabled,
+  forwardedRef,
 }: {
   value: string;
   onChange?: (v: string) => void;
   onBlur?: () => void;
+  onKeyDown?: (e: React.KeyboardEvent<HTMLTextAreaElement>) => void;
   placeholder?: string;
   disabled?: boolean;
+  forwardedRef?: React.Ref<HTMLTextAreaElement>;
 }) {
   const ref = useRef<HTMLTextAreaElement>(null);
   const COLLAPSED = 43;
@@ -223,7 +228,16 @@ function AutoTextarea({
   };
   return (
     <textarea
-      ref={ref}
+      ref={(el) => {
+        ref.current = el;
+        if (forwardedRef) {
+          if (typeof forwardedRef === "function") {
+            forwardedRef(el);
+          } else {
+            forwardedRef.current = el;
+          }
+        }
+      }}
       className="form-control"
       value={value}
       placeholder={placeholder}
@@ -237,6 +251,7 @@ function AutoTextarea({
         collapse();
         onBlur?.();
       }}
+      onKeyDown={onKeyDown}
       style={{ resize: "none", overflow: "hidden", height: COLLAPSED }}
       maxLength={3500}
     />
@@ -360,6 +375,23 @@ export function ListEditor({
   const [showLanguages, setShowLanguages] = useState(false);
   const langRef = useRef<HTMLDivElement>(null);
   const catRef = useRef<HTMLDivElement>(null);
+  const newValueInputRef = useRef<HTMLTextAreaElement>(null);
+  const newBlurbInputRef = useRef<HTMLTextAreaElement>(null);
+
+  // Only save when all mandatory fields are filled
+  const canSave = () => list.values.length >= 10 && list.name && list.categories.length > 0;
+
+  const handleBlur = (updatedList: TenThingsList) => {
+    if (canSave()) {
+      onBlur(updatedList);
+    }
+  };
+
+  // Check if a value already exists (case-insensitive, ignoring special characters)
+  const hasDuplicate = (value: string) => {
+    const normalized = removeAllButLetters(value);
+    return list.values.some((item) => removeAllButLetters(item.value) === normalized);
+  };
 
   useEffect(() => {
     const handler = (e: MouseEvent) => {
@@ -377,14 +409,43 @@ export function ListEditor({
   onChangeRef.current = onChange;
   const onBlurRef = useRef(onBlur);
   onBlurRef.current = onBlur;
+  const handleBlurRef = useRef(handleBlur);
+  handleBlurRef.current = handleBlur;
 
   const addValue = () => {
     if (!newItem.value) return;
-    onChangeRef.current({
+    if (hasDuplicate(newItem.value)) {
+      alert(`"${newItem.value}" is already in the list`);
+      return;
+    }
+    const updatedList = {
       ...listRef.current,
-      values: [...listRef.current.values, { _id: `tmp-${Date.now()}`, value: newItem.value, blurb: newItem.blurb }],
-    });
+      values: [
+        ...listRef.current.values,
+        { _id: `tmp-${Math.random().toString(36).substr(2, 9)}`, value: newItem.value, blurb: newItem.blurb },
+      ],
+    };
+    onChangeRef.current(updatedList);
     setNewItem({ value: "", blurb: "" });
+    // Refocus on value input for quick entry
+    setTimeout(() => newValueInputRef.current?.focus(), 0);
+    // Autosave when reaching 10 values with mandatory fields filled
+    if (updatedList.values.length >= 10 && updatedList.name && updatedList.categories.length > 0) {
+      handleBlurRef.current(updatedList);
+    }
+  };
+
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>, field: "value" | "blurb") => {
+    if (e.key === "Tab") {
+      e.preventDefault();
+      if (field === "value") {
+        // Tab on value input: focus on blurb input
+        newBlurbInputRef.current?.focus();
+      } else if (field === "blurb") {
+        // Tab on blurb input: create the value
+        addValue();
+      }
+    }
   };
 
   const updateValue = useCallback((index: number, patch: Partial<TenThingsValue>) => {
@@ -403,7 +464,7 @@ export function ListEditor({
     const cats = list.categories.includes(cat) ? list.categories.filter((c) => c !== cat) : [...list.categories, cat];
     const updated = { ...list, categories: cats };
     onChange(updated);
-    onBlur(updated);
+    handleBlur(updated);
   };
 
   const getCategoryLabel = () => {
@@ -549,7 +610,7 @@ export function ListEditor({
           value={list.name}
           disabled={readOnly}
           onChange={(e) => onChange({ ...list, name: e.target.value })}
-          onBlur={() => onBlur(listRef.current)}
+          onBlur={() => handleBlurRef.current(listRef.current)}
           autoComplete="off"
         />
       </div>
@@ -562,7 +623,7 @@ export function ListEditor({
           placeholder="Description displays when the list is introduced to the players."
           disabled={readOnly}
           onChange={(v) => onChange({ ...list, description: v })}
-          onBlur={() => onBlur(listRef.current)}
+          onBlur={() => handleBlurRef.current(listRef.current)}
         />
       </div>
 
@@ -590,7 +651,7 @@ export function ListEditor({
                     e.preventDefault();
                     const updated = { ...list, language: l.code };
                     onChange(updated);
-                    onBlur(updated);
+                    handleBlurRef.current(updated);
                     setShowLanguages(false);
                   }}
                 >
@@ -659,7 +720,7 @@ export function ListEditor({
               onClick={() => {
                 const updated = { ...list, difficulty: i };
                 onChange(updated);
-                onBlur(updated);
+                handleBlurRef.current(updated);
               }}
             >
               <i className={`fas ${d.icon}`} />
@@ -679,7 +740,7 @@ export function ListEditor({
               onClick={() => {
                 const updated = { ...list, frequency: i };
                 onChange(updated);
-                onBlur(updated);
+                handleBlurRef.current(updated);
               }}
             >
               <i className={`fas ${f.icon}`} />
@@ -758,6 +819,8 @@ export function ListEditor({
                     value={newItem.value}
                     placeholder={`New answer (${list.values.length + 1})`}
                     onChange={(v) => setNewItem({ ...newItem, value: v })}
+                    onKeyDown={(e) => handleKeyDown(e, "value")}
+                    forwardedRef={newValueInputRef}
                   />
                 </InputCell>
                 <InputCell>
@@ -765,6 +828,8 @@ export function ListEditor({
                     value={newItem.blurb}
                     placeholder={`Display after guessing ${newItem.value || "new answer"} (Can be a URL)`}
                     onChange={(v) => setNewItem({ ...newItem, blurb: v })}
+                    onKeyDown={(e) => handleKeyDown(e, "blurb")}
+                    forwardedRef={newBlurbInputRef}
                   />
                 </InputCell>
                 <td colSpan={2}>

@@ -207,6 +207,7 @@ export default function TenThingsLists() {
     const target = listToSave ?? selectedList;
     if (!target || !currentUser) return;
     try {
+      console.log("Saving list", target);
       if (target._id === "new") {
         const created = await createList(currentUser._id, target);
         setSelectedList(created);

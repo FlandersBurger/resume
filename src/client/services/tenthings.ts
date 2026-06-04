@@ -82,7 +82,19 @@ export async function getList(id: string) {
 }
 
 export async function createList(userId: string, list: Partial<TenThingsList>) {
-  const { data } = await http.post<TenThingsList>("/api/tenthings/lists", { user: userId, list });
+  // Strip out temporary IDs from values array before sending to API
+  const cleanList = {
+    ...list,
+    values: (list.values || []).map(({ _id, ...value }) => {
+      // Only include _id if it's a valid 24-char ObjectId, otherwise let API generate it
+      if (_id && typeof _id === "string" && /^[0-9a-f]{24}$/.test(_id)) {
+        return { _id, ...value };
+      }
+      return value;
+    }),
+  };
+  delete cleanList._id; // Ensure _id is not sent for new list
+  const { data } = await http.post<TenThingsList>("/api/tenthings/lists", { user: userId, list: cleanList });
   return data;
 }
 
