@@ -55,18 +55,16 @@ export default function TenThingsLists() {
   const [categoryFilter, setCategoryFilter] = useState<string[]>(
     searchParams.get("cat") ? searchParams.get("cat")!.split(",") : [],
   );
-  const [newList, setNewList] = useState(false);
   const [editorVisible, setEditorVisible] = useState(false);
   const [editorMounted, setEditorMounted] = useState(false);
   const [deleteModalLists, setDeleteModalLists] = useState<TenThingsList[]>([]);
 
   const readOnly =
-    !newList &&
-    (!currentUser ||
-      (!currentUser.admin &&
-        !!selectedList &&
-        selectedList._id !== "new" &&
-        String(selectedList.creator._id) !== String(currentUser._id)));
+    !currentUser ||
+    (!currentUser.admin &&
+      !!selectedList &&
+      selectedList._id !== "new" &&
+      String(selectedList.creator._id) !== String(currentUser._id));
 
   const INITIAL_LIMIT = 50;
   const PAGE_LIMIT = 50;
@@ -148,7 +146,6 @@ export default function TenThingsLists() {
     if (listId && listId !== "new") {
       getList(listId).then((l) => {
         setSelectedList(l);
-        setNewList(false);
         setEditorMounted(true);
         requestAnimationFrame(() => requestAnimationFrame(() => setEditorVisible(true)));
       });
@@ -160,7 +157,6 @@ export default function TenThingsLists() {
       const data = await getList(list._id);
       setSelectedList(data);
       setSearchParams({ list: data._id });
-      setNewList(false);
       setEditorMounted(true);
       requestAnimationFrame(() => requestAnimationFrame(() => setEditorVisible(true)));
     } catch {
@@ -174,7 +170,6 @@ export default function TenThingsLists() {
       setSelectedList(null);
       setEditorMounted(false);
     }, 320);
-    setNewList(false);
     setSearchParams(
       (prev) => {
         const next = new URLSearchParams(prev);
@@ -197,7 +192,6 @@ export default function TenThingsLists() {
       creator: { _id: currentUser._id, username: currentUser.username },
       values: [],
     });
-    setNewList(true);
     setSearchParams({ list: "new" });
     setEditorMounted(true);
     requestAnimationFrame(() => requestAnimationFrame(() => setEditorVisible(true)));
