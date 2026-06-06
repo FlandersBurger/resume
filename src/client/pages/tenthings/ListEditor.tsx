@@ -30,7 +30,8 @@ const EditListPanelHeader = styled.div`
   top: 0;
   background: white;
   z-index: 10;
-  padding-top: 10px;
+  margin: 0 -20px;
+  padding: 10px 20px 0;
   .input-group {
     position: relative;
     z-index: 5;
@@ -39,6 +40,8 @@ const EditListPanelHeader = styled.div`
     position: relative;
     z-index: 4;
   }
+  border-bottom: solid;
+  border-bottom-color: black;
 `;
 
 const BtnToolbar = styled.div`
