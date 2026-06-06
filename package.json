@@ -10,7 +10,7 @@
     "translate": "cd src/scripts && node i18n-scanner.js",
     "client:dev": "vite",
     "client:build": "vite build",
-    "client:watch": "vite build --watch",
+    "client:watch": "concurrently \"vite\" \"vite build --watch\"",
     "client:preview": "vite preview",
     "test": "jest",
     "test:watch": "jest --watch",

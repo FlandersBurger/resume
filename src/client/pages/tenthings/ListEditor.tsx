@@ -31,7 +31,7 @@ const EditListPanelHeader = styled.div`
   background: white;
   z-index: 10;
   margin: 0 -20px;
-  padding: 10px 20px 0;
+  padding: 0 20px;
   .input-group {
     position: relative;
     z-index: 5;
