@@ -57,13 +57,6 @@ export default function Terms() {
           YouTube API data is used solely to retrieve publicly available video links. No YouTube account data is
           accessed or stored on your behalf.
         </p>
-        <p>
-          You can manage or revoke this application's access to Google services at any time via your{" "}
-          <a href="https://myaccount.google.com/permissions" target="_blank" rel="noreferrer">
-            Google Account permissions page
-          </a>
-          .
-        </p>
       </Section>
 
       <Section>

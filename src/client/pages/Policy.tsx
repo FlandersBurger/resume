@@ -68,13 +68,6 @@ export default function Policy() {
           </a>
           .
         </p>
-        <p>
-          You can revoke this application's access to Google services at any time via your{" "}
-          <a href="https://myaccount.google.com/permissions" target="_blank" rel="noreferrer">
-            Google Account permissions page
-          </a>
-          .
-        </p>
       </Section>
 
       <Section>
