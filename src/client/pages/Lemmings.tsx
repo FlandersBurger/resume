@@ -1,9 +1,24 @@
 import { useEffect, useRef } from "react";
 
-const LEFT = 0;
-const RIGHT = 1;
+const LEFT = 0,
+  RIGHT = 1;
+const GRAVITY = 2.5,
+  MAX_FALL = 18,
+  WALK_SPEED = 2;
+const TICK_MS = 100,
+  MAX_LEMMINGS = 12,
+  SPAWN_EVERY = 6;
+const WALL_W = 28,
+  HATCH_W = 82,
+  HATCH_H = 50,
+  HATCH_FRAMES = 10;
+const HATCH_TX = 20,
+  HATCH_TY = 20;
+// Hatch drawn: translate(20,20) → translate(41,25) → drawImage size 164×100 from (61,45)
+const SPAWN_CX = HATCH_TX + HATCH_W / 2 + HATCH_W; // 143
+const SPAWN_FEET_Y = HATCH_TY + HATCH_H / 2 + HATCH_H * 2; // 145
 
-const actions: Record<string, any> = {
+const ANIM = {
   walk: { start: [0, 0], end: [320, 20], columns: 8, rows: 1, reverse: false },
   huh: { start: [320, 0], end: [640, 20], columns: 8, rows: 1, reverse: true },
   fall: { start: [0, 80], end: [160, 100], columns: 4, rows: 1, reverse: false },
@@ -13,153 +28,266 @@ const actions: Record<string, any> = {
   build: { start: [0, 200], end: [640, 225], columns: 16, rows: 1, reverse: false },
   punch: { start: [0, 240], end: [640, 300], columns: 16, rows: 2, reverse: false },
   dig: { start: [0, 320], end: [320, 345], columns: 8, rows: 1, reverse: false },
-};
+} as const;
+
+type AnimName = keyof typeof ANIM;
+type TerrainKind = "wall" | "ground" | "platform";
+type Terrain = { x: number; y: number; w: number; h: number; kind: TerrainKind };
+
+function rnd(a: number, b: number) {
+  return Math.random() * (b - a) + a;
+}
+
+function generateLevel(W: number, H: number): Terrain[] {
+  // Pit: always present, right side of the floor
+  const pitX = rnd(W * 0.52, W * 0.68);
+  const floorY = H * rnd(0.76, 0.82);
+
+  const terrain: Terrain[] = [
+    { x: 0, y: 0, w: WALL_W, h: H, kind: "wall" },
+    { x: W - WALL_W, y: 0, w: WALL_W, h: H, kind: "wall" },
+    { x: WALL_W, y: floorY, w: pitX - WALL_W, h: H - floorY, kind: "ground" },
+  ];
+
+  // Platform 1: guaranteed, must cover the spawn point so lemmings land on it
+  const p1Y = rnd(180, floorY - 70);
+  const p1X = rnd(WALL_W + 4, SPAWN_CX - 30);
+  const p1EndX = Math.min(rnd(SPAWN_CX + 60, pitX - 10), pitX - 10);
+  terrain.push({ x: p1X, y: p1Y, w: p1EndX - p1X, h: 14, kind: "platform" });
+
+  // Platform 2: optional, higher than platform 1
+  if (Math.random() > 0.35 && p1Y > 240) {
+    const p2Y = rnd(140, p1Y - 55);
+    const p2X = rnd(WALL_W + 4, pitX * 0.65);
+    const p2W = Math.min(rnd(W * 0.15, W * 0.38), pitX - p2X - 10);
+    if (p2W > 60) terrain.push({ x: p2X, y: p2Y, w: p2W, h: 14, kind: "platform" });
+  }
+
+  return terrain;
+}
+
+function inTerrain(px: number, py: number, terrain: Terrain[]): boolean {
+  return terrain.some((t) => px >= t.x && px < t.x + t.w && py >= t.y && py < t.y + t.h);
+}
+
+function spriteSize(name: AnimName) {
+  const a = ANIM[name];
+  return {
+    w: (a.end[0] - a.start[0]) / a.columns,
+    h: (a.end[1] - a.start[1] - 20 * (a.rows - 1)) / a.rows,
+  };
+}
 
 export default function Lemmings() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
   useEffect(() => {
-    const canvas = canvasRef.current;
-    if (!canvas) return;
+    const canvas = canvasRef.current!;
     const ctx = canvas.getContext("2d")!;
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+    const W = canvas.width,
+      H = canvas.height;
 
-    const lemmingsImage = new Image();
-    lemmingsImage.src = "lemmings/lemmings.png";
-    const decorImage = new Image();
-    decorImage.src = "lemmings/decor.png";
+    const lemmingImg = new Image();
+    lemmingImg.src = "lemmings/lemmings.png";
+    const decorImg = new Image();
+    decorImg.src = "lemmings/decor.png";
 
-    const lemmings: Record<string, any> = {};
-    let started = false;
-    let timeout: ReturnType<typeof setTimeout>;
+    const terrain = generateLevel(W, H);
+    let lemmings: any[] = [];
+    let totalSpawned = 0;
+    let tick = 0;
+    let timeoutId: ReturnType<typeof setTimeout>;
+    let reloadId: ReturnType<typeof setTimeout>;
 
-    function resizeCanvas() {
-      canvas.width = window.innerWidth;
-      canvas.height = window.innerHeight;
-    }
+    type HatchPhase = "opening" | "open" | "closing" | "closed";
+    let hatchPhase: HatchPhase = "opening";
+    let hatchFrame = 0;
 
-    function makeLemming(initAction: string) {
-      const actionDef = actions[initAction];
+    function makeLemming() {
+      const { w, h } = spriteSize("fall");
+      const sw = w * 2,
+        sh = h * 2;
       const l: any = {
-        position: [
-          Math.floor(Math.random() * (canvas.width - 200)) + 100,
-          Math.floor(Math.random() * (canvas.height - 200)) + 100,
-        ],
-        direction: Math.random() * 2 > 1 ? LEFT : RIGHT,
-        action: actionDef,
+        pos: [SPAWN_CX - sw / 2, SPAWN_FEET_Y - sh],
+        dir: Math.random() < 0.5 ? LEFT : RIGHT,
+        anim: ANIM.fall,
         cycle: 0,
-        animation: true,
-        width: (actionDef.end[0] - actionDef.start[0]) / actionDef.columns,
-        height: (actionDef.end[1] - actionDef.start[1] - 20 * (actionDef.rows - 1)) / actionDef.rows,
+        animForward: true,
+        w,
+        h,
+        sw,
+        sh,
+        vy: 0,
+        state: "fall",
+        alive: true,
       };
-      l.act = (name: string) => {
-        const a = actions[name];
-        l.action = a;
+
+      l.setAnim = (name: AnimName) => {
+        const a = ANIM[name];
+        const sz = spriteSize(name);
+        l.anim = a;
         l.cycle = 0;
-        l.width = (a.end[0] - a.start[0]) / a.columns;
-        l.height = (a.end[1] - a.start[1] - 20 * (a.rows - 1)) / a.rows;
-        l.animation = true;
+        l.animForward = true;
+        l.w = sz.w;
+        l.h = sz.h;
+        l.sw = sz.w * 2;
+        l.sh = sz.h * 2;
       };
-      l.move = () => {
+
+      l.draw = () => {
+        const { w, h, sw, sh, pos, dir, anim, cycle } = l;
+        const col = cycle % anim.columns;
+        const row = Math.floor(cycle / anim.columns);
+        const srcX = w * col + anim.start[0];
+        const srcY = (h + 20) * row + anim.start[1];
         ctx.save();
-        ctx.translate(l.position[0], l.position[1]);
-        ctx.translate(l.width / 2, l.height / 2);
-        if (l.direction === LEFT) ctx.scale(-1, 1);
-        const column = l.cycle % l.action.columns;
-        const row = Math.floor(l.cycle / l.action.columns);
-        ctx.drawImage(
-          lemmingsImage,
-          l.width * column + l.action.start[0],
-          (l.height + 20) * row + l.action.start[1],
-          l.width,
-          l.height,
-          0,
-          0,
-          l.width * 2,
-          l.height * 2,
-        );
+        if (dir === RIGHT) {
+          ctx.drawImage(lemmingImg, srcX, srcY, w, h, pos[0], pos[1], sw, sh);
+        } else {
+          ctx.translate(pos[0] + sw, 0);
+          ctx.scale(-1, 1);
+          ctx.drawImage(lemmingImg, srcX, srcY, w, h, 0, pos[1], sw, sh);
+        }
         ctx.restore();
-        if (l.action.reverse) {
-          if (l.animation) {
+
+        if (anim.reverse) {
+          if (l.animForward) {
             l.cycle++;
-            if (l.cycle >= l.action.columns * l.action.rows) {
-              l.animation = false;
-              l.cycle--;
+            if (l.cycle >= anim.columns * anim.rows) {
+              l.animForward = false;
+              l.cycle -= 2;
             }
           } else {
             l.cycle--;
             if (l.cycle < 0) {
-              l.animation = true;
-              l.cycle = 0;
+              l.animForward = true;
+              l.cycle = 1;
             }
           }
         } else {
-          l.cycle++;
-          if (l.cycle >= l.action.columns * l.action.rows) l.cycle = 0;
+          l.cycle = (l.cycle + 1) % (anim.columns * anim.rows);
         }
       };
+
       return l;
     }
 
-    function makeHatch() {
-      const a = { start: [0, 0], end: [82, 500], columns: 1, rows: 10 };
-      const h: any = {
-        position: [20, 20],
-        action: a,
-        width: (a.end[0] - a.start[0]) / a.columns,
-        height: (a.end[1] - a.start[1]) / a.rows,
-        cycle: 0,
-      };
-      h.open = () => {
-        ctx.save();
-        ctx.translate(h.position[0], h.position[1]);
-        ctx.translate(h.width / 2, h.height / 2);
-        const column = started ? h.cycle % h.action.columns : 0;
-        const row = started ? Math.floor(h.cycle / h.action.columns) : 0;
-        if (started && h.cycle < 9) h.cycle++;
-        ctx.drawImage(
-          decorImage,
-          h.width * column + h.action.start[0],
-          h.height * row + h.action.start[1] - 1,
-          h.width,
-          h.height,
-          0,
-          0,
-          h.width * 2,
-          h.height * 2,
-        );
-        ctx.restore();
-      };
-      return h;
-    }
+    function updateLemming(l: any) {
+      const { sw, sh } = l;
+      const cx = l.pos[0] + sw / 2;
+      const feet = l.pos[1] + sh;
 
-    function spawnLemming() {
-      Object.keys(actions).forEach((action) => {
-        lemmings[Math.round(Math.random() * 100000000)] = makeLemming(action);
-      });
-    }
+      if (l.state === "walk") {
+        const dx = l.dir === RIGHT ? WALK_SPEED : -WALK_SPEED;
+        const nextX = l.pos[0] + dx;
+        const wallX = l.dir === RIGHT ? nextX + sw + 1 : nextX - 1;
+        const midY = feet - sh * 0.4;
 
-    const hatch = makeHatch();
-    spawnLemming();
+        if (inTerrain(wallX, midY, terrain)) {
+          l.dir = 1 - l.dir;
+        } else {
+          l.pos[0] = nextX;
+        }
 
-    function draw() {
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-      if (started) {
-        for (const i in lemmings) lemmings[i].move();
+        if (!inTerrain(cx, feet + 1, terrain)) {
+          l.state = "fall";
+          l.vy = 0;
+          l.setAnim("fall");
+        }
+      } else if (l.state === "fall") {
+        l.vy = Math.min(l.vy + GRAVITY, MAX_FALL);
+        l.pos[1] += l.vy;
+
+        const newFeet = l.pos[1] + sh;
+        if (inTerrain(cx, newFeet, terrain)) {
+          let snapY = l.pos[1];
+          let i = 0;
+          while (inTerrain(cx, snapY + sh, terrain) && i++ < 30) snapY--;
+          l.pos[1] = snapY;
+          l.vy = 0;
+          l.state = "walk";
+          l.setAnim("walk");
+        }
+
+        if (l.pos[1] > H + 100) l.alive = false;
       }
-      hatch.open();
-      started = true;
-      timeout = setTimeout(draw, 150);
     }
 
-    resizeCanvas();
-    window.addEventListener("resize", resizeCanvas);
-    draw();
+    function drawTerrain() {
+      for (const t of terrain) {
+        if (t.kind === "wall") {
+          ctx.fillStyle = "rgba(80, 68, 50, 0.42)";
+          ctx.fillRect(t.x, 0, t.w, H);
+          ctx.fillStyle = "rgba(115, 98, 72, 0.28)";
+          const edgeX = t.x === 0 ? t.w - 3 : t.x;
+          ctx.fillRect(edgeX, 0, 3, H);
+        } else if (t.kind === "ground") {
+          ctx.fillStyle = "rgba(28, 88, 28, 0.25)";
+          ctx.fillRect(t.x, t.y + 5, t.w, t.h);
+          ctx.fillStyle = "rgba(55, 160, 55, 0.42)";
+          ctx.fillRect(t.x, t.y, t.w, 5);
+        } else {
+          ctx.fillStyle = "rgba(30, 96, 30, 0.28)";
+          ctx.fillRect(t.x, t.y + 4, t.w, t.h - 4);
+          ctx.fillStyle = "rgba(60, 175, 60, 0.44)";
+          ctx.fillRect(t.x, t.y, t.w, 4);
+        }
+      }
+    }
+
+    function drawHatch() {
+      ctx.save();
+      ctx.translate(HATCH_TX, HATCH_TY);
+      ctx.translate(HATCH_W / 2, HATCH_H / 2);
+      const srcY = HATCH_H * hatchFrame - (hatchFrame > 0 ? 1 : 0);
+      ctx.drawImage(decorImg, 0, srcY, HATCH_W, HATCH_H, 0, 0, HATCH_W * 2, HATCH_H * 2);
+      ctx.restore();
+
+      if (hatchPhase === "opening") {
+        if (hatchFrame < HATCH_FRAMES - 1) hatchFrame++;
+        else hatchPhase = "open";
+      } else if (hatchPhase === "closing") {
+        if (hatchFrame > 0) hatchFrame--;
+        else hatchPhase = "closed";
+      }
+    }
+
+    function frame() {
+      ctx.clearRect(0, 0, W, H);
+      drawTerrain();
+
+      if (hatchPhase === "open" && totalSpawned < MAX_LEMMINGS && tick % SPAWN_EVERY === 0) {
+        lemmings.push(makeLemming());
+        totalSpawned++;
+        if (totalSpawned >= MAX_LEMMINGS) hatchPhase = "closing";
+      }
+
+      lemmings = lemmings.filter((l) => l.alive);
+      for (const l of lemmings) {
+        updateLemming(l);
+        l.draw();
+      }
+
+      drawHatch();
+
+      if (hatchPhase === "closed" && lemmings.length === 0) {
+        reloadId = setTimeout(() => window.location.reload(), 1500);
+        return;
+      }
+
+      tick++;
+      timeoutId = setTimeout(frame, TICK_MS);
+    }
+
+    frame();
 
     return () => {
-      clearTimeout(timeout);
-      window.removeEventListener("resize", resizeCanvas);
+      clearTimeout(timeoutId);
+      clearTimeout(reloadId);
     };
   }, []);
 
-  return <canvas ref={canvasRef} id="lemmings-page" style={{ position: "fixed", top: 0, left: 0, zIndex: -1 }} />;
+  return <canvas ref={canvasRef} style={{ position: "fixed", top: 0, left: 0, zIndex: -1 }} />;
 }
