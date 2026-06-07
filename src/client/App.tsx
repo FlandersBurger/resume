@@ -22,6 +22,7 @@ import Asteroids from "./pages/Asteroids";
 import Lemmings from "./pages/Lemmings";
 import Lists from "./pages/Lists";
 import Policy from "./pages/Policy";
+import Terms from "./pages/Terms";
 import TenThingsLists from "./pages/tenthings/TenThingsLists";
 import TenThingsGame from "./pages/TenThingsGame";
 import TenThingsPlay from "./pages/TenThingsPlay";
@@ -135,6 +136,7 @@ export default function App() {
           <Route path="/profile" element={<Profile />} />
           <Route path="/login" element={<Navigate to="/home" replace />} />
           <Route path="/policy" element={<Policy />} />
+          <Route path="/terms" element={<Terms />} />
           <Route path="/workout" element={<Workout />} />
           <Route path="/charades" element={<Charades />} />
           <Route path="/bubbles" element={<Bubbles />} />

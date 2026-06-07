@@ -171,6 +171,12 @@ export function Navbar() {
                 <li>
                   <Link to="/profile">Profile</Link>
                 </li>
+                <li>
+                  <Link to="/policy">Privacy Policy</Link>
+                </li>
+                <li>
+                  <Link to="/terms">Terms of Service</Link>
+                </li>
                 <li role="separator" className="divider" />
                 <li>
                   <a

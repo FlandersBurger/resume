@@ -52,7 +52,34 @@ export default function Policy() {
       </Section>
 
       <Section>
-        <h2>4. Third-Party Authentication</h2>
+        <h2>4. YouTube API Services</h2>
+        <p>
+          This site uses the{" "}
+          <a href="https://developers.google.com/youtube/v3" target="_blank" rel="noreferrer">
+            YouTube Data API v3
+          </a>{" "}
+          to look up publicly available music video links for trivia content. No YouTube account data is collected,
+          stored, or shared on your behalf.
+        </p>
+        <p>
+          Google's privacy policy applies to data handled via YouTube API Services:{" "}
+          <a href="https://policies.google.com/privacy" target="_blank" rel="noreferrer">
+            https://policies.google.com/privacy
+          </a>
+          .
+        </p>
+        <p>
+          You can revoke this application's access to Google services at any time via your{" "}
+          <a href="https://myaccount.google.com/permissions" target="_blank" rel="noreferrer">
+            Google Account permissions page
+          </a>
+          .
+        </p>
+      </Section>
+
+      <Section>
+        <h2>5. Third-Party Authentication</h2>
+
         <p>
           Sign-in is provided by Firebase Authentication (Google). By signing in you are also subject to the privacy
           policies of the provider you choose:
@@ -72,7 +99,7 @@ export default function Policy() {
       </Section>
 
       <Section>
-        <h2>5. Data Retention</h2>
+        <h2>6. Data Retention</h2>
         <p>
           Your account data is retained for as long as you have an account on this site. You may request deletion of
           your data at any time by contacting me.
@@ -80,7 +107,7 @@ export default function Policy() {
       </Section>
 
       <Section>
-        <h2>6. Contact</h2>
+        <h2>7. Contact</h2>
         <p>
           If you have any questions about this policy, please reach out via the <a href="/contact">contact page</a>.
         </p>
