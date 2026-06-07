@@ -84,22 +84,20 @@ export default function Lemmings() {
   useEffect(() => {
     const canvas = canvasRef.current!;
     const ctx = canvas.getContext("2d")!;
-    canvas.width = window.innerWidth;
-    canvas.height = window.innerHeight;
-    const W = canvas.width,
-      H = canvas.height;
 
     const lemmingImg = new Image();
     lemmingImg.src = "lemmings/lemmings.png";
     const decorImg = new Image();
     decorImg.src = "lemmings/decor.png";
 
-    const terrain = generateLevel(W, H);
+    let W = 0,
+      H = 0;
+    let terrain: Terrain[] = [];
     let lemmings: any[] = [];
     let totalSpawned = 0;
     let tick = 0;
     let timeoutId: ReturnType<typeof setTimeout>;
-    let reloadId: ReturnType<typeof setTimeout>;
+    let restartId: ReturnType<typeof setTimeout>;
 
     type HatchPhase = "opening" | "open" | "closing" | "closed";
     let hatchPhase: HatchPhase = "opening";
@@ -273,7 +271,7 @@ export default function Lemmings() {
       drawHatch();
 
       if (hatchPhase === "closed" && lemmings.length === 0) {
-        reloadId = setTimeout(() => window.location.reload(), 1500);
+        restartId = setTimeout(startGame, 1500);
         return;
       }
 
@@ -281,11 +279,27 @@ export default function Lemmings() {
       timeoutId = setTimeout(frame, TICK_MS);
     }
 
-    frame();
+    function startGame() {
+      clearTimeout(timeoutId);
+      clearTimeout(restartId);
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+      W = canvas.width;
+      H = canvas.height;
+      terrain = generateLevel(W, H);
+      lemmings = [];
+      totalSpawned = 0;
+      tick = 0;
+      hatchPhase = "opening";
+      hatchFrame = 0;
+      frame();
+    }
+
+    startGame();
 
     return () => {
       clearTimeout(timeoutId);
-      clearTimeout(reloadId);
+      clearTimeout(restartId);
     };
   }, []);
 
