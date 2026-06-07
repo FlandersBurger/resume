@@ -86,9 +86,9 @@ export default function Lemmings() {
     const ctx = canvas.getContext("2d")!;
 
     const lemmingImg = new Image();
-    lemmingImg.src = "lemmings/lemmings.png";
+    lemmingImg.src = "/lemmings/lemmings.png";
     const decorImg = new Image();
-    decorImg.src = "lemmings/decor.png";
+    decorImg.src = "/lemmings/decor.png";
 
     let W = 0,
       H = 0;
@@ -135,6 +135,7 @@ export default function Lemmings() {
       };
 
       l.draw = () => {
+        if (!lemmingImg.complete || lemmingImg.naturalWidth === 0) return;
         const { w, h, sw, sh, pos, dir, anim, cycle } = l;
         const col = cycle % anim.columns;
         const row = Math.floor(cycle / anim.columns);
@@ -236,6 +237,7 @@ export default function Lemmings() {
     }
 
     function drawHatch() {
+      if (!decorImg.complete || decorImg.naturalWidth === 0) return;
       ctx.save();
       ctx.translate(HATCH_TX, HATCH_TY);
       ctx.translate(HATCH_W / 2, HATCH_H / 2);

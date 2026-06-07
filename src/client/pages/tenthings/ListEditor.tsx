@@ -505,8 +505,6 @@ export function ListEditor({
     { icon: "fa-chimney", title: "Never changes" },
   ];
 
-  const canDelete = list.values.length > 10 && list._id !== "new";
-
   return (
     <EditListPanel $active={active}>
       {selectedItem && <BlurbModal item={selectedItem} onClose={() => setSelectedItem(null)} />}
