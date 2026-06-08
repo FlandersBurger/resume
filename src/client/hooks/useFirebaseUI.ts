@@ -47,7 +47,11 @@ export function useFirebaseUI(containerId: string, active: boolean, onSuccess?: 
         },
       },
       signInFlow: "popup",
-      signInOptions: [firebase.auth.GoogleAuthProvider.PROVIDER_ID, firebase.auth.FacebookAuthProvider.PROVIDER_ID],
+      signInOptions: [
+        firebase.auth.EmailAuthProvider.PROVIDER_ID,
+        firebase.auth.GoogleAuthProvider.PROVIDER_ID,
+        firebase.auth.FacebookAuthProvider.PROVIDER_ID,
+      ],
     });
     return () => {
       uiRef.current?.reset();
