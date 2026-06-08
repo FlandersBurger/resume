@@ -20,6 +20,7 @@ import Charades from "./pages/Charades";
 import Bubbles from "./pages/Bubbles";
 import Asteroids from "./pages/Asteroids";
 import Lemmings from "./pages/Lemmings";
+import Minesweeper from "./pages/Minesweeper";
 import Lists from "./pages/Lists";
 import Policy from "./pages/Policy";
 import Terms from "./pages/Terms";
@@ -142,6 +143,7 @@ export default function App() {
           <Route path="/bubbles" element={<Bubbles />} />
           <Route path="/asteroids" element={<Asteroids />} />
           <Route path="/lemmings" element={<Lemmings />} />
+          <Route path="/minesweeper" element={<Minesweeper />} />
           <Route path="/lists" element={<Lists />} />
           <Route path="/tenthings" element={<TenThingsLists />} />
           <Route path="/tenthings/:gameId" element={<TenThingsGame />} />

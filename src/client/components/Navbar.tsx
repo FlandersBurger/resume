@@ -105,6 +105,9 @@ export function Navbar() {
               <li>
                 <Link to="/lemmings">Lemmings</Link>
               </li>
+              <li>
+                <Link to="/minesweeper">Minesweeper</Link>
+              </li>
             </Dropdown>
             <Dropdown label="Quizzes">
               <li>
