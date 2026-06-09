@@ -1,12 +1,15 @@
 import { useEffect, useRef } from "react";
 import styled from "styled-components";
+import { useApp } from "../context/AppContext";
+import { getHighscore, setHighscore } from "../services/games";
 
 const COLS = 16;
 const ROWS = 16;
 const MINE_COUNT = 40;
 const NAVBAR_H = 50;
 
-const NUM_COLORS = ["", "#0000ff", "#008000", "#ff0000", "#000080", "#800000", "#008080", "#000", "#808080"];
+// Classic minesweeper number colors — kept for gameplay clarity
+const NUM_COLORS = ["", "#1565c0", "#2e7d32", "#c62828", "#283593", "#6a1515", "#00695c", "#212121", "#555"];
 
 type Cell = { mine: boolean; revealed: boolean; flagged: boolean; adjacent: number };
 type GameState = "idle" | "playing" | "won" | "lost";
@@ -30,7 +33,7 @@ const Wrapper = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
-  background: #c0c0c0;
+  background: #111;
 `;
 
 const Canvas = styled.canvas`
@@ -41,7 +44,6 @@ const Canvas = styled.canvas`
 function computeLayout(): Layout {
   const availW = window.innerWidth;
   const availH = window.innerHeight - NAVBAR_H;
-  // header takes 2 cell heights; leave a little padding
   const cell = Math.max(14, Math.floor(Math.min(availW / COLS, availH / (ROWS + 2))));
   const headerH = cell * 2;
   return { cell, headerH, w: COLS * cell, h: ROWS * cell + headerH };
@@ -87,51 +89,28 @@ function revealCell(grid: Cell[][], r: number, c: number) {
     for (let dr = -1; dr <= 1; dr++) for (let dc = -1; dc <= 1; dc++) revealCell(grid, r + dr, c + dc);
 }
 
-function drawLCD(ctx: CanvasRenderingContext2D, x: number, y: number, value: string, cell: number) {
-  const lw = Math.round(cell * 1.34),
-    lh = Math.round(cell * 0.75);
-  ctx.fillStyle = "#000";
-  ctx.fillRect(x, y, lw, lh);
-  ctx.fillStyle = "#f00";
-  ctx.font = `bold ${Math.round(cell * 0.625)}px monospace`;
+function faIcon(ctx: CanvasRenderingContext2D, icon: string, x: number, y: number, size: number, color: string) {
+  ctx.fillStyle = color;
+  ctx.font = `900 ${size}px "Font Awesome 5 Pro"`;
   ctx.textAlign = "center";
   ctx.textBaseline = "middle";
-  ctx.fillText(value, x + lw / 2, y + lh / 2);
+  ctx.fillText(icon, x, y);
 }
 
-function drawMine(ctx: CanvasRenderingContext2D, cx: number, cy: number, r: number) {
+const LCD_W_RATIO = 2.5;
+const LCD_H_RATIO = 0.88;
+
+function drawLCD(ctx: CanvasRenderingContext2D, x: number, y: number, value: string, cell: number) {
+  const lw = Math.round(cell * LCD_W_RATIO),
+    lh = Math.round(cell * LCD_H_RATIO);
   ctx.fillStyle = "#000";
-  ctx.beginPath();
-  ctx.arc(cx, cy, r, 0, Math.PI * 2);
-  ctx.fill();
-  ctx.strokeStyle = "#000";
-  ctx.lineWidth = 2;
-  for (let i = 0; i < 8; i++) {
-    const a = (i * Math.PI * 2) / 8;
-    ctx.beginPath();
-    ctx.moveTo(cx + Math.cos(a) * r * 0.7, cy + Math.sin(a) * r * 0.7);
-    ctx.lineTo(cx + Math.cos(a) * r * 1.5, cy + Math.sin(a) * r * 1.5);
-    ctx.stroke();
-  }
+  ctx.fillRect(x, y, lw, lh);
   ctx.fillStyle = "#fff";
-  ctx.beginPath();
-  ctx.arc(cx - r * 0.3, cy - r * 0.3, r * 0.25, 0, Math.PI * 2);
-  ctx.fill();
-}
-
-function drawFlag(ctx: CanvasRenderingContext2D, x: number, y: number, cell: number) {
-  const cx = x + cell / 2;
-  const bot = y + cell - Math.round(cell * 0.22);
-  ctx.fillStyle = "#000";
-  ctx.fillRect(cx - 1, y + Math.round(cell * 0.16), 2, bot - (y + Math.round(cell * 0.16)));
-  ctx.fillStyle = "#f00";
-  ctx.beginPath();
-  ctx.moveTo(cx + 1, y + Math.round(cell * 0.16));
-  ctx.lineTo(cx + Math.round(cell * 0.41), y + Math.round(cell * 0.34));
-  ctx.lineTo(cx + 1, y + Math.round(cell * 0.53));
-  ctx.fill();
-  ctx.fillStyle = "#000";
-  ctx.fillRect(cx - Math.round(cell * 0.16), bot, Math.round(cell * 0.31), 2);
+  const fs = Math.max(8, Math.round(cell * 0.46));
+  ctx.font = `${fs}px "Press Start 2P", monospace`;
+  ctx.textAlign = "center";
+  ctx.textBaseline = "middle";
+  ctx.fillText(value, x + lw / 2, y + lh / 2 + 1);
 }
 
 function drawFace(ctx: CanvasRenderingContext2D, gameState: GameState, w: number, headerH: number) {
@@ -139,21 +118,21 @@ function drawFace(ctx: CanvasRenderingContext2D, gameState: GameState, w: number
     cy = headerH / 2;
   const fr = headerH * 0.28;
 
-  ctx.fillStyle = "#ff0";
+  ctx.fillStyle = "#e8e8e8";
   ctx.beginPath();
   ctx.arc(cx, cy, fr, 0, Math.PI * 2);
   ctx.fill();
-  ctx.strokeStyle = "#000";
+  ctx.strokeStyle = "#555";
   ctx.lineWidth = 1.5;
   ctx.stroke();
 
-  ctx.strokeStyle = "#000";
+  ctx.strokeStyle = "#222";
   ctx.lineWidth = 1.5;
 
   if (gameState === "won") {
     const gw = fr * 0.65,
       gh = fr * 0.35;
-    ctx.fillStyle = "#000";
+    ctx.fillStyle = "#222";
     ctx.fillRect(cx - fr * 0.75, cy - fr * 0.4, gw, gh);
     ctx.fillRect(cx + fr * 0.12, cy - fr * 0.4, gw, gh);
     ctx.beginPath();
@@ -178,7 +157,7 @@ function drawFace(ctx: CanvasRenderingContext2D, gameState: GameState, w: number
     ctx.arc(cx, cy + fr * 0.62, fr * 0.5, Math.PI, 0);
     ctx.stroke();
   } else {
-    ctx.fillStyle = "#000";
+    ctx.fillStyle = "#222";
     ctx.beginPath();
     ctx.arc(cx - fr * 0.31, cy - fr * 0.19, fr * 0.12, 0, Math.PI * 2);
     ctx.arc(cx + fr * 0.31, cy - fr * 0.19, fr * 0.12, 0, Math.PI * 2);
@@ -200,8 +179,18 @@ export default function Minesweeper() {
   });
   const layoutRef = useRef<Layout>(computeLayout());
   const rafRef = useRef(0);
-  const longPressTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const touchMoved = useRef(false);
+  const actionsRef = useRef({ doReveal: (_x: number, _y: number) => {}, doChord: (_x: number, _y: number) => {} });
+  const { currentUser } = useApp();
+  const bestTimeRef = useRef(0);
+
+  useEffect(() => {
+    if (!currentUser) return;
+    getHighscore("minesweeper", currentUser._id)
+      .then((t: number) => {
+        bestTimeRef.current = t ?? 0;
+      })
+      .catch(() => {});
+  }, [currentUser?._id]);
 
   useEffect(() => {
     const canvas = canvasRef.current!;
@@ -220,24 +209,35 @@ export default function Minesweeper() {
       const { grid, gameState, minesLeft, startTime, elapsed } = stateRef.current;
       const { cell, headerH, w, h } = layoutRef.current;
 
-      ctx.fillStyle = "#c0c0c0";
-      ctx.fillRect(0, 0, w, h);
-
+      // Header — flat white with a single bottom border
       ctx.fillStyle = "#fff";
-      ctx.fillRect(0, 0, w, 3);
-      ctx.fillRect(0, 0, 3, headerH);
-      ctx.fillStyle = "#808080";
-      ctx.fillRect(0, headerH - 3, w, 3);
-      ctx.fillRect(w - 3, 0, 3, headerH);
+      ctx.fillRect(0, 0, w, headerH);
+      ctx.fillStyle = "#ddd";
+      ctx.fillRect(0, headerH - 1, w, 1);
+
+      // Grid background
+      ctx.fillStyle = "#f5f5f5";
+      ctx.fillRect(0, headerH, w, h - headerH);
 
       const secs =
         gameState === "playing" && startTime ? Math.min(999, Math.floor((Date.now() - startTime) / 1000)) : elapsed;
 
-      const lcdW = Math.round(cell * 1.34),
-        lcdH = Math.round(cell * 0.75);
-      const lcdY = headerH / 2 - lcdH / 2;
+      const lcdW = Math.round(cell * LCD_W_RATIO),
+        lcdH = Math.round(cell * LCD_H_RATIO);
+      const lcdY = Math.round(headerH / 2 - lcdH / 2);
       drawLCD(ctx, 8, lcdY, String(Math.max(0, minesLeft)).padStart(3, "0"), cell);
       drawLCD(ctx, w - lcdW - 8, lcdY, String(secs).padStart(3, "0"), cell);
+
+      const best = bestTimeRef.current;
+      if (best > 0) {
+        const smallFs = Math.max(6, Math.round(cell * 0.22));
+        ctx.fillStyle = "#555";
+        ctx.font = `${smallFs}px "Press Start 2P", monospace`;
+        ctx.textAlign = "center";
+        ctx.textBaseline = "top";
+        ctx.fillText(`BEST ${String(best).padStart(3, "0")}`, w - lcdW / 2 - 8, lcdY + lcdH + 3);
+      }
+
       drawFace(ctx, gameState, w, headerH);
 
       for (let r = 0; r < ROWS; r++) {
@@ -247,31 +247,31 @@ export default function Minesweeper() {
           const cd = grid[r][c];
 
           if (cd.revealed) {
-            ctx.fillStyle = cd.mine ? "#f88" : "#bdbdbd";
+            ctx.fillStyle = cd.mine ? "#fee2e2" : "#e9e9e9";
             ctx.fillRect(x, y, cell, cell);
-            ctx.strokeStyle = "#999";
-            ctx.lineWidth = 0.5;
+            ctx.strokeStyle = "#d1d1d1";
+            ctx.lineWidth = 1;
             ctx.strokeRect(x + 0.5, y + 0.5, cell - 1, cell - 1);
 
             if (cd.mine) {
-              drawMine(ctx, x + cell / 2, y + cell / 2, cell * 0.28);
+              faIcon(ctx, "", x + cell / 2, y + cell / 2 + 1, Math.round(cell * 0.5), "#991b1b");
             } else if (cd.adjacent > 0) {
               ctx.fillStyle = NUM_COLORS[cd.adjacent];
-              ctx.font = `bold ${Math.round(cell * 0.55)}px sans-serif`;
+              ctx.font = `bold ${Math.round(cell * 0.52)}px sans-serif`;
               ctx.textAlign = "center";
               ctx.textBaseline = "middle";
               ctx.fillText(String(cd.adjacent), x + cell / 2, y + cell / 2 + 1);
             }
           } else {
-            ctx.fillStyle = "#bdbdbd";
-            ctx.fillRect(x, y, cell, cell);
             ctx.fillStyle = "#fff";
-            ctx.fillRect(x, y, cell, 2);
-            ctx.fillRect(x, y, 2, cell);
-            ctx.fillStyle = "#808080";
-            ctx.fillRect(x, y + cell - 2, cell, 2);
-            ctx.fillRect(x + cell - 2, y, 2, cell);
-            if (cd.flagged) drawFlag(ctx, x, y, cell);
+            ctx.fillRect(x, y, cell, cell);
+            ctx.strokeStyle = "#ccc";
+            ctx.lineWidth = 1;
+            ctx.strokeRect(x + 0.5, y + 0.5, cell - 1, cell - 1);
+
+            if (cd.flagged) {
+              faIcon(ctx, "", x + cell / 2, y + cell / 2 + 1, Math.round(cell * 0.46), "#dc2626");
+            }
           }
         }
       }
@@ -280,11 +280,59 @@ export default function Minesweeper() {
     };
 
     rafRef.current = requestAnimationFrame(draw);
-
     window.addEventListener("resize", applyLayout);
     return () => {
       cancelAnimationFrame(rafRef.current);
       window.removeEventListener("resize", applyLayout);
+    };
+  }, []);
+
+  useEffect(() => {
+    const canvas = canvasRef.current!;
+    let timer: ReturnType<typeof setTimeout> | null = null;
+    let startX = 0,
+      startY = 0,
+      moved = false;
+
+    const onTouchStart = (e: TouchEvent) => {
+      e.preventDefault();
+      moved = false;
+      startX = e.touches[0].clientX;
+      startY = e.touches[0].clientY;
+      timer = setTimeout(() => {
+        if (!moved) actionsRef.current.doChord(startX, startY);
+        timer = null;
+      }, 450);
+    };
+
+    const onTouchMove = (e: TouchEvent) => {
+      if (Math.hypot(e.touches[0].clientX - startX, e.touches[0].clientY - startY) > 8) {
+        moved = true;
+        if (timer) {
+          clearTimeout(timer);
+          timer = null;
+        }
+      }
+    };
+
+    const onTouchEnd = (e: TouchEvent) => {
+      e.preventDefault();
+      if (timer) {
+        clearTimeout(timer);
+        timer = null;
+        const t = e.changedTouches[0];
+        actionsRef.current.doReveal(t.clientX, t.clientY);
+      }
+    };
+
+    canvas.addEventListener("touchstart", onTouchStart, { passive: false });
+    canvas.addEventListener("touchmove", onTouchMove, { passive: false });
+    canvas.addEventListener("touchend", onTouchEnd, { passive: false });
+    return () => {
+      canvas.removeEventListener("touchstart", onTouchStart);
+      canvas.removeEventListener("touchmove", onTouchMove);
+      canvas.removeEventListener("touchend", onTouchEnd);
+      if (timer) clearTimeout(timer);
     };
   }, []);
 
@@ -411,52 +459,26 @@ export default function Minesweeper() {
     s.gameState = "won";
     for (let r = 0; r < ROWS; r++) for (let c = 0; c < COLS; c++) if (s.grid[r][c].mine) s.grid[r][c].flagged = true;
     s.minesLeft = 0;
-  };
 
-  const handleClick = (e: React.MouseEvent<HTMLCanvasElement>) => doReveal(e.clientX, e.clientY);
-
-  const handleRightClick = (e: React.MouseEvent<HTMLCanvasElement>) => {
-    e.preventDefault();
-    doChord(e.clientX, e.clientY);
-  };
-
-  const handleTouchStart = (e: React.TouchEvent<HTMLCanvasElement>) => {
-    e.preventDefault();
-    touchMoved.current = false;
-    const { clientX, clientY } = e.touches[0];
-    longPressTimer.current = setTimeout(() => {
-      if (!touchMoved.current) doChord(clientX, clientY);
-      longPressTimer.current = null;
-    }, 400);
-  };
-
-  const handleTouchMove = () => {
-    touchMoved.current = true;
-    if (longPressTimer.current) {
-      clearTimeout(longPressTimer.current);
-      longPressTimer.current = null;
+    const t = s.elapsed;
+    if (currentUser && t > 0 && (bestTimeRef.current === 0 || t < bestTimeRef.current)) {
+      bestTimeRef.current = t;
+      setHighscore("minesweeper", currentUser._id, t).catch(() => {});
     }
   };
 
-  const handleTouchEnd = (e: React.TouchEvent<HTMLCanvasElement>) => {
-    e.preventDefault();
-    if (longPressTimer.current) {
-      clearTimeout(longPressTimer.current);
-      longPressTimer.current = null;
-      const t = e.changedTouches[0];
-      doReveal(t.clientX, t.clientY);
-    }
-  };
+  actionsRef.current.doReveal = doReveal;
+  actionsRef.current.doChord = doChord;
 
   return (
     <Wrapper>
       <Canvas
         ref={canvasRef}
-        onClick={handleClick}
-        onContextMenu={handleRightClick}
-        onTouchStart={handleTouchStart}
-        onTouchMove={handleTouchMove}
-        onTouchEnd={handleTouchEnd}
+        onClick={(e) => doReveal(e.clientX, e.clientY)}
+        onContextMenu={(e) => {
+          e.preventDefault();
+          doChord(e.clientX, e.clientY);
+        }}
       />
     </Wrapper>
   );

@@ -6,6 +6,12 @@ import { User } from "@root/models";
 
 export const gamesRoute = Router();
 
+gamesRoute.get("/:game/:userId/highscore", async (req: Request, res: Response) => {
+  const user = await User.findOne({ _id: req.params.userId });
+  if (!user) res.sendStatus(404);
+  else res.json(user.highscore[req.params.game as keyof IUser["highscore"]] ?? 0);
+});
+
 gamesRoute.post("/:game/:userId/highscore", async (req: Request, res: Response) => {
   const user = await User.findOne({ _id: req.params.userId });
   if (!user) res.sendStatus(404);

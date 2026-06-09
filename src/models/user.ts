@@ -23,6 +23,7 @@ export interface IUser {
   flags: string[];
   highscore: {
     asteroids: number;
+    minesweeper: number;
   };
   telegramId: number;
 }
@@ -52,6 +53,7 @@ const userSchema = new Schema<IUser>(
     flags: [{ type: String, required: false }],
     highscore: {
       asteroids: { type: Number, required: false, default: 0 },
+      minesweeper: { type: Number, required: false, default: 0 },
     },
   },
   { timestamps: true },

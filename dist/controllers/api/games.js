@@ -5,6 +5,13 @@ const express_1 = require("express");
 const FuzzyMatching = require("fuzzy-matching");
 const models_1 = require("../../models");
 exports.gamesRoute = (0, express_1.Router)();
+exports.gamesRoute.get("/:game/:userId/highscore", async (req, res) => {
+    const user = await models_1.User.findOne({ _id: req.params.userId });
+    if (!user)
+        res.sendStatus(404);
+    else
+        res.json(user.highscore[req.params.game] ?? 0);
+});
 exports.gamesRoute.post("/:game/:userId/highscore", async (req, res) => {
     const user = await models_1.User.findOne({ _id: req.params.userId });
     if (!user)
