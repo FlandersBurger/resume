@@ -1,1 +1,0 @@
-import{j as o}from"./index-BTFEpXDS.js";import{F as e}from"./QuizBase-vnQa_28Y.js";import"./quizzes-CKGZsNDV.js";import"./games-BYKNfKL-.js";function u(){return o.jsx(e,{name:"google",title:"Google Doodles",description:"Can you identify famous Google Doodles? Guess the blurred images in this fun quiz."})}export{u as default};
