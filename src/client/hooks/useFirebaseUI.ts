@@ -2,6 +2,7 @@ import { useEffect, useRef } from "react";
 import * as firebaseui from "firebaseui";
 import firebase from "firebase/compat/app";
 import "firebase/compat/auth";
+import "../services/firebase";
 import { authenticate } from "../services/users";
 import { useApp } from "../context/AppContext";
 

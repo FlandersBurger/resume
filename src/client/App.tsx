@@ -4,37 +4,39 @@ import { AppProvider } from "./context/AppContext";
 import { Navbar } from "./components/Navbar";
 import { ToastContainer } from "./components/ToastContainer";
 import Print from "./pages/Print";
-import NotFound from "./pages/NotFound";
-import { useEffect } from "react";
-import Home from "./pages/Home";
-import Experience from "./pages/Experience";
-import Skills from "./pages/Skills";
-import Hobbies from "./pages/Hobbies";
-import Contact from "./pages/Contact";
-import Posts from "./pages/Posts";
-import Profile from "./pages/Profile";
-import Login from "./pages/Login";
-import LoginModal from "./components/LoginModal";
-import Workout from "./pages/Workout";
-import Charades from "./pages/Charades";
-import Bubbles from "./pages/Bubbles";
-import Asteroids from "./pages/Asteroids";
-import Lemmings from "./pages/Lemmings";
-import Minesweeper from "./pages/Minesweeper";
-import Lists from "./pages/Lists";
-import Policy from "./pages/Policy";
-import Terms from "./pages/Terms";
-import TenThingsLists from "./pages/tenthings/TenThingsLists";
-import TenThingsGame from "./pages/TenThingsGame";
-import TenThingsPlay from "./pages/TenThingsPlay";
-import TenThingsAdmin from "./pages/TenThingsAdmin";
-import TenThingsStats from "./pages/TenThingsStats";
-import QuizGoogle from "./pages/quizzes/QuizGoogle";
-import QuizLogos from "./pages/quizzes/QuizLogos";
-import QuizAnimals from "./pages/quizzes/QuizAnimals";
-import QuizFlags from "./pages/quizzes/QuizFlags";
-import QuizMovies from "./pages/quizzes/QuizMovies";
-import QuizSkeletons from "./pages/quizzes/QuizSkeletons";
+import { useEffect, lazy, Suspense } from "react";
+import { useApp } from "./context/AppContext";
+
+const LoginModal = lazy(() => import("./components/LoginModal"));
+
+const NotFound = lazy(() => import("./pages/NotFound"));
+const Home = lazy(() => import("./pages/Home"));
+const Experience = lazy(() => import("./pages/Experience"));
+const Skills = lazy(() => import("./pages/Skills"));
+const Hobbies = lazy(() => import("./pages/Hobbies"));
+const Contact = lazy(() => import("./pages/Contact"));
+const Posts = lazy(() => import("./pages/Posts"));
+const Profile = lazy(() => import("./pages/Profile"));
+const Workout = lazy(() => import("./pages/Workout"));
+const Charades = lazy(() => import("./pages/Charades"));
+const Bubbles = lazy(() => import("./pages/Bubbles"));
+const Asteroids = lazy(() => import("./pages/Asteroids"));
+const Lemmings = lazy(() => import("./pages/Lemmings"));
+const Minesweeper = lazy(() => import("./pages/Minesweeper"));
+const Lists = lazy(() => import("./pages/Lists"));
+const Policy = lazy(() => import("./pages/Policy"));
+const Terms = lazy(() => import("./pages/Terms"));
+const TenThingsLists = lazy(() => import("./pages/tenthings/TenThingsLists"));
+const TenThingsGame = lazy(() => import("./pages/TenThingsGame"));
+const TenThingsPlay = lazy(() => import("./pages/TenThingsPlay"));
+const TenThingsAdmin = lazy(() => import("./pages/TenThingsAdmin"));
+const TenThingsStats = lazy(() => import("./pages/TenThingsStats"));
+const QuizGoogle = lazy(() => import("./pages/quizzes/QuizGoogle"));
+const QuizLogos = lazy(() => import("./pages/quizzes/QuizLogos"));
+const QuizAnimals = lazy(() => import("./pages/quizzes/QuizAnimals"));
+const QuizFlags = lazy(() => import("./pages/quizzes/QuizFlags"));
+const QuizMovies = lazy(() => import("./pages/quizzes/QuizMovies"));
+const QuizSkeletons = lazy(() => import("./pages/quizzes/QuizSkeletons"));
 
 const GlobalStyle = createGlobalStyle`
   body {
@@ -104,7 +106,6 @@ const GlobalStyle = createGlobalStyle`
     }
   }
 `;
-import { useApp } from "./context/AppContext";
 
 function BootstrapTheme() {
   const { themeCounter } = useApp();
@@ -115,6 +116,16 @@ function BootstrapTheme() {
   return null;
 }
 
+function LazyLoginModal() {
+  const { showLogin } = useApp();
+  if (!showLogin) return null;
+  return (
+    <Suspense fallback={null}>
+      <LoginModal />
+    </Suspense>
+  );
+}
+
 export default function App() {
   return (
     <AppProvider>
@@ -122,42 +133,44 @@ export default function App() {
       <BootstrapTheme />
       <Navbar />
       <ToastContainer />
-      <LoginModal />
+      <LazyLoginModal />
       <Print />
       <div className="container page">
-        <Routes>
-          <Route path="/" element={<Navigate to="/home" replace />} />
-          <Route path="/home" element={<Home />} />
-          <Route path="/experience" element={<Experience />} />
-          <Route path="/skills" element={<Skills />} />
-          <Route path="/hobbies" element={<Hobbies />} />
-          <Route path="/hobbies/:hobby" element={<Hobbies />} />
-          <Route path="/contact" element={<Contact />} />
-          <Route path="/posts" element={<Posts />} />
-          <Route path="/profile" element={<Profile />} />
-          <Route path="/login" element={<Navigate to="/home" replace />} />
-          <Route path="/policy" element={<Policy />} />
-          <Route path="/terms" element={<Terms />} />
-          <Route path="/workout" element={<Workout />} />
-          <Route path="/charades" element={<Charades />} />
-          <Route path="/bubbles" element={<Bubbles />} />
-          <Route path="/asteroids" element={<Asteroids />} />
-          <Route path="/lemmings" element={<Lemmings />} />
-          <Route path="/minesweeper" element={<Minesweeper />} />
-          <Route path="/lists" element={<Lists />} />
-          <Route path="/tenthings" element={<TenThingsLists />} />
-          <Route path="/tenthings/:gameId" element={<TenThingsGame />} />
-          <Route path="/tenthings-play" element={<TenThingsPlay />} />
-          <Route path="/tenthings-admin" element={<TenThingsAdmin />} />
-          <Route path="/tenthings-stats" element={<TenThingsStats />} />
-          <Route path="/google" element={<QuizGoogle />} />
-          <Route path="/logos" element={<QuizLogos />} />
-          <Route path="/animals" element={<QuizAnimals />} />
-          <Route path="/flags" element={<QuizFlags />} />
-          <Route path="/movies" element={<QuizMovies />} />
-          <Route path="/skeletons" element={<QuizSkeletons />} />
-          <Route path="*" element={<NotFound />} />
-        </Routes>
+        <Suspense fallback={null}>
+          <Routes>
+            <Route path="/" element={<Navigate to="/home" replace />} />
+            <Route path="/home" element={<Home />} />
+            <Route path="/experience" element={<Experience />} />
+            <Route path="/skills" element={<Skills />} />
+            <Route path="/hobbies" element={<Hobbies />} />
+            <Route path="/hobbies/:hobby" element={<Hobbies />} />
+            <Route path="/contact" element={<Contact />} />
+            <Route path="/posts" element={<Posts />} />
+            <Route path="/profile" element={<Profile />} />
+            <Route path="/login" element={<Navigate to="/home" replace />} />
+            <Route path="/policy" element={<Policy />} />
+            <Route path="/terms" element={<Terms />} />
+            <Route path="/workout" element={<Workout />} />
+            <Route path="/charades" element={<Charades />} />
+            <Route path="/bubbles" element={<Bubbles />} />
+            <Route path="/asteroids" element={<Asteroids />} />
+            <Route path="/lemmings" element={<Lemmings />} />
+            <Route path="/minesweeper" element={<Minesweeper />} />
+            <Route path="/lists" element={<Lists />} />
+            <Route path="/tenthings" element={<TenThingsLists />} />
+            <Route path="/tenthings/:gameId" element={<TenThingsGame />} />
+            <Route path="/tenthings-play" element={<TenThingsPlay />} />
+            <Route path="/tenthings-admin" element={<TenThingsAdmin />} />
+            <Route path="/tenthings-stats" element={<TenThingsStats />} />
+            <Route path="/google" element={<QuizGoogle />} />
+            <Route path="/logos" element={<QuizLogos />} />
+            <Route path="/animals" element={<QuizAnimals />} />
+            <Route path="/flags" element={<QuizFlags />} />
+            <Route path="/movies" element={<QuizMovies />} />
+            <Route path="/skeletons" element={<QuizSkeletons />} />
+            <Route path="*" element={<NotFound />} />
+          </Routes>
+        </Suspense>
       </div>
     </AppProvider>
   );

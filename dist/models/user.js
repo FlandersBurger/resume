@@ -28,6 +28,7 @@ const userSchema = new mongoose_1.Schema({
     flags: [{ type: String, required: false }],
     highscore: {
         asteroids: { type: Number, required: false, default: 0 },
+        minesweeper: { type: Number, required: false, default: 0 },
     },
 }, { timestamps: true });
 for (const name in db_1.default) {

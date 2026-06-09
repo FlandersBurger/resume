@@ -28,7 +28,15 @@ function Dropdown({ label, children }: { label: React.ReactNode; children: React
 
   return (
     <li ref={ref} className={`dropdown${open ? " open" : ""}`}>
-      <a className="dropdown-toggle" role="button" style={{ cursor: "pointer" }} onClick={() => setOpen((o) => !o)}>
+      <a
+        className="dropdown-toggle"
+        role="button"
+        style={{ cursor: "pointer" }}
+        onClick={(e) => {
+          e.stopPropagation();
+          setOpen((o) => !o);
+        }}
+      >
         {label}
       </a>
       <ul className="dropdown-menu" onClick={() => setOpen(false)}>

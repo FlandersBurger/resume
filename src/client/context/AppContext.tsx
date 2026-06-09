@@ -1,6 +1,5 @@
 import { createContext, useContext, useReducer, useCallback, ReactNode, useEffect, useState } from "react";
 import axios from "axios";
-import { firebaseSignOut } from "../services/firebase";
 import { getUser } from "../services/users";
 
 export interface User {
@@ -93,7 +92,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
     window.localStorage.clear();
     delete axios.defaults.headers.common["X-Auth"];
     dispatch({ type: "SET_USER", user: null });
-    firebaseSignOut().catch(() => {});
+    import("../services/firebase").then(({ firebaseSignOut }) => firebaseSignOut().catch(() => {}));
   }, []);
 
   useEffect(() => {
