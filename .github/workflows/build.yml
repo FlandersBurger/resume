@@ -1,0 +1,43 @@
+name: Build
+
+on:
+  push:
+    branches: [master]
+    paths-ignore:
+      - "dist/**"
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Test
+        run: npm test
+
+      - name: Build server
+        run: npm run rebuild
+
+      - name: Build client
+        run: npm run client:build
+
+      - name: Commit dist
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add dist/
+          git diff --staged --quiet || git commit -m "Build dist [skip ci]"
+          git push
