@@ -1,0 +1,1 @@
+import{j as o}from"./index-BTFEpXDS.js";import{F as i}from"./QuizBase-vnQa_28Y.js";import"./quizzes-CKGZsNDV.js";import"./games-BYKNfKL-.js";function a(){return o.jsx(i,{name:"logos",title:"Pixelated Logos",description:"Can you identify famous brand logos from pixelated images? Test your logo recognition skills."})}export{a as default};

@@ -1,0 +1,1 @@
+import{j as t}from"./index-BTFEpXDS.js";import{F as e}from"./QuizBase-vnQa_28Y.js";import"./quizzes-CKGZsNDV.js";import"./games-BYKNfKL-.js";function r(){return t.jsx(e,{name:"flags",title:"Flags",labelsUrl:"/api/quizzes/flags/meta",description:"Can you identify the flags of the world? Test your geography knowledge in this flag quiz."})}export{r as default};

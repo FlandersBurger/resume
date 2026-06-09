@@ -1,0 +1,1 @@
+import{j as e}from"./index-BTFEpXDS.js";import{F as t}from"./QuizBase-vnQa_28Y.js";import"./quizzes-CKGZsNDV.js";import"./games-BYKNfKL-.js";function m(){return e.jsx(t,{name:"movies",title:"Untitled Movies",description:"Can you guess the movie from its poster with the title removed? Test your film knowledge."})}export{m as default};

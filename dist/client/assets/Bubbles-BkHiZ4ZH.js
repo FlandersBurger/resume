@@ -1,0 +1,6 @@
+import{r as c,j as m,e as f}from"./index-BTFEpXDS.js";const x=f.canvas`
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: -1;
+`,n=["#ffc300","#ff5733","#c70039","#900c3e","#571845"];function M(){const d=c.useRef(null);return c.useEffect(()=>{const a=d.current;if(!a)return;const t=a.getContext("2d");if(!t)return;let r=[],i;const s=()=>{a.width=window.innerWidth,a.height=window.innerHeight},h=()=>({lifespan:0,radius:1,expanding:!0,speed:Math.round(Math.random()*3),circumference:Math.round(Math.random()*50)+5,maxRadius:Math.round(Math.random()*200)+20,x:Math.round(Math.random()*a.width),y:Math.round(Math.random()*a.height),vx:Math.random()>=.5?1:-1,vy:Math.random()>=.5?1:-1}),u=()=>{t.clearRect(0,0,a.width,a.height),r.forEach(e=>{t.beginPath(),t.arc(e.x,e.y,e.radius,0,2*Math.PI),t.fillStyle=n[Math.round(n.length*e.radius/e.maxRadius)],t.fill(),t.strokeStyle=n[n.length-Math.round(n.length*e.radius/e.maxRadius)],t.lineWidth=e.circumference*e.radius/e.maxRadius,t.stroke()})},o=()=>{r.push(h()),r=r.filter(e=>(e.radius===e.maxRadius&&(e.expanding=!1),e.x+=e.vx*e.speed,e.y+=e.vy*e.speed,e.radius+=e.expanding?1:-1,e.radius>0)),u(),i=requestAnimationFrame(o)};return s(),window.addEventListener("resize",s),i=requestAnimationFrame(o),()=>{cancelAnimationFrame(i),window.removeEventListener("resize",s)}},[]),m.jsx(x,{ref:d})}export{M as default};
