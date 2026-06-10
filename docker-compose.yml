@@ -5,7 +5,6 @@ services:
       - "3000:3000"
     environment:
       NODE_ENV: production
-      MONGO_URL: mongodb://mongo:27017/resume
       REDISTOGO_URL: redis://redis:6379
       REDIS_HOST: redis
     env_file:
@@ -13,19 +12,9 @@ services:
     volumes:
       - ./keys:/app/keys:ro
     depends_on:
-      - mongo
       - redis
-    restart: unless-stopped
-
-  mongo:
-    image: mongo:7
-    volumes:
-      - mongo_data:/data/db
     restart: unless-stopped
 
   redis:
     image: redis:7-alpine
     restart: unless-stopped
-
-volumes:
-  mongo_data:
