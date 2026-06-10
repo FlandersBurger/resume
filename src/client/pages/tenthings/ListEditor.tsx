@@ -1,4 +1,4 @@
-import { useState, useRef, memo, useCallback, useEffect } from "react";
+import { useState, useRef, memo, useCallback, useEffect, useMemo } from "react";
 import styled from "styled-components";
 import { TenThingsList, TenThingsValue, Language, CategoryOption, getBlurbs } from "../../services/tenthings";
 import { removeAllButLetters } from "@utils/string-helpers";
@@ -191,10 +191,18 @@ interface Props {
   onDelete: () => void;
 }
 
-const fmt = (d?: string) => {
+const fmt = (d?: string | Date) => {
   if (!d) return "";
   const date = new Date(d);
+  if (isNaN(date.getTime())) return "";
   return `${String(date.getDate()).padStart(2, "0")}-${date.toLocaleString("en", { month: "short" })}-${date.getFullYear()}`;
+};
+
+const fmtCreated = (v: TenThingsValue) => {
+  if (v.date) return fmt(v.date);
+  // Fall back to the timestamp embedded in the MongoDB ObjectId
+  if (v._id && /^[0-9a-f]{24}$/i.test(v._id)) return fmt(new Date(parseInt(v._id.substring(0, 8), 16) * 1000));
+  return "";
 };
 
 const pct = (n?: number) => (n != null ? `${Math.round(n * 100)}%` : "");
@@ -295,9 +303,6 @@ const ValueRow = memo(
         <IconColumn className="hidden-xs hidden-sm visible-md visible-lg" title={v.creator?.username}>
           <i className="fas fa-user" />
         </IconColumn>
-        <IconColumn className="hidden-xs hidden-sm visible-md visible-lg" title={fmt(v.date)}>
-          <i className="fas fa-calendar" />
-        </IconColumn>
         <InputCell>
           {readOnly ? (
             <span>{v.value}</span>
@@ -326,6 +331,12 @@ const ValueRow = memo(
             />
           )}
         </InputCell>
+        <td className="hidden-xs hidden-sm visible-md visible-lg" style={{ whiteSpace: "nowrap", fontSize: 12 }}>
+          {fmtCreated(v)}
+        </td>
+        <td className="hidden-xs hidden-sm visible-md visible-lg" style={{ whiteSpace: "nowrap", fontSize: 12 }}>
+          {fmt(v.modifyDate)}
+        </td>
         <ImageCell style={{ width: 36 }} onClick={() => v.blurb && onBlurbClick(v)}>
           {v.blurb && (
             <img
@@ -376,6 +387,53 @@ export function ListEditor({
   const [selectedItem, setSelectedItem] = useState<TenThingsValue | null>(null);
   const [gettingBlurbs, setGettingBlurbs] = useState(false);
   const [showLanguages, setShowLanguages] = useState(false);
+
+  type SortCol = "value" | "blurb" | "creator" | "date" | "modifyDate";
+  const [sortCol, setSortCol] = useState<SortCol | null>(null);
+  const [sortDir, setSortDir] = useState<"asc" | "desc">("asc");
+
+  const handleSort = (col: SortCol) => {
+    if (sortCol === col) setSortDir((d) => (d === "asc" ? "desc" : "asc"));
+    else {
+      setSortCol(col);
+      setSortDir("asc");
+    }
+  };
+
+  const sortIcon = (col: SortCol) =>
+    sortCol === col ? (
+      <i className={`fas fa-sort-${sortDir === "asc" ? "up" : "down"}`} style={{ marginLeft: 4 }} />
+    ) : (
+      <i className="fas fa-sort" style={{ marginLeft: 4, opacity: 0.3 }} />
+    );
+
+  const sortedIndices = useMemo(() => {
+    const indices = list.values.map((_, i) => i);
+    if (!sortCol) return indices;
+    return [...indices].sort((a, b) => {
+      const va = list.values[a];
+      const vb = list.values[b];
+      let av = "",
+        bv = "";
+      if (sortCol === "value") {
+        av = va.value;
+        bv = vb.value;
+      } else if (sortCol === "blurb") {
+        av = va.blurb ?? "";
+        bv = vb.blurb ?? "";
+      } else if (sortCol === "creator") {
+        av = va.creator?.username ?? "";
+        bv = vb.creator?.username ?? "";
+      } else if (sortCol === "date") {
+        av = va.date ?? "";
+        bv = vb.date ?? "";
+      } else {
+        av = va.modifyDate ?? "";
+        bv = vb.modifyDate ?? "";
+      }
+      return sortDir === "asc" ? av.localeCompare(bv) : bv.localeCompare(av);
+    });
+  }, [list.values, sortCol, sortDir]);
   const langRef = useRef<HTMLDivElement>(null);
   const catRef = useRef<HTMLDivElement>(null);
   const newValueInputRef = useRef<HTMLTextAreaElement>(null);
@@ -793,11 +851,34 @@ export function ListEditor({
               <th className="col-1 hidden-xs hidden-sm visible-md visible-lg">
                 <i className="fas fa-user" title="Creator" />
               </th>
-              <th className="col-1 hidden-xs hidden-sm visible-md visible-lg">
-                <i className="fas fa-calendar" title="Date added" />
+              <th
+                className="col-5"
+                style={{ cursor: "pointer", userSelect: "none" }}
+                onClick={() => handleSort("value")}
+              >
+                Answer {sortIcon("value")}
               </th>
-              <th className="col-4">Answer</th>
-              <th className="col-5">Blurb</th>
+              <th
+                className="col-6"
+                style={{ cursor: "pointer", userSelect: "none" }}
+                onClick={() => handleSort("blurb")}
+              >
+                Blurb {sortIcon("blurb")}
+              </th>
+              <th
+                className="hidden-xs hidden-sm visible-md visible-lg"
+                style={{ cursor: "pointer", whiteSpace: "nowrap", userSelect: "none", width: 90 }}
+                onClick={() => handleSort("date")}
+              >
+                Created {sortIcon("date")}
+              </th>
+              <th
+                className="hidden-xs hidden-sm visible-md visible-lg"
+                style={{ cursor: "pointer", whiteSpace: "nowrap", userSelect: "none", width: 90 }}
+                onClick={() => handleSort("modifyDate")}
+              >
+                Updated {sortIcon("modifyDate")}
+              </th>
               <th className="col-1 hidden-xs hidden-sm visible-md visible-lg" style={{ width: 36 }}>
                 <i className="fas fa-link" />
               </th>
@@ -810,7 +891,6 @@ export function ListEditor({
             {/* New item row */}
             {!readOnly && list.name && list.categories.length > 0 && (
               <tr>
-                <td className="hidden-xs hidden-sm visible-md visible-lg" />
                 <td className="hidden-xs hidden-sm visible-md visible-lg" />
                 <InputCell>
                   <AutoTextarea
@@ -830,7 +910,9 @@ export function ListEditor({
                     forwardedRef={newBlurbInputRef}
                   />
                 </InputCell>
-                <td colSpan={2}>
+                <td className="hidden-xs hidden-sm visible-md visible-lg" />
+                <td className="hidden-xs hidden-sm visible-md visible-lg" />
+                <td colSpan={2} style={{ textAlign: "center" }}>
                   <button className="btn btn-sm btn-default" onClick={addValue} disabled={!newItem.value}>
                     <i className="fas fa-plus" />
                   </button>
@@ -839,10 +921,10 @@ export function ListEditor({
             )}
 
             {/* Existing items */}
-            {list.values.map((v, i) => (
+            {sortedIndices.map((i) => (
               <ValueRow
-                key={v._id?.toString() || i}
-                v={v}
+                key={list.values[i]._id?.toString() || i}
+                v={list.values[i]}
                 index={i}
                 readOnly={readOnly}
                 total={list.values.length}

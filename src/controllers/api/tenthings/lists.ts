@@ -268,7 +268,7 @@ tenthingsListsRoute.post("/:id/values", async (req: Request, res: Response) => {
     if (!list) res.sendStatus(404);
     else if (list.values.some(({ value }) => value === req.body.value)) res.sendStatus(400);
     else {
-      list.values.push({ ...req.body, creator: res.locals.user!._id });
+      list.values.push({ ...req.body, creator: res.locals.user!._id, date: new Date().toISOString() });
       list.modifyDate = new Date();
       await list.save();
       const updatedList = await List.findOne({ _id: req.params.id }).lean({ virtuals: true });
@@ -297,6 +297,7 @@ tenthingsListsRoute.put("/:id/values/:valueId", async (req: Request, res: Respon
           bot.notifyAdmins(`<u>Value changed in "${list.name}"</u>\n<b>${value.value}</b> -> <b>${req.body.value}</b>`);
         }
         Object.assign(value, req.body);
+        value.modifyDate = new Date();
         list.modifyDate = new Date();
         await list.save();
         const updatedList = await List.findOne({ _id: req.params.id }).lean({ virtuals: true });

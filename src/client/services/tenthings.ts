@@ -37,6 +37,7 @@ export interface TenThingsValue {
   guesser?: { username?: string; first_name?: string };
   creator?: { _id: string; username: string };
   date?: string;
+  modifyDate?: string;
 }
 
 export interface Language {

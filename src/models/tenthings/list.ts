@@ -17,6 +17,7 @@ export interface IListValue {
   blurb: string;
   creator: Types.ObjectId | IUser;
   date: string;
+  modifyDate?: Date;
 }
 
 export interface IList {
@@ -58,6 +59,7 @@ const listValueSchema = new Schema<IListValue>({
   blurb: { type: String, default: "", required: false },
   creator: { type: Schema.Types.ObjectId, ref: "User", required: false },
   date: { type: String, default: "", required: false },
+  modifyDate: { type: Date, required: false },
 });
 
 listValueSchema.virtual("blurbType").get(function () {
