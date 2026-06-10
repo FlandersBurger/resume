@@ -48,3 +48,22 @@ jobs:
           tags: ghcr.io/flandersburger/resume:latest
           cache-from: type=gha
           cache-to: type=gha,mode=max
+
+  deploy:
+    needs: docker
+    runs-on: ubuntu-latest
+    steps:
+      - uses: appleboy/ssh-action@v1
+        with:
+          host: ${{ secrets.DIGITAL_OCEAN_HOST }}
+          username: root
+          key: ${{ secrets.DIGITAL_OCEAN_SSH_KEY }}
+          script: |
+            cd /opt/resume
+            docker compose pull
+            docker compose up -d
+
+      - name: Notify Telegram
+        run: |
+          curl -s -X POST "https://api.telegram.org/bot${{ secrets.DIGITAL_OCEAN_TELEGRAM_TOKEN }}/sendMessage" \
+            -d "chat_id=${{ secrets.DIGITAL_OCEAN_TELEGRAM_MASTER_CHAT }}&text=✅ Deployed to production"
