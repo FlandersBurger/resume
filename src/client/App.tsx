@@ -4,7 +4,7 @@ import { AppProvider } from "./context/AppContext";
 import { Navbar } from "./components/Navbar";
 import { ToastContainer } from "./components/ToastContainer";
 import Print from "./pages/Print";
-import { useEffect, lazy, Suspense } from "react";
+import { lazy, Suspense } from "react";
 import { useApp } from "./context/AppContext";
 
 const LoginModal = lazy(() => import("./components/LoginModal"));
@@ -108,11 +108,6 @@ const GlobalStyle = createGlobalStyle`
 `;
 
 function BootstrapTheme() {
-  const { themeCounter } = useApp();
-  useEffect(() => {
-    const link = document.getElementById("bootstrap-theme") as HTMLLinkElement | null;
-    if (link) link.href = `/bootstrap${themeCounter}.min.css`;
-  }, [themeCounter]);
   return null;
 }
 
