@@ -12,7 +12,7 @@ export interface IVote {
 }
 
 export interface IListValue {
-  _id: Types.ObjectId;
+  _id?: Types.ObjectId;
   value: string;
   blurb: string;
   creator: Types.ObjectId | IUser;

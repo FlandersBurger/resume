@@ -423,10 +423,7 @@ export function ListEditor({
     }
     const updatedList = {
       ...listRef.current,
-      values: [
-        ...listRef.current.values,
-        { _id: `tmp-${Math.random().toString(36).substr(2, 9)}`, value: newItem.value, blurb: newItem.blurb },
-      ],
+      values: [...listRef.current.values, { value: newItem.value, blurb: newItem.blurb }],
     };
     onChangeRef.current(updatedList);
     setNewItem({ value: "", blurb: "" });

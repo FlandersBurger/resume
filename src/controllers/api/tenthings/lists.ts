@@ -289,7 +289,7 @@ tenthingsListsRoute.put("/:id/values/:valueId", async (req: Request, res: Respon
     const list = await List.findOne({ _id: req.params.id });
     if (!list) res.sendStatus(404);
     else {
-      const value = list.values.find(({ _id }) => _id.toString() === req.params.valueId);
+      const value = list.values.find(({ _id }) => _id!.toString() === req.params.valueId);
       if (!value) res.sendStatus(404);
       else if (value.creator !== res.locals.user?._id && !res.locals.isAdmin) res.sendStatus(401);
       else {
@@ -301,7 +301,7 @@ tenthingsListsRoute.put("/:id/values/:valueId", async (req: Request, res: Respon
         await list.save();
         const updatedList = await List.findOne({ _id: req.params.id }).lean({ virtuals: true });
         if (!updatedList) res.sendStatus(500);
-        else res.json(updatedList.values.find(({ _id }) => _id.toString() === req.params.valueId));
+        else res.json(updatedList.values.find(({ _id }) => _id!.toString() === req.params.valueId));
       }
     }
   }
@@ -313,7 +313,7 @@ tenthingsListsRoute.delete("/:id/values/:valueId", async (req: Request, res: Res
     const list = await List.findOne({ _id: req.params.id });
     if (!list) res.sendStatus(404);
     else {
-      const value = list.values.find(({ _id }) => _id.toString() === req.params.valueId);
+      const value = list.values.find(({ _id }) => _id!.toString() === req.params.valueId);
       if (!value) res.sendStatus(404);
       else if (value.creator !== res.locals.user?._id && !res.locals.isAdmin) res.sendStatus(401);
       else {
