@@ -45,6 +45,6 @@ jobs:
         with:
           context: .
           push: true
-          tags: ghcr.io/${{ github.repository }}:latest
+          tags: ghcr.io/flandersburger/resume:latest
           cache-from: type=gha
           cache-to: type=gha,mode=max
