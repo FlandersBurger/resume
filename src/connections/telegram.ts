@@ -23,7 +23,7 @@ type UserInput = TelegramMessage | TelegramCallbackData;
 const globalQueue = new Queue("sendMessage", {
   redis: {
     port: parseInt(process.env.REDIS_PORT || "6379"),
-    host: "localhost",
+    host: process.env.REDIS_HOST || "localhost",
     password: process.env.REDIS_PASSWORD,
   },
   limiter: {
@@ -35,7 +35,7 @@ const globalQueue = new Queue("sendMessage", {
 const chatQueue = new Queue("queueMessage", {
   redis: {
     port: parseInt(process.env.REDIS_PORT || "6379"),
-    host: "localhost",
+    host: process.env.REDIS_HOST || "localhost",
     password: process.env.REDIS_PASSWORD,
   },
   limiter: {
