@@ -20,12 +20,16 @@ const BANNED_TELEGRAM_USERS = [1726294650, 6758829541];
 
 type UserInput = TelegramMessage | TelegramCallbackData;
 
+const redisConfig = {
+  port: parseInt(process.env.REDIS_PORT || "6379"),
+  host: process.env.REDIS_HOST || "localhost",
+  password: process.env.REDIS_PASSWORD,
+  maxRetriesPerRequest: null,
+  enableReadyCheck: false,
+};
+
 const globalQueue = new Queue("sendMessage", {
-  redis: {
-    port: parseInt(process.env.REDIS_PORT || "6379"),
-    host: process.env.REDIS_HOST || "localhost",
-    password: process.env.REDIS_PASSWORD,
-  },
+  redis: redisConfig,
   limiter: {
     max: 30,
     duration: 1000,
@@ -33,11 +37,7 @@ const globalQueue = new Queue("sendMessage", {
 });
 
 const chatQueue = new Queue("queueMessage", {
-  redis: {
-    port: parseInt(process.env.REDIS_PORT || "6379"),
-    host: process.env.REDIS_HOST || "localhost",
-    password: process.env.REDIS_PASSWORD,
-  },
+  redis: redisConfig,
   limiter: {
     max: 20,
     duration: 60000,
