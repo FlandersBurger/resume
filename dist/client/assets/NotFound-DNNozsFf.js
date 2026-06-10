@@ -1,1 +1,0 @@
-import{j as e,L as o}from"./index-Bu5vLkey.js";function n(){return e.jsxs("div",{style:{textAlign:"center",marginTop:60},children:[e.jsx("h1",{children:"404 - Page Not Found"}),e.jsx(o,{to:"/home",children:"Go Home"})]})}export{n as default};

@@ -6,7 +6,7 @@ import fs from "fs";
 // Mirrors the Express static middleware directories so the Vite dev server
 // serves /bootstrap6.min.css, /fontawesome.min.css, /hobbies/... etc.
 const serveStaticDirs = (): import("vite").Plugin => {
-  const dirs = ["resources", "assets", "images", "sounds", "data"];
+  const dirs = ["resources", "resources/font-awesome", "assets", "images", "sounds", "data"];
   const mime: Record<string, string> = {
     css: "text/css",
     js: "application/javascript",

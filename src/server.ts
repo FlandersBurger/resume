@@ -2,7 +2,8 @@ require("module-alias/register");
 import "@root/env";
 import express, { NextFunction, Request, Response } from "express";
 import { json } from "body-parser";
-import admin from "firebase-admin";
+import { initializeApp, cert } from "firebase-admin/app";
+import { getAuth } from "firebase-admin/auth";
 import { WebSocketServer } from "@root/websockets";
 import auth from "@root/auth";
 import http from "http";
@@ -31,13 +32,15 @@ import { tenthingsWebBotRoute } from "@api/tenthings/web";
 
 const serviceAccount = require("../keys/resume-172205-firebase-adminsdk-r34t7-0028c702be.json");
 
-export const firebase = admin.initializeApp(
+const firebaseApp = initializeApp(
   {
-    credential: admin.credential.cert(serviceAccount),
+    credential: cert(serviceAccount),
     databaseURL: "https://resume-172205.firebaseio.com",
   },
   "resume",
 );
+
+export const firebaseAuth = getAuth(firebaseApp);
 
 const app = express();
 app.use(json({ limit: "5mb" }));
