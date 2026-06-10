@@ -33,7 +33,9 @@ export enum DiscordMessageType {
 const globalQueue = new Queue("discordSendMessage", {
   redis: {
     port: parseInt(process.env.REDIS_PORT || "6379"),
-    host: "localhost",
+    host: process.env.REDIS_HOST || "localhost",
+    maxRetriesPerRequest: null,
+    enableReadyCheck: false,
     password: process.env.REDIS_PASSWORD,
   },
   limiter: {
@@ -45,7 +47,9 @@ const globalQueue = new Queue("discordSendMessage", {
 const chatQueue = new Queue("discordQueueMessage", {
   redis: {
     port: parseInt(process.env.REDIS_PORT || "6379"),
-    host: "localhost",
+    host: process.env.REDIS_HOST || "localhost",
+    maxRetriesPerRequest: null,
+    enableReadyCheck: false,
     password: process.env.REDIS_PASSWORD,
   },
   limiter: {

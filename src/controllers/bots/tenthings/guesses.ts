@@ -30,8 +30,10 @@ export type Guess = {
 const guessQueue = new Queue("processGuess", {
   redis: {
     port: parseInt(process.env.REDIS_PORT || "6379"),
-    host: "localhost",
+    host: process.env.REDIS_HOST || "localhost",
     password: process.env.REDIS_PASSWORD,
+    maxRetriesPerRequest: null,
+    enableReadyCheck: false,
   },
 });
 
