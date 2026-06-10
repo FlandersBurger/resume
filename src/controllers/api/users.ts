@@ -2,7 +2,7 @@ import { Router, Request, Response, QueryableRequest } from "express";
 
 import bcrypt from "bcryptjs";
 import jwt from "jwt-simple";
-import { firebase } from "@root/server";
+import { firebaseAuth } from "@root/server";
 
 import { Player, User } from "@models/index";
 import bot, { verifyTelegramUser } from "@root/connections/telegram";
@@ -65,7 +65,7 @@ usersRoute.post("/authenticate", async (req: Request, res: Response) => {
   }
   let existingUser, uid, telegramId;
   if (authType === "firebase") {
-    const decodedToken = await firebase.auth().verifyIdToken(user.idToken);
+    const decodedToken = await firebaseAuth.verifyIdToken(user.idToken);
     uid = decodedToken.uid;
     existingUser = await User.findOne({
       uid,
