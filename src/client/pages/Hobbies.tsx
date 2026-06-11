@@ -1,14 +1,47 @@
 import { useEffect, useState } from "react";
-import styled from "styled-components";
+import styled, { keyframes } from "styled-components";
 import { useNavigate, useParams } from "react-router-dom";
 import { Helmet } from "react-helmet-async";
 
+const fadeInUp = keyframes`
+  from { opacity: 0; transform: translateY(14px); }
+  to   { opacity: 1; transform: translateY(0); }
+`;
+
 const HobbiesPage = styled.div``;
+
+const AnimatedButton = styled.button<{ $index: number }>`
+  opacity: 0;
+  animation: ${fadeInUp} 0.3s ease forwards;
+  animation-delay: ${({ $index }) => $index * 60}ms;
+`;
+
+const ImageGrid = styled.div`
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  gap: 16px;
+`;
+
+const ImageCell = styled.div<{ $index: number }>`
+  display: flex;
+  flex-direction: column;
+  opacity: 0;
+  animation: ${fadeInUp} 0.3s ease forwards;
+  animation-delay: ${({ $index }) => Math.min($index * 30, 480)}ms;
+`;
 
 const HobbyImage = styled.img`
   width: 100%;
   border-radius: 4px;
   margin-bottom: 8px;
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
+
+  &:hover {
+    transform: scale(1.05);
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.18);
+  }
 `;
 
 interface HobbyImage {
@@ -56,27 +89,27 @@ export default function Hobbies() {
         <meta property="og:url" content="https://belgocanadian.com/hobbies" />
         <link rel="canonical" href="https://belgocanadian.com/hobbies" />
       </Helmet>
-      <div style={{ display: "flex", gap: 8, flexWrap: "wrap", marginBottom: 24 }}>
-        {hobbies.map((hobby) => (
-          <button
+      <div style={{ display: "flex", gap: 8, flexWrap: "wrap", marginBottom: 24, justifyContent: "center" }}>
+        {hobbies.map((hobby, i) => (
+          <AnimatedButton
             key={hobby.name}
+            $index={i}
             onClick={() => {
               setSelected(hobby);
               navigate(`/hobbies/${hobby.name.toLowerCase()}`);
             }}
             className={`btn btn-lg ${selected?.name === hobby.name ? "btn-primary" : "btn-default"}`}
-            style={{ flex: "1 1 auto", minWidth: 100 }}
           >
             {hobby.icon && <i className={`fa ${hobby.icon}`} style={{ marginRight: 8 }} />}
             {hobby.name}
-          </button>
+          </AnimatedButton>
         ))}
       </div>
 
       {selected && (
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(150px, 1fr))", gap: 16 }}>
+        <ImageGrid key={selected.name}>
           {selected.images?.map((image, i) => (
-            <div key={i} style={{ display: "flex", flexDirection: "column" }}>
+            <ImageCell key={i} $index={i}>
               <a href={image.url} target="_blank" rel="noreferrer" style={{ display: "block" }}>
                 <HobbyImage
                   src={`/hobbies/${selected.name.toLowerCase()}/${image.file}`}
@@ -96,9 +129,9 @@ export default function Hobbies() {
               >
                 {image.name ?? ""}
               </p>
-            </div>
+            </ImageCell>
           ))}
-        </div>
+        </ImageGrid>
       )}
     </HobbiesPage>
   );

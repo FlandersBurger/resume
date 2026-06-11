@@ -14,10 +14,9 @@ class Facebook {
       },
       message: message,
     };
-    const { data } = await httpClient().post("https://graph.facebook.com/v2.6/me/messages", request_body, {
+    await httpClient().post("https://graph.facebook.com/v2.6/me/messages", request_body, {
       headers: { access_token: this.token },
     });
-    console.log(data);
   };
 }
 

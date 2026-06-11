@@ -259,7 +259,13 @@
       { "name": "The Intercept", "file": "intercept.png", "url": "https://theintercept.com/" },
       { "name": "Newsy", "file": "newsy.jpg", "url": "https://www.newsy.com/" },
       { "name": "Kickstarter", "file": "kickstarter.png", "url": "https://www.kickstarter.com/profile/flandersburger" },
-      { "name": "Steam", "file": "steam.jpg", "url": "http://steamcommunity.com/profiles/76561198053906137/" }
+      { "name": "Steam", "file": "steam.jpg", "url": "http://steamcommunity.com/profiles/76561198053906137/" },
+      { "name": "Battlesnake", "file": "battlesnake.png", "url": "https://play.battlesnake.com/" },
+      { "name": "The New York Times", "file": "nyt.png", "url": "https://www.nytimes.com/" },
+      { "name": "Goodreads", "file": "goodreads.png", "url": "https://www.goodreads.com/user/show/17070010-laurent" },
+      { "name": "Wordle", "file": "wordle.png", "url": "https://www.nytimes.com/games/wordle/index.html" },
+      { "name": "Semantle", "file": "semantle.png", "url": "https://semantle.com/" },
+      { "name": "Worldle", "file": "worldle.png", "url": "https://worldle.teuteuf.fr/" }
     ]
   },
   {

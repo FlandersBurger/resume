@@ -24,7 +24,7 @@ emailRoute.post("/", async (req: Request, res: Response) => {
     console.log("Email sent: " + info.response);
     res.sendStatus(200);
   } catch (error) {
-    console.log(error);
+    console.error(error);
     res.sendStatus(500);
   }
 });

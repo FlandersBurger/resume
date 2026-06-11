@@ -7,7 +7,6 @@ export default async (game: IGame, text: string) => {
   if (game.settings.sass && game.enabled) {
     const sassText = await sass(text);
     if (sassText) {
-      console.log(`SASS: ${text} => ${sassText}`);
       if (sassText.includes("http") && !sassText.includes("paypal")) {
         if (sassText.includes(".gif")) {
           bot.sendAnimation(game.telegramChannel, sassText);

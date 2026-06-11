@@ -393,7 +393,6 @@ class TelegramBot {
     const url = `${this.baseUrl}/getChatMember?chat_id=${game.telegramChannel.chat}&user_id=${user.id}`;
     try {
       const response = await httpClient().get(url);
-      console.log("Checking admin for", user.username, "in", game.chat_id, "->", response.data.result);
       const admin =
         response &&
         response.data &&
@@ -497,7 +496,6 @@ class TelegramBot {
   };
 
   public setCommands = async (channel: Channel, language: string) => {
-    console.log("Setting commands to", language);
     const commands = [
       Command.List,
       Command.Hint,
