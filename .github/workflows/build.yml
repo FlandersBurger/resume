@@ -37,7 +37,7 @@ jobs:
 
   translate:
     needs: test
-    if: github.event_name == 'push'
+    if: false
     runs-on: ubuntu-latest
     permissions:
       contents: write
@@ -75,7 +75,7 @@ jobs:
             -d "chat_id=${{ secrets.TELEGRAM_MASTER_CHAT }}&parse_mode=HTML&text=❌ Translation failed%0A<a href='https://github.com/${{ github.repository }}/commit/${{ github.sha }}'>${{ github.sha }}</a>"
 
   docker:
-    needs: [test, translate]
+    needs: [test]
     if: github.event_name == 'push'
     runs-on: ubuntu-latest
     steps:

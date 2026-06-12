@@ -77,6 +77,10 @@
       "name": "コマンド",
       "description": "コマンド一覧"
     },
+    "help": {
+      "name": "ヘルプ",
+      "description": "コマンド一覧"
+    },
     "list": {
       "name": "リスト",
       "description": "現在のラウンドの推測回答を一覧表示"
@@ -91,11 +95,11 @@
     },
     "veto": {
       "name": "拒否",
-      "description": "スキップを拒否"
+      "description": "拒否権を行使スキップ"
     },
     "minigame": {
       "name": "ミニゲーム",
-      "description": "逆トリビア質問"
+      "description": "逆トリビアクイズ"
     },
     "minihint": {
       "name": "ミニヒント",
@@ -103,19 +107,19 @@
     },
     "miniskip": {
       "name": "ミニスキップ",
-      "description": "現在のミニゲームをスキップする"
+      "description": "現在のミニゲームをスキップ"
     },
     "tinygame": {
-      "name": "ミニゲーム",
+      "name": "タイニーゲーム",
       "description": "リストを当てよう"
     },
     "tinyhint": {
-      "name": "ミニヒント",
-      "description": "ミニゲームのヒントを見る"
+      "name": "タイニーヒント",
+      "description": "タイニーゲームのヒントを見る"
     },
     "tinyskip": {
-      "name": "ミニスキップ",
-      "description": "現在のミニゲームをスキップする"
+      "name": "タイニースキップ",
+      "description": "現在のタイニーゲームをスキップ"
     },
     "score": {
       "name": "スコア",
@@ -130,8 +134,8 @@
       "description": "私の統計情報"
     },
     "intro": {
-      "name": "自己紹介",
-      "description": "私は何？"
+      "name": "イントロ",
+      "description": "私は何者？"
     },
     "logic": {
       "name": "ロジック",
@@ -184,26 +188,22 @@
     "queue": {
       "name": "キュー",
       "description": "ボットはどこで停止していますか？"
-    },
-    "help": {
-      "name": "ヘルプ",
-      "description": "コマンド一覧"
     }
   },
   "sentences": {
     "likeList": "<b>{{list}}</b>は気に入りましたか？",
-    "likesList": "👍 {{name}}は<b>{{list}}</b> ({{score}})を気に入っています",
-    "dislikesList": "👎 {{name}}は<b>{{list}}</b> ({{score}})を気に入っていません",
+    "likesList": "👍 {{name}} は <b>{{list}}</b> ({{score}}) を気に入っています",
+    "dislikesList": "👎 {{name}} は <b>{{list}}</b> ({{score}}) を気に入っていません",
     "queueList": "<b>どのリストをキューに追加しますか？</b>",
     "curateList": "<b>どのリストをキュレーションしますか？</b>",
-    "queueFull": "キューには既に最大10個のリストがあります{{name}}。",
-    "noSearchResults": "<b>\"{{search}}\"</b>, {{name}}に該当するリストが見つかりませんでした。\n\nよりシンプルなクエリを使用すると、より良い結果が得られます。",
-    "emptySearch": "何も検索していません、{{name}}。/search の後にメッセージを追加してください。",
+    "queueFull": "キューには既に最大10個のリストがあります、{{name}}。",
+    "noSearchResults": "<b>\"{{search}}\"</b>, {{name}} に該当するリストは見つかりませんでした。\n\nよりシンプルな検索クエリを使用すると、より良い結果が得られます。",
+    "emptySearch": "何も検索していません、{{name}}。 /search コマンドの後にメッセージを追加してください。",
     "upcomingLists": "<b>今後のリスト</b>",
-    "noUpcomingLists": "キューに登録されているリストはありません。/search [メッセージ] コマンドを使用してリストを検索してください。",
-    "skippedList": "<b>{{list}}</b> スキップされました！",
+    "noUpcomingLists": "キューに登録されているリストはありません。リストを探すには、/search [メッセージ] コマンドを使用してください。",
+    "skippedList": "<b>{{list}}</b> スキップされたリスト！",
     "skipConfirm": "<b>{{list}}</b> を {{skipDelay}} 秒後にスキップします。\n\nキャンセルするには /veto と入力するか、他の人に /skip と入力してもらって確定してください。",
-    "skipDenial": "他の人にスキップリクエストを確定してもらいましょう！",
+    "skipDenial": "スキップリクエストを他の人に確認してもらいましょう！\n\n\n\nスキップリクエストを他の人に確認してもらいましょう！",
     "skipVeto": "{{name}} によりスキップが拒否されました\n{{vetoDelay}} 秒間スキップできません",
     "skipAbort": "{{name}} が正解したためスキップが拒否されました\n{{vetoDelay}} 秒間スキップできません",
     "skipNotFound": "スキップリクエストが見つかりません、{{name}}",
@@ -222,13 +222,13 @@
     "banNotFound": "禁止申請が見つかりません、{{name}}さん",
     "inactivity": "寝ています。起こすには /list または /start と入力してください。\n30日間操作がないと寝ます。",
     "introduction": "こんにちは、{{name}}さん。\n「Ten Things」は、テーマが提示され、そのテーマに関連するあらゆることに答えるゲームです。\n\n/commands と入力すると、私に質問できるすべての項目が表示されます。\n独自のリストを追加したい場合は、https://belgocanadian.com/tenthings にアクセスしてください。\n楽しんでください！",
-    "suggestionNoted": "ご提案を承りました。",
-    "findTheConnection": "関連性を見つけてください。",
+    "suggestionNoted": "ご提案を承りました",
+    "findTheConnection": "関連性を見つけてください",
     "minigameAnswered": "ミニゲームの答えが当てられました！",
-    "findTheTitle": "リストのタイトルを見つけてください。",
+    "findTheTitle": "リストのタイトルを見つけてください",
     "tinygameAnswered": "ミニゲームの答えが当てられました！",
     "roundOver": "ラウンド終了",
-    "newRound": "次のラウンド！",
+    "newRound": "新しいラウンド！",
     "allListsPlayed": "すべてのリストがプレイされました。新しいサイクルが始まります。",
     "createdBy": "作成者：{{creator}}",
     "requestedBy": "リクエスト者：{{requestor}}",
@@ -244,14 +244,14 @@
   "warnings": {
     "minimum1Category": "最低1つのカテゴリが必要です",
     "adminFunction": "申し訳ありません、{{name}}、これはチャット管理者の機能です",
-    "abuse": "{{name}}、これを再度悪用した場合、Ten Thingsから追放されます",
-    "banned": "{{name}}、本日終了までTen Thingsから追放されます。 @FlandersBurger に解除申請をしてください。",
+    "abuse": "{{name}}、ボットを再度悪用した場合、Ten Thingsから追放されます",
+    "banned": "{{name}}、本日終了までTen Thingsから追放されました。 @FlandersBurger にアカウント停止解除を申請してください。",
     "fullQueue": "キューには既に最大10件のリストが登録されています。{{name}}",
+    "alreadyRequested": "{{name}}、このリストは本日既にリクエスト済みです。",
     "alreadyInQueue": "<b>{{list}}</b> は既にキューに登録されています。{{name}}",
     "unfoundList": "このリストは既に存在しません。",
-    "corroborateBanBySamePlayer": "他の人に禁止措置を確認してもらう必要があります。{{name}}！",
-    "noSuggestion": "{{name}}さん、何も提案していませんね。",
-    "alreadyRequested": "{{name}}さん、このリストは本日既にリクエスト済みです。"
+    "corroborateBanBySamePlayer": "他の人にアカウント停止の確認を依頼してください。{{name}}！\n\n\n\n（※※※※※※※）\n\n（※",
+    "noSuggestion": "何も提案してくれなかったね、{{name}}"
   },
   "stats": {
     "stats": "統計情報",
@@ -259,14 +259,14 @@
     "player": "プレイヤー統計情報",
     "global": "全体統計情報",
     "game": "ゲーム統計情報",
-    "misc": "<b>{{something}}</b>の統計情報"
+    "misc": "<b>{{something}}</b> の統計情報"
   },
   "rules": [
     "正解率が100%の場合、即座に正解者にポイントが与えられます。",
-    "正解率が75%を超える場合、より良い回答が提示されない限り、（正解率の2倍）秒後に正解者にポイントが与えられます。",
-    "正解判定において、英数字以外の記号と大文字・小文字は無視されます。",
+    "正解率が75%を超える場合、より良い回答が提供されない限り、（正解率の2倍）秒後に正解者にポイントが与えられます。",
+    "正解判定では、英数字以外の記号と大文字・小文字は無視されます。",
     "獲得ポイント = (最大ヒント数 {{maxHints}} - 質問されたヒント数 + 現在のプレイヤー数) / (最大ヒント数 {{maxHints}} + 現在のプレイヤー数) × 正解率 × 10",
-    "ヒントはここに表示されます順番：最初の文字、最後の文字、母音、そして残りの文字。残りの文字は出現頻度の低い順から高い順に表示されます。",
+    "ヒントは、最初の文字、最後の文字、母音、残りの文字の順に表示されます。残りは出現頻度の低い文字から高い文字の順に表示されます。",
     "ヒントを求める間隔は10秒です。",
     "2人のプレイヤーが/skipコマンドでリストをスキップすると、リストはスキップされます。",
     "1人のプレイヤーのみがリストをスキップした場合、リストがスキップされるまで10秒のクールダウンが発生します。",

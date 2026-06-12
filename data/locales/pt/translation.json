@@ -1,31 +1,27 @@
 {
   "settings": "Configurações",
   "playerIntro": "Introdução do jogador",
-  "sass": "Sass",
+  "sass": "Safadeza",
   "dailyUpdates": "Atualizações diárias",
   "language_one": "Idioma",
   "language_other": "Idiomas",
-  "botLanguage": "Idiomas do bot",
-  "triviaLangauges": "Idiomas do quiz",
-  "plays": "Jogadas",
+  "botLanguage": "Idioma do Bot",
+  "plays": "Jogos",
   "votes": "Votos",
-  "snubs": "Desprezos",
+  "snubs": "Desaprovação",
   "hints": "Dicas",
-  "skips": "Pular",
-  "skipDelay": "Atraso para pular",
-  "vetoDelay": "Atraso para vetar",
-  "hintDelay": "Atraso para dar dica",
+  "skips": "Pulos",
   "values": "Valores",
   "score": "Pontuação",
   "difficulty": "Dificuldade",
   "createdOn": "Criado em",
   "modifiedOn": "Modificado em",
-  "on": "ATIVADO",
-  "off": "DESATIVADO",
+  "on": "LIGADO",
+  "off": "DESLIGADO",
   "and": "e",
   "description": "Descrição",
-  "point_one": "{{count}} pontos",
-  "point_other": "{{count}} Pontos",
+  "point_one": "{{count}} ponto",
+  "point_other": "{{count}} pontos",
   "category_one": "Categoria",
   "category_other": "Categorias",
   "categories": {
@@ -41,7 +37,7 @@
     "Culture": "Cultura",
     "Entertainment": "Entretenimento",
     "Food and Drink": "Comida e Bebida",
-    "Funny": "Comédia",
+    "Funny": "Engraçado",
     "Gaming": "Jogos",
     "Geography": "Geografia",
     "History": "História",
@@ -70,59 +66,59 @@
   },
   "commands": {
     "start": {
-      "name": "iniciar",
-      "description": "Iniciar o jogo"
+      "name": "start",
+      "description": "Comece o jogo"
     },
     "commands": {
       "name": "comandos",
       "description": "Lista de comandos"
     },
     "list": {
-      "name": "listar",
-      "description": "Listar as respostas adivinhadas na rodada atual"
+      "name": "lista",
+      "description": "Lista das respostas adivinhadas na rodada atual"
     },
     "hint": {
       "name": "dica",
       "description": "Obter uma dica"
     },
     "skip": {
-      "name": "pular",
-      "description": "Pular a rodada atual rodada"
+      "name": "pule",
+      "description": "Pule a rodada atual"
     },
     "veto": {
       "name": "veto",
-      "description": "Veto ao pular"
+      "description": "Vote na lista atual"
     },
     "minigame": {
       "name": "minijogo",
-      "description": "Pergunta de curiosidades reversa"
+      "description": "Pergunta de trivia reversa"
     },
     "minihint": {
       "name": "minidica",
-      "description": "Obter uma dica para o minijogo"
+      "description": "Obter uma dica para o minigame"
     },
     "miniskip": {
-      "name": "minipular",
-      "description": "Pular o minijogo atual"
+      "name": "minipule",
+      "description": "Pule o minigame atual"
     },
     "tinygame": {
-      "name": "minijogo",
-      "description": "Adivinhar a lista"
+      "name": "jogominusculo",
+      "description": "Adivinhe a lista"
     },
     "tinyhint": {
-      "name": "minidica",
-      "description": "Obter uma dica para o minijogo"
+      "name": "dicaminusculo",
+      "description": "Obter uma dica para o jogominusculo"
     },
     "tinyskip": {
-      "name": "minijogo",
-      "description": "Pular o minijogo atual"
+      "name": "puleminusculo",
+      "description": "Pule o jogominusculo atual"
     },
     "score": {
-      "name": "pontuação",
+      "name": "pontuacao",
       "description": "Classificação diária"
     },
     "stats": {
-      "name": "estatísticas",
+      "name": "estatisticas",
       "description": "Estatísticas do jogo"
     },
     "me": {
@@ -130,60 +126,60 @@
       "description": "Minhas estatísticas"
     },
     "intro": {
-      "name": "introdução",
+      "name": "intro",
       "description": "O que sou eu?"
     },
     "logic": {
-      "name": "lógica",
-      "description": "Explicação da lógica utilizada"
+      "name": "logica",
+      "description": "Uma explicação da lógica usada"
     },
     "settings": {
-      "name": "Configurações",
-      "description": "Configurações de comportamento do bot (Somente para administradores)"
+      "name": "confi",
+      "description": "Configurações (Somente Admin)"
     },
     "categories": {
-      "name": "Categorias",
-      "description": "Selecionar quais categorias incluir (Somente para administradores)"
+      "name": "categorias",
+      "description": "Selecione as categorias a incluir (Somente Admin)"
     },
     "typo": {
-      "name": "Erro de digitação",
-      "description": "Reportar um erro de digitação na lista atual"
+      "name": "erro",
+      "description": "Relate um erro de digitação na lista atual"
     },
     "bug": {
-      "name": "Bug",
-      "description": "Reportar um bug no bot"
+      "name": "bug",
+      "description": "Relate um bug com o bot"
     },
     "feature": {
-      "name": "Recurso",
-      "description": "Recomendar um novo recurso para o bot"
+      "name": "recurso",
+      "description": "Recomende um novo recurso para o bot"
     },
     "suggest": {
-      "name": "Sugestão",
-      "description": "Sugerir um novo recurso para o bot"
-    },
-    "error": {
-      "name": "Erro",
-      "description": "Reportar um erro no bot"
+      "name": "sugestao",
+      "description": "Dê uma sugestão para o bot"
     },
     "search": {
-      "name": "Pesquisar",
-      "description": "Pesquisar listas para adicionar à fila"
+      "name": "pesquisar",
+      "description": "Pesquise listas para a fila"
     },
     "lists": {
-      "name": "Listas",
-      "description": "Ver listas na fila"
+      "name": "listas",
+      "description": "Veja listas na fila"
     },
     "stop": {
-      "name": "Parar",
-      "description": "Alternar para desligado"
+      "name": "parar",
+      "description": "Desligue-me"
+    },
+    "error": {
+      "name": "erro",
+      "description": "Reportar um erro com o bot"
     },
     "ping": {
       "name": "ping",
       "description": "pong"
     },
     "queue": {
-      "name": "fila",
-      "description": "Onde o bot está travado?"
+      "name": "queue",
+      "description": "Onde o bot está preso?"
     },
     "help": {
       "name": "ajuda",
@@ -191,88 +187,92 @@
     }
   },
   "sentences": {
-    "likeList": "Você gostou de <b>{{list}}</b>?",
-    "likesList": "👍 {{name}} curtidas <b>{{list}}</b> ({{score}})",
-    "dislikesList": "👎 {{name}} descurtidas <b>{{list}}</b> ({{score}})",
-    "queueList": "<b>Qual lista você gostaria de adicionar à fila?</b>",
-    "curateList": "<b>Qual lista você gostaria de selecionar?</b>",
+    "likeList": "Você gostou de {{list}}?",
+    "likesList": " 👍 {{name}} gosta de <b>{{list}}</b> ({{score}})",
+    "dislikesList": " 👎 {{name}} não gosta de <b>{{list}}</b> ({{score}})",
+    "queueList": "<b>Qual lista você gostaria de colocar na fila?</b>",
+    "curateList": "<b>Qual lista você gostaria de curar?</b>",
     "queueFull": "A fila já tem o máximo de 10 listas, {{name}}.",
-    "noSearchResults": "Não encontrei nenhuma lista correspondente para <b>\"{{search}}\"</b>, {{name}}.\n\nConsultas mais simples retornam melhores resultados.",
+    "noSearchResults": "Não encontrei nenhuma lista correspondente para <b>\"{{search}}\"</b>, {{name}}.\nConsultas mais simples retornam melhores resultados.",
     "emptySearch": "Você não pesquisou nada, {{name}}. Adicione sua mensagem após /search",
     "upcomingLists": "<b>Próximas listas</b>",
-    "noUpcomingLists": "Não há listas na fila. Use o comando /search [mensagem] para encontrar algumas.",
-    "skippedList": "<b>{{list}}</b> puladas!",
-    "skipConfirm": "Pulando <b>{{list}}</b> em {{skipDelay}} segundos.\n\nDigite /veto para cancelar ou peça para alguém digitar /skip para confirmar.",
-    "skipDenial": "Peça para alguém confirmar sua solicitação de pular! #__#\nPular vetado por {{name}}\nNão é permitido pular por {{vetoDelay}} segundos",
-    "skipVeto": "Pular vetado por {{name}} ter dado uma resposta correta\nNão é permitido pular por {{vetoDelay}} segundos",
-    "skipAbort": "Não consigo encontrar uma solicitação para pular, {{name}}",
-    "skipNotFound": "Banido {{name}} de pular novamente por {{delay}} segundos",
-    "skipShortBan": "Se você pular novamente dentro de {{delay}} segundos, {{name}}, você será banido de pular por 1 hora",
-    "skipBanThreat": "Banido {{name}} de pular por 1 hora",
-    "skipLongBan": "\"{{list}}\" adicionado",
-    "addedList": "<b>{{list}}</b> adicionado à fila, {{name}}.\nDigite /lists para ver a fila",
-    "addedListToQueue": "Observe que você pode adicionar suas próprias listas em https://belgocanadian.com/tenthings",
-    "addOwnList": "Lista de banimento?",
-    "banListQuestion": "Lista de banimentos!\n\n#__# Você confirma a lista de banimentos \"{{list}}\"?",
-    "banListCommand": "Alguém concorda com {{user}} em banir \"{{list}}\"?",
-    "confirmBan": "\"{{list}}\" já está banido!",
-    "corroborateBan": "\"{{list}}\" banido!",
-    "alreadyBannedList": "Não consigo encontrar um pedido de banimento, {{name}}",
-    "listBanned": "Estou dormindo, digite /list ou /start para me acordar.\n\nEu durmo após 30 dias de inatividade.",
-    "banNotFound": "Olá {{name}},\nDez Coisas, de mim mesmo, é um jogo que lhe dará um tema e você responderá qualquer coisa que vier à mente dentro dessa categoria.\nDigite /comandos para ver todas as coisas que você pode me perguntar.\nSe quiser adicionar suas próprias listas, acesse https://belgocanadian.com/tenthings\nDivirta-se!",
-    "inactivity": "Sugestão anotada",
-    "introduction": "Encontre a conexão",
-    "suggestionNoted": "Resposta do minigame adivinhada!",
-    "findTheConnection": "Encontre o título da lista",
-    "minigameAnswered": "Resposta do minigame adivinhada!",
-    "findTheTitle": "Rodada encerrada",
-    "tinygameAnswered": "Nova rodada!",
-    "roundOver": "Todas as listas foram jogadas, um novo ciclo começará agora.\n#__# por {{creator}}",
-    "newRound": "Solicitado por {{requestor}}",
-    "allListsPlayed": "{{guesser}} recebeu {{answer}}",
-    "createdBy": "Não adivinhado",
-    "requestedBy": "<b>Pontuações Diárias</b>",
-    "guessedBy": "<b>Melhores Pontuações Diárias</b>",
-    "notGuessed": "<b>Melhores {{limit}} Pontuações Diárias</b>",
-    "dailyScores": "Tempo até que uma lista seja pulada",
-    "topDailyScores": "Tempo até que uma nova opção de pular seja permitida após ser vetada",
-    "dailyScoresWithLimit": "Tempo até que uma nova dica seja permitida",
-    "skipDelay": "É necessário no mínimo 1 categoria",
-    "vetoDelay": "Desculpe {{name}}, esta é uma função de administração do chat",
-    "hintDelay": "{{name}}, você será banido do Ten Things se abusar disso uma vez Novamente"
+    "noUpcomingLists": "Não há listas na fila, use o comando /search [mensagem] para encontrar algumas",
+    "skippedList": "<b>{{list}}</b> pulada!",
+    "skipConfirm": "Pulando a lista <b>{{list}}</b> em {{skipDelay}} segundos.\nDigite /veto para cancelar ou peça a alguém para digitar /skip para confirmar.",
+    "skipDenial": "Peça a outra pessoa para confirmar o seu pedido de pulo!",
+    "skipVeto": "Pulo vetado por {{name}}\nNenhum pulo permitido por {{vetoDelay}} segundos",
+    "skipAbort": "Pulo vetado por {{name}} dando uma resposta correta\nNenhum pulo permitido por {{vetoDelay}} segundos",
+    "skipNotFound": "Não consigo encontrar um pedido de pulo, {{name}}",
+    "skipShortBan": "Banido {{name}} de pular novamente por {{delay}} segundos",
+    "skipBanThreat": "Se você pular novamente dentro de {{delay}} segundos, {{name}}, você será banido de pular por 1 hora",
+    "skipLongBan": "Banido {{name}} de pular por 1 hora",
+    "addedList": "\"{{list}}\" adicionada",
+    "addedListToQueue": "<b>{{list}}</b> adicionada à fila, {{name}}.\nDigite /lists para ver a fila",
+    "addOwnList": "Observe que você pode adicionar suas próprias listas em https://belgocanadian.com/tenthings",
+    "banListQuestion": "Banir lista?",
+    "banListCommand": "Banir lista!",
+    "confirmBan": "Você confirma o banimento da lista \"{{list}}\"?",
+    "alreadyBannedList": "\"{{list}}\" já está banida!",
+    "listBanned": "\"{{list}}\" banida!",
+    "banNotFound": "Não consigo encontrar um pedido de proibição, {{name}}",
+    "inactivity": "Estou dormindo, digite /list ou /start para me acordar.\nEu durmo após 30 dias de inatividade.",
+    "introduction": "Oi {{name}},\nTen Things, seu humilde servo, é um jogo que dará a você um assunto e depois você responde qualquer coisa que venha à mente nessa categoria.\nDigite /commands para ver todas as coisas que pode me perguntar\nSe quiser adicionar suas próprias listas, vá para https://belgocanadian.com/tenthings\nDivirta-se!",
+    "suggestionNoted": "Sugestão anotada",
+    "findTheConnection": "Encontre a conexão",
+    "minigameAnswered": "Resposta do minijogo adivinhada!",
+    "findTheTitle": "Encontre o título da lista",
+    "tinygameAnswered": "Resposta do jogominusculo adivinhada!",
+    "roundOver": "Fim da rodada",
+    "newRound": "Nova rodada!",
+    "allListsPlayed": "Todas as listas foram jogadas, um novo ciclo começará agora.",
+    "createdBy": "por {{creator}}",
+    "requestedBy": "Solicitado por {{requestor}}",
+    "guessedBy": "{{guesser}} acertou {{answer}}",
+    "notGuessed": "Não adivinhado",
+    "dailyScores": "<b>Pontuações Diárias</b>",
+    "topDailyScores": "<b>Top Pontuações Diárias</b>",
+    "dailyScoresWithLimit": "<b>Top {{limit}} Pontuações Diárias</b>",
+    "skipDelay": "Tempo até que uma lista seja pulada",
+    "vetoDelay": "Tempo até que um novo pulo seja permitido após ser vetado",
+    "hintDelay": "Tempo até que uma nova dica seja permitida",
+    "corroborateBan": "Alguém concorda com {{user}} para banir a lista \"{{list}}\"?"
   },
   "warnings": {
-    "minimum1Category": "{{name}}, você está banido do Ten Things até o final do dia. Sinta-se à vontade para solicitar o desbloqueio para @FlandersBurger",
-    "adminFunction": "A fila já tem o máximo de 10 listas, {{name}}",
-    "abuse": "<b>{{list}}</b> já está na fila, {{name}}",
-    "banned": "Esta lista não existe mais",
-    "fullQueue": "Peça para outra pessoa confirmar o banimento, {{name}}!",
-    "alreadyInQueue": "Você não sugeriu nada, {{name}}",
-    "unfoundList": "{{name}}, você já solicitou esta lista hoje",
-    "corroborateBanBySamePlayer": "Estatísticas",
-    "noSuggestion": "Estatísticas da lista",
-    "alreadyRequested": "Estatísticas do jogador"
+    "minimum1Category": "É necessário pelo menos 1 categoria",
+    "adminFunction": "Desculpe {{name}}, esta é uma função de administração de bate-papo",
+    "fullQueue": "A fila já possui o máximo de 10 listas, {{name}}",
+    "alreadyInQueue": "<b>{{list}}</b> já está na fila, {{name}}",
+    "unfoundList": "Esta lista não existe mais",
+    "corroborateBanBySamePlayer": "Peça a outra pessoa para confirmar a proibição, {{name}}!",
+    "noSuggestion": "Você não sugeriu nada, {{name}}",
+    "abuse": "{{name}}, você será banido do Ten Things se abusar disso mais uma vez",
+    "banned": "{{name}}, você foi banido do Ten Things. Sinta-se à vontade para fazer uma petição para desbanir @FlandersBurger",
+    "alreadyRequested": "{{name}}, você já solicitou esta lista hoje"
   },
   "stats": {
-    "stats": "Estatísticas globais",
-    "list": "Estatísticas do jogo",
-    "player": "Estatísticas para <b>{{something}}</b>",
-    "global": "Se uma resposta estiver 100% correta, ela será imediatamente concedida ao jogador que a adivinhou",
-    "game": "Se uma resposta estiver mais de 75% correta, ela será concedida após (2 * porcentagem de acerto) segundos, caso nenhuma resposta melhor seja fornecida",
-    "misc": "Sinais não alfanuméricos e maiúsculas/minúsculas são ignorados ao determinar a correção"
+    "stats": "Estatísticas",
+    "list": "Estatísticas da lista",
+    "player": "Estatísticas do jogador",
+    "global": "Estatísticas globais",
+    "game": "Estatísticas do jogo",
+    "misc": "Estatísticas para <b>{{something}}</b>"
   },
   "rules": [
-    "Pontuação = (Dicas máximas {{maxHints}} - dicas solicitadas + nº de jogadores atuais) / (Dicas máximas {{maxHints}} + nº de jogadores atuais) * precisão da resposta % * 10",
-    "As dicas são reveladas nesta ordem: primeiras letras, últimas letras, vogais e o restante. O restante será revelado da letra menos frequente para a mais frequente.",
-    "Há um intervalo de 10 segundos entre o pedido de dicas.",
-    "Uma lista pode ser pulada se 2 jogadores usarem o comando /pular.",
-    "Se apenas 1 jogador pular uma lista, haverá um intervalo de 10 segundos até que a lista seja pulada novamente.",
-    "Qualquer pessoa pode cancelar um pulo digitando /veto ou uma resposta correta.",
-    "Se um pulo for vetado, novos pulos serão ignorados por 15 segundos.",
-    "Todos os dias à meia-noite (horário universal), as pontuações diárias serão zeradas e um vencedor será registrado.",
-    "Spammers serão ignorados até que fiquem em silêncio por pelo menos 10 segundos.",
-    null,
-    null,
-    null
-  ]
+    "Se uma resposta estiver 100% correta, ela será imediatamente atribuída ao jogador",
+    "Se uma resposta estiver acima de 75% correta, será atribuída após (2 * porcentagem de corretude) segundos se nenhuma resposta melhor for fornecida",
+    "Sinais não alfanuméricos e maiúsculas são ignorados ao determinar a correção",
+    "Pontos marcados = (Máximas dicas {{maxHints}} - dicas solicitadas + # de jogadores atuais) / (Máximas dicas {{maxHints}} + # de jogadores atuais) * precisão da resposta % * 10",
+    "As dicas são reveladas nesta ordem: primeiras letras, últimas letras, vogais e o restante. O restante será revelado da letra menos frequente para a mais frequente",
+    "Há um cooldown de 10 segundos entre pedir dicas",
+    "Uma lista pode ser pulada se 2 jogadores a /skip",
+    "Se apenas 1 jogador pular uma lista, haverá um cooldown de 10 segundos até a lista ser pulada",
+    "Um pulo pode ser cancelado por qualquer pessoa digitando /veto ou uma resposta correta",
+    "Se um pulo for vetado, novos pulos serão ignorados por 15 segundos",
+    "Todo dia à meia-noite (tempo universal), as pontuações diárias serão redefinidas e um vencedor registrado",
+    "Spammers serão ignorados até ficarem em silêncio por pelo menos 10 segundos"
+  ],
+  "skipDelay": "Atraso de pular",
+  "vetoDelay": "Atraso de veto",
+  "hintDelay": "Atraso de dica",
+  "triviaLangauges": "Curiosidades sobre idiomas"
 }

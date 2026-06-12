@@ -1,20 +1,16 @@
 {
   "settings": "설정",
   "playerIntro": "플레이어 소개",
-  "sass": "재치",
-  "dailyUpdates": "일일 업데이트",
+  "sass": "Sass",
+  "dailyUpdates": "매일 업데이트",
   "language_one": "언어",
-  "language_other": "언어 목록",
+  "language_other": "언어",
   "botLanguage": "봇 언어",
-  "triviaLangauges": "퀴즈 언어",
-  "plays": "플레이 횟수",
-  "votes": "투표 수",
-  "snubs": "무시",
+  "plays": "플레이",
+  "votes": "투표",
+  "snubs": "거부",
   "hints": "힌트",
-  "skips": "건너뛰기",
-  "skipDelay": "건너뛰기 지연 시간",
-  "vetoDelay": "거부 지연 시간",
-  "hintDelay": "힌트 지연 시간",
+  "skips": "건너뜀",
   "values": "값",
   "score": "점수",
   "difficulty": "난이도",
@@ -22,32 +18,32 @@
   "modifiedOn": "수정일",
   "on": "켜기",
   "off": "끄기",
-  "and": "및",
+  "and": "그리고",
   "description": "설명",
-  "point_one": "{{count}}점",
+  "point_one": "{{count}} 포인트",
   "point_other": "{{count}} 포인트",
   "category_one": "카테고리",
-  "category_other": "카테고리들",
+  "category_other": "카테고리",
   "categories": {
     "Adult": "성인",
     "Albums": "앨범",
     "Animation": "애니메이션",
     "Anime/Manga": "애니메이션/만화",
-    "Art": "미술",
+    "Art": "예술",
     "Biology": "생물학",
     "Business": "비즈니스",
-    "Celebrities": "연예인",
+    "Celebrities": "유명인",
     "Chemistry": "화학",
     "Culture": "문화",
     "Entertainment": "엔터테인먼트",
-    "Food and Drink": "음식 및 음료",
-    "Funny": "유머",
+    "Food and Drink": "음식과 음료",
+    "Funny": "재미있는",
     "Gaming": "게임",
-    "Geography": "지리학",
+    "Geography": "지리",
     "History": "역사",
     "Internet": "인터넷",
-    "K-drama": "K드라마",
-    "K-pop": "K팝",
+    "K-drama": "K-드라마",
+    "K-pop": "K-팝",
     "Language": "언어",
     "Literature": "문학",
     "Lyrics": "가사",
@@ -70,120 +66,120 @@
   },
   "commands": {
     "start": {
-      "name": "시작",
+      "name": "start",
       "description": "게임 시작"
     },
     "commands": {
-      "name": "명령어",
+      "name": "commands",
       "description": "명령어 목록"
     },
     "list": {
-      "name": "목록",
-      "description": "현재 라운드에서 추측한 답 목록 표시"
+      "name": "list",
+      "description": "현재 라운드에서 추측한 답변 나열"
     },
     "hint": {
-      "name": "힌트",
+      "name": "hint",
       "description": "힌트 받기"
     },
     "skip": {
-      "name": "건너뛰기",
+      "name": "skip",
       "description": "현재 라운드 건너뛰기"
     },
     "veto": {
-      "name": "거부",
-      "description": "건너뛰기 거부"
+      "name": "veto",
+      "description": "건너뛰기 거부권"
     },
     "minigame": {
-      "name": "미니게임",
-      "description": "역퀴즈 질문"
+      "name": "minigame",
+      "description": "역 트리비아 질문"
     },
     "minihint": {
-      "name": "미니힌트",
-      "description": "미니게임 힌트 받기"
+      "name": "minihint",
+      "description": "minigame에 대한 힌트 받기"
     },
     "miniskip": {
-      "name": "미니스킵",
+      "name": "miniskip",
       "description": "현재 미니게임 건너뛰기"
     },
     "tinygame": {
-      "name": "타이니게임",
+      "name": "tinygame",
       "description": "목록 맞추기"
     },
     "tinyhint": {
-      "name": "타이니힌트",
-      "description": "타이니게임 힌트 받기"
+      "name": "tinyhint",
+      "description": "tinygame에 대한 힌트 받기"
     },
     "tinyskip": {
-      "name": "타이니스킵",
-      "description": "현재 타이니게임 건너뛰기"
+      "name": "tinyskip",
+      "description": "현재 tinygame 건너뛰기"
     },
     "score": {
-      "name": "점수",
+      "name": "score",
       "description": "일일 점수 순위"
     },
     "stats": {
-      "name": "통계",
+      "name": "stats",
       "description": "게임 통계"
     },
     "me": {
-      "name": "나",
+      "name": "me",
       "description": "내 통계"
     },
     "intro": {
-      "name": "소개",
-      "description": "나는 무엇일까요?"
+      "name": "intro",
+      "description": "나는 무엇인가?"
     },
     "logic": {
-      "name": "논리",
+      "name": "logic",
       "description": "사용된 로직에 대한 설명"
     },
     "settings": {
-      "name": "설정",
-      "description": "봇 동작 설정 (관리자 전용)"
+      "name": "settings",
+      "description": "봇 동작 설정(관리자 전용)"
     },
     "categories": {
-      "name": "카테고리",
-      "description": "포함할 카테고리 선택 (관리자 전용)"
+      "name": "categories",
+      "description": "포함할 카테고리 선택(관리자 전용)"
     },
     "typo": {
-      "name": "오타",
-      "description": "현재 목록의 오타 신고"
+      "name": "typo",
+      "description": "현재 목록에서 오타 신고"
     },
     "bug": {
-      "name": "버그",
-      "description": "봇의 버그 신고"
+      "name": "bug",
+      "description": "봇 버그 신고"
     },
     "feature": {
-      "name": "기능",
-      "description": "봇에 추가할 새로운 기능 제안"
+      "name": "feature",
+      "description": "봇에 새로운 기능 추천"
     },
     "suggest": {
-      "name": "제안",
-      "description": "봇에 추가할 새로운 기능 제안"
+      "name": "suggest",
+      "description": "봇에 새로운 기능 제안"
     },
     "error": {
-      "name": "오류",
-      "description": "봇의 오류 신고"
+      "name": "error",
+      "description": "봇 오류 신고"
     },
     "search": {
-      "name": "검색",
+      "name": "search",
       "description": "대기열에 추가할 목록 검색"
     },
     "lists": {
-      "name": "목록",
-      "description": "대기열에 추가된 목록 보기"
+      "name": "lists",
+      "description": "대기열 목록 보기"
     },
     "stop": {
-      "name": "중지",
-      "description": "봇 끄기"
+      "name": "stop",
+      "description": "끄기"
     },
     "ping": {
-      "name": "핑",
+      "name": "ping",
       "description": "퐁"
     },
     "queue": {
-      "name": "대기열",
-      "description": "봇이 어디에서 멈췄나요?"
+      "name": "queue",
+      "description": "봇이 어디에 갇혔나요?"
     },
     "help": {
       "name": "도움말",
@@ -191,88 +187,92 @@
     }
   },
   "sentences": {
-    "likeList": "<b>{{list}}</b>가 마음에 드셨나요?",
-    "likesList": "👍 {{name}} 좋아요 <b>{{list}}</b> ({{score}})",
-    "dislikesList": "👎 {{name}} 싫어요 <b>{{list}}</b> ({{score}})",
+    "likeList": "<b>{{list}}</b>이 마음에 드셨나요?",
+    "likesList": "👍 {{name}}명이 좋아요를 눌렀습니다 <b>{{list}}</b> ({{score}})",
+    "dislikesList": "👎 {{name}}명이 싫어요를 눌렀습니다 <b>{{list}}</b> ({{score}})",
     "queueList": "<b>어떤 목록을 대기열에 추가하시겠습니까?</b>",
     "curateList": "<b>어떤 목록을 큐레이션하시겠습니까?</b>",
-    "queueFull": "대기열에 이미 최대 10개의 목록이 있습니다. {{name}}",
-    "noSearchResults": "<b>\"{{search}}\"</b>, {{name}}에 해당하는 목록을 찾지 못했습니다.\n\n간단한 쿼리가 더 나은 결과를 가져옵니다.",
-    "emptySearch": "아무것도 검색하지 않았습니다, {{name}}. /search 뒤에 메시지를 추가하세요.",
-    "upcomingLists": "<b>예정된 목록</b>",
-    "noUpcomingLists": "대기 중인 목록이 없습니다. /search [메시지] 명령어를 사용하여 목록을 찾아보세요.",
-    "skippedList": "<b>{{list}}</b>명이 건너뛰었습니다!",
-    "skipConfirm": "<b>{{list}}</b>명이 {{skipDelay}}초 후에 건너뜁니다.\n\n취소하려면 /veto를 입력하거나 다른 사람이 /skip을 입력하여 확인하도록 하세요.",
-    "skipDenial": "다른 사람에게 건너뛰기 요청을 확인받으세요!",
-    "skipVeto": "{{name}}님이 건너뛰기를 거부했습니다.\n{{vetoDelay}}초 동안 건너뛰기가 허용되지 않습니다.",
-    "skipAbort": "{{name}}님이 정답을 입력하여 건너뛰기를 거부했습니다.\n{{vetoDelay}}초 동안 건너뛰기가 허용되지 않습니다.",
-    "skipNotFound": "건너뛰기 요청을 찾을 수 없습니다, {{name}}님.",
-    "skipShortBan": "{{name}}님은 {{delay}}초 동안 다시 건너뛸 수 없습니다.",
-    "skipBanThreat": "{{delay}}초 이내에 다시 건너뛰면, {{name}} 1시간 동안 건너뛰기가 금지됩니다.",
-    "skipLongBan": "{{name}}님은 1시간 동안 건너뛰기가 금지됩니다.",
-    "addedList": "\"{{list}}\" 추가됨",
-    "addedListToQueue": "<b>{{list}}</b>님이 대기열에 추가되었습니다, {{name}}님.\n\n/lists를 입력하여 대기열을 확인하세요.",
+    "queueFull": "대기열에는 이미 최대 10개 목록인 {{name}}이 있습니다.",
+    "noSearchResults": "<b>\"{{search}}\"</b>, {{name}}에 해당하는 목록을 찾을 수 없습니다.\n더 간단한 쿼리를 사용하면 더 나은 결과가 반환됩니다.",
+    "emptySearch": "아무것도 검색하지 않았습니다, {{name}}. /search 뒤에 메시지를 추가하세요",
+    "upcomingLists": "<b>다음 목록</b>",
+    "noUpcomingLists": "대기 중인 목록이 없습니다. /search [메시지] 명령을 사용하여 일부 목록을 찾으세요",
+    "skippedList": "<b>{{list}}</b>개 건너뛰었습니다!",
+    "skipConfirm": "<b>초 후에 {{list}}</b>{{skipDelay}}개 건너뜁니다.\n/veto를 입력하여 취소하거나 다른 사람에게 /skip을 입력하여 확인하게 하세요.",
+    "skipDenial": "다른 사람에게 건너뛰기 요청을 확인하게 하세요!",
+    "skipVeto": "{{name}}에 의해 건너뛰기가 거부되었습니다.\n{{vetoDelay}}초 동안 건너뛰기가 허용되지 않습니다.",
+    "skipAbort": "정답을 제시한 {{name}}에 의해 건너뛰기가 거부되었습니다.\n{{vetoDelay}}초 동안 건너뛰기가 허용되지 않습니다.",
+    "skipNotFound": "건너뛰기 요청을 찾을 수 없습니다. {{name}}",
+    "skipShortBan": "{{name}}이(가) {{delay}}초 동안 건너뛰기가 다시 금지되었습니다.",
+    "skipBanThreat": "{{delay}}초 내에 다시 건너뛰면 {{name}}, 1시간 동안 건너뛰기가 금지됩니다.",
+    "skipLongBan": "{{name}}이(가) 1시간 동안 건너뛰기가 금지되었습니다.",
+    "addedList": "\"{{list}}\"가 추가되었습니다.",
+    "addedListToQueue": "<b>{{list}}</b>이(가) 대기열에 추가되었습니다. {{name}}.\n/lists를 입력하여 대기열을 확인하세요",
     "addOwnList": "https://belgocanadian.com/tenthings 에서 직접 목록을 추가할 수 있습니다.",
     "banListQuestion": "금지 목록?",
-    "banListCommand": "차단 목록!",
-    "confirmBan": "\"{{list}}\" 차단 목록에 동의하시나요?",
-    "corroborateBan": "\"{{user}}\" 차단 목록에 동의하는 사람이 있나요?",
-    "alreadyBannedList": "\"{{list}}\"는 이미 차단되었습니다!",
-    "listBanned": "\"{{list}}\" 차단!",
-    "banNotFound": "차단 요청을 찾을 수 없습니다, {{list}}",
-    "inactivity": "자고 있습니다. 깨우려면 /list 또는 /start를 입력하세요.\n\n30일 동안 활동이 없으면 잠이 듭니다.",
-    "introduction": "안녕하세요, {{name}}님,\n\"열 가지 생각\"은 주어진 주제에 대해 생각나는 대로 답하는 게임입니다.\n\n/commands를 입력하시면 저에게 질문할 수 있는 모든 내용을 보실 수 있습니다.\n자신만의 목록을 추가하고 싶으시다면 https://belgocanadian.com/tenthings 로 이동해주세요.\n즐거운 시간 보내세요!",
-    "suggestionNoted": "제안 사항 확인 완료",
-    "findTheConnection": "연관점 찾기",
-    "minigameAnswered": "미니게임 정답 맞추기!",
+    "banListCommand": "금지 목록!",
+    "confirmBan": "금지 목록 \"{{list}}\"을 확인하셨나요?",
+    "alreadyBannedList": "\"{{list}}\"은 이미 금지되었습니다!",
+    "listBanned": "\"{{list}}\" 차단됨!",
+    "banNotFound": "차단 요청을 찾을 수 없습니다. {{name}}",
+    "inactivity": "잠을 자고 있습니다. /list나 /start를 입력해서 깨워주세요.\n30일 동안 활동이 없으면 잠이 듭니다.",
+    "introduction": "안녕하세요 {{name}},\nTen Things, 저는 주제를 주고 그 범주에서 떠오르는 모든 것에 답하는 게임입니다.\n/commands를 입력하면 질문할 수 있는 모든 것을 볼 수 있습니다.\n자신만의 목록을 추가하려면 https://belgocanadian.com/tenthings로 이동하세요.\n재밌게 놀아보세요!",
+    "suggestionNoted": "제안이 반영되었습니다.",
+    "findTheConnection": "연결 찾기",
+    "minigameAnswered": "미니게임 정답 맞히기!",
     "findTheTitle": "목록 제목 찾기",
-    "tinygameAnswered": "타이니게임 정답 맞추기!",
-    "roundOver": "라운드 종료",
-    "newRound": "새로운 라운드 시작!",
-    "allListsPlayed": "모든 목록이 완료되었습니다. 새로운 라운드가 시작됩니다.",
-    "createdBy": "{{name}}님이 작성함",
-    "requestedBy": "{{creator}}님이 요청함",
-    "guessedBy": "{{requestor}}님이 {{guesser}}를 획득함",
-    "notGuessed": "맞추지 못함",
-    "dailyScores": "{{answer}}일일 점수<b>",
-    "topDailyScores": "</b>일일 최고 점수<b>",
-    "dailyScoresWithLimit": "</b>일일 최고 점수 <b>{{limit}}",
-    "skipDelay": "목록 건너뛰기까지의 시간",
-    "vetoDelay": "거부된 후 새로운 건너뛰기가 허용될 때까지의 시간",
-    "hintDelay": "새로운 힌트가 허용될 때까지의 시간"
+    "tinygameAnswered": "미니게임 정답 맞히기!",
+    "roundOver": "라운드 오버",
+    "newRound": "새로운 라운드!",
+    "allListsPlayed": "모든 목록이 플레이되었으므로 이제 새로운 사이클이 시작됩니다.",
+    "createdBy": "by {{creator}}",
+    "requestedBy": "요청자: {{requestor}}",
+    "guessedBy": "{{guesser}}, {{answer}}",
+    "notGuessed": "추측하지 않음",
+    "dailyScores": "<b>일일 점수</b>",
+    "topDailyScores": "<b>최고 일일 점수</b>",
+    "dailyScoresWithLimit": "<b>최고 {{limit}}일일 점수</b>",
+    "skipDelay": "목록 건너뛰기까지 걸리는 시간",
+    "vetoDelay": "거부된 후 새로운 건너뛰기가 허용될 때까지 걸리는 시간",
+    "hintDelay": "새로운 힌트가 허용될 때까지 걸리는 시간",
+    "corroborateBan": "누군가 {{user}}이 목록 \"{{list}}\"을 금지하는 데 동의하시나요?"
   },
   "warnings": {
-    "minimum1Category": "최소 1개의 카테고리가 필요합니다",
-    "adminFunction": "</b>님, 죄송합니다. 이 기능은 채팅 관리자 기능입니다.",
-    "abuse": "{{name}}님, 이 기능을 다시 악용할 경우 Ten Things에서 차단됩니다.",
-    "banned": "{{name}}님, Ten Things에서 종료될 때까지 차단됩니다. 오늘의 게시물입니다. @FlandersBurger 계정의 차단 해제를 요청해 주세요.",
-    "fullQueue": "대기열에 이미 최대 10개의 목록이 등록되었습니다. {{name}}",
-    "alreadyInQueue": "{{name}}<b>{{list}}이 이미 대기열에 있습니다. </b>",
+    "minimum1Category": "최소 1개 카테고리가 필요합니다.",
+    "adminFunction": "죄송합니다. {{name}}, 채팅 관리 기능입니다.",
+    "fullQueue": "대기열에 이미 최대 10개 목록이 있습니다. {{name}}",
+    "alreadyInQueue": "<b>{{list}}</b>, 이미 대기열에 있습니다. {{name}}",
     "unfoundList": "이 목록은 더 이상 존재하지 않습니다.",
-    "corroborateBanBySamePlayer": "다른 사람에게 차단 확인을 요청하세요. {{name}}!",
-    "noSuggestion": "{{name}} 님은 아무것도 제안하지 않으셨습니다.",
-    "alreadyRequested": "{{name}} 님은 이미 오늘 이 목록을 요청하셨습니다."
+    "corroborateBanBySamePlayer": "다른 사람에게 금지 확인을 요청하세요. {{name}}!",
+    "noSuggestion": "아무것도 제안하지 않았습니다, {{name}}",
+    "abuse": "{{name}}, 다시 이걸 남용하면 Ten Things에서 추방됩니다",
+    "banned": "{{name}}, Ten Things에서 추방됩니다. @FlandersBurger에 추방 해제를 청원하세요.",
+    "alreadyRequested": "{{name}}님, 오늘 이미 이 목록을 요청하셨습니다."
   },
   "stats": {
     "stats": "통계",
-    "list": "목록 통계",
+    "list": "통계 목록",
     "player": "플레이어 통계",
-    "global": "전체 통계",
+    "global": "전역 통계",
     "game": "게임 통계",
-    "misc": "{{name}}<b>{{something}} 님 통계"
+    "misc": "<b>{{something}}</b>에 대한 통계"
   },
   "rules": [
-    "정답이 100% 맞으면 즉시 추측한 사람에게 보상이 주어집니다.",
-    "정답이 75% 이상 맞으면 더 나은 답이 제공되지 않을 경우 (2 * 정답률)초 후에 보상이 주어집니다.",
-    "정답 여부를 판단할 때 영숫자 이외의 기호와 대소문자는 무시됩니다.",
-    "점수 = (최대 힌트 </b> - 요청된 힌트 수 + 현재 플레이어 수) / (최대 힌트 {{maxHints}} + 현재 플레이어 수) * 정답률 % * 10",
-    "힌트는 첫 글자, 마지막 글자, 모음, 그리고 나머지 글자 순으로 공개됩니다. 나머지 글자는 가장 적게 나오는 글자부터 가장 많이 나오는 글자 순으로 공개됩니다.",
-    "힌트를 요청하는 데 10초의 쿨다운이 있습니다.",
-    "두 명의 플레이어가 /skip 명령어를 입력하면 해당 목록을 건너뛸 수 있습니다.",
-    "한 명의 플레이어만 /skip 명령어를 입력하면 해당 목록을 건너뛸 때까지 10초의 쿨다운이 적용됩니다.",
-    "스킵은 누구나 /veto를 입력하거나 정답을 입력하여 취소할 수 있습니다.",
-    "스킵이 거부되면 15초 동안 새로운 스킵 요청은 무시됩니다.",
-    "매일 자정(협정 세계시)에 일일 점수가 초기화되고 우승자가 기록됩니다.",
-    "스팸을 보내는 사용자는 최소 10초 동안 활동이 없을 때까지 무시됩니다."
-  ]
+    "답변이 100% 정확하면 추측자에게 즉시 수여됩니다",
+    "답변이 75% 이상 정확하면 더 나은 답변이 제공되지 않으면 (2 * 정확성 백분율)초 후에 수여됩니다",
+    "정확성을 결정할 때 영숫자가 아닌 기호와 대소문자는 무시됩니다",
+    "득점한 점수 = (최대 힌트 {{maxHints}} - 질문한 힌트 + 현재 플레이어 수) / (최대 힌트 {{maxHints}} + 현재 플레이어 수) * 답변 정확도 % * 10",
+    "힌트는 다음 순서로 공개됩니다: 첫 글자, 마지막 글자 문자, 모음 및 나머지. 나머지는 가장 덜 자주 나타나는 문자부터 가장 자주 나타나는 문자 순으로 공개됩니다.",
+    "힌트를 묻는 사이에 10초의 쿨다운이 있습니다.",
+    "2명의 플레이어가 /skip it을 입력하면 목록을 건너뛸 수 있습니다.",
+    "1명의 플레이어만 목록을 건너뛸 경우 목록을 건너뛸 때까지 10초의 쿨다운이 있습니다.",
+    "누구나 /veto 또는 정답을 입력하여 건너뛰기를 취소할 수 있습니다.",
+    "건너뛰기가 거부되면 새로운 건너뛰기는 15초 동안 무시됩니다.",
+    "매일 자정(세계시)에 일일 점수가 재설정되고 우승자가 기록됩니다.",
+    "스패머는 최소 10초 동안 침묵할 때까지 무시됩니다."
+  ],
+  "skipDelay": "스킵 지연",
+  "vetoDelay": "거부 지연",
+  "hintDelay": "힌트 지연",
+  "triviaLangauges": "잡학 언어"
 }
