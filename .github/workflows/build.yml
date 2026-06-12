@@ -26,8 +26,53 @@ jobs:
       - name: Test
         run: npm test
 
-  docker:
+      - name: Notify Telegram on failure
+        if: failure()
+        run: |
+          curl -s -X POST "https://api.telegram.org/bot${{ secrets.TELEGRAM_TOKEN }}/sendMessage" \
+            -d "chat_id=${{ secrets.TELEGRAM_MASTER_CHAT }}&parse_mode=HTML&text=❌ Tests failed%0A<a href='https://github.com/${{ github.repository }}/commit/${{ github.sha }}'>${{ github.sha }}</a>"
+
+  translate:
     needs: test
+    if: github.event_name == 'push'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Translate locales
+        env:
+          GOOGLE_TOKEN: ${{ secrets.GOOGLE_TOKEN }}
+        run: |
+          cd src/scripts
+          for lang in ar de es fr hi id ja ko nl pt ru tl; do
+            node translate-data.js $lang
+          done
+
+      - name: Commit translations
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add data/locales/
+          git diff --cached --quiet || git commit -m "chore: update translations [skip ci]"
+          git push
+
+      - name: Notify Telegram on failure
+        if: failure()
+        run: |
+          curl -s -X POST "https://api.telegram.org/bot${{ secrets.TELEGRAM_TOKEN }}/sendMessage" \
+            -d "chat_id=${{ secrets.TELEGRAM_MASTER_CHAT }}&parse_mode=HTML&text=❌ Translation failed%0A<a href='https://github.com/${{ github.repository }}/commit/${{ github.sha }}'>${{ github.sha }}</a>"
+
+  docker:
+    needs: [test, translate]
     if: github.event_name == 'push'
     runs-on: ubuntu-latest
     steps:
@@ -49,6 +94,12 @@ jobs:
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
+      - name: Notify Telegram on failure
+        if: failure()
+        run: |
+          curl -s -X POST "https://api.telegram.org/bot${{ secrets.TELEGRAM_TOKEN }}/sendMessage" \
+            -d "chat_id=${{ secrets.TELEGRAM_MASTER_CHAT }}&parse_mode=HTML&text=❌ Docker build failed%0A<a href='https://github.com/${{ github.repository }}/commit/${{ github.sha }}'>${{ github.sha }}</a>"
+
   deploy:
     needs: docker
     runs-on: ubuntu-latest
@@ -62,8 +113,15 @@ jobs:
             cd /opt/resume
             docker compose pull
             docker compose up -d
+            docker image prune -f
 
       - name: Notify Telegram
         run: |
           curl -s -X POST "https://api.telegram.org/bot${{ secrets.TELEGRAM_TOKEN }}/sendMessage" \
             -d "chat_id=${{ secrets.TELEGRAM_MASTER_CHAT }}&parse_mode=HTML&text=✅ Deployed to production%0A<a href='https://github.com/${{ github.repository }}/commit/${{ github.sha }}'>${{ github.sha }}</a>"
+
+      - name: Notify Telegram on failure
+        if: failure()
+        run: |
+          curl -s -X POST "https://api.telegram.org/bot${{ secrets.TELEGRAM_TOKEN }}/sendMessage" \
+            -d "chat_id=${{ secrets.TELEGRAM_MASTER_CHAT }}&parse_mode=HTML&text=❌ Deploy failed%0A<a href='https://github.com/${{ github.repository }}/commit/${{ github.sha }}'>${{ github.sha }}</a>"
