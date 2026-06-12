@@ -1,4 +1,4 @@
-FROM node:22-alpine AS builder
+FROM node:24-bookworm-slim AS builder
 WORKDIR /app
 COPY package.json package-lock.json* ./
 RUN npm install
@@ -6,7 +6,7 @@ COPY tsconfig.json vite.config.ts ./
 COPY src/ ./src/
 RUN npm run rebuild && npm run client:build
 
-FROM node:22-alpine
+FROM node:24-bookworm-slim
 WORKDIR /app
 COPY package.json package-lock.json* ./
 RUN npm install --omit=dev --ignore-scripts
