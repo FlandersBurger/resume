@@ -1,23 +1,27 @@
 {
   "settings": "Pengaturan",
   "playerIntro": "Pengantar Pemain",
-  "sass": "Kenakalan",
+  "sass": "Sass",
   "dailyUpdates": "Pembaruan Harian",
   "language_one": "Bahasa",
   "language_other": "Bahasa",
   "botLanguage": "Bahasa Bot",
+  "triviaLangauges": "Bahasa Trivia",
   "plays": "Permainan",
-  "votes": "Voting",
+  "votes": "Suara",
   "snubs": "Penolakan",
   "hints": "Petunjuk",
   "skips": "Lewati",
-  "values": "Nilai-nilai",
+  "skipDelay": "Penundaan Lewati",
+  "vetoDelay": "Penundaan Veto",
+  "hintDelay": "Penundaan Petunjuk",
+  "values": "Nilai",
   "score": "Skor",
   "difficulty": "Kesulitan",
   "createdOn": "Dibuat pada",
   "modifiedOn": "Dimodifikasi pada",
-  "on": "NYALA",
-  "off": "MATI",
+  "on": "AKTIF",
+  "off": "NONAKTIF",
   "and": "dan",
   "description": "Deskripsi",
   "point_one": "{{count}} poin",
@@ -38,7 +42,7 @@
     "Entertainment": "Hiburan",
     "Food and Drink": "Makanan dan Minuman",
     "Funny": "Lucu",
-    "Gaming": "Gaming",
+    "Gaming": "Permainan",
     "Geography": "Geografi",
     "History": "Sejarah",
     "Internet": "Internet",
@@ -49,11 +53,11 @@
     "Lyrics": "Lirik",
     "Mathematics": "Matematika",
     "Medicine": "Kedokteran",
-    "Misc": "Berbagai",
+    "Misc": "Lain-lain",
     "Movies": "Film",
     "Music": "Musik",
     "Nature": "Alam",
-    "Objects": "Objek",
+    "Objects": "Benda",
     "Politics": "Politik",
     "Religion": "Agama",
     "Science": "Sains",
@@ -75,7 +79,7 @@
     },
     "list": {
       "name": "daftar",
-      "description": "Daftar jawaban yang ditebak pada putaran saat ini"
+      "description": "Daftar jawaban yang ditebak di babak saat ini"
     },
     "hint": {
       "name": "petunjuk",
@@ -83,35 +87,35 @@
     },
     "skip": {
       "name": "lewati",
-      "description": "Lewati putaran saat ini"
+      "description": "Lewati babak saat ini"
     },
     "veto": {
       "name": "veto",
-      "description": "Veto jawaban saat ini"
+      "description": "Veto lewati"
     },
     "minigame": {
-      "name": "minipermainan",
-      "description": "Pertanyaan trivia terbalik"
+      "name": "minigame",
+      "description": "Trivia terbalik pertanyaan"
     },
     "minihint": {
-      "name": "minipetunjuk",
-      "description": "Dapatkan petunjuk untuk minipermainan"
+      "name": "petunjuk singkat",
+      "description": "Dapatkan petunjuk untuk minigame"
     },
     "miniskip": {
-      "name": "minilewati",
-      "description": "Lewati minipermainan saat ini"
+      "name": "lewati minigame",
+      "description": "Lewati minigame saat ini"
     },
     "tinygame": {
-      "name": "permainankecil",
-      "description": "Tebak daftar"
+      "name": "permainan kecil",
+      "description": "Tebak daftarnya"
     },
     "tinyhint": {
-      "name": "petunjukkecil",
-      "description": "Dapatkan petunjuk untuk permainankecil"
+      "name": "petunjuk singkat",
+      "description": "Dapatkan petunjuk untuk permainan kecil"
     },
     "tinyskip": {
-      "name": "lewatikecil",
-      "description": "Lewati permainankecil saat ini"
+      "name": "lewati kecil",
+      "description": "Lewati permainan kecil saat ini"
     },
     "score": {
       "name": "skor",
@@ -126,8 +130,8 @@
       "description": "Statistik saya"
     },
     "intro": {
-      "name": "pengenalan",
-      "description": "Apa saya ini?"
+      "name": "pengantar",
+      "description": "Siapakah saya?"
     },
     "logic": {
       "name": "logika",
@@ -135,15 +139,15 @@
     },
     "settings": {
       "name": "pengaturan",
-      "description": "Pengaturan perilaku bot (Hanya untuk admin)"
+      "description": "Pengaturan perilaku bot (Hanya Admin)"
     },
     "categories": {
       "name": "kategori",
-      "description": "Pilih kategori yang akan disertakan (Hanya untuk admin)"
+      "description": "Pilih kategori mana yang akan disertakan (Hanya Admin)"
     },
     "typo": {
-      "name": "kesalahanpenulisan",
-      "description": "Laporkan kesalahan penulisan pada daftar saat ini"
+      "name": "kesalahan ketik",
+      "description": "Laporkan kesalahan ketik dalam daftar saat ini"
     },
     "bug": {
       "name": "bug",
@@ -154,31 +158,31 @@
       "description": "Rekomendasikan fitur baru untuk bot"
     },
     "suggest": {
-      "name": "saran",
-      "description": "Beri saran untuk bot"
+      "name": "sarankan",
+      "description": "Sarankan fitur baru untuk bot"
+    },
+    "error": {
+      "name": "kesalahan",
+      "description": "Laporkan kesalahan pada bot"
     },
     "search": {
-      "name": "cari",
-      "description": "Cari daftar untuk dimasukkan dalam antrian"
+      "name": "pencarian",
+      "description": "Cari daftar untuk diantrekan"
     },
     "lists": {
-      "name": "daftarberikutnya",
-      "description": "Lihat daftar yang dijadwalkan"
+      "name": "daftar",
+      "description": "Lihat daftar yang diantrekan"
     },
     "stop": {
       "name": "berhenti",
       "description": "Matikan saya"
-    },
-    "error": {
-      "name": "error",
-      "description": "Laporkan kesalahan pada bot"
     },
     "ping": {
       "name": "ping",
       "description": "pong"
     },
     "queue": {
-      "name": "queue",
+      "name": "antrian",
       "description": "Di mana bot macet?"
     },
     "help": {
@@ -187,92 +191,88 @@
     }
   },
   "sentences": {
-    "likeList": "Apakah kamu suka {{list}}?",
-    "likesList": " 👍 {{name}} suka <b>{{list}}</b> ({{score}})",
-    "dislikesList": " 👎 {{name}} tidak suka <b>{{list}}</b> ({{score}})",
-    "queueList": "<b>Daftar mana yang ingin Anda antre?</b>",
+    "likeList": "Apakah Anda menyukai <b>{{list}}</b>?",
+    "likesList": "👍 {{name}} suka <b>{{list}}</b> ({{score}})",
+    "dislikesList": "👎 {{name}} tidak suka <b>{{list}}</b> ({{score}})",
+    "queueList": "<b>Daftar mana yang ingin Anda antrekan?</b>",
     "curateList": "<b>Daftar mana yang ingin Anda kurasi?</b>",
-    "queueFull": "Antrean sudah mencapai maksimum 10 daftar, {{name}}.",
-    "noSearchResults": "Saya tidak menemukan daftar yang sesuai untuk <b>\"{{search}}\"</b>, {{name}}.\nKueri yang lebih sederhana memberikan hasil yang lebih baik.",
+    "queueFull": "Antrean sudah memiliki maksimum 10 daftar, {{name}}.",
+    "noSearchResults": "Saya tidak menemukan daftar yang sesuai untuk <b>\"{{search}}\"</b>, {{name}}.\n\nKueri yang lebih sederhana menghasilkan hasil yang lebih baik.",
     "emptySearch": "Anda tidak mencari apa pun, {{name}}. Tambahkan pesan Anda setelah /search",
-    "upcomingLists": "<b>Daftar yang akan datang</b>",
-    "noUpcomingLists": "Tidak ada daftar yang masuk antrean, gunakan perintah /search [pesan] untuk menemukan beberapa",
+    "upcomingLists": "<b>Daftar mendatang</b>",
+    "noUpcomingLists": "Tidak ada daftar yang diantrekan, gunakan perintah /search [pesan] untuk menemukan beberapa",
     "skippedList": "<b>{{list}}</b> dilewati!",
-    "skipConfirm": "Melewati daftar <b>{{list}}</b> dalam {{skipDelay}} detik.\nKetik /veto untuk membatalkan atau minta seseorang ketik /skip untuk mengonfirmasi.",
-    "skipDenial": "Minta orang lain untuk mengonfirmasi permintaan lewatan Anda!",
-    "skipVeto": "Pelewatan ditolak oleh {{name}}\nTidak ada pelewat yang diizinkan selama {{vetoDelay}} detik",
-    "skipAbort": "Pelewatan ditolak oleh {{name}} yang memberikan jawaban yang benar\nTidak ada pelewat yang diizinkan selama {{vetoDelay}} detik",
-    "skipNotFound": "Saya tidak dapat menemukan permintaan lewat, {{name}}",
-    "skipShortBan": "Memblokir {{name}} dari melewatkan lagi selama {{delay}} detik",
-    "skipBanThreat": "Jika Anda melewatkan lagi dalam {{delay}} detik, {{name}}, Anda akan diblokir dari melewatkan selama 1 jam",
-    "skipLongBan": "Memblokir {{name}} dari melewatkan selama 1 jam",
-    "addedList": "\"{{list}}\" ditambahkan",
-    "addedListToQueue": "<b>{{list}}</b> ditambahkan ke antrian, {{name}}.\nKetik /lists untuk melihat antrian",
-    "addOwnList": "Perhatikan bahwa Anda dapat menambahkan daftar Anda sendiri di https://belgocanadian.com/tenthings",
-    "banListQuestion": "Larang daftar?",
-    "banListCommand": "Larang daftar!",
-    "confirmBan": "Apakah Anda mengonfirmasi pelarangan daftar \"{{list}}\"?",
-    "alreadyBannedList": "\"{{list}}\" sudah dilarang!",
-    "listBanned": "\"{{list}}\" dilarang!",
-    "banNotFound": "Saya tidak bisa menemukan permintaan larangan, {{name}}",
-    "inactivity": "Saya sedang tidur, ketik /list atau /start untuk membangunkan saya.\nSaya tidur setelah 30 hari tidak aktif.",
-    "introduction": "Hai {{name}},\nTen Things, ciptaanmu sendiri, adalah permainan yang akan memberimu subjek dan kemudian kamu menjawab apa saja yang terlintas dalam pikiranmu dalam kategori tersebut.\nKetik /perintah untuk melihat semua yang bisa kamu tanyakan kepada saya\nJika kamu ingin menambahkan daftar sendiri, silakan kunjungi https://belgocanadian.com/tenthings\nSelamat bersenang-senang!",
-    "suggestionNoted": "Saran dicatat",
-    "findTheConnection": "Temukan koneksi",
-    "minigameAnswered": "Jawaban minigame berhasil ditebak!",
-    "findTheTitle": "Temukan judul daftar",
-    "tinygameAnswered": "Jawaban tinygame berhasil ditebak!",
-    "roundOver": "Putaran berakhir",
-    "newRound": "Ronde baru!",
-    "allListsPlayed": "Semua daftar telah dimainkan, siklus baru akan dimulai sekarang.",
-    "createdBy": "oleh {{creator}}",
-    "requestedBy": "Diminta oleh {{requestor}}",
-    "guessedBy": "{{guesser}} menebak {{answer}}",
-    "notGuessed": "Belum ditebak",
-    "dailyScores": "<b>Skor Harian</b>",
-    "topDailyScores": "<b>Top Skor Harian</b>",
-    "dailyScoresWithLimit": "<b>Top {{limit}} Skor Harian</b>",
-    "skipDelay": "Waktu hingga daftar dilewati",
-    "vetoDelay": "Waktu hingga lompatan baru diizinkan setelah diveto",
-    "hintDelay": "Waktu hingga petunjuk baru diizinkan",
-    "corroborateBan": "Apakah ada yang setuju dengan {{user}} untuk melarang daftar \"{{list}}\"?"
+    "skipConfirm": "Melewati <b>{{list}}</b> dalam {{skipDelay}} detik.\nKetik /veto untuk membatalkan atau minta orang lain mengetik /skip untuk mengkonfirmasi.",
+    "skipDenial": "Minta orang lain untuk mengkonfirmasi permintaan lewati Anda!\n\n#__# Permintaan lewati ditolak oleh {{name}}\nTidak diperbolehkan melewati selama {{vetoDelay}} detik\n#__# Permintaan lewati ditolak oleh {{name}} yang memberikan jawaban yang benar\nTidak diperbolehkan melewati selama {{vetoDelay}} detik",
+    "skipVeto": "Saya tidak dapat menemukan permintaan lewati, {{name}}\n#__# Dilarang {{name}} untuk melewati lagi selama {{delay}} detik",
+    "skipAbort": "Jika Anda melewati lagi dalam {{delay}} detik, {{name}}, Anda akan dilarang melewati selama 1 jam\n#__# Dilarang {{name}} untuk melewati selama 1 jam",
+    "skipNotFound": "\"{{list}}\" ditambahkan",
+    "skipShortBan": "<b>{{list}}</b> ditambahkan ke antrian, {{name}}.\n\nKetik /lists untuk melihat antrean",
+    "skipBanThreat": "Perhatikan bahwa Anda dapat menambahkan daftar Anda sendiri di https://belgocanadian.com/tenthings",
+    "skipLongBan": "Daftar larangan?",
+    "addedList": "Daftar blokir!",
+    "addedListToQueue": "Apakah Anda mengkonfirmasi daftar blokir \"{{list}}\"?",
+    "addOwnList": "Apakah ada yang setuju dengan {{user}} untuk daftar blokir \"{{list}}\"?",
+    "banListQuestion": "\"{{list}}\" sudah diblokir!",
+    "banListCommand": "\"{{list}}\" diblokir!",
+    "confirmBan": "Saya tidak dapat menemukan permintaan pemblokiran, {{name}}",
+    "corroborateBan": "Saya sedang tidur, ketik /list atau /start untuk membangunkan saya.\n\nSaya tidur setelah 30 hari tidak aktif.",
+    "alreadyBannedList": "Hai {{name}},\nTen Things, saya sendiri, adalah permainan yang akan memberi Anda sebuah subjek dan kemudian Anda menjawab apa pun yang terlintas dalam pikiran Anda dalam kategori tersebut.\n\nKetik /commands untuk melihat semua hal yang dapat Anda tanyakan kepada saya\nJika Anda ingin menambahkan daftar Anda sendiri, silakan kunjungi https://belgocanadian.com/tenthings\nSelamat bersenang-senang!",
+    "listBanned": "Saran dicatat",
+    "banNotFound": "Temukan hubungannya",
+    "inactivity": "Jawaban minigame ditebak!",
+    "introduction": "Temukan judul daftar",
+    "suggestionNoted": "Jawaban tinygame ditebak!",
+    "findTheConnection": "Putaran selesai",
+    "minigameAnswered": "Putaran baru!",
+    "findTheTitle": "Semua daftar telah dimainkan, siklus baru akan segera dimulai.",
+    "tinygameAnswered": "oleh {{creator}}",
+    "roundOver": "Diminta oleh {{requestor}}",
+    "newRound": "{{guesser}} mendapat {{answer}}",
+    "allListsPlayed": "Tidak ditebak",
+    "createdBy": "<b>Skor Harian</b>",
+    "requestedBy": "<b>Skor Harian Teratas</b>",
+    "guessedBy": "<b>Skor Harian Teratas {{limit}}</b>",
+    "notGuessed": "Waktu hingga daftar dilewati",
+    "dailyScores": "Waktu hingga lewati baru diizinkan setelah diveto",
+    "topDailyScores": "Waktu hingga petunjuk baru diizinkan",
+    "dailyScoresWithLimit": "Minimal 1 kategori diperlukan",
+    "skipDelay": "Maaf {{name}}, ini adalah fungsi admin obrolan",
+    "vetoDelay": "{{name}}, Anda akan dilarang dari Ten Things jika Anda menyalahgunakan ini sekali lagi",
+    "hintDelay": "{{name}}, Anda dilarang dari Ten Things hingga akhir hari. Silakan ajukan petisi pencabutan larangan kepada @FlandersBurger"
   },
   "warnings": {
-    "minimum1Category": "Setidaknya 1 kategori diperlukan",
-    "adminFunction": "Maaf {{name}}, ini adalah fungsi admin obrolan",
-    "fullQueue": "Antrian sudah mencapai maksimum 10 daftar, {{name}}",
-    "alreadyInQueue": "<b>{{list}}</b> sudah ada dalam antrian, {{name}}",
-    "unfoundList": "Daftar ini tidak lagi ada",
-    "corroborateBanBySamePlayer": "Dapatkan orang lain untuk mengonfirmasi pelarangan, {{name}}!",
-    "noSuggestion": "Kamu tidak menyarankan apa pun, {{name}}",
-    "abuse": "{{name}}, Anda akan diblokir dari Ten Things jika Anda menyalahgunakan ini sekali lagi",
-    "banned": "{{name}}, Anda diblokir dari Ten Things. Jangan ragu untuk mengajukan petisi pembatalan pemblokiran ke @FlandersBurger",
-    "alreadyRequested": "{{name}}, kamu sudah meminta daftar ini hari ini"
+    "minimum1Category": "Antrean sudah memiliki maksimal 10 daftar, {{name}}",
+    "adminFunction": "<b>{{list}}</b> sudah ada dalam antrean, {{name}}",
+    "abuse": "Daftar ini sudah tidak ada lagi",
+    "banned": "Minta orang lain untuk mengkonfirmasi larangan tersebut, {{name}}!",
+    "fullQueue": "Anda tidak menyarankan apa pun, {{name}}",
+    "alreadyInQueue": "{{name}}, Anda sudah meminta daftar ini hari ini",
+    "unfoundList": "Statistik",
+    "corroborateBanBySamePlayer": "Statistik daftar",
+    "noSuggestion": "Statistik pemain",
+    "alreadyRequested": "Statistik global"
   },
   "stats": {
-    "stats": "Statistik",
-    "list": "Statistik daftar",
-    "player": "Statistik pemain",
-    "global": "Statistik global",
-    "game": "Statistik permainan",
-    "misc": "Statistik untuk <b>{{something}}</b>"
+    "stats": "Statistik permainan",
+    "list": "Statistik untuk <b>{{something}}</b>",
+    "player": "Jika jawaban 100% benar, jawaban akan langsung diberikan kepada penebak",
+    "global": "Jika jawaban lebih dari 75% benar, jawaban akan diberikan setelah (2 * persentase kebenaran) detik jika tidak ada jawaban yang lebih baik",
+    "game": "Tanda non-alfanumerik dan huruf besar/kecil diabaikan saat menentukan kebenaran",
+    "misc": "Poin yang dicetak = (Petunjuk maksimum {{maxHints}} - petunjuk yang diminta + jumlah pemain saat ini) / (Petunjuk maksimum {{maxHints}} + jumlah pemain saat ini) * persentase akurasi jawaban * 10"
   },
   "rules": [
-    "Jika jawabannya 100% benar, itu akan langsung diberikan kepada penembak",
-    "Jika jawaban lebih dari 75% benar, itu akan diberikan setelah (2 * persentase kebenaran) detik jika tidak ada jawaban yang lebih baik",
-    "Tanda non-alfanumerik dan huruf besar diabaikan saat menentukan kebenaran",
-    "Skor poin = (Petunjuk maksimal {{maxHints}} - petunjuk yang diminta + # pemain saat ini) / (Petunjuk maksimal {{maxHints}} + # pemain saat ini) * akurasi jawaban % * 10",
-    "Petunjuk diungkapkan dalam urutan ini: huruf pertama, huruf terakhir, vokal, dan sisanya. Sisanya akan diungkapkan dari huruf yang paling jarang hingga paling sering",
-    "Ada pendingin selama 10 detik antara meminta petunjuk",
-    "Sebuah daftar dapat dilewati jika 2 pemain /skip",
-    "Jika hanya 1 pemain melewatkan daftar, akan ada pendingin selama 10 detik sampai daftar dilewati",
-    "Lewatan dapat dibatalkan oleh siapa saja dengan mengetik /veto atau jawaban yang benar",
-    "Jika lewatan dibatalkan, lewatan baru akan diabaikan selama 15 detik",
-    "Setiap hari pada tengah malam (waktu universal) skor harian akan direset dan pemenang dicatat",
-    "Spammer akan diabaikan sampai mereka diam setidaknya selama 10 detik"
-  ],
-  "skipDelay": "Penundaan lewati",
-  "vetoDelay": "Penundaan veto",
-  "hintDelay": "Penundaan petunjuk",
-  "triviaLangauges": "Bahasa Trivia"
+    "Petunjuk Petunjuk akan diungkapkan dalam urutan ini: huruf pertama, huruf terakhir, huruf vokal, dan sisanya. Sisanya akan diungkapkan dari huruf yang paling jarang muncul hingga huruf yang paling sering muncul.",
+    "Terdapat jeda 10 detik antara meminta petunjuk.",
+    "Sebuah daftar dapat dilewati jika 2 pemain /skip it.",
+    "Jika hanya 1 pemain yang melewati sebuah daftar, akan ada jeda 10 detik hingga daftar tersebut dilewati.",
+    "Lewati pertanyaan dapat dibatalkan oleh siapa saja dengan mengetik /veto atau jawaban yang benar",
+    "Jika lewati pertanyaan diveto, lewati pertanyaan baru akan diabaikan selama 15 detik",
+    "Setiap hari tengah malam (waktu universal) skor harian akan direset dan pemenang akan dicatat",
+    "Pengguna spam akan diabaikan sampai mereka diam setidaknya selama 10 detik",
+    null,
+    null,
+    null,
+    null
+  ]
 }

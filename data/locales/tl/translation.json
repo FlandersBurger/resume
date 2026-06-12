@@ -1,31 +1,35 @@
 {
   "settings": "Mga Setting",
-  "playerIntro": "Introduksyon ng Player",
+  "playerIntro": "Intro ng Manlalaro",
   "sass": "Sass",
-  "dailyUpdates": "Araw-araw na mga Update",
+  "dailyUpdates": "Mga Pang-araw-araw na Update",
   "language_one": "Wika",
   "language_other": "Mga Wika",
   "botLanguage": "Wika ng Bot",
-  "plays": "Mga Laro",
-  "votes": "Boto",
-  "snubs": "Snubs",
-  "hints": "Mga Hint",
-  "skips": "Mga Skip",
+  "triviaLangauges": "Mga Wika ng Trivia",
+  "plays": "Mga Paglalaro",
+  "votes": "Mga Boto",
+  "snubs": "Mga Snubs",
+  "hints": "Mga Pahiwatig",
+  "skips": "Mga Laktawan",
+  "skipDelay": "Pagkaantala ng Laktawan",
+  "vetoDelay": "Pagkaantala ng Pag-veto",
+  "hintDelay": "Pagkaantala ng Pahiwatig",
   "values": "Mga Halaga",
-  "score": "Score",
-  "difficulty": "Kahirapan",
+  "score": "Iskor",
+  "difficulty": "Hirap",
   "createdOn": "Nilikha noong",
   "modifiedOn": "Binago noong",
-  "on": "BUKAS",
-  "off": "HINDI BUO",
+  "on": "ON",
+  "off": "OFF",
   "and": "at",
-  "description": "Deskripsyon",
+  "description": "Paglalarawan",
   "point_one": "{{count}} punto",
   "point_other": "{{count}} mga puntos",
   "category_one": "Kategorya",
   "category_other": "Mga Kategorya",
   "categories": {
-    "Adult": "Adulto",
+    "Adult": "Matanda",
     "Albums": "Mga Album",
     "Animation": "Animasyon",
     "Anime/Manga": "Anime/Manga",
@@ -38,7 +42,7 @@
     "Entertainment": "Libangan",
     "Food and Drink": "Pagkain at Inumin",
     "Funny": "Nakakatawa",
-    "Gaming": "Laro",
+    "Gaming": "Paglalaro",
     "Geography": "Heograpiya",
     "History": "Kasaysayan",
     "Internet": "Internet",
@@ -49,81 +53,81 @@
     "Lyrics": "Liriko",
     "Mathematics": "Matematika",
     "Medicine": "Medisina",
-    "Misc": "Iba't Ibang Bagay",
+    "Misc": "Iba pa",
     "Movies": "Mga Pelikula",
     "Music": "Musika",
     "Nature": "Kalikasan",
     "Objects": "Mga Bagay",
-    "Politics": "Politika",
+    "Politics": "Pulitika",
     "Religion": "Relihiyon",
     "Science": "Agham",
     "Society": "Lipunan",
-    "Sports": "Sports",
+    "Sports": "Palakasan",
     "Technology": "Teknolohiya",
-    "Telenovelas": "Telenovelas",
+    "Telenovelas": "Mga Telenovela",
     "Television": "Telebisyon",
     "Transportation": "Transportasyon"
   },
   "commands": {
     "start": {
-      "name": "simula",
-      "description": "Simulan ang trivia"
+      "name": "simulan",
+      "description": "Simulan ang laro"
     },
     "commands": {
-      "name": "mgautos",
+      "name": "mga utos",
       "description": "Listahan ng mga utos"
     },
     "list": {
       "name": "listahan",
-      "description": "Listahan ng mga hula sa kasalukuyang putukan"
+      "description": "Ilista ang mga nahulaang sagot sa kasalukuyang round"
     },
     "hint": {
       "name": "pahiwatig",
-      "description": "Kumuha ng hint"
+      "description": "Kumuha ng pahiwatig"
     },
     "skip": {
       "name": "laktawan",
-      "description": "I-skip ang kasalukuyang putukan"
+      "description": "Laktawan ang kasalukuyang round"
     },
     "veto": {
-      "name": "boto",
-      "description": "Bumoto sa isang listahan"
+      "name": "veto",
+      "description": "Veto ang laktawan"
     },
     "minigame": {
-      "name": "muntinglaro",
-      "description": "Baligtad na tanong sa trivia"
+      "name": "minigame",
+      "description": "Baliktarin ang trivia tanong"
     },
     "minihint": {
-      "name": "muntingpahiwatig",
-      "description": "Kumuha ng hint para sa minigame"
+      "name": "minihint",
+      "description": "Humingi ng pahiwatig para sa minigame"
     },
     "miniskip": {
-      "name": "muntinglaktawan",
-      "description": "I-skip ang kasalukuyang minigame"
+      "name": "miniskip",
+      "description": "Laktawan ang kasalukuyang minigame"
     },
     "tinygame": {
-      "name": "maliitlaro",
+      "name": "tinygame",
       "description": "Hulaan ang listahan"
     },
     "tinyhint": {
-      "name": "maliitpahiwatig",
-      "description": "Kumuha ng hint para sa tinygame"
+      "name": "tinyhint",
+      "description": "Humingi ng pahiwatig para sa tinygame"
     },
     "tinyskip": {
-      "name": "maliitlaktawan",
-      "description": "I-skip ang kasalukuyang tinygame"
+      "name": "tinyskip",
+      "description": "Laktawan ang kasalukuyang tinygame"
     },
     "score": {
       "name": "iskor",
-      "description": "Araw-araw na pagkakasunod-sunod ng score"
+      "description": "Pang-araw-araw na katayuan ng iskor"
     },
     "stats": {
-      "name": "eastdistika",
-      "description": "Estadistika sa laro"
+      "name": "mga istatistika",
+      "description": "Mga istatistika sa laro"
     },
     "me": {
       "name": "ako",
-      "description": "Aking estadistika"
+      "description": "Aking mga istatistika"
     },
     "intro": {
       "name": "panimula",
@@ -131,47 +135,47 @@
     },
     "logic": {
       "name": "lohika",
-      "description": "Pagsusuri ng ginamit na logic"
+      "description": "Isang paliwanag sa lohikang ginamit"
     },
     "settings": {
-      "name": "mgasetting",
-      "description": "Mga setting ng ugali ng Bot (Admin Lang)"
+      "name": "mga setting",
+      "description": "Mga setting ng pag-uugali ng bot (Admin Lamang)"
     },
     "categories": {
-      "name": "mgakategorya",
-      "description": "Pumili kung aling mga kategorya ang isasama (Admin Lang)"
+      "name": "mga kategorya",
+      "description": "Piliin kung aling mga kategorya ang isasama (Admin Lamang)"
     },
     "typo": {
-      "name": "pagkakamali",
-      "description": "I-ulat ang isang typo sa kasalukuyang listahan"
+      "name": "typo",
+      "description": "Mag-ulat ng typo sa kasalukuyang listahan"
     },
     "bug": {
       "name": "bug",
-      "description": "I-ulat ang isang bug sa bot"
+      "description": "Mag-ulat ng bug gamit ang bot"
     },
     "feature": {
       "name": "tampok",
-      "description": "Magrekomenda ng bagong feature para sa bot"
+      "description": "Magrekomenda ng bagong tampok para sa bot"
     },
     "suggest": {
-      "name": "mungkahi",
-      "description": "Magrekomenda ng isang bagong feature para sa bot"
+      "name": "magmungkahi",
+      "description": "Magmungkahi ng bagong tampok para sa bot"
+    },
+    "error": {
+      "name": "error",
+      "description": "Mag-ulat ng error gamit ang bot"
     },
     "search": {
-      "name": "maghanap",
-      "description": "Maghanap ng mga listahan na isasama sa queue"
+      "name": "paghahanap",
+      "description": "Maghanap ng mga listahan sa pila"
     },
     "lists": {
-      "name": "mgalistahan",
-      "description": "Makita ang mga naka-queue na listahan"
+      "name": "mga listahan",
+      "description": "Tingnan ang mga nakapila na listahan"
     },
     "stop": {
       "name": "itigil",
       "description": "Patayin ako"
-    },
-    "error": {
-      "name": "pagkakamali",
-      "description": "Mag-ulat ng error sa bot"
     },
     "ping": {
       "name": "ping",
@@ -179,7 +183,7 @@
     },
     "queue": {
       "name": "pila",
-      "description": "Saan na-stuck ang bot?"
+      "description": "Nasaan natigil ang bot?"
     },
     "help": {
       "name": "tulong",
@@ -187,89 +191,88 @@
     }
   },
   "sentences": {
-    "likeList": "Nagustuhan mo ba si {{list}}?",
-    "likesList": " 👍 Si {{name}} ay gusto ng <b>{{list}}</b> ({{score}})",
-    "dislikesList": " 👎 Si {{name}} ay hindi gusto ang <b>{{list}}</b> ({{score}})",
-    "queueList": "<b>Aling listahan ang nais mong ilagay sa pila?</b>",
-    "curateList": "<b>Aling listahan ang nais mong i-curate?</b>",
+    "likeList": "Nagustuhan mo ba ang <b>{{list}}</b>?",
+    "likesList": "👍 {{name}} mga gusto <b>{{list}}</b> ({{score}})",
+    "dislikesList": "👎 {{name}} mga hindi gusto <b>{{list}}</b> ({{score}})",
+    "queueList": "<b>Aling listahan ang gusto mong i-pila?</b>",
+    "curateList": "<b>Aling listahan ang gusto mong i-curate?</b>",
     "queueFull": "Ang pila ay mayroon nang maximum na 10 listahan, {{name}}.",
-    "noSearchResults": "Wala akong nahanap na katugmang mga listahan para sa <b>\"{{search}}\"</b>, {{name}}.\nAng mas simpleng mga query ay nagbibigay ng mas magagandang resulta.",
+    "noSearchResults": "Wala akong nakitang anumang katumbas na listahan para sa <b>\"{{search}}\"</b>, {{name}}.\nMas magagandang resulta ang ibinabalik ng mas simpleng mga query.",
     "emptySearch": "Wala kang hinanap, {{name}}. Idagdag ang iyong mensahe pagkatapos ng /search",
-    "upcomingLists": "<b>Paparating na mga listahan</b>",
-    "noUpcomingLists": "Walang nakapilang mga listahan, gamitin ang utos na /search [mensahe] para maghanap ng iba",
-    "skippedList": "<b>{{list}}</b> na-skip!",
-    "skipConfirm": "I-skip si <b>{{list}}</b> sa loob ng {{skipDelay}} segundo.\nMag-type ng /veto para kanselahin o magpa-type ng /skip ng iba para kumpirmahin.",
-    "skipDenial": "Maghanap ng iba na magkumpirma ng iyong kahilingan na i-skip!",
-    "skipVeto": "Skip na binawi ni {{name}}\nBawal ang skipping sa loob ng {{vetoDelay}} segundo",
-    "skipAbort": "Skip na binawi ni {{name}} sa pagbibigay ng tamang sagot\nBawal ang skipping sa loob ng {{vetoDelay}} segundo",
-    "skipNotFound": "Hindi ko mahanap ang kahilingan na i-skip, {{name}}",
-    "skipShortBan": "Ibina-ban si {{name}} mula sa pagskip sa loob ng {{delay}} segundo",
-    "skipBanThreat": "Kung mag-skip ka ulit sa loob ng {{delay}} segundo, {{name}}, ikaw ay iba-ban sa pagskip ng 1 oras",
-    "skipLongBan": "Ibina-ban si {{name}} mula sa pagskip ng 1 oras",
+    "upcomingLists": "<b>Mga paparating na listahan</b>",
+    "noUpcomingLists": "Walang nakapila na listahan, gamitin ang utos na /search [message] para makahanap ng ilang",
+    "skippedList": "<b>{{list}}</b> nilaktawan!",
+    "skipConfirm": "Nilalaktawan ang <b>{{list}}</b> sa loob ng {{skipDelay}} segundo.\nI-type ang /veto para kanselahin o ipa-type sa ibang tao ang /skip para kumpirmahin.",
+    "skipDenial": "Kumuha ng ibang tao para kumpirmahin ang iyong kahilingan sa paglaktaw!",
+    "skipVeto": "Binago ni {{name}} ang paglaktaw\nBawal ang paglaktaw sa loob ng {{vetoDelay}} segundo",
+    "skipAbort": "Binago ni {{name}} ang paglaktaw sa loob ng {{vetoDelay}} segundo",
+    "skipNotFound": "Wala akong makitang kahilingan sa paglaktaw, {{name}}",
+    "skipShortBan": "Pinagbawalan si {{name}} na muling lumaktaw sa loob ng {{delay}} segundo",
+    "skipBanThreat": "Kung lalaktawan mo ulit sa loob ng {{delay}} segundo, {{name}}, pagbabawalan ka nang lumaktaw sa loob ng 1 oras",
+    "skipLongBan": "Pinagbawalan si {{name}} na lumaktaw sa loob ng 1 oras",
     "addedList": "Idinagdag ang \"{{list}}\"",
-    "addedListToQueue": "<b>{{list}}</b> idinagdag sa pila, {{name}}.\nMag-type ng /lists para makita ang pila",
-    "addOwnList": "Tandaan na maaari mong idagdag ang iyong sariling mga listahan sa https://belgocanadian.com/tenthings",
+    "addedListToQueue": "Idinagdag ang <b>{{list}}</b> sa pila, {{name}}.\nI-type ang /lists para makita ang pila",
+    "addOwnList": "Tandaan na maaari kang magdagdag ng sarili mong mga listahan sa https://belgocanadian.com/tenthings",
     "banListQuestion": "I-ban ang listahan?",
-    "banListCommand": "I-ban ang listahan!",
-    "confirmBan": "Kumpirmahin mo ba ang pagbaban ng listahan \"{{list}}\"?",
-    "alreadyBannedList": "\"{{list}}\" ay mayroon nang ban!",
-    "listBanned": "Binalaan na ang \"{{list}}\"!",
-    "banNotFound": "Hindi ko mahanap ang kahilingan ng ban, {{name}}",
-    "inactivity": "Natutulog ako, mag-type ng /list o /start para gisingin ako.\nNatutulog ako pagkatapos ng 30 araw ng inactivity.",
-    "introduction": "Hi {{name}},\nAng Ten Things, yours truly, ay isang laro na magbibigay sa iyo ng isang paksa at pagkatapos ay sasagutin mo ang anumang pumapasok sa iyong isip sa nasabing kategorya.\nMag-type ng /commands para makita ang lahat ng bagay na maaari mong itanong sa akin\nKung nais mong idagdag ang iyong sariling mga listahan, mangyaring pumunta sa https://belgocanadian.com/tenthings\nMag-enjoy!",
-    "suggestionNoted": "Suggestion naaayon",
+    "banListCommand": "Listahan ng mga Ban!",
+    "confirmBan": "Kinumpirma mo ba ang listahan ng mga ban na \"{{list}}\"?",
+    "corroborateBan": "May sumasang-ayon ba kay {{user}} sa listahan ng mga ban na \"{{list}}\"?",
+    "alreadyBannedList": "Na-ban na ang \"{{list}}\"!",
+    "listBanned": "Na-ban na ang \"{{list}}\"!",
+    "banNotFound": "Hindi ako makahanap ng kahilingan sa pagbabawal, {{name}}",
+    "inactivity": "Natutulog ako, i-type ang /list o /start para gisingin ako.\nNatutulog ako pagkatapos ng 30 araw na hindi aktibo.",
+    "introduction": "Kumusta {{name}},\nAng Ten Things, tunay na ikaw, ay isang laro na magbibigay sa iyo ng isang paksa at pagkatapos ay sasagutin mo ang anumang maiisip mo sa kategoryang iyon.\nI-type ang /commands para makita ang lahat ng bagay na maaari mong itanong sa akin\nKung gusto mong magdagdag ng sarili mong mga listahan, pumunta sa https://belgocanadian.com/tenthings\nMagsaya ka!",
+    "suggestionNoted": "Nabanggit ang mungkahi",
     "findTheConnection": "Hanapin ang koneksyon",
-    "minigameAnswered": "Minigame sagot natantiya!",
+    "minigameAnswered": "Nahulaan ang sagot sa minigame!",
     "findTheTitle": "Hanapin ang pamagat ng listahan",
-    "tinygameAnswered": "Tinygame sagot natantiya!",
-    "roundOver": "Tapos na ang putukan",
+    "tinygameAnswered": "Nahulaan ang sagot sa tinygame!",
+    "roundOver": "Pag-ikot",
     "newRound": "Bagong round!",
-    "allListsPlayed": "Lahat ng listahan ay na-play na, magsisimula na ang bagong ikot.",
+    "allListsPlayed": "Nalaro na ang lahat ng listahan, magsisimula na ngayon ang isang bagong cycle.",
     "createdBy": "ni {{creator}}",
-    "requestedBy": "Inirequest ni {{requestor}}",
-    "guessedBy": "{{guesser}} nakakuha ng {{answer}}",
-    "notGuessed": "Hindi natantiya",
-    "dailyScores": "<b>Araw-araw na mga Scores</b>",
-    "topDailyScores": "<b>Top Araw-araw na mga Scores</b>",
-    "dailyScoresWithLimit": "<b>Top {{limit}} Araw-araw na mga Scores</b>",
-    "skipDelay": "Oras hanggang sa malaktawan ang isang listahan\n#___#\nOras hanggang ang isang bagong paglaktaw ay pinapayagan pagkatapos ma-veto\n#___#\nOras hanggang pinapayagan ang isang bagong pahiwatig\n#___#\n{{name}}, maba-ban ka sa Ten Things kung aabuso mo ito muli\n#___#\n{{name}}, pinagbawalan ka sa Ten Things. Huwag mag-atubiling magpetisyon ng unban sa @FlandersBurger",
-    "corroborateBan": "May sumasang-ayon ba sa {{user}} sa pagbabawal sa listahang \"{{list}}\"?\n#___#\nOras hanggang ang isang bagong paglaktaw ay pinapayagan pagkatapos ma-veto\n#___#\nOras hanggang pinapayagan ang isang bagong pahiwatig\n#___#\n{{name}}, ikaw ay pagbabawalan mula sa Sampung Bagay kung muli mo itong aabuso\n#___#\n{{name}}, pinagbawalan ka sa Ten Things. Huwag mag-atubiling magpetisyon ng unban sa @FlandersBurger"
+    "requestedBy": "Hiniling ni {{requestor}}",
+    "guessedBy": "Nakuha ni {{guesser}} {{answer}}",
+    "notGuessed": "Hindi nahulaan",
+    "dailyScores": "<b>Pang-araw-araw na Iskor</b>",
+    "topDailyScores": "<b>Nangungunang Pang-araw-araw na Iskor</b>",
+    "dailyScoresWithLimit": "<b>Nangungunang Pang-araw-araw na Iskor {{limit}}</b>",
+    "skipDelay": "Oras hanggang sa laktawan ang isang listahan",
+    "vetoDelay": "Oras hanggang sa payagan ang isang bagong laktawan pagkatapos ma-veto",
+    "hintDelay": "Oras hanggang sa payagan ang isang bagong pahiwatig"
   },
   "warnings": {
-    "minimum1Category": "Kinakailangan ng hindi kukulangin sa 1 kategorya",
-    "adminFunction": "Pasensya na {{name}}, ito ay isang chat admin na function",
-    "fullQueue": "Ang pila ay puno na at umabot na sa maximum na 10 listahan, {{name}}",
-    "alreadyInQueue": "Ang <b>{{list}}</b> ay nasa pila na, {{name}}",
-    "unfoundList": "Ang listahang ito ay hindi na umiiral",
-    "corroborateBanBySamePlayer": "Kumuha ng ibang tao upang kumpirmahin ang ban, {{name}}!",
-    "noSuggestion": "Wala kang iminungkahing anuman, {{name}}",
-    "abuse": "{{name}}, maba-ban ka sa Ten Things kung aabuso mo muli ang bot",
+    "minimum1Category": "Kinakailangan ang minimum na 1 kategorya",
+    "adminFunction": "Paumanhin {{name}}, ito ay isang function ng chat admin",
+    "abuse": "{{name}}, ikaw ay ipagbabawal mula sa Sampung Bagay kung aabusuhin mo itong muli",
+    "banned": "{{name}}, ikaw ay ipagbabawal mula sa Sampung Bagay hanggang sa katapusan ng araw. Huwag mag-atubiling magpetisyon para sa pag-unban sa @FlandersBurger",
+    "fullQueue": "Ang pila ay mayroon nang maximum na 10 listahan, {{name}}",
+    "alreadyInQueue": "<b>{{list}}</b> ay nasa pila na, {{name}}",
+    "unfoundList": "Wala na ang listahang ito",
+    "corroborateBanBySamePlayer": "Humingi ng ibang tao para kumpirmahin ang pagbabawal, {{name}}!",
+    "noSuggestion": "Wala kang iminungkahi, {{name}}",
     "alreadyRequested": "{{name}}, hiniling mo na ang listahang ito ngayon"
   },
   "stats": {
-    "stats": "Estadistika",
-    "list": "Estadistika ng Listahan",
-    "player": "Estadistika ng Player",
-    "global": "Estadistika ng Buong Mundo",
-    "game": "Estadistika ng Laro",
-    "misc": "Estadistika para kay <b>{{something}}</b>"
+    "stats": "Mga Istatistika",
+    "list": "Mga istatistika ng listahan",
+    "player": "Mga istatistika ng manlalaro",
+    "global": "Mga pandaigdigang istatistika",
+    "game": "Mga istatistika ng laro",
+    "misc": "Mga istatistika para kay <b>{{something}}</b>"
   },
   "rules": [
-    "Kung ang sagot ay 100% na tama, ito agad na ibibigay sa nagsagot",
-    "Kung ang sagot ay higit sa 75% na tama, ito ay ibibigay pagkatapos ng (2 * bahagyang koreksyon) segundo kung walang mas magandang sagot na ibinigay",
-    "Ang mga non-alphanumeric na mga sagisag at kaso ng mga titik ay ina-ignored kapag ini-determine ang koreksyon",
-    "Mga puntos na nakuha = (Mga Max na Hint {{maxHints}} - mga hint na hinihingi + # ng kasalukuyang mga manlalaro) / (Mga Max na Hint {{maxHints}} + # ng kasalukuyang mga manlalaro) * porsyento ng kahusayan ng sagot * 10",
-    "Ang mga hint ay inilalabas sa ganitong ayos: unang mga titik, huling mga titik, mga patinig, at ang iba pa. Ang iba ay ilalabas mula sa pinakamababa hanggang sa pinakamataas na bilang ng titik",
-    "Mayroong cooldown na 10 segundo sa pagitan ng pagtatanong ng mga hint",
-    "Ang isang listahan ay maaaring i-skip kung 2 players ang i-skip ito",
-    "Kung i-skip ng iisang player ang isang listahan, may cooldown na 10 segundo bago ito i-skip",
-    "Ang i-skip ay maaaring kanselahin ng sinuman sa pamamagitan ng pag-type ng /veto o tamang sagot",
-    "Kung binawi ang isang i-skip, ang mga bagong i-skip ay hindi papansinin sa loob ng 15 segundo",
-    "Bawat araw sa hatinggabi (universal time), ang mga araw-araw na scores ay mareset at ang isang nanalo ay maitatala",
-    "Ang mga nag-s-spam ay hindi papansinin hanggang sa maging tahimik sila ng hindi kukulangin sa 10 segundo"
-  ],
-  "skipDelay": "Laktawan ang pagkaantala\n#___#\nPagkaantala ng veto\n#___#\nPahiwatig na pagkaantala",
-  "vetoDelay": "Pagkaantala ng veto\n#___#\nPahiwatig na pagkaantala\n#___#\nOras hanggang sa malaktawan ang isang listahan\n#___#\nOras hanggang ang isang bagong paglaktaw ay pinapayagan pagkatapos ma-veto\n#___#\nOras hanggang pinapayagan ang isang bagong pahiwatig",
-  "triviaLangauges": "Mga trivia na wika\n#___#\nPahiwatig na pagkaantala\n#___#\nOras hanggang sa malaktawan ang isang listahan\n#___#\nOras hanggang ang isang bagong paglaktaw ay pinapayagan pagkatapos ma-veto\n#___#\nOras hanggang pinapayagan ang isang bagong pahiwatig",
-  "hintDelay": "Pahiwatig na pagkaantala\n#___#\nOras hanggang sa malaktawan ang isang listahan\n#___#\nOras hanggang ang isang bagong paglaktaw ay pinapayagan pagkatapos ma-veto\n#___#\nOras hanggang pinapayagan ang isang bagong pahiwatig\n#___#\n{{name}}, maba-ban ka sa Ten Things kung aabuso mo ito muli\n#___#\n{{name}}, pinagbawalan ka sa Ten Things. Huwag mag-atubiling magpetisyon ng unban sa @FlandersBurger"
+    "Kung ang isang sagot ay 100% tama, agad itong ibibigay sa manghuhula",
+    "Kung ang isang sagot ay higit sa 75% tama, ibibigay ito pagkatapos ng (2 * porsyento ng kawastuhan) segundo kung walang ibinigay na mas mahusay na sagot",
+    "Ang mga simbolo na hindi alphanumeric at mga letrang liit ay hindi pinapansin kapag tinutukoy ang kawastuhan",
+    "Mga puntos na nakuha = (Max na mga pahiwatig {{maxHints}} - mga pahiwatig na tinanong + # ng mga kasalukuyang manlalaro) / (Max na mga pahiwatig {{maxHints}} + # ng mga kasalukuyang manlalaro) * katumpakan ng sagot % * 10",
+    "Ang mga pahiwatig ay ipinapakita dito pagkakasunod-sunod: mga unang letra, mga huling letra, mga patinig, at ang iba pa. Ang iba pa ay ipapakita mula sa pinakamadalas na letra hanggang sa pinakamadalas na letra",
+    "Mayroong 10 segundong cooldown sa pagitan ng pagtatanong ng mga pahiwatig",
+    "Maaaring laktawan ang isang listahan kung 2 manlalaro ang /laktawan ito",
+    "Kung 1 manlalaro lamang ang laktawan ang isang listahan, magkakaroon ng 10 segundong cooldown hanggang sa laktawan ang listahan.",
+    "Maaaring kanselahin ng sinuman ang isang paglaktaw sa pamamagitan ng pag-type ng /veto o isang tamang sagot",
+    "Kung ang isang paglaktaw ay ma-veto, ang mga bagong paglaktaw ay hindi papansinin sa loob ng 15 segundo",
+    "Araw-araw sa hatinggabi (universal time) ang pang-araw-araw na mga marka ay irereset at ang isang panalo ay itatala",
+    "Ang mga spammer ay hindi papansinin hanggang sa sila ay manahimik nang hindi bababa sa 10 segundo"
+  ]
 }

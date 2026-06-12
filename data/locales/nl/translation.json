@@ -1,52 +1,56 @@
 {
   "settings": "Instellingen",
-  "playerIntro": "Spelersintro",
-  "sass": "Ondeugendheid",
+  "playerIntro": "Spelerintroductie",
+  "sass": "Sass",
   "dailyUpdates": "Dagelijkse updates",
   "language_one": "Taal",
   "language_other": "Talen",
   "botLanguage": "Bottaal",
-  "plays": "Spelletjes",
+  "triviaLangauges": "Trivia-talen",
+  "plays": "Spelen",
   "votes": "Stemmen",
-  "snubs": "Afkeuringen",
+  "snubs": "Snubs",
   "hints": "Hints",
-  "skips": "Skips",
+  "skips": "Overslaan",
+  "skipDelay": "Vertraging overslaan",
+  "vetoDelay": "Veto-vertraging",
+  "hintDelay": "Vertraging hint",
   "values": "Waarden",
   "score": "Score",
-  "difficulty": "Moeilijkheid",
-  "createdOn": "Gemaakt op",
-  "modifiedOn": "Aangepast op",
+  "difficulty": "Moeilijkheidsgraad",
+  "createdOn": "Aangemaakt op",
+  "modifiedOn": "Gewijzigd op",
   "on": "AAN",
   "off": "UIT",
   "and": "en",
-  "description": "Omschrijving",
+  "description": "Beschrijving",
   "point_one": "{{count}} punt",
   "point_other": "{{count}} punten",
   "category_one": "Categorie",
   "category_other": "Categorieën",
   "categories": {
-    "Adult": "Volwassen",
+    "Adult": "Volwassenen",
     "Albums": "Albums",
     "Animation": "Animatie",
     "Anime/Manga": "Anime/Manga",
     "Art": "Kunst",
     "Biology": "Biologie",
-    "Business": "Zaken",
+    "Business": "Zakelijk",
     "Celebrities": "Beroemdheden",
-    "Chemistry": "Chemie",
+    "Chemistry": "Scheikunde",
     "Culture": "Cultuur",
-    "Entertainment": "Amusement",
-    "Food and Drink": "Eten en Drinken",
+    "Entertainment": "Entertainment",
+    "Food and Drink": "Eten en drinken",
     "Funny": "Grappig",
-    "Gaming": "Gamen",
-    "Geography": "Geografie",
+    "Gaming": "Gaming",
+    "Geography": "Aardrijkskunde",
     "History": "Geschiedenis",
     "Internet": "Internet",
     "K-drama": "K-drama",
     "K-pop": "K-pop",
     "Language": "Taal",
     "Literature": "Literatuur",
-    "Lyrics": "Liedteksten",
+    "Lyrics": "Tekst",
     "Mathematics": "Wiskunde",
     "Medicine": "Geneeskunde",
     "Misc": "Diversen",
@@ -57,68 +61,68 @@
     "Politics": "Politiek",
     "Religion": "Religie",
     "Science": "Wetenschap",
-    "Society": "Samenleving",
-    "Sports": "Sporten",
+    "Society": "Maatschappij",
+    "Sports": "Sport",
     "Technology": "Technologie",
-    "Telenovelas": "Telenovelas",
+    "Telenovelas": "Telenovela's",
     "Television": "Televisie",
-    "Transportation": "Transport"
+    "Transportation": "Vervoer"
   },
   "commands": {
     "start": {
-      "name": "start",
+      "name": "Start",
       "description": "Start het spel"
     },
     "commands": {
-      "name": "commandos",
+      "name": "Commando's",
       "description": "Lijst met commando's"
     },
     "list": {
-      "name": "lijst",
-      "description": "Toon de geraden antwoorden in de huidige ronde"
+      "name": "Lijst",
+      "description": "Lijst met de geraden antwoorden in de huidige ronde"
     },
     "hint": {
-      "name": "hint",
+      "name": "Hint",
       "description": "Krijg een hint"
     },
     "skip": {
-      "name": "skip",
-      "description": "Sla de huidige ronde over"
+      "name": "Overslaan",
+      "description": "Sla de huidige ronde over ronde"
     },
     "veto": {
       "name": "veto",
-      "description": "Annuleer een skipverzoek"
+      "description": "Veto tegen overslaan"
     },
     "minigame": {
       "name": "minigame",
-      "description": "Omgekeerde trivia-vraag"
+      "description": "Omgekeerde quizvraag"
     },
     "minihint": {
       "name": "minihint",
-      "description": "Krijg een hint voor minigame"
+      "description": "Krijg een hint voor de minigame"
     },
     "miniskip": {
       "name": "miniskip",
       "description": "Sla de huidige minigame over"
     },
     "tinygame": {
-      "name": "tinygame",
+      "name": "kleine game",
       "description": "Raad de lijst"
     },
     "tinyhint": {
-      "name": "tinyhint",
-      "description": "Krijg een hint voor tinygame"
+      "name": "kleine hint",
+      "description": "Krijg een hint voor de kleine game"
     },
     "tinyskip": {
-      "name": "tinyskip",
-      "description": "Sla de huidige tinygame over"
+      "name": "kleine skip",
+      "description": "Sla de huidige kleine game over"
     },
     "score": {
       "name": "score",
-      "description": "Dagelijkse scorestand"
+      "description": "Dagelijkse score"
     },
     "stats": {
-      "name": "stats",
+      "name": "statistieken",
       "description": "Statistieken over het spel"
     },
     "me": {
@@ -127,58 +131,58 @@
     },
     "intro": {
       "name": "intro",
-      "description": "Wat ben ik?"
+      "description": "Wie ben ik?"
     },
     "logic": {
       "name": "logica",
       "description": "Een uitleg van de gebruikte logica"
     },
     "settings": {
-      "name": "instellingen",
-      "description": "Botinstellingen (Alleen voor beheerders)"
+      "name": "Instellingen",
+      "description": "Gedragsinstellingen van de bot (alleen beheerders)"
     },
     "categories": {
-      "name": "categorieen",
-      "description": "Selecteer welke categorieën moeten worden opgenomen (Alleen voor beheerders)"
+      "name": "Categorieën",
+      "description": "Selecteer welke categorieën moeten worden opgenomen (alleen beheerders)"
     },
     "typo": {
-      "name": "typo",
-      "description": "Meld een typefout in de huidige lijst"
+      "name": "Typfout",
+      "description": "Meld een typfout in de huidige lijst"
     },
     "bug": {
-      "name": "bug",
-      "description": "Meld een bug bij de bot"
+      "name": "Bug",
+      "description": "Meld een bug in de bot"
     },
     "feature": {
-      "name": "functie",
-      "description": "Dien een nieuwe functie in voor de bot"
+      "name": "Functie",
+      "description": "Stel een nieuwe functie voor de bot voor"
     },
     "suggest": {
-      "name": "suggestie",
-      "description": "Voer een suggestie in voor de bot"
-    },
-    "search": {
-      "name": "zoek",
-      "description": "Doorzoek lijsten om in de wachtrij te zetten"
-    },
-    "lists": {
-      "name": "lijsten",
-      "description": "Bekijk de lijsten in de wachtrij"
-    },
-    "stop": {
-      "name": "stop",
-      "description": "Zet me uit"
+      "name": "Suggestie",
+      "description": "Stel een nieuwe functie voor de bot voor"
     },
     "error": {
-      "name": "error",
-      "description": "Meld een fout met de bot"
+      "name": "Fout",
+      "description": "Meld een fout in de bot"
+    },
+    "search": {
+      "name": "Zoeken",
+      "description": "Zoeklijsten om in de wachtrij te plaatsen"
+    },
+    "lists": {
+      "name": "Lijsten",
+      "description": "Bekijk lijsten in de wachtrij"
+    },
+    "stop": {
+      "name": "Stoppen",
+      "description": "Schakel mij over uit"
     },
     "ping": {
       "name": "ping",
       "description": "pong"
     },
     "queue": {
-      "name": "queue",
+      "name": "wachtrij",
       "description": "Waar zit de bot vast?"
     },
     "help": {
@@ -187,92 +191,88 @@
     }
   },
   "sentences": {
-    "likeList": "Vind je <b>{{list}}</b> leuk?",
-    "likesList": " 👍 {{name}} vindt <b>{{list}}</b> leuk ({{score}})",
-    "dislikesList": " 👎 {{name}} vindt <b>{{list}}</b> niet leuk ({{score}})",
+    "likeList": "Vond je <b>{{list}}</b> leuk?",
+    "likesList": "👍 {{name}} vindt <b>{{list}}</b> leuk ({{score}})",
+    "dislikesList": "👎 {{name}} vindt <b>{{list}}</b> niet leuk ({{score}})",
     "queueList": "<b>Welke lijst wil je in de wachtrij plaatsen?</b>",
-    "curateList": "<b>Welke lijst wil je cureren?</b>",
-    "queueFull": "De wachtrij heeft al het maximum van 10 lijsten, {{name}}.",
-    "noSearchResults": "Ik heb geen overeenkomende lijsten gevonden voor <b>\"{{search}}\"</b>, {{name}}.\nEenvoudigere zoekopdrachten leveren betere resultaten op.",
+    "curateList": "<b>Welke lijst wil je beheren?</b>",
+    "queueFull": "De wachtrij bevat al het maximum van 10 lijsten, {{name}}.",
+    "noSearchResults": "Ik heb geen overeenkomende lijsten gevonden voor <b>\\\"{{search}}\\\"</b>, {{name}}.\n\nEenvoudigere zoekopdrachten leveren betere resultaten op.",
     "emptySearch": "Je hebt niets gezocht, {{name}}. Voeg je bericht toe na /search",
-    "upcomingLists": "<b>Lijsten in de wachtrij</b>",
-    "noUpcomingLists": "Er staan geen lijsten in de wachtrij, gebruik de /search [boodschap] opdracht om er een paar te vinden",
+    "upcomingLists": "<b>Aankomende lijsten</b>",
+    "noUpcomingLists": "Er staan geen lijsten in de wachtrij. Gebruik de opdracht /search [bericht] om er een paar te vinden.",
     "skippedList": "<b>{{list}}</b> overgeslagen!",
-    "skipConfirm": "List <b>{{list}}</b> wordt overgeslagen in {{skipDelay}} seconden.\nTyp /veto om te annuleren of laat iemand anders /skip typen om te bevestigen.",
-    "skipDenial": "Laat iemand anders je skipverzoek bevestigen!",
-    "skipVeto": "Skip tegengehouden door {{name}}\nGeen overslaan toegestaan voor {{vetoDelay}} seconden",
-    "skipAbort": "Skip tegengehouden door {{name}} die een correct antwoord geeft\nGeen overslaan toegestaan voor {{vetoDelay}} seconden",
-    "skipNotFound": "Ik kan geen skipverzoek vinden, {{name}}",
-    "skipShortBan": "{{name}} is voor {{delay}} seconden verbannen om opnieuw te skippen",
-    "skipBanThreat": "Als je binnen {{delay}} seconden opnieuw overslaat, {{name}}, wordt je verbannen van overslaan voor 1 uur",
-    "skipLongBan": "{{name}} is voor 1 uur verbannen om te skippen",
+    "skipConfirm": "<b>{{list}}</b> wordt overgeslagen over {{skipDelay}} seconden.\n\nTyp /veto om te annuleren of laat iemand anders /skip typen om te bevestigen.",
+    "skipDenial": "Laat iemand anders je verzoek om over te slaan bevestigen!",
+    "skipVeto": "Overslaan geblokkeerd door {{name}}\nOverslaan is niet toegestaan gedurende {{vetoDelay}} seconden",
+    "skipAbort": "Overslaan geblokkeerd door {{name}} die een correct antwoord gaf\nOverslaan is niet toegestaan gedurende {{vetoDelay}} seconden",
+    "skipNotFound": "Ik kan geen overslaanverzoek vinden, {{name}}",
+    "skipShortBan": "{{name}} mag niet meer overslaan gedurende {{delay}} seconden",
+    "skipBanThreat": "Als je binnen {{delay}} seconden opnieuw overslaat, {{name}}, word je 1 uur lang geblokkeerd voor overslaan",
+    "skipLongBan": "{{name}} mag niet meer overslaan gedurende 1 uur",
     "addedList": "\"{{list}}\" toegevoegd",
-    "addedListToQueue": "<b>{{list}}</b> toegevoegd aan de wachtrij, {{name}}.\nTyp /lists om de wachtrij te bekijken",
-    "addOwnList": "Let op dat je je eigen lijsten kunt toevoegen op https://belgocanadian.com/tenthings",
-    "banListQuestion": "Lijst verbannen?",
-    "banListCommand": "Lijst verbannen!",
-    "confirmBan": "Bevestig je het verbannen van lijst \"{{list}}\"?",
+    "addedListToQueue": "<b>{{list}}</b> toegevoegd aan de wachtrij, {{name}}.\n\nTyp /lists om de wachtrij te bekijken",
+    "addOwnList": "Je kunt je eigen lijsten toevoegen op https://belgocanadian.com/tenthings",
+    "banListQuestion": "Blokkeerlijst?",
+    "banListCommand": "Banlijst!",
+    "confirmBan": "Bevestig je de banlijst \"{{list}}\"?",
+    "corroborateBan": "Is iemand het eens met {{user}} over de banlijst \"{{list}}\"?",
     "alreadyBannedList": "\"{{list}}\" is al verbannen!",
-    "listBanned": "\"{{list}}\" verbannen!",
-    "banNotFound": "Ik kan geen verbodsverzoek vinden, {{name}}",
-    "inactivity": "Ik slaap, typ /list of /start om me wakker te maken.\nIk ga slapen na 30 dagen inactiviteit.",
-    "introduction": "Hoi {{name}},\nTen Things, de jouwe echt, is een spel waarbij je een onderwerp krijgt en dan antwoord geeft op alles wat in die categorie naar boven komt.\nTyp /commando's om alle dingen te zien die je me kunt vragen\nAls je je eigen lijsten wilt toevoegen, ga dan naar https://belgocanadian.com/tenthings\nVeel plezier!",
+    "listBanned": "\"{{list}}\" is verbannen!",
+    "banNotFound": "Ik kan geen banverzoek vinden, {{name}}",
+    "inactivity": "Ik slaap, typ /list of /start om me wakker te maken.\n\nIk ga slapen na 30 dagen inactiviteit.",
+    "introduction": "Hallo {{name}},\nTen Things, ondergetekende, is een spel waarbij je een onderwerp krijgt en vervolgens antwoordt op alles wat in je opkomt binnen die categorie.\n\nTyp /commands om alle vragen te zien die je me kunt stellen.\nAls je je eigen lijsten wilt toevoegen, ga dan naar https://belgocanadian.com/tenthings\nVeel plezier!",
     "suggestionNoted": "Suggestie genoteerd",
     "findTheConnection": "Vind de connectie",
-    "minigameAnswered": "Minigame antwoord geraden!",
+    "minigameAnswered": "Antwoord minigame geraden!",
     "findTheTitle": "Vind de lijsttitel",
-    "tinygameAnswered": "Tinygame antwoord geraden!",
+    "tinygameAnswered": "Antwoord minigame geraden!",
     "roundOver": "Ronde voorbij",
-    "allListsPlayed": "Alle lijsten zijn gespeeld, een nieuwe cyclus begint nu.",
     "newRound": "Nieuwe ronde!",
+    "allListsPlayed": "Alle lijsten zijn gespeeld, een nieuwe cyclus begint nu.",
     "createdBy": "door {{creator}}",
     "requestedBy": "Aangevraagd door {{requestor}}",
-    "guessedBy": "{{guesser}} heeft {{answer}} geraden",
+    "guessedBy": "{{guesser}} kreeg {{answer}}",
     "notGuessed": "Niet geraden",
-    "dailyScores": "<b>Dagelijkse Scores</b>",
-    "topDailyScores": "<b>Top Dagelijkse Scores</b>",
-    "dailyScoresWithLimit": "<b>Top {{limit}} Dagelijkse Scores</b>",
-    "skipDelay": "Tijd totdat een lijst wordt overgeslagen",
-    "vetoDelay": "Tijd totdat een nieuwe overslaan is toegestaan na veto",
-    "hintDelay": "Tijd totdat een nieuwe hint is toegestaan",
-    "corroborateBan": "Is iemand het eens met {{user}} wat betreft de banlijst \"{{list}}\"?"
+    "dailyScores": "<b>Dagelijkse scores</b>",
+    "topDailyScores": "<b>Hoogste dagelijkse scores</b>",
+    "dailyScoresWithLimit": "<b>Hoogste {{limit}} dagelijkse scores</b>",
+    "skipDelay": "Tijd tot een lijst wordt overgeslagen",
+    "vetoDelay": "Tijd tot een nieuwe overslaan is toegestaan na een veto",
+    "hintDelay": "Tijd tot een nieuwe hint is toegestaan"
   },
   "warnings": {
     "minimum1Category": "Minimaal 1 categorie is vereist",
-    "adminFunction": "Sorry {{name}}, dit is een chatbeheerdersfunctie",
-    "fullQueue": "De wachtrij heeft al het maximum van 10 lijsten, {{name}}",
+    "adminFunction": "Sorry {{name}}, dit is een chatbeheerderfunctie",
+    "abuse": "{{name}}, je wordt van Ten Things verbannen als je dit nogmaals misbruikt",
+    "banned": "{{name}}, Je bent tot het einde van de dag verbannen van Ten Things. Je kunt gerust een verzoek tot opheffing van de ban indienen bij @FlandersBurger",
+    "fullQueue": "De wachtrij bevat al het maximum van 10 lijsten, {{name}}",
     "alreadyInQueue": "<b>{{list}}</b> staat al in de wachtrij, {{name}}",
     "unfoundList": "Deze lijst bestaat niet meer",
-    "corroborateBanBySamePlayer": "Laat iemand anders het verbod bevestigen, {{name}}!",
-    "noSuggestion": "Je hebt niets gesuggereerd, {{name}}",
-    "abuse": "{{name}}, je wordt verbannen van Ten Things als je dit nogmaals misbruikt",
-    "banned": "{{name}}, je bent verbannen van Ten Things. Je kunt een petitie indienen aan @FlandersBurger",
+    "corroborateBanBySamePlayer": "Laat iemand anders de ban bevestigen, {{name}}!",
+    "noSuggestion": "Je hebt niets voorgesteld, {{name}}",
     "alreadyRequested": "{{name}}, je hebt deze lijst vandaag al aangevraagd"
   },
   "stats": {
     "stats": "Statistieken",
     "list": "Lijststatistieken",
-    "player": "Spelerstatistieken",
-    "global": "Algemene statistieken",
+    "player": "Spelersstatistieken",
+    "global": "Wereldwijde statistieken",
     "game": "Spelstatistieken",
     "misc": "Statistieken voor <b>{{something}}</b>"
   },
   "rules": [
-    "Als een antwoord 100% correct is, wordt het onmiddellijk toegekend aan de gokker",
-    "Als een antwoord meer dan 75% correct is, wordt het toegekend na (2 * nauwkeurigheid %) seconden als er geen beter antwoord wordt gegeven",
-    "Niet-alfanumerieke tekens en hoofdletters worden genegeerd bij het bepalen van de nauwkeurigheid",
-    "Punten gescoord = (Max hints {{maxHints}} - gevraagde hints + # huidige spelers) / (Max hints {{maxHints}} + # huidige spelers) * nauwkeurigheid van het antwoord % * 10",
-    "Hints worden in deze volgorde onthuld: eerste letters, laatste letters, klinkers en de rest. De rest wordt onthuld van minst frequente naar meest frequente letter",
-    "Er is een afkoelperiode van 10 seconden tussen het vragen van hints",
-    "Een lijst kan worden overgeslagen als 2 spelers /skip typen",
-    "Als slechts 1 speler een lijst overslaat, is er een afkoelperiode van 10 seconden totdat de lijst wordt overgeslagen",
-    "Een skip kan door iedereen worden geannuleerd door /veto of een correct antwoord te typen",
-    "Als een skip wordt afgewezen, worden nieuwe skips genegeerd gedurende 15 seconden",
-    "Elke dag om middernacht (universele tijd) worden de dagelijkse scores gereset en een winnaar geannonceerd",
-    "Spammers worden genegeerd totdat ze ten minste 10 seconden stil zijn"
-  ],
-  "skipDelay": "Skipvertraging",
-  "vetoDelay": "Vetovertraging",
-  "hintDelay": "Hintvertraging",
-  "triviaLangauges": "Trivia-talen"
+    "Als een antwoord 100% correct is, wordt het direct aan de gokker toegekend",
+    "Als een antwoord meer dan 75% correct is, wordt het na (2 * correctheidspercentage) seconden toegekend als er geen beter antwoord wordt gegeven",
+    "Niet-alfanumerieke tekens en hoofdletters/kleine letters worden genegeerd bij het bepalen van de correctheid",
+    "Gescoorde punten = (Max. aantal hints {{maxHints}} - gevraagde hints + aantal huidige spelers) / (Max. aantal hints {{maxHints}} + aantal huidige spelers) spelers) * antwoordnauwkeurigheid % * 10",
+    "Hints worden in deze volgorde onthuld: eerste letters, laatste letters, klinkers en de rest. De rest wordt onthuld van minst frequent naar meest frequente letter.",
+    "Er is een afkoelperiode van 10 seconden tussen het vragen van hints.",
+    "Een lijst kan worden overgeslagen als 2 spelers /skip deze over",
+    "Als slechts 1 speler een lijst overslaat, is er een afkoelperiode van 10 seconden totdat de lijst wordt overgeslagen.",
+    "Een skip kan door iedereen worden geannuleerd door /veto te typen of een correct antwoord te geven.",
+    "Als een skip wordt geblokkeerd, worden nieuwe skips gedurende 15 seconden genegeerd.",
+    "Elke dag om middernacht (universele tijd) worden de dagelijkse scores gereset en wordt een winnaar geregistreerd.",
+    "Spammers worden genegeerd totdat ze minstens 10 seconden stil zijn."
+  ]
 }
