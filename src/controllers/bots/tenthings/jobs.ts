@@ -15,7 +15,6 @@ import { IPlayer } from "@models/tenthings/player";
 import { IStats } from "@models/tenthings/stats";
 import { IList } from "@models/tenthings/list";
 import { updateMinigames } from "./minigame";
-const backup = require("@root/scripts/backup-db");
 import { Game, Player, Stats, List } from "@models/index";
 
 // ██████  ███████ ███████ ███████ ████████     ██████   █████  ██ ██      ██    ██     ███████  ██████  ██████  ██████  ███████
@@ -88,17 +87,6 @@ const resetDailyScore = () => {
   } else {
     bot.notifyAdmin(`Schedule incorrectly triggered: ${moment().format("DD-MMM-YYYY hh:mm")}`);
   }
-};
-
-const backupDatabase = () => {
-  backup().then(
-    () => {
-      bot.notifyAdmin(`Database backed up successfuly`);
-    },
-    (err: Error) => {
-      bot.notifyAdmin(`Database Backup Failed\n${err}`);
-    },
-  );
 };
 
 /*
@@ -460,6 +448,6 @@ if (process.env.NODE_ENV === "production") {
   // jobs.push(schedule.scheduleJob('0 30 12 * * *', sendUpdatedLists))
 }
 
-jobs.push(schedule.scheduleJob("Backup Database", "0 0 21 * * *", backupDatabase));
+// jobs.push(schedule.scheduleJob("Backup Database", "0 0 21 * * *", backupDatabase));
 
 export default jobs;
