@@ -69,44 +69,131 @@
     "Transportation": "Transportation"
   },
   "commands": {
-    "start": { "name": "start", "description": "Start the game" },
-    "commands": { "name": "commands", "description": "List of commands" },
-    "help": { "name": "help", "description": "List of commands" },
-    "list": { "name": "list", "description": "List the guessed answers in the current round" },
-    "hint": { "name": "hint", "description": "Get a hint" },
-    "skip": { "name": "skip", "description": "Skip the current round" },
-    "veto": { "name": "veto", "description": "Veto the skip" },
-    "minigame": { "name": "minigame", "description": "Reverse trivia question" },
-    "minihint": { "name": "minihint", "description": "Get a hint for minigame" },
-    "miniskip": { "name": "miniskip", "description": "Skip the current minigame" },
-    "tinygame": { "name": "tinygame", "description": "Guess the list" },
-    "tinyhint": { "name": "tinyhint", "description": "Get a hint for tinygame" },
-    "tinyskip": { "name": "tinyskip", "description": "Skip the current tinygame" },
-    "score": { "name": "score", "description": "Daily score standing" },
-    "stats": { "name": "stats", "description": "Statistics on the game" },
-    "me": { "name": "me", "description": "My stats" },
-    "intro": { "name": "intro", "description": "What am I?" },
-    "logic": { "name": "logic", "description": "An explanation of the logic used" },
-    "settings": { "name": "settings", "description": "Bot behaviour settings (Admin Only)" },
+    "start": {
+      "name": "start",
+      "description": "Start the game"
+    },
+    "commands": {
+      "name": "commands",
+      "description": "List of commands"
+    },
+    "help": {
+      "name": "help",
+      "description": "List of commands"
+    },
+    "list": {
+      "name": "list",
+      "description": "List the guessed answers in the current round"
+    },
+    "hint": {
+      "name": "hint",
+      "description": "Get a hint"
+    },
+    "skip": {
+      "name": "skip",
+      "description": "Skip the current round"
+    },
+    "veto": {
+      "name": "veto",
+      "description": "Veto the skip"
+    },
+    "minigame": {
+      "name": "minigame",
+      "description": "Reverse trivia question"
+    },
+    "minihint": {
+      "name": "minihint",
+      "description": "Get a hint for minigame"
+    },
+    "miniskip": {
+      "name": "miniskip",
+      "description": "Skip the current minigame"
+    },
+    "tinygame": {
+      "name": "tinygame",
+      "description": "Guess the list"
+    },
+    "tinyhint": {
+      "name": "tinyhint",
+      "description": "Get a hint for tinygame"
+    },
+    "tinyskip": {
+      "name": "tinyskip",
+      "description": "Skip the current tinygame"
+    },
+    "score": {
+      "name": "score",
+      "description": "Daily score standing"
+    },
+    "stats": {
+      "name": "stats",
+      "description": "Statistics on the game"
+    },
+    "me": {
+      "name": "me",
+      "description": "My stats"
+    },
+    "intro": {
+      "name": "intro",
+      "description": "What am I?"
+    },
+    "logic": {
+      "name": "logic",
+      "description": "An explanation of the logic used"
+    },
+    "settings": {
+      "name": "settings",
+      "description": "Bot behaviour settings (Admin Only)"
+    },
     "categories": {
       "name": "categories",
       "description": "Select which categories to include (Admin Only)"
     },
-    "typo": { "name": "typo", "description": "Report a typo in the current list" },
-    "bug": { "name": "bug", "description": "Report a bug with the bot" },
-    "feature": { "name": "feature", "description": "Recommend a new feature for the bot" },
-    "suggest": { "name": "suggest", "description": "Suggest a new feature for the bot" },
-    "error": { "name": "error", "description": "Report an error with the bot" },
-    "search": { "name": "search", "description": "Search lists to queue" },
-    "lists": { "name": "lists", "description": "See queued lists" },
-    "stop": { "name": "stop", "description": "Switch me off" },
-    "ping": { "name": "ping", "description": "pong" },
-    "queue": { "name": "queue", "description": "Where's the bot stuck?" }
+    "typo": {
+      "name": "typo",
+      "description": "Report a typo in the current list"
+    },
+    "bug": {
+      "name": "bug",
+      "description": "Report a bug with the bot"
+    },
+    "feature": {
+      "name": "feature",
+      "description": "Recommend a new feature for the bot"
+    },
+    "suggest": {
+      "name": "suggest",
+      "description": "Suggest a new feature for the bot"
+    },
+    "error": {
+      "name": "error",
+      "description": "Report an error with the bot"
+    },
+    "search": {
+      "name": "search",
+      "description": "Search lists to queue"
+    },
+    "lists": {
+      "name": "lists",
+      "description": "See queued lists"
+    },
+    "stop": {
+      "name": "stop",
+      "description": "Switch me off"
+    },
+    "ping": {
+      "name": "ping",
+      "description": "pong"
+    },
+    "queue": {
+      "name": "queue",
+      "description": "Where's the bot stuck?"
+    }
   },
   "sentences": {
     "likeList": "Did you like <b>{{list}}</b>?",
-    "likesList": " \ud83d\udc4d {{name}} likes <b>{{list}}</b> ({{score}})",
-    "dislikesList": " \ud83d\udc4e {{name}} dislikes <b>{{list}}</b> ({{score}})",
+    "likesList": " 👍 {{name}} likes <b>{{list}}</b> ({{score}})",
+    "dislikesList": " 👎 {{name}} dislikes <b>{{list}}</b> ({{score}})",
     "queueList": "<b>Which list would you like to queue?</b>",
     "curateList": "<b>Which list would you like to curate?</b>",
     "queueFull": "The queue already has the maximum of 10 lists, {{name}}.",
@@ -141,7 +228,7 @@
     "findTheTitle": "Find the list title",
     "tinygameAnswered": "Tinygame answer guessed!",
     "roundOver": "Round over",
-    "newRound": "A new round will start in 2 seconds",
+    "newRound": "New round!",
     "allListsPlayed": "All lists have been played, a new cycle will now start.",
     "createdBy": "by {{creator}}",
     "requestedBy": "Requested by {{requestor}}",

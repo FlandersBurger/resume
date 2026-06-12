@@ -223,7 +223,7 @@
     "findTheTitle": "Encuentra el título de la lista",
     "tinygameAnswered": "¡Respuesta del minijuego adivinada!",
     "roundOver": "Finalizada la ronda",
-    "newRound": "En 2 segundos comenzará una nueva ronda",
+    "newRound": "¡Nueva ronda!",
     "allListsPlayed": "Se han jugado todas las listas, ahora comenzará un nuevo ciclo.",
     "createdBy": "por {{creator}}",
     "requestedBy": "Solicitado por {{requestor}}",

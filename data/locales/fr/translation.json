@@ -223,7 +223,7 @@
     "findTheTitle": "Trouvez le titre de la liste",
     "tinygameAnswered": "Réponse du petit-jeu devinée !",
     "roundOver": "Fin du tour",
-    "newRound": "Un nouveau tour va commencer dans 2 secondes",
+    "newRound": "Nouveau tour !",
     "allListsPlayed": "Toutes les listes ont été jouées, un nouveau cycle va maintenant commencer.",
     "createdBy": "par {{creator}}",
     "requestedBy": "Demandé par {{requestor}}",

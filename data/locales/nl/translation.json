@@ -224,7 +224,7 @@
     "tinygameAnswered": "Tinygame antwoord geraden!",
     "roundOver": "Ronde voorbij",
     "allListsPlayed": "Alle lijsten zijn gespeeld, een nieuwe cyclus begint nu.",
-    "newRound": "Een nieuwe ronde begint over 2 seconden",
+    "newRound": "Nieuwe ronde!",
     "createdBy": "door {{creator}}",
     "requestedBy": "Aangevraagd door {{requestor}}",
     "guessedBy": "{{guesser}} heeft {{answer}} geraden",

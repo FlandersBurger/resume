@@ -228,7 +228,7 @@
     "findTheTitle": "リストのタイトルを見つけてください",
     "tinygameAnswered": "ミニゲームの答えが当てられました！",
     "roundOver": "ラウンド終了",
-    "newRound": "2秒後に新しいラウンドが始まります",
+    "newRound": "新しいラウンド！",
     "allListsPlayed": "すべてのリストがプレイされました。新しいサイクルが始まります。",
     "createdBy": "作成者：{{creator}}",
     "requestedBy": "リクエスト者：{{requestor}}",

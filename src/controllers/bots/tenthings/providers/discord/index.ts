@@ -44,23 +44,18 @@ export const discord: Provider = {
     bot.queueMessage(game.discordChannel, message);
   },
   newRound: (game: IGame, list: IList | IGameList) => {
-    let message = i18n(game.settings.language, "sentences.newRound");
+    let message = `**${i18n(game.settings.language, "sentences.newRound")}**`;
     message += `\n${i18n(game.settings.language, "category", {
       count: game.list.categories.length,
     })}: `;
     message += `**${getCategoryLabel(game.settings.language, list)}**`;
+    message += `\n\n**${game.list.name}** (${game.list.answers}) ${i18n(game.settings.language, "sentences.createdBy", { creator: (game.list.creator as IUser).username })}`;
+    message += game.list.description ? `\n*${parseSymbols(game.list.description)}*` : "";
     bot.queueMessage(game.discordChannel, message);
   },
   endOfRound: async (game: IGame, list: IList) => {
     let message = getListStats(game.settings.language, list, undefined);
     message += await getDailyScores(game, 5);
-    bot.queueMessage(game.discordChannel, message);
-  },
-  newList: (game: IGame) => {
-    let message = `**${game.list.name}** (${game.list.answers}) ${i18n(game.settings.language, "sentences.createdBy", {
-      creator: (game.list.creator as IUser).username,
-    })}`;
-    message += game.list.description ? `\n*${parseSymbols(game.list.description)}*` : "";
     bot.queueMessage(game.discordChannel, message);
   },
   skipList: (game: IGame) => {
@@ -84,6 +79,12 @@ export const discord: Provider = {
   },
   dailyWinners: (game: IGame, winners: IPlayer[], score: number) => {
     let message = `**${winners.map((winner) => getPlayerName(winner, true)).join(" & ")} won with ${score} points!**\n\n`;
+    message += getDailyMessage();
+    bot.queueMessage(game.discordChannel, message);
+  },
+  endOfDay: async (game: IGame, winners: IPlayer[], score: number) => {
+    let message = await getDailyScores(game);
+    message += `\n**${winners.map((winner) => getPlayerName(winner, true)).join(" & ")} won with ${score} points!**\n\n`;
     message += getDailyMessage();
     bot.queueMessage(game.discordChannel, message);
   },

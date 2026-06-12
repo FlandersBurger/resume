@@ -45,25 +45,18 @@ export const telegram: Provider = {
     bot.queueMessage(game.telegramChannel, message);
   },
   newRound: (game: IGame, list: IList | IGameList) => {
-    let message = i18n(game.settings.language, "sentences.newRound");
+    let message = `<b>${i18n(game.settings.language, "sentences.newRound")}</b>`;
     message += `\n${i18n(game.settings.language, "category", {
       count: game.list.categories.length,
     })}: `;
     message += `<b>${getCategoryLabel(game.settings.language, list)}</b>`;
+    message += `\n\n<b>${game.list.name}</b> (${game.list.answers}) ${i18n(game.settings.language, "sentences.createdBy", { creator: (game.list.creator as IUser).username })}`;
+    message += game.list.description ? `\n<i>${parseSymbols(game.list.description)}</i>` : "";
     bot.queueMessage(game.telegramChannel, message);
   },
   endOfRound: async (game: IGame, list: IList) => {
     let message = getListStats(game.settings.language, list, undefined);
     message += await getDailyScores(game, 5);
-    bot.queueMessage(game.telegramChannel, message);
-  },
-  newList: (game: IGame) => {
-    let message = `<b>${game.list.name}</b> (${game.list.answers}) ${i18n(
-      game.settings.language,
-      "sentences.createdBy",
-      { creator: (game.list.creator as IUser).username },
-    )}`;
-    message += game.list.description ? `\n<i>${parseSymbols(game.list.description)}</i>` : "";
     bot.queueMessage(game.telegramChannel, message);
   },
   skipList: (game: IGame) => {
@@ -92,6 +85,14 @@ export const telegram: Provider = {
   },
   dailyWinners: (game: IGame, winners: IPlayer[], score: number) => {
     let message = `<b>${winners.map((winner) => getPlayerName(winner, true)).join(" & ")} won with ${score} points!</b>\n\n`;
+    message += getDailyMessage();
+    // message += `\t - Bitcoin Address: bc1qnr4y95d3w5rwahcypazpjdv33g8wupewmw6rpa3s2927qvgmduqsvcpgfs`;
+    //'\n\nCome join us in the <a href="https://t.me/tenthings">Ten Things Supergroup</a>!'
+    bot.queueMessage(game.telegramChannel, message);
+  },
+  endOfDay: async (game: IGame, winners: IPlayer[], score: number) => {
+    let message = await getDailyScores(game);
+    message += `\n<b>${winners.map((winner) => getPlayerName(winner, true)).join(" & ")} won with ${score} points!</b>\n\n`;
     message += getDailyMessage();
     // message += `\t - Bitcoin Address: bc1qnr4y95d3w5rwahcypazpjdv33g8wupewmw6rpa3s2927qvgmduqsvcpgfs`;
     //'\n\nCome join us in the <a href="https://t.me/tenthings">Ten Things Supergroup</a>!'

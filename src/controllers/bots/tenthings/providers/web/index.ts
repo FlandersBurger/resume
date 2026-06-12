@@ -22,16 +22,13 @@ export const web: Provider = {
     console.log("Round ended", game._id, list.name);
     await publish("tenthings_message", { message: "Round ended" });
   },
-  newList: (game: IGame) => {
-    console.log("New list picked", game.list.name);
-    publish("tenthings_message", {});
-  },
   skipList: (game: IGame) => {
     console.log("List skipped", game.list.name);
     publish("tenthings_message", { message: "List skipped" });
   },
   dailyScores: () => {},
   dailyWinners: () => {},
+  endOfDay: async () => {},
   guessed: async (game: IGame, player: IPlayer, match: IGameListValue, ..._: any) => {
     await publish("tenthings_message", {
       message: getGuessedMessage(game.settings.language, parseSymbols(match.value), getPlayerName(player, true)),

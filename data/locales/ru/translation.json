@@ -223,7 +223,7 @@
     "findTheTitle": "Найдите название списка",
     "tinygameAnswered": "Ответ на Tinygame угадан!",
     "roundOver": "Раунд окончен",
-    "newRound": "Новый раунд начнется через 2 секунды",
+    "newRound": "Новый раунд!",
     "allListsPlayed": "Все списки сыграны, сейчас начнется новый цикл.",
     "createdBy": "от {{creator}}",
     "requestedBy": "Запрошено {{requestor}}",

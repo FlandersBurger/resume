@@ -114,9 +114,6 @@ export const newRound = async (currentGame: IGame) => {
       count: 0,
     };
   }
-  setTimeout(() => {
-    game.provider.newList(game);
-  }, 2000);
   game.playedLists.push(game.list._id);
   await game.save();
   console.log(`${game._id} - New round started -> ${chalk.cyan(list.name)}`);

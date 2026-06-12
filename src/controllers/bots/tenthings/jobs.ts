@@ -43,7 +43,6 @@ const resetDailyScore = () => {
             .select("_id id")
             .exec();
           for (let game of games) {
-            game.provider.dailyScores(game);
             const players: IPlayer[] = await Player.find({
               game: game._id,
               scoreDaily: { $gt: 0 },
@@ -53,7 +52,7 @@ const resetDailyScore = () => {
               .exec();
             const highScore = players.reduce((highScore, { scoreDaily }) => max([highScore, scoreDaily]) as number, 0);
             let winners = players.filter((player) => player.scoreDaily === highScore);
-            game.provider.dailyWinners(game, winners, highScore);
+            await game.provider.endOfDay(game, winners, highScore);
             await Player.updateMany({ game: game._id, scoreDaily: 0 }, { $set: { playStreak: 0 } });
             await Player.updateMany(
               {
@@ -202,7 +201,6 @@ const updateDailyStats = async (games: IGame[], totalPlayers: number, uniquePlay
   });
   try {
     await dailyStats.save();
-    bot.notifyAdmin("Daily Stats Updated!");
     base.listsPlayed = listStats[0].plays;
     base.votes = listStats[0].votes;
     base.hints = playerStats[0].hints;
@@ -215,7 +213,7 @@ const updateDailyStats = async (games: IGame[], totalPlayers: number, uniquePlay
     base.minigamePlays = playerStats[0].minigamePlays;
     base.tinygamePlays = playerStats[0].tinygamePlays;
     await base.save();
-    bot.notifyAdmin("Base Stats Updated!");
+    bot.notifyAdmin("Daily & Base Stats Updated!");
   } catch (error) {
     bot.notifyAdmin(`Daily stat save issue\n${error}`);
   }
