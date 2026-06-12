@@ -252,13 +252,17 @@ class TelegramBot {
         if (error.response) {
           if (error.response.data.description === "Bad Gateway") {
             if (retries < 3) {
-              setTimeout(() => this.sendMessage(channel, message, options, retries++), retries * 500);
+              setTimeout(() => this.sendMessage(channel, message, options, retries + 1), (retries + 1) * 500);
             } else {
               this.errorHandler(channel, "Send message (failed 3 times)", error, message);
             }
           } else this.errorHandler(channel, "Send message", error, message);
         } else {
-          if (channel.chat !== parseInt(process.env.MASTER_CHAT || "")) {
+          // Network error (ETIMEDOUT, ECONNABORTED) — retry with exponential backoff before notifying
+          if (retries < 3) {
+            const delay = Math.pow(2, retries) * 1000;
+            setTimeout(() => this.sendMessage(channel, message, options, retries + 1), delay);
+          } else if (channel.chat !== parseInt(process.env.MASTER_CHAT || "")) {
             this.errorHandler(channel, "Send message", error);
           }
         }

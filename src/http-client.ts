@@ -5,7 +5,7 @@ let instance: AxiosInstance;
 export default () => {
   if (!instance) {
     instance = axios.create({
-      timeout: 60000, //optional
+      timeout: 15000,
       httpsAgent: new https.Agent({ keepAlive: true }),
       headers: { "Content-Type": "application/xml" },
     });
