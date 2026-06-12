@@ -95,46 +95,46 @@
     },
     "minigame": {
       "name": "minigame",
-      "description": "Trivia terbalik pertanyaan"
+      "description": "Trivia terbalik Pertanyaan"
     },
     "minihint": {
-      "name": "petunjuk singkat",
+      "name": "Petunjuk singkat",
       "description": "Dapatkan petunjuk untuk minigame"
     },
     "miniskip": {
-      "name": "lewati minigame",
+      "name": "Lewati minigame",
       "description": "Lewati minigame saat ini"
     },
     "tinygame": {
-      "name": "permainan kecil",
+      "name": "Permainan kecil",
       "description": "Tebak daftarnya"
     },
     "tinyhint": {
-      "name": "petunjuk singkat",
+      "name": "Petunjuk singkat",
       "description": "Dapatkan petunjuk untuk permainan kecil"
     },
     "tinyskip": {
-      "name": "lewati kecil",
+      "name": "Lewati kecil",
       "description": "Lewati permainan kecil saat ini"
     },
     "score": {
-      "name": "skor",
+      "name": "Skor",
       "description": "Peringkat skor harian"
     },
     "stats": {
-      "name": "statistik",
+      "name": "Statistik",
       "description": "Statistik permainan"
     },
     "me": {
-      "name": "saya",
+      "name": "Saya",
       "description": "Statistik saya"
     },
     "intro": {
-      "name": "pengantar",
+      "name": "Pendahuluan",
       "description": "Siapakah saya?"
     },
     "logic": {
-      "name": "logika",
+      "name": "Logika",
       "description": "Penjelasan logika yang digunakan"
     },
     "settings": {
