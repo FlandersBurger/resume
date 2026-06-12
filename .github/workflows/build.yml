@@ -12,6 +12,7 @@ permissions:
 
 env:
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+  WORKFLOW_URL: https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}
 
 jobs:
   test:
@@ -33,7 +34,7 @@ jobs:
         if: failure()
         run: |
           curl -s -X POST "https://api.telegram.org/bot${{ secrets.TELEGRAM_TOKEN }}/sendMessage" \
-            -d "chat_id=${{ secrets.TELEGRAM_MASTER_CHAT }}&parse_mode=HTML&text=❌ Tests failed%0A<a href='https://github.com/${{ github.repository }}/commit/${{ github.sha }}'>${{ github.sha }}</a>"
+            -d "chat_id=${{ secrets.TELEGRAM_MASTER_CHAT }}&parse_mode=HTML&text=❌ Tests failed%0A<a href='${{ env.WORKFLOW_URL }}'>View run</a>"
 
 
   docker:
@@ -59,11 +60,17 @@ jobs:
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
+      - name: Notify Telegram — awaiting approval
+        if: success()
+        run: |
+          curl -s -X POST "https://api.telegram.org/bot${{ secrets.TELEGRAM_TOKEN }}/sendMessage" \
+            -d "chat_id=${{ secrets.TELEGRAM_MASTER_CHAT }}&parse_mode=HTML&text=⏳ Deploy awaiting approval%0A<a href='${{ env.WORKFLOW_URL }}'>Review and approve</a>"
+
       - name: Notify Telegram on failure
         if: failure()
         run: |
           curl -s -X POST "https://api.telegram.org/bot${{ secrets.TELEGRAM_TOKEN }}/sendMessage" \
-            -d "chat_id=${{ secrets.TELEGRAM_MASTER_CHAT }}&parse_mode=HTML&text=❌ Docker build failed%0A<a href='https://github.com/${{ github.repository }}/commit/${{ github.sha }}'>${{ github.sha }}</a>"
+            -d "chat_id=${{ secrets.TELEGRAM_MASTER_CHAT }}&parse_mode=HTML&text=❌ Docker build failed%0A<a href='${{ env.WORKFLOW_URL }}'>View run</a>"
 
   deploy:
     needs: docker
@@ -84,10 +91,10 @@ jobs:
       - name: Notify Telegram
         run: |
           curl -s -X POST "https://api.telegram.org/bot${{ secrets.TELEGRAM_TOKEN }}/sendMessage" \
-            -d "chat_id=${{ secrets.TELEGRAM_MASTER_CHAT }}&parse_mode=HTML&text=✅ Deployed to production%0A<a href='https://github.com/${{ github.repository }}/commit/${{ github.sha }}'>${{ github.sha }}</a>"
+            -d "chat_id=${{ secrets.TELEGRAM_MASTER_CHAT }}&parse_mode=HTML&text=✅ Deployed to production%0A<a href='${{ env.WORKFLOW_URL }}'>View run</a>"
 
       - name: Notify Telegram on failure
         if: failure()
         run: |
           curl -s -X POST "https://api.telegram.org/bot${{ secrets.TELEGRAM_TOKEN }}/sendMessage" \
-            -d "chat_id=${{ secrets.TELEGRAM_MASTER_CHAT }}&parse_mode=HTML&text=❌ Deploy failed%0A<a href='https://github.com/${{ github.repository }}/commit/${{ github.sha }}'>${{ github.sha }}</a>"
+            -d "chat_id=${{ secrets.TELEGRAM_MASTER_CHAT }}&parse_mode=HTML&text=❌ Deploy failed%0A<a href='${{ env.WORKFLOW_URL }}'>View run</a>"
