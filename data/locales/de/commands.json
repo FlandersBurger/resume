@@ -1,8 +1,8 @@
 {
   "start": "start",
-  "list": "list",
-  "hint": "hint",
-  "skip": "skip",
+  "liste": "list",
+  "hinweis": "hint",
+  "uberspringen": "skip",
   "veto": "veto",
   "minigame": "minigame",
   "minihint": "minihint",

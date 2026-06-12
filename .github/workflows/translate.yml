@@ -1,0 +1,47 @@
+name: Translate
+
+on:
+  push:
+    branches: [master]
+    paths:
+      - "data/locales/master/**"
+
+permissions:
+  contents: write
+
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+
+jobs:
+  translate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "24"
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Translate locales
+        env:
+          GOOGLE_TOKEN: ${{ secrets.GOOGLE_TOKEN }}
+        run: |
+          cd src/scripts
+          node i18n-scanner.js en ar de es fr hi id ja ko nl pt ru tl
+
+      - name: Commit translations
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add data/locales/
+          git diff --cached --quiet || git commit -m "chore: update translations [skip ci]"
+          git push
+
+      - name: Notify Telegram on failure
+        if: failure()
+        run: |
+          curl -s -X POST "https://api.telegram.org/bot${{ secrets.TELEGRAM_TOKEN }}/sendMessage" \
+            -d "chat_id=${{ secrets.TELEGRAM_MASTER_CHAT }}&parse_mode=HTML&text=❌ Translation failed%0A<a href='https://github.com/${{ github.repository }}/commit/${{ github.sha }}'>${{ github.sha }}</a>"

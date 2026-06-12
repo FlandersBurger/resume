@@ -42,8 +42,14 @@ const getSwappedDifferences = (obj1, obj2) => {
 };
 
 glob("./data/locales/*", (err, languagePaths) => {
-  const languages = ["ja"]; //languagePaths.filter((path) => path !== masterPath).map((path) => path.substring(path.length - 2));
-  const files = fs.readdirSync(englishPath); //.filter((file) => file !== "commands.json");
+  const args = process.argv.slice(2);
+  const languages =
+    args.length > 0
+      ? args
+      : languagePaths
+          .filter((path) => path !== masterPath && path !== englishPath)
+          .map((path) => path.split("/").pop());
+  const files = fs.readdirSync(masterPath);
   for (const file of files) {
     const isCommandsFile = file === "commands.json";
     console.log("Processing file:", file);

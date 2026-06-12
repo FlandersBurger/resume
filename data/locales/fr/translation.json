@@ -67,7 +67,7 @@
   "commands": {
     "start": {
       "name": "demarrer",
-      "description": "Obtenez un indice pour petitjeu"
+      "description": "Démarrer le jeu"
     },
     "commands": {
       "name": "commandes",
