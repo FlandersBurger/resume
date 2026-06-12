@@ -14,6 +14,110 @@ const ProfileImg = styled.img`
   max-height: 40px;
 `;
 
+const Overlay = styled.div<{ $open: boolean }>`
+  display: none;
+  @media (max-width: 767px) {
+    display: block;
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.4);
+    z-index: 99998;
+    opacity: ${(p) => (p.$open ? 1 : 0)};
+    pointer-events: ${(p) => (p.$open ? "auto" : "none")};
+    transition: opacity 0.25s ease;
+  }
+`;
+
+const Drawer = styled.div<{ $open: boolean }>`
+  display: none;
+  @media (max-width: 767px) {
+    display: flex;
+    flex-direction: column;
+    position: fixed;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    width: 240px;
+    background: #fff;
+    border-right: 1px solid #ddd;
+    z-index: 99999;
+    transform: translateX(${(p) => (p.$open ? "0" : "-100%")});
+    transition: transform 0.25s ease;
+    overflow-y: auto;
+    padding-top: 50px;
+  }
+`;
+
+const DrawerNav = styled.ul`
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  width: 100%;
+  a,
+  span {
+    display: block;
+    padding: 10px 20px;
+    color: #555;
+    text-decoration: none;
+    cursor: pointer;
+    &:hover {
+      background: #f5f5f5;
+      color: #333;
+    }
+  }
+`;
+
+const DrawerGroupHeader = styled.li`
+  border-top: 1px solid #eee;
+  padding: 10px 20px;
+  font-size: 13px;
+  color: #555;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  user-select: none;
+  &:hover {
+    background: #f5f5f5;
+  }
+`;
+
+const DrawerGroupItems = styled.ul<{ $open: boolean }>`
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  max-height: ${(p) => (p.$open ? "500px" : "0")};
+  overflow: hidden;
+  transition: max-height 0.2s ease;
+  background: #fafafa;
+  a,
+  span {
+    padding-left: 32px;
+  }
+`;
+
+const DrawerDivider = styled.li`
+  border-top: 1px solid #eee;
+`;
+
+function DrawerGroup({ label, children }: { label: string; children: React.ReactNode }) {
+  const [open, setOpen] = useState(false);
+  return (
+    <>
+      <DrawerGroupHeader
+        onClick={(e) => {
+          e.stopPropagation();
+          setOpen((o) => !o);
+        }}
+      >
+        {label}
+        <i className={`fa fa-chevron-${open ? "up" : "down"}`} style={{ fontSize: 11, color: "#aaa" }} />
+      </DrawerGroupHeader>
+      <DrawerGroupItems $open={open}>{children}</DrawerGroupItems>
+    </>
+  );
+}
+
 function Dropdown({ label, children }: { label: React.ReactNode; children: React.ReactNode }) {
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLLIElement>(null);
@@ -52,168 +156,279 @@ export function Navbar() {
   const [mobileOpen, setMobileOpen] = useState(false);
 
   return (
-    <nav className="navbar navbar-default navbar-fixed-top">
-      <div className="container-fluid">
-        <div className="navbar-header">
-          <NavbarToggle
-            type="button"
-            className={`navbar-toggle${mobileOpen ? "" : " collapsed"}`}
-            onClick={() => setMobileOpen((o) => !o)}
-          >
-            <span className="icon-bar" />
-            <span className="icon-bar" />
-            <span className="icon-bar" />
-          </NavbarToggle>
-          <Link className="navbar-brand" to="/home">
-            Resume
-          </Link>
-        </div>
-        <div
-          className={`navbar-collapse${mobileOpen ? " in" : " collapse"}`}
-          id="navbar-collapse"
-          onClick={() => setMobileOpen(false)}
-        >
-          <ul className="nav navbar-nav">
-            <li>
-              <Link to="/experience">Experience</Link>
-            </li>
-            <li>
-              <Link to="/skills">Skills</Link>
-            </li>
-            {currentUser ? (
-              <Dropdown label="Contact">
-                <li>
-                  <Link to="/contact">Contact</Link>
-                </li>
-                <li>
-                  <Link to="/posts">Chat</Link>
-                </li>
-              </Dropdown>
-            ) : (
+    <>
+      <Overlay $open={mobileOpen} onClick={() => setMobileOpen(false)} />
+      <Drawer $open={mobileOpen} onClick={() => setMobileOpen(false)}>
+        <DrawerNav>
+          <li>
+            <Link to="/experience">Experience</Link>
+          </li>
+          <li>
+            <Link to="/skills">Skills</Link>
+          </li>
+          {currentUser ? (
+            <DrawerGroup label="Contact">
               <li>
                 <Link to="/contact">Contact</Link>
               </li>
-            )}
-            <Dropdown label="Doodles">
               <li>
-                <Link to="/hobbies">Hobbies</Link>
+                <Link to="/posts">Chat</Link>
               </li>
-              <li>
-                <Link to="/asteroids">Asteroids</Link>
-              </li>
-              <li>
-                <Link to="/bubbles">Bubbles</Link>
-              </li>
-              <li>
-                <Link to="/charades">Charades</Link>
-              </li>
-              <li>
-                <Link to="/workout">Workout</Link>
-              </li>
-              <li>
-                <Link to="/lemmings">Lemmings</Link>
-              </li>
-              <li>
-                <Link to="/minesweeper">Minesweeper</Link>
-              </li>
-            </Dropdown>
-            <Dropdown label="Quizzes">
-              <li>
-                <Link to="/google">Google</Link>
-              </li>
-              <li>
-                <Link to="/logos">Logos</Link>
-              </li>
-              <li>
-                <Link to="/animals">Animals</Link>
-              </li>
-              <li>
-                <Link to="/flags">Flags</Link>
-              </li>
-              <li>
-                <Link to="/movies">Movies</Link>
-              </li>
-              <li>
-                <Link to="/skeletons">Skeletons</Link>
-              </li>
-            </Dropdown>
-            {currentUser?.admin ? (
-              <Dropdown label="Ten Things">
-                <li>
-                  <Link to="/tenthings">Lists</Link>
-                </li>
-                <li>
-                  <Link to="/tenthings-play">Play</Link>
-                </li>
-                <li>
-                  <Link to="/tenthings-stats">Stats</Link>
-                </li>
-                <li>
-                  <Link to="/tenthings-admin">Admin</Link>
-                </li>
-              </Dropdown>
-            ) : (
-              <li>
-                <Link to="/tenthings">Ten Things</Link>
-              </li>
-            )}
-          </ul>
-          <ul className="nav navbar-nav navbar-right">
+            </DrawerGroup>
+          ) : (
             <li>
-              <a style={{ cursor: "pointer" }} title="Print resume" onClick={() => window.print()}>
-                <i className="fa fa-print" />
-              </a>
+              <Link to="/contact">Contact</Link>
             </li>
-            {currentUser ? (
-              <Dropdown
-                label={
-                  currentUser.photoURL ? (
-                    <ProfileImg
-                      src={currentUser.photoURL}
-                      alt={currentUser.username}
-                      className="img-circle"
-                      style={{ height: 34, width: 34, marginTop: -7, marginBottom: -7 }}
-                    />
-                  ) : (
-                    <i className="fa fa-user" />
-                  )
-                }
-              >
+          )}
+          <DrawerGroup label="Doodles">
+            <li>
+              <Link to="/hobbies">Hobbies</Link>
+            </li>
+            <li>
+              <Link to="/asteroids">Asteroids</Link>
+            </li>
+            <li>
+              <Link to="/bubbles">Bubbles</Link>
+            </li>
+            <li>
+              <Link to="/charades">Charades</Link>
+            </li>
+            <li>
+              <Link to="/workout">Workout</Link>
+            </li>
+            <li>
+              <Link to="/lemmings">Lemmings</Link>
+            </li>
+            <li>
+              <Link to="/minesweeper">Minesweeper</Link>
+            </li>
+          </DrawerGroup>
+          <DrawerGroup label="Quizzes">
+            <li>
+              <Link to="/google">Google</Link>
+            </li>
+            <li>
+              <Link to="/logos">Logos</Link>
+            </li>
+            <li>
+              <Link to="/animals">Animals</Link>
+            </li>
+            <li>
+              <Link to="/flags">Flags</Link>
+            </li>
+            <li>
+              <Link to="/movies">Movies</Link>
+            </li>
+            <li>
+              <Link to="/skeletons">Skeletons</Link>
+            </li>
+          </DrawerGroup>
+          {currentUser?.admin ? (
+            <DrawerGroup label="Ten Things">
+              <li>
+                <Link to="/tenthings">Lists</Link>
+              </li>
+              <li>
+                <Link to="/tenthings-play">Play</Link>
+              </li>
+              <li>
+                <Link to="/tenthings-stats">Stats</Link>
+              </li>
+              <li>
+                <Link to="/tenthings-admin">Admin</Link>
+              </li>
+            </DrawerGroup>
+          ) : (
+            <li>
+              <Link to="/tenthings">Ten Things</Link>
+            </li>
+          )}
+          <DrawerDivider />
+          <li>
+            <span onClick={() => window.print()}>Print resume</span>
+          </li>
+          {currentUser ? (
+            <>
+              <li>
+                <Link to="/profile">Profile</Link>
+              </li>
+              <li>
+                <span
+                  onClick={() => {
+                    logout();
+                    navigate("/home");
+                  }}
+                >
+                  Logout
+                </span>
+              </li>
+            </>
+          ) : (
+            <li>
+              <span onClick={loginLoading ? undefined : openLogin}>{loginLoading ? "..." : "Login"}</span>
+            </li>
+          )}
+        </DrawerNav>
+      </Drawer>
+      <nav className="navbar navbar-default navbar-fixed-top">
+        <div className="container-fluid">
+          <div className="navbar-header">
+            <NavbarToggle
+              type="button"
+              className={`navbar-toggle${mobileOpen ? "" : " collapsed"}`}
+              onClick={() => setMobileOpen((o) => !o)}
+            >
+              <span className="icon-bar" />
+              <span className="icon-bar" />
+              <span className="icon-bar" />
+            </NavbarToggle>
+            <Link className="navbar-brand" to="/home">
+              Resume
+            </Link>
+          </div>
+          <div className="navbar-collapse collapse" id="navbar-collapse">
+            <ul className="nav navbar-nav">
+              <li>
+                <Link to="/experience">Experience</Link>
+              </li>
+              <li>
+                <Link to="/skills">Skills</Link>
+              </li>
+              {currentUser ? (
+                <Dropdown label="Contact">
+                  <li>
+                    <Link to="/contact">Contact</Link>
+                  </li>
+                  <li>
+                    <Link to="/posts">Chat</Link>
+                  </li>
+                </Dropdown>
+              ) : (
                 <li>
-                  <Link to="/profile">Profile</Link>
+                  <Link to="/contact">Contact</Link>
+                </li>
+              )}
+              <Dropdown label="Doodles">
+                <li>
+                  <Link to="/hobbies">Hobbies</Link>
                 </li>
                 <li>
-                  <Link to="/policy">Privacy Policy</Link>
+                  <Link to="/asteroids">Asteroids</Link>
                 </li>
                 <li>
-                  <Link to="/terms">Terms of Service</Link>
+                  <Link to="/bubbles">Bubbles</Link>
                 </li>
-                <li role="separator" className="divider" />
                 <li>
-                  <a
-                    style={{ cursor: "pointer" }}
-                    onClick={() => {
-                      logout();
-                      navigate("/home");
-                    }}
-                  >
-                    Logout
-                  </a>
+                  <Link to="/charades">Charades</Link>
+                </li>
+                <li>
+                  <Link to="/workout">Workout</Link>
+                </li>
+                <li>
+                  <Link to="/lemmings">Lemmings</Link>
+                </li>
+                <li>
+                  <Link to="/minesweeper">Minesweeper</Link>
                 </li>
               </Dropdown>
-            ) : (
+              <Dropdown label="Quizzes">
+                <li>
+                  <Link to="/google">Google</Link>
+                </li>
+                <li>
+                  <Link to="/logos">Logos</Link>
+                </li>
+                <li>
+                  <Link to="/animals">Animals</Link>
+                </li>
+                <li>
+                  <Link to="/flags">Flags</Link>
+                </li>
+                <li>
+                  <Link to="/movies">Movies</Link>
+                </li>
+                <li>
+                  <Link to="/skeletons">Skeletons</Link>
+                </li>
+              </Dropdown>
+              {currentUser?.admin ? (
+                <Dropdown label="Ten Things">
+                  <li>
+                    <Link to="/tenthings">Lists</Link>
+                  </li>
+                  <li>
+                    <Link to="/tenthings-play">Play</Link>
+                  </li>
+                  <li>
+                    <Link to="/tenthings-stats">Stats</Link>
+                  </li>
+                  <li>
+                    <Link to="/tenthings-admin">Admin</Link>
+                  </li>
+                </Dropdown>
+              ) : (
+                <li>
+                  <Link to="/tenthings">Ten Things</Link>
+                </li>
+              )}
+            </ul>
+            <ul className="nav navbar-nav navbar-right">
               <li>
-                <a
-                  style={{ cursor: loginLoading ? "default" : "pointer" }}
-                  onClick={loginLoading ? undefined : openLogin}
-                >
-                  {loginLoading ? <i className="fa fa-spinner fa-spin" /> : "Login"}
+                <a style={{ cursor: "pointer" }} title="Print resume" onClick={() => window.print()}>
+                  <i className="fa fa-print" />
                 </a>
               </li>
-            )}
-          </ul>
+              {currentUser ? (
+                <Dropdown
+                  label={
+                    currentUser.photoURL ? (
+                      <ProfileImg
+                        src={currentUser.photoURL}
+                        alt={currentUser.username}
+                        className="img-circle"
+                        style={{ height: 34, width: 34, marginTop: -7, marginBottom: -7 }}
+                      />
+                    ) : (
+                      <i className="fa fa-user" />
+                    )
+                  }
+                >
+                  <li>
+                    <Link to="/profile">Profile</Link>
+                  </li>
+                  <li>
+                    <Link to="/policy">Privacy Policy</Link>
+                  </li>
+                  <li>
+                    <Link to="/terms">Terms of Service</Link>
+                  </li>
+                  <li role="separator" className="divider" />
+                  <li>
+                    <a
+                      style={{ cursor: "pointer" }}
+                      onClick={() => {
+                        logout();
+                        navigate("/home");
+                      }}
+                    >
+                      Logout
+                    </a>
+                  </li>
+                </Dropdown>
+              ) : (
+                <li>
+                  <a
+                    style={{ cursor: loginLoading ? "default" : "pointer" }}
+                    onClick={loginLoading ? undefined : openLogin}
+                  >
+                    {loginLoading ? <i className="fa fa-spinner fa-spin" /> : "Login"}
+                  </a>
+                </li>
+              )}
+            </ul>
+          </div>
         </div>
-      </div>
-    </nav>
+      </nav>
+    </>
   );
 }
