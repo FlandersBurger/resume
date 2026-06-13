@@ -6,8 +6,8 @@ import { HydratedDocument, Types } from "mongoose";
 import { newRound } from "./maingame";
 import { getListScore } from "./lists";
 
-import bot from "@root/connections/telegram";
 import i18n from "@root/i18n";
+import { notifyAdmin } from "./notify";
 
 import { getPlayerName } from "./players";
 
@@ -16,9 +16,9 @@ export const vetoCache: { [key: string]: Moment } = {};
 const skippers: { [key: string]: { delay: number; lastSkipped: Moment } } = {};
 
 const skipCooldown = (game: IGame, skipper: IPlayer) => {
-  if (skipCache[game.chat_id]) {
-    if (skipCache[game.chat_id].timer > 0) {
-      skipCache[game.chat_id].timer--;
+  if (skipCache[game.channelId]) {
+    if (skipCache[game.channelId].timer > 0) {
+      skipCache[game.channelId].timer--;
       setTimeout(() => {
         skipCooldown(game, skipper);
       }, 1000);
@@ -29,15 +29,15 @@ const skipCooldown = (game: IGame, skipper: IPlayer) => {
 };
 
 export const processSkip = (game: IGame, skipper: IPlayer) => {
-  if (vetoCache[game.chat_id]) {
-    delete skipCache[game.chat_id];
+  if (vetoCache[game.channelId]) {
+    delete skipCache[game.channelId];
     return;
   }
-  if (game.chat_id < 0) {
+  if (!game.isPersonalChat) {
     if (game.settings.skipDelay > 0) {
-      if (skipCache[game.chat_id] && skipCache[game.chat_id].playerId !== skipper._id) {
-        skipCache[game.chat_id].timer = 2;
-      } else if (skipCache[game.chat_id] && skipCache[game.chat_id].playerId === skipper._id) {
+      if (skipCache[game.channelId] && skipCache[game.channelId].playerId !== skipper._id) {
+        skipCache[game.channelId].timer = 2;
+      } else if (skipCache[game.channelId] && skipCache[game.channelId].playerId === skipper._id) {
         game.provider.message(game, i18n(game.settings.language, "sentences.skipDenial"));
       } else {
         game.provider.message(
@@ -47,7 +47,7 @@ export const processSkip = (game: IGame, skipper: IPlayer) => {
             skipDelay: game.settings.skipDelay,
           }),
         );
-        skipCache[game.chat_id] = {
+        skipCache[game.channelId] = {
           timer: game.settings.skipDelay,
           playerId: skipper._id,
         };
@@ -66,7 +66,7 @@ const skipList = async (game: IGame, skipper: IPlayer) => {
   await Player.updateMany(
     {
       game: game._id,
-      _id: skipCache[game.chat_id] ? { $in: [skipCache[game.chat_id].playerId, skipper._id] } : skipper._id,
+      _id: skipCache[game.channelId] ? { $in: [skipCache[game.channelId].playerId, skipper._id] } : skipper._id,
     },
     {
       $set: { hintStreak: 0 },
@@ -74,7 +74,7 @@ const skipList = async (game: IGame, skipper: IPlayer) => {
     },
   );
   game.provider.skipList(game);
-  delete skipCache[game.chat_id];
+  delete skipCache[game.channelId];
   let foundList = await List.findOne({
     _id: game.list._id,
   })
@@ -90,7 +90,7 @@ const skipList = async (game: IGame, skipper: IPlayer) => {
     await foundList.validate();
     await foundList.save();
   } catch (err) {
-    return bot.notifyAdmin(`Skip List Error:\n${err}`);
+    return notifyAdmin(`Skip List Error:\n${err}`);
   }
   game.provider.dailyScores(game, 5);
   if (game.pickedLists.find((list) => list._id.equals(game.list._id))) {
@@ -100,9 +100,9 @@ const skipList = async (game: IGame, skipper: IPlayer) => {
 };
 
 export const checkSkipper = async (game: IGame, player: IPlayer) => {
-  if (game.chat_id > 0) return true;
-  if (!vetoCache[game.chat_id] || vetoCache[game.chat_id] < moment().subtract(game.settings.vetoDelay, "seconds")) {
-    delete vetoCache[game.chat_id];
+  if (game.isPersonalChat) return true;
+  if (!vetoCache[game.channelId] || vetoCache[game.channelId] < moment().subtract(game.settings.vetoDelay, "seconds")) {
+    delete vetoCache[game.channelId];
     if (skippers[player.id]) {
       //Check for spamming if it's the same player
       if (skippers[player.id].lastSkipped < moment().subtract(skippers[player.id].delay, "seconds")) {
@@ -156,9 +156,9 @@ export const checkSkipper = async (game: IGame, player: IPlayer) => {
 export const vetoSkip = async (game: IGame, player: HydratedDocument<IPlayer>) => {
   player.vetoes++;
   await player.save();
-  if (skipCache[game.chat_id]) {
-    delete skipCache[game.chat_id];
-    vetoCache[game.chat_id] = moment();
+  if (skipCache[game.channelId]) {
+    delete skipCache[game.channelId];
+    vetoCache[game.channelId] = moment();
     game.provider.message(
       game,
       i18n(game.settings.language, "sentences.skipVeto", {
@@ -177,8 +177,8 @@ export const vetoSkip = async (game: IGame, player: HydratedDocument<IPlayer>) =
 };
 
 export const abortSkip = (game: IGame, player: IPlayer) => {
-  delete skipCache[game.chat_id];
-  vetoCache[game.chat_id] = moment();
+  delete skipCache[game.channelId];
+  vetoCache[game.channelId] = moment();
   game.provider.message(
     game,
     i18n(game.settings.language, "sentences.skipAbort", {

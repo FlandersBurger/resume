@@ -28,10 +28,14 @@ export const initiateBan = async (game: IGame, callbackQuery: TelegramCallbackDa
       if (foundList) {
         bot.sendKeyboard(
           game.telegramChannel,
-          i18n(game.settings.language, `sentences.${game.chat_id > 0 ? "confirmBan" : "corroborateBan"}`, {
-            list: foundList.name,
-            user: callbackQuery.from.name ?? callbackQuery.from.username ?? "Unknown",
-          }),
+          i18n(
+            game.settings.language,
+            `sentences.${game.chat_id !== undefined && game.chat_id > 0 ? "confirmBan" : "corroborateBan"}`,
+            {
+              list: foundList.name,
+              user: callbackQuery.from.name ?? callbackQuery.from.username ?? "Unknown",
+            },
+          ),
           confirmBanListKeyboard(game.settings.language, foundList),
         );
       }
@@ -45,7 +49,10 @@ export const initiateBan = async (game: IGame, callbackQuery: TelegramCallbackDa
 export const processBan = (game: HydratedDocument<IGame>, callbackQuery: TelegramCallbackData) => {
   if (!cache[`${game._id}-${callbackQuery.data}`]) {
     bot.deleteMessage(game.telegramChannel, callbackQuery.id);
-  } else if (cache[`${game._id}-${callbackQuery.data}`] !== callbackQuery.from.id || game.chat_id > 0) {
+  } else if (
+    cache[`${game._id}-${callbackQuery.data}`] !== callbackQuery.from.id ||
+    (game.chat_id !== undefined && game.chat_id > 0)
+  ) {
     banList(game, callbackQuery.data);
     delete cache[`${game._id}-${callbackQuery.data}`];
     bot.deleteMessage(game.telegramChannel, callbackQuery.id);

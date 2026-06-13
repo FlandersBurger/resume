@@ -16,7 +16,7 @@ import {
 } from "@tenthings/messages";
 import { getPlayerName } from "@tenthings/players";
 import { getHint } from "@tenthings/hints";
-import { banListKeyboard } from "./keyboards";
+import { banListKeyboard, likeListKeyboard } from "./keyboards";
 import { Player } from "@root/models";
 import { HydratedDocument } from "mongoose";
 import { BotLanguage } from "@tenthings/languages";
@@ -217,6 +217,20 @@ export const telegram: Provider = {
       count: score,
     })}</u>`;
     bot.queueMessage(game.telegramChannel, message);
+  },
+  rateList: (game: IGame) => {
+    bot.sendKeyboard(
+      game.telegramChannel,
+      i18n(game.settings.language, "sentences.likeList", { list: parseSymbols(game.list!.name) }),
+      likeListKeyboard(game),
+    );
+  },
+  sendMedia: (game: IGame, url: string) => {
+    if (url.includes(".gif")) {
+      bot.sendAnimation(game.telegramChannel, url);
+    } else {
+      bot.sendPhoto(game.telegramChannel, url);
+    }
   },
   listMessage: (list: HydratedDocument<IList> | IList): string => {
     let msg = `<b>${list.name}</b> [${list.language}]\n`;

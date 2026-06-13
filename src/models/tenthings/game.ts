@@ -4,7 +4,7 @@ import { IUser } from "@models/user";
 import { IPlayer } from "@models/tenthings/player";
 import { web } from "@tenthings/providers/web";
 import { telegram } from "@tenthings/providers/telegram";
-// import { discord } from "@tenthings/providers/discord";
+import { discord } from "@tenthings/providers/discord";
 import { Provider } from "@tenthings/providers";
 import { BotLanguage, SupportedLanguage } from "@tenthings/languages";
 
@@ -47,8 +47,10 @@ export interface IGameList {
 export interface IGame {
   _id: Types.ObjectId;
   platform: Platform;
-  chat_id: number;
+  chat_id?: number;
   topicId?: number;
+  channelId: string;
+  isPersonalChat: boolean;
   telegramChannel: { chat: number; topic?: number };
   discordChannelId?: string;
   discordChannel: { channelId: string };
@@ -92,7 +94,7 @@ let Game: { [key: string]: Model<IGame> } = {};
 const gameSchema = new Schema<IGame>(
   {
     platform: { type: String, required: true, default: "telegram" },
-    chat_id: { type: Number, required: true, unique: true },
+    chat_id: { type: Number, required: false, unique: true, sparse: true },
     topicId: { type: Number, required: false },
     discordChannelId: { type: String, required: false, unique: true, sparse: true },
     enabled: { type: Boolean, required: true, default: true },
@@ -160,10 +162,18 @@ gameSchema.virtual("provider").get(function () {
     case "web":
       return web;
     case "discord":
-    // return discord;
+      return discord;
     default:
       return telegram;
   }
+});
+
+gameSchema.virtual("channelId").get(function () {
+  return this.chat_id?.toString() ?? this.discordChannelId ?? "";
+});
+
+gameSchema.virtual("isPersonalChat").get(function () {
+  return this.chat_id !== undefined && this.chat_id > 0;
 });
 
 gameSchema.virtual("telegramChannel").get(function () {
@@ -174,7 +184,14 @@ gameSchema.virtual("discordChannel").get(function () {
   return { channelId: this.discordChannelId || "" };
 });
 
-gameSchema.index({ chat_id: 1 });
+gameSchema.pre("validate", function () {
+  if (this.chat_id != null && this.discordChannelId) {
+    this.invalidate("chat_id", "A game cannot have both chat_id and discordChannelId");
+  }
+  if (this.chat_id == null && !this.discordChannelId) {
+    this.invalidate("chat_id", "A game must have either chat_id or discordChannelId");
+  }
+});
 
 for (const name in db) {
   Game[name] = db[name].model<IGame>("TenThings", gameSchema);

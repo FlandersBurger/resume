@@ -15,11 +15,11 @@ import { getListScore, rateList, selectList } from "./lists";
 import { abortSkip, skipCache } from "./skips";
 import i18n from "@root/i18n";
 
-import bot from "@root/connections/telegram";
 import chalk from "chalk";
+import { notifyAdmin } from "./notify";
 
 export const createMaingame = async (platformSettings: {
-  chat_id: number;
+  chat_id?: number;
   topicId?: number;
   platform: Platform;
   discordChannelId?: string;
@@ -90,7 +90,7 @@ export const newRound = async (currentGame: IGame) => {
     await list.validate();
     await list.save();
   } catch (error) {
-    bot.notifyAdmin(`New Round List Error\n${error}\n\n${list}`);
+    notifyAdmin(`New Round List Error\n${error}\n\n${list}`);
   }
   for (let player of players) {
     player.lists++;
@@ -162,7 +162,7 @@ export const checkMaingame = async (game: HydratedDocument<IGame>, player: Hydra
   try {
     game.lastPlayDate = moment().toDate();
     player.lastPlayDate = moment().toDate();
-    if (skipCache[game.chat_id]) {
+    if (skipCache[game.channelId]) {
       abortSkip(game, player);
     }
     if (!some(game.guessers, (guesser: Types.ObjectId) => guesser.equals(player._id))) {
@@ -172,8 +172,7 @@ export const checkMaingame = async (game: HydratedDocument<IGame>, player: Hydra
     }
     const match = game.list.values.find(({ value }) => value === guess.match.value);
     if (!player) {
-      bot.notifyAdmin(`Something wrong with this guess:\n${JSON.stringify(guess)}`);
-      console.error(`Something wrong with this guess:\n${JSON.stringify(guess)}`);
+      notifyAdmin(`Something wrong with this guess:\n${JSON.stringify(guess)}`);
     }
     if (match && !match.guesser) {
       match.guesser = player;

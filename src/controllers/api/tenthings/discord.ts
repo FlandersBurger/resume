@@ -15,7 +15,7 @@ export const initDiscordBot = () => {
       .exec();
 
     if (!existingGame) {
-      const newGame = await createMaingame({ chat_id: 0, discordChannelId: msg.channelId, platform: "discord" });
+      const newGame = await createMaingame({ discordChannelId: msg.channelId, platform: "discord" });
       console.log(`New Discord game created for channel ${msg.channelId}`);
       await evaluate(msg, newGame, true);
     } else {

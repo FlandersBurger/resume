@@ -15,14 +15,14 @@ export const getGame = async (chat_id: number) => {
       chat_id,
     });
     if (!game) return;
-    await redis.set(game.chat_id.toString(), JSON.stringify(game));
+    await redis.set(game.channelId, JSON.stringify(game));
     return game;
   }
 };
 
 export const saveGame = async (game: HydratedDocument<IGame>) => {
   await game.save();
-  await redis.set(game.chat_id!.toString(), JSON.stringify(game));
+  await redis.set(game.channelId, JSON.stringify(game));
 };
 
 export const getList = async (_id: Types.ObjectId) => {

@@ -13,8 +13,8 @@ import { checkMaingame, newRound } from "./maingame";
 import { checkMinigame } from "./minigame";
 import { checkTinygame } from "./tinygame";
 import { getPlayerName } from "./players";
-import bot from "@root/connections/telegram";
 import chalk from "chalk";
+import { notifyAdmin } from "./notify";
 
 export type Guess = {
   gameId: Types.ObjectId;
@@ -133,7 +133,7 @@ guessQueue.process(async ({ data }, done) => {
       }
       newRound(game);
     }
-    bot.notifyAdmin(`Error in ProcessGuess`);
+    notifyAdmin(`Error in ProcessGuess`);
     console.error(err);
   }
   done();

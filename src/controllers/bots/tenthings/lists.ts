@@ -1,6 +1,5 @@
 import moment from "moment";
 
-import bot from "@root/connections/telegram";
 import { List } from "@models/index";
 import { HydratedDocument, QueryOptions, Types } from "mongoose";
 import { IList } from "@models/tenthings/list";
@@ -10,9 +9,9 @@ import some from "lodash/some";
 import sampleSize from "lodash/sampleSize";
 import orderBy from "lodash/orderBy";
 import uniqBy from "lodash/uniqBy";
-import { likeListKeyboard } from "@tenthings/providers/telegram/keyboards";
 import i18n from "@root/i18n";
-import { parseSymbols, removeSpecialCharacters } from "@utils/string-helpers";
+import { removeSpecialCharacters } from "@utils/string-helpers";
+import { notifyAdmin } from "./notify";
 
 export const getRandomList = async (parameters: QueryOptions = {}): Promise<HydratedDocument<IList> | undefined> => {
   const count = await List.countDocuments(parameters).exec();
@@ -40,11 +39,7 @@ export const getListScore = (list: IList): number => {
 };
 
 export const rateList = (game: IGame) => {
-  bot.sendKeyboard(
-    game.telegramChannel,
-    i18n(game.settings.language, "sentences.likeList", { list: parseSymbols(game.list!.name) }),
-    likeListKeyboard(game),
-  );
+  game.provider.rateList(game);
 };
 
 const getAvailableLanguages = ({ settings }: { settings: IGameSettings }): string[] =>
@@ -161,7 +156,7 @@ export const logHint = async (listId: Types.ObjectId) => {
       await list.validate();
       await list.save();
     } catch (err) {
-      return bot.notifyAdmin(`Hint List Error:\n${list.name}`);
+      return notifyAdmin(`Hint List Error:\n${list.name}`);
     }
   }
 };

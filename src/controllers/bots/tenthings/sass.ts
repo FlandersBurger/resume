@@ -1,6 +1,5 @@
 import moment from "moment";
 import { IGame } from "@models/tenthings/game";
-import bot from "@root/connections/telegram";
 import httpClient from "@root/http-client";
 
 export default async (game: IGame, text: string) => {
@@ -8,11 +7,7 @@ export default async (game: IGame, text: string) => {
     const sassText = await sass(text);
     if (sassText) {
       if (sassText.includes("http") && !sassText.includes("paypal")) {
-        if (sassText.includes(".gif")) {
-          bot.sendAnimation(game.telegramChannel, sassText);
-        } else {
-          bot.sendPhoto(game.telegramChannel, sassText);
-        }
+        game.provider.sendMedia(game, sassText);
       } else {
         game.provider.message(game, sassText);
       }

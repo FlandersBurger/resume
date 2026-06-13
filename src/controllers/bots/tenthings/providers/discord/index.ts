@@ -177,6 +177,10 @@ export const discord: Provider = {
     msg += list.frequency ? ` - Frequency: ${capitalize(getFrequencyMessage(list.frequency))} changes\n` : "";
     return msg;
   },
+  rateList: (_game: IGame) => {},
+  sendMedia: (game: IGame, url: string) => {
+    bot.queueMessage(game.discordChannel, url);
+  },
   categoriesMessage: (game: IGame): string => {
     return Object.keys(categories)
       .sort()

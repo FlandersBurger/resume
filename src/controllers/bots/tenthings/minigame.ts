@@ -3,9 +3,8 @@ import { HydratedDocument, QueryOptions } from "mongoose";
 import uniq from "lodash/uniq";
 import sampleSize from "lodash/sampleSize";
 
-import bot from "@root/connections/telegram";
-
 import { List, Minigame } from "@models/index";
+import { notifyAdmin } from "./notify";
 import { IGame } from "@models/tenthings/game";
 import { Language } from "./languages";
 import { IList } from "@models/tenthings/list";
@@ -27,8 +26,8 @@ export const createMinigame = async (game: HydratedDocument<IGame>) => {
       language: "EN",
     });
     if (minigames.length > 0)
-      bot.queueMessage(
-        game.telegramChannel,
+      game.provider.message(
+        game,
         "Not enough lists available in your chosen languages to make a minigame work, defaulting to English",
       );
   }
@@ -37,8 +36,8 @@ export const createMinigame = async (game: HydratedDocument<IGame>) => {
       language: "EN",
     });
     if (minigames.length > 0)
-      bot.queueMessage(
-        game.telegramChannel,
+      game.provider.message(
+        game,
         "Not enough lists available in your chosen categories to make a minigame work, defaulting to all lists",
       );
   }
@@ -81,7 +80,7 @@ export const updateMinigames = async () => {
   const lists = await List.find({ "values.value": { $in: newValues } })
     .select("name language values categories")
     .lean();
-  bot.notifyAdmin(`Vetting ${lists.length} lists for minigames`);
+  notifyAdmin(`Vetting ${lists.length} lists for minigames`);
   let answers = lists.reduce(
     (
       answers: {
@@ -135,7 +134,7 @@ export const updateMinigames = async () => {
     }),
   );
   const total = await Minigame.countDocuments();
-  bot.notifyAdmin(`Minigames total: ${total} updated: ${count.updated} new: ${count.new}`);
+  notifyAdmin(`Minigames total: ${total} updated: ${count.updated} new: ${count.new}`);
 };
 
 const getMinigames = async (parameters: QueryOptions): Promise<IMinigame[]> => {
