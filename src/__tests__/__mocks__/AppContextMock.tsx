@@ -16,6 +16,9 @@ export const defaultContextValue: AppContextValue = {
   openLogin: jest.fn(),
   closeLogin: jest.fn(),
   setLoginLoading: jest.fn(),
+  showChat: false,
+  openChat: jest.fn(),
+  closeChat: jest.fn(),
 };
 
 jest.mock("../../client/context/AppContext", () => ({

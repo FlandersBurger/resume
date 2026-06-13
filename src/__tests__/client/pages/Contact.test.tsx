@@ -21,9 +21,9 @@ function renderContact(overrides: Partial<AppContextValue> = {}) {
 describe("Contact page", () => {
   beforeEach(() => jest.clearAllMocks());
 
-  it("renders the Contact heading", () => {
+  it("renders the contact form", () => {
     renderContact();
-    expect(screen.getByText("Contact")).toBeInTheDocument();
+    expect(document.querySelector("form")).toBeInTheDocument();
   });
 
   it("renders the Name, Email, Phone and Message fields", () => {

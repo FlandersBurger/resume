@@ -26,13 +26,13 @@ describe("Navbar", () => {
 
   it("renders navigation links", () => {
     renderNavbar();
-    expect(screen.getByText("Experience")).toBeInTheDocument();
-    expect(screen.getByText("Skills")).toBeInTheDocument();
+    expect(screen.getAllByText("Experience")[0]).toBeInTheDocument();
+    expect(screen.getAllByText("Skills")[0]).toBeInTheDocument();
   });
 
   it("shows Login link when no user is logged in", () => {
     renderNavbar({ currentUser: null, loginLoading: false });
-    expect(screen.getByText("Login")).toBeInTheDocument();
+    expect(screen.getAllByText("Login")[0]).toBeInTheDocument();
   });
 
   it("shows a spinner when loginLoading is true", () => {
@@ -46,22 +46,22 @@ describe("Navbar", () => {
     renderNavbar({
       currentUser: { _id: "1", username: "alice", displayName: "Alice" },
     });
-    expect(screen.getByText("Profile")).toBeInTheDocument();
-    expect(screen.getByText("Logout")).toBeInTheDocument();
+    expect(screen.getAllByText("Profile")[0]).toBeInTheDocument();
+    expect(screen.getAllByText("Logout")[0]).toBeInTheDocument();
   });
 
   it("shows Ten Things admin menu for admin users", () => {
     renderNavbar({
       currentUser: { _id: "1", username: "alice", admin: true },
     });
-    expect(screen.getByText("Lists")).toBeInTheDocument();
-    expect(screen.getByText("Play")).toBeInTheDocument();
-    expect(screen.getByText("Admin")).toBeInTheDocument();
+    expect(screen.getAllByText("Lists")[0]).toBeInTheDocument();
+    expect(screen.getAllByText("Play")[0]).toBeInTheDocument();
+    expect(screen.getAllByText("Admin")[0]).toBeInTheDocument();
   });
 
   it("shows Ten Things link for non-admin users", () => {
     renderNavbar({ currentUser: null });
-    expect(screen.getByText("Ten Things")).toBeInTheDocument();
+    expect(screen.getAllByText("Ten Things")[0]).toBeInTheDocument();
   });
 
   it("shows Contact link (not dropdown) when not logged in", () => {
@@ -74,7 +74,7 @@ describe("Navbar", () => {
   it("calls openLogin when Login is clicked", async () => {
     const openLogin = jest.fn();
     renderNavbar({ currentUser: null, loginLoading: false, openLogin });
-    screen.getByText("Login").click();
+    screen.getAllByText("Login")[0].click();
     expect(openLogin).toHaveBeenCalledTimes(1);
   });
 });

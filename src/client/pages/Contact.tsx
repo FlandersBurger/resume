@@ -213,8 +213,9 @@ export default function Contact() {
           </Field>
 
           <Field>
-            <label>Message</label>
+            <label htmlFor="message">Message</label>
             <textarea
+              id="message"
               className="form-control"
               rows={5}
               value={contact.message}
