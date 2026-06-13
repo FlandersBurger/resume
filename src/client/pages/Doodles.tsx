@@ -81,6 +81,7 @@ const games = [
   { to: "/minesweeper", icon: "fa fa-bomb", label: "Minesweeper", desc: "Don't hit the mines" },
   { to: "/workout", icon: "fa fa-heartbeat", label: "Workout", desc: "Get ripped" },
   { to: "/yahtzee", icon: "fa fa-dice", label: "Yahtzee", desc: "Roll for glory" },
+  { to: "/stew", icon: "fa fa-fire", label: "Beef Stew", desc: "Carbonnade Flamande" },
 ];
 
 const quizzes = [
