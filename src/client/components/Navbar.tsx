@@ -4,10 +4,42 @@ import { useApp } from "../context/AppContext";
 import { useState, useEffect, useRef } from "react";
 
 const NavbarToggle = styled.button`
-  .navbar-default & {
-    border-color: #fff;
-    color: #fff;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 5px;
+  width: 40px;
+  height: 40px;
+  padding: 0;
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+  cursor: pointer;
+  @media (max-width: 767px) {
+    display: flex !important;
   }
+  &:focus {
+    outline: none;
+    background: transparent !important;
+  }
+`;
+
+const HamBar = styled.span<{ $open: boolean; $which: number }>`
+  display: block;
+  width: 20px;
+  height: 2px;
+  background: #666;
+  border-radius: 1px;
+  transition:
+    transform 0.25s ease,
+    opacity 0.2s ease;
+  ${({ $open, $which }) =>
+    $open &&
+    ($which === 0
+      ? "transform: translateY(7px) rotate(45deg);"
+      : $which === 1
+        ? "opacity: 0; transform: scaleX(0);"
+        : "transform: translateY(-7px) rotate(-45deg);")}
 `;
 
 const ProfileImg = styled.img`
@@ -44,7 +76,7 @@ const Drawer = styled.div<{ $open: boolean }>`
     transform: translateX(${(p) => (p.$open ? "0" : "-100%")});
     transition: transform 0.25s ease;
     overflow-y: auto;
-    padding-top: 50px;
+    padding-top: 66px;
   }
 `;
 
@@ -166,20 +198,9 @@ export function Navbar() {
           <li>
             <Link to="/skills">Skills</Link>
           </li>
-          {currentUser ? (
-            <DrawerGroup label="Contact">
-              <li>
-                <Link to="/contact">Contact</Link>
-              </li>
-              <li>
-                <span onClick={openChat}>Chat</span>
-              </li>
-            </DrawerGroup>
-          ) : (
-            <li>
-              <Link to="/contact">Contact</Link>
-            </li>
-          )}
+          <li>
+            <Link to="/contact">Contact</Link>
+          </li>
           <li>
             <Link to="/doodles">Doodles</Link>
           </li>
@@ -233,14 +254,10 @@ export function Navbar() {
       <nav className="navbar navbar-default navbar-fixed-top">
         <div className="container-fluid">
           <div className="navbar-header">
-            <NavbarToggle
-              type="button"
-              className={`navbar-toggle${mobileOpen ? "" : " collapsed"}`}
-              onClick={() => setMobileOpen((o) => !o)}
-            >
-              <span className="icon-bar" />
-              <span className="icon-bar" />
-              <span className="icon-bar" />
+            <NavbarToggle type="button" className="navbar-toggle" onClick={() => setMobileOpen((o) => !o)}>
+              <HamBar $open={mobileOpen} $which={0} />
+              <HamBar $open={mobileOpen} $which={1} />
+              <HamBar $open={mobileOpen} $which={2} />
             </NavbarToggle>
             <Link className="navbar-brand" to="/home">
               Resume
@@ -254,22 +271,9 @@ export function Navbar() {
               <li>
                 <Link to="/skills">Skills</Link>
               </li>
-              {currentUser ? (
-                <Dropdown label="Contact">
-                  <li>
-                    <Link to="/contact">Contact</Link>
-                  </li>
-                  <li>
-                    <a style={{ cursor: "pointer" }} onClick={openChat}>
-                      Chat
-                    </a>
-                  </li>
-                </Dropdown>
-              ) : (
-                <li>
-                  <Link to="/contact">Contact</Link>
-                </li>
-              )}
+              <li>
+                <Link to="/contact">Contact</Link>
+              </li>
               <li>
                 <Link to="/doodles">Doodles</Link>
               </li>
