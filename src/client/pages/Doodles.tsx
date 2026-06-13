@@ -80,6 +80,7 @@ const games = [
   { to: "/lemmings", icon: "fa fa-users", label: "Lemmings", desc: "Or something like it" },
   { to: "/minesweeper", icon: "fa fa-bomb", label: "Minesweeper", desc: "Don't hit the mines" },
   { to: "/workout", icon: "fa fa-heartbeat", label: "Workout", desc: "Get ripped" },
+  { to: "/yahtzee", icon: "fa fa-dice", label: "Yahtzee", desc: "Roll for glory" },
 ];
 
 const quizzes = [
@@ -102,7 +103,7 @@ export default function Doodles() {
         <link rel="canonical" href="https://belgocanadian.com/doodles" />
       </Helmet>
 
-      <SectionLabel>Hobbies</SectionLabel>
+      <SectionLabel>Playground</SectionLabel>
       <CardGrid>
         <DoodleCard to="/hobbies" $index={0}>
           <CardIcon>
@@ -111,10 +112,6 @@ export default function Doodles() {
           <CardTitle>Hobbies</CardTitle>
           <CardDesc>Photos & interests</CardDesc>
         </DoodleCard>
-      </CardGrid>
-
-      <SectionLabel>Games</SectionLabel>
-      <CardGrid>
         {games.map((item, i) => (
           <DoodleCard key={item.to} to={item.to} $index={i + 1}>
             <CardIcon>
