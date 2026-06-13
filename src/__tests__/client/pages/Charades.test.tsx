@@ -18,9 +18,9 @@ afterEach(() => {
 });
 
 describe("Charades page", () => {
-  it("renders the Charades Generator heading", () => {
+  it("renders the Charades heading", () => {
     render(<Charades />);
-    expect(screen.getByText("Charades Generator")).toBeInTheDocument();
+    expect(screen.getByRole("heading", { level: 2 })).toHaveTextContent("Charades");
   });
 
   it("renders category buttons after data loads", async () => {
@@ -29,27 +29,29 @@ describe("Charades page", () => {
     expect(screen.getByText("Actions")).toBeInTheDocument();
   });
 
-  it("shows no word initially", () => {
+  it("shows no word initially", async () => {
     render(<Charades />);
-    // No h2 with a word yet
-    expect(screen.queryByRole("heading", { level: 2 })).not.toBeInTheDocument();
+    await waitFor(() => expect(screen.getByText("Animals")).toBeInTheDocument());
+    // Word card only appears after a category is selected
+    expect(screen.queryByText("Next word")).not.toBeInTheDocument();
   });
 
   it("shows a word from the selected category when a button is clicked", async () => {
     render(<Charades />);
     await waitFor(() => expect(screen.getByText("Animals")).toBeInTheDocument());
     await userEvent.click(screen.getByText("Animals"));
-    const word = screen.getByRole("heading", { level: 2 });
-    expect(charadesData.Animals).toContain(word.textContent);
+    expect(screen.getByText("Next word")).toBeInTheDocument();
+    const shown = charadesData.Animals.find((w) => screen.queryByText(w));
+    expect(shown).toBeDefined();
   });
 
-  it("changes the word when a different category is clicked", async () => {
+  it("shows a word from the new category when switching", async () => {
     render(<Charades />);
     await waitFor(() => expect(screen.getByText("Animals")).toBeInTheDocument());
     await userEvent.click(screen.getByText("Animals"));
     await userEvent.click(screen.getByText("Actions"));
-    const word = screen.getByRole("heading", { level: 2 });
-    expect(charadesData.Actions).toContain(word.textContent);
+    const shown = charadesData.Actions.find((w) => screen.queryByText(w));
+    expect(shown).toBeDefined();
   });
 
   it("fetches /charades.json on mount", async () => {

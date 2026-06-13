@@ -18,48 +18,47 @@ describe("Workout page", () => {
     expect(screen.getByDisplayValue("10")).toBeInTheDocument(); // default rest time
   });
 
-  it("renders the Start Workout button initially", () => {
+  it("renders the Start button initially", () => {
     render(<Workout />);
-    expect(screen.getByRole("button", { name: "Start Workout" })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Start" })).toBeInTheDocument();
   });
 
-  it("changes button to Stop Workout after clicking Start", async () => {
+  it("shows the Stop button after clicking Start", async () => {
     render(<Workout />);
-    await userEvent.click(screen.getByRole("button", { name: "Start Workout" }));
-    expect(screen.getByRole("button", { name: "Stop Workout" })).toBeInTheDocument();
+    await userEvent.click(screen.getByRole("button", { name: "Start" }));
+    expect(screen.getByRole("button", { name: "Stop" })).toBeInTheDocument();
   });
 
-  it("disables the time inputs while workout is running", async () => {
+  it("hides the time inputs while workout is running", async () => {
     render(<Workout />);
-    await userEvent.click(screen.getByRole("button", { name: "Start Workout" }));
-    expect(screen.getByDisplayValue("30")).toBeDisabled();
-    expect(screen.getByDisplayValue("10")).toBeDisabled();
+    await userEvent.click(screen.getByRole("button", { name: "Start" }));
+    expect(screen.queryByDisplayValue("30")).not.toBeInTheDocument();
+    expect(screen.queryByDisplayValue("10")).not.toBeInTheDocument();
   });
 
-  it("returns to Start Workout after clicking Stop", async () => {
+  it("returns to Start button after clicking Stop", async () => {
     render(<Workout />);
-    await userEvent.click(screen.getByRole("button", { name: "Start Workout" }));
-    await userEvent.click(screen.getByRole("button", { name: "Stop Workout" }));
-    expect(screen.getByRole("button", { name: "Start Workout" })).toBeInTheDocument();
+    await userEvent.click(screen.getByRole("button", { name: "Start" }));
+    await userEvent.click(screen.getByRole("button", { name: "Stop" }));
+    expect(screen.getByRole("button", { name: "Start" })).toBeInTheDocument();
   });
 
-  it("re-enables inputs after stopping", async () => {
+  it("shows inputs again after stopping", async () => {
     render(<Workout />);
-    await userEvent.click(screen.getByRole("button", { name: "Start Workout" }));
-    await userEvent.click(screen.getByRole("button", { name: "Stop Workout" }));
-    expect(screen.getByDisplayValue("30")).not.toBeDisabled();
+    await userEvent.click(screen.getByRole("button", { name: "Start" }));
+    await userEvent.click(screen.getByRole("button", { name: "Stop" }));
+    expect(screen.getByDisplayValue("30")).toBeInTheDocument();
   });
 
   it("shows the first exercise name after starting (with fake timers)", () => {
     jest.useFakeTimers();
     render(<Workout />);
     act(() => {
-      fireEvent.click(screen.getByRole("button", { name: "Start Workout" }));
+      fireEvent.click(screen.getByRole("button", { name: "Start" }));
     });
     act(() => {
       jest.advanceTimersByTime(1000);
     });
-    // First exercise is Jumping Jacks
     expect(screen.getByText(/Jumping Jacks/)).toBeInTheDocument();
     jest.useRealTimers();
   });
