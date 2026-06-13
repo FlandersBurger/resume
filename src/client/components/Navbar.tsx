@@ -151,7 +151,7 @@ function Dropdown({ label, children }: { label: React.ReactNode; children: React
 }
 
 export function Navbar() {
-  const { currentUser, logout, openLogin, loginLoading } = useApp();
+  const { currentUser, logout, openLogin, loginLoading, openChat } = useApp();
   const navigate = useNavigate();
   const [mobileOpen, setMobileOpen] = useState(false);
 
@@ -172,7 +172,7 @@ export function Navbar() {
                 <Link to="/contact">Contact</Link>
               </li>
               <li>
-                <Link to="/posts">Chat</Link>
+                <span onClick={openChat}>Chat</span>
               </li>
             </DrawerGroup>
           ) : (
@@ -180,49 +180,9 @@ export function Navbar() {
               <Link to="/contact">Contact</Link>
             </li>
           )}
-          <DrawerGroup label="Doodles">
-            <li>
-              <Link to="/hobbies">Hobbies</Link>
-            </li>
-            <li>
-              <Link to="/asteroids">Asteroids</Link>
-            </li>
-            <li>
-              <Link to="/bubbles">Bubbles</Link>
-            </li>
-            <li>
-              <Link to="/charades">Charades</Link>
-            </li>
-            <li>
-              <Link to="/workout">Workout</Link>
-            </li>
-            <li>
-              <Link to="/lemmings">Lemmings</Link>
-            </li>
-            <li>
-              <Link to="/minesweeper">Minesweeper</Link>
-            </li>
-          </DrawerGroup>
-          <DrawerGroup label="Quizzes">
-            <li>
-              <Link to="/google">Google</Link>
-            </li>
-            <li>
-              <Link to="/logos">Logos</Link>
-            </li>
-            <li>
-              <Link to="/animals">Animals</Link>
-            </li>
-            <li>
-              <Link to="/flags">Flags</Link>
-            </li>
-            <li>
-              <Link to="/movies">Movies</Link>
-            </li>
-            <li>
-              <Link to="/skeletons">Skeletons</Link>
-            </li>
-          </DrawerGroup>
+          <li>
+            <Link to="/doodles">Doodles</Link>
+          </li>
           {currentUser?.admin ? (
             <DrawerGroup label="Ten Things">
               <li>
@@ -300,7 +260,9 @@ export function Navbar() {
                     <Link to="/contact">Contact</Link>
                   </li>
                   <li>
-                    <Link to="/posts">Chat</Link>
+                    <a style={{ cursor: "pointer" }} onClick={openChat}>
+                      Chat
+                    </a>
                   </li>
                 </Dropdown>
               ) : (
@@ -308,49 +270,9 @@ export function Navbar() {
                   <Link to="/contact">Contact</Link>
                 </li>
               )}
-              <Dropdown label="Doodles">
-                <li>
-                  <Link to="/hobbies">Hobbies</Link>
-                </li>
-                <li>
-                  <Link to="/asteroids">Asteroids</Link>
-                </li>
-                <li>
-                  <Link to="/bubbles">Bubbles</Link>
-                </li>
-                <li>
-                  <Link to="/charades">Charades</Link>
-                </li>
-                <li>
-                  <Link to="/workout">Workout</Link>
-                </li>
-                <li>
-                  <Link to="/lemmings">Lemmings</Link>
-                </li>
-                <li>
-                  <Link to="/minesweeper">Minesweeper</Link>
-                </li>
-              </Dropdown>
-              <Dropdown label="Quizzes">
-                <li>
-                  <Link to="/google">Google</Link>
-                </li>
-                <li>
-                  <Link to="/logos">Logos</Link>
-                </li>
-                <li>
-                  <Link to="/animals">Animals</Link>
-                </li>
-                <li>
-                  <Link to="/flags">Flags</Link>
-                </li>
-                <li>
-                  <Link to="/movies">Movies</Link>
-                </li>
-                <li>
-                  <Link to="/skeletons">Skeletons</Link>
-                </li>
-              </Dropdown>
+              <li>
+                <Link to="/doodles">Doodles</Link>
+              </li>
               {currentUser?.admin ? (
                 <Dropdown label="Ten Things">
                   <li>
@@ -373,6 +295,13 @@ export function Navbar() {
               )}
             </ul>
             <ul className="nav navbar-nav navbar-right">
+              {currentUser && (
+                <li>
+                  <a style={{ cursor: "pointer" }} title="Chat" onClick={openChat}>
+                    <i className="fa fa-comments" />
+                  </a>
+                </li>
+              )}
               <li>
                 <a style={{ cursor: "pointer" }} title="Print resume" onClick={() => window.print()}>
                   <i className="fa fa-print" />

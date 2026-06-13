@@ -78,7 +78,8 @@ const HomeNav = styled.div`
 `;
 
 const HomeNavBtn = styled(Link)`
-  flex: 1 1 auto;
+  flex: 1 1 0;
+  text-align: center;
 `;
 
 export default function Home() {
@@ -172,16 +173,16 @@ export default function Home() {
 
       <HomeNav>
         <HomeNavBtn to="/experience" className="btn btn-default">
-          <i className="fa fa-briefcase" /> Experience
+          Experience
         </HomeNavBtn>
         <HomeNavBtn to="/skills" className="btn btn-default">
-          <i className="fa fa-code" /> Skills
+          Skills
         </HomeNavBtn>
-        <HomeNavBtn to="/hobbies" className="btn btn-default">
-          <i className="fa fa-heart" /> Hobbies
+        <HomeNavBtn to="/doodles" className="btn btn-default">
+          Doodles
         </HomeNavBtn>
         <HomeNavBtn to="/contact" className="btn btn-default">
-          <i className="fa fa-envelope" /> Contact
+          Contact
         </HomeNavBtn>
       </HomeNav>
     </HomePage>

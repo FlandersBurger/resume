@@ -52,6 +52,7 @@ interface AppContextValue {
   themeCounter: number;
   showLogin: boolean;
   loginLoading: boolean;
+  showChat: boolean;
   toast: (message: string) => void;
   setUser: (user: User | null) => void;
   flipTheme: () => void;
@@ -59,6 +60,8 @@ interface AppContextValue {
   openLogin: () => void;
   closeLogin: () => void;
   setLoginLoading: (v: boolean) => void;
+  openChat: () => void;
+  closeChat: () => void;
 }
 
 const AppContext = createContext<AppContextValue | null>(null);
@@ -68,6 +71,9 @@ export function AppProvider({ children }: { children: ReactNode }) {
   const [loginLoading, setLoginLoading] = useState(false);
   const openLogin = useCallback(() => setShowLogin(true), []);
   const closeLogin = useCallback(() => setShowLogin(false), []);
+  const [showChat, setShowChat] = useState(false);
+  const openChat = useCallback(() => setShowChat(true), []);
+  const closeChat = useCallback(() => setShowChat(false), []);
   const [state, dispatch] = useReducer(reducer, {
     currentUser: null,
     toasts: [],
@@ -117,6 +123,9 @@ export function AppProvider({ children }: { children: ReactNode }) {
         logout,
         openLogin,
         closeLogin,
+        showChat,
+        openChat,
+        closeChat,
       }}
     >
       {children}

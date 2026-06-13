@@ -3,6 +3,7 @@ import { createGlobalStyle } from "styled-components";
 import { AppProvider } from "./context/AppContext";
 import { Navbar } from "./components/Navbar";
 import { ToastContainer } from "./components/ToastContainer";
+import { ChatDrawer } from "./components/ChatDrawer";
 import Print from "./pages/Print";
 import { lazy, Suspense } from "react";
 import { useApp } from "./context/AppContext";
@@ -14,6 +15,7 @@ const Home = lazy(() => import("./pages/Home"));
 const Experience = lazy(() => import("./pages/Experience"));
 const Skills = lazy(() => import("./pages/Skills"));
 const Hobbies = lazy(() => import("./pages/Hobbies"));
+const Doodles = lazy(() => import("./pages/Doodles"));
 const Contact = lazy(() => import("./pages/Contact"));
 const Posts = lazy(() => import("./pages/Posts"));
 const Profile = lazy(() => import("./pages/Profile"));
@@ -129,6 +131,7 @@ export default function App() {
       <Navbar />
       <ToastContainer />
       <LazyLoginModal />
+      <ChatDrawer />
       <Print />
       <div className="container page">
         <Suspense fallback={null}>
@@ -137,6 +140,7 @@ export default function App() {
             <Route path="/home" element={<Home />} />
             <Route path="/experience" element={<Experience />} />
             <Route path="/skills" element={<Skills />} />
+            <Route path="/doodles" element={<Doodles />} />
             <Route path="/hobbies" element={<Hobbies />} />
             <Route path="/hobbies/:hobby" element={<Hobbies />} />
             <Route path="/contact" element={<Contact />} />
