@@ -112,13 +112,23 @@ export const queueGuess = async (game: IGame, player: IPlayer, answer: string) =
   }
 };
 
-const queueingGuess = (guess: Guess) => guessQueue.add(guess);
+const queueingGuess = (guess: Guess) => {
+  guessQueue.add(guess);
+};
 
-guessQueue.process(async ({ data }, done) => {
+guessQueue.process(async (job) => {
+  const { data } = job;
+  const jobAgeMs = Date.now() - job.timestamp;
+  if (jobAgeMs > 30000) {
+    console.log(
+      `[guessQueue.process] Skipping stale job (${Math.round(jobAgeMs / 1000)}s old, created before this session)`,
+    );
+    return;
+  }
   try {
     await processGuess(data);
   } catch (err) {
-    const game = await Game.findOne({ telegramChatId: data.game });
+    const game = await Game.findOne({ _id: data.gameId });
     if (game) {
       try {
         await game.validate();
@@ -136,7 +146,6 @@ guessQueue.process(async ({ data }, done) => {
     notifyAdmin(`Error in ProcessGuess`);
     console.error(err);
   }
-  done();
 });
 
 const processGuess = async (guess: Guess) => {

@@ -8,6 +8,8 @@ import {
   REST,
   Routes,
   Interaction,
+  ActionRowBuilder,
+  ButtonBuilder,
 } from "discord.js";
 import Queue, { Job } from "bull";
 import redis from "@root/queue";
@@ -79,6 +81,16 @@ chatQueue.on("completed", function (job: Job) {
 
 type MessageHandler = (message: DiscordMessage) => Promise<void>;
 
+export type DiscordButtonInteraction = {
+  userId: string;
+  username: string;
+  displayName: string;
+  channelId: string;
+  customId: string;
+};
+
+type ButtonHandler = (interaction: DiscordButtonInteraction) => Promise<void>;
+
 const slashCommands = [
   { name: "ping", description: "Check if the bot is alive" },
   { name: "start", description: "Start the game" },
@@ -117,6 +129,7 @@ class DiscordBot {
   private client: Client;
   private token: string;
   private messageHandler: MessageHandler | null = null;
+  private buttonHandler: ButtonHandler | null = null;
 
   constructor(token: string) {
     this.token = token;
@@ -139,6 +152,20 @@ class DiscordBot {
     });
 
     this.client.on(Events.InteractionCreate, async (interaction: Interaction) => {
+      if (interaction.isButton()) {
+        await interaction.deferUpdate();
+        if (this.buttonHandler) {
+          await this.buttonHandler({
+            userId: interaction.user.id,
+            username: interaction.user.username,
+            displayName: interaction.user.displayName,
+            channelId: interaction.channelId,
+            customId: interaction.customId,
+          });
+        }
+        return;
+      }
+
       if (!interaction.isChatInputCommand()) return;
       if ((await redis.get("pause")) === "true") return;
 
@@ -168,6 +195,12 @@ class DiscordBot {
       if (message.author.bot) return;
       if ((await redis.get("pause")) === "true") return;
 
+      // Deduplicate by Discord message ID to guard against WebSocket resume replays
+      // or concurrent bot instances processing the same event.
+      const dedupKey = `discord:msg:${message.id}`;
+      const isNew = await redis.set(dedupKey, "1", { NX: true, EX: 60 });
+      if (!isNew) return;
+
       const domainMessage = this.toDomainMessage(message);
       if (domainMessage && this.messageHandler) {
         await this.messageHandler(domainMessage);
@@ -196,6 +229,26 @@ class DiscordBot {
 
   public onMessage = (handler: MessageHandler) => {
     this.messageHandler = handler;
+  };
+
+  public onButton = (handler: ButtonHandler) => {
+    this.buttonHandler = handler;
+  };
+
+  public sendMessageWithComponents = async (
+    channel: DiscordChannel,
+    message: string,
+    components: ActionRowBuilder<ButtonBuilder>[],
+  ) => {
+    try {
+      const ch = await this.client.channels.fetch(channel.channelId);
+      if (ch && ch.isTextBased()) {
+        const discordMessage = this.htmlToMarkdown(message);
+        await (ch as TextChannel).send({ content: discordMessage, components });
+      }
+    } catch (error: any) {
+      console.error(`Discord send with components error in ${channel.channelId}:`, error?.message);
+    }
   };
 
   private registerCommands = async (appId: string) => {

@@ -3,8 +3,11 @@ import { activate, createMaingame, newRound } from "@tenthings/maingame";
 
 import discordBot, { DiscordMessage } from "@root/connections/discord";
 import { Command, evaluate, translateCommand } from "@tenthings/providers/discord/commands";
+import handleButton from "@tenthings/providers/discord/callbacks";
 
 export const initDiscordBot = () => {
+  discordBot.onButton(handleButton);
+
   discordBot.onMessage(async (msg: DiscordMessage) => {
     if (!msg.from?.id) return;
 

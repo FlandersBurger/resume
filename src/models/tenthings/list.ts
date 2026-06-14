@@ -5,7 +5,7 @@ import { IUser } from "@models/user";
 import { SupportedLanguage } from "@tenthings/languages";
 
 export interface IVote {
-  voter: number;
+  voter: number | string;
   vote: number;
   date: Date;
   modifyDate: Date;

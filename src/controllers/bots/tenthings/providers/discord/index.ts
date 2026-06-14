@@ -20,6 +20,7 @@ import { Player } from "@root/models";
 import { HydratedDocument } from "mongoose";
 import { BotLanguage } from "@tenthings/languages";
 import { getListStats } from "@tenthings/providers/telegram/stats";
+import { likeListButtons } from "./keyboards";
 import emojis from "../../emojis";
 
 const getDailyScores = async ({ _id, settings }: IGame, limit = 0) => {
@@ -56,7 +57,7 @@ export const discord: Provider = {
   endOfRound: async (game: IGame, list: IList) => {
     let message = getListStats(game.settings.language, list, undefined);
     message += await getDailyScores(game, 5);
-    bot.queueMessage(game.discordChannel, message);
+    bot.sendMessageWithComponents(game.discordChannel, message, [likeListButtons(game)]);
   },
   skipList: (game: IGame) => {
     let message = `${i18n(game.settings.language, "sentences.skippedList", {
