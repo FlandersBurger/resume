@@ -1,4 +1,14 @@
-import { Client, GatewayIntentBits, Message, Partials, TextChannel, Events } from "discord.js";
+import {
+  Client,
+  GatewayIntentBits,
+  Message,
+  Partials,
+  TextChannel,
+  Events,
+  REST,
+  Routes,
+  Interaction,
+} from "discord.js";
 import Queue, { Job } from "bull";
 import redis from "@root/queue";
 import { maskUrls } from "@utils/string-helpers";
@@ -69,11 +79,47 @@ chatQueue.on("completed", function (job: Job) {
 
 type MessageHandler = (message: DiscordMessage) => Promise<void>;
 
+const slashCommands = [
+  { name: "ping", description: "Check if the bot is alive" },
+  { name: "start", description: "Start the game" },
+  { name: "stop", description: "Stop the game" },
+  { name: "list", description: "Show the current list" },
+  { name: "lists", description: "Show upcoming lists in queue" },
+  { name: "skip", description: "Skip the current list" },
+  { name: "veto", description: "Veto a skip" },
+  { name: "hint", description: "Get a hint for the main game" },
+  { name: "minigame", description: "Show the minigame" },
+  { name: "minihint", description: "Get a hint for the minigame" },
+  { name: "miniskip", description: "Skip the minigame" },
+  { name: "tinygame", description: "Show the tinygame" },
+  { name: "tinyhint", description: "Get a hint for the tinygame" },
+  { name: "tinyskip", description: "Skip the tinygame" },
+  { name: "score", description: "Show daily scores" },
+  { name: "me", description: "Show top 10 scores" },
+  { name: "categories", description: "Show and manage categories" },
+  { name: "stats", description: "Show game statistics" },
+  { name: "intro", description: "Show introduction" },
+  { name: "logic", description: "Show game rules" },
+  { name: "help", description: "Show available commands" },
+  {
+    name: "search",
+    description: "Search for a list to add to the queue",
+    options: [{ type: 3, name: "text", description: "Search term", required: true }],
+  },
+  {
+    name: "error",
+    description: "Report an error",
+    options: [{ type: 3, name: "text", description: "Description", required: false }],
+  },
+];
+
 class DiscordBot {
   private client: Client;
+  private token: string;
   private messageHandler: MessageHandler | null = null;
 
   constructor(token: string) {
+    this.token = token;
     this.client = new Client({
       intents: [
         GatewayIntentBits.Guilds,
@@ -84,8 +130,38 @@ class DiscordBot {
       partials: [Partials.Channel, Partials.Message],
     });
 
-    this.client.once(Events.ClientReady, (readyClient) => {
+    this.client.once(Events.ClientReady, async (readyClient) => {
       console.log(chalk.blue(`Discord bot ready: ${readyClient.user.tag}`));
+      const appId = process.env.DISCORD_APP_ID;
+      if (appId) {
+        await this.registerCommands(appId);
+      }
+    });
+
+    this.client.on(Events.InteractionCreate, async (interaction: Interaction) => {
+      if (!interaction.isChatInputCommand()) return;
+      if ((await redis.get("pause")) === "true") return;
+
+      await interaction.deferReply({ ephemeral: true });
+
+      const domainMessage: DiscordMessage = {
+        id: interaction.id,
+        from: {
+          id: interaction.user.id,
+          username: maskUrls(interaction.user.username),
+          displayName: maskUrls(interaction.user.displayName),
+          bot: interaction.user.bot,
+        },
+        command: interaction.commandName,
+        text: interaction.options.getString("text") ?? "",
+        channelId: interaction.channelId,
+      };
+
+      if (this.messageHandler) {
+        await this.messageHandler(domainMessage);
+      }
+
+      await interaction.deleteReply();
     });
 
     this.client.on(Events.MessageCreate, async (message: Message) => {
@@ -120,6 +196,12 @@ class DiscordBot {
 
   public onMessage = (handler: MessageHandler) => {
     this.messageHandler = handler;
+  };
+
+  private registerCommands = async (appId: string) => {
+    const rest = new REST().setToken(this.token);
+    await rest.put(Routes.applicationCommands(appId), { body: slashCommands });
+    console.log(chalk.blue(`Discord slash commands registered (${slashCommands.length})`));
   };
 
   private toDomainUser = (author: Message["author"]): DiscordUser => ({
