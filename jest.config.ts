@@ -11,7 +11,19 @@ const config: Config = {
       roots: ["<rootDir>/src"],
       testMatch: ["<rootDir>/src/__tests__/utils/**/*.test.ts", "<rootDir>/src/__tests__/server/**/*.test.ts"],
       transform: {
-        "^.+\\.tsx?$": ["ts-jest", { tsconfig: "<rootDir>/tsconfig.json" }],
+        "^.+\\.tsx?$": [
+          "ts-jest",
+          {
+            tsconfig: {
+              types: ["jest"],
+              module: "commonjs",
+              moduleResolution: "node",
+              esModuleInterop: true,
+              noUnusedLocals: false,
+              noUnusedParameters: false,
+            },
+          },
+        ],
       },
       moduleNameMapper: {
         "^@root/(.*)$": "<rootDir>/src/$1",
