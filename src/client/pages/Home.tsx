@@ -1,12 +1,7 @@
 import { Link } from "react-router-dom";
 import styled from "styled-components";
 import { Helmet } from "react-helmet-async";
-
-const HomePage = styled.div`
-  max-width: 700px;
-  margin: 40px auto;
-  padding: 0 16px;
-`;
+import { PageContainer } from "../components/layout";
 
 const HomeHero = styled.div`
   display: flex;
@@ -84,7 +79,7 @@ const HomeNavBtn = styled(Link)`
 
 export default function Home() {
   return (
-    <HomePage>
+    <PageContainer $maxWidth="700px">
       <Helmet>
         <title>Laurent Debacker — Full Stack Developer</title>
         <meta
@@ -185,6 +180,6 @@ export default function Home() {
           Contact
         </HomeNavBtn>
       </HomeNav>
-    </HomePage>
+    </PageContainer>
   );
 }

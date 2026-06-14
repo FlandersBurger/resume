@@ -1,27 +1,8 @@
 import { Link } from "react-router-dom";
-import styled, { keyframes } from "styled-components";
+import styled from "styled-components";
 import { Helmet } from "react-helmet-async";
-
-const fadeInUp = keyframes`
-  from { opacity: 0; transform: translateY(12px); }
-  to   { opacity: 1; transform: translateY(0); }
-`;
-
-const DoodlesPage = styled.div`
-  max-width: 860px;
-  margin: 0 auto;
-  padding: 0 16px 40px;
-`;
-
-const SectionLabel = styled.h4`
-  text-transform: uppercase;
-  letter-spacing: 0.1em;
-  font-size: 0.72em;
-  color: #aaa;
-  margin: 28px 0 10px;
-  padding-bottom: 6px;
-  border-bottom: 1px solid #eee;
-`;
+import { PageContainer, SectionLabel } from "../components/layout";
+import { fadeInUp } from "../styles/animations";
 
 const CardGrid = styled.div`
   display: grid;
@@ -95,7 +76,7 @@ const quizzes = [
 
 export default function Doodles() {
   return (
-    <DoodlesPage>
+    <PageContainer $maxWidth="860px">
       <Helmet>
         <title>Doodles — Laurent Debacker</title>
         <meta name="description" content="Games, quizzes, and hobby galleries." />
@@ -136,6 +117,6 @@ export default function Doodles() {
           </DoodleCard>
         ))}
       </CardGrid>
-    </DoodlesPage>
+    </PageContainer>
   );
 }

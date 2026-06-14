@@ -1,5 +1,6 @@
 import styled from "styled-components";
 import { Helmet } from "react-helmet-async";
+import { PageContainer, SectionLabel } from "../components/layout";
 
 // ─── Data ─────────────────────────────────────────────────────────────────────
 
@@ -69,12 +70,6 @@ const steps: { text: string; photos: number[] }[] = [
 ];
 
 // ─── Styled ───────────────────────────────────────────────────────────────────
-
-const Page = styled.div`
-  max-width: 740px;
-  margin: 0 auto;
-  padding: 0 16px 60px;
-`;
 
 const Hero = styled.img`
   width: 100%;
@@ -162,16 +157,6 @@ const Ingredient = styled.li`
   }
 `;
 
-const SectionLabel = styled.h4`
-  text-transform: uppercase;
-  letter-spacing: 0.1em;
-  font-size: 0.72em;
-  color: #aaa;
-  margin: 0 0 16px;
-  padding-bottom: 6px;
-  border-bottom: 1px solid #eee;
-`;
-
 const StepList = styled.div`
   display: flex;
   flex-direction: column;
@@ -236,7 +221,7 @@ const StepPhoto = styled.img`
 
 export default function Stew() {
   return (
-    <Page>
+    <PageContainer $maxWidth="740px">
       <Helmet>
         <title>Belgian Beef Stew — Laurent Debacker</title>
         <meta
@@ -290,6 +275,6 @@ export default function Stew() {
           </StepRow>
         ))}
       </StepList>
-    </Page>
+    </PageContainer>
   );
 }

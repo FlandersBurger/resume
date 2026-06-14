@@ -3,6 +3,7 @@ import { fetchPosts, createPost, getPost, Post } from "../services/posts";
 import { useApp } from "../context/AppContext";
 import { useWebSocket } from "../hooks/useWebSocket";
 import { Helmet } from "react-helmet-async";
+import { PageContainer } from "../components/layout";
 
 export default function Posts() {
   const { currentUser } = useApp();
@@ -33,7 +34,7 @@ export default function Posts() {
     .slice(0, 50);
 
   return (
-    <div className="container">
+    <PageContainer>
       <Helmet>
         <title>Posts — Laurent Debacker</title>
         <meta name="description" content="Personal posts and updates by Laurent Debacker." />
@@ -41,7 +42,6 @@ export default function Posts() {
         <meta property="og:url" content="https://belgocanadian.com/posts" />
         <link rel="canonical" href="https://belgocanadian.com/posts" />
       </Helmet>
-      <br />
       <div className="form-group">
         <div className="input-group">
           <input
@@ -76,6 +76,6 @@ export default function Posts() {
           ))}
         </ul>
       )}
-    </div>
+    </PageContainer>
   );
 }

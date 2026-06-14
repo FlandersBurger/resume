@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { useApp } from "../context/AppContext";
 import { updateUser, changeUsername, changePassword } from "../services/users";
+import { PageContainer } from "../components/layout";
 
 export default function Profile() {
   const { currentUser, setUser, toast } = useApp();
@@ -92,7 +93,7 @@ export default function Profile() {
   };
 
   return (
-    <div className="container" id="profile-page">
+    <PageContainer id="profile-page">
       <h1>Profile</h1>
       <div className="form-group">
         {usernameToggle ? (
@@ -228,6 +229,6 @@ export default function Profile() {
           Change Password
         </button>
       </form>
-    </div>
+    </PageContainer>
   );
 }

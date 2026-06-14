@@ -6,37 +6,56 @@ import { Helmet } from "react-helmet-async";
 const ExperiencePage = styled.div`
   padding-bottom: 100px;
   p.story {
-    padding: 8px;
+    padding: 8px 0;
   }
   .list-group {
-    padding: 8px;
+    padding: 8px 0;
   }
 `;
 
 const JobRow = styled.div`
-  min-height: 100px;
-  margin: 10px;
+  display: grid;
+  grid-template-columns: 120px 1fr;
+  grid-template-areas:
+    "logo title"
+    "logo body";
+  gap: 0 16px;
+  margin: 10px 0;
+
+  @media (max-width: 767px) {
+    grid-template-columns: 90px 1fr;
+    grid-template-areas:
+      "logo title"
+      "body body";
+  }
+`;
+
+const JobLogoArea = styled.div`
+  grid-area: logo;
+`;
+
+const JobTitleArea = styled.div`
+  grid-area: title;
+`;
+
+const JobBodyArea = styled.div`
+  grid-area: body;
+  margin-top: 10px;
+  @media (max-width: 767px) {
+    padding-left: 8px;
+  }
 `;
 
 const JobImageBox = styled.div`
-  min-width: 90px;
   box-shadow: 5px 5px 5px #888;
   border-radius: 7px;
   border: 1px solid #ddd;
   background-color: #fff;
   padding: 5px;
-  @media (max-width: 768px) {
-    margin-top: 10px;
-    text-align: center;
-    img {
-      max-height: 80px;
-    }
-  }
-  @media (min-width: 768px) {
-    margin-top: 20px;
-    img {
-      width: 100%;
-    }
+  margin-top: 10px;
+  img {
+    width: 100%;
+    display: block;
   }
 `;
 
@@ -101,95 +120,93 @@ function JobSection({ job, skills }: { job: Job; skills: Skill[] }) {
   const getSkill = (code: string) => skills.find((s) => s.code === code);
 
   return (
-    <JobRow className="row">
-      <div className="col-md-2 col-sm-3 col-xs-4 job-header">
+    <JobRow>
+      <JobLogoArea>
         <JobImageBox>
           <img src={`/experience/${job.image}`} alt={job.company} />
         </JobImageBox>
-      </div>
-      <div className="col-md-10 col-sm-9 col-xs-8">
-        <div className="job-title">
-          <h2>{job.company}</h2>
-          <h4>
-            {job.title} ~ {getTimeSpan(job)}
-          </h4>
-        </div>
-        <div className="job-body">
-          {job.projects?.length || job.responsibilities?.length ? (
-            <ul className="nav nav-pills">
-              <li className={tab === "story" ? "active" : ""}>
-                <a onClick={() => setTab("story")} style={{ cursor: "pointer" }}>
-                  Story
+      </JobLogoArea>
+      <JobTitleArea>
+        <h2>{job.company}</h2>
+        <h4>
+          {job.title} ~ {getTimeSpan(job)}
+        </h4>
+      </JobTitleArea>
+      <JobBodyArea>
+        {job.projects?.length || job.responsibilities?.length ? (
+          <ul className="nav nav-pills">
+            <li className={tab === "story" ? "active" : ""}>
+              <a onClick={() => setTab("story")} style={{ cursor: "pointer" }}>
+                Story
+              </a>
+            </li>
+            {job.projects && job.projects.length > 0 && (
+              <li className={tab === "projects" ? "active" : ""}>
+                <a onClick={() => setTab("projects")} style={{ cursor: "pointer" }}>
+                  Projects
                 </a>
               </li>
-              {job.projects && job.projects.length > 0 && (
-                <li className={tab === "projects" ? "active" : ""}>
-                  <a onClick={() => setTab("projects")} style={{ cursor: "pointer" }}>
-                    Projects
-                  </a>
-                </li>
-              )}
-              {job.responsibilities && job.responsibilities.length > 0 && (
-                <li className={tab === "responsibilities" ? "active" : ""}>
-                  <a onClick={() => setTab("responsibilities")} style={{ cursor: "pointer" }}>
-                    Responsibilities
-                  </a>
-                </li>
-              )}
-            </ul>
-          ) : null}
+            )}
+            {job.responsibilities && job.responsibilities.length > 0 && (
+              <li className={tab === "responsibilities" ? "active" : ""}>
+                <a onClick={() => setTab("responsibilities")} style={{ cursor: "pointer" }}>
+                  Responsibilities
+                </a>
+              </li>
+            )}
+          </ul>
+        ) : null}
 
-          {tab === "story" && <p className="story">{job.story}</p>}
+        {tab === "story" && <p className="story">{job.story}</p>}
 
-          {tab === "projects" && job.projects && (
-            <div>
-              {job.projects.map((project, i) => (
-                <div key={i}>
-                  <h4>{project.name}</h4>
-                  {project.url && (
-                    <a href={project.url} target="_blank" rel="noreferrer">
-                      {project.url}
-                    </a>
-                  )}
-                  {project.description && (
-                    <p dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(project.description) }} />
-                  )}
-                  {project.tldr && (
-                    <p>
-                      <strong title="Too Long; Didn't Read">TL;DR</strong>{" "}
-                      <span dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(project.tldr) }} />
-                    </p>
-                  )}
-                  <div className="clearfix">
-                    {[...project.skills].sort().map((skillCode) => {
-                      const skill = getSkill(skillCode);
-                      if (!skill) return null;
-                      return (
-                        <ProjectSkill key={skillCode} title={skill.name}>
-                          <ProjectSkillImage src={`/skills/${skill.image}`} alt={skill.name} />
-                        </ProjectSkill>
-                      );
-                    })}
-                  </div>
-                  {i < job.projects!.length - 1 && <hr />}
+        {tab === "projects" && job.projects && (
+          <div>
+            {job.projects.map((project, i) => (
+              <div key={i}>
+                <h4>{project.name}</h4>
+                {project.url && (
+                  <a href={project.url} target="_blank" rel="noreferrer">
+                    {project.url}
+                  </a>
+                )}
+                {project.description && (
+                  <p dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(project.description) }} />
+                )}
+                {project.tldr && (
+                  <p>
+                    <strong title="Too Long; Didn't Read">TL;DR</strong>{" "}
+                    <span dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(project.tldr) }} />
+                  </p>
+                )}
+                <div className="clearfix">
+                  {[...project.skills].sort().map((skillCode) => {
+                    const skill = getSkill(skillCode);
+                    if (!skill) return null;
+                    return (
+                      <ProjectSkill key={skillCode} title={skill.name}>
+                        <ProjectSkillImage src={`/skills/${skill.image}`} alt={skill.name} />
+                      </ProjectSkill>
+                    );
+                  })}
                 </div>
-              ))}
-            </div>
-          )}
+                {i < job.projects!.length - 1 && <hr />}
+              </div>
+            ))}
+          </div>
+        )}
 
-          {tab === "responsibilities" && job.responsibilities && (
-            <ul className="list-group">
-              {[...job.responsibilities]
-                .sort((a, b) => a.name.localeCompare(b.name))
-                .map((r) => (
-                  <li key={r.name} className="list-group-item">
-                    <strong>{r.name}:</strong> {r.description}
-                  </li>
-                ))}
-            </ul>
-          )}
-        </div>
-      </div>
+        {tab === "responsibilities" && job.responsibilities && (
+          <ul className="list-group">
+            {[...job.responsibilities]
+              .sort((a, b) => a.name.localeCompare(b.name))
+              .map((r) => (
+                <li key={r.name} className="list-group-item">
+                  <strong>{r.name}:</strong> {r.description}
+                </li>
+              ))}
+          </ul>
+        )}
+      </JobBodyArea>
     </JobRow>
   );
 }

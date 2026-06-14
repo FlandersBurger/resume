@@ -1,10 +1,8 @@
 import { Helmet } from "react-helmet-async";
 import styled from "styled-components";
+import { PageContainer } from "../components/layout";
 
-const TermsPage = styled.div`
-  max-width: 800px;
-  margin: 40px auto;
-  padding: 0 20px;
+const TermsPage = styled(PageContainer)`
   line-height: 1.7;
 `;
 

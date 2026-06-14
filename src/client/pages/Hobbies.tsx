@@ -1,14 +1,8 @@
 import { useEffect, useState } from "react";
-import styled, { keyframes } from "styled-components";
+import styled from "styled-components";
 import { useNavigate, useParams } from "react-router-dom";
 import { Helmet } from "react-helmet-async";
-
-const fadeInUp = keyframes`
-  from { opacity: 0; transform: translateY(14px); }
-  to   { opacity: 1; transform: translateY(0); }
-`;
-
-const HobbiesPage = styled.div``;
+import { fadeInUp } from "../styles/animations";
 
 const AnimatedButton = styled.button<{ $index: number }>`
   opacity: 0;
@@ -78,7 +72,7 @@ export default function Hobbies() {
   }, []);
 
   return (
-    <HobbiesPage>
+    <>
       <Helmet>
         <title>Hobbies — Laurent Debacker</title>
         <meta
@@ -133,6 +127,6 @@ export default function Hobbies() {
           ))}
         </ImageGrid>
       )}
-    </HobbiesPage>
+    </>
   );
 }

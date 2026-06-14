@@ -3,12 +3,7 @@ import styled from "styled-components";
 import { sendEmail } from "../services/email";
 import { useApp } from "../context/AppContext";
 import { Helmet } from "react-helmet-async";
-
-const Page = styled.div`
-  max-width: 540px;
-  margin: 0 auto;
-  padding: 24px 16px 40px;
-`;
+import { PageContainer } from "../components/layout";
 
 const FieldRow = styled.div`
   display: grid;
@@ -137,7 +132,7 @@ export default function Contact() {
   };
 
   return (
-    <Page>
+    <PageContainer $maxWidth="540px">
       <Helmet>
         <title>Contact — Laurent Debacker</title>
         <meta
@@ -228,6 +223,6 @@ export default function Contact() {
           </button>
         </form>
       )}
-    </Page>
+    </PageContainer>
   );
 }

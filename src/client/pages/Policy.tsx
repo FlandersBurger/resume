@@ -1,10 +1,8 @@
 import { Helmet } from "react-helmet-async";
 import styled from "styled-components";
+import { PageContainer } from "../components/layout";
 
-const PolicyPage = styled.div`
-  max-width: 800px;
-  margin: 40px auto;
-  padding: 0 20px;
+const PolicyPage = styled(PageContainer)`
   line-height: 1.7;
 `;
 

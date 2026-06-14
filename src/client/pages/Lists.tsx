@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { getCategories, addCategory, addTask, Category } from "../services/categories";
+import { PageContainer } from "../components/layout";
 
 interface SelectedTask {
   name: string;
@@ -81,7 +82,7 @@ export default function Lists() {
     .slice(0, 10);
 
   return (
-    <div className="container">
+    <PageContainer>
       <form className="form-group">
         <h2
           onClick={() => setShowCategory(selectedCategory ? !showCategory : true)}
@@ -158,6 +159,6 @@ export default function Lists() {
           ))}
         </div>
       )}
-    </div>
+    </PageContainer>
   );
 }
