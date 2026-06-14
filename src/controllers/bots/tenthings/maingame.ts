@@ -21,6 +21,7 @@ import { notifyAdmin } from "./notify";
 export const createMaingame = async (platformSettings: {
   telegramChatId?: number;
   telegramTopicId?: number;
+  webGameId?: number;
   platform: Platform;
   discordChannelId?: string;
 }): Promise<HydratedDocument<IGame>> => {

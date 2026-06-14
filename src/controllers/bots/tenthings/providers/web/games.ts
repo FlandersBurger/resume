@@ -4,13 +4,13 @@ import { IGame } from "@models/tenthings/game";
 import { HydratedDocument } from "mongoose";
 import { getHint } from "@tenthings/hints";
 
-export const getWebGame = async (telegramChatId: number = 1): Promise<HydratedDocument<IGame>> => {
-  let game = await Game.findOne({ platform: "web", telegramChatId })
+export const getWebGame = async (webGameId: number = 1): Promise<HydratedDocument<IGame>> => {
+  let game = await Game.findOne({ platform: "web", webGameId })
     .populate("list.creator")
     .populate("list.values.guesser", "username first_name")
     .select("-playedLists");
   if (!game) {
-    game = await createMaingame({ platform: "web", telegramChatId });
+    game = await createMaingame({ platform: "web", webGameId });
   }
   const valuesLeft = game.list.values.filter(({ guesser }: any) => !guesser).length;
   if (game.list.values.length === 0 || valuesLeft === 0) {

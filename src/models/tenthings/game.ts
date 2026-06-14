@@ -49,6 +49,7 @@ export interface IGame {
   platform: Platform;
   telegramChatId?: number;
   telegramTopicId?: number;
+  webGameId?: number;
   channelId: string;
   isPersonalChat: boolean;
   telegramChannel: { chat: number; topic?: number };
@@ -96,6 +97,7 @@ const gameSchema = new Schema<IGame>(
     platform: { type: String, required: true, default: "telegram" },
     telegramChatId: { type: Number, required: false, unique: true, sparse: true },
     telegramTopicId: { type: Number, required: false },
+    webGameId: { type: Number, required: false, unique: true, sparse: true },
     discordChannelId: { type: String, required: false, unique: true, sparse: true },
     enabled: { type: Boolean, required: true, default: true },
     hints: { type: Number, required: true, default: 0 },
@@ -169,7 +171,7 @@ gameSchema.virtual("provider").get(function () {
 });
 
 gameSchema.virtual("channelId").get(function () {
-  return this.telegramChatId?.toString() ?? this.discordChannelId ?? "";
+  return this.telegramChatId?.toString() ?? this.discordChannelId ?? this.webGameId?.toString() ?? "";
 });
 
 gameSchema.virtual("isPersonalChat").get(function () {
@@ -185,11 +187,12 @@ gameSchema.virtual("discordChannel").get(function () {
 });
 
 gameSchema.pre("validate", function () {
-  if (this.telegramChatId != null && this.discordChannelId) {
-    this.invalidate("telegramChatId", "A game cannot have both telegramChatId and discordChannelId");
+  const ids = [this.telegramChatId, this.discordChannelId, this.webGameId].filter((id) => id != null);
+  if (ids.length > 1) {
+    this.invalidate("telegramChatId", "A game must have exactly one of telegramChatId, discordChannelId, or webGameId");
   }
-  if (this.telegramChatId == null && !this.discordChannelId) {
-    this.invalidate("telegramChatId", "A game must have either telegramChatId or discordChannelId");
+  if (ids.length === 0) {
+    this.invalidate("telegramChatId", "A game must have one of telegramChatId, discordChannelId, or webGameId");
   }
 });
 
