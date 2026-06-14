@@ -4,7 +4,7 @@
     "rebuild": "rimraf dist && npm run bundle",
     "bundle": "tsc -p src/. && tsc-alias",
     "build": "tsc && tsc-alias",
-    "watch": "concurrently --kill-others \"tsc -w -p src/.\" \"tsc-alias -w\" \"npm run dev\"",
+    "watch": "tsx watch src/server.ts",
     "dev": "tsx src/server.ts",
     "start": "npm run build -- -w",
     "translate": "cd src/scripts && node i18n-scanner.js",
