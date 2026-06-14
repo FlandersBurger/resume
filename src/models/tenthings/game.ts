@@ -47,8 +47,8 @@ export interface IGameList {
 export interface IGame {
   _id: Types.ObjectId;
   platform: Platform;
-  chat_id?: number;
-  topicId?: number;
+  telegramChatId?: number;
+  telegramTopicId?: number;
   channelId: string;
   isPersonalChat: boolean;
   telegramChannel: { chat: number; topic?: number };
@@ -94,8 +94,8 @@ let Game: { [key: string]: Model<IGame> } = {};
 const gameSchema = new Schema<IGame>(
   {
     platform: { type: String, required: true, default: "telegram" },
-    chat_id: { type: Number, required: false, unique: true, sparse: true },
-    topicId: { type: Number, required: false },
+    telegramChatId: { type: Number, required: false, unique: true, sparse: true },
+    telegramTopicId: { type: Number, required: false },
     discordChannelId: { type: String, required: false, unique: true, sparse: true },
     enabled: { type: Boolean, required: true, default: true },
     hints: { type: Number, required: true, default: 0 },
@@ -169,15 +169,15 @@ gameSchema.virtual("provider").get(function () {
 });
 
 gameSchema.virtual("channelId").get(function () {
-  return this.chat_id?.toString() ?? this.discordChannelId ?? "";
+  return this.telegramChatId?.toString() ?? this.discordChannelId ?? "";
 });
 
 gameSchema.virtual("isPersonalChat").get(function () {
-  return this.chat_id !== undefined && this.chat_id > 0;
+  return this.telegramChatId !== undefined && this.telegramChatId > 0;
 });
 
 gameSchema.virtual("telegramChannel").get(function () {
-  return { chat: this.chat_id, topic: this.topicId };
+  return { chat: this.telegramChatId, topic: this.telegramTopicId };
 });
 
 gameSchema.virtual("discordChannel").get(function () {
@@ -185,11 +185,11 @@ gameSchema.virtual("discordChannel").get(function () {
 });
 
 gameSchema.pre("validate", function () {
-  if (this.chat_id != null && this.discordChannelId) {
-    this.invalidate("chat_id", "A game cannot have both chat_id and discordChannelId");
+  if (this.telegramChatId != null && this.discordChannelId) {
+    this.invalidate("telegramChatId", "A game cannot have both telegramChatId and discordChannelId");
   }
-  if (this.chat_id == null && !this.discordChannelId) {
-    this.invalidate("chat_id", "A game must have either chat_id or discordChannelId");
+  if (this.telegramChatId == null && !this.discordChannelId) {
+    this.invalidate("telegramChatId", "A game must have either telegramChatId or discordChannelId");
   }
 });
 

@@ -386,7 +386,7 @@ export default function TenThingsGame() {
         <>
           <HeaderCompact className="page-header">
             <HeaderTitle>
-              Game {game.chat_id} {game.topicId ? <small>Topic {game.topicId}</small> : null}
+              Game {game.telegramChatId} {game.telegramTopicId ? <small>Topic {game.telegramTopicId}</small> : null}
             </HeaderTitle>
           </HeaderCompact>
 

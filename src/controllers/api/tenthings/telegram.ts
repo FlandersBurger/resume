@@ -90,7 +90,7 @@ tenthingsTelegramBotRoute.post("/", async (req: Request, res: Response) => {
       res.sendStatus(200);
       return;
     case TelegramMessageType.PlayerLeft:
-      const game = await Game.findOne({ chat_id: domainMessage.message!.chatId });
+      const game = await Game.findOne({ telegramChatId: domainMessage.message!.chatId });
       if (game) {
         const player = await Player.findOne({ game: game._id, id: `${domainMessage.message!.from.id}` });
         if (player) {
@@ -107,14 +107,14 @@ tenthingsTelegramBotRoute.post("/", async (req: Request, res: Response) => {
   if (!msg?.from?.id) {
     if (!res.headersSent) res.sendStatus(200);
   } else {
-    const existingGame = await Game.findOne({ chat_id: msg.chatId })
+    const existingGame = await Game.findOne({ telegramChatId: msg.chatId })
       .populate("list.creator")
       .populate("list.values.guesser")
       .select("-playedLists")
       .exec();
 
     if (!existingGame) {
-      const newGame = await createMaingame({ chat_id: msg.chatId, platform: "telegram" });
+      const newGame = await createMaingame({ telegramChatId: msg.chatId, platform: "telegram" });
       console.log(`New game created for ${msg.chatId}`);
       await evaluate(msg, newGame, true);
     } else {

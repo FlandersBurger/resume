@@ -572,7 +572,7 @@ class TelegramBot {
               from,
               command: Command.Commands,
               chatId: body.message.chat.id,
-              topicId: body.message.message_thread_id,
+              telegramTopicId: body.message.message_thread_id,
               text: "",
             },
           };
@@ -615,7 +615,7 @@ class TelegramBot {
             from,
             command,
             chatId: body.message.chat.id,
-            topicId: body.message.message_thread_id,
+            telegramTopicId: body.message.message_thread_id,
             text,
           },
         };

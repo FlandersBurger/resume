@@ -159,7 +159,7 @@ export const telegram: Provider = {
     } else {
       message = `<b>${game.list.name}</b>\n`;
     }
-    if (game.chat_id === 592503547) console.log(game.list.values);
+    if (game.telegramChatId === 592503547) console.log(game.list.values);
     message += game.list.values.reduce((str, { guesser, value }, index) => {
       if (long) {
         if (!guesser) {
@@ -297,7 +297,7 @@ export type TelegramMessage = {
   command?: string;
   text: string;
   chatId: number;
-  topicId?: number;
+  telegramTopicId?: number;
 };
 
 export const convertTelegramUserToPlayer = async (

@@ -12,7 +12,10 @@ import { convertTelegramUserToPlayer } from ".";
 const cache: { [key: string]: number } = {};
 
 export const initiateBan = async (game: IGame, callbackQuery: TelegramCallbackData) => {
-  if (game.chat_id !== parseInt(process.env.GROUP_CHAT || "") || (await bot.checkAdmin(game, callbackQuery.from))) {
+  if (
+    game.telegramChatId !== parseInt(process.env.GROUP_CHAT || "") ||
+    (await bot.checkAdmin(game, callbackQuery.from))
+  ) {
     const foundList = await List.findOne({ _id: callbackQuery.data }).exec();
     if (!foundList) {
       return game.provider.message(game, i18n(game.settings.language, "warnings.unfoundList"));
@@ -30,7 +33,7 @@ export const initiateBan = async (game: IGame, callbackQuery: TelegramCallbackDa
           game.telegramChannel,
           i18n(
             game.settings.language,
-            `sentences.${game.chat_id !== undefined && game.chat_id > 0 ? "confirmBan" : "corroborateBan"}`,
+            `sentences.${game.telegramChatId !== undefined && game.telegramChatId > 0 ? "confirmBan" : "corroborateBan"}`,
             {
               list: foundList.name,
               user: callbackQuery.from.name ?? callbackQuery.from.username ?? "Unknown",
@@ -51,7 +54,7 @@ export const processBan = (game: HydratedDocument<IGame>, callbackQuery: Telegra
     bot.deleteMessage(game.telegramChannel, callbackQuery.id);
   } else if (
     cache[`${game._id}-${callbackQuery.data}`] !== callbackQuery.from.id ||
-    (game.chat_id !== undefined && game.chat_id > 0)
+    (game.telegramChatId !== undefined && game.telegramChatId > 0)
   ) {
     banList(game, callbackQuery.data);
     delete cache[`${game._id}-${callbackQuery.data}`];

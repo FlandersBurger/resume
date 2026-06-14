@@ -80,7 +80,7 @@ export const callbackDateTypeDelays: TelegramCallbackDataTypeDelay[] = [
 ];
 
 export default async (callbackQuery: TelegramCallbackData) => {
-  const game: HydratedDocument<IGame> | null = await Game.findOne({ chat_id: callbackQuery.chatId });
+  const game: HydratedDocument<IGame> | null = await Game.findOne({ telegramChatId: callbackQuery.chatId });
   if (!game) {
     return;
   }
@@ -187,7 +187,7 @@ export default async (callbackQuery: TelegramCallbackData) => {
       getScores(game, callbackQuery.data);
       break;
     case TelegramCallbackDataType.Category:
-      if (game.chat_id != parseInt(process.env.GROUP_CHAT || "")) {
+      if (game.telegramChatId != parseInt(process.env.GROUP_CHAT || "")) {
         if (await bot.checkAdmin(game, callbackQuery.from)) {
           bot.queueEditMessage(
             game.telegramChannel,
@@ -199,7 +199,7 @@ export default async (callbackQuery: TelegramCallbackData) => {
       }
       break;
     case TelegramCallbackDataType.Subcategory:
-      if (game.chat_id != parseInt(process.env.GROUP_CHAT || "")) {
+      if (game.telegramChatId != parseInt(process.env.GROUP_CHAT || "")) {
         if (await bot.checkAdmin(game, callbackQuery.from)) {
           if (!game || !callbackQuery.data) return;
           const mainCategory = callbackQuery.data.split(".")[0];
@@ -220,7 +220,7 @@ export default async (callbackQuery: TelegramCallbackData) => {
       }
       break;
     case TelegramCallbackDataType.Setting:
-      if (game.chat_id !== parseInt(process.env.ADMIN_CHAT || "")) {
+      if (game.telegramChatId !== parseInt(process.env.ADMIN_CHAT || "")) {
         if (await bot.checkAdmin(game, callbackQuery.from)) {
           if (!game || !callbackQuery.data) return;
           if (callbackQuery.data === "langs") {
@@ -255,7 +255,7 @@ export default async (callbackQuery: TelegramCallbackData) => {
               settingsKeyboard(game),
             );
           } else if (callbackDateTypeDelays.includes(callbackQuery.data as TelegramCallbackDataTypeDelay)) {
-            // if (game.chat_id < 0) {
+            // if (game.telegramChatId < 0) {
             bot.editMessage(
               game.telegramChannel,
               callbackQuery.id,
@@ -322,7 +322,7 @@ export default async (callbackQuery: TelegramCallbackData) => {
       }
       break;
     case TelegramCallbackDataType.Pick:
-      if (game.chat_id === parseInt(process.env.ADMIN_CHAT || "")) {
+      if (game.telegramChatId === parseInt(process.env.ADMIN_CHAT || "")) {
         const list: HydratedDocument<IList> | null = await List.findOne({ _id: callbackQuery.data })
           .populate("creator")
           .exec();

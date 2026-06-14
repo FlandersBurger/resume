@@ -19,8 +19,8 @@ import chalk from "chalk";
 import { notifyAdmin } from "./notify";
 
 export const createMaingame = async (platformSettings: {
-  chat_id?: number;
-  topicId?: number;
+  telegramChatId?: number;
+  telegramTopicId?: number;
   platform: Platform;
   discordChannelId?: string;
 }): Promise<HydratedDocument<IGame>> => {

@@ -7,12 +7,12 @@ import { IList } from "@models/tenthings/list";
 
 export const votersCache: { [key: string]: { lastVoted: Moment; delay: number } } = {};
 
-export const getGame = async (chat_id: number) => {
-  const cachedGame = await redis.get(chat_id.toString());
+export const getGame = async (telegramChatId: number) => {
+  const cachedGame = await redis.get(telegramChatId.toString());
   if (cachedGame) return cachedGame;
   else {
     const game = await Game.findOne({
-      chat_id,
+      telegramChatId,
     });
     if (!game) return;
     await redis.set(game.channelId, JSON.stringify(game));

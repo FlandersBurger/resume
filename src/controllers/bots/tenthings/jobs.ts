@@ -29,7 +29,7 @@ const resetDailyScore = () => {
     Game.find({
       lastPlayDate: { $gte: moment().subtract(1, "days") },
     })
-      .select("chat_id topicId telegramChannel list date hints")
+      .select("telegramChatId telegramTopicId telegramChannel list date hints")
       .populate("list.creator")
       .populate("list.values.guesser")
       .then(
@@ -280,7 +280,7 @@ const sendNewLists = () => {
           enabled: true,
           listsPlayed: { $gt: 0 },
         })
-          .select("chat_id topicId telegramChannel")
+          .select("telegramChatId telegramTopicId telegramChannel")
           .then((games: IGame[]) => {
             bot.broadcast(
               games.map((game) => game.telegramChannel),
@@ -322,7 +322,7 @@ const sendUpdatedLists = () => {
           enabled: true,
           listsPlayed: { $gt: 0 },
         })
-          .select("chat_id topicId telegramChannel")
+          .select("telegramChatId telegramTopicId telegramChannel")
           .then((games: IGame[]) => {
             bot.broadcast(
               games.map((game) => game.telegramChannel),
@@ -371,7 +371,7 @@ const deactivateInactiveChats = () => {
     lastPlayDate: { $lt: moment().subtract(90, "days") },
     enabled: true,
   })
-    .select("chat_id topicId telegramChannel enabled settings")
+    .select("telegramChatId telegramTopicId telegramChannel enabled settings")
     .then((games: HydratedDocument<IGame>[]) => {
       games.forEach(deactivate);
       if (games.length > 0) bot.notifyAdmin(`${games.length} inactive chats deactivated`);

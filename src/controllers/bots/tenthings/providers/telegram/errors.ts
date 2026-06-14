@@ -6,27 +6,27 @@ import { IPlayer } from "@root/models/tenthings/player";
 import { getPlayerName } from "../../players";
 import { HydratedDocument } from "mongoose";
 
-export const chatNotFound = async (chat_id: number) => {
-  const inactiveGame = await Game.findOneAndUpdate({ chat_id }, { $set: { enabled: false } });
+export const chatNotFound = async (telegramChatId: number) => {
+  const inactiveGame = await Game.findOneAndUpdate({ telegramChatId }, { $set: { enabled: false } });
   if (inactiveGame) {
     await Player.updateMany({ game: inactiveGame._id }, { $set: { present: false } });
   }
-  console.error(`Inactive chat disabled: ${chat_id}`);
+  console.error(`Inactive chat disabled: ${telegramChatId}`);
 };
 
-export const botMuted = async (chat_id: number, reason?: string) => {
+export const botMuted = async (telegramChatId: number, reason?: string) => {
   const mutedGame = await Game.findOneAndUpdate(
-    { chat_id, enabled: true, platform: { $ne: "discord" } },
+    { telegramChatId, enabled: true, platform: { $ne: "discord" } },
     { $set: { enabled: false } },
   );
   if (mutedGame) {
     await Player.updateMany({ game: mutedGame._id }, { $set: { present: false } });
-    console.error(`Muted game disabled: ${chat_id}${reason ? `, Reason: ${reason}` : ""}`);
+    console.error(`Muted game disabled: ${telegramChatId}${reason ? `, Reason: ${reason}` : ""}`);
   }
 };
 
-export const noTopic = async (chat_id: number) => {
-  await Game.findOneAndUpdate({ chat_id }, { $set: { topicId: null } });
+export const noTopic = async (telegramChatId: number) => {
+  await Game.findOneAndUpdate({ telegramChatId }, { $set: { telegramTopicId: null } });
 };
 
 export const adminOnly = async (game: IGame, player: HydratedDocument<IPlayer>) => {
@@ -47,7 +47,7 @@ export const adminOnly = async (game: IGame, player: HydratedDocument<IPlayer>) 
       `${i18n(game.settings.language, "warnings.banned", { name: getPlayerName(player) })}\nID: ${player.id}`,
     );
     bot.notifyAdmin(
-      `Banned player: ${getPlayerName(player)}\nID: ${player.id}\nChat: https://belgocanadian.com/tenthings/${game.chat_id}`,
+      `Banned player: ${getPlayerName(player)}\nID: ${player.id}\nChat: https://belgocanadian.com/tenthings/${game.telegramChatId}`,
     );
     player.banned = true;
   }

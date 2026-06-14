@@ -118,7 +118,7 @@ guessQueue.process(async ({ data }, done) => {
   try {
     await processGuess(data);
   } catch (err) {
-    const game = await Game.findOne({ chat_id: data.game });
+    const game = await Game.findOne({ telegramChatId: data.game });
     if (game) {
       try {
         await game.validate();

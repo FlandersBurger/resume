@@ -1,6 +1,6 @@
 import { GameType, IGame } from "@models/tenthings/game";
 import { Game, List } from "@models/index";
-import { HydratedDocument, LeanDocument } from "mongoose";
+import { HydratedDocument } from "mongoose";
 import { convertTelegramUserToPlayer, TelegramMessage } from "@tenthings/providers/telegram";
 import { getRules } from "@tenthings/messages";
 import { deactivate, newRound } from "@tenthings/maingame";
@@ -75,7 +75,7 @@ export const translateCommand = (language: string, key: string): Command | undef
 
 export const evaluate = async (msg: TelegramMessage, game: HydratedDocument<IGame>, isNew: boolean) => {
   //bot.notifyAdmin(tenthings);
-  //bot.notifyAdmin(games[game.chat_id].list);
+  //bot.notifyAdmin(games[game.telegramChatId].list);
   const command = msg.command && translateCommand(game.settings.language, msg.command);
   let player = await convertTelegramUserToPlayer(game, msg.from);
   if (!player || player.banned) {
@@ -85,7 +85,7 @@ export const evaluate = async (msg: TelegramMessage, game: HydratedDocument<IGam
     console.error("msg without a first_name?");
     console.error(msg);
     return;
-  } else if (game.chat_id === parseInt(process.env.ADMIN_CHAT || "") && command) {
+  } else if (game.telegramChatId === parseInt(process.env.ADMIN_CHAT || "") && command) {
     //Admin group chat
     if (
       ![Command.Search, Command.Stats, Command.Typo, Command.Bug, Command.Feature, Command.Suggestion].includes(command)
@@ -113,8 +113,8 @@ export const evaluate = async (msg: TelegramMessage, game: HydratedDocument<IGam
     await newRound(game);
   }
   if (command) {
-    if (command && commands.includes(command) && msg.topicId && msg.topicId !== game.topicId) {
-      game.topicId = msg.topicId;
+    if (command && commands.includes(command) && msg.telegramTopicId && msg.telegramTopicId !== game.telegramTopicId) {
+      game.telegramTopicId = msg.telegramTopicId;
     }
     switch (command) {
       case Command.Error:
@@ -123,7 +123,7 @@ export const evaluate = async (msg: TelegramMessage, game: HydratedDocument<IGam
           "Please let me know directly if it's an issue with your specific chat -> @FlandersBurger",
         );
         const chatLink = await bot.exportChatInviteLink(game.telegramChannel);
-        bot.notifyAdmins(`Error reported in ${game.chat_id}: \n${msg.text}\n\n${chatLink}`);
+        bot.notifyAdmins(`Error reported in ${game.telegramChatId}: \n${msg.text}\n\n${chatLink}`);
         break;
       case Command.Intro:
         bot.queueMessage(
@@ -231,7 +231,7 @@ export const evaluate = async (msg: TelegramMessage, game: HydratedDocument<IGam
               game.telegramChannel,
               `${i18n(
                 game.settings.language,
-                `sentences.${game.chat_id === parseInt(process.env.ADMIN_CHAT || "") ? "curate" : "queue"}List`,
+                `sentences.${game.telegramChatId === parseInt(process.env.ADMIN_CHAT || "") ? "curate" : "queue"}List`,
               )}\n<i>(${search})</i>`,
               keyboard,
             );
@@ -261,9 +261,9 @@ export const evaluate = async (msg: TelegramMessage, game: HydratedDocument<IGam
         processHint(game, player, GameType.TINYGAME);
         break;
       case Command.Notify:
-        if (game.chat_id === parseInt(process.env.MASTER_CHAT || "")) {
+        if (game.telegramChatId === parseInt(process.env.MASTER_CHAT || "")) {
           Game.find({ enabled: true })
-            .select("chat_id topicId telegramChannel")
+            .select("telegramChatId telegramTopicId telegramChannel")
             .then((games) => {
               bot.broadcast(
                 games.map(({ telegramChannel }) => telegramChannel),
@@ -274,7 +274,7 @@ export const evaluate = async (msg: TelegramMessage, game: HydratedDocument<IGam
         break;
       /*
     case '/pause':
-      if (game.chat_id === parseInt(process.env.MASTER_CHAT || "")) {
+      if (game.telegramChatId === parseInt(process.env.MASTER_CHAT || "")) {
         redis.get('pause').then(value => {
           const pause = value === 'true';
           bot.notifyAdmin(`Pause = ${!pause}`);
@@ -304,7 +304,7 @@ export const evaluate = async (msg: TelegramMessage, game: HydratedDocument<IGam
         }
         break;
       case Command.Categories:
-        if (game.chat_id != parseInt(process.env.GROUP_CHAT || "")) {
+        if (game.telegramChatId != parseInt(process.env.GROUP_CHAT || "")) {
           if (await bot.checkAdmin(game, msg.from)) {
             bot.sendKeyboard(
               game.telegramChannel,
@@ -317,7 +317,7 @@ export const evaluate = async (msg: TelegramMessage, game: HydratedDocument<IGam
         }
         break;
       case Command.Settings:
-        if (game.chat_id != parseInt(process.env.GROUP_CHAT || "")) {
+        if (game.telegramChatId != parseInt(process.env.GROUP_CHAT || "")) {
           if (await bot.checkAdmin(game, msg.from)) {
             bot.sendKeyboard(
               game.telegramChannel,
@@ -333,17 +333,17 @@ export const evaluate = async (msg: TelegramMessage, game: HydratedDocument<IGam
         if (msg.from.id === parseInt(process.env.MASTER_CHAT || "")) {
           bot.queueMessage(game.telegramChannel, "Yes, master. Let me send you what you need!");
           bot.notifyAdmin(
-            `Chat id: ${game.chat_id}\nGame _id: ${game._id}\nSettings:\n${JSON.stringify(game.settings)}\nList: ${
+            `Chat id: ${game.telegramChatId}\nGame _id: ${game._id}\nSettings:\n${JSON.stringify(game.settings)}\nList: ${
               game.list.name
             }\nMinigame: ${game.minigame.answer}\nTinygame: ${
               game.tinygame.answer
-            }\nhttps://belgocanadian.com/tenthings/${game.chat_id}`,
+            }\nhttps://belgocanadian.com/tenthings/${game.telegramChatId}`,
           );
         }
         break;
       case Command.Flush:
         if (msg.from.id === parseInt(process.env.MASTER_CHAT || "")) {
-          game.list = (await getRandomList()) as LeanDocument<IList>;
+          game.list = (await getRandomList()) as IList;
           game.pickedLists = [];
           game.playedLists = [];
           game.cycles++;
@@ -364,7 +364,7 @@ export const evaluate = async (msg: TelegramMessage, game: HydratedDocument<IGam
         bot.queueMessage(game.telegramChannel, "You already had me but you got greedy, now you ruined it");
         break;
       case Command.Resume:
-        if (game.chat_id === parseInt(process.env.MASTER_CHAT || "")) {
+        if (game.telegramChatId === parseInt(process.env.MASTER_CHAT || "")) {
           bot.resumeQueue();
         }
       case Command.Queue:
@@ -388,7 +388,7 @@ export const evaluate = async (msg: TelegramMessage, game: HydratedDocument<IGam
         break;
     }
   } else {
-    if (game.enabled && game.chat_id != parseInt(process.env.ADMIN_CHAT || "")) {
+    if (game.enabled && game.telegramChatId != parseInt(process.env.ADMIN_CHAT || "")) {
       queueGuess(game, player, msg.text);
     }
   }
