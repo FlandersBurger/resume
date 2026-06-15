@@ -33,6 +33,9 @@ import { adminOnly } from "@root/controllers/bots/tenthings/providers/telegram/e
 import { isBotLanguage, isSupportedLanguage, SupportedLanguage } from "@tenthings/languages";
 import { convertTelegramUserToPlayer } from ".";
 import { newRound } from "../../maingame";
+import { TelegramCallbackDataType, TelegramCallbackDataTypeDelay, callbackDateTypeDelays } from "./callback-types";
+
+export { TelegramCallbackDataType, TelegramCallbackDataTypeDelay, callbackDateTypeDelays } from "./callback-types";
 
 export type TelegramCallbackData = {
   id: string;
@@ -44,40 +47,6 @@ export type TelegramCallbackData = {
   text: string;
   data: string;
 };
-
-export enum TelegramCallbackDataType {
-  Ban = "ban",
-  BotLanguage = "lang",
-  Category = "cat",
-  Subcategory = "sub",
-  ConfirmBan = "cban",
-  Description = "desc",
-  Difficulty = "diff",
-  Frequency = "freq",
-  Pick = "pick",
-  Score = "score",
-  Setting = "setting",
-  Stats = "stat",
-  StatOptions = "stats",
-  Suggestion = "suggest",
-  TriviaLanguages = "langs",
-  Values = "values",
-  Vote = "vote",
-  SkipDelay = "skipDelay",
-  VetoDelay = "vetoDelay",
-  HintDelay = "hintDelay",
-}
-
-export type TelegramCallbackDataTypeDelay =
-  | TelegramCallbackDataType.SkipDelay
-  | TelegramCallbackDataType.VetoDelay
-  | TelegramCallbackDataType.HintDelay;
-
-export const callbackDateTypeDelays: TelegramCallbackDataTypeDelay[] = [
-  TelegramCallbackDataType.SkipDelay,
-  TelegramCallbackDataType.VetoDelay,
-  TelegramCallbackDataType.HintDelay,
-];
 
 export default async (callbackQuery: TelegramCallbackData) => {
   const game: HydratedDocument<IGame> | null = await Game.findOne({ telegramChatId: callbackQuery.chatId });

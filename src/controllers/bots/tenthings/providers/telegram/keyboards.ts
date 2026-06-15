@@ -3,7 +3,7 @@ import { capitalize } from "@utils/string-helpers";
 import { getFrequencyMessage } from "@tenthings/messages";
 import emojis from "@tenthings/emojis";
 import { Keyboard, KeyboardButton } from "@root/connections/telegram";
-import { TelegramCallbackDataType } from "./callbacks";
+import { TelegramCallbackDataType } from "./callback-types";
 import { KeyboardDef } from "@tenthings/keyboards";
 
 // ── Telegram converter ─────────────────────────────────────────────────────────
