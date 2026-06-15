@@ -1,2 +1,19 @@
 npx lint-staged
 tsc --noEmit
+node -e "
+const { execSync } = require('child_process');
+const BASELINE = 73;
+try {
+  execSync('npx madge --circular --ts-config tsconfig.json --extensions ts src/', { stdio: 'pipe' });
+  process.exit(0);
+} catch (e) {
+  const out = (e.stderr ? e.stderr.toString() : '') + (e.stdout ? e.stdout.toString() : '');
+  const m = out.match(/Found (\\d+) circular/);
+  const count = m ? parseInt(m[1]) : 0;
+  if (count > BASELINE) {
+    console.error('\\x1b[31m✖ Circular dependencies increased: ' + count + ' (baseline ' + BASELINE + ')\\x1b[0m');
+    console.error(out);
+    process.exit(1);
+  }
+  console.log('\\x1b[33m⚠ ' + count + ' circular dependencies (at baseline ' + BASELINE + ', not blocking)\\x1b[0m');
+}"

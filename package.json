@@ -15,7 +15,8 @@
     "test": "jest",
     "test:watch": "jest --watch",
     "test:coverage": "jest --coverage",
-    "prepare": "husky"
+    "prepare": "husky",
+    "check:circular": "madge --circular --ts-config tsconfig.json --extensions ts src/"
   },
   "dependencies": {
     "asn1": "^0.2.6",
@@ -95,6 +96,7 @@
     "jest": "^30.4.2",
     "jest-environment-jsdom": "^30.4.1",
     "lint-staged": "^15.2.5",
+    "madge": "^8.0.0",
     "nodemon": "^3.1.0",
     "npm": "^10.8.2",
     "npm-check-updates": "^17.1.0",
