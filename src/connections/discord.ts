@@ -86,6 +86,7 @@ export type DiscordButtonInteraction = {
   username: string;
   displayName: string;
   channelId: string;
+  guildId: string | null;
   customId: string;
 };
 
@@ -123,6 +124,7 @@ const slashCommands = [
     description: "Report an error",
     options: [{ type: 3, name: "text", description: "Description", required: false }],
   },
+  { name: "settings", description: "Show and manage game settings" },
 ];
 
 class DiscordBot {
@@ -160,6 +162,7 @@ class DiscordBot {
             username: interaction.user.username,
             displayName: interaction.user.displayName,
             channelId: interaction.channelId,
+            guildId: interaction.guildId,
             customId: interaction.customId,
           });
         }

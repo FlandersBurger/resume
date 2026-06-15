@@ -6,7 +6,6 @@ import { IGame } from "@models/tenthings/game";
 import { IList } from "@models/tenthings/list";
 import { IPlayer } from "@models/tenthings/player";
 
-import bot from "@root/connections/telegram";
 import i18n from "@root/i18n";
 import { makePercentage, makeReadable } from "@root/utils/number-helpers";
 import { parseSymbols } from "@utils/string-helpers";
@@ -15,19 +14,12 @@ import { getListScore } from "@tenthings/lists";
 import emojis from "@tenthings/emojis";
 
 export const getScores = async (game: IGame, type: string) => {
-  /*
-  stats('score', game_id, scoreType)
-  .then(function(str) {
-    bot.queueMessage(game_id, str);
-  });
-  */
   const players = await Player.find({ game: game._id }).exec();
   let str = "";
   switch (type) {
     case "td":
       str = i18n(game.settings.language, "sentences.topDailyScores") + "\n";
       str += "<i>Highest single day score</i>\n";
-      console.log(str);
       players
         .filter(({ present }) => present)
         .sort((player1, player2) => player2.highScore - player1.highScore)
@@ -35,7 +27,7 @@ export const getScores = async (game: IGame, type: string) => {
         .forEach((player, index) => {
           str += `${index + 1}: ${getPlayerName(player)}: ${player.highScore}\n`;
         });
-      bot.queueMessage(game.telegramChannel, str);
+      game.provider.message(game, str);
       break;
     case "tr":
       str = "<b>Top Win Ratio</b>\n";
@@ -53,7 +45,7 @@ export const getScores = async (game: IGame, type: string) => {
             Math.round(player.plays === 0 ? 0 : (player.wins / player.plays) * 10000) / 100
           }%)\n`;
         });
-      bot.queueMessage(game.telegramChannel, str);
+      game.provider.message(game, str);
       break;
     case "ts":
       str = "<b>Top Overall Score</b>\n";
@@ -65,7 +57,7 @@ export const getScores = async (game: IGame, type: string) => {
         .forEach((player, index) => {
           str += `${index + 1}: ${getPlayerName(player)}: ${player.score}\n`;
         });
-      bot.queueMessage(game.telegramChannel, str);
+      game.provider.message(game, str);
       break;
     case "ta":
       str = "<b>Top Average Daily Score</b>\n";
@@ -81,7 +73,7 @@ export const getScores = async (game: IGame, type: string) => {
         .forEach((player, index) => {
           str += `${index + 1}: ${getPlayerName(player)}: ${Math.round(player.plays === 0 ? 0 : player.score / player.plays)}\n`;
         });
-      bot.queueMessage(game.telegramChannel, str);
+      game.provider.message(game, str);
       break;
     default:
       game.provider.dailyScores(game);
@@ -200,12 +192,8 @@ export const getStats = async (game: IGame, data: string, requestor?: string) =>
       message += `Suggestions given: ${makeReadable(stats.suggestions)}\n`;
       message += `Lists searched: ${makeReadable(stats.searches)}\n`;
       message += `Lists Skipped: ${makeReadable(stats.skips)}\n`;
-      //message += `${allPlayers.filter(({scoreDaily}) => scoreDaily).length} out of ${allPlayers.filter(({present}) => present).length} players played today\n`;
-      //message += `Cycled through all lists ${games.reduce((count, {cycles}) => count + (cycles ? cycles : 0), 0)} times\n`;
       message += "\n";
-
-      bot.queueMessage(game.telegramChannel, message);
-
+      game.provider.message(game, message);
       break;
     case "g":
       const count = await List.countDocuments().exec();
@@ -252,7 +240,7 @@ export const getStats = async (game: IGame, data: string, requestor?: string) =>
         (game.playedLists.length / count) * 100,
       ).toFixed(0)}%)\n`;
       message += "\n";
-      bot.queueMessage(game.telegramChannel, message);
+      game.provider.message(game, message);
       break;
     case "c":
       creatorStats(game, requestor);
@@ -260,9 +248,9 @@ export const getStats = async (game: IGame, data: string, requestor?: string) =>
     case "p":
       const player = await Player.findOne({ game: game._id, id: _id });
       if (!player) {
-        bot.queueMessage(game.telegramChannel, "Player not found");
+        game.provider.message(game, "Player not found");
       } else {
-        bot.queueMessage(game.telegramChannel, getPlayerStats(player, requestor));
+        game.provider.message(game, getPlayerStats(player, requestor));
       }
       break;
     case "l":
@@ -270,9 +258,9 @@ export const getStats = async (game: IGame, data: string, requestor?: string) =>
         _id: _id,
       }).populate("creator");
       if (!gameList) {
-        bot.queueMessage(game.telegramChannel, "List not found");
+        game.provider.message(game, "List not found");
       } else {
-        bot.queueMessage(game.telegramChannel, getListStats(game.settings.language, gameList, requestor));
+        game.provider.message(game, getListStats(game.settings.language, gameList, requestor));
       }
       break;
     case "mostskipped":
@@ -457,21 +445,15 @@ export const getStats = async (game: IGame, data: string, requestor?: string) =>
       );
       break;
     default:
-      bot.queueMessage(game.telegramChannel, "Something");
+      game.provider.message(game, "Something");
   }
 };
 
 const addRequestor = (msg: string, requestor?: string) =>
   msg + (requestor ? `<i>Requested by ${parseSymbols(requestor)}</i>\n` : "");
 
-// ██      ██ ███████ ████████     ███████ ████████  █████  ████████ ███████
-// ██      ██ ██         ██        ██         ██    ██   ██    ██    ██
-// ██      ██ ███████    ██        ███████    ██    ███████    ██    ███████
-// ██      ██      ██    ██             ██    ██    ██   ██    ██         ██
-// ███████ ██ ███████    ██        ███████    ██    ██   ██    ██    ███████
-
 const listStats = async (
-  { telegramChannel, settings, disabledCategories }: IGame,
+  game: IGame,
   field: keyof IList,
   divisor: keyof IList | undefined,
   ratio: number,
@@ -484,8 +466,8 @@ const listStats = async (
   message += description ? `<code>${description}</code>\n` : "";
   message = addRequestor(message, requestor);
   const lists = await List.find({
-    language: { $in: settings.languages },
-    categories: { $nin: disabledCategories },
+    language: { $in: game.settings.languages },
+    categories: { $nin: game.disabledCategories },
     plays: { $gte: 100 },
   })
     .select(`${field} ${divisor} name actualPlays`)
@@ -510,17 +492,11 @@ const listStats = async (
       const result = Math.round(((listField * ratio) / listDivisor) * 100) / 100;
       message += `${index + 1}. ${list.name} (${divisor ? makePercentage(result, 0) : result})\n`;
     });
-  bot.queueMessage(telegramChannel, message);
+  game.provider.message(game, message);
 };
 
-// ██████  ██       █████  ██    ██ ███████ ██████      ███████ ████████  █████  ████████ ███████
-// ██   ██ ██      ██   ██  ██  ██  ██      ██   ██     ██         ██    ██   ██    ██    ██
-// ██████  ██      ███████   ████   █████   ██████      ███████    ██    ███████    ██    ███████
-// ██      ██      ██   ██    ██    ██      ██   ██          ██    ██    ██   ██    ██         ██
-// ██      ███████ ██   ██    ██    ███████ ██   ██     ███████    ██    ██   ██    ██    ███████
-
 const playerStats = async (
-  { telegramChannel }: IGame,
+  game: IGame,
   players: IPlayer[],
   field: keyof IPlayer,
   divisor: keyof IPlayer | undefined,
@@ -553,22 +529,10 @@ const playerStats = async (
       const result = Math.round(((playerField * ratio) / playerDivisor) * 100) / 100;
       message += `${index + 1}. ${getPlayerName(player)} (${divisor ? makePercentage(result, 0) : result})\n`;
     });
-  bot.queueMessage(telegramChannel, message);
+  game.provider.message(game, message);
 };
 
-// ██    ██  ██████  ████████ ███████     ███████ ████████  █████  ████████ ███████
-// ██    ██ ██    ██    ██    ██          ██         ██    ██   ██    ██    ██
-// ██    ██ ██    ██    ██    █████       ███████    ██    ███████    ██    ███████
-//  ██  ██  ██    ██    ██    ██               ██    ██    ██   ██    ██         ██
-//   ████    ██████     ██    ███████     ███████    ██    ██   ██    ██    ███████
-
-const voteStats = async (
-  { telegramChannel }: IGame,
-  players: IPlayer[],
-  sorter: SortOrder,
-  title: string,
-  requestor?: string,
-) => {
+const voteStats = async (game: IGame, players: IPlayer[], sorter: SortOrder, title: string, requestor?: string) => {
   const voters = await List.aggregate([{ $unwind: "$votes" }, { $group: { _id: "$votes.voter", votes: { $sum: 1 } } }])
     .sort({ votes: sorter })
     .limit(10);
@@ -581,16 +545,36 @@ const voteStats = async (
       message += `${i++}. ${getPlayerName(player)} (${voter.votes})\n`;
     }
   });
-  bot.queueMessage(telegramChannel, message);
+  game.provider.message(game, message);
 };
 
-//  ██████ ██████  ███████  █████  ████████  ██████  ██████      ███████ ████████  █████  ████████ ███████
-// ██      ██   ██ ██      ██   ██    ██    ██    ██ ██   ██     ██         ██    ██   ██    ██    ██
-// ██      ██████  █████   ███████    ██    ██    ██ ██████      ███████    ██    ███████    ██    ███████
-// ██      ██   ██ ██      ██   ██    ██    ██    ██ ██   ██          ██    ██    ██   ██    ██         ██
-//  ██████ ██   ██ ███████ ██   ██    ██     ██████  ██   ██     ███████    ██    ██   ██    ██    ███████
+const voteSentimentStats = async (
+  game: IGame,
+  players: IPlayer[],
+  sorter: SortOrder,
+  title: string,
+  requestor?: string,
+) => {
+  const voters = await List.aggregate([
+    { $match: { "votes.vote": sorter } },
+    { $unwind: "$votes" },
+    { $group: { _id: "$votes.voter", votes: { $sum: 1 } } },
+  ])
+    .sort({ votes: -sorter as SortOrder })
+    .limit(10);
+  let message = `<b>${title}</b>\n`;
+  message += requestor ? `<i>Requested by ${requestor}</i>\n` : "";
+  let i = 1;
+  voters.forEach((voter) => {
+    const player = find(players, (player: IPlayer) => voter._id == player.id);
+    if (player) {
+      message += `${i++}. ${getPlayerName(player)} (${voter.votes})\n`;
+    }
+  });
+  game.provider.message(game, message);
+};
 
-const creatorStats = async ({ telegramChannel }: IGame, requestor?: string) => {
+const creatorStats = async (game: IGame, requestor?: string) => {
   const lists = await List.aggregate([
     { $unwind: "$votes" },
     {
@@ -629,8 +613,6 @@ const creatorStats = async ({ telegramChannel }: IGame, requestor?: string) => {
       },
     },
   ]);
-  //const listsWithCreators = await List.populate(lists, { path: '_id' });
-  //const listCount = await List.countDocuments();
   for (const list of lists) list.creator = await User.findOne({ _id: list._id }).select("username displayName").lean();
   let message = `<b>Creator Stats</b>\n`;
   message = addRequestor(message, requestor);
@@ -661,77 +643,5 @@ const creatorStats = async ({ telegramChannel }: IGame, requestor?: string) => {
       result += ` - ${stat.creator} - ${stat.likeRatio}\n`;
       return result;
     }, "");
-  bot.queueMessage(telegramChannel, message);
-};
-
-// ███████ ███████ ███    ██ ████████ ██ ███    ███ ███████ ███    ██ ████████     ███████ ████████  █████  ████████ ███████
-// ██      ██      ████   ██    ██    ██ ████  ████ ██      ████   ██    ██        ██         ██    ██   ██    ██    ██
-// ███████ █████   ██ ██  ██    ██    ██ ██ ████ ██ █████   ██ ██  ██    ██        ███████    ██    ███████    ██    ███████
-//      ██ ██      ██  ██ ██    ██    ██ ██  ██  ██ ██      ██  ██ ██    ██             ██    ██    ██   ██    ██         ██
-// ███████ ███████ ██   ████    ██    ██ ██      ██ ███████ ██   ████    ██        ███████    ██    ██   ██    ██    ███████
-
-const voteSentimentStats = async (
-  { telegramChannel }: IGame,
-  players: IPlayer[],
-  sorter: SortOrder,
-  title: string,
-  requestor?: string,
-) => {
-  const voters = await List.aggregate([
-    { $match: { "votes.vote": sorter } },
-    { $unwind: "$votes" },
-    { $group: { _id: "$votes.voter", votes: { $sum: 1 } } },
-  ])
-    .sort({ votes: -sorter as SortOrder })
-    .limit(10);
-  let message = `<b>${title}</b>\n`;
-  message += requestor ? `<i>Requested by ${requestor}</i>\n` : "";
-  let i = 1;
-  voters.forEach((voter) => {
-    const player = find(players, (player: IPlayer) => voter._id == player.id);
-    if (player) {
-      message += `${i++}. ${getPlayerName(player)} (${voter.votes})\n`;
-    }
-  });
-  bot.queueMessage(telegramChannel, message);
-};
-
-//  ██████  ██       ██████  ██████   █████  ██          ███████ ████████  █████  ████████ ███████
-// ██       ██      ██    ██ ██   ██ ██   ██ ██          ██         ██    ██   ██    ██    ██
-// ██   ███ ██      ██    ██ ██████  ███████ ██          ███████    ██    ███████    ██    ███████
-// ██    ██ ██      ██    ██ ██   ██ ██   ██ ██               ██    ██    ██   ██    ██         ██
-//  ██████  ███████  ██████  ██████  ██   ██ ███████     ███████    ██    ██   ██    ██    ███████
-
-// @ts-ignore
-const tenThingsStats = async (
-  game: IGame,
-  sorter: { [key in keyof IPlayer]: SortOrder },
-  field: keyof IPlayer,
-  title: string,
-) => {
-  const players = await Player.aggregate([
-    { $match: { game: game._id } },
-    {
-      $group: {
-        _id: { _id: "$_id", first_name: "$first_name" },
-        score: { $sum: "$score" },
-        plays: { $sum: "$plays" },
-        wins: { $sum: "$wins" },
-        answers: { $sum: "$answers" },
-        snubs: { $sum: "$snubs" },
-        hints: { $sum: "$hints" },
-        skips: { $sum: "$skips" },
-        answerStreaks: { $max: "$streak" },
-        playStreaks: { $max: "$maxPlayStreak" },
-        minigamePlays: { $sum: "$minigamePlays" },
-        tinygamePlays: { $sum: "$tinygamePlays" },
-      },
-    },
-  ])
-    .sort(sorter)
-    .limit(10);
-  let message = `<b>${title}</b>\n`;
-  players.forEach((player, index) => {
-    message += `${index + 1}. ${getPlayerName(player)} (${player[field]})\n`;
-  });
+  game.provider.message(game, message);
 };

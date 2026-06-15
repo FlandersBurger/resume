@@ -20,7 +20,7 @@ import { Player } from "@root/models";
 import { HydratedDocument } from "mongoose";
 import { BotLanguage } from "@tenthings/languages";
 import { getListStats } from "@tenthings/providers/telegram/stats";
-import { likeListButtons } from "./keyboards";
+import { likeListButtons, hintSkipButtons, miniGameButtons, tinyGameButtons, banListButton } from "./keyboards";
 import emojis from "../../emojis";
 
 const getDailyScores = async ({ _id, settings }: IGame, limit = 0) => {
@@ -52,7 +52,7 @@ export const discord: Provider = {
     message += `**${getCategoryLabel(game.settings.language, list)}**`;
     message += `\n\n**${game.list.name}** (${game.list.answers}) ${i18n(game.settings.language, "sentences.createdBy", { creator: (game.list.creator as IUser).username })}`;
     message += game.list.description ? `\n*${parseSymbols(game.list.description)}*` : "";
-    bot.queueMessage(game.discordChannel, message);
+    bot.sendMessageWithComponents(game.discordChannel, message, [hintSkipButtons()]);
   },
   endOfRound: async (game: IGame, list: IList) => {
     let message = getListStats(game.settings.language, list, undefined);
@@ -74,6 +74,9 @@ export const discord: Provider = {
       return str;
     }, "");
     bot.queueMessage(game.discordChannel, message);
+    bot.sendMessageWithComponents(game.discordChannel, `Ban "${game.list.name}" from this game?`, [
+      banListButton(game.settings.language, game.list),
+    ]);
   },
   dailyScores: async (game: IGame, limit?: number) => {
     bot.queueMessage(game.discordChannel, await getDailyScores(game, limit));
@@ -142,7 +145,7 @@ export const discord: Provider = {
       return msg;
     }, "");
     message += `\n**${getHint(game.minigame.hints, game.minigame.answer)}**`;
-    bot.queueMessage(game.discordChannel, message);
+    bot.sendMessageWithComponents(game.discordChannel, message, [miniGameButtons()]);
   },
   miniGameGuessed: (game: IGame, player: IPlayer, score: number, accuracy: string) => {
     let message = `${i18n(game.settings.language, "sentences.minigameAnswered")} (${accuracy}%)\n`;
@@ -159,7 +162,7 @@ export const discord: Provider = {
       return msg;
     }, "");
     message += `\n**${getHint(game.tinygame.hints, game.tinygame.answer)}**`;
-    bot.queueMessage(game.discordChannel, message);
+    bot.sendMessageWithComponents(game.discordChannel, message, [tinyGameButtons()]);
   },
   tinyGameGuessed: (game: IGame, player: IPlayer, score: number, accuracy: string) => {
     let message = `${i18n(game.settings.language, "sentences.tinygameAnswered")} (${accuracy}%)\n`;

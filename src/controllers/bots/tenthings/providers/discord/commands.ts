@@ -16,6 +16,7 @@ import i18n from "@root/i18n";
 import { getPlayerName } from "@tenthings/players";
 import { checkSkipper, processSkip, vetoSkip } from "@tenthings/skips";
 import bot from "@root/connections/discord";
+import { searchResultsButtons, settingsButtons, statsButtons } from "./keyboards";
 
 // Re-export the shared Command enum from telegram for consumers of this module
 export { Command, translateCommand } from "@tenthings/providers/telegram/commands";
@@ -135,7 +136,23 @@ export const evaluate = async (msg: DiscordMessage, game: HydratedDocument<IGame
         vetoSkip(game, player);
         break;
       case Command.Stats:
-        bot.queueMessage(game.discordChannel, game.provider.categoriesMessage(game));
+        bot.sendMessageWithComponents(game.discordChannel, `<b>${i18n(game.settings.language, "stats.stats")}</b>`, [
+          statsButtons(),
+        ]);
+        break;
+      case Command.Settings:
+        if (await bot.checkAdmin(null, msg.from.id)) {
+          bot.sendMessageWithComponents(
+            game.discordChannel,
+            `<b>${i18n(game.settings.language, "settings")}</b>`,
+            settingsButtons(game),
+          );
+        } else {
+          game.provider.message(
+            game,
+            i18n(game.settings.language, "warnings.adminFunction", { name: getPlayerName(player) }),
+          );
+        }
         break;
       case Command.Search:
         const search = msg.text;
@@ -156,9 +173,10 @@ export const evaluate = async (msg: DiscordMessage, game: HydratedDocument<IGame
               .slice(0, 10)
               .map((list, i) => `${i + 1}. ${list.name}`)
               .join("\n");
-            bot.queueMessage(
+            bot.sendMessageWithComponents(
               game.discordChannel,
               `${i18n(game.settings.language, "sentences.queueList")}\n*(${search})*\n${listNames}`,
+              searchResultsButtons(foundLists),
             );
           } else {
             bot.queueMessage(
