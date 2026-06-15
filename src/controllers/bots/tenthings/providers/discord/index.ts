@@ -3,7 +3,7 @@ import bot, { DiscordUser } from "@root/connections/discord";
 import categories, { getCategoryLabel } from "../../categories";
 import { capitalize, maskUrls, parseSymbols } from "@utils/string-helpers";
 import { IGame, IGameList, IGameListValue } from "@root/models/tenthings/game";
-import { IList } from "@root/models/tenthings/list";
+import { getBlurbType, IList } from "@root/models/tenthings/list";
 import { IUser } from "@root/models/user";
 import { Provider } from "..";
 import { IPlayer } from "@root/models/tenthings/player";
@@ -103,8 +103,10 @@ export const discord: Provider = {
     bot.queueMessage(game.discordChannel, message);
   },
   guessed: (game: IGame, player: IPlayer, match: IGameListValue, score: number, accuracy: string) => {
-    const blurb = match.blurb && match.blurb.substring(0, 4) !== "http" ? `\n*${parseSymbols(match.blurb)}*` : "";
+    const isUrlBlurb = match.blurb?.substring(0, 4) === "http";
+    const blurb = isUrlBlurb ? "" : match.blurb ? `\n*${parseSymbols(match.blurb)}*` : "";
     guessed(game, player, match.value, blurb, score, accuracy);
+    if (isUrlBlurb && match.blurb) bot.queueMedia(game.discordChannel, match.blurb, getBlurbType(match.blurb));
   },
   mainGameMessage: (game: IGame, long = true) => {
     let message;
@@ -193,7 +195,7 @@ export const discord: Provider = {
   },
   rateList: (_game: IGame) => {},
   sendMedia: (game: IGame, url: string) => {
-    bot.sendImage(game.discordChannel, url);
+    bot.queueMedia(game.discordChannel, url, getBlurbType(url));
   },
   categoriesMessage: (game: IGame): string => {
     return Object.keys(categories)

@@ -216,7 +216,11 @@ class DiscordBot {
     });
 
     chatQueue.process(async (job: Job) => {
-      await this.doSendMessage(job.data.channelId, job.data.message);
+      if (job.data.mediaUrl) {
+        await this.doSendMedia(job.data.channelId, job.data.mediaUrl, job.data.blurbType);
+      } else {
+        await this.doSendMessage(job.data.channelId, job.data.message);
+      }
     });
 
     globalQueue.on("failed", function (_job: Job, error: any) {
@@ -363,15 +367,23 @@ class DiscordBot {
     }
   };
 
-  public sendImage = async (channel: DiscordChannel, url: string) => {
+  private doSendMedia = async (channelId: string, url: string, blurbType: string) => {
     try {
-      const ch = await this.client.channels.fetch(channel.channelId);
-      if (ch && ch.isTextBased()) {
+      const ch = await this.client.channels.fetch(channelId);
+      if (!ch || !ch.isTextBased()) return;
+      if (blurbType === "image") {
         await (ch as TextChannel).send({ embeds: [new EmbedBuilder().setImage(url)] });
+      } else {
+        // youtube / spotify / link: send as plain URL — Discord auto-embeds these
+        await (ch as TextChannel).send(url);
       }
     } catch (error: any) {
-      console.error(`Discord send image error in ${channel.channelId}:`, error?.message);
+      console.error(`Discord send media error in ${channelId}:`, error?.message);
     }
+  };
+
+  public queueMedia = async (channel: DiscordChannel, url: string, blurbType: string) => {
+    chatQueue.add("", { channelId: channel.channelId, mediaUrl: url, blurbType, chat: channel.channelId }, {});
   };
 
   public getQueueCount = async (): Promise<number> => {

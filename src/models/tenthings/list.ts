@@ -62,21 +62,23 @@ const listValueSchema = new Schema<IListValue>({
   modifyDate: { type: Date, required: false },
 });
 
-listValueSchema.virtual("blurbType").get(function () {
-  if (!this.blurb) return "text";
-  else if (
-    this.blurb.substring(0, 4) === "http" &&
-    this.blurb.indexOf("youtu") < 0 &&
-    this.blurb.indexOf("spotify") < 0 &&
-    (this.blurb.match(/\.(jpeg|jpg|gif|png|webp)(\?.*|$)/) ||
-      this.blurb.indexOf("unsplash") >= 0 ||
-      this.blurb.indexOf("pexels") >= 0)
+export type BlurbType = "text" | "image" | "youtube" | "spotify" | "link";
+
+export const getBlurbType = (blurb: string | undefined): BlurbType => {
+  if (!blurb || blurb.substring(0, 4) !== "http") return "text";
+  if (blurb.indexOf("youtu") >= 0) return "youtube";
+  if (blurb.indexOf("spotify.com") >= 0) return "spotify";
+  if (
+    blurb.indexOf("youtu") < 0 &&
+    blurb.indexOf("spotify") < 0 &&
+    (blurb.match(/\.(jpeg|jpg|gif|png|webp)(\?.*|$)/) || blurb.indexOf("unsplash") >= 0 || blurb.indexOf("pexels") >= 0)
   )
     return "image";
-  else if (this.blurb.substring(0, 4) === "http" && this.blurb.indexOf("youtu") >= 0) return "youtube";
-  else if (this.blurb.substring(0, 4) === "http" && this.blurb.indexOf("spotify.com") >= 0) return "spotify";
-  else if (this.blurb.substring(0, 4) === "http") return "link";
-  else return "text";
+  return "link";
+};
+
+listValueSchema.virtual("blurbType").get(function () {
+  return getBlurbType(this.blurb);
 });
 
 const listSchema = new Schema<IList>(
