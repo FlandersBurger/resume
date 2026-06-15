@@ -17,16 +17,16 @@ import { checkSkipper, processSkip, vetoSkip } from "@tenthings/skips";
 import { getStats, getScores } from "@tenthings/providers/telegram/stats";
 import { isBotLanguage, isSupportedLanguage, SupportedLanguage } from "@tenthings/languages";
 import {
-  categoriesButtons,
-  confirmBanButton,
-  delayButtons,
-  languageButtons,
-  languagesButtons,
-  listStatsButtons,
-  playerStatsButtons,
-  settingsButtons,
-  subcategoriesButtons,
-} from "./keyboards";
+  categoriesKeyboard,
+  confirmBanKeyboard,
+  delayKeyboard,
+  languageKeyboard,
+  languagesKeyboard,
+  listStatsKeyboard,
+  playerStatsKeyboard,
+  settingsKeyboard,
+  subcategoriesKeyboard,
+} from "@tenthings/keyboards";
 
 const getPopulatedGame = (channelId: string) =>
   Game.findOne({ discordChannelId: channelId })
@@ -258,7 +258,7 @@ export default async (interaction: DiscordButtonInteraction) => {
             list: foundList.name,
             user: interaction.displayName,
           }),
-          [confirmBanButton(game.settings.language, listId)],
+          confirmBanKeyboard(game, listId),
         );
       }
       break;
@@ -298,10 +298,10 @@ export default async (interaction: DiscordButtonInteraction) => {
       const [subtype] = rest;
       switch (subtype) {
         case "list":
-          bot.sendMessageWithComponents(game.discordChannel, "<b>List Stats</b>", listStatsButtons(game));
+          bot.sendMessageWithComponents(game.discordChannel, "<b>List Stats</b>", listStatsKeyboard(game));
           break;
         case "player":
-          bot.sendMessageWithComponents(game.discordChannel, "<b>Player Stats</b>", playerStatsButtons());
+          bot.sendMessageWithComponents(game.discordChannel, "<b>Player Stats</b>", playerStatsKeyboard(game));
           break;
       }
       break;
@@ -333,14 +333,14 @@ export default async (interaction: DiscordButtonInteraction) => {
           bot.sendMessageWithComponents(
             game.discordChannel,
             `<b>${i18n(game.settings.language, "settings")}</b>`,
-            settingsButtons(game),
+            settingsKeyboard(game),
           );
           break;
         case "lang":
           bot.sendMessageWithComponents(
             game.discordChannel,
             `<b>${i18n(game.settings.language, "botLanguage")}</b>`,
-            languageButtons(game),
+            languageKeyboard(game),
           );
           break;
         case "langs": {
@@ -350,7 +350,7 @@ export default async (interaction: DiscordButtonInteraction) => {
           bot.sendMessageWithComponents(
             game.discordChannel,
             `<b>${i18n(game.settings.language, "triviaLangauges")}</b>`,
-            languagesButtons(game, availableLanguages),
+            languagesKeyboard(game, availableLanguages),
           );
           break;
         }
@@ -358,7 +358,7 @@ export default async (interaction: DiscordButtonInteraction) => {
           bot.sendMessageWithComponents(
             game.discordChannel,
             `<b>${i18n(game.settings.language, "category", { count: 0 })}</b>`,
-            categoriesButtons(game),
+            categoriesKeyboard(game),
           );
           break;
         case "skipDelay":
@@ -367,7 +367,7 @@ export default async (interaction: DiscordButtonInteraction) => {
           bot.sendMessageWithComponents(
             game.discordChannel,
             `<b>${i18n(game.settings.language, key)}</b>\n${i18n(game.settings.language, `sentences.${key}`)}`,
-            delayButtons(game, key),
+            delayKeyboard(game, key),
           );
           break;
         default:
@@ -376,7 +376,7 @@ export default async (interaction: DiscordButtonInteraction) => {
           bot.sendMessageWithComponents(
             game.discordChannel,
             `${key} → ${(game.settings as any)[key] ? i18n(game.settings.language, "on") : i18n(game.settings.language, "off")}`,
-            settingsButtons(game),
+            settingsKeyboard(game),
           );
       }
       break;
@@ -392,7 +392,7 @@ export default async (interaction: DiscordButtonInteraction) => {
       bot.sendMessageWithComponents(
         game.discordChannel,
         `<b>${i18n(game.settings.language, `${category}.name`, { ns: "categories" })}</b>`,
-        subcategoriesButtons(game, category),
+        subcategoriesKeyboard(game, category),
       );
       break;
     }
@@ -404,32 +404,19 @@ export default async (interaction: DiscordButtonInteraction) => {
 
       const [fullKey] = rest;
       const mainCategory = fullKey.split(".")[0];
+      const isAllToggle = !fullKey.includes(".");
       setDisabledCategories(game, fullKey);
       await game.save();
       bot.sendMessageWithComponents(
         game.discordChannel,
-        `${i18n(game.settings.language, fullKey, { ns: "categories" })} → ${
-          game.disabledCategories.includes(fullKey)
-            ? i18n(game.settings.language, "off")
-            : i18n(game.settings.language, "on")
-        }`,
-        subcategoriesButtons(game, mainCategory),
-      );
-      break;
-    }
-
-    case "subcatall": {
-      const game = await Game.findOne({ discordChannelId: interaction.channelId });
-      if (!game) break;
-      if (!(await bot.checkAdmin(interaction.guildId, interaction.userId))) break;
-
-      const [category] = rest;
-      setDisabledCategories(game, category);
-      await game.save();
-      bot.sendMessageWithComponents(
-        game.discordChannel,
-        `<b>${i18n(game.settings.language, `${category}.name`, { ns: "categories" })}</b>`,
-        subcategoriesButtons(game, category),
+        isAllToggle
+          ? `<b>${i18n(game.settings.language, `${fullKey}.name`, { ns: "categories" })}</b>`
+          : `${i18n(game.settings.language, fullKey, { ns: "categories" })} → ${
+              game.disabledCategories.includes(fullKey)
+                ? i18n(game.settings.language, "off")
+                : i18n(game.settings.language, "on")
+            }`,
+        subcategoriesKeyboard(game, mainCategory),
       );
       break;
     }
@@ -444,7 +431,7 @@ export default async (interaction: DiscordButtonInteraction) => {
       if (!isBotLanguage(langCode)) break;
       game.settings.language = langCode;
       await game.save();
-      bot.sendMessageWithComponents(game.discordChannel, `${langCode} → new bot language`, languageButtons(game));
+      bot.sendMessageWithComponents(game.discordChannel, `${langCode} → new bot language`, languageKeyboard(game));
       break;
     }
 
@@ -469,7 +456,7 @@ export default async (interaction: DiscordButtonInteraction) => {
       bot.sendMessageWithComponents(
         game.discordChannel,
         `${langCode} → ${isSelected ? i18n(game.settings.language, "off") : i18n(game.settings.language, "on")}`,
-        languagesButtons(game, availableLanguages),
+        languagesKeyboard(game, availableLanguages),
       );
       break;
     }
@@ -488,7 +475,7 @@ export default async (interaction: DiscordButtonInteraction) => {
       bot.sendMessageWithComponents(
         game.discordChannel,
         `<b>${i18n(game.settings.language, "settings")}</b>`,
-        settingsButtons(game),
+        settingsKeyboard(game),
       );
       break;
     }

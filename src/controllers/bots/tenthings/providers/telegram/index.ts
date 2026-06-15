@@ -16,7 +16,8 @@ import {
 } from "@tenthings/messages";
 import { getPlayerName } from "@tenthings/players";
 import { getHint } from "@tenthings/hints";
-import { banListKeyboard, likeListKeyboard } from "./keyboards";
+import { toTelegramKeyboard } from "./keyboards";
+import { likeListKeyboard, banListKeyboard } from "@tenthings/keyboards";
 import { Player } from "@root/models";
 import { HydratedDocument } from "mongoose";
 import { BotLanguage } from "@tenthings/languages";
@@ -41,6 +42,7 @@ const getDailyScores = async ({ _id, settings }: IGame, limit = 0) => {
 
 export const telegram: Provider = {
   type: "telegram",
+  keyboardConverter: toTelegramKeyboard,
   message: (game: IGame, message: string) => {
     bot.queueMessage(game.telegramChannel, message);
   },
@@ -77,7 +79,7 @@ export const telegram: Provider = {
     bot.sendKeyboard(
       game.telegramChannel,
       `Experimental feature to permanently ban list from game\nDo you want to ban "${game.list.name}"`,
-      banListKeyboard(game.settings.language, game.list),
+      banListKeyboard(game, game.list),
     );
   },
   dailyScores: async (game: IGame, limit?: number) => {

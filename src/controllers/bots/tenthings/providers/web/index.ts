@@ -12,6 +12,7 @@ import { getPlayerName } from "../../players";
 
 export const web: Provider = {
   type: "web",
+  keyboardConverter: (def) => def,
   message: async (_game: IGame, message) => {
     await publish("tenthings_message", { message });
   },

@@ -4,7 +4,7 @@ import { IGame } from "@models/tenthings/game";
 import { TelegramCallbackData } from "./callbacks";
 
 import i18n from "@root/i18n";
-import { confirmBanListKeyboard } from "./keyboards";
+import { confirmBanKeyboard } from "@tenthings/keyboards";
 import bot from "@root/connections/telegram";
 import { adminOnly } from "@root/controllers/bots/tenthings/providers/telegram/errors";
 import { convertTelegramUserToPlayer } from ".";
@@ -39,7 +39,7 @@ export const initiateBan = async (game: IGame, callbackQuery: TelegramCallbackDa
               user: callbackQuery.from.name ?? callbackQuery.from.username ?? "Unknown",
             },
           ),
-          confirmBanListKeyboard(game.settings.language, foundList),
+          confirmBanKeyboard(game, foundList._id.toString()),
         );
       }
     }

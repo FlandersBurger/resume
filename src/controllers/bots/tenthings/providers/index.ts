@@ -1,9 +1,11 @@
 import { IGame, IGameList, IGameListValue } from "@root/models/tenthings/game";
 import { IList } from "@root/models/tenthings/list";
 import { IPlayer } from "@root/models/tenthings/player";
+import { KeyboardDef } from "@tenthings/keyboards";
 
 export type Provider = {
   type: "web" | "telegram" | "discord";
+  keyboardConverter: (def: KeyboardDef) => any;
 
   message: (game: IGame, message: string) => void;
   newRound: (game: IGame, list: IList | IGameList) => void;

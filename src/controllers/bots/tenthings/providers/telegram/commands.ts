@@ -17,7 +17,8 @@ import { getPlayerName } from "@tenthings/players";
 import { getQueue } from "@tenthings/providers/telegram/queue";
 import { checkSkipper, processSkip, vetoSkip } from "@tenthings/skips";
 import { getStats } from "@tenthings/providers/telegram/stats";
-import { categoriesKeyboard, listsKeyboard, settingsKeyboard, statsKeyboard } from "./keyboards";
+import { categoriesKeyboard, searchResultsKeyboard, settingsKeyboard, statsKeyboard } from "@tenthings/keyboards";
+import shuffle from "lodash/shuffle";
 import bot from "@root/connections/telegram";
 import {
   checkSuggestionProvided,
@@ -201,7 +202,7 @@ export const evaluate = async (msg: TelegramMessage, game: HydratedDocument<IGam
         bot.sendKeyboard(
           game.telegramChannel,
           `<b>${i18n(game.settings.language, "stats.stats")}</b>`,
-          statsKeyboard(),
+          statsKeyboard(game),
         );
         break;
       case Command.Typo:
@@ -226,7 +227,7 @@ export const evaluate = async (msg: TelegramMessage, game: HydratedDocument<IGam
 
           const foundLists = await searchList(search, game);
           if (foundLists.length > 0) {
-            const keyboard = listsKeyboard(foundLists);
+            const keyboard = searchResultsKeyboard(game, shuffle(foundLists).slice(0, 10));
             bot.sendKeyboard(
               game.telegramChannel,
               `${i18n(

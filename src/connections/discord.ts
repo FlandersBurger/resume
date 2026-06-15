@@ -1,5 +1,6 @@
 import {
   Client,
+  EmbedBuilder,
   GatewayIntentBits,
   Message,
   Partials,
@@ -359,6 +360,17 @@ class DiscordBot {
     } catch (error: any) {
       console.error("Discord checkAdmin error:", error?.message);
       return false;
+    }
+  };
+
+  public sendImage = async (channel: DiscordChannel, url: string) => {
+    try {
+      const ch = await this.client.channels.fetch(channel.channelId);
+      if (ch && ch.isTextBased()) {
+        await (ch as TextChannel).send({ embeds: [new EmbedBuilder().setImage(url)] });
+      }
+    } catch (error: any) {
+      console.error(`Discord send image error in ${channel.channelId}:`, error?.message);
     }
   };
 

@@ -16,7 +16,7 @@ import i18n from "@root/i18n";
 import { getPlayerName } from "@tenthings/players";
 import { checkSkipper, processSkip, vetoSkip } from "@tenthings/skips";
 import bot from "@root/connections/discord";
-import { searchResultsButtons, settingsButtons, statsButtons } from "./keyboards";
+import { searchResultsKeyboard, settingsKeyboard, statsKeyboard } from "@tenthings/keyboards";
 
 // Re-export the shared Command enum from telegram for consumers of this module
 export { Command, translateCommand } from "@tenthings/providers/telegram/commands";
@@ -136,16 +136,18 @@ export const evaluate = async (msg: DiscordMessage, game: HydratedDocument<IGame
         vetoSkip(game, player);
         break;
       case Command.Stats:
-        bot.sendMessageWithComponents(game.discordChannel, `<b>${i18n(game.settings.language, "stats.stats")}</b>`, [
-          statsButtons(),
-        ]);
+        bot.sendMessageWithComponents(
+          game.discordChannel,
+          `<b>${i18n(game.settings.language, "stats.stats")}</b>`,
+          statsKeyboard(game),
+        );
         break;
       case Command.Settings:
         if (await bot.checkAdmin(null, msg.from.id)) {
           bot.sendMessageWithComponents(
             game.discordChannel,
             `<b>${i18n(game.settings.language, "settings")}</b>`,
-            settingsButtons(game),
+            settingsKeyboard(game),
           );
         } else {
           game.provider.message(
@@ -176,7 +178,7 @@ export const evaluate = async (msg: DiscordMessage, game: HydratedDocument<IGame
             bot.sendMessageWithComponents(
               game.discordChannel,
               `${i18n(game.settings.language, "sentences.queueList")}\n*(${search})*\n${listNames}`,
-              searchResultsButtons(foundLists),
+              searchResultsKeyboard(game, foundLists.slice(0, 5)),
             );
           } else {
             bot.queueMessage(

@@ -17,9 +17,9 @@ import emojis from "@tenthings/emojis";
 import { initiateBan, processBan } from "@tenthings/providers/telegram/bans";
 import { getScores, getStats } from "@tenthings/providers/telegram/stats";
 import { votersCache } from "@tenthings/cache";
+import { curateListKeyboard } from "./keyboards";
 import {
   categoriesKeyboard,
-  curateListKeyboard,
   delayKeyboard,
   languageKeyboard,
   languagesKeyboard,
@@ -27,7 +27,7 @@ import {
   playerStatsKeyboard,
   settingsKeyboard,
   subcategoriesKeyboard,
-} from "./keyboards";
+} from "@tenthings/keyboards";
 import bot, { TelegramUser } from "@root/connections/telegram";
 import { adminOnly } from "@root/controllers/bots/tenthings/providers/telegram/errors";
 import { isBotLanguage, isSupportedLanguage, SupportedLanguage } from "@tenthings/languages";
@@ -164,7 +164,7 @@ export default async (callbackQuery: TelegramCallbackData) => {
             break;
           case "player":
             bot.answerCallback(callbackQuery.callbackQueryId, text);
-            bot.sendKeyboard(game.telegramChannel, `<b>${text}</b>`, playerStatsKeyboard());
+            bot.sendKeyboard(game.telegramChannel, `<b>${text}</b>`, playerStatsKeyboard(game));
             break;
           case "global":
             bot.answerCallback(callbackQuery.callbackQueryId, text);

@@ -20,7 +20,14 @@ import { Player } from "@root/models";
 import { HydratedDocument } from "mongoose";
 import { BotLanguage } from "@tenthings/languages";
 import { getListStats } from "@tenthings/providers/telegram/stats";
-import { likeListButtons, hintSkipButtons, miniGameButtons, tinyGameButtons, banListButton } from "./keyboards";
+import { toDiscordComponents } from "./keyboards";
+import {
+  likeListKeyboard,
+  hintSkipKeyboard,
+  miniGameKeyboard,
+  tinyGameKeyboard,
+  banListKeyboard,
+} from "@tenthings/keyboards";
 import emojis from "../../emojis";
 
 const getDailyScores = async ({ _id, settings }: IGame, limit = 0) => {
@@ -41,6 +48,7 @@ const getDailyScores = async ({ _id, settings }: IGame, limit = 0) => {
 
 export const discord: Provider = {
   type: "discord",
+  keyboardConverter: toDiscordComponents,
   message: (game: IGame, message: string) => {
     bot.queueMessage(game.discordChannel, message);
   },
@@ -52,12 +60,12 @@ export const discord: Provider = {
     message += `**${getCategoryLabel(game.settings.language, list)}**`;
     message += `\n\n**${game.list.name}** (${game.list.answers}) ${i18n(game.settings.language, "sentences.createdBy", { creator: (game.list.creator as IUser).username })}`;
     message += game.list.description ? `\n*${parseSymbols(game.list.description)}*` : "";
-    bot.sendMessageWithComponents(game.discordChannel, message, [hintSkipButtons()]);
+    bot.sendMessageWithComponents(game.discordChannel, message, hintSkipKeyboard(game));
   },
   endOfRound: async (game: IGame, list: IList) => {
     let message = getListStats(game.settings.language, list, undefined);
     message += await getDailyScores(game, 5);
-    bot.sendMessageWithComponents(game.discordChannel, message, [likeListButtons(game)]);
+    bot.sendMessageWithComponents(game.discordChannel, message, likeListKeyboard(game));
   },
   skipList: (game: IGame) => {
     let message = `${i18n(game.settings.language, "sentences.skippedList", {
@@ -74,9 +82,11 @@ export const discord: Provider = {
       return str;
     }, "");
     bot.queueMessage(game.discordChannel, message);
-    bot.sendMessageWithComponents(game.discordChannel, `Ban "${game.list.name}" from this game?`, [
-      banListButton(game.settings.language, game.list),
-    ]);
+    bot.sendMessageWithComponents(
+      game.discordChannel,
+      `Ban "${game.list.name}" from this game?`,
+      banListKeyboard(game, game.list),
+    );
   },
   dailyScores: async (game: IGame, limit?: number) => {
     bot.queueMessage(game.discordChannel, await getDailyScores(game, limit));
@@ -145,7 +155,7 @@ export const discord: Provider = {
       return msg;
     }, "");
     message += `\n**${getHint(game.minigame.hints, game.minigame.answer)}**`;
-    bot.sendMessageWithComponents(game.discordChannel, message, [miniGameButtons()]);
+    bot.sendMessageWithComponents(game.discordChannel, message, miniGameKeyboard(game));
   },
   miniGameGuessed: (game: IGame, player: IPlayer, score: number, accuracy: string) => {
     let message = `${i18n(game.settings.language, "sentences.minigameAnswered")} (${accuracy}%)\n`;
@@ -162,7 +172,7 @@ export const discord: Provider = {
       return msg;
     }, "");
     message += `\n**${getHint(game.tinygame.hints, game.tinygame.answer)}**`;
-    bot.sendMessageWithComponents(game.discordChannel, message, [tinyGameButtons()]);
+    bot.sendMessageWithComponents(game.discordChannel, message, tinyGameKeyboard(game));
   },
   tinyGameGuessed: (game: IGame, player: IPlayer, score: number, accuracy: string) => {
     let message = `${i18n(game.settings.language, "sentences.tinygameAnswered")} (${accuracy}%)\n`;
@@ -183,7 +193,7 @@ export const discord: Provider = {
   },
   rateList: (_game: IGame) => {},
   sendMedia: (game: IGame, url: string) => {
-    bot.queueMessage(game.discordChannel, url);
+    bot.sendImage(game.discordChannel, url);
   },
   categoriesMessage: (game: IGame): string => {
     return Object.keys(categories)
