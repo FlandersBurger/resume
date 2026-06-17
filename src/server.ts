@@ -82,8 +82,8 @@ server.listen(port, async () => {
   redisConnect();
   if (process.env.NODE_ENV === "production") {
     bot.notifyAdmin("<b>Started Ten Things</b>");
+    initDiscordBot();
   }
-  initDiscordBot();
   await subscribe("new_post", (post: any) => {
     websocketServer.broadcast("new_post", post);
   });

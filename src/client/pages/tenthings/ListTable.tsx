@@ -80,6 +80,11 @@ interface Props {
   languageOptions?: Language[];
   languageFilter?: string[];
   categoryFilter?: string[];
+  sortField: string;
+  sortDir: "asc" | "desc";
+  onSortChange: (field: string) => void;
+  myListsOnly?: boolean;
+  onMyListsToggle?: () => void;
   onLanguageFilterChange?: (langs: string[]) => void;
   onCategoryFilterChange?: (cats: string[]) => void;
   onSearchChange: (s: string, field: string) => void;
@@ -112,6 +117,11 @@ export function ListTable({
   languageOptions = [],
   languageFilter = [],
   categoryFilter = [],
+  sortField,
+  sortDir,
+  onSortChange,
+  myListsOnly = false,
+  onMyListsToggle,
   onLanguageFilterChange,
   onCategoryFilterChange,
   onSearchChange,
@@ -127,64 +137,14 @@ export function ListTable({
 }: Props) {
   const [tooltip, setTooltip] = useState<{ text: string; x: number; y: number } | null>(null);
   const [showFilters, setShowFilters] = useState(false);
-  const [sortField, setSortField] = useState<string>("date");
-  const [sortDir, setSortDir] = useState<1 | -1>(-1);
-
-  const handleSort = (field: string) => {
-    if (sortField === field) setSortDir((d) => (d === 1 ? -1 : 1));
-    else {
-      setSortField(field);
-      setSortDir(1);
-    }
-  };
 
   const sortIcon = (field: string) =>
     sortField === field ? (
       <i
-        className={`fas ${sortDir === 1 ? "fa-sort-alpha-down" : "fa-sort-alpha-down-alt"}`}
+        className={`fas ${sortDir === "asc" ? "fa-sort-alpha-down" : "fa-sort-alpha-down-alt"}`}
         style={{ marginLeft: 4 }}
       />
     ) : null;
-
-  const sortedLists = [...lists].sort((a, b) => {
-    const get = (l: TenThingsList): string | number => {
-      switch (sortField) {
-        case "name":
-          return l.name?.toLowerCase() ?? "";
-        case "categories":
-          return getCategoryLabel(l.categories).toLowerCase();
-        case "creator":
-          return l.creator?.username?.toLowerCase() ?? "";
-        case "date":
-          return l.date ?? "";
-        case "modifyDate":
-          return l.modifyDate ?? "";
-        case "answers":
-          return l.answers ?? 0;
-        case "language":
-          return l.language?.toLowerCase() ?? "";
-        case "upvotes":
-          return l.upvotes ?? 0;
-        case "downvotes":
-          return l.downvotes ?? 0;
-        case "likeRatio":
-          return l.likeRatio ?? 0;
-        case "plays":
-          return l.plays ?? 0;
-        case "playRatio":
-          return l.playRatio ?? 0;
-        case "bans":
-          return l.bans ?? 0;
-        default:
-          return "";
-      }
-    };
-    const av = get(a),
-      bv = get(b);
-    if (av < bv) return -sortDir;
-    if (av > bv) return sortDir;
-    return 0;
-  });
   const fmt = (d?: string) => {
     if (!d) return "";
     const date = new Date(d);
@@ -293,6 +253,18 @@ export function ListTable({
       {showFilters && (
         <div className="panel panel-default" style={{ marginBottom: 8 }}>
           <div className="panel-body" style={{ padding: "8px 12px" }}>
+            {onMyListsToggle && (
+              <div style={{ marginBottom: 8 }}>
+                <strong style={{ marginRight: 8 }}>Lists:</strong>
+                <button
+                  className={`btn btn-xs ${myListsOnly ? "btn-primary" : "btn-default"}`}
+                  style={{ margin: "2px 3px" }}
+                  onClick={onMyListsToggle}
+                >
+                  <i className="fas fa-user" /> My Lists
+                </button>
+              </div>
+            )}
             {languageOptions.length > 0 && (
               <div style={{ marginBottom: 8 }}>
                 <strong style={{ marginRight: 8 }}>Language:</strong>
@@ -371,7 +343,7 @@ export function ListTable({
                   <i className="fas fa-star-half-alt" />
                 </th>
               )}
-              <th style={{ cursor: "pointer" }} onClick={() => handleSort("name")}>
+              <th style={{ cursor: "pointer" }} onClick={() => onSortChange("name")}>
                 Name{" "}
                 <span style={{ fontWeight: "lighter", fontSize: "small" }}>
                   ({lists.length}/{count})
@@ -381,39 +353,39 @@ export function ListTable({
               <th
                 className="hidden-sm visible-md visible-lg"
                 style={{ cursor: "pointer" }}
-                onClick={() => handleSort("categories")}
+                onClick={() => onSortChange("categories")}
               >
                 Categories{sortIcon("categories")}
               </th>
               <th
                 className="hidden-sm hidden-md visible-lg"
                 style={{ cursor: "pointer" }}
-                onClick={() => handleSort("creator")}
+                onClick={() => onSortChange("creator")}
               >
                 {canViewCreator && <>Creator{sortIcon("creator")}</>}
               </th>
               <th
                 className="hidden-xs visible-sm visible-md visible-lg"
                 style={{ cursor: "pointer" }}
-                onClick={() => handleSort("date")}
+                onClick={() => onSortChange("date")}
               >
                 Created{sortIcon("date")}
               </th>
               <th
                 className="hidden-sm hidden-md visible-lg"
                 style={{ cursor: "pointer" }}
-                onClick={() => handleSort("modifyDate")}
+                onClick={() => onSortChange("modifyDate")}
               >
                 Updated{sortIcon("modifyDate")}
               </th>
-              <th style={{ cursor: "pointer" }} onClick={() => handleSort("answers")}>
+              <th style={{ cursor: "pointer" }} onClick={() => onSortChange("answers")}>
                 <i className="fas fa-list-ol" title="Values" />
                 {sortIcon("answers")}
               </th>
               <th
                 className="hidden-xs visible-sm visible-md visible-lg"
                 style={{ cursor: "pointer" }}
-                onClick={() => handleSort("language")}
+                onClick={() => onSortChange("language")}
               >
                 <i className="fas fa-language" title="Language" />
                 {sortIcon("language")}
@@ -421,7 +393,7 @@ export function ListTable({
               <th
                 className="hidden-sm visible-md visible-lg"
                 style={{ cursor: "pointer" }}
-                onClick={() => handleSort("upvotes")}
+                onClick={() => onSortChange("upvotes")}
               >
                 <i className="fas fa-thumbs-up text-success" title="Upvotes" />
                 {sortIcon("upvotes")}
@@ -429,7 +401,7 @@ export function ListTable({
               <th
                 className="hidden-sm visible-md visible-lg"
                 style={{ cursor: "pointer" }}
-                onClick={() => handleSort("downvotes")}
+                onClick={() => onSortChange("downvotes")}
               >
                 <i className="fas fa-thumbs-down text-danger" title="Downvotes" />
                 {sortIcon("downvotes")}
@@ -437,7 +409,7 @@ export function ListTable({
               <th
                 className="hidden-sm visible-md visible-lg"
                 style={{ cursor: "pointer" }}
-                onClick={() => handleSort("likeRatio")}
+                onClick={() => onSortChange("likeRatio")}
               >
                 <i className="fas fa-heart" title="Like Ratio" />
                 {sortIcon("likeRatio")}
@@ -445,7 +417,7 @@ export function ListTable({
               <th
                 className="hidden-sm visible-md visible-lg"
                 style={{ cursor: "pointer" }}
-                onClick={() => handleSort("plays")}
+                onClick={() => onSortChange("plays")}
               >
                 <i className="fas fa-play" title="Plays" />
                 {sortIcon("plays")}
@@ -453,7 +425,7 @@ export function ListTable({
               <th
                 className="hidden-sm visible-md visible-lg"
                 style={{ cursor: "pointer" }}
-                onClick={() => handleSort("playRatio")}
+                onClick={() => onSortChange("playRatio")}
               >
                 <i className="fas fa-percentage" title="Play Ratio" />
                 {sortIcon("playRatio")}
@@ -461,7 +433,7 @@ export function ListTable({
               <th
                 className="hidden-sm visible-md visible-lg"
                 style={{ cursor: "pointer" }}
-                onClick={() => handleSort("bans")}
+                onClick={() => onSortChange("bans")}
               >
                 <i className="fas fa-ban" title="Bans" />
                 {sortIcon("bans")}
@@ -470,7 +442,7 @@ export function ListTable({
             </tr>
           </thead>
           <tbody>
-            {sortedLists.map((list) => (
+            {lists.map((list) => (
               <tr
                 key={list._id}
                 className={highlightedIds.includes(list._id) ? "success" : ""}

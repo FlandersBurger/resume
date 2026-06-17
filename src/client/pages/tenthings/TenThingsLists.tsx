@@ -55,6 +55,17 @@ export default function TenThingsLists() {
   const [categoryFilter, setCategoryFilter] = useState<string[]>(
     searchParams.get("cat") ? searchParams.get("cat")!.split(",") : [],
   );
+  const [sortField, setSortField] = useState<string>("date");
+  const [sortDir, setSortDir] = useState<"asc" | "desc">("desc");
+  const [myListsOnly, setMyListsOnly] = useState(false);
+
+  const handleSortChange = (field: string) => {
+    if (sortField === field) setSortDir((d) => (d === "asc" ? "desc" : "asc"));
+    else {
+      setSortField(field);
+      setSortDir("asc");
+    }
+  };
   const [editorVisible, setEditorVisible] = useState(false);
   const [editorMounted, setEditorMounted] = useState(false);
   const [deleteModalLists, setDeleteModalLists] = useState<TenThingsList[]>([]);
@@ -82,6 +93,9 @@ export default function TenThingsLists() {
           search,
           language: languageFilter,
           categories: categoryFilter,
+          sortBy: sortField,
+          orderBy: sortDir,
+          creator: myListsOnly && currentUser ? currentUser._id : undefined,
         });
         prefetchRef.current = { page: p, data: data.lists };
       } catch {
@@ -89,7 +103,7 @@ export default function TenThingsLists() {
       }
       prefetchingRef.current = false;
     },
-    [search, languageFilter, categoryFilter],
+    [search, languageFilter, categoryFilter, sortField, sortDir, myListsOnly, currentUser],
   );
 
   useEffect(() => {
@@ -121,6 +135,9 @@ export default function TenThingsLists() {
             ...searchOpts,
             language: languageFilter,
             categories: categoryFilter,
+            sortBy: sortField,
+            orderBy: sortDir,
+            creator: myListsOnly && currentUser ? currentUser._id : undefined,
           });
           lists = data.lists;
           count = data.count;
@@ -137,7 +154,7 @@ export default function TenThingsLists() {
         setLoading(false);
       }
     },
-    [search, searchField, languageFilter, categoryFilter, prefetchPage],
+    [search, searchField, languageFilter, categoryFilter, sortField, sortDir, myListsOnly, currentUser, prefetchPage],
   );
 
   useEffect(() => {
@@ -275,12 +292,12 @@ export default function TenThingsLists() {
         <title>Ten Things — Trivia Lists for the Telegram Bot</title>
         <meta
           name="description"
-          content="Browse and manage hundreds of trivia lists powering the Ten Things Telegram bot. Play the daily trivia game with friends on Telegram."
+          content="Browse and manage hundreds of trivia lists powering the Ten Things bot. Play the daily trivia game with friends on Telegram or Discord."
         />
-        <meta property="og:title" content="Ten Things — Trivia Lists for the Telegram Bot" />
+        <meta property="og:title" content="Ten Things — Trivia Lists for Telegram &amp; Discord" />
         <meta
           property="og:description"
-          content="Browse and manage hundreds of trivia lists powering the Ten Things Telegram bot. Play the daily trivia game with friends on Telegram."
+          content="Browse and manage hundreds of trivia lists powering the Ten Things bot. Play the daily trivia game with friends on Telegram or Discord."
         />
         <meta property="og:url" content="https://belgocanadian.com/tenthings" />
         <link rel="canonical" href="https://belgocanadian.com/tenthings" />
@@ -292,6 +309,14 @@ export default function TenThingsLists() {
           <strong>Ten Things</strong> is a daily trivia game played by hundreds of people on{" "}
           <a href="https://t.me/joinchat/I1Di-1MXGXkjhgNPXi6Vfg" target="_blank" rel="noreferrer">
             Telegram
+          </a>{" "}
+          and{" "}
+          <a
+            href="https://discord.com/oauth2/authorize?client_id=1508334882198392832&permissions=274877975552&integration_type=0&scope=bot+applications.commands"
+            target="_blank"
+            rel="noreferrer"
+          >
+            Discord
           </a>
           . Each round, players race to name ten things in a category — from countries in Europe to Oscar-winning films.
           Browse the list library below, or log in to contribute your own lists to the game.
@@ -314,11 +339,16 @@ export default function TenThingsLists() {
             canAddList={!!currentUser}
             canViewCreator={!!currentUser}
             canOpenEditor={!!currentUser}
-            filterCount={languageFilter.length + categoryFilter.length}
+            filterCount={languageFilter.length + categoryFilter.length + (myListsOnly ? 1 : 0)}
             categoryOptions={categoryOptions}
             languageOptions={languageOptions}
             languageFilter={languageFilter}
             categoryFilter={categoryFilter}
+            myListsOnly={myListsOnly}
+            onMyListsToggle={currentUser ? () => setMyListsOnly((v) => !v) : undefined}
+            sortField={sortField}
+            sortDir={sortDir}
+            onSortChange={handleSortChange}
             onLanguageFilterChange={(langs) => {
               setLanguageFilter(langs);
               setSearchParams(

@@ -11,6 +11,7 @@ import {
   Interaction,
   ActionRowBuilder,
   ButtonBuilder,
+  Options,
 } from "discord.js";
 import Queue, { Job } from "bull";
 import redis from "@root/queue";
@@ -144,6 +145,14 @@ class DiscordBot {
         GatewayIntentBits.DirectMessages,
       ],
       partials: [Partials.Channel, Partials.Message],
+      makeCache: Options.cacheWithLimits({
+        MessageManager: 50,
+        GuildMemberManager: 100,
+        UserManager: 200,
+      }),
+      sweepers: {
+        messages: { interval: 300, lifetime: 600 },
+      },
     });
 
     this.client.once(Events.ClientReady, async (readyClient) => {
@@ -230,9 +239,11 @@ class DiscordBot {
       console.error("Discord chat queue error:", error);
     });
 
-    this.client.login(token).catch((error) => {
-      console.error("Discord login failed:", error);
-    });
+    if (token) {
+      this.client.login(token).catch((error) => {
+        console.error("Discord login failed:", error);
+      });
+    }
   }
 
   public onMessage = (handler: MessageHandler) => {

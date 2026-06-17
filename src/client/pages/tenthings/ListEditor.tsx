@@ -402,10 +402,11 @@ export function ListEditor({
 
   const sortIcon = (col: SortCol) =>
     sortCol === col ? (
-      <i className={`fas fa-sort-${sortDir === "asc" ? "up" : "down"}`} style={{ marginLeft: 4 }} />
-    ) : (
-      <i className="fas fa-sort" style={{ marginLeft: 4, opacity: 0.3 }} />
-    );
+      <i
+        className={`fas ${sortDir === "asc" ? "fa-sort-alpha-down" : "fa-sort-alpha-down-alt"}`}
+        style={{ marginLeft: 4 }}
+      />
+    ) : null;
 
   const sortedIndices = useMemo(() => {
     const indices = list.values.map((_, i) => i);

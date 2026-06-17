@@ -12,6 +12,10 @@ export const usersRoute = Router();
 type AuthType = "telegram" | "firebase";
 const isAcceptedAuth = (authType: string = ""): authType is AuthType => ["telegram", "firebase"].includes(authType);
 
+usersRoute.get("/bot-info", (_: Request, res: Response) => {
+  res.json({ telegramUsername: bot.getUsername() });
+});
+
 usersRoute.get("/", (_: Request, res: Response) => {
   if (!res.locals.isAuthorized) res.sendStatus(401);
   else res.json(res.locals.user);

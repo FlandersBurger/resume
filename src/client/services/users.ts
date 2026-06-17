@@ -17,6 +17,11 @@ export async function getUser(): Promise<User> {
   return data;
 }
 
+export async function getBotInfo(): Promise<{ telegramUsername: string }> {
+  const { data } = await http.get<{ telegramUsername: string }>("/api/users/bot-info");
+  return data;
+}
+
 export async function getUsers(): Promise<User[]> {
   const { data } = await http.get<User[]>("/api/users/all");
   return data;

@@ -10,6 +10,17 @@ const cache: {
   };
 } = {};
 
+// Purge entries that have been idle for over a minute so the object doesn't
+// accumulate one entry per unique Telegram user ID indefinitely.
+setInterval(() => {
+  const cutoff = moment().subtract(1, "minute");
+  for (const key of Object.keys(cache)) {
+    if (cache[key].lastMessage.isBefore(cutoff)) {
+      delete cache[key];
+    }
+  }
+}, 60_000);
+
 export const checkSpam = (body: {
   message?: TelegramMessage;
   callback_query?: { from: TelegramMessage["from"]; message: TelegramMessage };

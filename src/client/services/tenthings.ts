@@ -57,6 +57,7 @@ export interface GetListsOptions {
   categoriesNot?: string[];
   search?: string;
   name?: string;
+  creator?: string;
 }
 
 export async function getLists(options: GetListsOptions = {}) {
@@ -71,6 +72,7 @@ export async function getLists(options: GetListsOptions = {}) {
   if (options.categoriesNot?.length) params.append("!categories", options.categoriesNot.join(","));
   if (options.search) params.append("search", options.search);
   if (options.name) params.append("name", options.name);
+  if (options.creator) params.append("creator", options.creator);
   const { data } = await http.get<{ result: TenThingsList[]; count: number; nextPage: number }>(
     `/api/tenthings/lists?${params}`,
   );

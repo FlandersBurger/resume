@@ -1,11 +1,22 @@
 import { HydratedDocument, Types } from "mongoose";
-import { Moment } from "moment";
+import moment, { Moment } from "moment";
 import { Game, List } from "@models/index";
 import redis from "@root/queue";
 import { IGame } from "@models/tenthings/game";
 import { IList } from "@models/tenthings/list";
 
 export const votersCache: { [key: string]: { lastVoted: Moment; delay: number } } = {};
+
+// Purge entries older than the maximum vote delay so the object doesn't retain
+// one entry per unique voter indefinitely.
+setInterval(() => {
+  const cutoff = moment().subtract(5, "minutes");
+  for (const key of Object.keys(votersCache)) {
+    if (votersCache[key].lastVoted.isBefore(cutoff)) {
+      delete votersCache[key];
+    }
+  }
+}, 5 * 60_000);
 
 export const getGame = async (telegramChatId: number) => {
   const cachedGame = await redis.get(telegramChatId.toString());

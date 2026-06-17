@@ -1,6 +1,6 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useApp } from "../context/AppContext";
-import { updateUser, changeUsername, changePassword } from "../services/users";
+import { updateUser, changeUsername, changePassword, linkTelegram, getBotInfo } from "../services/users";
 import { PageContainer } from "../components/layout";
 
 export default function Profile() {
@@ -14,6 +14,7 @@ export default function Profile() {
   const [allCountries, setAllCountries] = useState<{ code: string; name: string }[]>([]);
   const [flagSearch, setFlagSearch] = useState("");
   const [flagDropdownOpen, setFlagDropdownOpen] = useState(false);
+  const telegramWidgetRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if (currentUser) {
@@ -31,6 +32,40 @@ export default function Profile() {
       )
       .catch(() => {});
   }, []);
+
+  useEffect(() => {
+    if (!currentUser || currentUser.telegramId) return;
+    const container = telegramWidgetRef.current;
+    if (!container) return;
+
+    getBotInfo().then(({ telegramUsername }) => {
+      if (!telegramUsername) return;
+
+      (window as any).onTelegramAuth = async (data: object) => {
+        try {
+          const updated = await linkTelegram(currentUser._id, data);
+          setUser(updated as any);
+          toast("Telegram account linked");
+        } catch {
+          toast("Failed to link Telegram account");
+        }
+      };
+
+      const script = document.createElement("script");
+      script.src = "https://telegram.org/js/telegram-widget.js?22";
+      script.setAttribute("data-telegram-login", telegramUsername);
+      script.setAttribute("data-size", "medium");
+      script.setAttribute("data-onauth", "onTelegramAuth(user)");
+      script.setAttribute("data-request-access", "write");
+      script.async = true;
+      container.appendChild(script);
+    });
+
+    return () => {
+      delete (window as any).onTelegramAuth;
+      if (container) container.innerHTML = "";
+    };
+  }, [currentUser, setUser, toast]);
 
   const handleUpdateUser = async (updatedFlags?: string[], updatedBirthDate?: string) => {
     if (!currentUser) return;
@@ -204,6 +239,16 @@ export default function Profile() {
             </ul>
           )}
         </div>
+      </div>
+      <div className="form-group">
+        <label>Telegram</label>
+        {currentUser.telegramId ? (
+          <p className="text-success">
+            <i className="fab fa-telegram" /> Linked (ID: {currentUser.telegramId})
+          </p>
+        ) : (
+          <div ref={telegramWidgetRef} />
+        )}
       </div>
       <form onSubmit={handleChangePassword}>
         <h4>Change Password</h4>

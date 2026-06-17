@@ -1,5 +1,5 @@
 import { QueryableRequest, Request, Response, Router } from "express";
-import { Types, LeanDocument, SortOrder } from "mongoose";
+import { Types, LeanDocument } from "mongoose";
 import moment from "moment";
 
 import bot from "@root/connections/telegram";
@@ -23,18 +23,81 @@ import { telegram } from "@tenthings/providers/telegram";
 
 export const tenthingsListsRoute = Router();
 
+const VIRTUAL_SORT_FIELDS = new Set(["likeRatio", "upvotes", "downvotes", "answers", "playRatio"]);
+
+const safeVotes = { $ifNull: ["$votes", []] };
+const safeValues = { $ifNull: ["$values", []] };
+
+const VIRTUAL_ADD_FIELDS = {
+  answers: { $size: safeValues },
+  upvotes: { $size: { $filter: { input: safeVotes, as: "v", cond: { $gt: ["$$v.vote", 0] } } } },
+  downvotes: { $size: { $filter: { input: safeVotes, as: "v", cond: { $lt: ["$$v.vote", 0] } } } },
+  likeRatio: {
+    $let: {
+      vars: { votes: safeVotes },
+      in: {
+        $cond: {
+          if: { $eq: [{ $size: "$$votes" }, 0] },
+          then: 0,
+          else: {
+            $divide: [
+              { $size: { $filter: { input: "$$votes", as: "v", cond: { $gt: ["$$v.vote", 0] } } } },
+              { $size: "$$votes" },
+            ],
+          },
+        },
+      },
+    },
+  },
+  playRatio: {
+    $cond: {
+      if: { $eq: ["$plays", 0] },
+      then: 0,
+      else: { $divide: [{ $subtract: ["$plays", { $ifNull: ["$skips", 0] }] }, "$plays"] },
+    },
+  },
+};
+
 tenthingsListsRoute.get("/", async (req: QueryableRequest, res: Response) => {
   const authorized = !!res.locals.isAuthorized;
   const page = parseInt(req.query.page ?? 1);
+  const limit = parseInt(req.query.limit) || 0;
+  const skip = limit * (page - 1) || 0;
+  const sortBy = req.query.sort_by ?? "date";
+  const sortDir: 1 | -1 = req.query.order_by === "asc" || req.query.order_by === "1" ? 1 : -1;
   const query = parseQuery(req.query);
   const count = await List.countDocuments(query);
-  const lists: LeanDocument<IList>[] = await List.find(query)
-    .limit(parseInt(req.query.limit) || 0)
-    .skip(parseInt(req.query.limit) * (page - 1) || 0)
-    .sort({ [req.query.sort_by ?? "date"]: parseInt(req.query.order_by ?? -1) as SortOrder })
-    .populate(authorized ? "creator" : "", authorized ? "_id username displayName" : "")
-    .populate(authorized ? "values.creator" : "", authorized ? "_id username displayName" : "")
-    .lean({ virtuals: true });
+
+  let lists: LeanDocument<IList>[];
+
+  if (VIRTUAL_SORT_FIELDS.has(sortBy)) {
+    // Aggregate to sort by computed virtual field, then hydrate with populate
+    const sortedIds: { _id: unknown }[] = await List.aggregate([
+      { $match: query },
+      { $addFields: VIRTUAL_ADD_FIELDS },
+      { $sort: { [sortBy]: sortDir } },
+      ...(skip ? [{ $skip: skip }] : []),
+      ...(limit ? [{ $limit: limit }] : []),
+      { $project: { _id: 1 } },
+    ]);
+    const ids = sortedIds.map((d) => d._id);
+    const hydrated = await List.find({ _id: { $in: ids } })
+      .populate(authorized ? "creator" : "", authorized ? "_id username displayName" : "")
+      .populate(authorized ? "values.creator" : "", authorized ? "_id username displayName" : "")
+      .lean({ virtuals: true });
+    // Restore aggregation order (find $in does not preserve it)
+    const byId = new Map(hydrated.map((h) => [String(h._id), h]));
+    lists = ids.map((id) => byId.get(String(id))!).filter(Boolean);
+  } else {
+    lists = await List.find(query)
+      .limit(limit)
+      .skip(skip)
+      .sort({ [sortBy]: sortDir })
+      .populate(authorized ? "creator" : "", authorized ? "_id username displayName" : "")
+      .populate(authorized ? "values.creator" : "", authorized ? "_id username displayName" : "")
+      .lean({ virtuals: true });
+  }
+
   const result = authorized ? lists : lists.map(({ creator: _c, values: _v, ...rest }) => rest);
   res.json({ result, nextPage: page + 1, count });
 });
@@ -151,8 +214,20 @@ tenthingsListsRoute.put("/:id", async (req: Request, res: Response) => {
       const previousModifyDate = moment(list.modifyDate);
       list.values.filter(({ creator }) => !creator).forEach((value) => (value.creator = list.creator));
 
+      const existingValuesById = new Map(list.values.map((v) => [String(v._id), v]));
+      const now = new Date();
+      (req.body.values || []).forEach((incoming: IListValue) => {
+        const existing = existingValuesById.get(String(incoming._id));
+        if (!existing) {
+          incoming.date = incoming.date || now.toISOString();
+          incoming.modifyDate = now;
+        } else if (existing.value !== incoming.value || existing.blurb !== incoming.blurb) {
+          incoming.modifyDate = now;
+        }
+      });
+
       Object.assign(list, req.body);
-      list.modifyDate = new Date();
+      list.modifyDate = now;
       await list.validate();
       await list.save();
       const updatedList = await getList(new Types.ObjectId(req.params.id));
@@ -268,7 +343,8 @@ tenthingsListsRoute.post("/:id/values", async (req: Request, res: Response) => {
     if (!list) res.sendStatus(404);
     else if (list.values.some(({ value }) => value === req.body.value)) res.sendStatus(400);
     else {
-      list.values.push({ ...req.body, creator: res.locals.user!._id, date: new Date().toISOString() });
+      const now = new Date();
+      list.values.push({ ...req.body, creator: res.locals.user!._id, date: now.toISOString(), modifyDate: now });
       list.modifyDate = new Date();
       await list.save();
       const updatedList = await List.findOne({ _id: req.params.id }).lean({ virtuals: true });
