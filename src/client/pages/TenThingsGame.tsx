@@ -242,6 +242,24 @@ export default function TenThingsGame() {
   const [settingsSaving, setSettingsSaving] = useState(false);
   const [showLangDropdown, setShowLangDropdown] = useState(false);
   const [showLanguagesDropdown, setShowLanguagesDropdown] = useState(false);
+  const [playerSortField, setPlayerSortField] = useState("lastPlayDate");
+  const [playerSortDir, setPlayerSortDir] = useState<1 | -1>(-1);
+
+  const handlePlayerSort = (field: string) => {
+    if (playerSortField === field) setPlayerSortDir((d) => (d === 1 ? -1 : 1));
+    else {
+      setPlayerSortField(field);
+      setPlayerSortDir(-1);
+    }
+  };
+
+  const playerSortIcon = (field: string) =>
+    playerSortField === field ? (
+      <i
+        className={`fas ${playerSortDir === 1 ? "fa-sort-alpha-down" : "fa-sort-alpha-down-alt"}`}
+        style={{ marginLeft: 4 }}
+      />
+    ) : null;
   // Editable settings handlers
   const handleSettingToggle = async (key: string) => {
     if (!gameId) return;
@@ -727,30 +745,49 @@ export default function TenThingsGame() {
                     <PlayersTable className="table table-striped table-condensed">
                       <thead>
                         <tr>
-                          <th>Name</th>
-                          <th>Wins</th>
-                          <th>Ans</th>
-                          <th>High</th>
-                          <th>Score</th>
-                          <th>Hints</th>
-                          <th>Snubs</th>
-                          <th>Skips</th>
-                          <th>Vetoes</th>
-                          <th>Sug</th>
-                          <th>Search</th>
-                          <th>Streak</th>
-                          <th>Play (max)</th>
-                          <th>Hint (max)</th>
-                          <th>Last Played</th>
+                          {[
+                            { label: "Name", field: "name" },
+                            { label: "Wins", field: "wins" },
+                            { label: "Ans", field: "answers" },
+                            { label: "High", field: "highScore" },
+                            { label: "Score", field: "score" },
+                            { label: "Hints", field: "hints" },
+                            { label: "Snubs", field: "snubs" },
+                            { label: "Skips", field: "skips" },
+                            { label: "Vetoes", field: "vetoes" },
+                            { label: "Sug", field: "suggestions" },
+                            { label: "Search", field: "searches" },
+                            { label: "Streak", field: "streak" },
+                            { label: "Play (max)", field: "playStreak" },
+                            { label: "Hint (max)", field: "hintStreak" },
+                            { label: "Last Played", field: "lastPlayDate" },
+                          ].map(({ label, field }) => (
+                            <th
+                              key={field}
+                              style={{ cursor: "pointer", whiteSpace: "nowrap" }}
+                              onClick={() => handlePlayerSort(field)}
+                            >
+                              {label}
+                              {playerSortIcon(field)}
+                            </th>
+                          ))}
                         </tr>
                       </thead>
                       <tbody>
                         {(game.players || [])
                           .slice()
-                          .sort(
-                            (a: any, b: any) =>
-                              new Date(b.lastPlayDate || 0).getTime() - new Date(a.lastPlayDate || 0).getTime(),
-                          )
+                          .sort((a: any, b: any) => {
+                            const get = (p: any) => {
+                              if (playerSortField === "name") return (p.username || p.first_name || "").toLowerCase();
+                              if (playerSortField === "lastPlayDate") return new Date(p.lastPlayDate || 0).getTime();
+                              return p[playerSortField] ?? 0;
+                            };
+                            const av = get(a),
+                              bv = get(b);
+                            if (av < bv) return -playerSortDir;
+                            if (av > bv) return playerSortDir;
+                            return 0;
+                          })
                           .map((player: any) => (
                             <tr key={player._id || player.chat_id || `${player.username}-${player.first_name}`}>
                               <td>{player.username || player.first_name}</td>
