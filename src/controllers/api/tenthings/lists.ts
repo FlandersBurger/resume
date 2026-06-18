@@ -181,10 +181,10 @@ tenthingsListsRoute.post("/:id/blurbs/:type", async (req: Request, res: Response
           bot.notifyAdmin(`Error saving ${list.name} ${list._id}`);
           console.error(error);
         }
-        res.sendStatus(200);
-      } else {
-        res.sendStatus(304);
       }
+      const freshList = await getList(new Types.ObjectId(req.params.id));
+      if (freshList) res.json(freshList);
+      else res.sendStatus(404);
     } else {
       res.sendStatus(404);
     }
