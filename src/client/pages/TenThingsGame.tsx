@@ -439,7 +439,12 @@ export default function TenThingsGame() {
   if (!currentUser.telegramId && !isAdmin)
     return <h2 className="text-muted">Link your Telegram account in your profile to view your game.</h2>;
 
-  const currentGameLabel = myGames.length > 0 && gameId ? `Game ${gameId}` : gameId ? `Game ${gameId}` : "Select game";
+  const gameLabel = (g: MyGame) => {
+    const name = g.platform ? g.platform.charAt(0).toUpperCase() + g.platform.slice(1) : "Game";
+    return g.telegramChatId ? `${name} ${g.telegramChatId}` : name;
+  };
+  const currentGame = myGames.find((g) => String(g.telegramChatId) === gameId);
+  const currentGameLabel = currentGame ? gameLabel(currentGame) : gameId ? `Game ${gameId}` : "Select game";
 
   return (
     <PageContainer id="tenthingsgame-page" className="container-fluid">
@@ -447,7 +452,8 @@ export default function TenThingsGame() {
         <HeaderTitle>
           {game ? (
             <>
-              Game {game.telegramChatId}
+              {game.platform ? game.platform.charAt(0).toUpperCase() + game.platform.slice(1) : "Game"}{" "}
+              {game.telegramChatId}
               {game.telegramTopicId ? <small> Topic {game.telegramTopicId}</small> : null}
             </>
           ) : (
@@ -475,7 +481,7 @@ export default function TenThingsGame() {
                       navigate(`/tenthings-game/${g.telegramChatId}`);
                     }}
                   >
-                    Game {g.telegramChatId}
+                    {gameLabel(g)}
                     {g.lastPlayDate && (
                       <span className="text-muted" style={{ marginLeft: 8, fontSize: 12 }}>
                         {formatShortDate(g.lastPlayDate)}
