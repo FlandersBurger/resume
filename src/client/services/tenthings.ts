@@ -190,7 +190,42 @@ export async function getGameStats() {
   return data as { _id: { language: string; year: number }; count: number }[];
 }
 
-export async function getListCategoryStats() {
-  const { data } = await http.get("/api/tenthings/stats/categories");
+export async function getListCategoryStats(
+  options: { language?: string[]; categories?: string[]; creator?: string } = {},
+) {
+  const params = new URLSearchParams();
+  if (options.language?.length) params.append("language", options.language.join(","));
+  if (options.categories?.length) params.append("categories", options.categories.join(","));
+  if (options.creator) params.append("creator", options.creator);
+  const query = params.toString();
+  const { data } = await http.get(`/api/tenthings/stats/categories${query ? `?${query}` : ""}`);
   return data as { _id: string; count: number }[];
+}
+
+export type RankRow = { _id?: string; name: string; value: number };
+
+export const LIST_STAT_KEYS = [
+  "mostplayed",
+  "mostskipped",
+  "mosthinted",
+  "mostliked",
+  "leastliked",
+  "mostbanned",
+  "mostupvoted",
+  "mostdownvoted",
+] as const;
+
+export type ListStatKey = (typeof LIST_STAT_KEYS)[number];
+
+export async function getListRanking(
+  stat: ListStatKey,
+  options: { language?: string[]; categories?: string[]; creator?: string } = {},
+) {
+  const params = new URLSearchParams();
+  if (options.language?.length) params.append("language", options.language.join(","));
+  if (options.categories?.length) params.append("categories", options.categories.join(","));
+  if (options.creator) params.append("creator", options.creator);
+  const query = params.toString();
+  const { data } = await http.get<RankRow[]>(`/api/tenthings/stats/list-rankings/${stat}${query ? `?${query}` : ""}`);
+  return data;
 }

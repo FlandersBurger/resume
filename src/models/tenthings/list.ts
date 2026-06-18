@@ -151,6 +151,8 @@ listSchema.plugin(mongooseLeanVirtuals);
 
 listSchema.index({ name: 1 });
 listSchema.index({ name: "text", description: "text", "values.value": "text", "values.blurb": "text" });
+listSchema.index({ plays: -1 });
+listSchema.index({ plays: -1, language: 1 });
 
 for (const name in db) {
   List[name] = db[name].model<IList>("List", listSchema);
