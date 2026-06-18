@@ -146,7 +146,7 @@ export default function TenThingsStats() {
   const [editorMounted, setEditorMounted] = useState(false);
 
   useEffect(() => {
-    if (!currentUser?.admin) return;
+    if (!currentUser) return;
     getPlayStats().then((d) => setPlayStats(d || []));
     getListLanguageStats().then((d) => setLangStats(d || []));
     getGameStats().then((d) => setGameStats(d || []));
@@ -159,7 +159,7 @@ export default function TenThingsStats() {
   }, [currentUser]);
 
   useEffect(() => {
-    if (!currentUser?.admin) return;
+    if (!currentUser) return;
     setListRankings({});
     const opts = {
       language: languageFilter,
@@ -196,7 +196,7 @@ export default function TenThingsStats() {
     }, 320);
   };
 
-  if (!currentUser?.admin) return <h2 className="text-danger">Admin only</h2>;
+  if (!currentUser) return <h2 className="text-muted">Log in to view stats.</h2>;
 
   // ── Play stats ──
   const playYears = uniq(playStats.map((r) => r.year)).sort();

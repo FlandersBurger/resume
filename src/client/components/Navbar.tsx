@@ -204,7 +204,7 @@ export function Navbar() {
           <li>
             <Link to="/doodles">Doodles</Link>
           </li>
-          {currentUser?.admin ? (
+          {currentUser ? (
             <DrawerGroup label="Ten Things">
               <li>
                 <Link to="/tenthings">Lists</Link>
@@ -215,9 +215,11 @@ export function Navbar() {
               <li>
                 <Link to="/tenthings-stats">Stats</Link>
               </li>
-              <li>
-                <Link to="/tenthings-admin">Admin</Link>
-              </li>
+              {currentUser.admin && (
+                <li>
+                  <Link to="/tenthings-admin">Admin</Link>
+                </li>
+              )}
             </DrawerGroup>
           ) : (
             <li>
@@ -277,7 +279,7 @@ export function Navbar() {
               <li>
                 <Link to="/doodles">Doodles</Link>
               </li>
-              {currentUser?.admin ? (
+              {currentUser ? (
                 <Dropdown label="Ten Things">
                   <li>
                     <Link to="/tenthings">Lists</Link>
@@ -288,9 +290,11 @@ export function Navbar() {
                   <li>
                     <Link to="/tenthings-stats">Stats</Link>
                   </li>
-                  <li>
-                    <Link to="/tenthings-admin">Admin</Link>
-                  </li>
+                  {currentUser.admin && (
+                    <li>
+                      <Link to="/tenthings-admin">Admin</Link>
+                    </li>
+                  )}
                 </Dropdown>
               ) : (
                 <li>
