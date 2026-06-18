@@ -161,7 +161,8 @@ export default function App() {
             <Route path="/stew" element={<Stew />} />
             <Route path="/lists" element={<Lists />} />
             <Route path="/tenthings" element={<TenThingsLists />} />
-            <Route path="/tenthings/:gameId" element={<TenThingsGame />} />
+            <Route path="/tenthings-game/:gameId" element={<TenThingsGame />} />
+            <Route path="/tenthings-game" element={<TenThingsGame />} />
             <Route path="/tenthings-play" element={<TenThingsPlay />} />
             <Route path="/tenthings-admin" element={<TenThingsAdmin />} />
             <Route path="/tenthings-stats" element={<TenThingsStats />} />

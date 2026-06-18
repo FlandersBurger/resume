@@ -160,6 +160,18 @@ export async function getQueue() {
   return data;
 }
 
+export interface MyGame {
+  _id: string;
+  telegramChatId?: number;
+  platform: string;
+  lastPlayDate?: string;
+}
+
+export async function getMyGames() {
+  const { data } = await http.get<MyGame[]>("/api/tenthings/games/mine");
+  return data;
+}
+
 export async function getGame(id: string) {
   const { data } = await http.get(`/api/tenthings/games/${id}`);
   return data;

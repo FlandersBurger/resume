@@ -210,7 +210,7 @@ export function Navbar() {
                 <Link to="/tenthings">Lists</Link>
               </li>
               <li>
-                <Link to="/tenthings-play">Play</Link>
+                <Link to="/tenthings-game">Game</Link>
               </li>
               <li>
                 <Link to="/tenthings-stats">Stats</Link>
@@ -285,7 +285,7 @@ export function Navbar() {
                     <Link to="/tenthings">Lists</Link>
                   </li>
                   <li>
-                    <Link to="/tenthings-play">Play</Link>
+                    <Link to="/tenthings-game">Game</Link>
                   </li>
                   <li>
                     <Link to="/tenthings-stats">Stats</Link>

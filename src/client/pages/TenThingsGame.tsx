@@ -1,14 +1,16 @@
 import { useEffect, useRef, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import styled from "styled-components";
 import {
   CategoryOption,
   Language,
+  MyGame,
   TenThingsList,
   getCategories,
   getGame,
   getLanguages,
   getList,
+  getMyGames,
   updateGameCategory,
   updateGameSettings,
   updateList,
@@ -75,6 +77,10 @@ const CompactPanel = styled.div`
 const HeaderCompact = styled.div`
   margin-top: 10px;
   margin-bottom: 14px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
 `;
 
 const HeaderTitle = styled.h2`
@@ -231,8 +237,10 @@ const EditorBackdrop = styled.div<{ $visible: boolean }>`
 
 export default function TenThingsGame() {
   const { gameId } = useParams<{ gameId: string }>();
+  const navigate = useNavigate();
   const { currentUser, toast } = useApp();
   const [game, setGame] = useState<any>(null);
+  const [myGames, setMyGames] = useState<MyGame[]>([]);
   const [categories, setCategories] = useState<CategoryOption[]>([]);
   const [languages, setLanguages] = useState<Language[]>([]);
   const [showCategories, setShowCategories] = useState(false);
@@ -242,8 +250,11 @@ export default function TenThingsGame() {
   const [settingsSaving, setSettingsSaving] = useState(false);
   const [showLangDropdown, setShowLangDropdown] = useState(false);
   const [showLanguagesDropdown, setShowLanguagesDropdown] = useState(false);
+  const [showGameDropdown, setShowGameDropdown] = useState(false);
   const [playerSortField, setPlayerSortField] = useState("lastPlayDate");
   const [playerSortDir, setPlayerSortDir] = useState<1 | -1>(-1);
+
+  const isAdmin = !!currentUser?.admin;
 
   const handlePlayerSort = (field: string) => {
     if (playerSortField === field) setPlayerSortDir((d) => (d === 1 ? -1 : 1));
@@ -260,9 +271,9 @@ export default function TenThingsGame() {
         style={{ marginLeft: 4 }}
       />
     ) : null;
-  // Editable settings handlers
+
   const handleSettingToggle = async (key: string) => {
-    if (!gameId) return;
+    if (!gameId || !isAdmin) return;
     setSettingsSaving(true);
     try {
       const newSettings = { ...game.settings, [key]: !game.settings[key] };
@@ -276,7 +287,7 @@ export default function TenThingsGame() {
   };
 
   const handleSettingChange = async (key: string, value: any) => {
-    if (!gameId) return;
+    if (!gameId || !isAdmin) return;
     setSettingsSaving(true);
     try {
       const updated = await updateGameSettings(gameId, { [key]: value });
@@ -287,15 +298,40 @@ export default function TenThingsGame() {
       setSettingsSaving(false);
     }
   };
-  const categoryRef = useRef<HTMLDivElement>(null);
 
+  const categoryRef = useRef<HTMLDivElement>(null);
+  const gameDropdownRef = useRef<HTMLDivElement>(null);
+
+  // Load user's games list
+  useEffect(() => {
+    if (!currentUser) return;
+    getMyGames()
+      .then((games) => {
+        setMyGames(games);
+        // Auto-navigate to first game if no gameId in URL
+        if (!gameId && games.length > 0) {
+          navigate(`/tenthings-game/${games[0].telegramChatId}`, { replace: true });
+        }
+      })
+      .catch(() => {});
+  }, [currentUser]);
+
+  // Load game data when gameId changes
   useEffect(() => {
     const load = async () => {
-      if (!currentUser?.admin || !gameId) return;
-      const [cats, langs, gameData] = await Promise.all([getCategories(), getLanguages(), getGame(gameId)]);
-      setCategories(cats);
-      setLanguages(langs);
-      setGame(gameData);
+      if (!currentUser || !gameId) return;
+      try {
+        const [gameData, cats, langs] = await Promise.all([
+          getGame(gameId),
+          isAdmin ? getCategories() : Promise.resolve([]),
+          isAdmin ? getLanguages() : Promise.resolve([]),
+        ]);
+        setGame(gameData);
+        if (cats.length) setCategories(cats);
+        if (langs.length) setLanguages(langs);
+      } catch {
+        toast("Failed to load game");
+      }
     };
     load();
   }, [currentUser, gameId]);
@@ -305,13 +341,16 @@ export default function TenThingsGame() {
       if (categoryRef.current && !categoryRef.current.contains(event.target as Node)) {
         setShowCategories(false);
       }
+      if (gameDropdownRef.current && !gameDropdownRef.current.contains(event.target as Node)) {
+        setShowGameDropdown(false);
+      }
     };
     document.addEventListener("mousedown", onMouseDown);
     return () => document.removeEventListener("mousedown", onMouseDown);
   }, []);
 
   const handleSetCategory = async (category: string) => {
-    if (!gameId) return;
+    if (!gameId || !isAdmin) return;
     const disabled = await updateGameCategory(gameId, category);
     setGame((prev: any) => ({ ...prev, disabledCategories: disabled }));
   };
@@ -319,6 +358,7 @@ export default function TenThingsGame() {
   const isDisabled = (category: string): boolean => !!game?.disabledCategories?.includes(category);
 
   const openListEditor = async () => {
+    if (!isAdmin) return;
     const listId = game?.list?._id;
     if (!listId) return;
     try {
@@ -379,7 +419,6 @@ export default function TenThingsGame() {
         .join(", ");
     }
 
-    // Fallback when only subcategories are disabled
     const disabledLabels = game.disabledCategories
       .map((value: string) => {
         const [main, sub] = value.split(".");
@@ -396,18 +435,62 @@ export default function TenThingsGame() {
   const formatDate = (value?: string) => (value ? moment(value).format("DD-MMM-YYYY HH:mm") : "");
   const formatShortDate = (value?: string) => (value ? moment(value).format("DD-MMM-YYYY") : "");
 
-  if (!currentUser?.admin) return <h2 className="text-danger">Admin only</h2>;
+  if (!currentUser) return <h2 className="text-muted">Log in to view your game.</h2>;
+  if (!currentUser.telegramId && !isAdmin)
+    return <h2 className="text-muted">Link your Telegram account in your profile to view your game.</h2>;
+
+  const currentGameLabel = myGames.length > 0 && gameId ? `Game ${gameId}` : gameId ? `Game ${gameId}` : "Select game";
 
   return (
     <PageContainer id="tenthingsgame-page" className="container-fluid">
+      <HeaderCompact className="page-header">
+        <HeaderTitle>
+          {game ? (
+            <>
+              Game {game.telegramChatId}
+              {game.telegramTopicId ? <small> Topic {game.telegramTopicId}</small> : null}
+            </>
+          ) : (
+            "Ten Things Game"
+          )}
+        </HeaderTitle>
+
+        {myGames.length > 1 && (
+          <div ref={gameDropdownRef} className={`dropdown btn-group${showGameDropdown ? " open" : ""}`}>
+            <button
+              className="btn btn-default btn-sm dropdown-toggle"
+              type="button"
+              onClick={() => setShowGameDropdown((s) => !s)}
+            >
+              {currentGameLabel} <span className="caret" />
+            </button>
+            <ul className="dropdown-menu">
+              {myGames.map((g) => (
+                <li key={String(g.telegramChatId)} className={String(g.telegramChatId) === gameId ? "active" : ""}>
+                  <a
+                    href="#"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      setShowGameDropdown(false);
+                      navigate(`/tenthings-game/${g.telegramChatId}`);
+                    }}
+                  >
+                    Game {g.telegramChatId}
+                    {g.lastPlayDate && (
+                      <span className="text-muted" style={{ marginLeft: 8, fontSize: 12 }}>
+                        {formatShortDate(g.lastPlayDate)}
+                      </span>
+                    )}
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
+      </HeaderCompact>
+
       {game && (
         <>
-          <HeaderCompact className="page-header">
-            <HeaderTitle>
-              Game {game.telegramChatId} {game.telegramTopicId ? <small>Topic {game.telegramTopicId}</small> : null}
-            </HeaderTitle>
-          </HeaderCompact>
-
           <div className="row">
             <div className="col-lg-4 col-md-5">
               <CompactPanel className="panel panel-default">
@@ -415,152 +498,64 @@ export default function TenThingsGame() {
                   <strong>Settings</strong>
                 </div>
                 <SettingsBody className="panel-body">
-                  <MetricRow>
-                    <b>Intro</b>
-                    <SwitchLabel>
-                      <SwitchInput
-                        checked={!!game.settings?.intro}
-                        disabled={settingsSaving}
-                        onChange={() => handleSettingToggle("intro")}
-                      />
-                      <SwitchSlider checked={!!game.settings?.intro} />
-                    </SwitchLabel>
-                  </MetricRow>
-                  <MetricRow>
-                    <b>Sass</b>
-                    <SwitchLabel>
-                      <SwitchInput
-                        checked={!!game.settings?.sass}
-                        disabled={settingsSaving}
-                        onChange={() => handleSettingToggle("sass")}
-                      />
-                      <SwitchSlider checked={!!game.settings?.sass} />
-                    </SwitchLabel>
-                  </MetricRow>
-                  <MetricRow>
-                    <b>Snubs</b>
-                    <SwitchLabel>
-                      <SwitchInput
-                        checked={!!game.settings?.snubs}
-                        disabled={settingsSaving}
-                        onChange={() => handleSettingToggle("snubs")}
-                      />
-                      <SwitchSlider checked={!!game.settings?.snubs} />
-                    </SwitchLabel>
-                  </MetricRow>
-                  <MetricRow>
-                    <b>Updates</b>
-                    <SwitchLabel>
-                      <SwitchInput
-                        checked={!!game.settings?.updates}
-                        disabled={settingsSaving}
-                        onChange={() => handleSettingToggle("updates")}
-                      />
-                      <SwitchSlider checked={!!game.settings?.updates} />
-                    </SwitchLabel>
-                  </MetricRow>
+                  {(["intro", "sass", "snubs", "updates"] as const).map((key) => (
+                    <MetricRow key={key}>
+                      <b style={{ textTransform: "capitalize" }}>{key}</b>
+                      {isAdmin ? (
+                        <SwitchLabel>
+                          <SwitchInput
+                            checked={!!game.settings?.[key]}
+                            disabled={settingsSaving}
+                            onChange={() => handleSettingToggle(key)}
+                          />
+                          <SwitchSlider checked={!!game.settings?.[key]} />
+                        </SwitchLabel>
+                      ) : (
+                        <span className={`label ${game.settings?.[key] ? "label-success" : "label-default"}`}>
+                          {game.settings?.[key] ? "On" : "Off"}
+                        </span>
+                      )}
+                    </MetricRow>
+                  ))}
                   <MetricRow>
                     <b>Bot Language</b>
-                    <div className={`dropdown btn-group${settingsSaving ? "" : ""}`} style={{ maxWidth: 180 }}>
-                      <button
-                        className="btn btn-default dropdown-toggle"
-                        type="button"
-                        disabled={settingsSaving}
-                        data-toggle="dropdown"
-                        aria-haspopup="true"
-                        aria-expanded="false"
-                        title="Language"
-                        onClick={(e) => {
-                          e.preventDefault();
-                          setShowLangDropdown((s: boolean) => !s);
-                        }}
-                      >
-                        {languages.find((l) => l.code === game.settings?.language)?.native || "Select..."}
-                        <span className="caret" style={{ marginLeft: 8 }} />
-                      </button>
-                      <ul
-                        className={`dropdown-menu${showLangDropdown ? " show" : ""}`}
-                        style={{ maxHeight: 220, overflowY: "auto", minWidth: 120 }}
-                      >
-                        {languages.map((l) => (
-                          <li key={l.code} className={l.code === game.settings?.language ? "active" : ""}>
-                            <a
-                              href="#"
-                              onClick={(e) => {
-                                e.preventDefault();
-                                handleSettingChange("language", l.code);
-                                setShowLangDropdown(false);
-                              }}
-                            >
-                              {l.code} - {l.native}
-                            </a>
-                          </li>
-                        ))}
-                      </ul>
-                    </div>
-                  </MetricRow>
-                  <MetricRow>
-                    <b>Languages</b>
-                    <div className={`dropdown btn-group${settingsSaving ? "" : ""}`} style={{ maxWidth: 220 }}>
-                      <button
-                        className="btn btn-default dropdown-toggle"
-                        type="button"
-                        disabled={settingsSaving}
-                        data-toggle="dropdown"
-                        aria-haspopup="true"
-                        aria-expanded="false"
-                        title="Languages"
-                        onClick={(e) => {
-                          e.preventDefault();
-                          setShowLanguagesDropdown((s: boolean) => !s);
-                        }}
-                      >
-                        {Array.isArray(game.settings?.languages) && game.settings.languages.length > 0
-                          ? game.settings.languages
-                              .map((code) => languages.find((l) => l.code === code)?.native || code)
-                              .join(", ")
-                          : "Select..."}
-                        <span className="caret" style={{ marginLeft: 8 }} />
-                      </button>
-                      <ul
-                        className={`dropdown-menu${showLanguagesDropdown ? " show" : ""}`}
-                        style={{ maxHeight: 220, overflowY: "auto", minWidth: 160 }}
-                      >
-                        {languages.map((l) => (
-                          <li
-                            key={l.code}
-                            className={
-                              Array.isArray(game.settings?.languages) && game.settings.languages.includes(l.code)
-                                ? "active"
-                                : ""
-                            }
-                          >
-                            <a
-                              href="#"
-                              style={{ display: "flex", alignItems: "center", gap: 8 }}
-                              onClick={(e) => {
-                                e.preventDefault();
-                                if (!Array.isArray(game.settings?.languages)) return;
-                                let newLangs = game.settings.languages.includes(l.code)
-                                  ? game.settings.languages.filter((code) => code !== l.code)
-                                  : [...game.settings.languages, l.code];
-                                handleSettingChange("languages", newLangs);
-                              }}
-                            >
-                              <input
-                                type="checkbox"
-                                checked={
-                                  Array.isArray(game.settings?.languages) && game.settings.languages.includes(l.code)
-                                }
-                                readOnly
-                                style={{ marginRight: 6 }}
-                              />
-                              {l.code} - {l.native}
-                            </a>
-                          </li>
-                        ))}
-                      </ul>
-                    </div>
+                    {isAdmin ? (
+                      <div className="dropdown btn-group" style={{ maxWidth: 180 }}>
+                        <button
+                          className="btn btn-default dropdown-toggle"
+                          type="button"
+                          disabled={settingsSaving}
+                          onClick={(e) => {
+                            e.preventDefault();
+                            setShowLangDropdown((s) => !s);
+                          }}
+                        >
+                          {languages.find((l) => l.code === game.settings?.language)?.native || "Select..."}
+                          <span className="caret" style={{ marginLeft: 8 }} />
+                        </button>
+                        <ul
+                          className={`dropdown-menu${showLangDropdown ? " show" : ""}`}
+                          style={{ maxHeight: 220, overflowY: "auto", minWidth: 120 }}
+                        >
+                          {languages.map((l) => (
+                            <li key={l.code} className={l.code === game.settings?.language ? "active" : ""}>
+                              <a
+                                href="#"
+                                onClick={(e) => {
+                                  e.preventDefault();
+                                  handleSettingChange("language", l.code);
+                                  setShowLangDropdown(false);
+                                }}
+                              >
+                                {l.code} - {l.native}
+                              </a>
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                    ) : (
+                      <span>{game.settings?.language || "-"}</span>
+                    )}
                   </MetricRow>
                   <MetricRow>
                     <b>Hints</b>
@@ -585,65 +580,67 @@ export default function TenThingsGame() {
                 </SettingsBody>
               </CompactPanel>
 
-              <CompactPanel className="panel panel-default">
-                <div className="panel-heading">
-                  <strong>Disabled Categories</strong>
-                </div>
-                <SettingsBody className="panel-body">
-                  <CategoryDropdownRoot
-                    ref={categoryRef}
-                    className={`dropdown btn-group btn-block${showCategories ? " open" : ""}`}
-                  >
-                    <button
-                      className={`btn dropdown-toggle btn-block text-left ${game.disabledCategories?.length ? "btn-warning" : "btn-default"}`}
-                      type="button"
-                      onClick={() => setShowCategories((s) => !s)}
-                      title="Disabled categories"
+              {isAdmin && (
+                <CompactPanel className="panel panel-default">
+                  <div className="panel-heading">
+                    <strong>Disabled Categories</strong>
+                  </div>
+                  <SettingsBody className="panel-body">
+                    <CategoryDropdownRoot
+                      ref={categoryRef}
+                      className={`dropdown btn-group btn-block${showCategories ? " open" : ""}`}
                     >
-                      {getDisabledCategoryLabel()}
-                    </button>
-                    <CategoryMenu className="dropdown-menu">
-                      <CategoryMenuList>
-                        {categories
-                          .slice()
-                          .sort((a, b) => a.value.localeCompare(b.value))
-                          .map((category) => (
-                            <CategoryRow key={category.value}>
-                              <CategoryMainButton
-                                type="button"
-                                className={`btn btn-xs ${isDisabled(category.value) ? "btn-warning" : "btn-default"}`}
-                                onClick={() => handleSetCategory(category.value)}
-                              >
-                                {category.label}
-                              </CategoryMainButton>
+                      <button
+                        className={`btn dropdown-toggle btn-block text-left ${game.disabledCategories?.length ? "btn-warning" : "btn-default"}`}
+                        type="button"
+                        onClick={() => setShowCategories((s) => !s)}
+                        title="Disabled categories"
+                      >
+                        {getDisabledCategoryLabel()}
+                      </button>
+                      <CategoryMenu className="dropdown-menu">
+                        <CategoryMenuList>
+                          {categories
+                            .slice()
+                            .sort((a, b) => a.value.localeCompare(b.value))
+                            .map((category) => (
+                              <CategoryRow key={category.value}>
+                                <CategoryMainButton
+                                  type="button"
+                                  className={`btn btn-xs ${isDisabled(category.value) ? "btn-warning" : "btn-default"}`}
+                                  onClick={() => handleSetCategory(category.value)}
+                                >
+                                  {category.label}
+                                </CategoryMainButton>
 
-                              {category.subcategories && category.subcategories.length > 0 && (
-                                <>
-                                  <CategoryArrow>›</CategoryArrow>
-                                  <CategorySubgroup>
-                                    {category.subcategories
-                                      .slice()
-                                      .sort((a, b) => a.value.localeCompare(b.value))
-                                      .map((subcategory) => (
-                                        <button
-                                          key={subcategory.value}
-                                          type="button"
-                                          className={`btn btn-xs ${isDisabled(subcategory.value) ? "btn-warning" : "btn-default"}`}
-                                          onClick={() => handleSetCategory(subcategory.value)}
-                                        >
-                                          {subcategory.label}
-                                        </button>
-                                      ))}
-                                  </CategorySubgroup>
-                                </>
-                              )}
-                            </CategoryRow>
-                          ))}
-                      </CategoryMenuList>
-                    </CategoryMenu>
-                  </CategoryDropdownRoot>
-                </SettingsBody>
-              </CompactPanel>
+                                {category.subcategories && category.subcategories.length > 0 && (
+                                  <>
+                                    <CategoryArrow>›</CategoryArrow>
+                                    <CategorySubgroup>
+                                      {category.subcategories
+                                        .slice()
+                                        .sort((a, b) => a.value.localeCompare(b.value))
+                                        .map((subcategory) => (
+                                          <button
+                                            key={subcategory.value}
+                                            type="button"
+                                            className={`btn btn-xs ${isDisabled(subcategory.value) ? "btn-warning" : "btn-default"}`}
+                                            onClick={() => handleSetCategory(subcategory.value)}
+                                          >
+                                            {subcategory.label}
+                                          </button>
+                                        ))}
+                                    </CategorySubgroup>
+                                  </>
+                                )}
+                              </CategoryRow>
+                            ))}
+                        </CategoryMenuList>
+                      </CategoryMenu>
+                    </CategoryDropdownRoot>
+                  </SettingsBody>
+                </CompactPanel>
+              )}
             </div>
 
             <div className="col-lg-8 col-md-7">
@@ -652,23 +649,25 @@ export default function TenThingsGame() {
                   <strong>Current List + Mini Games</strong>
                 </div>
                 <SectionBody className="panel-body">
-                  <MiniGameRow className="row">
-                    <div className="col-sm-6">
-                      <MiniGameWell className="well well-sm">
-                        <strong>Minigame:</strong> {game.minigame?.answer || "-"}
-                        <MiniGameMeta className="text-muted">{game.minigame?.lists?.join(" / ") || ""}</MiniGameMeta>
-                      </MiniGameWell>
-                    </div>
-                    <div className="col-sm-6">
-                      <MiniGameWell className="well well-sm">
-                        <strong>Tinygame:</strong> {game.tinygame?.answer || "-"}
-                        <MiniGameMeta className="text-muted">{game.tinygame?.clues?.join(" / ") || ""}</MiniGameMeta>
-                      </MiniGameWell>
-                    </div>
-                  </MiniGameRow>
+                  {isAdmin && (
+                    <MiniGameRow className="row">
+                      <div className="col-sm-6">
+                        <MiniGameWell className="well well-sm">
+                          <strong>Minigame:</strong> {game.minigame?.answer || "-"}
+                          <MiniGameMeta className="text-muted">{game.minigame?.lists?.join(" / ") || ""}</MiniGameMeta>
+                        </MiniGameWell>
+                      </div>
+                      <div className="col-sm-6">
+                        <MiniGameWell className="well well-sm">
+                          <strong>Tinygame:</strong> {game.tinygame?.answer || "-"}
+                          <MiniGameMeta className="text-muted">{game.tinygame?.clues?.join(" / ") || ""}</MiniGameMeta>
+                        </MiniGameWell>
+                      </div>
+                    </MiniGameRow>
+                  )}
 
                   <ListTitle>
-                    {game.list?._id ? (
+                    {game.list?._id && isAdmin ? (
                       <ListTitleButton
                         type="button"
                         className="btn btn-link"
@@ -821,12 +820,20 @@ export default function TenThingsGame() {
         </>
       )}
 
-      {editorMounted && editorList && (
+      {!game && gameId && <p className="text-muted">Loading game {gameId}...</p>}
+
+      {!gameId && myGames.length === 0 && (
+        <p className="text-muted">
+          No games found. Make sure your Telegram account is linked and you are playing in a TenThings group.
+        </p>
+      )}
+
+      {isAdmin && editorMounted && editorList && (
         <>
           <ListEditor
             list={editorList}
             active={editorVisible}
-            isAdmin={!!currentUser?.admin}
+            isAdmin={isAdmin}
             readOnly={false}
             languageOptions={languages}
             categoryOptions={categories}
