@@ -19,6 +19,9 @@ export const defaultContextValue: AppContextValue = {
   showChat: false,
   openChat: jest.fn(),
   closeChat: jest.fn(),
+  adminMode: true,
+  isAdmin: false,
+  toggleAdminMode: jest.fn(),
 };
 
 jest.mock("../../client/context/AppContext", () => ({

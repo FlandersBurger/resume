@@ -53,6 +53,7 @@ describe("Navbar", () => {
   it("shows Ten Things admin menu for admin users", () => {
     renderNavbar({
       currentUser: { _id: "1", username: "alice", admin: true },
+      isAdmin: true,
     });
     expect(screen.getAllByText("Lists")[0]).toBeInTheDocument();
     expect(screen.getAllByText("Play")[0]).toBeInTheDocument();
