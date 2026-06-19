@@ -53,6 +53,8 @@ interface AppContextValue {
   showLogin: boolean;
   loginLoading: boolean;
   showChat: boolean;
+  adminMode: boolean;
+  isAdmin: boolean;
   toast: (message: string) => void;
   setUser: (user: User | null) => void;
   flipTheme: () => void;
@@ -62,6 +64,7 @@ interface AppContextValue {
   setLoginLoading: (v: boolean) => void;
   openChat: () => void;
   closeChat: () => void;
+  toggleAdminMode: () => void;
 }
 
 const AppContext = createContext<AppContextValue | null>(null);
@@ -74,6 +77,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
   const [showChat, setShowChat] = useState(false);
   const openChat = useCallback(() => setShowChat(true), []);
   const closeChat = useCallback(() => setShowChat(false), []);
+  const [adminMode, setAdminMode] = useState(() => window.localStorage.getItem("adminMode") !== "false");
   const [state, dispatch] = useReducer(reducer, {
     currentUser: null,
     toasts: [],
@@ -94,6 +98,14 @@ export function AppProvider({ children }: { children: ReactNode }) {
     dispatch({ type: "FLIP_THEME" });
   }, []);
 
+  const toggleAdminMode = useCallback(() => {
+    setAdminMode((prev) => {
+      const next = !prev;
+      window.localStorage.setItem("adminMode", String(next));
+      return next;
+    });
+  }, []);
+
   const logout = useCallback(() => {
     window.localStorage.clear();
     delete axios.defaults.headers.common["X-Auth"];
@@ -109,6 +121,8 @@ export function AppProvider({ children }: { children: ReactNode }) {
         .catch(() => window.localStorage.removeItem("token"));
     }
   }, []);
+
+  const isAdmin = !!state.currentUser?.admin && adminMode;
 
   return (
     <AppContext.Provider
@@ -126,6 +140,9 @@ export function AppProvider({ children }: { children: ReactNode }) {
         showChat,
         openChat,
         closeChat,
+        adminMode,
+        isAdmin,
+        toggleAdminMode,
       }}
     >
       {children}

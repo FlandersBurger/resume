@@ -4,7 +4,7 @@ import { getQueue, getPause, togglePause } from "../services/tenthings";
 import { useApp } from "../context/AppContext";
 
 export default function TenThingsAdmin() {
-  const { currentUser } = useApp();
+  const { currentUser, isAdmin } = useApp();
   const [users, setUsers] = useState<any[]>([]);
   const [queue, setQueue] = useState<string>("");
   const [paused, setPaused] = useState(false);
@@ -15,7 +15,7 @@ export default function TenThingsAdmin() {
   const [sortReverse, setSortReverse] = useState(false);
 
   const loadData = () => {
-    if (!currentUser?.admin) return;
+    if (!isAdmin) return;
     getUsers().then(setUsers);
     getQueue().then((q) => setQueue(String(q ?? "")));
     getPause().then(setPaused);
@@ -43,7 +43,7 @@ export default function TenThingsAdmin() {
     }
   };
 
-  if (!currentUser?.admin) return <h2 className="text-danger">Admin only</h2>;
+  if (!isAdmin) return <h2 className="text-danger">Admin only</h2>;
 
   const filteredUsers = users
     .filter(

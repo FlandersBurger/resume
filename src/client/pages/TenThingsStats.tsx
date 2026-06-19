@@ -130,7 +130,7 @@ function StatTable({
 }
 
 export default function TenThingsStats() {
-  const { currentUser } = useApp();
+  const { currentUser, isAdmin } = useApp();
   const [playStats, setPlayStats] = useState<PlayRow[]>([]);
   const [langStats, setLangStats] = useState<YearLangRow[]>([]);
   const [gameStats, setGameStats] = useState<YearLangRow[]>([]);
@@ -420,7 +420,7 @@ export default function TenThingsStats() {
         <ListEditor
           list={selectedList}
           active={editorVisible}
-          isAdmin={!!currentUser?.admin}
+          isAdmin={isAdmin}
           readOnly={false}
           languageOptions={languageOptions}
           categoryOptions={categoryOptions}

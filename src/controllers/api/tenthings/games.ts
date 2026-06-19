@@ -1,9 +1,16 @@
 import { Router, Request, Response } from "express";
+import { isValidObjectId } from "mongoose";
 
 import { Game, Player } from "@models/index";
 import { setDisabledCategories } from "@root/controllers/bots/tenthings/categories";
 
 export const tenthingsGamesRoute = Router();
+
+async function findGame(id: string) {
+  if (/^-?\d+$/.test(id)) return Game.findOne({ telegramChatId: id });
+  if (isValidObjectId(id)) return Game.findOne({ _id: id });
+  return null;
+}
 
 tenthingsGamesRoute.get("/", async (req: Request, res: Response) => {
   if (!res.locals.isAdmin) res.sendStatus(401);
@@ -38,32 +45,28 @@ tenthingsGamesRoute.get("/mine", async (_: Request, res: Response) => {
 tenthingsGamesRoute.get("/:id", async (req: Request, res: Response) => {
   const user = res.locals.user;
   if (!user) return res.sendStatus(401);
-  const game = await Game.findOne({ telegramChatId: req.params.id }).lean();
+  const game = await findGame(req.params.id);
   if (!game) return res.sendStatus(404);
   if (!res.locals.isAdmin) {
     const playerExists = await Player.findOne({ game: game._id, user: user._id }).lean();
     if (!playerExists) return res.sendStatus(403);
   }
   const players = await Player.find({ game: game._id }).lean();
-  return res.json({ ...game, players });
+  return res.json({ ...game.toObject(), players });
 });
 
 tenthingsGamesRoute.post("/:id/category/:category", async (req: Request, res: Response) => {
-  if (!res.locals.isAdmin) res.sendStatus(401);
-  else {
-    const game = await Game.findOne({ telegramChatId: req.params.id });
-    if (!game) res.sendStatus(404);
-    else {
-      setDisabledCategories(game, req.params.category);
-      const updatedGame = await game.save();
-      res.json(updatedGame.disabledCategories);
-    }
-  }
+  if (!res.locals.isAdmin) return res.sendStatus(401);
+  const game = await findGame(req.params.id);
+  if (!game) return res.sendStatus(404);
+  setDisabledCategories(game, req.params.category);
+  const updatedGame = await game.save();
+  return res.json(updatedGame.disabledCategories);
 });
 
 tenthingsGamesRoute.put("/:id/settings", async (req: Request, res: Response) => {
   if (!res.locals.isAdmin) return res.sendStatus(401);
-  const game = await Game.findOne({ telegramChatId: req.params.id });
+  const game = await findGame(req.params.id);
   if (!game) return res.sendStatus(404);
   game.settings = { ...game.settings, ...req.body };
   await game.save();

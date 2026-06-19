@@ -238,7 +238,7 @@ const EditorBackdrop = styled.div<{ $visible: boolean }>`
 export default function TenThingsGame() {
   const { gameId } = useParams<{ gameId: string }>();
   const navigate = useNavigate();
-  const { currentUser, toast } = useApp();
+  const { currentUser, toast, isAdmin } = useApp();
   const [game, setGame] = useState<any>(null);
   const [myGames, setMyGames] = useState<MyGame[]>([]);
   const [categories, setCategories] = useState<CategoryOption[]>([]);
@@ -253,8 +253,6 @@ export default function TenThingsGame() {
   const [showGameDropdown, setShowGameDropdown] = useState(false);
   const [playerSortField, setPlayerSortField] = useState("lastPlayDate");
   const [playerSortDir, setPlayerSortDir] = useState<1 | -1>(-1);
-
-  const isAdmin = !!currentUser?.admin;
 
   const handlePlayerSort = (field: string) => {
     if (playerSortField === field) setPlayerSortDir((d) => (d === 1 ? -1 : 1));
@@ -310,7 +308,8 @@ export default function TenThingsGame() {
         setMyGames(games);
         // Auto-navigate to first game if no gameId in URL
         if (!gameId && games.length > 0) {
-          navigate(`/tenthings-game/${games[0].telegramChatId}`, { replace: true });
+          const first = games[0];
+          navigate(`/tenthings-game/${first.telegramChatId ?? first._id}`, { replace: true });
         }
       })
       .catch(() => {});
@@ -439,11 +438,12 @@ export default function TenThingsGame() {
   if (!currentUser.telegramId && !isAdmin)
     return <h2 className="text-muted">Link your Telegram account in your profile to view your game.</h2>;
 
+  const gameUrlId = (g: MyGame) => (g.telegramChatId ? String(g.telegramChatId) : g._id);
   const gameLabel = (g: MyGame) => {
     const name = g.platform ? g.platform.charAt(0).toUpperCase() + g.platform.slice(1) : "Game";
     return g.telegramChatId ? `${name} ${g.telegramChatId}` : name;
   };
-  const currentGame = myGames.find((g) => String(g.telegramChatId) === gameId);
+  const currentGame = myGames.find((g) => gameUrlId(g) === gameId);
   const currentGameLabel = currentGame ? gameLabel(currentGame) : gameId ? `Game ${gameId}` : "Select game";
 
   return (
@@ -472,13 +472,13 @@ export default function TenThingsGame() {
             </button>
             <ul className="dropdown-menu">
               {myGames.map((g) => (
-                <li key={String(g.telegramChatId)} className={String(g.telegramChatId) === gameId ? "active" : ""}>
+                <li key={gameUrlId(g)} className={gameUrlId(g) === gameId ? "active" : ""}>
                   <a
                     href="#"
                     onClick={(e) => {
                       e.preventDefault();
                       setShowGameDropdown(false);
-                      navigate(`/tenthings-game/${g.telegramChatId}`);
+                      navigate(`/tenthings-game/${gameUrlId(g)}`);
                     }}
                   >
                     {gameLabel(g)}

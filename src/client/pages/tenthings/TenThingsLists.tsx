@@ -35,7 +35,7 @@ const Overlay = styled.div<{ $visible: boolean }>`
 `;
 
 export default function TenThingsLists() {
-  const { currentUser, toast } = useApp();
+  const { currentUser, toast, isAdmin } = useApp();
   const [searchParams, setSearchParams] = useSearchParams();
 
   const [lists, setLists] = useState<TenThingsList[]>([]);
@@ -72,7 +72,7 @@ export default function TenThingsLists() {
 
   const readOnly =
     !currentUser ||
-    (!currentUser.admin &&
+    (!isAdmin &&
       !!selectedList &&
       selectedList._id !== "new" &&
       String(selectedList.creator._id) !== String(currentUser._id));
@@ -334,7 +334,7 @@ export default function TenThingsLists() {
             search={search}
             searchField={searchField}
             highlightedIds={highlightedIds}
-            isAdmin={!!currentUser?.admin}
+            isAdmin={isAdmin}
             hasMore={hasMore}
             canAddList={!!currentUser}
             canViewCreator={!!currentUser}
@@ -406,7 +406,7 @@ export default function TenThingsLists() {
             <ListEditor
               list={selectedList}
               active={editorVisible}
-              isAdmin={!!currentUser?.admin}
+              isAdmin={isAdmin}
               readOnly={readOnly}
               languageOptions={languageOptions}
               categoryOptions={categoryOptions}

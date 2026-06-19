@@ -94,14 +94,14 @@ interface Game {
 }
 
 export default function TenThingsPlay() {
-  const { currentUser, toast } = useApp();
+  const { currentUser, toast, isAdmin } = useApp();
   const [game, setGame] = useState<Game | null>(null);
   const [guess, setGuess] = useState("");
   const [loading, setLoading] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
 
   const loadGame = async () => {
-    if (!currentUser?.admin) return;
+    if (!isAdmin) return;
     const data = await getTenthings();
     setGame(data);
   };
@@ -153,7 +153,7 @@ export default function TenThingsPlay() {
     if (e.key === "Enter") handleCheckAnswer();
   };
 
-  if (!currentUser?.admin) return <h2 className="text-danger">Admin only</h2>;
+  if (!isAdmin) return <h2 className="text-danger">Admin only</h2>;
 
   const values = game?.list?.values ?? [];
   const guessedCount = values.filter((v) => v.guesser).length;

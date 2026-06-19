@@ -183,7 +183,7 @@ function Dropdown({ label, children }: { label: React.ReactNode; children: React
 }
 
 export function Navbar() {
-  const { currentUser, logout, openLogin, loginLoading, openChat } = useApp();
+  const { currentUser, logout, openLogin, loginLoading, openChat, isAdmin, adminMode, toggleAdminMode } = useApp();
   const navigate = useNavigate();
   const [mobileOpen, setMobileOpen] = useState(false);
 
@@ -218,7 +218,7 @@ export function Navbar() {
               <li>
                 <Link to="/tenthings-stats">Stats</Link>
               </li>
-              {currentUser.admin && (
+              {isAdmin && (
                 <li>
                   <Link to="/tenthings-admin">Admin</Link>
                 </li>
@@ -238,6 +238,11 @@ export function Navbar() {
               <li>
                 <Link to="/profile">Profile</Link>
               </li>
+              {currentUser.admin && (
+                <li>
+                  <span onClick={toggleAdminMode}>Admin mode: {adminMode ? "on" : "off"}</span>
+                </li>
+              )}
               <li>
                 <span
                   onClick={() => {
@@ -296,7 +301,7 @@ export function Navbar() {
                   <li>
                     <Link to="/tenthings-stats">Stats</Link>
                   </li>
-                  {currentUser.admin && (
+                  {isAdmin && (
                     <li>
                       <Link to="/tenthings-admin">Admin</Link>
                     </li>
@@ -345,6 +350,16 @@ export function Navbar() {
                   <li>
                     <Link to="/terms">Terms of Service</Link>
                   </li>
+                  {currentUser.admin && (
+                    <>
+                      <li role="separator" className="divider" />
+                      <li>
+                        <a style={{ cursor: "pointer" }} onClick={toggleAdminMode}>
+                          Admin mode: {adminMode ? "on" : "off"}
+                        </a>
+                      </li>
+                    </>
+                  )}
                   <li role="separator" className="divider" />
                   <li>
                     <a
