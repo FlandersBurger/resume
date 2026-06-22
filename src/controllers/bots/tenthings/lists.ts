@@ -43,6 +43,27 @@ export const rateList = (game: IGame) => {
 const getAvailableLanguages = ({ settings }: { settings: IGameSettings }): string[] =>
   settings.languages && settings.languages.length > 0 ? settings.languages : ["EN"];
 
+const MIN_CATEGORY_ROUNDS = 5;
+const MIN_AFFINITY_SCORE = 0.6;
+
+const getPreferredCategories = async (gameId: Types.ObjectId): Promise<string[]> => {
+  const affinity = await GameRound.aggregate<{ _id: string }>([
+    { $match: { gameId, outcome: { $in: ["completed", "skipped"] } } },
+    { $unwind: "$categories" },
+    {
+      $group: {
+        _id: "$categories",
+        completed: { $sum: { $cond: [{ $eq: ["$outcome", "completed"] }, 1, 0] } },
+        total: { $sum: 1 },
+      },
+    },
+    { $match: { total: { $gte: MIN_CATEGORY_ROUNDS } } },
+    { $addFields: { affinity: { $divide: ["$completed", "$total"] } } },
+    { $match: { affinity: { $gte: MIN_AFFINITY_SCORE } } },
+  ]);
+  return affinity.map((c) => c._id);
+};
+
 const getExcludedListIds = async (
   game: IGame,
 ): Promise<{ recent: Types.ObjectId[]; banned: Types.ObjectId[]; cooldownRounds: number }> => {
@@ -78,33 +99,34 @@ export const selectList = async (game: IGame): Promise<HydratedDocument<IList>> 
     return list;
   }
 
-  const { recent, banned } = await getExcludedListIds(game);
-  const consistentParameters = {
+  const [{ recent, banned }, preferredCategories] = await Promise.all([
+    getExcludedListIds(game),
+    getPreferredCategories(game._id),
+  ]);
+  const baseQuery = {
+    _id: { $nin: [...recent, ...banned] },
+    language: { $in: availableLanguages },
     categories: { $nin: game.disabledCategories },
     ...(game.platform === "web" ? { starred: true } : {}),
   };
 
-  let list = await getRandomList({
-    _id: { $nin: [...recent, ...banned] },
-    language: { $in: availableLanguages },
-    ...consistentParameters,
-  });
+  let list =
+    preferredCategories.length > 0
+      ? await getRandomList({ ...baseQuery, categories: { $nin: game.disabledCategories, $in: preferredCategories } })
+      : undefined;
+
+  if (!list) list = await getRandomList(baseQuery);
 
   if (!list) {
     // Cooldown window exhausted — reset to all non-banned and notify
     game.provider.message(game, i18n(game.settings.language, "sentences.allListsPlayed"));
-    list = await getRandomList({
+    const exhaustedQuery = {
       _id: { $nin: banned },
-      language: { $in: availableLanguages },
-      ...consistentParameters,
-    });
-    if (!list) {
-      list = await getRandomList({
-        _id: { $nin: banned },
-        language: "EN",
-        ...consistentParameters,
-      });
-    }
+      categories: { $nin: game.disabledCategories },
+      ...(game.platform === "web" ? { starred: true } : {}),
+    };
+    list = await getRandomList({ ...exhaustedQuery, language: { $in: availableLanguages } });
+    if (!list) list = await getRandomList({ ...exhaustedQuery, language: "EN" });
   }
 
   return list!;
