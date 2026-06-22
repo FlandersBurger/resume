@@ -1,0 +1,17 @@
+name: Telegram Notify
+description: Send a Telegram HTML message with link preview disabled
+inputs:
+  text:
+    description: Message text (HTML parse mode)
+    required: true
+runs:
+  using: composite
+  steps:
+    - shell: bash
+      env:
+        TEXT: ${{ inputs.text }}
+      run: |
+        curl -s -X POST "https://api.telegram.org/bot${TELEGRAM_TOKEN}/sendMessage" \
+          -H "Content-Type: application/json" \
+          --data-raw "$(jq -n --arg chat_id "$TELEGRAM_MASTER_CHAT" --arg text "$TEXT" \
+            '{chat_id:$chat_id,parse_mode:"HTML",text:$text,link_preview_options:{is_disabled:true}}')"

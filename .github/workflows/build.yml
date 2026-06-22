@@ -13,6 +13,8 @@ permissions:
 env:
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
   WORKFLOW_URL: https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}
+  TELEGRAM_TOKEN: ${{ secrets.TELEGRAM_TOKEN }}
+  TELEGRAM_MASTER_CHAT: ${{ secrets.TELEGRAM_MASTER_CHAT }}
 
 jobs:
   test:
@@ -32,9 +34,9 @@ jobs:
 
       - name: Notify Telegram on failure
         if: failure()
-        run: |
-          curl -s -X POST "https://api.telegram.org/bot${{ secrets.TELEGRAM_TOKEN }}/sendMessage" \
-            -d "chat_id=${{ secrets.TELEGRAM_MASTER_CHAT }}&parse_mode=HTML&text=❌ Tests failed%0A<a href='${{ env.WORKFLOW_URL }}'>View run</a>"
+        uses: ./.github/actions/telegram-notify
+        with:
+          text: "❌ Tests failed\n<a href='${{ env.WORKFLOW_URL }}'>View run</a>"
 
 
   docker:
@@ -62,21 +64,23 @@ jobs:
 
       - name: Notify Telegram — awaiting approval
         if: success()
-        run: |
-          curl -s -X POST "https://api.telegram.org/bot${{ secrets.TELEGRAM_TOKEN }}/sendMessage" \
-            -d "chat_id=${{ secrets.TELEGRAM_MASTER_CHAT }}&parse_mode=HTML&text=⏳ Deploy awaiting approval%0A<a href='${{ env.WORKFLOW_URL }}'>Review and approve</a>"
+        uses: ./.github/actions/telegram-notify
+        with:
+          text: "⏳ Deploy awaiting approval\n<a href='${{ env.WORKFLOW_URL }}'>Review and approve</a>"
 
       - name: Notify Telegram on failure
         if: failure()
-        run: |
-          curl -s -X POST "https://api.telegram.org/bot${{ secrets.TELEGRAM_TOKEN }}/sendMessage" \
-            -d "chat_id=${{ secrets.TELEGRAM_MASTER_CHAT }}&parse_mode=HTML&text=❌ Docker build failed%0A<a href='${{ env.WORKFLOW_URL }}'>View run</a>"
+        uses: ./.github/actions/telegram-notify
+        with:
+          text: "❌ Docker build failed\n<a href='${{ env.WORKFLOW_URL }}'>View run</a>"
 
   deploy:
     needs: docker
     runs-on: ubuntu-latest
     environment: production
     steps:
+      - uses: actions/checkout@v4
+
       - uses: appleboy/ssh-action@v1
         with:
           host: ${{ secrets.DIGITAL_OCEAN_HOST }}
@@ -89,12 +93,12 @@ jobs:
             docker image prune -f
 
       - name: Notify Telegram
-        run: |
-          curl -s -X POST "https://api.telegram.org/bot${{ secrets.TELEGRAM_TOKEN }}/sendMessage" \
-            -d "chat_id=${{ secrets.TELEGRAM_MASTER_CHAT }}&parse_mode=HTML&text=✅ Deployed to production%0A<a href='${{ env.WORKFLOW_URL }}'>View run</a>"
+        uses: ./.github/actions/telegram-notify
+        with:
+          text: "✅ Deployed to production\n<a href='${{ env.WORKFLOW_URL }}'>View run</a>"
 
       - name: Notify Telegram on failure
         if: failure()
-        run: |
-          curl -s -X POST "https://api.telegram.org/bot${{ secrets.TELEGRAM_TOKEN }}/sendMessage" \
-            -d "chat_id=${{ secrets.TELEGRAM_MASTER_CHAT }}&parse_mode=HTML&text=❌ Deploy failed%0A<a href='${{ env.WORKFLOW_URL }}'>View run</a>"
+        uses: ./.github/actions/telegram-notify
+        with:
+          text: "❌ Deploy failed\n<a href='${{ env.WORKFLOW_URL }}'>View run</a>"
