@@ -125,7 +125,15 @@ export const newRound = async (currentGame: IGame) => {
       count: 0,
     };
   }
-  await game.save();
+  try {
+    await game.save();
+  } catch (err: any) {
+    if (err.name === "VersionError") {
+      console.warn(`${game._id} - newRound save skipped (version conflict)`);
+    } else {
+      throw err;
+    }
+  }
   console.log(`${game._id} - New round started -> ${chalk.cyan(list.name)}`);
 };
 
