@@ -2,7 +2,7 @@ import { List, GameRound } from "@models/index";
 import { HydratedDocument, QueryOptions, Types } from "mongoose";
 import { IList } from "@models/tenthings/list";
 import { IGame, IGameSettings } from "@models/tenthings/game";
-import { COOLDOWN_MS } from "@models/tenthings/gameround";
+import { COOLDOWN_ROUNDS } from "@models/tenthings/gameround";
 
 import some from "lodash/some";
 import sampleSize from "lodash/sampleSize";
@@ -47,16 +47,15 @@ const getAvailableLanguages = ({ settings }: { settings: IGameSettings }): strin
 const getExcludedListIds = async (
   gameId: Types.ObjectId,
 ): Promise<{ recent: Types.ObjectId[]; banned: Types.ObjectId[] }> => {
-  const cooldownCutoff = new Date(Date.now() - COOLDOWN_MS);
-  const [recent, banned] = await Promise.all([
-    GameRound.distinct("listId", {
-      gameId,
-      outcome: { $in: ["completed", "skipped"] },
-      playedAt: { $gt: cooldownCutoff },
-    }),
+  const [recentRounds, banned] = await Promise.all([
+    GameRound.find({ gameId, outcome: { $in: ["completed", "skipped"] } })
+      .sort({ playedAt: -1 })
+      .limit(COOLDOWN_ROUNDS)
+      .select("listId")
+      .lean(),
     GameRound.distinct("listId", { gameId, outcome: "banned" }),
   ]);
-  return { recent, banned };
+  return { recent: recentRounds.map((r) => r.listId), banned };
 };
 
 export const selectList = async (game: IGame): Promise<HydratedDocument<IList>> => {

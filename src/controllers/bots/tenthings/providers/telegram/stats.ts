@@ -2,7 +2,7 @@ import { SortOrder } from "mongoose";
 import moment from "moment";
 import find from "lodash/find";
 import { GameRound, List, Player, User } from "@models/index";
-import { COOLDOWN_MS } from "@models/tenthings/gameround";
+import { COOLDOWN_ROUNDS } from "@models/tenthings/gameround";
 import { IGame } from "@models/tenthings/game";
 import { IList } from "@models/tenthings/list";
 import { IPlayer } from "@models/tenthings/player";
@@ -236,12 +236,15 @@ export const getStats = async (game: IGame, data: string, requestor?: string) =>
       message += `${players.filter(({ scoreDaily }) => scoreDaily).length} out of ${
         players.filter(({ present }) => present).length
       } players played today\n`;
-      const recentlyPlayed = await GameRound.countDocuments({
+      const recentRounds = await GameRound.find({
         gameId: game._id,
         outcome: { $in: ["completed", "skipped"] },
-        playedAt: { $gt: new Date(Date.now() - COOLDOWN_MS) },
-      });
-      message += `${recentlyPlayed} of ${count} lists played in the last 30 days (${Math.round((recentlyPlayed / count) * 100).toFixed(0)}%)\n`;
+      })
+        .sort({ playedAt: -1 })
+        .limit(COOLDOWN_ROUNDS)
+        .distinct("listId");
+      const recentlyPlayed = recentRounds.length;
+      message += `${recentlyPlayed} of ${count} lists on cooldown (last ${COOLDOWN_ROUNDS} rounds, ${Math.round((recentlyPlayed / count) * 100).toFixed(0)}%)\n`;
       message += "\n";
       game.provider.message(game, message);
       break;

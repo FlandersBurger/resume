@@ -15,8 +15,7 @@ export interface IGameRound {
   playedAt: Date;
 }
 
-export const COOLDOWN_DAYS = 30;
-export const COOLDOWN_MS = COOLDOWN_DAYS * 24 * 60 * 60 * 1000;
+export const COOLDOWN_ROUNDS = 100;
 
 let GameRound: { [key: string]: Model<IGameRound> } = {};
 
