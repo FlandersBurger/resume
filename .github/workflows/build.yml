@@ -81,6 +81,14 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - uses: appleboy/scp-action@v0.1.7
+        with:
+          host: ${{ secrets.DIGITAL_OCEAN_HOST }}
+          username: root
+          key: ${{ secrets.DIGITAL_OCEAN_SSH_KEY }}
+          source: "docker-compose.yml"
+          target: "/opt/resume/"
+
       - uses: appleboy/ssh-action@v1
         with:
           host: ${{ secrets.DIGITAL_OCEAN_HOST }}
