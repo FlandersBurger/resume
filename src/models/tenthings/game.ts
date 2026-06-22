@@ -58,8 +58,6 @@ export interface IGame {
   provider: Provider;
   enabled: boolean;
   hints: number;
-  cycles: number;
-  lastCycleDate: Date;
   lastPlayDate: Date;
   listsPlayed: number;
   guessers: Types.ObjectId[];
@@ -68,9 +66,7 @@ export interface IGame {
     count: number;
   };
   disabledCategories: string[];
-  playedLists: Types.ObjectId[];
   pickedLists: Types.ObjectId[];
-  bannedLists: Types.ObjectId[];
   list: IGameList;
   date: Date;
   minigame: {
@@ -101,8 +97,6 @@ const gameSchema = new Schema<IGame>(
     discordChannelId: { type: String, required: false, unique: true, sparse: true },
     enabled: { type: Boolean, required: true, default: true },
     hints: { type: Number, required: true, default: 0 },
-    cycles: { type: Number, required: true, default: 0 },
-    lastCycleDate: { type: Date, required: true, default: Date.now },
     lastPlayDate: { type: Date, required: true, default: Date.now },
     listsPlayed: { type: Number, required: true, default: 0 },
     guessers: [{ type: Schema.Types.ObjectId, ref: "Player", required: true }],
@@ -111,9 +105,7 @@ const gameSchema = new Schema<IGame>(
       count: { type: Number, required: false },
     },
     disabledCategories: [String],
-    playedLists: [{ type: Schema.Types.ObjectId, ref: "List" }],
     pickedLists: [{ type: Schema.Types.ObjectId, ref: "List" }],
-    bannedLists: [{ type: Schema.Types.ObjectId, ref: "List" }],
     list: {
       _id: String,
       name: String,

@@ -1,5 +1,5 @@
 import { HydratedDocument } from "mongoose";
-import { List } from "@models/index";
+import { GameRound, List } from "@models/index";
 import { IGame } from "@models/tenthings/game";
 import { TelegramCallbackData } from "./callbacks";
 
@@ -20,7 +20,7 @@ export const initiateBan = async (game: IGame, callbackQuery: TelegramCallbackDa
     if (!foundList) {
       return game.provider.message(game, i18n(game.settings.language, "warnings.unfoundList"));
     }
-    if (game.bannedLists.some((bannedListId) => bannedListId.toString() == callbackQuery.data)) {
+    if (await GameRound.exists({ gameId: game._id, listId: callbackQuery.data, outcome: "banned" })) {
       bot.queueMessage(
         game.telegramChannel,
         i18n(game.settings.language, "sentences.alreadyBannedList", { list: foundList.name }),
@@ -68,13 +68,21 @@ export const processBan = (game: HydratedDocument<IGame>, callbackQuery: Telegra
 };
 
 const banList = async (game: HydratedDocument<IGame>, listId: string) => {
-  const list = await List.findOne({ _id: listId }).select("_id bans name").exec();
+  const list = await List.findOne({ _id: listId }).select("_id bans name language categories").exec();
   if (list) {
-    if (game.bannedLists.some((bannedListId) => bannedListId.toString() == listId)) {
+    if (await GameRound.exists({ gameId: game._id, listId: list._id, outcome: "banned" })) {
       game.provider.message(game, i18n(game.settings.language, "sentences.alreadyBannedList", { list: list.name }));
     } else {
-      game.bannedLists.push(list._id);
-      await game.save();
+      await GameRound.create({
+        gameId: game._id,
+        listId: list._id,
+        outcome: "banned",
+        categories: list.categories ?? [],
+        language: list.language,
+        answersRevealed: 0,
+        hintsUsed: 0,
+        playedAt: new Date(),
+      });
       list.bans++;
       await list.save();
       game.provider.message(game, i18n(game.settings.language, "sentences.listBanned", { list: list.name }));

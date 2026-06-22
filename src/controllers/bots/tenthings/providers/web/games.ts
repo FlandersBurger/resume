@@ -7,8 +7,7 @@ import { getHint } from "@tenthings/hints";
 export const getWebGame = async (webGameId: number = 1): Promise<HydratedDocument<IGame>> => {
   let game = await Game.findOne({ platform: "web", webGameId })
     .populate("list.creator")
-    .populate("list.values.guesser", "username first_name")
-    .select("-playedLists");
+    .populate("list.values.guesser", "username first_name");
   if (!game) {
     game = await createMaingame({ platform: "web", webGameId });
   }

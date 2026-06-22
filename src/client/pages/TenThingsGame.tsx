@@ -568,14 +568,6 @@ export default function TenThingsGame() {
                     <span>{game.hints}</span>
                   </MetricRow>
                   <MetricRow>
-                    <b>Cycles</b>
-                    <span>{game.cycles}</span>
-                  </MetricRow>
-                  <MetricRow>
-                    <b>Last Cycled</b>
-                    <span>{formatDate(game.lastCycleDate)}</span>
-                  </MetricRow>
-                  <MetricRow>
                     <b>Last Played</b>
                     <span>{formatDate(game.lastPlayDate)}</span>
                   </MetricRow>

@@ -1,5 +1,5 @@
 import { GameType, IGame } from "@models/tenthings/game";
-import { List } from "@models/index";
+import { GameRound, List } from "@models/index";
 import { HydratedDocument, LeanDocument } from "mongoose";
 import { convertDiscordUserToPlayer, DiscordMessage } from "@tenthings/providers/discord";
 import { getRules } from "@tenthings/messages";
@@ -240,9 +240,7 @@ export const evaluate = async (msg: DiscordMessage, game: HydratedDocument<IGame
         if (msg.from.id === process.env.DISCORD_ADMIN_USER_ID) {
           game.list = (await getRandomList()) as LeanDocument<IList>;
           game.pickedLists = [];
-          game.playedLists = [];
-          game.cycles++;
-          game.lastCycleDate = new Date();
+          await GameRound.deleteMany({ gameId: game._id, outcome: { $ne: "banned" } });
           game.save();
           bot.queueMessage(game.discordChannel, "Flushed this chat");
         }

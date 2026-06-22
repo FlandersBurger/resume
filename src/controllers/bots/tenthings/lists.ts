@@ -1,9 +1,8 @@
-import moment from "moment";
-
-import { List } from "@models/index";
+import { List, GameRound } from "@models/index";
 import { HydratedDocument, QueryOptions, Types } from "mongoose";
 import { IList } from "@models/tenthings/list";
 import { IGame, IGameSettings } from "@models/tenthings/game";
+import { COOLDOWN_MS } from "@models/tenthings/gameround";
 
 import some from "lodash/some";
 import sampleSize from "lodash/sampleSize";
@@ -45,50 +44,64 @@ export const rateList = (game: IGame) => {
 const getAvailableLanguages = ({ settings }: { settings: IGameSettings }): string[] =>
   settings.languages && settings.languages.length > 0 ? settings.languages : ["EN"];
 
+const getExcludedListIds = async (
+  gameId: Types.ObjectId,
+): Promise<{ recent: Types.ObjectId[]; banned: Types.ObjectId[] }> => {
+  const cooldownCutoff = new Date(Date.now() - COOLDOWN_MS);
+  const [recent, banned] = await Promise.all([
+    GameRound.distinct("listId", {
+      gameId,
+      outcome: { $in: ["completed", "skipped"] },
+      playedAt: { $gt: cooldownCutoff },
+    }),
+    GameRound.distinct("listId", { gameId, outcome: "banned" }),
+  ]);
+  return { recent, banned };
+};
+
 export const selectList = async (game: IGame): Promise<HydratedDocument<IList>> => {
   const availableLanguages = getAvailableLanguages(game);
+
   if (game.pickedLists.length > 0) {
-    let list = await List.findOne({ _id: game.pickedLists[0] }).populate("creator").exec();
+    const list = await List.findOne({ _id: game.pickedLists[0] }).populate("creator").exec();
     game.pickedLists.shift();
     if (!list) {
       console.log(`Moving to next picked list`);
       return await selectList(game);
-    } else {
-      if (!some(game.playedLists, (playedListId: Types.ObjectId) => playedListId == list!._id)) {
-        game.playedLists.push(list._id);
-      }
-      return list;
     }
-  } else {
-    const consistentParameters = {
-      categories: { $nin: game.disabledCategories },
-      ...(game.platform === "web" ? { starred: true } : {}),
-    };
-    let list = await getRandomList({
-      _id: { $nin: game.playedLists.concat(game.bannedLists ?? []) },
+    return list;
+  }
+
+  const { recent, banned } = await getExcludedListIds(game._id);
+  const consistentParameters = {
+    categories: { $nin: game.disabledCategories },
+    ...(game.platform === "web" ? { starred: true } : {}),
+  };
+
+  let list = await getRandomList({
+    _id: { $nin: [...recent, ...banned] },
+    language: { $in: availableLanguages },
+    ...consistentParameters,
+  });
+
+  if (!list) {
+    // Cooldown window exhausted — reset to all non-banned and notify
+    game.provider.message(game, i18n(game.settings.language, "sentences.allListsPlayed"));
+    list = await getRandomList({
+      _id: { $nin: banned },
       language: { $in: availableLanguages },
       ...consistentParameters,
     });
     if (!list) {
-      game.playedLists = [];
-      game.cycles++;
-      game.lastCycleDate = moment().toDate();
-      game.provider.message(game, i18n(game.settings.language, "sentences.allListsPlayed"));
       list = await getRandomList({
-        _id: { $nin: game.bannedLists ?? [] },
-        language: { $in: availableLanguages },
+        _id: { $nin: banned },
+        language: "EN",
         ...consistentParameters,
       });
-      if (!list) {
-        list = await getRandomList({
-          _id: { $nin: game.bannedLists ?? [] },
-          language: "EN",
-          ...consistentParameters,
-        });
-      }
     }
-    return list!;
   }
+
+  return list!;
 };
 
 const sampleLists = async (query: QueryOptions<IList>, sampledLists: IList[]): Promise<IList[]> => {

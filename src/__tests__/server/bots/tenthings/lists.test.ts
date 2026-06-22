@@ -1,6 +1,10 @@
-jest.mock("@models/index", () => ({ List: { countDocuments: jest.fn(), find: jest.fn(), findOne: jest.fn() } }));
+jest.mock("@models/index", () => ({
+  List: { countDocuments: jest.fn(), find: jest.fn(), findOne: jest.fn() },
+  GameRound: { distinct: jest.fn().mockResolvedValue([]) },
+}));
 jest.mock("@models/tenthings/list", () => ({}));
 jest.mock("@models/tenthings/game", () => ({}));
+jest.mock("@models/tenthings/gameround", () => ({ COOLDOWN_MS: 2592000000 }));
 jest.mock("@root/i18n", () => ({ __esModule: true, default: jest.fn(), t_list: jest.fn(() => []) }));
 jest.mock("@tenthings/notify", () => ({ notifyAdmin: jest.fn() }));
 
