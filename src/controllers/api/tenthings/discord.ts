@@ -14,7 +14,6 @@ export const initDiscordBot = () => {
     const existingGame = await Game.findOne({ discordChannelId: msg.channelId })
       .populate("list.creator")
       .populate("list.values.guesser")
-      .select("-playedLists")
       .exec();
 
     if (!existingGame) {

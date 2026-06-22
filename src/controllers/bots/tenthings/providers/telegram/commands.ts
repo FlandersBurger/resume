@@ -1,5 +1,5 @@
 import { GameType, IGame } from "@models/tenthings/game";
-import { Game, List } from "@models/index";
+import { Game, GameRound, List } from "@models/index";
 import { HydratedDocument } from "mongoose";
 import { convertTelegramUserToPlayer, TelegramMessage } from "@tenthings/providers/telegram";
 import { getRules } from "@tenthings/messages";
@@ -346,9 +346,7 @@ export const evaluate = async (msg: TelegramMessage, game: HydratedDocument<IGam
         if (msg.from.id === parseInt(process.env.MASTER_CHAT || "")) {
           game.list = (await getRandomList()) as IList;
           game.pickedLists = [];
-          game.playedLists = [];
-          game.cycles++;
-          game.lastCycleDate = new Date();
+          await GameRound.deleteMany({ gameId: game._id, outcome: { $ne: "banned" } });
           game.save();
           bot.queueMessage(game.telegramChannel, "Flushed this chat");
         }

@@ -1,5 +1,5 @@
 import { HydratedDocument, Types } from "mongoose";
-import { Game, List } from "@models/index";
+import { Game, GameRound, List } from "@models/index";
 import { IGame, IGameSettings } from "@models/tenthings/game";
 import { IList, IVote } from "@models/tenthings/list";
 import { capitalize, parseSymbols } from "@utils/string-helpers";
@@ -338,9 +338,7 @@ export default async (callbackQuery: TelegramCallbackData) => {
           player.pickedLists.push(list._id);
           player.save();
           game.pickedLists.push(list._id);
-          if (find(game.bannedLists, (bannedListId: Types.ObjectId) => bannedListId === list._id)) {
-            game.bannedLists = game.bannedLists.filter((bannedListId: Types.ObjectId) => bannedListId !== list._id);
-          }
+          await GameRound.deleteOne({ gameId: game._id, listId: list._id, outcome: "banned" });
           game.save();
           list.picks++;
           list.save();

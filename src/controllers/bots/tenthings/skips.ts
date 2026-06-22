@@ -1,5 +1,5 @@
 import moment, { Moment } from "moment";
-import { List, Player } from "@models/index";
+import { GameRound, List, Player } from "@models/index";
 import { IGame } from "@models/tenthings/game";
 import { IPlayer } from "@models/tenthings/player";
 import { HydratedDocument, Types } from "mongoose";
@@ -78,7 +78,7 @@ const skipList = async (game: IGame, skipper: IPlayer) => {
   let foundList = await List.findOne({
     _id: game.list._id,
   })
-    .select("_id plays skips votes score")
+    .select("_id plays skips votes score language categories")
     .exec();
   if (!foundList) return newRound(game);
   if (!foundList.skips) {
@@ -92,6 +92,16 @@ const skipList = async (game: IGame, skipper: IPlayer) => {
   } catch (err) {
     return notifyAdmin(`Skip List Error:\n${err}`);
   }
+  GameRound.create({
+    gameId: game._id,
+    listId: foundList._id,
+    outcome: "skipped",
+    categories: foundList.categories ?? [],
+    language: foundList.language,
+    answersRevealed: game.list.values.filter((v) => v.guesser).length,
+    hintsUsed: game.hints,
+    playedAt: new Date(),
+  });
   game.provider.dailyScores(game, 5);
   if (game.pickedLists.find((list) => list._id.equals(game.list._id))) {
     game.pickedLists = game.pickedLists.filter((list) => !list._id.equals(game.list._id));

@@ -3,7 +3,7 @@ import { HydratedDocument, Types } from "mongoose";
 import sampleSize from "lodash/sampleSize";
 import some from "lodash/some";
 
-import { Game, List, Player } from "@models/index";
+import { Game, GameRound, List, Player } from "@models/index";
 import { IGame, Platform } from "@models/tenthings/game";
 import { IList } from "@models/tenthings/list";
 import { parseSymbols } from "@utils/string-helpers";
@@ -53,6 +53,16 @@ export const checkRound = (game: IGame) => {
         game.provider.endOfRound(game, foundList);
         foundList.lastPlayDate = moment().toDate();
         foundList.save();
+        GameRound.create({
+          gameId: game._id,
+          listId: foundList._id,
+          outcome: "completed",
+          categories: game.list.categories,
+          language: foundList.language,
+          answersRevealed: game.list.values.length,
+          hintsUsed: game.hints,
+          playedAt: new Date(),
+        });
       }
       setTimeout(() => {
         rateList(game);
@@ -115,7 +125,6 @@ export const newRound = async (currentGame: IGame) => {
       count: 0,
     };
   }
-  game.playedLists.push(game.list._id);
   await game.save();
   console.log(`${game._id} - New round started -> ${chalk.cyan(list.name)}`);
 };

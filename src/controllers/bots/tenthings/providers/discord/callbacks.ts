@@ -1,7 +1,7 @@
 import moment from "moment";
 import find from "lodash/find";
 import { Types } from "mongoose";
-import { Game, List } from "@models/index";
+import { Game, GameRound, List } from "@models/index";
 import { IVote } from "@models/tenthings/list";
 import { GameType } from "@models/tenthings/game";
 import { getListScore } from "@tenthings/lists";
@@ -219,9 +219,7 @@ export default async (interaction: DiscordButtonInteraction) => {
         player.pickedLists.push(pickedList._id);
         await player.save();
         game.pickedLists.push(pickedList._id);
-        if (find(game.bannedLists, (id: Types.ObjectId) => id.equals(pickedList._id))) {
-          game.bannedLists = game.bannedLists.filter((id) => !id.equals(pickedList._id));
-        }
+        await GameRound.deleteOne({ gameId: game._id, listId: pickedList._id, outcome: "banned" });
         await game.save();
         pickedList.picks++;
         await pickedList.save();
@@ -246,7 +244,7 @@ export default async (interaction: DiscordButtonInteraction) => {
       const foundList = await List.findOne({ _id: listId }).exec();
       if (!foundList) break;
 
-      if (game.bannedLists.some((id) => id.toString() === listId)) {
+      if (await GameRound.exists({ gameId: game._id, listId: foundList._id, outcome: "banned" })) {
         bot.queueMessage(
           game.discordChannel,
           i18n(game.settings.language, "sentences.alreadyBannedList", { list: foundList.name }),
@@ -273,14 +271,22 @@ export default async (interaction: DiscordButtonInteraction) => {
       const banTarget = await List.findOne({ _id: listId }).select("_id bans name").exec();
       if (!banTarget) break;
 
-      if (game.bannedLists.some((id) => id.toString() === listId)) {
+      if (await GameRound.exists({ gameId: game._id, listId: banTarget._id, outcome: "banned" })) {
         bot.queueMessage(
           game.discordChannel,
           i18n(game.settings.language, "sentences.alreadyBannedList", { list: banTarget.name }),
         );
       } else {
-        game.bannedLists.push(banTarget._id);
-        await game.save();
+        await GameRound.create({
+          gameId: game._id,
+          listId: banTarget._id,
+          outcome: "banned",
+          categories: banTarget.categories ?? [],
+          language: banTarget.language,
+          answersRevealed: 0,
+          hintsUsed: 0,
+          playedAt: new Date(),
+        });
         banTarget.bans++;
         await banTarget.save();
         bot.queueMessage(
