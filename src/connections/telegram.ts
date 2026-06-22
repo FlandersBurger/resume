@@ -159,18 +159,24 @@ class TelegramBot {
 
   private errorHandler = (channel: Channel, source: string, error: any, message?: string) => {
     const reason = error?.response?.data?.description;
+    const isAdminChat = channel.chat === parseInt(process.env.MASTER_CHAT || "");
 
     if (reason) {
       if (this.muteReasons.includes(reason)) {
         botMuted(channel.chat);
       } else if (reason.includes("too long")) {
-        if (message) {
+        if (message && !isAdminChat) {
           this.notifyAdmin(`Too long: ${message.substring(0, 500)}...`);
         }
       } else if (reason.includes("Bad Request: message thread not found")) {
         noTopic(channel.chat);
       } else if (reason.includes("can't parse")) {
-        this.notifyAdmin(`Send Message to ${channel.chat} parse Fail: ${message}`);
+        const stripped = message?.replace(/<[^>]*>/g, "") ?? "";
+        if (isAdminChat) {
+          console.error(`Admin chat parse fail — message contained bad HTML: ${stripped.substring(0, 500)}`);
+        } else {
+          this.notifyAdmin(`Send Message to ${channel.chat} parse Fail: ${stripped.substring(0, 500)}`);
+        }
       } else if (error.response.data.description.startsWith("Too Many Requests: retry after ")) {
         if (!this.paused) {
           this.paused = true;
@@ -187,14 +193,16 @@ class TelegramBot {
         `Bad Request: invalid file HTTP URL specified: Wrong port number specified in the URL`
       ) {
         this.notifyAdmin(`Invalid URL for ${source} in ${channel.chat}: ${message}`);
-      } else if (!this.ignoreReasons.includes(reason)) {
+      } else if (!this.ignoreReasons.includes(reason) && !isAdminChat) {
         bot.notifyAdmin(`Error from "${source}" in channel ${channel.chat}:\n${parseSymbols(reason)}`);
       }
-    } else {
+    } else if (!isAdminChat) {
       bot.notifyAdmin(
         `Unknown error from "${source}" in channel ${channel.chat}\nCode:${parseSymbols(error.code)}\nMessage:${parseSymbols(error.message)}`,
       );
       console.error(`${source} error`, error);
+    } else {
+      console.error(`Admin chat ${source} error (${error.code}):`, error.message);
     }
   };
 
@@ -258,12 +266,15 @@ class TelegramBot {
             }
           } else this.errorHandler(channel, "Send message", error, message);
         } else {
-          // Network error (ETIMEDOUT, ECONNABORTED) — retry with exponential backoff before notifying
-          if (retries < 3) {
+          // Network error (ETIMEDOUT, ECONNABORTED) — retry with exponential backoff, silently drop after max retries
+          if (retries < 6) {
             const delay = Math.pow(2, retries) * 1000;
             setTimeout(() => this.sendMessage(channel, message, options, retries + 1), delay);
-          } else if (channel.chat !== parseInt(process.env.MASTER_CHAT || "")) {
-            this.errorHandler(channel, "Send message", error);
+          } else {
+            console.error(
+              `sendMessage gave up after ${retries} retries (${error.code}) for channel ${channel.chat}`,
+              error.message,
+            );
           }
         }
       });
