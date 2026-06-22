@@ -68,7 +68,9 @@ tenthingsGamesRoute.put("/:id/settings", async (req: Request, res: Response) => 
   if (!res.locals.isAdmin) return res.sendStatus(401);
   const game = await findGame(req.params.id);
   if (!game) return res.sendStatus(404);
-  game.settings = { ...game.settings, ...req.body };
+  if (req.body.enabled !== undefined) game.enabled = !!req.body.enabled;
+  const { enabled: _enabled, ...settingsBody } = req.body;
+  game.settings = { ...game.settings, ...settingsBody };
   await game.save();
-  return res.json(game.settings);
+  return res.json({ ...game.settings, enabled: game.enabled });
 });
