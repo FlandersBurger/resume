@@ -2,7 +2,6 @@ import { List, GameRound } from "@models/index";
 import { HydratedDocument, QueryOptions, Types } from "mongoose";
 import { IList } from "@models/tenthings/list";
 import { IGame, IGameSettings } from "@models/tenthings/game";
-import { COOLDOWN_ROUNDS } from "@models/tenthings/gameround";
 
 import some from "lodash/some";
 import sampleSize from "lodash/sampleSize";
@@ -45,17 +44,25 @@ const getAvailableLanguages = ({ settings }: { settings: IGameSettings }): strin
   settings.languages && settings.languages.length > 0 ? settings.languages : ["EN"];
 
 const getExcludedListIds = async (
-  gameId: Types.ObjectId,
-): Promise<{ recent: Types.ObjectId[]; banned: Types.ObjectId[] }> => {
-  const [recentRounds, banned] = await Promise.all([
-    GameRound.find({ gameId, outcome: { $in: ["completed", "skipped"] } })
+  game: IGame,
+): Promise<{ recent: Types.ObjectId[]; banned: Types.ObjectId[]; cooldownRounds: number }> => {
+  const availableLanguages = getAvailableLanguages(game);
+  const poolQuery = {
+    language: { $in: availableLanguages },
+    categories: { $nin: game.disabledCategories },
+    ...(game.platform === "web" ? { starred: true } : {}),
+  };
+  const [poolSize, recentRounds, banned] = await Promise.all([
+    List.countDocuments(poolQuery),
+    GameRound.find({ gameId: game._id, outcome: { $in: ["completed", "skipped"] } })
       .sort({ playedAt: -1 })
-      .limit(COOLDOWN_ROUNDS)
+      .limit(5000)
       .select("listId")
       .lean(),
-    GameRound.distinct("listId", { gameId, outcome: "banned" }),
+    GameRound.distinct("listId", { gameId: game._id, outcome: "banned" }),
   ]);
-  return { recent: recentRounds.map((r) => r.listId), banned };
+  const cooldownRounds = Math.max(10, Math.floor(poolSize / 2));
+  return { recent: recentRounds.slice(0, cooldownRounds).map((r) => r.listId), banned, cooldownRounds };
 };
 
 export const selectList = async (game: IGame): Promise<HydratedDocument<IList>> => {
@@ -71,7 +78,7 @@ export const selectList = async (game: IGame): Promise<HydratedDocument<IList>> 
     return list;
   }
 
-  const { recent, banned } = await getExcludedListIds(game._id);
+  const { recent, banned } = await getExcludedListIds(game);
   const consistentParameters = {
     categories: { $nin: game.disabledCategories },
     ...(game.platform === "web" ? { starred: true } : {}),

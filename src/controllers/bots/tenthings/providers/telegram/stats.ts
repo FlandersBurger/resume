@@ -2,7 +2,6 @@ import { SortOrder } from "mongoose";
 import moment from "moment";
 import find from "lodash/find";
 import { GameRound, List, Player, User } from "@models/index";
-import { COOLDOWN_ROUNDS } from "@models/tenthings/gameround";
 import { IGame } from "@models/tenthings/game";
 import { IList } from "@models/tenthings/list";
 import { IPlayer } from "@models/tenthings/player";
@@ -197,7 +196,6 @@ export const getStats = async (game: IGame, data: string, requestor?: string) =>
       game.provider.message(game, message);
       break;
     case "g":
-      const count = await List.countDocuments().exec();
       message = "<b>Game Stats</b>\n";
       message += requestor ? `<i>Requested by ${requestor}</i>\n` : "";
       message += `Started ${moment(game.date).format("DD-MMM-YYYY")}\n`;
@@ -236,15 +234,22 @@ export const getStats = async (game: IGame, data: string, requestor?: string) =>
       message += `${players.filter(({ scoreDaily }) => scoreDaily).length} out of ${
         players.filter(({ present }) => present).length
       } players played today\n`;
+      const availableLanguages = game.settings.languages?.length > 0 ? game.settings.languages : ["EN"];
+      const poolSize = await List.countDocuments({
+        language: { $in: availableLanguages },
+        categories: { $nin: game.disabledCategories },
+        ...(game.platform === "web" ? { starred: true } : {}),
+      });
+      const cooldownRounds = Math.max(10, Math.floor(poolSize / 2));
       const recentRounds = await GameRound.find({
         gameId: game._id,
         outcome: { $in: ["completed", "skipped"] },
       })
         .sort({ playedAt: -1 })
-        .limit(COOLDOWN_ROUNDS)
+        .limit(cooldownRounds)
         .distinct("listId");
       const recentlyPlayed = recentRounds.length;
-      message += `${recentlyPlayed} of ${count} lists on cooldown (last ${COOLDOWN_ROUNDS} rounds, ${Math.round((recentlyPlayed / count) * 100).toFixed(0)}%)\n`;
+      message += `${recentlyPlayed} of ${poolSize} lists on cooldown (last ${cooldownRounds} rounds, ${Math.round((recentlyPlayed / poolSize) * 100).toFixed(0)}%)\n`;
       message += "\n";
       game.provider.message(game, message);
       break;

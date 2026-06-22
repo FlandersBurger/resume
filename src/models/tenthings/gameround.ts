@@ -15,8 +15,6 @@ export interface IGameRound {
   playedAt: Date;
 }
 
-export const COOLDOWN_ROUNDS = 100;
-
 let GameRound: { [key: string]: Model<IGameRound> } = {};
 
 const gameRoundSchema = new Schema<IGameRound>({
