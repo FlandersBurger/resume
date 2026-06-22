@@ -57,6 +57,7 @@ export interface IGame {
   discordChannel: { channelId: string };
   provider: Provider;
   enabled: boolean;
+  adminDisabled: boolean;
   hints: number;
   lastPlayDate: Date;
   listsPlayed: number;
@@ -96,6 +97,7 @@ const gameSchema = new Schema<IGame>(
     webGameId: { type: Number, required: false, unique: true, sparse: true },
     discordChannelId: { type: String, required: false, unique: true, sparse: true },
     enabled: { type: Boolean, required: true, default: true },
+    adminDisabled: { type: Boolean, required: true, default: false },
     hints: { type: Number, required: true, default: 0 },
     lastPlayDate: { type: Date, required: true, default: Date.now },
     listsPlayed: { type: Number, required: true, default: 0 },

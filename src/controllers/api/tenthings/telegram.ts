@@ -118,7 +118,7 @@ tenthingsTelegramBotRoute.post("/", async (req: Request, res: Response) => {
       await evaluate(msg, newGame, true);
     } else {
       if (!existingGame.enabled) {
-        if (msg.command) {
+        if (!existingGame.adminDisabled && msg.command) {
           const command = translateCommand(existingGame.settings.language, msg.command);
           if (
             (command &&

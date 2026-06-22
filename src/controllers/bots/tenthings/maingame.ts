@@ -87,6 +87,7 @@ export const newRound = async (currentGame: IGame) => {
     .populate("list.creator")
     .populate("list.values.guesser");
   if (!game) return console.log("Game not found");
+  if (game.adminDisabled) return;
   let players = await Player.find({
     game: currentGame._id,
     _id: { $in: game.guessers },

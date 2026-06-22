@@ -270,6 +270,19 @@ export default function TenThingsGame() {
       />
     ) : null;
 
+  const handleAdminDisabledToggle = async () => {
+    if (!gameId || !isAdmin) return;
+    setSettingsSaving(true);
+    try {
+      const { adminDisabled } = await updateGameSettings(gameId, { adminDisabled: !game.adminDisabled });
+      setGame((prev: any) => ({ ...prev, adminDisabled }));
+    } catch {
+      toast("Failed to update game");
+    } finally {
+      setSettingsSaving(false);
+    }
+  };
+
   const handleSettingToggle = async (key: string) => {
     if (!gameId || !isAdmin) return;
     setSettingsSaving(true);
@@ -504,6 +517,19 @@ export default function TenThingsGame() {
                   <strong>Settings</strong>
                 </div>
                 <SettingsBody className="panel-body">
+                  {isAdmin && (
+                    <MetricRow>
+                      <b>Admin Disabled</b>
+                      <SwitchLabel>
+                        <SwitchInput
+                          checked={!!game.adminDisabled}
+                          disabled={settingsSaving}
+                          onChange={handleAdminDisabledToggle}
+                        />
+                        <SwitchSlider checked={!!game.adminDisabled} />
+                      </SwitchLabel>
+                    </MetricRow>
+                  )}
                   {(["intro", "sass", "snubs", "updates"] as const).map((key) => (
                     <MetricRow key={key}>
                       <b style={{ textTransform: "capitalize" }}>{key}</b>
