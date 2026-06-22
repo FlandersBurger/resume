@@ -438,6 +438,11 @@ export function ListTable({
                 <i className="fas fa-ban" title="Bans" />
                 {sortIcon("bans")}
               </th>
+              {isAdmin && (
+                <th className="hidden-sm hidden-md visible-lg">
+                  <i className="fas fa-exclamation-triangle text-warning" title="Low Quality" />
+                </th>
+              )}
               {isAdmin && <th className="hidden-xs visible-sm visible-md visible-lg" style={{ width: 32 }} />}
             </tr>
           </thead>
@@ -520,6 +525,11 @@ export function ListTable({
                 <td className="hidden-sm visible-md visible-lg" onClick={() => canOpenEditor && onSelect(list)}>
                   {list.bans ?? ""}
                 </td>
+                {isAdmin && (
+                  <td className="hidden-sm hidden-md visible-lg">
+                    {list.lowQuality && <i className="fas fa-exclamation-triangle text-warning" />}
+                  </td>
+                )}
                 {isAdmin && (
                   <td
                     className="hidden-xs visible-sm visible-md visible-lg"

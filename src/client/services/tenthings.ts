@@ -23,6 +23,7 @@ export interface TenThingsList {
   picks?: number;
   hints?: number;
   score?: number;
+  lowQuality?: boolean;
   calculatedDifficulty?: number;
   difficulty?: number;
   frequency?: number;
