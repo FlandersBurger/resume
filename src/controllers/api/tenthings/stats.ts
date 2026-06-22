@@ -3,7 +3,7 @@ import { Router, Request, Response } from "express";
 export const tenthingsStatsRoute = Router();
 
 import { Types } from "mongoose";
-import { Game, List, Stats } from "@root/models";
+import { Game, GameRound, List, Stats } from "@root/models";
 
 tenthingsStatsRoute.get("/total", async (_: Request, res: Response) => {
   const total = await List.countDocuments({});
@@ -219,4 +219,51 @@ tenthingsStatsRoute.get("/list-rankings/:stat", async (req: Request, res: Respon
 
   rankingCache.set(cacheKey, { data: rows, expiresAt: Date.now() + CACHE_TTL });
   res.json(rows);
+});
+
+tenthingsStatsRoute.get("/skip-rate-trend", async (_: Request, res: Response) => {
+  const result = await GameRound.aggregate<{
+    _id: { year: number; month: number };
+    skipped: number;
+    total: number;
+  }>([
+    { $match: { outcome: { $in: ["completed", "skipped"] } } },
+    {
+      $group: {
+        _id: { year: { $year: "$playedAt" }, month: { $month: "$playedAt" } },
+        skipped: { $sum: { $cond: [{ $eq: ["$outcome", "skipped"] }, 1, 0] } },
+        total: { $sum: 1 },
+      },
+    },
+    { $sort: { "_id.year": 1, "_id.month": 1 } },
+  ]);
+  res.json(
+    result.map((r) => ({
+      year: r._id.year,
+      month: r._id.month,
+      skipRate: r.total > 0 ? Math.round((r.skipped / r.total) * 1000) / 10 : 0,
+      total: r.total,
+    })),
+  );
+});
+
+tenthingsStatsRoute.get("/low-quality", async (_: Request, res: Response) => {
+  const lowQualityLists = await List.find({ lowQuality: true }).select("name").lean();
+  if (!lowQualityLists.length) return res.json([]);
+  const ids = lowQualityLists.map((l) => l._id);
+  const skipRates = await GameRound.aggregate<{ _id: Types.ObjectId; skipped: number; total: number }>([
+    { $match: { listId: { $in: ids }, outcome: { $in: ["completed", "skipped"] } } },
+    {
+      $group: {
+        _id: "$listId",
+        skipped: { $sum: { $cond: [{ $eq: ["$outcome", "skipped"] }, 1, 0] } },
+        total: { $sum: 1 },
+      },
+    },
+  ]);
+  const rateMap = new Map(skipRates.map((r) => [String(r._id), Math.round((r.skipped / r.total) * 100)]));
+  const rows = lowQualityLists
+    .map((l) => ({ _id: String(l._id), name: l.name ?? "", value: rateMap.get(String(l._id)) ?? 0 }))
+    .sort((a, b) => b.value - a.value);
+  return res.json(rows);
 });

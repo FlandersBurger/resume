@@ -230,6 +230,18 @@ export const LIST_STAT_KEYS = [
 
 export type ListStatKey = (typeof LIST_STAT_KEYS)[number];
 
+export async function getSkipRateTrend() {
+  const { data } = await http.get<{ year: number; month: number; skipRate: number; total: number }[]>(
+    "/api/tenthings/stats/skip-rate-trend",
+  );
+  return data;
+}
+
+export async function getLowQualityLists() {
+  const { data } = await http.get<RankRow[]>("/api/tenthings/stats/low-quality");
+  return data;
+}
+
 export async function getListRanking(
   stat: ListStatKey,
   options: { language?: string[]; categories?: string[]; creator?: string } = {},

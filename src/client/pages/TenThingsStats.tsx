@@ -19,6 +19,8 @@ import {
   getGameStats,
   getListCategoryStats,
   getListRanking,
+  getSkipRateTrend,
+  getLowQualityLists,
   getCategories,
   getLanguages,
   getList,
@@ -47,6 +49,7 @@ const Overlay = styled.div<{ $visible: boolean }>`
 `;
 
 type PlayRow = { month: number; year: number; uniquePlayers: number; listsPlayed: number };
+type SkipTrendRow = { year: number; month: number; skipRate: number; total: number };
 type YearLangRow = { _id: { language: string; year: number }; count: number };
 type CategoryRow = { _id: string; count: number };
 
@@ -135,6 +138,8 @@ export default function TenThingsStats() {
   const [langStats, setLangStats] = useState<YearLangRow[]>([]);
   const [gameStats, setGameStats] = useState<YearLangRow[]>([]);
   const [categoryStats, setCategoryStats] = useState<CategoryRow[]>([]);
+  const [skipTrend, setSkipTrend] = useState<SkipTrendRow[]>([]);
+  const [lowQualityLists, setLowQualityLists] = useState<RankRow[]>([]);
   const [listRankings, setListRankings] = useState<Record<string, RankRow[]>>({});
   const [categoryOptions, setCategoryOptions] = useState<CategoryOption[]>([]);
   const [languageOptions, setLanguageOptions] = useState<Language[]>([]);
@@ -150,6 +155,8 @@ export default function TenThingsStats() {
     getPlayStats().then((d) => setPlayStats(d || []));
     getListLanguageStats().then((d) => setLangStats(d || []));
     getGameStats().then((d) => setGameStats(d || []));
+    getSkipRateTrend().then((d) => setSkipTrend(d || []));
+    getLowQualityLists().then((d) => setLowQualityLists(d || []));
     getCategories()
       .then(setCategoryOptions)
       .catch(() => setCategoryOptions([]));
@@ -262,6 +269,22 @@ export default function TenThingsStats() {
       tension: 0.3,
       spanGaps: true,
     })),
+  };
+
+  // ── Skip rate trend ──
+  const skipTrendLabels = skipTrend.map((r) => `${MONTH_LABELS[r.month - 1]} ${r.year}`);
+  const skipTrendData = {
+    labels: skipTrendLabels,
+    datasets: [
+      {
+        label: "Global Skip Rate %",
+        data: skipTrend.map((r) => r.skipRate),
+        borderColor: PALETTE[2],
+        backgroundColor: PALETTE[2] + "33",
+        tension: 0.3,
+        fill: true,
+      },
+    ],
   };
 
   // ── Category stats ──
@@ -414,6 +437,36 @@ export default function TenThingsStats() {
           <Line data={gameData} options={lineOpts("Games Played by Language (per Year)")} />
         </div>
       </div>
+
+      {skipTrend.length > 0 && (
+        <div className="row" style={{ marginBottom: 32 }}>
+          <div className="col-md-12">
+            <Line
+              data={skipTrendData}
+              options={{
+                ...lineOpts("Global Skip Rate by Month (%)"),
+                scales: { y: { min: 0, max: 100 } },
+              }}
+            />
+          </div>
+        </div>
+      )}
+
+      {lowQualityLists.length > 0 && (
+        <>
+          <h4 style={{ marginBottom: 12 }}>Low Quality Lists</h4>
+          <div className="row" style={{ marginBottom: 32 }}>
+            <div className="col-md-4">
+              <StatTable
+                title="Highest Global Skip Rate"
+                rows={lowQualityLists.slice(0, 10)}
+                pct
+                onRowClick={handleRowClick}
+              />
+            </div>
+          </div>
+        </>
+      )}
 
       {/* ── ListEditor ───────────────────────────────────────────── */}
       {editorMounted && selectedList && (
