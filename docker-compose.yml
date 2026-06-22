@@ -7,6 +7,7 @@ services:
       NODE_ENV: production
       REDISTOGO_URL: redis://redis:6379
       REDIS_HOST: redis
+      FORCE_COLOR: 1
     env_file:
       - .env
     volumes:
