@@ -10,12 +10,12 @@ import uniq from "lodash/uniq";
 import { deactivate } from "./maingame";
 import { IGame } from "@models/tenthings/game";
 import { makeReadable } from "@root/utils/number-helpers";
-import { HydratedDocument } from "mongoose";
+import { HydratedDocument, Types } from "mongoose";
 import { IPlayer } from "@models/tenthings/player";
 import { IStats } from "@models/tenthings/stats";
 import { IList } from "@models/tenthings/list";
 import { updateMinigames } from "./minigame";
-import { Game, Player, Stats, List } from "@models/index";
+import { Game, GameRound, Player, Stats, List } from "@models/index";
 
 // ██████  ███████ ███████ ███████ ████████     ██████   █████  ██ ██      ██    ██     ███████  ██████  ██████  ██████  ███████
 // ██   ██ ██      ██      ██         ██        ██   ██ ██   ██ ██ ██       ██  ██      ██      ██      ██    ██ ██   ██ ██
@@ -428,6 +428,31 @@ const unbanPlayers = async () => {
   bot.notifyAdmin(`${unbannedPlayers.matchedCount} players unbanned`);
 };
 
+const MIN_GLOBAL_ROUNDS = 10;
+const MAX_SKIP_RATE = 0.7;
+
+const updateLowQualityLists = async () => {
+  const lowQualityResults = await GameRound.aggregate<{ _id: Types.ObjectId }>([
+    { $match: { outcome: { $in: ["completed", "skipped"] } } },
+    {
+      $group: {
+        _id: "$listId",
+        skipped: { $sum: { $cond: [{ $eq: ["$outcome", "skipped"] }, 1, 0] } },
+        total: { $sum: 1 },
+      },
+    },
+    { $match: { total: { $gte: MIN_GLOBAL_ROUNDS } } },
+    { $addFields: { skipRate: { $divide: ["$skipped", "$total"] } } },
+    { $match: { skipRate: { $gte: MAX_SKIP_RATE } } },
+  ]);
+  const lowQualityIds = lowQualityResults.map((r) => r._id);
+  const [flagged, unflagged] = await Promise.all([
+    List.updateMany({ _id: { $in: lowQualityIds } }, { $set: { lowQuality: true } }),
+    List.updateMany({ _id: { $nin: lowQualityIds }, lowQuality: true }, { $set: { lowQuality: false } }),
+  ]);
+  bot.notifyAdmin(`Low quality lists: ${flagged.modifiedCount} flagged, ${unflagged.modifiedCount} unflagged`);
+};
+
 let jobs: Job[] = [];
 
 // ███████  ██████ ██   ██ ███████ ██████  ██    ██ ██      ███████
@@ -444,6 +469,7 @@ if (process.env.NODE_ENV === "production") {
   jobs.push(schedule.scheduleJob("Delete Stale Players", "0 0 5 * * *", deleteStalePlayers));
   jobs.push(schedule.scheduleJob("Delete Stale Games", "0 0 6 * * *", deleteStaleGames));
   jobs.push(schedule.scheduleJob("Unban Banned Players", "0 0 7 * * *", unbanPlayers));
+  jobs.push(schedule.scheduleJob("Update Low Quality Lists", "0 0 8 * * *", updateLowQualityLists));
   // jobs.push(schedule.scheduleJob("Send New List Notice", "0 0 12 * * *", sendNewLists));
   // jobs.push(schedule.scheduleJob('0 30 12 * * *', sendUpdatedLists))
 }

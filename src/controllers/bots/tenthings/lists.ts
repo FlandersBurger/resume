@@ -107,6 +107,7 @@ export const selectList = async (game: IGame): Promise<HydratedDocument<IList>> 
     _id: { $nin: [...recent, ...banned] },
     language: { $in: availableLanguages },
     categories: { $nin: game.disabledCategories },
+    lowQuality: { $ne: true },
     ...(game.platform === "web" ? { starred: true } : {}),
   };
 
@@ -118,15 +119,17 @@ export const selectList = async (game: IGame): Promise<HydratedDocument<IList>> 
   if (!list) list = await getRandomList(baseQuery);
 
   if (!list) {
-    // Cooldown window exhausted — reset to all non-banned and notify
+    // Cooldown exhausted — ignore cooldown, still filter low-quality
     game.provider.message(game, i18n(game.settings.language, "sentences.allListsPlayed"));
     const exhaustedQuery = {
       _id: { $nin: banned },
       categories: { $nin: game.disabledCategories },
+      lowQuality: { $ne: true },
       ...(game.platform === "web" ? { starred: true } : {}),
     };
     list = await getRandomList({ ...exhaustedQuery, language: { $in: availableLanguages } });
-    if (!list) list = await getRandomList({ ...exhaustedQuery, language: "EN" });
+    // Last resort: drop quality filter entirely
+    if (!list) list = await getRandomList({ _id: { $nin: banned }, language: "EN" });
   }
 
   return list!;
