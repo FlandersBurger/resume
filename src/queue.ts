@@ -1,9 +1,11 @@
 import { createClient } from "redis";
 
 const url = process.env.REDISTOGO_URL || "redis://localhost:" + (process.env.REDIS_PORT || "6379");
-const client = createClient({ url, password: process.env.REDIS_PASSWORD });
-const publisher = createClient({ url, password: process.env.REDIS_PASSWORD });
-const subscriber = createClient({ url, password: process.env.REDIS_PASSWORD });
+// RESP3 (negotiated via HELLO) requires Redis >= 6.0; the server in use predates that, so pin RESP2.
+const clientOptions = { url, password: process.env.REDIS_PASSWORD, RESP: 2 as const };
+const client = createClient(clientOptions);
+const publisher = createClient(clientOptions);
+const subscriber = createClient(clientOptions);
 
 export const redisConnect = async () => {
   /*
