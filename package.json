@@ -23,7 +23,6 @@
     "axios": "^1.18.1",
     "bcrypt-pbkdf": "^1.0.2",
     "bcryptjs": "^3.0.3",
-    "bootstrap": "^4.5.2",
     "bson": "^7.3.0",
     "bull": "^4.16.5",
     "chalk": "^4.1.2",
