@@ -279,10 +279,9 @@ export default function TenThingsStats() {
       {
         label: "Global Skip Rate %",
         data: skipTrend.map((r) => r.skipRate),
+        backgroundColor: PALETTE[2] + "cc",
         borderColor: PALETTE[2],
-        backgroundColor: PALETTE[2] + "33",
-        tension: 0.3,
-        fill: true,
+        borderWidth: 1,
       },
     ],
   };
@@ -441,10 +440,14 @@ export default function TenThingsStats() {
       {skipTrend.length > 0 && (
         <div className="row" style={{ marginBottom: 32 }}>
           <div className="col-md-12">
-            <Line
+            <Bar
               data={skipTrendData}
               options={{
-                ...lineOpts("Global Skip Rate by Month (%)"),
+                responsive: true,
+                plugins: {
+                  legend: { display: false },
+                  title: { display: true, text: "Global Skip Rate by Month (%)" },
+                },
                 scales: { y: { min: 0, max: 100 } },
               }}
             />

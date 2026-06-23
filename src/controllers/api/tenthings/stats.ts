@@ -227,7 +227,7 @@ tenthingsStatsRoute.get("/skip-rate-trend", async (_: Request, res: Response) =>
     skipped: number;
     total: number;
   }>([
-    { $match: { outcome: { $in: ["completed", "skipped"] } } },
+    { $match: { outcome: { $in: ["completed", "skipped"] }, playedAt: { $gt: new Date(0) } } },
     {
       $group: {
         _id: { year: { $year: "$playedAt" }, month: { $month: "$playedAt" } },
