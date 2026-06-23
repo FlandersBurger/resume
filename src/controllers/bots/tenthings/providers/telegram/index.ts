@@ -2,7 +2,7 @@ import i18n from "@root/i18n";
 import bot, { TelegramUser } from "@root/connections/telegram";
 import categories, { getCategoryLabel } from "../../categories";
 import { capitalize, maskUrls, parseSymbols } from "@utils/string-helpers";
-import { IGame, IGameListValue } from "@root/models/tenthings/game";
+import { IGame, IGameList, IGameListValue } from "@root/models/tenthings/game";
 import { IList } from "@root/models/tenthings/list";
 import { IUser } from "@root/models/user";
 import { Provider } from "..";
@@ -46,12 +46,15 @@ export const telegram: Provider = {
   message: (game: IGame, message: string) => {
     bot.queueMessage(game.telegramChannel, message);
   },
-  newRound: (game: IGame) => {
-    let message = `<p>${i18n(game.settings.language, "sentences.newRound")}</p>`;
-    message += `<h2>${game.list.name}</h2>`;
-    message += `<p>by <i>${(game.list.creator as IUser).username}</i> (${game.list.answers})</p>`;
-    if (game.list.description) message += `<blockquote><i>${parseSymbols(game.list.description)}</i></blockquote>`;
-    bot.queueRichMessage(game.telegramChannel, message);
+  newRound: (game: IGame, list: IList | IGameList) => {
+    let message = `<b>${i18n(game.settings.language, "sentences.newRound")}</b>`;
+    message += `\n${i18n(game.settings.language, "category", {
+      count: game.list.categories.length,
+    })}: `;
+    message += `<b>${getCategoryLabel(game.settings.language, list)}</b>`;
+    message += `\n\n<b>${game.list.name}</b> (${game.list.answers}) ${i18n(game.settings.language, "sentences.createdBy", { creator: (game.list.creator as IUser).username })}`;
+    message += game.list.description ? `\n<i>${parseSymbols(game.list.description)}</i>` : "";
+    bot.queueMessage(game.telegramChannel, message);
   },
   endOfRound: async (game: IGame, list: IList) => {
     let message = getListStats(game.settings.language, list, undefined);
