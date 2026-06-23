@@ -45,3 +45,6 @@ jspm_packages
 
 # mongodump output
 dump/
+
+# Local-only compose overrides (e.g. exposing service ports not needed in prod)
+docker-compose.override.yml

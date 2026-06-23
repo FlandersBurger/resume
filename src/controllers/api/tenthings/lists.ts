@@ -1,5 +1,5 @@
 import { QueryableRequest, Request, Response, Router } from "express";
-import { Types, LeanDocument } from "mongoose";
+import { Types, FlattenMaps } from "mongoose";
 import moment from "moment";
 
 import bot from "@root/connections/telegram";
@@ -68,7 +68,7 @@ tenthingsListsRoute.get("/", async (req: QueryableRequest, res: Response) => {
   const query = parseQuery(req.query);
   const count = await List.countDocuments(query);
 
-  let lists: LeanDocument<IList>[];
+  let lists: FlattenMaps<IList>[];
 
   if (VIRTUAL_SORT_FIELDS.has(sortBy)) {
     // Aggregate to sort by computed virtual field, then hydrate with populate

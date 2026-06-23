@@ -1,6 +1,6 @@
 import { GameType, IGame } from "@models/tenthings/game";
 import { GameRound, List } from "@models/index";
-import { HydratedDocument, LeanDocument } from "mongoose";
+import { HydratedDocument, FlattenMaps } from "mongoose";
 import { convertDiscordUserToPlayer, DiscordMessage } from "@tenthings/providers/discord";
 import { getRules } from "@tenthings/messages";
 import { deactivate, newRound } from "@tenthings/maingame";
@@ -238,7 +238,7 @@ export const evaluate = async (msg: DiscordMessage, game: HydratedDocument<IGame
         break;
       case Command.Flush:
         if (msg.from.id === process.env.DISCORD_ADMIN_USER_ID) {
-          game.list = (await getRandomList()) as LeanDocument<IList>;
+          game.list = (await getRandomList()) as FlattenMaps<IList>;
           game.pickedLists = [];
           await GameRound.deleteMany({ gameId: game._id, outcome: { $ne: "banned" } });
           game.save();
