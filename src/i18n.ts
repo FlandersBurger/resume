@@ -9,7 +9,7 @@ const systemLocale = Intl.DateTimeFormat().resolvedOptions().locale;
 const localesFolder = join(__dirname, "../data/locales");
 
 i18next.use(Backend).init({
-  initImmediate: false, // setting initImediate to false, will load the resources synchronously
+  initAsync: false, // setting initAsync to false, will load the resources synchronously
   fallbackLng: "en",
   preload: readdirSync(localesFolder).filter((fileName: string): boolean => {
     const joinedPath = join(localesFolder, fileName);
