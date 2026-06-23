@@ -124,7 +124,7 @@ usersRoute.get("/:id/login", async (req: Request, res: Response) => {
   }
 });
 
-usersRoute.post("/:id/verification", async (req: Request, res: Response) => {
+usersRoute.post("/:id/verification", async (req: Request<{ id: string }>, res: Response) => {
   if (checkUser(req.params.id, res)) {
     const user = await User.findOne({ _id: res.locals.user?._id }).select("password");
     if (!user || user.banned) res.sendStatus(401);
@@ -137,7 +137,7 @@ usersRoute.post("/:id/verification", async (req: Request, res: Response) => {
   }
 });
 
-usersRoute.post("/:id/telegram", async (req: Request, res: Response) => {
+usersRoute.post("/:id/telegram", async (req: Request<{ id: string }>, res: Response) => {
   if (checkUser(req.params.id, res)) {
     const data = req.body;
     if (verifyTelegramUser(data)) {
@@ -157,7 +157,7 @@ usersRoute.post("/:id/telegram", async (req: Request, res: Response) => {
   }
 });
 
-usersRoute.post("/:id", async (req: Request, res: Response) => {
+usersRoute.post("/:id", async (req: Request<{ id: string }>, res: Response) => {
   if (checkUser(req.params.id, res)) {
     if (!res.locals.user?._id) res.sendStatus(400);
     else {
@@ -180,7 +180,7 @@ usersRoute.post("/:id", async (req: Request, res: Response) => {
   }
 });
 
-usersRoute.post("/:id/password", async (req: Request, res: Response) => {
+usersRoute.post("/:id/password", async (req: Request<{ id: string }>, res: Response) => {
   if (checkUser(req.params.id, res)) {
     const user = await User.findOne({ _id: res.locals.user?._id }).select("username").select("password");
     if (!user || user.banned) res.sendStatus(401);
@@ -201,7 +201,7 @@ usersRoute.post("/:id/password", async (req: Request, res: Response) => {
   }
 });
 
-usersRoute.post("/:id/username", async (req: Request, res: Response) => {
+usersRoute.post("/:id/username", async (req: Request<{ id: string }>, res: Response) => {
   if (checkUser(req.params.id, res)) {
     const user = await User.findOne({ _id: res.locals.user?._id }).select("username");
     if (!user || user.banned) res.sendStatus(401);

@@ -42,7 +42,7 @@ tenthingsGamesRoute.get("/mine", async (_: Request, res: Response) => {
   return res.json(games);
 });
 
-tenthingsGamesRoute.get("/:id", async (req: Request, res: Response) => {
+tenthingsGamesRoute.get("/:id", async (req: Request<{ id: string }>, res: Response) => {
   const user = res.locals.user;
   if (!user) return res.sendStatus(401);
   const game = await findGame(req.params.id);
@@ -55,16 +55,19 @@ tenthingsGamesRoute.get("/:id", async (req: Request, res: Response) => {
   return res.json({ ...game.toObject(), players });
 });
 
-tenthingsGamesRoute.post("/:id/category/:category", async (req: Request, res: Response) => {
-  if (!res.locals.isAdmin) return res.sendStatus(401);
-  const game = await findGame(req.params.id);
-  if (!game) return res.sendStatus(404);
-  setDisabledCategories(game, req.params.category);
-  const updatedGame = await game.save();
-  return res.json(updatedGame.disabledCategories);
-});
+tenthingsGamesRoute.post(
+  "/:id/category/:category",
+  async (req: Request<{ id: string; category: string }>, res: Response) => {
+    if (!res.locals.isAdmin) return res.sendStatus(401);
+    const game = await findGame(req.params.id);
+    if (!game) return res.sendStatus(404);
+    setDisabledCategories(game, req.params.category);
+    const updatedGame = await game.save();
+    return res.json(updatedGame.disabledCategories);
+  },
+);
 
-tenthingsGamesRoute.put("/:id/settings", async (req: Request, res: Response) => {
+tenthingsGamesRoute.put("/:id/settings", async (req: Request<{ id: string }>, res: Response) => {
   if (!res.locals.isAdmin) return res.sendStatus(401);
   const game = await findGame(req.params.id);
   if (!game) return res.sendStatus(404);

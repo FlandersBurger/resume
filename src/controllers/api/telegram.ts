@@ -5,7 +5,7 @@ import { checkUser } from "./users";
 
 export const telegramRoute = Router();
 
-telegramRoute.get("/:id/games", async (req: Request, res: Response) => {
+telegramRoute.get("/:id/games", async (req: Request<{ id: string }>, res: Response) => {
   if (checkUser(req.params.id, res)) {
     const user = await User.findOne({ _id: res.locals.user._id });
     if (!user?.telegramId) res.sendStatus(400);
@@ -17,7 +17,7 @@ telegramRoute.get("/:id/games", async (req: Request, res: Response) => {
   }
 });
 
-telegramRoute.post("/:id/link", async (req: Request, res: Response) => {
+telegramRoute.post("/:id/link", async (req: Request<{ id: string }>, res: Response) => {
   if (checkUser(req.params.id, res)) {
     const data = req.body;
     if (verifyTelegramUser(data)) {

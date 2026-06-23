@@ -131,7 +131,7 @@ const VOTE_STATS = new Set(["mostliked", "leastliked", "mostupvoted", "mostdownv
 const rankingCache = new Map<string, { data: RankRow[]; expiresAt: number }>();
 const CACHE_TTL = 10 * 60 * 1000;
 
-tenthingsStatsRoute.get("/list-rankings/:stat", async (req: Request, res: Response) => {
+tenthingsStatsRoute.get("/list-rankings/:stat", async (req: Request<{ stat: string }>, res: Response) => {
   const config = LIST_STAT_CONFIG[req.params.stat];
   if (!config) {
     res.status(404).json({ error: "Unknown stat" });

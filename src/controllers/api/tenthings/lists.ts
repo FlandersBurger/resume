@@ -111,7 +111,7 @@ tenthingsListsRoute.post("/random", async (_: Request, res: Response) => {
   }
 });
 
-tenthingsListsRoute.get("/:id", async (req: Request, res: Response) => {
+tenthingsListsRoute.get("/:id", async (req: Request<{ id: string }>, res: Response) => {
   const authorized = !!res.locals.isAuthorized;
   if (req.params.id === "names") {
     if (!authorized) return res.sendStatus(401);
@@ -128,7 +128,7 @@ tenthingsListsRoute.get("/:id", async (req: Request, res: Response) => {
   }
 });
 
-tenthingsListsRoute.post("/:id/blurbs/:type", async (req: Request, res: Response) => {
+tenthingsListsRoute.post("/:id/blurbs/:type", async (req: Request<{ id: string; type: string }>, res: Response) => {
   if (!res.locals.isAuthorized) res.sendStatus(401);
   else {
     let list = await List.findOne({ _id: req.params.id });
@@ -191,7 +191,7 @@ tenthingsListsRoute.post("/:id/blurbs/:type", async (req: Request, res: Response
   }
 });
 
-tenthingsListsRoute.get("/:id/report/:user", async (req: Request, res: Response) => {
+tenthingsListsRoute.get("/:id/report/:user", async (req: Request<{ id: string; user: string }>, res: Response) => {
   if (!res.locals.isAuthorized) res.sendStatus(401);
   else {
     const list = await List.findOne({ _id: req.params.id });
@@ -204,7 +204,7 @@ tenthingsListsRoute.get("/:id/report/:user", async (req: Request, res: Response)
   }
 });
 
-tenthingsListsRoute.put("/:id", async (req: Request, res: Response) => {
+tenthingsListsRoute.put("/:id", async (req: Request<{ id: string }>, res: Response) => {
   if (!res.locals.isAuthorized) res.sendStatus(401);
   else {
     const yesterday = moment().subtract(1, "days");
@@ -308,7 +308,7 @@ tenthingsListsRoute.post("/merge", async (req: Request, res: Response) => {
   }
 });
 
-tenthingsListsRoute.delete("/:id", async (req: Request, res: Response) => {
+tenthingsListsRoute.delete("/:id", async (req: Request<{ id: string }>, res: Response) => {
   if (!res.locals.isAuthorized) res.sendStatus(401);
   else {
     const list = await List.findOne({ _id: req.params.id });
@@ -336,7 +336,7 @@ tenthingsListsRoute.delete("/:id", async (req: Request, res: Response) => {
   }
 });
 
-tenthingsListsRoute.post("/:id/values", async (req: Request, res: Response) => {
+tenthingsListsRoute.post("/:id/values", async (req: Request<{ id: string }>, res: Response) => {
   if (!res.locals.isAuthorized) res.sendStatus(401);
   else {
     const list = await List.findOne({ _id: req.params.id });
@@ -359,47 +359,55 @@ tenthingsListsRoute.post("/:id/values", async (req: Request, res: Response) => {
   }
 });
 
-tenthingsListsRoute.put("/:id/values/:valueId", async (req: Request, res: Response) => {
-  if (!res.locals.isAuthorized) res.sendStatus(401);
-  else {
-    const list = await List.findOne({ _id: req.params.id });
-    if (!list) res.sendStatus(404);
+tenthingsListsRoute.put(
+  "/:id/values/:valueId",
+  async (req: Request<{ id: string; valueId: string }>, res: Response) => {
+    if (!res.locals.isAuthorized) res.sendStatus(401);
     else {
-      const value = list.values.find(({ _id }) => _id!.toString() === req.params.valueId);
-      if (!value) res.sendStatus(404);
-      else if (value.creator !== res.locals.user?._id && !res.locals.isAdmin) res.sendStatus(401);
+      const list = await List.findOne({ _id: req.params.id });
+      if (!list) res.sendStatus(404);
       else {
-        if (moment(list.modifyDate).diff(list.date, "days") > 1) {
-          bot.notifyAdmins(`<u>Value changed in "${list.name}"</u>\n<b>${value.value}</b> -> <b>${req.body.value}</b>`);
+        const value = list.values.find(({ _id }) => _id!.toString() === req.params.valueId);
+        if (!value) res.sendStatus(404);
+        else if (value.creator !== res.locals.user?._id && !res.locals.isAdmin) res.sendStatus(401);
+        else {
+          if (moment(list.modifyDate).diff(list.date, "days") > 1) {
+            bot.notifyAdmins(
+              `<u>Value changed in "${list.name}"</u>\n<b>${value.value}</b> -> <b>${req.body.value}</b>`,
+            );
+          }
+          Object.assign(value, req.body);
+          value.modifyDate = new Date();
+          list.modifyDate = new Date();
+          await list.save();
+          const updatedList = await List.findOne({ _id: req.params.id }).lean({ virtuals: true });
+          if (!updatedList) res.sendStatus(500);
+          else res.json(updatedList.values.find(({ _id }) => _id!.toString() === req.params.valueId));
         }
-        Object.assign(value, req.body);
-        value.modifyDate = new Date();
-        list.modifyDate = new Date();
-        await list.save();
-        const updatedList = await List.findOne({ _id: req.params.id }).lean({ virtuals: true });
-        if (!updatedList) res.sendStatus(500);
-        else res.json(updatedList.values.find(({ _id }) => _id!.toString() === req.params.valueId));
       }
     }
-  }
-});
+  },
+);
 
-tenthingsListsRoute.delete("/:id/values/:valueId", async (req: Request, res: Response) => {
-  if (!res.locals.isAuthorized) res.sendStatus(401);
-  else {
-    const list = await List.findOne({ _id: req.params.id });
-    if (!list) res.sendStatus(404);
+tenthingsListsRoute.delete(
+  "/:id/values/:valueId",
+  async (req: Request<{ id: string; valueId: string }>, res: Response) => {
+    if (!res.locals.isAuthorized) res.sendStatus(401);
     else {
-      const value = list.values.find(({ _id }) => _id!.toString() === req.params.valueId);
-      if (!value) res.sendStatus(404);
-      else if (value.creator !== res.locals.user?._id && !res.locals.isAdmin) res.sendStatus(401);
+      const list = await List.findOne({ _id: req.params.id });
+      if (!list) res.sendStatus(404);
       else {
-        await List.findByIdAndUpdate(req.params.id, { $pull: { values: { _id: req.params.valueId } } }).exec();
-        res.sendStatus(200);
+        const value = list.values.find(({ _id }) => _id!.toString() === req.params.valueId);
+        if (!value) res.sendStatus(404);
+        else if (value.creator !== res.locals.user?._id && !res.locals.isAdmin) res.sendStatus(401);
+        else {
+          await List.findByIdAndUpdate(req.params.id, { $pull: { values: { _id: req.params.valueId } } }).exec();
+          res.sendStatus(200);
+        }
       }
     }
-  }
-});
+  },
+);
 
 const parseQuery = (query: { [key: string]: string }) => {
   return Object.keys(query).reduce((params, key) => {
