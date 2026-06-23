@@ -235,7 +235,13 @@
     "skipDelay": "Waktu hingga daftar dilewati",
     "vetoDelay": "Waktu hingga lompatan baru diizinkan setelah diveto",
     "hintDelay": "Waktu hingga petunjuk baru diizinkan",
-    "corroborateBan": "Apakah ada yang setuju dengan {{user}} untuk melarang daftar \"{{list}}\"?"
+    "corroborateBan": "Apakah ada yang setuju dengan {{user}} untuk melarang daftar \"{{list}}\"?",
+    "gameStarted": "Sepuluh Hal dimulai",
+    "banListPrompt": "Apakah Anda ingin melarang \"{{list}}\" secara permanen dari game ini?",
+    "suggestionPrompt": "<b>SARAN</b>\nSilakan tambahkan saran Anda di pesan Anda berikutnya, {{name}}!",
+    "featurePrompt": "<b>FITUR</b>\nSilakan sarankan fitur Anda di pesan Anda berikutnya, {{name}}!",
+    "typoPrompt": "<b>KESALAHAN KETIK</b>\nSilakan beri tahu saya apa kesalahan ketiknya di pesan Anda berikutnya, {{name}}!\nSebutkan juga nama daftarnya jika kesalahan ketik tersebut bukan bagian dari: <i>\"{{list}}\"</i>",
+    "bugPrompt": "<b>BUG</b>\nSilakan berikan beberapa detail tentang apa yang salah di pesan Anda berikutnya, {{name}}!"
   },
   "warnings": {
     "minimum1Category": "Setidaknya 1 kategori diperlukan",
@@ -247,7 +253,17 @@
     "noSuggestion": "Kamu tidak menyarankan apa pun, {{name}}",
     "abuse": "{{name}}, Anda akan diblokir dari Ten Things jika Anda menyalahgunakan ini sekali lagi",
     "banned": "{{name}}, Anda diblokir dari Ten Things. Jangan ragu untuk mengajukan petisi pembatalan pemblokiran ke @FlandersBurger",
-    "alreadyRequested": "{{name}}, kamu sudah meminta daftar ini hari ini"
+    "alreadyRequested": "{{name}}, kamu sudah meminta daftar ini hari ini",
+    "noContact": "Saya tidak dapat menghubungi Anda di sini, {{name}}. Silakan bergabung dengan <a href=\"https://t.me/tenthings\">Supergrup Ten Things</a> dan ping admin di sana, atau hubungi saya langsung -> @FlandersBurger",
+    "thankYou": "Terima kasih, {{name}}",
+    "contactDirectly": "Silakan beri tahu saya langsung jika ada masalah dengan obrolan spesifik Anda -> @FlandersBurger",
+    "noListsForLanguage": "Tidak cukup daftar yang tersedia dalam bahasa pilihan Anda untuk membuat minigame berfungsi, default ke bahasa Inggris",
+    "noListsForCategory": "Tidak cukup daftar yang tersedia dalam kategori pilihan Anda untuk membuat minigame berfungsi, default ke semua daftar",
+    "tooManyHints": "Apa? Petunjuk lain? Aku akan mengabaikan permintaan itu saja",
+    "hintCooldown": "Tenang dengan petunjuknya, tunggu {{seconds}} detik lagi",
+    "playerNotFound": "Pemain tidak ditemukan",
+    "statsListNotFound": "Daftar tidak ditemukan",
+    "statUnknown": "Sesuatu"
   },
   "stats": {
     "stats": "Statistik",

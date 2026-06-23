@@ -233,7 +233,13 @@
     "topDailyScores": "<b>Top Araw-araw na mga Scores</b>",
     "dailyScoresWithLimit": "<b>Top {{limit}} Araw-araw na mga Scores</b>",
     "skipDelay": "Oras hanggang sa malaktawan ang isang listahan\n#___#\nOras hanggang ang isang bagong paglaktaw ay pinapayagan pagkatapos ma-veto\n#___#\nOras hanggang pinapayagan ang isang bagong pahiwatig\n#___#\n{{name}}, maba-ban ka sa Ten Things kung aabuso mo ito muli\n#___#\n{{name}}, pinagbawalan ka sa Ten Things. Huwag mag-atubiling magpetisyon ng unban sa @FlandersBurger",
-    "corroborateBan": "May sumasang-ayon ba sa {{user}} sa pagbabawal sa listahang \"{{list}}\"?\n#___#\nOras hanggang ang isang bagong paglaktaw ay pinapayagan pagkatapos ma-veto\n#___#\nOras hanggang pinapayagan ang isang bagong pahiwatig\n#___#\n{{name}}, ikaw ay pagbabawalan mula sa Sampung Bagay kung muli mo itong aabuso\n#___#\n{{name}}, pinagbawalan ka sa Ten Things. Huwag mag-atubiling magpetisyon ng unban sa @FlandersBurger"
+    "corroborateBan": "May sumasang-ayon ba sa {{user}} sa pagbabawal sa listahang \"{{list}}\"?\n#___#\nOras hanggang ang isang bagong paglaktaw ay pinapayagan pagkatapos ma-veto\n#___#\nOras hanggang pinapayagan ang isang bagong pahiwatig\n#___#\n{{name}}, ikaw ay pagbabawalan mula sa Sampung Bagay kung muli mo itong aabuso\n#___#\n{{name}}, pinagbawalan ka sa Ten Things. Huwag mag-atubiling magpetisyon ng unban sa @FlandersBurger",
+    "gameStarted": "Sampung Bagay ang Nagsimula",
+    "banListPrompt": "Gusto mo bang permanenteng i-ban si \"{{list}}\" sa larong ito?",
+    "suggestionPrompt": "<b>MUNGKAHI</b>\nPakidagdag ang iyong mungkahi sa iyong susunod na mensahe, {{name}}!",
+    "featurePrompt": "<b>FEATURE</b>\nPakimungkahi ang iyong feature sa iyong susunod na mensahe, {{name}}!",
+    "typoPrompt": "<b>TYPO</b>\nPakisabi sa akin kung ano ang typo sa iyong susunod na mensahe, {{name}}!\nBanggitin din ang pangalan ng listahan kung ang typo ay hindi bahagi ng: <i>\"{{list}}\"</i>",
+    "bugPrompt": "<b>BUG</b>\nPakibigay ng ilang detalye kung ano ang nangyaring mali sa iyong susunod na mensahe, {{name}}!"
   },
   "warnings": {
     "minimum1Category": "Kinakailangan ng hindi kukulangin sa 1 kategorya",
@@ -244,7 +250,17 @@
     "corroborateBanBySamePlayer": "Kumuha ng ibang tao upang kumpirmahin ang ban, {{name}}!",
     "noSuggestion": "Wala kang iminungkahing anuman, {{name}}",
     "abuse": "{{name}}, maba-ban ka sa Ten Things kung aabuso mo muli ang bot",
-    "alreadyRequested": "{{name}}, hiniling mo na ang listahang ito ngayon"
+    "alreadyRequested": "{{name}}, hiniling mo na ang listahang ito ngayon",
+    "noContact": "Hindi kita makontak dito, {{name}}. Sumali ka sa <a href=\"https://t.me/tenthings\">Ten Things Supergroup</a> at mag-ping sa admin doon, o direktang makipag-ugnayan sa akin -> @FlandersBurger",
+    "thankYou": "Salamat, {{name}}",
+    "contactDirectly": "Pakisabihan mo ako nang direkta kung may problema sa partikular mong chat -> @FlandersBurger",
+    "noListsForLanguage": "Hindi sapat ang mga listahang available sa mga napili mong wika para gumana ang isang minigame, default sa English",
+    "noListsForCategory": "Hindi sapat ang mga listahang available sa mga napili mong kategorya para gumana ang isang minigame, default sa lahat ng listahan",
+    "tooManyHints": "Ano? Isa pang pahiwatig? Hindi ko na lang papansinin ang kahilingang iyan",
+    "hintCooldown": "Kumalma ka sa mga pahiwatig, maghintay ng {{seconds}} segundo pa",
+    "playerNotFound": "Hindi natagpuan ang manlalaro",
+    "statsListNotFound": "Hindi natagpuan ang listahan",
+    "statUnknown": "Mayroon"
   },
   "stats": {
     "stats": "Estadistika",

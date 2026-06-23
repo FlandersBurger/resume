@@ -235,7 +235,13 @@
     "skipDelay": "Tiempo hasta que se omite una lista",
     "vetoDelay": "Tiempo hasta que se permite un nuevo salto después de haber sido vetado",
     "hintDelay": "Tiempo hasta que se permite una nueva pista",
-    "corroborateBan": "¿Alguien está de acuerdo con {{user}} en prohibir la lista \"{{list}}\"?"
+    "corroborateBan": "¿Alguien está de acuerdo con {{user}} en prohibir la lista \"{{list}}\"?",
+    "gameStarted": "Diez cosas comenzaron",
+    "banListPrompt": "¿Quieres prohibir permanentemente a \"{{list}}\" de este juego?",
+    "suggestionPrompt": "<b>SUGERENCIA</b>\nPor favor, añade tu sugerencia en tu próximo mensaje, {{name}}!",
+    "featurePrompt": "<b>FUNCIÓN</b>\nPor favor, sugiere tu función en tu próximo mensaje, {{name}}!",
+    "typoPrompt": "<b>ERROR TIPOGRÁFICO</b>\nPor favor, indícame cuál es el error tipográfico en tu próximo mensaje, {{name}}!\n\nMenciona también el nombre de la lista si el error tipográfico no forma parte de: <i>\"{{list}}\"</i>",
+    "bugPrompt": "<b>ERROR</b>\nPor favor, proporciona detalles sobre qué salió mal en tu próximo mensaje, {{name}}!"
   },
   "warnings": {
     "minimum1Category": "Se requiere un mínimo de 1 categoría",
@@ -247,7 +253,17 @@
     "noSuggestion": "No has sugerido nada, {{name}}",
     "abuse": "{{name}}, serás expulsado de Ten Things si vuelves a abusar de esto",
     "banned": "{{name}}, estás expulsado de Ten Things. No dudes en solicitar que se levante la prohibición a @FlandersBurger",
-    "alreadyRequested": "{{name}}, ya solicitaste esta lista hoy."
+    "alreadyRequested": "{{name}}, ya solicitaste esta lista hoy.",
+    "noContact": "No puedo comunicarme contigo aquí, {{name}}. Únete al <a href=\"https://t.me/tenthings\">Supergrupo de Ten Things</a> y menciona a un administrador allí, o contáctame directamente: @FlandersBurger",
+    "thankYou": "Gracias, {{name}}",
+    "contactDirectly": "Por favor, avísame directamente si el problema está en tu chat: @FlandersBurger",
+    "noListsForLanguage": "No hay suficientes listas disponibles en los idiomas seleccionados para que funcione el minijuego; se usará el inglés por defecto.",
+    "noListsForCategory": "No hay suficientes listas disponibles en las categorías seleccionadas para que funcione el minijuego; se usarán todas las listas por defecto.",
+    "tooManyHints": "¿Qué? ¿Otra pista? Voy a ignorar esa solicitud.",
+    "hintCooldown": "Tranquilízate con las pistas, espera {{seconds}} segundos más.",
+    "playerNotFound": "Jugador no encontrado.",
+    "statsListNotFound": "Lista no encontrada.",
+    "statUnknown": "Algo."
   },
   "stats": {
     "stats": "Estadísticas",

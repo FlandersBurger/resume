@@ -235,7 +235,13 @@
     "skipDelay": "Zeit bis zum Überspringen einer Liste",
     "vetoDelay": "Zeit bis nach einem Veto ein erneutes Überspringen erlaubt ist",
     "hintDelay": "Zeit bis ein neuer Hinweis erlaubt ist",
-    "corroborateBan": "Stimmt jemand {{user}} der Sperrliste \"{{list}}\" zu?"
+    "corroborateBan": "Stimmt jemand {{user}} der Sperrliste \"{{list}}\" zu?",
+    "gameStarted": "Zehn Dinge begannen",
+    "banListPrompt": "Möchtest du \"{{list}}\" dauerhaft von diesem Spiel verbannen?",
+    "suggestionPrompt": "<b>VORSCHLAG</b> Bitte füge deinen Vorschlag in deiner nächsten Nachricht hinzu, {{name}}!",
+    "featurePrompt": "<b>FUNKTION</b> Bitte schlage deine Funktion in deiner nächsten Nachricht vor, {{name}}!",
+    "typoPrompt": "<b>TIPPFEHLER</b> Bitte teile mir in deiner nächsten Nachricht mit, was der Tippfehler ist, {{name}}! Nenne auch den Namen der Liste, falls der Tippfehler nicht Teil von <i>\"{{list}}\"</i> ist.",
+    "bugPrompt": "<b>FEHLER</b> Bitte gib in deiner nächsten Nachricht Details darüber an, was schiefgelaufen ist, {{name}}!"
   },
   "warnings": {
     "minimum1Category": "Mindestens 1 Kategorie ist erforderlich",
@@ -247,7 +253,12 @@
     "noSuggestion": "Sie haben nichts vorgeschlagen, {{name}}",
     "abuse": "{{name}}, du wirst von Ten Things verbannt, wenn du dies erneut missbrauchst",
     "banned": "{{name}}, du bist von Ten Things verbannt. Du kannst gerne eine Aufhebung der Verbannung bei @FlandersBurger beantragen.",
-    "alreadyRequested": "{{name}}, Sie haben diese Liste bereits heute angefordert."
+    "alreadyRequested": "{{name}}, Sie haben diese Liste bereits heute angefordert.",
+    "noContact": "Ich kann dich hier nicht erreichen, {{name}}. Bitte tritt der <a href=\"https://t.me/tenthings\">Ten Things Supergruppe</a> bei und pinge dort einen Admin an oder kontaktiere mich direkt -> @FlandersBurger",
+    "thankYou": "Danke, {{name}}",
+    "contactDirectly": "Bitte gib mir direkt Bescheid, falls es ein Problem mit deinem Chat gibt -> @FlandersBurger",
+    "noListsForLanguage": "Es sind nicht genügend Listen in den von dir gewählten Sprachen verfügbar, um ein Minispiel zu starten. Es wird standardmäßig Englisch verwendet.",
+    "noListsForCategory": "Es sind nicht genügend Listen in den von dir gewählten Kategorien verfügbar, um ein Minispiel zu starten. Es werden standardmäßig alle Listen verwendet.\n\nWas? Noch ein Hinweis? Ich ignoriere diese Anfrage einfach.\n#__# Beruhige dich mit den Hinweisen, warte {{seconds}} Sekunden.\n#__# Spieler nicht gefunden.\n#__# Liste nicht gefunden.\n#__# Etwas."
   },
   "stats": {
     "stats": "Statistiken",

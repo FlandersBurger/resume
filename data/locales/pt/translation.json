@@ -235,7 +235,13 @@
     "skipDelay": "Tempo até que uma lista seja pulada",
     "vetoDelay": "Tempo até que um novo pulo seja permitido após ser vetado",
     "hintDelay": "Tempo até que uma nova dica seja permitida",
-    "corroborateBan": "Alguém concorda com {{user}} para banir a lista \"{{list}}\"?"
+    "corroborateBan": "Alguém concorda com {{user}} para banir a lista \"{{list}}\"?",
+    "gameStarted": "Dez Coisas começou",
+    "banListPrompt": "Você quer banir permanentemente \"{{list}}\" deste jogo?",
+    "suggestionPrompt": "<b>SUGESTÃO</b>\nPor favor, adicione sua sugestão na sua próxima mensagem, {{name}}!",
+    "featurePrompt": "<b>RECURSO</b>\nPor favor, sugira seu recurso na sua próxima mensagem, {{name}}!",
+    "typoPrompt": "<b>ERRO DE DIGITAÇÃO</b>\nPor favor, me informe qual é o erro de digitação na sua próxima mensagem, {{name}}!\n\nMencione também o nome da lista se o erro de digitação não fizer parte de: <i>\"{{list}}\"</i>",
+    "bugPrompt": "<b>BUG</b>\nPor favor, forneça alguns detalhes sobre o que deu errado na sua próxima mensagem, {{name}}!"
   },
   "warnings": {
     "minimum1Category": "É necessário pelo menos 1 categoria",
@@ -247,7 +253,17 @@
     "noSuggestion": "Você não sugeriu nada, {{name}}",
     "abuse": "{{name}}, você será banido do Ten Things se abusar disso mais uma vez",
     "banned": "{{name}}, você foi banido do Ten Things. Sinta-se à vontade para fazer uma petição para desbanir @FlandersBurger",
-    "alreadyRequested": "{{name}}, você já solicitou esta lista hoje"
+    "alreadyRequested": "{{name}}, você já solicitou esta lista hoje",
+    "noContact": "Não consigo te contatar por aqui, {{name}}. Por favor, entre no Supergrupo <a href=\"https://t.me/tenthings\">Ten Things</a> e mencione um administrador lá, ou entre em contato comigo diretamente -> @FlandersBurger",
+    "thankYou": "Obrigado, {{name}}",
+    "contactDirectly": "Por favor, me avise diretamente se o problema for com o seu chat específico -> @FlandersBurger",
+    "noListsForLanguage": "Não há listas suficientes disponíveis nos idiomas escolhidos para que um minijogo funcione. O padrão será o inglês.",
+    "noListsForCategory": "Não há listas suficientes disponíveis nas categorias escolhidas para que um minijogo funcione. O padrão será todas as listas.",
+    "tooManyHints": "O quê? Outra dica? Vou ignorar esse pedido",
+    "hintCooldown": "Calma com as dicas, espere mais {{seconds}} segundos",
+    "playerNotFound": "Jogador não encontrado",
+    "statsListNotFound": "Lista não encontrada",
+    "statUnknown": "Algo"
   },
   "stats": {
     "stats": "Estatísticas",

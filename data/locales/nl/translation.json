@@ -235,7 +235,13 @@
     "skipDelay": "Tijd totdat een lijst wordt overgeslagen",
     "vetoDelay": "Tijd totdat een nieuwe overslaan is toegestaan na veto",
     "hintDelay": "Tijd totdat een nieuwe hint is toegestaan",
-    "corroborateBan": "Is iemand het eens met {{user}} wat betreft de banlijst \"{{list}}\"?"
+    "corroborateBan": "Is iemand het eens met {{user}} wat betreft de banlijst \"{{list}}\"?",
+    "gameStarted": "Tien dingen begonnen",
+    "banListPrompt": "Wil je \"{{list}}\" permanent uit dit spel bannen?",
+    "suggestionPrompt": "<b>SUGGESTIE</b>\nVoeg je suggestie toe in je volgende bericht, {{name}}!",
+    "featurePrompt": "<b>FUNCTIE</b>\nStel je functie voor in je volgende bericht, {{name}}!",
+    "typoPrompt": "<b>TYPFOUT</b>\nLaat me in je volgende bericht weten wat de typfout is, {{name}}!\n\nVermeld ook de lijstnaam als de typfout geen deel uitmaakt van: <i>\"{{list}}\"</i>",
+    "bugPrompt": "<b>BUG</b>\nGeef in je volgende bericht wat meer details over wat er mis is gegaan, {{name}}!"
   },
   "warnings": {
     "minimum1Category": "Minimaal 1 categorie is vereist",
@@ -247,7 +253,17 @@
     "noSuggestion": "Je hebt niets gesuggereerd, {{name}}",
     "abuse": "{{name}}, je wordt verbannen van Ten Things als je dit nogmaals misbruikt",
     "banned": "{{name}}, je bent verbannen van Ten Things. Je kunt een petitie indienen aan @FlandersBurger",
-    "alreadyRequested": "{{name}}, je hebt deze lijst vandaag al aangevraagd"
+    "alreadyRequested": "{{name}}, je hebt deze lijst vandaag al aangevraagd",
+    "noContact": "Ik kan je hier niet bereiken, {{name}}. Word lid van de <a href=\"https://t.me/tenthings\">Ten Things Supergroep</a> en tag daar een beheerder, of neem rechtstreeks contact met me op -> @FlandersBurger",
+    "thankYou": "Bedankt, {{name}}",
+    "contactDirectly": "Laat het me direct weten als het een probleem is met jouw specifieke chat -> @FlandersBurger",
+    "noListsForLanguage": "Er zijn niet genoeg lijsten beschikbaar in de door jou gekozen talen om een minigame te laten werken, standaard ingesteld op Engels",
+    "noListsForCategory": "Er zijn niet genoeg lijsten beschikbaar in de door jou gekozen categorieën om een minigame te laten werken, standaard ingesteld op alle lijsten",
+    "tooManyHints": "Wat? Nog een hint? Ik negeer dat verzoek gewoon",
+    "hintCooldown": "Rustig aan met de hints, wacht nog {{seconds}} seconden",
+    "playerNotFound": "Speler niet gevonden",
+    "statsListNotFound": "Lijst niet gevonden",
+    "statUnknown": "Iets"
   },
   "stats": {
     "stats": "Statistieken",

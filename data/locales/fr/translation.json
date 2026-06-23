@@ -235,7 +235,13 @@
     "skipDelay": "Temps avant qu'une liste soit ignorée",
     "vetoDelay": "Temps avant qu'un nouveau saut soit autorisé après avoir été rejeté",
     "hintDelay": "Temps avant qu'un nouvel indice soit autorisé",
-    "corroborateBan": "Quelqu'un est-il d'accord avec {{user}} pour interdire la liste \"{{list}}\"?"
+    "corroborateBan": "Quelqu'un est-il d'accord avec {{user}} pour interdire la liste \"{{list}}\"?",
+    "gameStarted": "Dix choses ont commencé",
+    "banListPrompt": "Souhaitez-vous bannir définitivement « {{list}} » de ce jeu ?",
+    "suggestionPrompt": "<b>SUGGESTION</b>\nVeuillez ajouter votre suggestion dans votre prochain message, {{name}} !",
+    "featurePrompt": "<b>FONCTIONNALITÉ</b>\nVeuillez suggérer votre fonctionnalité dans votre prochain message, {{name}} !",
+    "typoPrompt": "<b>FAUTE DE FRAPPE</b>\nVeuillez m'indiquer la faute de frappe dans votre prochain message, {{name}} !\n\nMentionnez également le nom de la liste si la faute de frappe ne fait pas partie de : <i>\"{{list}}\"</i>",
+    "bugPrompt": "<b>BUG</b>\nVeuillez fournir des détails sur le problème rencontré dans votre prochain message, {{name}} !"
   },
   "warnings": {
     "minimum1Category": "Un minimum d'une catégorie est requis",
@@ -247,7 +253,14 @@
     "noSuggestion": "Vous n'avez rien suggéré, {{name}}",
     "abuse": "{{name}}, vous serez banni de Ten Things si vous abusez encore une fois de ce service",
     "banned": "{{name}}, vous êtes banni de Ten Things. N'hésitez pas à demander une levée de bannissement à @FlandersBurger",
-    "alreadyRequested": "{{name}}, vous avez déjà demandé cette liste aujourd'hui."
+    "alreadyRequested": "{{name}}, vous avez déjà demandé cette liste aujourd'hui.",
+    "noContact": "Je ne parviens pas à vous joindre ici, {{name}}. Veuillez rejoindre le <a href=\"https://t.me/tenthings\">Supergroupe Ten Things</a> et mentionner un administrateur, ou contactez-moi directement : @FlandersBurger",
+    "thankYou": "Merci, {{name}}\n#__# Veuillez me signaler directement tout problème lié à votre chat : @FlandersBurger",
+    "contactDirectly": "Nombre insuffisant de listes dans les langues choisies pour le fonctionnement du mini-jeu ; utilisation de l'anglais par défaut.",
+    "noListsForLanguage": "Nombre insuffisant de listes dans les catégories choisies pour le fonctionnement du mini-jeu ; utilisation de toutes les listes par défaut.",
+    "noListsForCategory": "Quoi ? Un autre indice ? Je vais simplement ignorer cette requête.\n#__# Du calme avec les indices, attendez {{seconds}} secondes de plus.",
+    "tooManyHints": "Joueur introuvable.",
+    "hintCooldown": "Liste introuvable.\n#__#"
   },
   "stats": {
     "stats": "Statistiques",

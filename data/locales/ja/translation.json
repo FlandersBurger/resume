@@ -239,7 +239,13 @@
     "dailyScoresWithLimit": "<b>デイリースコア上位{{limit}}</b>",
     "skipDelay": "リストがスキップされるまでの時間",
     "vetoDelay": "拒否された後、再度スキップが許可されるまでの時間",
-    "hintDelay": "新しいヒントが許可されるまでの時間"
+    "hintDelay": "新しいヒントが許可されるまでの時間",
+    "gameStarted": "10個の項目が開始されました",
+    "banListPrompt": "「{{list}}」をこのゲームから永久追放しますか？",
+    "suggestionPrompt": "<b>提案</b>\n次のメッセージで提案をお願いします{{name}}！",
+    "featurePrompt": "<b>機能</b>\n次のメッセージで機能の提案をお願いします{{name}}！",
+    "typoPrompt": "<b>誤字</b>\n次のメッセージで誤字の内容をお知らせください{{name}}！\n誤字が<i>「{{list}}」「</i>」に含まれていない場合は、リスト名も記載してください。",
+    "bugPrompt": "<b>バグ</b>\n次のメッセージで、何が問題だったのか詳細をお知らせください{{name}}！"
   },
   "warnings": {
     "minimum1Category": "最低1つのカテゴリが必要です",
@@ -251,7 +257,17 @@
     "alreadyInQueue": "<b>{{list}}</b> は既にキューに登録されています。{{name}}",
     "unfoundList": "このリストは既に存在しません。",
     "corroborateBanBySamePlayer": "他の人にアカウント停止の確認を依頼してください。{{name}}！\n\n\n\n（※※※※※※※）\n\n（※",
-    "noSuggestion": "何も提案してくれなかったね、{{name}}"
+    "noSuggestion": "何も提案してくれなかったね、{{name}}",
+    "noContact": "{{name}}、こちらでは連絡が取れません。<a href=\"https://t.me/tenthings\">Ten Things Supergroup</a>に参加して管理者にメンションするか、直接私に連絡してください -> @FlandersBurger",
+    "thankYou": "ありがとうございます、{{name}}",
+    "contactDirectly": "特定のチャットに問題がある場合は、直接私に知らせてください -> @FlandersBurger",
+    "noListsForLanguage": "選択した言語でミニゲームを実行するのに十分なリストがないため、英語にデフォルト設定されます。",
+    "noListsForCategory": "選択したカテゴリでミニゲームを実行するのに十分なリストがないため、すべてのリストにデフォルト設定されます。",
+    "tooManyHints": "何？またヒント？そのリクエストは無視します",
+    "hintCooldown": "ヒントは落ち着いて、あと {{seconds}}秒待ってください",
+    "playerNotFound": "プレイヤーが見つかりません",
+    "statsListNotFound": "リストが見つかりません",
+    "statUnknown": "何か"
   },
   "stats": {
     "stats": "統計情報",
