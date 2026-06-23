@@ -239,7 +239,13 @@
     "dailyScoresWithLimit": "<b>Top {{limit}} Daily Scores</b>",
     "skipDelay": "Time until a list is skipped",
     "vetoDelay": "Time until a new skip is allowed after being vetoed",
-    "hintDelay": "Time until a new hint is allowed"
+    "hintDelay": "Time until a new hint is allowed",
+    "gameStarted": "Ten Things started",
+    "banListPrompt": "Do you want to permanently ban \"{{list}}\" from this game?",
+    "suggestionPrompt": "<b>SUGGESTION</b>\nPlease add your suggestion in your next message, {{name}}!",
+    "featurePrompt": "<b>FEATURE</b>\nPlease suggest your feature in your next message, {{name}}!",
+    "typoPrompt": "<b>TYPO</b>\nPlease let me know what the typo is in your next message, {{name}}!\nMention the list name too if the typo is not part of: <i>\"{{list}}\"</i>",
+    "bugPrompt": "<b>BUG</b>\nPlease provide some details as to what went wrong in your next message, {{name}}!"
   },
   "warnings": {
     "minimum1Category": "A minimum of 1 category is required",
@@ -251,7 +257,17 @@
     "alreadyInQueue": "<b>{{list}}</b> is already in the queue, {{name}}",
     "unfoundList": "This list no longer exists",
     "corroborateBanBySamePlayer": "Get someone else to confirm the ban, {{name}}!",
-    "noSuggestion": "You didn't suggest anything, {{name}}"
+    "noSuggestion": "You didn't suggest anything, {{name}}",
+    "noContact": "I'm unable to reach you here, {{name}}. Please join the <a href=\"https://t.me/tenthings\">Ten Things Supergroup</a> and ping an admin there, or contact me directly -> @FlandersBurger",
+    "thankYou": "Thank you, {{name}}",
+    "contactDirectly": "Please let me know directly if it's an issue with your specific chat -> @FlandersBurger",
+    "noListsForLanguage": "Not enough lists available in your chosen languages to make a minigame work, defaulting to English",
+    "noListsForCategory": "Not enough lists available in your chosen categories to make a minigame work, defaulting to all lists",
+    "tooManyHints": "What? Another hint? I'm just gonna ignore that request",
+    "hintCooldown": "Calm down with the hints, wait {{seconds}} more seconds",
+    "playerNotFound": "Player not found",
+    "statsListNotFound": "List not found",
+    "statUnknown": "Something"
   },
   "stats": {
     "stats": "Stats",

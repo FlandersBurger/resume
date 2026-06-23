@@ -259,7 +259,7 @@ export const getStats = async (game: IGame, data: string, requestor?: string) =>
     case "p":
       const player = await Player.findOne({ game: game._id, id: _id });
       if (!player) {
-        game.provider.message(game, "Player not found");
+        game.provider.message(game, i18n(game.settings.language, "warnings.playerNotFound"));
       } else {
         game.provider.message(game, getPlayerStats(player, requestor));
       }
@@ -269,7 +269,7 @@ export const getStats = async (game: IGame, data: string, requestor?: string) =>
         _id: _id,
       }).populate("creator");
       if (!gameList) {
-        game.provider.message(game, "List not found");
+        game.provider.message(game, i18n(game.settings.language, "warnings.statsListNotFound"));
       } else {
         game.provider.message(game, getListStats(game.settings.language, gameList, requestor));
       }
@@ -456,7 +456,7 @@ export const getStats = async (game: IGame, data: string, requestor?: string) =>
       );
       break;
     default:
-      game.provider.message(game, "Something");
+      game.provider.message(game, i18n(game.settings.language, "warnings.statUnknown"));
   }
 };
 

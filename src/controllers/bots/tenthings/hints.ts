@@ -4,6 +4,7 @@ import { IPlayer } from "@models/tenthings/player";
 import { parseSymbols, conceal, concealMiddle, SPECIAL_CHARACTERS } from "@utils/string-helpers";
 import uniq from "lodash/uniq";
 import { logHint } from "./lists";
+import i18n from "@root/i18n";
 
 export const MAX_HINTS = 6;
 const VOWELS = "aeiouAEIOUàèìòùÀÈÌÒÙáéíóúýÁÉÍÓÚÝâêîôûÂÊÎÔÛãñõÃÑÕäëïöüÿÄËÏÖÜŸçÇßØøÅåÆæœ";
@@ -29,9 +30,12 @@ export const processHint = async (
     (type === GameType.MAINGAME && game.hints >= MAX_HINTS) ||
     (type !== GameType.MAINGAME && game[type].hints >= MAX_HINTS)
   ) {
-    game.provider.message(game, "What? Another hint? I'm just gonna ignore that request");
+    game.provider.message(game, i18n(game.settings.language, "warnings.tooManyHints"));
   } else if (hintCache[game._id.toString()] && hintCache[game._id.toString()] > 0) {
-    game.provider.message(game, `Calm down with the hints, wait ${hintCache[game._id.toString()]} more seconds`);
+    game.provider.message(
+      game,
+      i18n(game.settings.language, "warnings.hintCooldown", { seconds: hintCache[game._id.toString()] }),
+    );
   } else {
     if (player) {
       if (player.hints) player.hints++;

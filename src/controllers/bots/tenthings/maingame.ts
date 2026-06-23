@@ -140,7 +140,7 @@ export const activate = async (game: HydratedDocument<IGame>, save = false) => {
   if (!game.enabled) {
     game.lastPlayDate = moment().toDate();
     game.enabled = true;
-    game.provider.message(game, "Ten Things started");
+    game.provider.message(game, i18n(game.settings.language, "sentences.gameStarted"));
     try {
       await game.validate();
     } catch (err) {

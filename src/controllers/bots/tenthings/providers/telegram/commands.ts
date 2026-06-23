@@ -119,10 +119,7 @@ export const evaluate = async (msg: TelegramMessage, game: HydratedDocument<IGam
     }
     switch (command) {
       case Command.Error:
-        game.provider.message(
-          game,
-          "Please let me know directly if it's an issue with your specific chat -> @FlandersBurger",
-        );
+        game.provider.message(game, i18n(game.settings.language, "warnings.contactDirectly"));
         const chatLink = await bot.exportChatInviteLink(game.telegramChannel);
         bot.notifyAdmins(`Error reported in ${game.telegramChatId}: \n${msg.text}\n\n${chatLink}`);
         break;

@@ -84,7 +84,7 @@ export const discord: Provider = {
     bot.queueMessage(game.discordChannel, message);
     bot.sendMessageWithComponents(
       game.discordChannel,
-      `Ban "${game.list.name}" from this game?`,
+      i18n(game.settings.language, "sentences.banListPrompt", { list: game.list.name }),
       banListKeyboard(game, game.list),
     );
   },

@@ -435,7 +435,7 @@ class TelegramBot {
     }
   };
 
-  public getChat = async (channel: Channel): Promise<string> => {
+  public getChat = async (channel: Channel): Promise<string | null> => {
     const url = `${bot.baseUrl}/getChat?chat_id=${channel.chat}`;
     try {
       const { data } = await httpClient().get(encodeURI(url));
@@ -450,7 +450,7 @@ class TelegramBot {
       } else {
         this.errorHandler(channel, "Get chat", error);
       }
-      return `Chat not found: ${channel} - ${error.response.data.error_code}`;
+      return null;
     }
     return "";
   };

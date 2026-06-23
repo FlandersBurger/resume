@@ -78,7 +78,7 @@ export const telegram: Provider = {
     bot.queueMessage(game.telegramChannel, message);
     bot.sendKeyboard(
       game.telegramChannel,
-      `Experimental feature to permanently ban list from game\nDo you want to ban "${game.list.name}"`,
+      i18n(game.settings.language, "sentences.banListPrompt", { list: game.list.name }),
       banListKeyboard(game, game.list),
     );
   },

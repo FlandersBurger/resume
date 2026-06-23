@@ -54,10 +54,7 @@ export const evaluate = async (msg: DiscordMessage, game: HydratedDocument<IGame
   if (command) {
     switch (command) {
       case Command.Error:
-        game.provider.message(
-          game,
-          "Please let me know directly if it's an issue with your specific chat -> @FlandersBurger",
-        );
+        game.provider.message(game, i18n(game.settings.language, "warnings.contactDirectly"));
         bot.notifyAdmin(`Error reported in Discord channel ${msg.channelId}: \n${msg.text}`);
         break;
       case Command.Intro:

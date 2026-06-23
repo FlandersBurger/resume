@@ -12,6 +12,7 @@ import { IPlayer } from "@models/tenthings/player";
 import { Guess, getAnswerScore } from "./guesses";
 import { IMinigame } from "@models/tenthings/minigame";
 import { parseSymbols } from "@utils/string-helpers";
+import i18n from "@root/i18n";
 
 export const createMinigame = async (game: HydratedDocument<IGame>) => {
   const availableLanguages =
@@ -25,21 +26,13 @@ export const createMinigame = async (game: HydratedDocument<IGame>) => {
       categories: { $nin: game.disabledCategories },
       language: "EN",
     });
-    if (minigames.length > 0)
-      game.provider.message(
-        game,
-        "Not enough lists available in your chosen languages to make a minigame work, defaulting to English",
-      );
+    if (minigames.length > 0) game.provider.message(game, i18n(game.settings.language, "warnings.noListsForLanguage"));
   }
   if (minigames.length === 0) {
     minigames = await getMinigames({
       language: "EN",
     });
-    if (minigames.length > 0)
-      game.provider.message(
-        game,
-        "Not enough lists available in your chosen categories to make a minigame work, defaulting to all lists",
-      );
+    if (minigames.length > 0) game.provider.message(game, i18n(game.settings.language, "warnings.noListsForCategory"));
   }
   let minigame = minigames[Math.floor(Math.random() * minigames.length)];
 
