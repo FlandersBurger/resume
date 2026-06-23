@@ -157,7 +157,7 @@ class TelegramBot {
     });
   };
 
-  private errorHandler = (channel: Channel, source: string, error: any, message?: string) => {
+  private errorHandler = (channel: Channel, source: string, error: any, message?: string, requeue?: () => void) => {
     const reason = error?.response?.data?.description;
     const isAdminChat = channel.chat === parseInt(process.env.MASTER_CHAT || "");
 
@@ -187,7 +187,8 @@ class TelegramBot {
           else console.log(`${channel.chat} - Pausing queue for ${timeout} seconds due to too many requests`);
           setTimeout(this.resumeQueue, timeout * 1000);
         }
-        if (message) this.queueMessage(channel, message);
+        if (requeue) requeue();
+        else if (message) this.queueMessage(channel, message);
       } else if (
         error.response?.data?.description ===
         `Bad Request: invalid file HTTP URL specified: Wrong port number specified in the URL`
@@ -203,6 +204,38 @@ class TelegramBot {
       console.error(`${source} error`, error);
     } else {
       console.error(`Admin chat ${source} error (${error.code}):`, error.message);
+    }
+  };
+
+  private handleSendError = (
+    channel: Channel,
+    source: string,
+    error: any,
+    content: string,
+    retries: number,
+    onRetry: (retries: number) => void,
+    onRequeue: () => void,
+  ) => {
+    if (error.response) {
+      if (error.response.data.description === "Bad Gateway") {
+        if (retries < 3) {
+          setTimeout(() => onRetry(retries + 1), (retries + 1) * 500);
+        } else {
+          this.errorHandler(channel, `${source} (failed 3 times)`, error, content, onRequeue);
+        }
+      } else {
+        this.errorHandler(channel, source, error, content, onRequeue);
+      }
+    } else {
+      // Network error (ETIMEDOUT, ECONNABORTED) — retry with exponential backoff
+      if (retries < 6) {
+        setTimeout(() => onRetry(retries + 1), Math.pow(2, retries) * 1000);
+      } else {
+        console.error(
+          `${source} gave up after ${retries} retries (${error.code}) for channel ${channel.chat}`,
+          error.message,
+        );
+      }
     }
   };
 
@@ -240,44 +273,74 @@ class TelegramBot {
     }
   };
 
+  private buildMessageUrl = (
+    endpoint: string,
+    channel: Channel,
+    payload: string,
+    options: { replyMessageId?: string; replyMarkup?: ReplyMarkup } = {},
+  ): string => {
+    let url = `${this.baseUrl}/${endpoint}?chat_id=${channel.chat}&disable_notification=true&${payload}`;
+    if (channel.topic) url += `&message_thread_id=${channel.topic}`;
+    if (options.replyMessageId) {
+      url += `&reply_markup=${JSON.stringify({ force_reply: true, selective: true })}`;
+      url += `&reply_parameters=${JSON.stringify({ message_id: options.replyMessageId, allow_sending_without_reply: true })}`;
+    }
+    if (options.replyMarkup) url += `&reply_markup=${JSON.stringify(options.replyMarkup)}`;
+    return url;
+  };
+
   public sendMessage = async (
     channel: Channel,
     message: string,
     options: { replyMessageId?: string; replyMarkup?: ReplyMarkup } = {},
     retries: number = 0,
   ) => {
-    const { replyMessageId, replyMarkup } = options;
-    let url = `${this.baseUrl}/sendMessage?chat_id=${channel.chat}&disable_notification=true&parse_mode=html&text=${encodeURIComponent(message)}`;
-    if (channel.topic) url += `&message_thread_id=${channel.topic}`;
-    if (replyMessageId) {
-      url += `&reply_markup=${JSON.stringify({ force_reply: true, selective: true })}`;
-      url += `&reply_parameters=${JSON.stringify({ message_id: replyMessageId, allow_sending_without_reply: true })}`;
-    }
-    if (replyMarkup) url += `&reply_markup=${JSON.stringify(replyMarkup)}`;
+    const url = this.buildMessageUrl(
+      "sendMessage",
+      channel,
+      `parse_mode=html&text=${encodeURIComponent(message)}`,
+      options,
+    );
     httpClient()
       .get(url)
-      .catch((error) => {
-        if (error.response) {
-          if (error.response.data.description === "Bad Gateway") {
-            if (retries < 3) {
-              setTimeout(() => this.sendMessage(channel, message, options, retries + 1), (retries + 1) * 500);
-            } else {
-              this.errorHandler(channel, "Send message (failed 3 times)", error, message);
-            }
-          } else this.errorHandler(channel, "Send message", error, message);
-        } else {
-          // Network error (ETIMEDOUT, ECONNABORTED) — retry with exponential backoff, silently drop after max retries
-          if (retries < 6) {
-            const delay = Math.pow(2, retries) * 1000;
-            setTimeout(() => this.sendMessage(channel, message, options, retries + 1), delay);
-          } else {
-            console.error(
-              `sendMessage gave up after ${retries} retries (${error.code}) for channel ${channel.chat}`,
-              error.message,
-            );
-          }
-        }
-      });
+      .catch((error) =>
+        this.handleSendError(
+          channel,
+          "Send message",
+          error,
+          message,
+          retries,
+          (r) => this.sendMessage(channel, message, options, r),
+          () => this.queueMessage(channel, message),
+        ),
+      );
+  };
+
+  public sendRichMessage = async (
+    channel: Channel,
+    html: string,
+    options: { replyMessageId?: string; replyMarkup?: ReplyMarkup } = {},
+    retries: number = 0,
+  ) => {
+    const url = this.buildMessageUrl(
+      "sendRichMessage",
+      channel,
+      `rich_message=${encodeURIComponent(JSON.stringify({ html }))}`,
+      options,
+    );
+    httpClient()
+      .get(url)
+      .catch((error) =>
+        this.handleSendError(
+          channel,
+          "Send rich message",
+          error,
+          html,
+          retries,
+          (r) => this.sendRichMessage(channel, html, options, r),
+          () => this.queueRichMessage(channel, html),
+        ),
+      );
   };
 
   public deleteMessage = async (channel: Channel, message_id: string) => {
@@ -291,6 +354,13 @@ class TelegramBot {
 
   public queueMessage = async (channel: Channel, message: string) => {
     chatQueue.add("", { channel, message, action: "sendMessage", chat: channel.chat }, {});
+    if (this.timeoutUntil && moment().isAfter(this.timeoutUntil)) {
+      this.resumeQueue();
+    }
+  };
+
+  public queueRichMessage = async (channel: Channel, html: string) => {
+    chatQueue.add("", { channel, html, action: Actions.SendRichMessage, chat: channel.chat }, {});
     if (this.timeoutUntil && moment().isAfter(this.timeoutUntil)) {
       this.resumeQueue();
     }
@@ -652,12 +722,14 @@ const bot = new TelegramBot(process.env.TELEGRAM_TOKEN!);
 
 enum Actions {
   SendMessage = "sendMessage",
+  SendRichMessage = "sendRichMessage",
   EditKeyboard = "editKeyboard",
   EditMessage = "editMessage",
 }
 
 type QueueData =
   | { channel: Channel; action: Actions.SendMessage; message: string }
+  | { channel: Channel; action: Actions.SendRichMessage; html: string }
   | { channel: Channel; action: Actions.EditKeyboard; message_id: string; keyboard: Keyboard }
   | { channel: Channel; action: Actions.EditMessage; message_id: string; message: string; keyboard?: Keyboard };
 
@@ -669,6 +741,9 @@ globalQueue.process(async ({ data }: { data: QueueData }) => {
   switch (data.action) {
     case "sendMessage":
       bot.sendMessage(data.channel, data.message);
+      break;
+    case "sendRichMessage":
+      bot.sendRichMessage(data.channel, data.html);
       break;
     case "editKeyboard":
       bot.editKeyboard(data.channel, data.message_id, data.keyboard!);
