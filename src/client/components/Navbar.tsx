@@ -223,6 +223,11 @@ export function Navbar() {
                   <Link to="/tenthings-admin">Admin</Link>
                 </li>
               )}
+              {isAdmin && (
+                <li>
+                  <Link to="/tenthings-sass">Sass</Link>
+                </li>
+              )}
             </DrawerGroup>
           ) : (
             <li>
@@ -304,6 +309,11 @@ export function Navbar() {
                   {isAdmin && (
                     <li>
                       <Link to="/tenthings-admin">Admin</Link>
+                    </li>
+                  )}
+                  {isAdmin && (
+                    <li>
+                      <Link to="/tenthings-sass">Sass</Link>
                     </li>
                   )}
                 </Dropdown>

@@ -1,6 +1,14 @@
 import chalk from "chalk";
 import { Connection, createConnection } from "mongoose";
 import { createTunnel } from "tunnel-ssh";
+import dns from "dns";
+
+// Some machines report a loopback (127.0.0.1) DNS server to Node even though the OS
+// resolver itself works fine, which breaks mongodb+srv:// lookups with ECONNREFUSED.
+// Force a known-good resolver so SRV polling doesn't depend on that detection.
+if (dns.getServers().every((server) => server === "127.0.0.1" || server === "::1")) {
+  dns.setServers(["1.1.1.1", "8.8.8.8"]);
+}
 
 const connections: { [key: string]: Connection } = {};
 

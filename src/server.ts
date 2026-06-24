@@ -23,6 +23,7 @@ import { tenthingsPauseRoute } from "@api/tenthings/pause";
 import { tenthingsPlayersRoute } from "@api/tenthings/players";
 import { tenthingsStatsRoute } from "@api/tenthings/stats";
 import { tenthingsSearchRoute } from "@api/tenthings/search";
+import { tenthingsSassRoute } from "@api/tenthings/sass";
 import { usersRoute } from "@api/users";
 import { tenthingsTelegramBotRoute } from "@api/tenthings/telegram";
 import { initDiscordBot } from "@api/tenthings/discord";
@@ -61,6 +62,7 @@ app.use("/api/tenthings/pause", tenthingsPauseRoute);
 app.use("/api/tenthings/players", tenthingsPlayersRoute);
 app.use("/api/tenthings/stats", tenthingsStatsRoute);
 app.use("/api/tenthings/search", tenthingsSearchRoute);
+app.use("/api/tenthings/sass", tenthingsSassRoute);
 app.use("/api/tenthings/web", tenthingsWebBotRoute);
 
 app.use("/bots/tenthings", tenthingsTelegramBotRoute);

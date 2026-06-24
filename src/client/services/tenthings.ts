@@ -242,6 +242,37 @@ export async function getLowQualityLists() {
   return data;
 }
 
+export interface SassEntry {
+  _id: string;
+  label: string;
+  triggers: string[];
+  requiresBotMention: boolean;
+  responses: string[];
+  enabled: boolean;
+  order: number;
+  date?: string;
+  modifyDate?: string;
+}
+
+export async function getSass() {
+  const { data } = await http.get<SassEntry[]>("/api/tenthings/sass");
+  return data;
+}
+
+export async function createSass(entry: Partial<SassEntry>) {
+  const { data } = await http.post<SassEntry>("/api/tenthings/sass", entry);
+  return data;
+}
+
+export async function updateSass(entry: SassEntry) {
+  const { data } = await http.put<SassEntry>(`/api/tenthings/sass/${entry._id}`, entry);
+  return data;
+}
+
+export async function deleteSass(id: string) {
+  await http.delete(`/api/tenthings/sass/${id}`);
+}
+
 export async function getListRanking(
   stat: ListStatKey,
   options: { language?: string[]; categories?: string[]; creator?: string } = {},
