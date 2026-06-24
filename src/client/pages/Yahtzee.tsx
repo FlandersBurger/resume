@@ -155,12 +155,9 @@ const Panel = styled.div`
 
 const DiceRow = styled.div`
   display: flex;
-  gap: 12px;
+  gap: 8px;
   justify-content: center;
   margin-bottom: 16px;
-  @media (max-width: 420px) {
-    gap: 8px;
-  }
 `;
 
 const shake = keyframes`
@@ -170,15 +167,17 @@ const shake = keyframes`
 `;
 
 const DieWrap = styled.div<{ $held: boolean; $clickable: boolean; $shaking: boolean; $blank: boolean }>`
-  width: 70px;
-  height: 70px;
+  flex: 1 1 0;
+  min-width: 0;
+  max-width: 70px;
+  aspect-ratio: 1 / 1;
   border: 2px solid ${(p) => (p.$blank ? "#eee" : p.$held ? "#337ab7" : "#ccc")};
   border-radius: 10px;
   background: ${(p) => (p.$blank ? "#fafafa" : p.$held ? "#eff5ff" : "#fff")};
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   grid-template-rows: repeat(3, 1fr);
-  padding: 9px;
+  padding: 12%;
   cursor: ${(p) => (p.$clickable ? "pointer" : "default")};
   transition:
     border-color 0.15s,
@@ -205,25 +204,16 @@ const DieWrap = styled.div<{ $held: boolean; $clickable: boolean; $shaking: bool
         background: #dbe9ff;
       `}
   }
-  @media (max-width: 420px) {
-    width: 56px;
-    height: 56px;
-    padding: 7px;
-  }
 `;
 
 const Pip = styled.div<{ $on: boolean }>`
   width: 100%;
   height: 100%;
-  max-width: 14px;
-  max-height: 14px;
+  max-width: 30%;
+  max-height: 30%;
   border-radius: 50%;
   background: ${(p) => (p.$on ? "#222" : "transparent")};
   margin: auto;
-  @media (max-width: 420px) {
-    max-width: 11px;
-    max-height: 11px;
-  }
 `;
 
 const Controls = styled.div`
@@ -376,15 +366,17 @@ function Die({
   held,
   clickable,
   shaking,
+  onClick,
 }: {
   value: number;
   held: boolean;
   clickable: boolean;
   shaking: boolean;
+  onClick: () => void;
 }) {
   const pips = PIPS[value] ?? [];
   return (
-    <DieWrap $held={held} $clickable={clickable} $shaking={shaking} $blank={value === 0}>
+    <DieWrap $held={held} $clickable={clickable} $shaking={shaking} $blank={value === 0} onClick={onClick}>
       {Array.from({ length: 9 }, (_, i) => (
         <Pip key={i} $on={pips.includes(i)} />
       ))}
@@ -507,14 +499,14 @@ export default function Yahtzee() {
         <Panel>
           <DiceRow>
             {dice.map((d, i) => (
-              <div key={i} onClick={() => toggleHold(i)}>
-                <Die
-                  value={d}
-                  held={held[i]}
-                  clickable={hasRolled && !isRolling && rollsLeft > 0}
-                  shaking={isRolling && !held[i]}
-                />
-              </div>
+              <Die
+                key={i}
+                value={d}
+                held={held[i]}
+                clickable={hasRolled && !isRolling && rollsLeft > 0}
+                shaking={isRolling && !held[i]}
+                onClick={() => toggleHold(i)}
+              />
             ))}
           </DiceRow>
           <Controls>
