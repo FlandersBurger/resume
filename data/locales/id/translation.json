@@ -187,7 +187,7 @@
     }
   },
   "sentences": {
-    "likeList": "Apakah kamu suka {{list}}?",
+    "likeList": "Apakah kamu suka <b>{{list}}</b>?",
     "likesList": " 👍 {{name}} suka <b>{{list}}</b> ({{score}})",
     "dislikesList": " 👎 {{name}} tidak suka <b>{{list}}</b> ({{score}})",
     "queueList": "<b>Daftar mana yang ingin Anda antre?</b>",
@@ -236,7 +236,7 @@
     "vetoDelay": "Waktu hingga lompatan baru diizinkan setelah diveto",
     "hintDelay": "Waktu hingga petunjuk baru diizinkan",
     "corroborateBan": "Apakah ada yang setuju dengan {{user}} untuk melarang daftar \"{{list}}\"?",
-    "gameStarted": "Sepuluh Hal dimulai",
+    "gameStarted": "{{gameName}} dimulai",
     "banListPrompt": "Apakah Anda ingin melarang \"{{list}}\" secara permanen dari game ini?",
     "suggestionPrompt": "<b>SARAN</b>\nSilakan tambahkan saran Anda di pesan Anda berikutnya, {{name}}!",
     "featurePrompt": "<b>FITUR</b>\nSilakan sarankan fitur Anda di pesan Anda berikutnya, {{name}}!",

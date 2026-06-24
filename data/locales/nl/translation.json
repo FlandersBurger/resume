@@ -236,11 +236,11 @@
     "vetoDelay": "Tijd totdat een nieuwe overslaan is toegestaan na veto",
     "hintDelay": "Tijd totdat een nieuwe hint is toegestaan",
     "corroborateBan": "Is iemand het eens met {{user}} wat betreft de banlijst \"{{list}}\"?",
-    "gameStarted": "Tien dingen begonnen",
+    "gameStarted": "{{gameName}} begonnen",
     "banListPrompt": "Wil je \"{{list}}\" permanent uit dit spel bannen?",
     "suggestionPrompt": "<b>SUGGESTIE</b>\nVoeg je suggestie toe in je volgende bericht, {{name}}!",
     "featurePrompt": "<b>FUNCTIE</b>\nStel je functie voor in je volgende bericht, {{name}}!",
-    "typoPrompt": "<b>TYPFOUT</b>\nLaat me in je volgende bericht weten wat de typfout is, {{name}}!\n\nVermeld ook de lijstnaam als de typfout geen deel uitmaakt van: <i>\"{{list}}\"</i>",
+    "typoPrompt": "<b>TYPFOUT</b>\nLaat me in je volgende bericht weten wat de typfout is, {{name}}!\nVermeld ook de lijstnaam als de typfout geen deel uitmaakt van: <i>\"{{list}}\"</i>",
     "bugPrompt": "<b>BUG</b>\nGeef in je volgende bericht wat meer details over wat er mis is gegaan, {{name}}!"
   },
   "warnings": {

@@ -27,5 +27,11 @@
   "berhenti": "stop",
   "perintah": "commands",
   "antrian": "queue",
-  "membantu": "help"
+  "membantu": "help",
+  "notify": "notify",
+  "check": "check",
+  "flush": "flush",
+  "minigames": "minigames",
+  "ping": "ping",
+  "hello": "hello"
 }

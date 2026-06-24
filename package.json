@@ -8,6 +8,7 @@
     "dev": "tsx src/server.ts",
     "start": "npm run build -- -w",
     "translate": "cd src/scripts && node i18n-scanner.js",
+    "translate:verify": "cd src/scripts && node i18n-verify.js",
     "client:dev": "vite",
     "client:build": "vite build",
     "client:watch": "concurrently \"vite\" \"vite build --watch\"",

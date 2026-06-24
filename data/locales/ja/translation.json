@@ -240,7 +240,7 @@
     "skipDelay": "リストがスキップされるまでの時間",
     "vetoDelay": "拒否された後、再度スキップが許可されるまでの時間",
     "hintDelay": "新しいヒントが許可されるまでの時間",
-    "gameStarted": "10個の項目が開始されました",
+    "gameStarted": "{{gameName}}が開始されました",
     "banListPrompt": "「{{list}}」をこのゲームから永久追放しますか？",
     "suggestionPrompt": "<b>提案</b>\n次のメッセージで提案をお願いします{{name}}！",
     "featurePrompt": "<b>機能</b>\n次のメッセージで機能の提案をお願いします{{name}}！",

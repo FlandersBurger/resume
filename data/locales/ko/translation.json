@@ -236,7 +236,7 @@
     "vetoDelay": "거부된 후 새로운 건너뛰기가 허용될 때까지 걸리는 시간",
     "hintDelay": "새로운 힌트가 허용될 때까지 걸리는 시간",
     "corroborateBan": "누군가 {{user}}이 목록 \"{{list}}\"을 금지하는 데 동의하시나요?",
-    "gameStarted": "열 가지 질문 시작",
+    "gameStarted": "{{gameName}}이 시작되었습니다",
     "banListPrompt": "\"{{list}}\"을 이 게임에서 영구적으로 차단하시겠습니까?",
     "suggestionPrompt": "<b>제안</b>\n다음 메시지에 제안을 추가해 주세요, {{name}}!",
     "featurePrompt": "<b>기능</b>\n다음 메시지에 기능을 제안해 주세요, {{name}}!",

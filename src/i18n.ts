@@ -20,7 +20,7 @@ i18next.use(Backend).init({
   },
   ns: ["translation", "commands", "categories"],
   defaultNS: "translation",
-  interpolation: { escapeValue: false },
+  interpolation: { escapeValue: false, defaultVariables: { gameName: "Ten Things" } },
 });
 
 export default (lng: string, key: string, params = {}): string =>

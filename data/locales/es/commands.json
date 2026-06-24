@@ -32,5 +32,6 @@
   "ping": "ping",
   "hola": "hello",
   "cola": "queue",
-  "ayuda": "help"
+  "ayuda": "help",
+  "fallo": "bug"
 }

@@ -34,6 +34,9 @@ jobs:
           cd src/scripts
           node i18n-scanner.js en ar de es fr hi id ja ko nl pt ru tl
 
+      - name: Verify translations
+        run: npm run translate:verify
+
       - name: Commit translations
         run: |
           git config user.name "github-actions[bot]"

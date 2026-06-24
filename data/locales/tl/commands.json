@@ -27,5 +27,11 @@
   "itigil": "stop",
   "mgautos": "commands",
   "pila": "queue",
-  "tulong": "help"
+  "tulong": "help",
+  "notify": "notify",
+  "check": "check",
+  "flush": "flush",
+  "minigames": "minigames",
+  "ping": "ping",
+  "hello": "hello"
 }

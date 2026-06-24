@@ -240,7 +240,7 @@
     "skipDelay": "Time until a list is skipped",
     "vetoDelay": "Time until a new skip is allowed after being vetoed",
     "hintDelay": "Time until a new hint is allowed",
-    "gameStarted": "Ten Things started",
+    "gameStarted": "{{gameName}} started",
     "banListPrompt": "Do you want to permanently ban \"{{list}}\" from this game?",
     "suggestionPrompt": "<b>SUGGESTION</b>\nPlease add your suggestion in your next message, {{name}}!",
     "featurePrompt": "<b>FEATURE</b>\nPlease suggest your feature in your next message, {{name}}!",

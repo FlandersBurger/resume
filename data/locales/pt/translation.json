@@ -187,7 +187,7 @@
     }
   },
   "sentences": {
-    "likeList": "Você gostou de {{list}}?",
+    "likeList": "Você gostou de <b>{{list}}</b>?",
     "likesList": " 👍 {{name}} gosta de <b>{{list}}</b> ({{score}})",
     "dislikesList": " 👎 {{name}} não gosta de <b>{{list}}</b> ({{score}})",
     "queueList": "<b>Qual lista você gostaria de colocar na fila?</b>",
@@ -236,7 +236,7 @@
     "vetoDelay": "Tempo até que um novo pulo seja permitido após ser vetado",
     "hintDelay": "Tempo até que uma nova dica seja permitida",
     "corroborateBan": "Alguém concorda com {{user}} para banir a lista \"{{list}}\"?",
-    "gameStarted": "Dez Coisas começou",
+    "gameStarted": "{{gameName}} começou",
     "banListPrompt": "Você quer banir permanentemente \"{{list}}\" deste jogo?",
     "suggestionPrompt": "<b>SUGESTÃO</b>\nPor favor, adicione sua sugestão na sua próxima mensagem, {{name}}!",
     "featurePrompt": "<b>RECURSO</b>\nPor favor, sugira seu recurso na sua próxima mensagem, {{name}}!",

@@ -27,5 +27,11 @@
   "stopp": "stop",
   "befehle": "commands",
   "warteschlange": "queue",
-  "helfen": "help"
+  "helfen": "help",
+  "notify": "notify",
+  "check": "check",
+  "flush": "flush",
+  "minigames": "minigames",
+  "ping": "ping",
+  "hello": "hello"
 }

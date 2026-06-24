@@ -27,5 +27,11 @@
   "parar": "stop",
   "comandos": "commands",
   "fila": "queue",
-  "ajuda": "help"
+  "ajuda": "help",
+  "notify": "notify",
+  "check": "check",
+  "flush": "flush",
+  "minigames": "minigames",
+  "ping": "ping",
+  "hello": "hello"
 }

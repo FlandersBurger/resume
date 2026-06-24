@@ -236,7 +236,7 @@
     "vetoDelay": "Tiempo hasta que se permite un nuevo salto después de haber sido vetado",
     "hintDelay": "Tiempo hasta que se permite una nueva pista",
     "corroborateBan": "¿Alguien está de acuerdo con {{user}} en prohibir la lista \"{{list}}\"?",
-    "gameStarted": "Diez cosas comenzaron",
+    "gameStarted": "{{gameName}} comenzó",
     "banListPrompt": "¿Quieres prohibir permanentemente a \"{{list}}\" de este juego?",
     "suggestionPrompt": "<b>SUGERENCIA</b>\nPor favor, añade tu sugerencia en tu próximo mensaje, {{name}}!",
     "featurePrompt": "<b>FUNCIÓN</b>\nPor favor, sugiere tu función en tu próximo mensaje, {{name}}!",

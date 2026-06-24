@@ -187,7 +187,7 @@
     }
   },
   "sentences": {
-    "likeList": "Nagustuhan mo ba si {{list}}?",
+    "likeList": "Nagustuhan mo ba si <b>{{list}}</b>?",
     "likesList": " 👍 Si {{name}} ay gusto ng <b>{{list}}</b> ({{score}})",
     "dislikesList": " 👎 Si {{name}} ay hindi gusto ang <b>{{list}}</b> ({{score}})",
     "queueList": "<b>Aling listahan ang nais mong ilagay sa pila?</b>",
@@ -232,14 +232,16 @@
     "dailyScores": "<b>Araw-araw na mga Scores</b>",
     "topDailyScores": "<b>Top Araw-araw na mga Scores</b>",
     "dailyScoresWithLimit": "<b>Top {{limit}} Araw-araw na mga Scores</b>",
-    "skipDelay": "Oras hanggang sa malaktawan ang isang listahan\n#___#\nOras hanggang ang isang bagong paglaktaw ay pinapayagan pagkatapos ma-veto\n#___#\nOras hanggang pinapayagan ang isang bagong pahiwatig\n#___#\n{{name}}, maba-ban ka sa Ten Things kung aabuso mo ito muli\n#___#\n{{name}}, pinagbawalan ka sa Ten Things. Huwag mag-atubiling magpetisyon ng unban sa @FlandersBurger",
-    "corroborateBan": "May sumasang-ayon ba sa {{user}} sa pagbabawal sa listahang \"{{list}}\"?\n#___#\nOras hanggang ang isang bagong paglaktaw ay pinapayagan pagkatapos ma-veto\n#___#\nOras hanggang pinapayagan ang isang bagong pahiwatig\n#___#\n{{name}}, ikaw ay pagbabawalan mula sa Sampung Bagay kung muli mo itong aabuso\n#___#\n{{name}}, pinagbawalan ka sa Ten Things. Huwag mag-atubiling magpetisyon ng unban sa @FlandersBurger",
-    "gameStarted": "Sampung Bagay ang Nagsimula",
+    "skipDelay": "Oras hanggang sa malaktawan ang isang listahan",
+    "corroborateBan": "May sumasang-ayon ba sa {{user}} sa pagbabawal sa listahang \"{{list}}\"?",
+    "gameStarted": "{{gameName}} ang Nagsimula",
     "banListPrompt": "Gusto mo bang permanenteng i-ban si \"{{list}}\" sa larong ito?",
     "suggestionPrompt": "<b>MUNGKAHI</b>\nPakidagdag ang iyong mungkahi sa iyong susunod na mensahe, {{name}}!",
     "featurePrompt": "<b>FEATURE</b>\nPakimungkahi ang iyong feature sa iyong susunod na mensahe, {{name}}!",
     "typoPrompt": "<b>TYPO</b>\nPakisabi sa akin kung ano ang typo sa iyong susunod na mensahe, {{name}}!\nBanggitin din ang pangalan ng listahan kung ang typo ay hindi bahagi ng: <i>\"{{list}}\"</i>",
-    "bugPrompt": "<b>BUG</b>\nPakibigay ng ilang detalye kung ano ang nangyaring mali sa iyong susunod na mensahe, {{name}}!"
+    "bugPrompt": "<b>BUG</b>\nPakibigay ng ilang detalye kung ano ang nangyaring mali sa iyong susunod na mensahe, {{name}}!",
+    "vetoDelay": "Oras hanggang ang isang bagong paglaktaw ay pinapayagan pagkatapos ma-veto",
+    "hintDelay": "Oras hanggang pinapayagan ang isang bagong pahiwatig"
   },
   "warnings": {
     "minimum1Category": "Kinakailangan ng hindi kukulangin sa 1 kategorya",
@@ -260,7 +262,8 @@
     "hintCooldown": "Kumalma ka sa mga pahiwatig, maghintay ng {{seconds}} segundo pa",
     "playerNotFound": "Hindi natagpuan ang manlalaro",
     "statsListNotFound": "Hindi natagpuan ang listahan",
-    "statUnknown": "Mayroon"
+    "statUnknown": "Mayroon",
+    "banned": "{{name}}, pinagbawalan ka sa Ten Things. Huwag mag-atubiling magpetisyon ng unban sa @FlandersBurger"
   },
   "stats": {
     "stats": "Estadistika",
@@ -284,8 +287,8 @@
     "Bawat araw sa hatinggabi (universal time), ang mga araw-araw na scores ay mareset at ang isang nanalo ay maitatala",
     "Ang mga nag-s-spam ay hindi papansinin hanggang sa maging tahimik sila ng hindi kukulangin sa 10 segundo"
   ],
-  "skipDelay": "Laktawan ang pagkaantala\n#___#\nPagkaantala ng veto\n#___#\nPahiwatig na pagkaantala",
-  "vetoDelay": "Pagkaantala ng veto\n#___#\nPahiwatig na pagkaantala\n#___#\nOras hanggang sa malaktawan ang isang listahan\n#___#\nOras hanggang ang isang bagong paglaktaw ay pinapayagan pagkatapos ma-veto\n#___#\nOras hanggang pinapayagan ang isang bagong pahiwatig",
+  "skipDelay": "Laktawan ang pagkaantala",
+  "vetoDelay": "Pagkaantala ng veto",
   "triviaLangauges": "Mga trivia na wika\n#___#\nPahiwatig na pagkaantala\n#___#\nOras hanggang sa malaktawan ang isang listahan\n#___#\nOras hanggang ang isang bagong paglaktaw ay pinapayagan pagkatapos ma-veto\n#___#\nOras hanggang pinapayagan ang isang bagong pahiwatig",
-  "hintDelay": "Pahiwatig na pagkaantala\n#___#\nOras hanggang sa malaktawan ang isang listahan\n#___#\nOras hanggang ang isang bagong paglaktaw ay pinapayagan pagkatapos ma-veto\n#___#\nOras hanggang pinapayagan ang isang bagong pahiwatig\n#___#\n{{name}}, maba-ban ka sa Ten Things kung aabuso mo ito muli\n#___#\n{{name}}, pinagbawalan ka sa Ten Things. Huwag mag-atubiling magpetisyon ng unban sa @FlandersBurger"
+  "hintDelay": "Pahiwatig na pagkaantala"
 }
