@@ -4,13 +4,22 @@ inputs:
   text:
     description: Message text (HTML parse mode)
     required: true
+  context:
+    description: Optional plain-text context line (e.g. PR or commit title); HTML-escaped and appended automatically
+    required: false
+    default: ""
 runs:
   using: composite
   steps:
     - shell: bash
       env:
         TEXT: ${{ inputs.text }}
+        CONTEXT: ${{ inputs.context }}
       run: |
+        if [ -n "$CONTEXT" ]; then
+          ESCAPED_CONTEXT=$(printf '%s' "$CONTEXT" | head -n1 | sed 's/&/\&amp;/g; s/</\&lt;/g; s/>/\&gt;/g')
+          TEXT="$TEXT"$'\n'"<i>${ESCAPED_CONTEXT}</i>"
+        fi
         curl -s -X POST "https://api.telegram.org/bot${TELEGRAM_TOKEN}/sendMessage" \
           -H "Content-Type: application/json" \
           --data-raw "$(jq -n --arg chat_id "$TELEGRAM_MASTER_CHAT" --arg text "$TEXT" \

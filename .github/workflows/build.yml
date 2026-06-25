@@ -37,6 +37,7 @@ jobs:
         uses: ./.github/actions/telegram-notify
         with:
           text: "❌ Tests failed\n<a href='${{ env.WORKFLOW_URL }}'>View run</a>"
+          context: ${{ github.event_name == 'pull_request' && github.event.pull_request.title || github.event.head_commit.message }}
 
 
   docker:
@@ -67,12 +68,14 @@ jobs:
         uses: ./.github/actions/telegram-notify
         with:
           text: "⏳ Deploy awaiting approval\n<a href='${{ env.WORKFLOW_URL }}'>Review and approve</a>"
+          context: ${{ github.event.head_commit.message }}
 
       - name: Notify Telegram on failure
         if: failure()
         uses: ./.github/actions/telegram-notify
         with:
           text: "❌ Docker build failed\n<a href='${{ env.WORKFLOW_URL }}'>View run</a>"
+          context: ${{ github.event.head_commit.message }}
 
   deploy:
     needs: docker
@@ -96,9 +99,11 @@ jobs:
         uses: ./.github/actions/telegram-notify
         with:
           text: "✅ Deployed to production\n<a href='${{ env.WORKFLOW_URL }}'>View run</a>"
+          context: ${{ github.event.head_commit.message }}
 
       - name: Notify Telegram on failure
         if: failure()
         uses: ./.github/actions/telegram-notify
         with:
           text: "❌ Deploy failed\n<a href='${{ env.WORKFLOW_URL }}'>View run</a>"
+          context: ${{ github.event.head_commit.message }}
