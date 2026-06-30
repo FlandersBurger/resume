@@ -50,7 +50,30 @@ export default function Policy() {
       </Section>
 
       <Section>
-        <h2>4. YouTube API Services</h2>
+        <h2>4. Cookies and Local Storage</h2>
+        <p>This site stores information directly on your device to support its functionality:</p>
+        <ul>
+          <li>
+            <strong>Authentication token</strong> — when you sign in, a JSON Web Token (JWT) is saved in your browser's
+            local storage so you remain logged in across page loads. It is removed when you sign out.
+          </li>
+          <li>
+            <strong>Firebase Authentication cookies</strong> — Firebase may set cookies or use IndexedDB/local storage
+            on your device to manage your sign-in session. These are governed by{" "}
+            <a href="https://policies.google.com/privacy" target="_blank" rel="noreferrer">
+              Google's Privacy Policy
+            </a>
+            .
+          </li>
+          <li>
+            <strong>Theme preference</strong> — your chosen display theme (light/dark) may be saved in local storage.
+          </li>
+        </ul>
+        <p>No advertising cookies or third-party tracking cookies are placed by this site.</p>
+      </Section>
+
+      <Section>
+        <h2>5. YouTube API Services</h2>
         <p>
           This site uses the{" "}
           <a href="https://developers.google.com/youtube/v3" target="_blank" rel="noreferrer">
@@ -69,7 +92,7 @@ export default function Policy() {
       </Section>
 
       <Section>
-        <h2>5. Third-Party Authentication</h2>
+        <h2>6. Third-Party Authentication</h2>
 
         <p>
           Sign-in is provided by Firebase Authentication (Google). By signing in you are also subject to the privacy
@@ -90,7 +113,7 @@ export default function Policy() {
       </Section>
 
       <Section>
-        <h2>6. Data Retention</h2>
+        <h2>7. Data Retention</h2>
         <p>
           Your account data is retained for as long as you have an account on this site. You may request deletion of
           your data at any time by contacting me.
@@ -98,7 +121,7 @@ export default function Policy() {
       </Section>
 
       <Section>
-        <h2>7. Contact</h2>
+        <h2>8. Contact</h2>
         <p>
           If you have any questions about this policy, please reach out via the <a href="/contact">contact page</a>.
         </p>
