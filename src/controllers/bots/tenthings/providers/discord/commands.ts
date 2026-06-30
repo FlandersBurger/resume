@@ -24,7 +24,8 @@ import { Command, translateCommand } from "@tenthings/providers/telegram/command
 
 const commands: Command[] = Object.values(Command);
 const userCommands = commands.filter(
-  (command) => ![Command.Notify, Command.Check, Command.Flush, Command.Minigames, Command.Hello].includes(command),
+  (command) =>
+    ![Command.Notify, Command.Check, Command.Flush, Command.Minigames, Command.Hello, Command.Resume].includes(command),
 );
 
 export const evaluate = async (msg: DiscordMessage, game: HydratedDocument<IGame>, isNew: boolean) => {
