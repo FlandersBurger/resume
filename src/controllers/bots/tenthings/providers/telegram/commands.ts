@@ -68,7 +68,8 @@ export enum Command {
 
 const commands: Command[] = Object.values(Command);
 const userCommands = commands.filter(
-  (command) => ![Command.Notify, Command.Check, Command.Flush, Command.Minigames, Command.Hello].includes(command),
+  (command) =>
+    ![Command.Notify, Command.Check, Command.Flush, Command.Minigames, Command.Hello, Command.Resume].includes(command),
 );
 
 export const translateCommand = (language: string, key: string): Command | undefined =>
