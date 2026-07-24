@@ -23,6 +23,8 @@ import { telegram } from "@tenthings/providers/telegram";
 
 export const tenthingsListsRoute = Router();
 
+const MIN_LIST_VALUES = 10;
+
 const VIRTUAL_SORT_FIELDS = new Set(["likeRatio", "upvotes", "downvotes", "answers", "playRatio"]);
 
 const safeVotes = { $ifNull: ["$votes", []] };
@@ -246,6 +248,10 @@ tenthingsListsRoute.put("/:id", async (req: Request<{ id: string }>, res: Respon
       });
 
       Object.assign(list, req.body);
+      if (list.values.length < MIN_LIST_VALUES) {
+        res.status(400).json({ error: `A list must have at least ${MIN_LIST_VALUES} values.` });
+        return;
+      }
       list.modifyDate = now;
       await list.validate();
       await list.save();
@@ -266,7 +272,9 @@ tenthingsListsRoute.put("/:id", async (req: Request<{ id: string }>, res: Respon
 
 tenthingsListsRoute.post("/", async (req: Request, res: Response) => {
   if (!res.locals.isAuthorized) res.sendStatus(401);
-  else {
+  else if ((req.body.list.values?.length ?? 0) < MIN_LIST_VALUES) {
+    res.status(400).json({ error: `A list must have at least ${MIN_LIST_VALUES} values.` });
+  } else {
     const yesterday = moment().subtract(1, "days");
     const previousModifyDate = moment(req.body.list.modifyDate);
     req.body.list.modifyDate = new Date();
@@ -419,7 +427,9 @@ tenthingsListsRoute.delete(
         const value = list.values.find(({ _id }) => _id!.toString() === req.params.valueId);
         if (!value) res.sendStatus(404);
         else if (value.creator !== res.locals.user?._id && !res.locals.isAdmin) res.sendStatus(401);
-        else {
+        else if (list.values.length <= MIN_LIST_VALUES) {
+          res.status(400).json({ error: `A list must have at least ${MIN_LIST_VALUES} values.` });
+        } else {
           await List.findByIdAndUpdate(req.params.id, { $pull: { values: { _id: req.params.valueId } } }).exec();
           res.sendStatus(200);
         }
