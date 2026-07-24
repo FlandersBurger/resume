@@ -322,10 +322,10 @@ export const convertTelegramUserToPlayer = async (
     const savedPlayer = await player.save();
     console.log(`${game._id} - Player ${from.id} created`);
     return savedPlayer;
-  } else if (player && player.first_name) {
-    player.first_name = player.first_name ? maskUrls(player.first_name) : "";
-    player.last_name = player.last_name ? maskUrls(player.last_name) : "";
-    player.username = player.username ? maskUrls(player.username) : "";
+  } else if (player && from.first_name) {
+    player.first_name = maskUrls(from.first_name);
+    player.last_name = from.last_name ? maskUrls(from.last_name) : "";
+    player.username = from.username ? maskUrls(from.username) : "";
     player.present = true;
   }
   return player;
