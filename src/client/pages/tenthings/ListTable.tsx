@@ -414,21 +414,11 @@ export function ListTable({
                 <i className="fas fa-heart" title="Like Ratio" />
                 {sortIcon("likeRatio")}
               </th>
-              <th
-                className="hidden-sm visible-md visible-lg"
-                style={{ cursor: "pointer" }}
-                onClick={() => onSortChange("plays")}
-              >
-                <i className="fas fa-play" title="Plays" />
-                {sortIcon("plays")}
+              <th className="hidden-sm visible-md visible-lg">
+                <i className="fas fa-check" title="Completed" />
               </th>
-              <th
-                className="hidden-sm visible-md visible-lg"
-                style={{ cursor: "pointer" }}
-                onClick={() => onSortChange("playRatio")}
-              >
-                <i className="fas fa-percentage" title="Play Ratio" />
-                {sortIcon("playRatio")}
+              <th className="hidden-sm visible-md visible-lg">
+                <i className="fas fa-forward" title="Skipped" />
               </th>
               <th
                 className="hidden-sm visible-md visible-lg"
@@ -517,10 +507,10 @@ export function ListTable({
                   {pct(list.likeRatio)}
                 </td>
                 <td className="hidden-sm visible-md visible-lg" onClick={() => canOpenEditor && onSelect(list)}>
-                  {list.plays ?? ""}
+                  {list.completedRounds ?? ""}
                 </td>
                 <td className="hidden-sm visible-md visible-lg" onClick={() => canOpenEditor && onSelect(list)}>
-                  {pct(list.playRatio)}
+                  {list.skippedRounds ?? ""}
                 </td>
                 <td className="hidden-sm visible-md visible-lg" onClick={() => canOpenEditor && onSelect(list)}>
                   {list.bans ?? ""}

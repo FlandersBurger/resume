@@ -14,7 +14,7 @@ import Unsplash from "@root/connections/unsplash";
 // spotify.init();
 
 import { IList, IListValue } from "@models/tenthings/list";
-import { List, User } from "@models/index";
+import { GameRound, List, User } from "@models/index";
 import { parseSymbols, removeAllButLetters } from "@utils/string-helpers";
 import { getList, getListScore, getRandomList, mergeLists } from "@tenthings/lists";
 import { curateListKeyboard } from "@tenthings/providers/telegram/keyboards";
@@ -98,7 +98,26 @@ tenthingsListsRoute.get("/", async (req: QueryableRequest, res: Response) => {
       .lean({ virtuals: true });
   }
 
-  const result = authorized ? lists : lists.map(({ creator: _c, values: _v, ...rest }) => rest);
+  const roundCounts = await GameRound.aggregate<{ _id: { listId: Types.ObjectId; outcome: string }; count: number }>([
+    { $match: { listId: { $in: lists.map((list) => list._id) }, outcome: { $in: ["completed", "skipped"] } } },
+    { $group: { _id: { listId: "$listId", outcome: "$outcome" }, count: { $sum: 1 } } },
+  ]);
+  const roundCountMap = new Map<string, { completedRounds: number; skippedRounds: number }>();
+  for (const { _id, count } of roundCounts) {
+    const key = String(_id.listId);
+    const entry = roundCountMap.get(key) ?? { completedRounds: 0, skippedRounds: 0 };
+    if (_id.outcome === "completed") entry.completedRounds = count;
+    else entry.skippedRounds = count;
+    roundCountMap.set(key, entry);
+  }
+  const listsWithRoundCounts = lists.map((list) => ({
+    ...list,
+    ...(roundCountMap.get(String(list._id)) ?? { completedRounds: 0, skippedRounds: 0 }),
+  }));
+
+  const result = authorized
+    ? listsWithRoundCounts
+    : listsWithRoundCounts.map(({ creator: _c, values: _v, ...rest }) => rest);
   res.json({ result, nextPage: page + 1, count });
 });
 

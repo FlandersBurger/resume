@@ -15,6 +15,8 @@ export interface TenThingsList {
   modifyDate?: string;
   plays?: number;
   playRatio?: number;
+  completedRounds?: number;
+  skippedRounds?: number;
   upvotes?: number;
   downvotes?: number;
   likeRatio?: number;
