@@ -177,7 +177,7 @@ const DieWrap = styled.div<{ $held: boolean; $clickable: boolean; $shaking: bool
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   grid-template-rows: repeat(3, 1fr);
-  padding: 12%;
+  padding: 8px;
   cursor: ${(p) => (p.$clickable ? "pointer" : "default")};
   transition:
     border-color 0.15s,
