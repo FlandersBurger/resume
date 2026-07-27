@@ -33,9 +33,7 @@ function loadAsteroidImages(): Promise<HTMLImageElement[]> {
 export default function Asteroids() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [score, setScore] = useState(0);
-  const [playing, setPlaying] = useState(false);
   const [highscore, setHighscore] = useState(0);
-  const [announce, setAnnounce] = useState(false);
   const [announcement, setAnnouncement] = useState("");
   const [spaceIndex, setSpaceIndex] = useState(0);
 
@@ -57,21 +55,17 @@ export default function Asteroids() {
     animId: 0,
     spawnTimeout: null as ReturnType<typeof setTimeout> | null,
     setScore: null as ((n: number) => void) | null,
-    setPlaying: null as ((b: boolean) => void) | null,
-    setAnnounce: null as ((b: boolean) => void) | null,
     setAnnouncement: null as ((s: string) => void) | null,
   });
 
   useEffect(() => {
     const g = gameRef.current;
     g.setScore = setScore;
-    g.setPlaying = setPlaying;
-    g.setAnnounce = setAnnounce;
     g.setAnnouncement = setAnnouncement;
   });
 
   useEffect(() => {
-    const canvas = canvasRef.current;
+    const canvas = canvasRef.current!;
     if (!canvas) return;
     const ctx = canvas.getContext("2d")!;
     const g = gameRef.current;
@@ -366,9 +360,8 @@ export default function Asteroids() {
           return;
         }
         if (g.spaceship && hit(g.spaceship, p)) {
-          g.setAnnounce!(true);
           g.setAnnouncement!(type.announcement);
-          setTimeout(() => g.setAnnounce!(false), 1000);
+          setTimeout(() => g.setAnnouncement!(""), 1000);
           type.activate(g.spaceship);
           delete g.powerups[id];
           return;
@@ -419,7 +412,6 @@ export default function Asteroids() {
 
     function gameOver() {
       g.playing = false;
-      g.setPlaying!(false);
       for (const i in g.asteroids) g.asteroids[i].explode();
       g.shots = {};
       if (g.score > g.highscore) {
@@ -431,7 +423,6 @@ export default function Asteroids() {
     function start() {
       g.playing = true;
       g.score = 0;
-      g.setPlaying!(true);
       g.setScore!(0);
       g.space = Math.floor(Math.random() * spacepics);
       setSpaceIndex(g.space);
@@ -476,11 +467,11 @@ export default function Asteroids() {
         const gradient = ctx.createLinearGradient(0, 0, canvas.width, 0);
         const t = g.tally;
         const c = (a: number, b: number) => Math.floor(a + (b * t) / 100);
-        gradient.addColorStop("0", `rgb(${c(256, -256)},${c(0, 256)},${c(0, 256)})`);
-        gradient.addColorStop("0.25", `rgb(${c(0, 256)},${c(256, -256)},${c(0, 256)})`);
-        gradient.addColorStop("0.5", `rgb(${c(0, 256)},${c(0, 256)},${c(256, -256)})`);
-        gradient.addColorStop("0.75", `rgb(${c(0, 256)},${c(256, -256)},${c(0, 256)})`);
-        gradient.addColorStop("1.0", `rgb(${c(256, -256)},${c(0, 256)},${c(0, 256)})`);
+        gradient.addColorStop(0, `rgb(${c(256, -256)},${c(0, 256)},${c(0, 256)})`);
+        gradient.addColorStop(0.25, `rgb(${c(0, 256)},${c(256, -256)},${c(0, 256)})`);
+        gradient.addColorStop(0.5, `rgb(${c(0, 256)},${c(0, 256)},${c(256, -256)})`);
+        gradient.addColorStop(0.75, `rgb(${c(0, 256)},${c(256, -256)},${c(0, 256)})`);
+        gradient.addColorStop(1.0, `rgb(${c(256, -256)},${c(0, 256)},${c(0, 256)})`);
         ctx.fillStyle = gradient;
         ctx.font = "60px Monoton";
         ctx.fillText("Asteroids", canvas.width / 2 - ctx.measureText("Asteroids").width / 2, canvas.height / 2);
@@ -545,7 +536,7 @@ export default function Asteroids() {
       <div style={{ position: "fixed", top: 10, right: 20, color: "#fff", fontSize: 24 }}>
         Score: {score} | High: {highscore}
       </div>
-      {announce && (
+      {announcement && (
         <div
           style={{
             position: "fixed",

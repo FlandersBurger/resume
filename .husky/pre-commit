@@ -1,5 +1,6 @@
 npx lint-staged
 tsc --noEmit
+npm run check:client
 node -e "
 const { execSync } = require('child_process');
 const BASELINE = 73;
