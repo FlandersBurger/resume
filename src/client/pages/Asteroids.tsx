@@ -13,6 +13,23 @@ const AsteroidsCanvas = styled.canvas`
 
 const spacepics = 10;
 
+const MAX_ASTEROID_IMAGES = 30;
+
+function loadAsteroidImages(): Promise<HTMLImageElement[]> {
+  const attempts = Array.from({ length: MAX_ASTEROID_IMAGES }, (_, i) => i + 1);
+  return Promise.all(
+    attempts.map(
+      (n) =>
+        new Promise<HTMLImageElement | null>((resolve) => {
+          const img = new Image();
+          img.onload = () => resolve(img);
+          img.onerror = () => resolve(null);
+          img.src = `asteroids/asteroid${n}.png`;
+        }),
+    ),
+  ).then((imgs) => imgs.filter((img): img is HTMLImageElement => img !== null));
+}
+
 export default function Asteroids() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [score, setScore] = useState(0);
@@ -28,6 +45,7 @@ export default function Asteroids() {
     score: 0,
     highscore: 0,
     shots: {} as Record<string, any>,
+    asteroidImages: [] as HTMLImageElement[],
     asteroids: {} as Record<string, any>,
     powerups: {} as Record<string, any>,
     explosions: {} as Record<string, any>,
@@ -60,6 +78,10 @@ export default function Asteroids() {
 
     const explosionImage = new Image();
     explosionImage.src = "asteroids/explosion.png";
+
+    loadAsteroidImages().then((imgs) => {
+      g.asteroidImages = imgs;
+    });
 
     const powerupTypes = [
       {
@@ -267,7 +289,11 @@ export default function Asteroids() {
       };
       a.height = a.width;
       a.position = getEntryPosition(a.width, a.height);
-      a.img.src = `asteroids/asteroid${Math.round(Math.random() * 6) + 1}.png`;
+      if (g.asteroidImages.length > 0) {
+        a.img = g.asteroidImages[Math.floor(Math.random() * g.asteroidImages.length)];
+      } else {
+        a.img.src = "asteroids/asteroid1.png";
+      }
       a.explode = () => {
         g.explosions[a.id] = makeExplosion(a);
         delete g.asteroids[a.id];
