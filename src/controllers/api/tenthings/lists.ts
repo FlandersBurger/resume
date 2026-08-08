@@ -252,9 +252,18 @@ tenthingsListsRoute.put("/:id", async (req: Request<{ id: string }>, res: Respon
         res.status(400).json({ error: `A list must have at least ${MIN_LIST_VALUES} values.` });
         return;
       }
+      if (list.values.some(({ value }) => !value?.trim())) {
+        res.status(400).json({ error: "Answers cannot be blank." });
+        return;
+      }
       list.modifyDate = now;
-      await list.validate();
-      await list.save();
+      try {
+        await list.validate();
+        await list.save();
+      } catch (error) {
+        res.status(400).json({ error: error instanceof Error ? error.message : "Failed to save list." });
+        return;
+      }
       const updatedList = await getList(new Types.ObjectId(req.params.id));
       if (!updatedList) res.sendStatus(404);
       else {
@@ -274,6 +283,8 @@ tenthingsListsRoute.post("/", async (req: Request, res: Response) => {
   if (!res.locals.isAuthorized) res.sendStatus(401);
   else if ((req.body.list.values?.length ?? 0) < MIN_LIST_VALUES) {
     res.status(400).json({ error: `A list must have at least ${MIN_LIST_VALUES} values.` });
+  } else if (req.body.list.values.some(({ value }: IListValue) => !value?.trim())) {
+    res.status(400).json({ error: "Answers cannot be blank." });
   } else {
     const yesterday = moment().subtract(1, "days");
     const previousModifyDate = moment(req.body.list.modifyDate);
