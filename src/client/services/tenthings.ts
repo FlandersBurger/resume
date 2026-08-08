@@ -32,7 +32,7 @@ export interface TenThingsList {
 }
 
 export interface TenThingsValue {
-  _id: string;
+  _id?: string;
   value: string;
   maskedValue?: string;
   blurb?: string;

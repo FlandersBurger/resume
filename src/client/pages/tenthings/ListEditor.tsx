@@ -516,7 +516,9 @@ export function ListEditor({
 
   const removeValue = useCallback((index: number) => {
     const l = listRef.current;
-    onChangeRef.current({ ...l, values: l.values.filter((_, i) => i !== index) });
+    const updated = { ...l, values: l.values.filter((_, i) => i !== index) };
+    onChangeRef.current(updated);
+    onBlurRef.current(updated);
   }, []); // stable — reads latest list via ref
 
   const toggleCategory = (cat: string) => {

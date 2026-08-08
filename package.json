@@ -17,7 +17,8 @@
     "test:watch": "jest --watch",
     "test:coverage": "jest --coverage",
     "prepare": "husky",
-    "check:circular": "madge --circular --ts-config tsconfig.json --extensions ts src/"
+    "check:circular": "madge --circular --ts-config tsconfig.json --extensions ts src/",
+    "check:client": "tsc --noEmit -p src/client/tsconfig.json"
   },
   "dependencies": {
     "@testing-library/dom": "^10.4.1",

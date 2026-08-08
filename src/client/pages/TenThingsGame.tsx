@@ -249,7 +249,6 @@ export default function TenThingsGame() {
   const [editorVisible, setEditorVisible] = useState(false);
   const [settingsSaving, setSettingsSaving] = useState(false);
   const [showLangDropdown, setShowLangDropdown] = useState(false);
-  const [showLanguagesDropdown, setShowLanguagesDropdown] = useState(false);
   const [showGameDropdown, setShowGameDropdown] = useState(false);
   const [playerSortField, setPlayerSortField] = useState("lastPlayDate");
   const [playerSortDir, setPlayerSortDir] = useState<1 | -1>(-1);

@@ -193,7 +193,9 @@ export function FuzzyImageQuiz({ name, title, labelsUrl, description }: ImageQui
     Promise.all([
       getQuizFiles(name),
       fetch("/quiz-aliases.json").then((r) => r.json()) as Promise<Record<string, Record<string, string[]>>>,
-      labelsUrl ? (fetch(labelsUrl).then((r) => r.json()) as Promise<Record<string, string>>) : Promise.resolve({}),
+      labelsUrl
+        ? (fetch(labelsUrl).then((r) => r.json()) as Promise<Record<string, string>>)
+        : Promise.resolve({} as Record<string, string>),
     ]).then(([files, allAliases, allLabels]) => {
       const labels = files.map((f) => {
         const stem = f.replace(/\.[^.]+$/, "");
@@ -229,7 +231,7 @@ export function FuzzyImageQuiz({ name, title, labelsUrl, description }: ImageQui
     const result = await fuzzyMatch(fuzzyValues, item.inputValue.trim());
     const rawMatch: string | null = result?.value ?? null;
     // Resolve alias → canonical label if needed
-    const matched = rawMatch !== null ? aliasToLabel[rawMatch] ?? rawMatch : null;
+    const matched = rawMatch !== null ? (aliasToLabel[rawMatch] ?? rawMatch) : null;
     const correct = matched === item.label;
     setItems((prev) =>
       prev.map((it, i) => (i === index ? { ...it, state: correct ? "correct" : "wrong", matchedLabel: matched } : it)),
