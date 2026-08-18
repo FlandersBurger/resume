@@ -1,6 +1,8 @@
 import {
   // Game,
   // GameBackup,
+  CareLog,
+  CareLogBackup,
   Joke,
   JokeBackup,
   List,
@@ -35,6 +37,9 @@ const dstUser = UserBackup;
 
 const srcTenthingsStats = Stats;
 const dstTenthingsStats = StatsBackup;
+
+const srcCareLog = CareLog;
+const dstCareLog = CareLogBackup;
 
 const syncDB = async () => {
   let N = 0;
@@ -74,6 +79,11 @@ const syncDB = async () => {
   await dstTenthingsStats.deleteMany({});
   await dstTenthingsStats.insertMany(stats);
   console.log(`${stats.length} stats synced`);
+
+  const careLogs = await srcCareLog.find({}).exec();
+  await dstCareLog.deleteMany({});
+  await dstCareLog.insertMany(careLogs);
+  console.log(`${careLogs.length} care logs synced`);
 
   // await dstTenthingsGame.deleteMany({});
   // N = 0;

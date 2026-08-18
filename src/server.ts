@@ -8,6 +8,7 @@ import { WebSocketServer } from "@root/websockets";
 import auth from "@root/auth";
 import http from "http";
 
+import { careLogRoute } from "@api/care-log";
 import { emailRoute } from "@api/email";
 import { quizzesRoute } from "@api/quizzes";
 import { gamesRoute } from "@api/games";
@@ -47,6 +48,7 @@ const app = express();
 app.use(json({ limit: "5mb" }));
 
 app.use(auth);
+app.use("/api/care-log", careLogRoute);
 app.use("/api/email", emailRoute);
 app.use("/api/games", gamesRoute);
 app.use("/api/users", usersRoute);

@@ -28,6 +28,7 @@ const Minesweeper = lazy(() => import("./pages/Minesweeper"));
 const Yahtzee = lazy(() => import("./pages/Yahtzee"));
 const Stew = lazy(() => import("./pages/Stew"));
 const Lists = lazy(() => import("./pages/Lists"));
+const CareTracker = lazy(() => import("./pages/CareTracker"));
 const Policy = lazy(() => import("./pages/Policy"));
 const Terms = lazy(() => import("./pages/Terms"));
 const TenThingsLists = lazy(() => import("./pages/tenthings/TenThingsLists"));
@@ -160,6 +161,7 @@ export default function App() {
             <Route path="/minesweeper" element={<Minesweeper />} />
             <Route path="/yahtzee" element={<Yahtzee />} />
             <Route path="/stew" element={<Stew />} />
+            <Route path="/care" element={<CareTracker />} />
             <Route path="/lists" element={<Lists />} />
             <Route path="/tenthings" element={<TenThingsLists />} />
             <Route path="/tenthings-game/:gameId" element={<TenThingsGame />} />

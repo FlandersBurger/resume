@@ -10,6 +10,7 @@ import MinigameModels, { IMinigame } from "./tenthings/minigame";
 import PlayerModels, { IPlayer } from "./tenthings/player";
 import StatsModels, { IStats } from "./tenthings/stats";
 import SassModels, { ISass } from "./tenthings/sass";
+import CareLogModels, { ICareLog } from "./careLog";
 
 export const User: Model<IUser> = UserModels();
 export const Joke: Model<IJoke> = JokeModels();
@@ -21,6 +22,7 @@ export const Minigame: Model<IMinigame> = MinigameModels();
 export const Player: Model<IPlayer> = PlayerModels();
 export const Stats: Model<IStats> = StatsModels();
 export const Sass: Model<ISass> = SassModels();
+export const CareLog: Model<ICareLog> = CareLogModels();
 
 export const UserBackup: Model<IUser> = UserModels("backup");
 export const JokeBackup: Model<IJoke> = JokeModels("backup");
@@ -32,3 +34,4 @@ export const MinigameBackup: Model<IMinigame> = MinigameModels("backup");
 export const PlayerBackup: Model<IPlayer> = PlayerModels("backup");
 export const StatsBackup: Model<IStats> = StatsModels("backup");
 export const SassBackup: Model<ISass> = SassModels("backup");
+export const CareLogBackup: Model<ICareLog> = CareLogModels("backup");
