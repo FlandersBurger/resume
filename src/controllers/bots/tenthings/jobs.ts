@@ -429,10 +429,12 @@ const unbanPlayers = async () => {
 };
 
 const MIN_GLOBAL_ROUNDS = 10;
-const MAX_SKIP_RATE = 0.7;
+const MAX_SKIP_RATE = 0.8;
+const MAX_LIKE_RATIO = 0.5;
+const MIN_VOTES_FOR_LIKE_CHECK = 5;
 
 const updateLowQualityLists = async () => {
-  const lowQualityResults = await GameRound.aggregate<{ _id: Types.ObjectId }>([
+  const skipCandidates = await GameRound.aggregate<{ _id: Types.ObjectId }>([
     { $match: { outcome: { $in: ["completed", "skipped"] } } },
     {
       $group: {
@@ -445,7 +447,20 @@ const updateLowQualityLists = async () => {
     { $addFields: { skipRate: { $divide: ["$skipped", "$total"] } } },
     { $match: { skipRate: { $gte: MAX_SKIP_RATE } } },
   ]);
-  const lowQualityIds = lowQualityResults.map((r) => r._id);
+  // A high skip rate alone can mean "hard but loved" rather than "low quality" — corroborate
+  // with community sentiment. Lists without enough votes to judge sentiment are flagged on
+  // skip rate alone.
+  const candidates = await List.find({ _id: { $in: skipCandidates.map((r) => r._id) } })
+    .select("_id votes")
+    .lean();
+  const lowQualityIds = candidates
+    .filter((list) => {
+      const votes = list.votes ?? [];
+      if (votes.length < MIN_VOTES_FOR_LIKE_CHECK) return true;
+      const likeRatio = votes.filter((vote) => vote.vote > 0).length / votes.length;
+      return likeRatio < MAX_LIKE_RATIO;
+    })
+    .map((list) => list._id);
   const [flagged, unflagged] = await Promise.all([
     List.updateMany({ _id: { $in: lowQualityIds } }, { $set: { lowQuality: true } }),
     List.updateMany({ _id: { $nin: lowQualityIds }, lowQuality: true }, { $set: { lowQuality: false } }),

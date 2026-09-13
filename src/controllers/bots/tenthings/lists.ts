@@ -45,6 +45,7 @@ const getAvailableLanguages = ({ settings }: { settings: IGameSettings }): strin
 
 const MIN_CATEGORY_ROUNDS = 5;
 const MIN_AFFINITY_SCORE = 0.6;
+const MIN_SKIP_HEAVY_ROUNDS = 2;
 
 const getPreferredCategories = async (gameId: Types.ObjectId): Promise<string[]> => {
   const affinity = await GameRound.aggregate<{ _id: string }>([
@@ -64,16 +65,41 @@ const getPreferredCategories = async (gameId: Types.ObjectId): Promise<string[]>
   return affinity.map((c) => c._id);
 };
 
+// Per-game, per-list: once a game has skipped a list more often than it has completed it,
+// stop offering that list to this game again. Unlike getPreferredCategories (category-level,
+// positive bias only) this is list-level and exclusionary, and unlike `lowQuality` it's scoped
+// to a single game rather than global.
+const getSkipHeavyListIds = async (gameId: Types.ObjectId): Promise<Types.ObjectId[]> => {
+  const results = await GameRound.aggregate<{ _id: Types.ObjectId }>([
+    { $match: { gameId, outcome: { $in: ["completed", "skipped"] } } },
+    {
+      $group: {
+        _id: "$listId",
+        completed: { $sum: { $cond: [{ $eq: ["$outcome", "completed"] }, 1, 0] } },
+        skipped: { $sum: { $cond: [{ $eq: ["$outcome", "skipped"] }, 1, 0] } },
+        total: { $sum: 1 },
+      },
+    },
+    { $match: { total: { $gte: MIN_SKIP_HEAVY_ROUNDS }, $expr: { $gt: ["$skipped", "$completed"] } } },
+  ]);
+  return results.map((r) => r._id);
+};
+
 const getExcludedListIds = async (
   game: IGame,
-): Promise<{ recent: Types.ObjectId[]; banned: Types.ObjectId[]; cooldownRounds: number }> => {
+): Promise<{
+  recent: Types.ObjectId[];
+  banned: Types.ObjectId[];
+  skipHeavy: Types.ObjectId[];
+  cooldownRounds: number;
+}> => {
   const availableLanguages = getAvailableLanguages(game);
   const poolQuery = {
     language: { $in: availableLanguages },
     categories: { $nin: game.disabledCategories },
     ...(game.platform === "web" ? { starred: true } : {}),
   };
-  const [poolSize, recentRounds, banned] = await Promise.all([
+  const [poolSize, recentRounds, banned, skipHeavy] = await Promise.all([
     List.countDocuments(poolQuery),
     GameRound.find({ gameId: game._id, outcome: { $in: ["completed", "skipped"] } })
       .sort({ playedAt: -1 })
@@ -81,9 +107,10 @@ const getExcludedListIds = async (
       .select("listId")
       .lean(),
     GameRound.distinct("listId", { gameId: game._id, outcome: "banned" }),
+    getSkipHeavyListIds(game._id),
   ]);
   const cooldownRounds = Math.max(10, Math.floor(poolSize / 2));
-  return { recent: recentRounds.slice(0, cooldownRounds).map((r) => r.listId), banned, cooldownRounds };
+  return { recent: recentRounds.slice(0, cooldownRounds).map((r) => r.listId), banned, skipHeavy, cooldownRounds };
 };
 
 export const selectList = async (game: IGame): Promise<HydratedDocument<IList>> => {
@@ -99,12 +126,12 @@ export const selectList = async (game: IGame): Promise<HydratedDocument<IList>> 
     return list;
   }
 
-  const [{ recent, banned }, preferredCategories] = await Promise.all([
+  const [{ recent, banned, skipHeavy }, preferredCategories] = await Promise.all([
     getExcludedListIds(game),
     getPreferredCategories(game._id),
   ]);
   const baseQuery = {
-    _id: { $nin: [...recent, ...banned] },
+    _id: { $nin: [...recent, ...banned, ...skipHeavy] },
     language: { $in: availableLanguages },
     categories: { $nin: game.disabledCategories },
     lowQuality: { $ne: true },
@@ -122,7 +149,7 @@ export const selectList = async (game: IGame): Promise<HydratedDocument<IList>> 
     // Cooldown exhausted — ignore cooldown, still filter low-quality
     game.provider.message(game, i18n(game.settings.language, "sentences.allListsPlayed"));
     const exhaustedQuery = {
-      _id: { $nin: banned },
+      _id: { $nin: [...banned, ...skipHeavy] },
       categories: { $nin: game.disabledCategories },
       lowQuality: { $ne: true },
       ...(game.platform === "web" ? { starred: true } : {}),
