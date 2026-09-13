@@ -55,6 +55,9 @@ export default function TenThingsLists() {
   const [categoryFilter, setCategoryFilter] = useState<string[]>(
     searchParams.get("cat") ? searchParams.get("cat")!.split(",") : [],
   );
+  const [qualityFilter, setQualityFilter] = useState<string[]>(
+    searchParams.get("quality") ? searchParams.get("quality")!.split(",") : [],
+  );
   const [sortField, setSortField] = useState<string>("date");
   const [sortDir, setSortDir] = useState<"asc" | "desc">("desc");
   const [myListsOnly, setMyListsOnly] = useState(false);
@@ -93,6 +96,7 @@ export default function TenThingsLists() {
           search,
           language: languageFilter,
           categories: categoryFilter,
+          quality: qualityFilter,
           sortBy: sortField,
           orderBy: sortDir,
           creator: myListsOnly && currentUser ? currentUser._id : undefined,
@@ -103,7 +107,7 @@ export default function TenThingsLists() {
       }
       prefetchingRef.current = false;
     },
-    [search, languageFilter, categoryFilter, sortField, sortDir, myListsOnly, currentUser],
+    [search, languageFilter, categoryFilter, qualityFilter, sortField, sortDir, myListsOnly, currentUser],
   );
 
   useEffect(() => {
@@ -135,6 +139,7 @@ export default function TenThingsLists() {
             ...searchOpts,
             language: languageFilter,
             categories: categoryFilter,
+            quality: qualityFilter,
             sortBy: sortField,
             orderBy: sortDir,
             creator: myListsOnly && currentUser ? currentUser._id : undefined,
@@ -154,7 +159,18 @@ export default function TenThingsLists() {
         setLoading(false);
       }
     },
-    [search, searchField, languageFilter, categoryFilter, sortField, sortDir, myListsOnly, currentUser, prefetchPage],
+    [
+      search,
+      searchField,
+      languageFilter,
+      categoryFilter,
+      qualityFilter,
+      sortField,
+      sortDir,
+      myListsOnly,
+      currentUser,
+      prefetchPage,
+    ],
   );
 
   useEffect(() => {
@@ -339,11 +355,12 @@ export default function TenThingsLists() {
             canAddList={!!currentUser}
             canViewCreator={!!currentUser}
             canOpenEditor={!!currentUser}
-            filterCount={languageFilter.length + categoryFilter.length + (myListsOnly ? 1 : 0)}
+            filterCount={languageFilter.length + categoryFilter.length + qualityFilter.length + (myListsOnly ? 1 : 0)}
             categoryOptions={categoryOptions}
             languageOptions={languageOptions}
             languageFilter={languageFilter}
             categoryFilter={categoryFilter}
+            qualityFilter={qualityFilter}
             myListsOnly={myListsOnly}
             onMyListsToggle={currentUser ? () => setMyListsOnly((v) => !v) : undefined}
             sortField={sortField}
@@ -368,6 +385,18 @@ export default function TenThingsLists() {
                   const next = new URLSearchParams(prev);
                   if (cats.length) next.set("cat", cats.join(","));
                   else next.delete("cat");
+                  return next;
+                },
+                { replace: true },
+              );
+            }}
+            onQualityFilterChange={(states) => {
+              setQualityFilter(states);
+              setSearchParams(
+                (prev) => {
+                  const next = new URLSearchParams(prev);
+                  if (states.length) next.set("quality", states.join(","));
+                  else next.delete("quality");
                   return next;
                 },
                 { replace: true },
