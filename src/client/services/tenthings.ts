@@ -26,6 +26,7 @@ export interface TenThingsList {
   hints?: number;
   score?: number;
   lowQuality?: boolean;
+  highQuality?: boolean;
   calculatedDifficulty?: number;
   difficulty?: number;
   frequency?: number;
@@ -58,6 +59,7 @@ export interface GetListsOptions {
   categories?: string[];
   languageNot?: string[];
   categoriesNot?: string[];
+  quality?: string[];
   search?: string;
   name?: string;
   creator?: string;
@@ -73,6 +75,7 @@ export async function getLists(options: GetListsOptions = {}) {
   if (options.categories?.length) params.append("categories", options.categories.join(","));
   if (options.languageNot?.length) params.append("!language", options.languageNot.join(","));
   if (options.categoriesNot?.length) params.append("!categories", options.categoriesNot.join(","));
+  if (options.quality?.length) params.append("quality", options.quality.join(","));
   if (options.search) params.append("search", options.search);
   if (options.name) params.append("name", options.name);
   if (options.creator) params.append("creator", options.creator);

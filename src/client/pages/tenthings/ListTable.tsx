@@ -80,6 +80,7 @@ interface Props {
   languageOptions?: Language[];
   languageFilter?: string[];
   categoryFilter?: string[];
+  qualityFilter?: string[];
   sortField: string;
   sortDir: "asc" | "desc";
   onSortChange: (field: string) => void;
@@ -87,6 +88,7 @@ interface Props {
   onMyListsToggle?: () => void;
   onLanguageFilterChange?: (langs: string[]) => void;
   onCategoryFilterChange?: (cats: string[]) => void;
+  onQualityFilterChange?: (states: string[]) => void;
   onSearchChange: (s: string, field: string) => void;
   onSelect: (list: TenThingsList) => void;
   onToggleHighlight: (id: string) => void;
@@ -117,6 +119,7 @@ export function ListTable({
   languageOptions = [],
   languageFilter = [],
   categoryFilter = [],
+  qualityFilter = [],
   sortField,
   sortDir,
   onSortChange,
@@ -124,6 +127,7 @@ export function ListTable({
   onMyListsToggle,
   onLanguageFilterChange,
   onCategoryFilterChange,
+  onQualityFilterChange,
   onSearchChange,
   onSelect,
   onToggleHighlight,
@@ -329,6 +333,42 @@ export function ListTable({
                 )}
               </div>
             )}
+            {isAdmin && onQualityFilterChange && (
+              <div style={{ marginTop: 8 }}>
+                <strong style={{ marginRight: 8 }}>Quality:</strong>
+                {[
+                  { value: "high", label: "High", icon: "fas fa-award text-success" },
+                  { value: "neutral", label: "Neutral", icon: "far fa-circle" },
+                  { value: "low", label: "Low", icon: "fas fa-exclamation-triangle text-warning" },
+                ].map((opt) => {
+                  const active = qualityFilter.includes(opt.value);
+                  return (
+                    <button
+                      key={opt.value}
+                      className={`btn btn-xs ${active ? "btn-primary" : "btn-default"}`}
+                      style={{ margin: "2px 3px" }}
+                      onClick={() => {
+                        const next = active
+                          ? qualityFilter.filter((v) => v !== opt.value)
+                          : [...qualityFilter, opt.value];
+                        onQualityFilterChange(next);
+                      }}
+                    >
+                      <i className={opt.icon} /> {opt.label}
+                    </button>
+                  );
+                })}
+                {qualityFilter.length > 0 && (
+                  <button
+                    className="btn btn-xs btn-danger"
+                    style={{ margin: "2px 3px" }}
+                    onClick={() => onQualityFilterChange([])}
+                  >
+                    <i className="fas fa-times" /> Clear
+                  </button>
+                )}
+              </div>
+            )}
           </div>
         </div>
       )}
@@ -429,8 +469,14 @@ export function ListTable({
                 {sortIcon("bans")}
               </th>
               {isAdmin && (
-                <th className="hidden-sm hidden-md visible-lg">
-                  <i className="fas fa-exclamation-triangle text-warning" title="Low Quality" />
+                <th
+                  className="hidden-sm hidden-md visible-lg"
+                  style={{ cursor: "pointer" }}
+                  onClick={() => onSortChange("quality")}
+                  title="Quality"
+                >
+                  <i className="fas fa-award" />
+                  {sortIcon("quality")}
                 </th>
               )}
               {isAdmin && <th className="hidden-xs visible-sm visible-md visible-lg" style={{ width: 32 }} />}
@@ -517,7 +563,11 @@ export function ListTable({
                 </td>
                 {isAdmin && (
                   <td className="hidden-sm hidden-md visible-lg">
-                    {list.lowQuality && <i className="fas fa-exclamation-triangle text-warning" />}
+                    {list.lowQuality ? (
+                      <i className="fas fa-exclamation-triangle text-warning" title="Low Quality" />
+                    ) : list.highQuality ? (
+                      <i className="fas fa-award text-success" title="High Quality" />
+                    ) : null}
                   </td>
                 )}
                 {isAdmin && (

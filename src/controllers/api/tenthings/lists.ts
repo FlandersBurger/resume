@@ -25,7 +25,7 @@ export const tenthingsListsRoute = Router();
 
 const MIN_LIST_VALUES = 10;
 
-const VIRTUAL_SORT_FIELDS = new Set(["likeRatio", "upvotes", "downvotes", "answers", "playRatio"]);
+const VIRTUAL_SORT_FIELDS = new Set(["likeRatio", "upvotes", "downvotes", "answers", "playRatio", "quality"]);
 
 const safeVotes = { $ifNull: ["$votes", []] };
 const safeValues = { $ifNull: ["$values", []] };
@@ -57,6 +57,10 @@ const VIRTUAL_ADD_FIELDS = {
       then: 0,
       else: { $divide: [{ $subtract: ["$plays", { $ifNull: ["$skips", 0] }] }, "$plays"] },
     },
+  },
+  // Combined tri-state used by the quality column/filter: -1 low, 0 neutral, 1 high.
+  quality: {
+    $cond: [{ $eq: ["$lowQuality", true] }, -1, { $cond: [{ $eq: ["$highQuality", true] }, 1, 0] }],
   },
 };
 
@@ -449,16 +453,38 @@ tenthingsListsRoute.delete(
   },
 );
 
+// search and quality both filter via $or — combine rather than clobber if both are present at once.
+const mergeOrClause = (params: Record<string, unknown>, orClauses: Record<string, unknown>[]) => {
+  if (Array.isArray(params.$and)) {
+    params.$and.push({ $or: orClauses });
+  } else if (params.$or) {
+    params.$and = [{ $or: params.$or }, { $or: orClauses }];
+    delete params.$or;
+  } else {
+    params.$or = orClauses;
+  }
+};
+
 const parseQuery = (query: { [key: string]: string }) => {
-  return Object.keys(query).reduce((params, key) => {
+  return Object.keys(query).reduce<Record<string, unknown>>((params, key) => {
     switch (key) {
       case "search":
         if (query[key]) {
-          Object.assign(params, {
-            $or: [{ $text: { $search: `"${query[key]}"` } }, { name: { $regex: query[key], $options: "i" } }],
-          });
+          mergeOrClause(params, [
+            { $text: { $search: `"${query[key]}"` } },
+            { name: { $regex: query[key], $options: "i" } },
+          ]);
         }
         break;
+      case "quality": {
+        const states = query[key].split(",").filter(Boolean);
+        const clauses: Record<string, unknown>[] = [];
+        if (states.includes("high")) clauses.push({ highQuality: true });
+        if (states.includes("low")) clauses.push({ lowQuality: true });
+        if (states.includes("neutral")) clauses.push({ lowQuality: { $ne: true }, highQuality: { $ne: true } });
+        if (clauses.length) mergeOrClause(params, clauses);
+        break;
+      }
       case "name":
         Object.assign(params, { name: { $regex: query[key], $options: "i" } });
         break;
