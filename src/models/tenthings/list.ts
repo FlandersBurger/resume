@@ -34,6 +34,7 @@ export interface IList {
   starred: boolean;
   enabled: boolean;
   lowQuality: boolean;
+  highQuality: boolean;
   values: IListValue[];
   date: Date;
   modifyDate: Date;
@@ -96,6 +97,7 @@ const listSchema = new Schema<IList>(
     starred: { type: Boolean, required: true, default: false },
     enabled: { type: Boolean, required: true, default: true },
     lowQuality: { type: Boolean, required: true, default: false },
+    highQuality: { type: Boolean, required: true, default: false },
     values: [listValueSchema],
     date: { type: Date, required: true, default: Date.now },
     modifyDate: { type: Date, required: true, default: Date.now },
