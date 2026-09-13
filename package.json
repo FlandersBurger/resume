@@ -44,7 +44,7 @@
     "lodash": "^4.18.1",
     "module-alias": "^2.3.4",
     "moment": "^2.30.1",
-    "mongoose": "^8.9.4",
+    "mongoose": "^8.24.4",
     "mongoose-lean-virtuals": "^2.1.0",
     "morgan": "^1.12.0",
     "mtprotoproxy": "^2.0.0",
