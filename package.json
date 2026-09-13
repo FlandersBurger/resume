@@ -34,7 +34,7 @@
     "dompurify": "^3.4.13",
     "dotenv": "^17.4.2",
     "express": "^5.2.1",
-    "firebase": "^10.14.1",
+    "firebase": "^12.19.0",
     "firebase-admin": "^14.0.0",
     "firebaseui": "^6.1.0",
     "fuzzy-matching": "^0.4.3",
