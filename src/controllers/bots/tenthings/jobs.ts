@@ -468,6 +468,46 @@ const updateLowQualityLists = async () => {
   bot.notifyAdmin(`Low quality lists: ${flagged.modifiedCount} flagged, ${unflagged.modifiedCount} unflagged`);
 };
 
+const MAX_HIGH_QUALITY_SKIP_RATE = 0.3;
+const MIN_HIGH_QUALITY_LIKE_RATIO = 0.7;
+const MIN_VOTES_FOR_HIGH_QUALITY = 5;
+
+// Mirrors updateLowQualityLists, inverted: feeds the new-game quality ramp in selectList.
+// Unlike lowQuality (which falls back to skip-rate-alone when votes are sparse), a positive
+// "high quality" claim is riskier to get wrong, so it always requires corroborating votes —
+// no votes means no flag, regardless of how low the skip rate is.
+const updateHighQualityLists = async () => {
+  const skipCandidates = await GameRound.aggregate<{ _id: Types.ObjectId }>([
+    { $match: { outcome: { $in: ["completed", "skipped"] } } },
+    {
+      $group: {
+        _id: "$listId",
+        skipped: { $sum: { $cond: [{ $eq: ["$outcome", "skipped"] }, 1, 0] } },
+        total: { $sum: 1 },
+      },
+    },
+    { $match: { total: { $gte: MIN_GLOBAL_ROUNDS } } },
+    { $addFields: { skipRate: { $divide: ["$skipped", "$total"] } } },
+    { $match: { skipRate: { $lte: MAX_HIGH_QUALITY_SKIP_RATE } } },
+  ]);
+  const candidates = await List.find({ _id: { $in: skipCandidates.map((r) => r._id) } })
+    .select("_id votes")
+    .lean();
+  const highQualityIds = candidates
+    .filter((list) => {
+      const votes = list.votes ?? [];
+      if (votes.length < MIN_VOTES_FOR_HIGH_QUALITY) return false;
+      const likeRatio = votes.filter((vote) => vote.vote > 0).length / votes.length;
+      return likeRatio >= MIN_HIGH_QUALITY_LIKE_RATIO;
+    })
+    .map((list) => list._id);
+  const [flagged, unflagged] = await Promise.all([
+    List.updateMany({ _id: { $in: highQualityIds } }, { $set: { highQuality: true } }),
+    List.updateMany({ _id: { $nin: highQualityIds }, highQuality: true }, { $set: { highQuality: false } }),
+  ]);
+  bot.notifyAdmin(`High quality lists: ${flagged.modifiedCount} flagged, ${unflagged.modifiedCount} unflagged`);
+};
+
 let jobs: Job[] = [];
 
 // ███████  ██████ ██   ██ ███████ ██████  ██    ██ ██      ███████
@@ -485,6 +525,7 @@ if (process.env.NODE_ENV === "production") {
   jobs.push(schedule.scheduleJob("Delete Stale Games", "0 0 6 * * *", deleteStaleGames));
   jobs.push(schedule.scheduleJob("Unban Banned Players", "0 0 7 * * *", unbanPlayers));
   jobs.push(schedule.scheduleJob("Update Low Quality Lists", "0 0 8 * * *", updateLowQualityLists));
+  jobs.push(schedule.scheduleJob("Update High Quality Lists", "0 15 8 * * *", updateHighQualityLists));
   // jobs.push(schedule.scheduleJob("Send New List Notice", "0 0 12 * * *", sendNewLists));
   // jobs.push(schedule.scheduleJob('0 30 12 * * *', sendUpdatedLists))
 }

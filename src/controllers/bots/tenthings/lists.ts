@@ -85,6 +85,17 @@ const getSkipHeavyListIds = async (gameId: Types.ObjectId): Promise<Types.Object
   return results.map((r) => r._id);
 };
 
+const QUALITY_RAMP_PURE_ROUNDS = 10; // brand-new games only see high-quality lists for this many rounds
+const QUALITY_RAMP_TRICKLE_ROUNDS = 140; // then the odds of a fully general pick climb to 100% over this many more
+
+// New games start on a "best of" pool — starred, or behaviorally proven via the highQuality flag —
+// and gradually trickle into the full catalog as they rack up rounds, rather than a hard cutover.
+const getHighQualityProbability = (listsPlayed: number): number => {
+  if (listsPlayed < QUALITY_RAMP_PURE_ROUNDS) return 1;
+  const progress = (listsPlayed - QUALITY_RAMP_PURE_ROUNDS) / QUALITY_RAMP_TRICKLE_ROUNDS;
+  return Math.max(0, 1 - progress);
+};
+
 const getExcludedListIds = async (
   game: IGame,
 ): Promise<{
@@ -138,12 +149,19 @@ export const selectList = async (game: IGame): Promise<HydratedDocument<IList>> 
     ...(game.platform === "web" ? { starred: true } : {}),
   };
 
-  let list =
-    preferredCategories.length > 0
-      ? await getRandomList({ ...baseQuery, categories: { $nin: game.disabledCategories, $in: preferredCategories } })
-      : undefined;
+  const findFromPool = async (query: QueryOptions): Promise<HydratedDocument<IList> | undefined> => {
+    const preferred =
+      preferredCategories.length > 0
+        ? await getRandomList({ ...query, categories: { $nin: game.disabledCategories, $in: preferredCategories } })
+        : undefined;
+    return preferred ?? (await getRandomList(query));
+  };
 
-  if (!list) list = await getRandomList(baseQuery);
+  let list: HydratedDocument<IList> | undefined;
+  if (Math.random() < getHighQualityProbability(game.listsPlayed)) {
+    list = await findFromPool({ ...baseQuery, $or: [{ highQuality: true }, { starred: true }] });
+  }
+  if (!list) list = await findFromPool(baseQuery);
 
   if (!list) {
     // Cooldown exhausted — ignore cooldown, still filter low-quality
