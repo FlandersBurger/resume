@@ -27,7 +27,7 @@ let Stats: { [key: string]: Model<IStats> } = {};
 
 const statsSchema = new Schema<IStats>(
   {
-    date: { type: Date, required: false, default: new Date() },
+    date: { type: Date, required: false, default: Date.now },
     base: { type: Boolean, required: true, default: false },
     hints: { type: Number, required: true, default: 0 },
     cycles: { type: Number, required: true, default: 0 },
@@ -46,7 +46,7 @@ const statsSchema = new Schema<IStats>(
     minigamePlays: { type: Number, required: false, default: 0 },
     tinygamePlays: { type: Number, required: false, default: 0 },
   },
-  { timestamps: true }
+  { timestamps: true },
 );
 
 for (const name in db) {

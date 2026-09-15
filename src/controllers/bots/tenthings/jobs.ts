@@ -1,7 +1,7 @@
 /*jslint esversion: 10*/
 import schedule, { Job } from "node-schedule";
 import moment from "moment";
-import bot from "@root/connections/telegram";
+import bot, { Channel } from "@root/connections/telegram";
 import minBy from "lodash/minBy";
 import maxBy from "lodash/maxBy";
 import max from "lodash/max";
@@ -13,8 +13,8 @@ import { makeReadable } from "@root/utils/number-helpers";
 import { HydratedDocument, Types } from "mongoose";
 import { IPlayer } from "@models/tenthings/player";
 import { IStats } from "@models/tenthings/stats";
-import { IList } from "@models/tenthings/list";
 import { updateMinigames } from "./minigame";
+import { SupportedLanguage } from "./languages";
 import { Game, GameRound, Player, Stats, List } from "@models/index";
 
 // ██████  ███████ ███████ ███████ ████████     ██████   █████  ██ ██      ██    ██     ███████  ██████  ██████  ██████  ███████
@@ -260,80 +260,59 @@ const updateDailyStats = async (games: IGame[], totalPlayers: number, uniquePlay
 // ██      ██      ██    ██        ██    ██ ██      ██   ██ ██   ██    ██    ██           ██
 // ███████ ██ ███████    ██         ██████  ██      ██████  ██   ██    ██    ███████ ███████
 
-// @ts-ignore
-const sendNewLists = () => {
-  List.find({
-    date: { $gte: moment().subtract(1, "days") },
+// Combines the old separate "new lists" / "updated lists" notices into one message per game,
+// and curates which lists get mentioned to the languages that game actually plays (game.settings.languages)
+// instead of blasting every game with every list regardless of language.
+const sendListUpdates = async () => {
+  const yesterday = moment().subtract(1, "days");
+  const lists = await List.find({
+    $or: [{ date: { $gte: yesterday } }, { modifyDate: { $gte: yesterday }, date: { $lt: yesterday } }],
   })
-    .select("name")
-    .lean()
-    .then((lists: IList[]) => {
-      if (lists.length > 0) {
-        let message = "<b>New lists created today</b>";
-        lists.forEach(({ name }) => {
-          message += `\n- ${name}`;
-        });
-        message += "\n<i>Switch off daily updates through /settings</i>";
-        Game.find({
-          "settings.updates": true,
-          platform: "telegram",
-          enabled: true,
-          listsPlayed: { $gt: 0 },
-        })
-          .select("telegramChatId telegramTopicId telegramChannel")
-          .then((games: IGame[]) => {
-            bot.broadcast(
-              games.map((game) => game.telegramChannel),
-              message,
-            );
-          });
-      } else {
-        bot.notifyAdmin("No lists created");
-      }
-    });
-};
+    .select("name language date")
+    .lean();
+  if (lists.length === 0) return bot.notifyAdmin("No lists created or modified");
 
-// @ts-ignore
-const sendUpdatedLists = () => {
-  List.find({
-    $or: [
-      {
-        modifyDate: {
-          $gte: moment().subtract(1, "days"),
-        },
-        date: {
-          $lt: moment().subtract(1, "days"),
-        },
-      },
-    ],
-  })
-    .select("name")
-    .lean()
-    .then((lists: IList[]) => {
-      if (lists.length > 0) {
-        let message = "<b>Lists updated today</b>";
-        lists.forEach(({ name }) => {
-          message += `\n- ${name}`;
-        });
-        message += "\n<i>Switch off daily updates through /settings</i>";
-        Game.find({
-          "settings.updates": true,
-          platform: "telegram",
-          enabled: true,
-          listsPlayed: { $gt: 0 },
-        })
-          .select("telegramChatId telegramTopicId telegramChannel")
-          .then((games: IGame[]) => {
-            bot.broadcast(
-              games.map((game) => game.telegramChannel),
-              message,
-            );
-            bot.notifyAdmins(message);
-          });
-      } else {
-        bot.notifyAdmin("No lists modified");
-      }
-    });
+  const newLists = lists.filter(({ date }) => moment(date) >= yesterday);
+  const updatedLists = lists.filter(({ date }) => moment(date) < yesterday);
+
+  const games: HydratedDocument<IGame>[] = await Game.find({
+    "settings.updates": true,
+    platform: "telegram",
+    enabled: true,
+    listsPlayed: { $gt: 0 },
+  }).select("telegramChatId telegramTopicId telegramChannel settings.languages");
+
+  // Group games by their language set so each distinct combination gets one composed message
+  // instead of recomputing (and resending) the same text per game.
+  const groups = new Map<string, { languages: string[]; channels: Channel[] }>();
+  for (const game of games) {
+    const languages = game.settings.languages?.length ? game.settings.languages : [SupportedLanguage.EN];
+    const key = [...languages].sort().join(",");
+    if (!groups.has(key)) groups.set(key, { languages, channels: [] });
+    groups.get(key)!.channels.push(game.telegramChannel);
+  }
+
+  let sentTo = 0;
+  for (const { languages, channels } of groups.values()) {
+    const relevantNew = newLists.filter(({ language }) => languages.includes(language));
+    const relevantUpdated = updatedLists.filter(({ language }) => languages.includes(language));
+    if (relevantNew.length === 0 && relevantUpdated.length === 0) continue;
+
+    let message = "";
+    if (relevantNew.length > 0) {
+      message += "<b>New lists</b>";
+      relevantNew.forEach(({ name }) => (message += `\n- ${name}`));
+    }
+    if (relevantUpdated.length > 0) {
+      if (message) message += "\n\n";
+      message += "<b>Updated lists</b>";
+      relevantUpdated.forEach(({ name }) => (message += `\n- ${name}`));
+    }
+    message += "\n\n<i>Switch off these updates through /settings</i>";
+    bot.broadcast(channels, message);
+    sentTo += channels.length;
+  }
+  bot.notifyAdmin(`List update notice sent to ${sentTo} of ${games.length} eligible games`);
 };
 
 //bot.sendPhoto(parseInt(process.env.MASTER_CHAT || ""), 'https://m.media-amazon.com/images/M/MV5BNmE1OWI2ZGItMDUyOS00MmU5LWE0MzUtYTQ0YzA1YTE5MGYxXkEyXkFqcGdeQXVyMDM5ODIyNw@@._V1._SX40_CR0,0,40,54_.jpg')
@@ -526,8 +505,7 @@ if (process.env.NODE_ENV === "production") {
   jobs.push(schedule.scheduleJob("Unban Banned Players", "0 0 7 * * *", unbanPlayers));
   jobs.push(schedule.scheduleJob("Update Low Quality Lists", "0 0 8 * * *", updateLowQualityLists));
   jobs.push(schedule.scheduleJob("Update High Quality Lists", "0 15 8 * * *", updateHighQualityLists));
-  // jobs.push(schedule.scheduleJob("Send New List Notice", "0 0 12 * * *", sendNewLists));
-  // jobs.push(schedule.scheduleJob('0 30 12 * * *', sendUpdatedLists))
+  jobs.push(schedule.scheduleJob("Send List Update Notice", "0 0 12 * * *", sendListUpdates));
 }
 
 // jobs.push(schedule.scheduleJob("Backup Database", "0 0 21 * * *", backupDatabase));
