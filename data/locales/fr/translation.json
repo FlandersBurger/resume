@@ -241,7 +241,10 @@
     "suggestionPrompt": "<b>SUGGESTION</b>\nVeuillez ajouter votre suggestion dans votre prochain message, {{name}} !",
     "featurePrompt": "<b>FONCTIONNALITÉ</b>\nVeuillez suggérer votre fonctionnalité dans votre prochain message, {{name}} !",
     "typoPrompt": "<b>FAUTE DE FRAPPE</b>\nVeuillez m'indiquer la faute de frappe dans votre prochain message, {{name}} !\n\nMentionnez également le nom de la liste si la faute de frappe ne fait pas partie de : <i>\"{{list}}\"</i>",
-    "bugPrompt": "<b>BUG</b>\nVeuillez fournir des détails sur le problème rencontré dans votre prochain message, {{name}} !"
+    "bugPrompt": "<b>BUG</b>\nVeuillez fournir des détails sur le problème rencontré dans votre prochain message, {{name}} !",
+    "newListsHeading": "<b>Nouvelles listes</b>",
+    "updatedListsHeading": "<b>Listes mises à jour</b>",
+    "listUpdatesOptOut": "Désactivez ces mises à jour via /settings"
   },
   "warnings": {
     "minimum1Category": "Un minimum d'une catégorie est requis",

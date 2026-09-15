@@ -241,7 +241,10 @@
     "typoPrompt": "<b>TYPO</b>\nPakisabi sa akin kung ano ang typo sa iyong susunod na mensahe, {{name}}!\nBanggitin din ang pangalan ng listahan kung ang typo ay hindi bahagi ng: <i>\"{{list}}\"</i>",
     "bugPrompt": "<b>BUG</b>\nPakibigay ng ilang detalye kung ano ang nangyaring mali sa iyong susunod na mensahe, {{name}}!",
     "vetoDelay": "Oras hanggang ang isang bagong paglaktaw ay pinapayagan pagkatapos ma-veto",
-    "hintDelay": "Oras hanggang pinapayagan ang isang bagong pahiwatig"
+    "hintDelay": "Oras hanggang pinapayagan ang isang bagong pahiwatig",
+    "newListsHeading": "<b>Mga bagong listahan</b>",
+    "updatedListsHeading": "<b>Mga na-update na listahan</b>",
+    "listUpdatesOptOut": "I-off ang mga update na ito sa pamamagitan ng /settings"
   },
   "warnings": {
     "minimum1Category": "Kinakailangan ng hindi kukulangin sa 1 kategorya",

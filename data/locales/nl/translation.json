@@ -241,7 +241,10 @@
     "suggestionPrompt": "<b>SUGGESTIE</b>\nVoeg je suggestie toe in je volgende bericht, {{name}}!",
     "featurePrompt": "<b>FUNCTIE</b>\nStel je functie voor in je volgende bericht, {{name}}!",
     "typoPrompt": "<b>TYPFOUT</b>\nLaat me in je volgende bericht weten wat de typfout is, {{name}}!\nVermeld ook de lijstnaam als de typfout geen deel uitmaakt van: <i>\"{{list}}\"</i>",
-    "bugPrompt": "<b>BUG</b>\nGeef in je volgende bericht wat meer details over wat er mis is gegaan, {{name}}!"
+    "bugPrompt": "<b>BUG</b>\nGeef in je volgende bericht wat meer details over wat er mis is gegaan, {{name}}!",
+    "newListsHeading": "<b>Nieuwe lijsten</b>",
+    "updatedListsHeading": "<b>Bijgewerkte lijsten</b>",
+    "listUpdatesOptOut": "Zet deze updates uit via /settings"
   },
   "warnings": {
     "minimum1Category": "Minimaal 1 categorie is vereist",

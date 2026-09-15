@@ -245,7 +245,10 @@
     "suggestionPrompt": "<b>提案</b>\n次のメッセージで提案をお願いします{{name}}！",
     "featurePrompt": "<b>機能</b>\n次のメッセージで機能の提案をお願いします{{name}}！",
     "typoPrompt": "<b>誤字</b>\n次のメッセージで誤字の内容をお知らせください{{name}}！\n誤字が<i>「{{list}}」「</i>」に含まれていない場合は、リスト名も記載してください。",
-    "bugPrompt": "<b>バグ</b>\n次のメッセージで、何が問題だったのか詳細をお知らせください{{name}}！"
+    "bugPrompt": "<b>バグ</b>\n次のメッセージで、何が問題だったのか詳細をお知らせください{{name}}！",
+    "newListsHeading": "<b>新しいリスト</b>",
+    "updatedListsHeading": "<b>更新されたリスト</b>",
+    "listUpdatesOptOut": "/settings でこれらの通知をオフにできます"
   },
   "warnings": {
     "minimum1Category": "最低1つのカテゴリが必要です",
