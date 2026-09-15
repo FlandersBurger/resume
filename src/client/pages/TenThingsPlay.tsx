@@ -9,7 +9,7 @@ const TenThingsPlayPage = styled.div``;
 const PlayProgress = styled.div`
   height: 8px;
   border-radius: 4px;
-  background: #e9ecef;
+  background: var(--surface-alt);
   margin-bottom: 12px;
   overflow: hidden;
 `;
@@ -17,7 +17,7 @@ const PlayProgress = styled.div`
 const PlayProgressBar = styled.div<{ $width: number }>`
   height: 100%;
   width: ${({ $width }) => $width}%;
-  background: #28a745;
+  background: var(--success-strong);
   transition: width 0.4s ease;
 `;
 
@@ -41,7 +41,7 @@ const PlayListGroupItem = styled.li<{ $guessed?: boolean }>`
   padding: 8px 12px;
   border-radius: 4px;
   transition: background-color 0.3s;
-  ${({ $guessed }) => $guessed && `background-color: #d4edda;`}
+  ${({ $guessed }) => $guessed && `background-color: var(--success-soft);`}
 `;
 
 const AnswerRow = styled.div`

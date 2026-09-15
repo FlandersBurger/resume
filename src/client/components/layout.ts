@@ -10,8 +10,8 @@ export const SectionLabel = styled.h4`
   text-transform: uppercase;
   letter-spacing: 0.1em;
   font-size: 0.72em;
-  color: #aaa;
+  color: var(--text-muted, #aaa);
   margin: 28px 0 10px;
   padding-bottom: 6px;
-  border-bottom: 1px solid #eee;
+  border-bottom: 1px solid var(--border-soft, #eee);
 `;

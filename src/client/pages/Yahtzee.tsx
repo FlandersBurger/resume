@@ -140,15 +140,15 @@ const Page = styled.div`
 `;
 
 const Subtitle = styled.p`
-  color: #999;
+  color: var(--text-muted);
   font-size: 0.9em;
   margin-bottom: 28px;
 `;
 
 const Panel = styled.div`
-  border: 1px solid #ddd;
+  border: 1px solid var(--border);
   border-radius: 8px;
-  background: #fff;
+  background: var(--surface);
   padding: 20px 16px;
   margin-bottom: 20px;
 `;
@@ -171,9 +171,9 @@ const DieWrap = styled.div<{ $held: boolean; $clickable: boolean; $shaking: bool
   min-width: 0;
   max-width: 70px;
   aspect-ratio: 1 / 1;
-  border: 2px solid ${(p) => (p.$blank ? "#eee" : p.$held ? "#337ab7" : "#ccc")};
+  border: 2px solid ${(p) => (p.$blank ? "var(--border-soft)" : p.$held ? "var(--accent)" : "var(--border)")};
   border-radius: 10px;
-  background: ${(p) => (p.$blank ? "#fafafa" : p.$held ? "#eff5ff" : "#fff")};
+  background: ${(p) => (p.$blank ? "var(--surface-alt)" : p.$held ? "var(--accent-soft)" : "var(--surface)")};
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   grid-template-rows: repeat(3, 1fr);
@@ -193,15 +193,15 @@ const DieWrap = styled.div<{ $held: boolean; $clickable: boolean; $shaking: bool
       p.$clickable &&
       !p.$held &&
       css`
-        border-color: #337ab7;
-        background: #f8faff;
+        border-color: var(--accent);
+        background: var(--accent-soft);
       `}
     ${(p) =>
       p.$clickable &&
       p.$held &&
       css`
-        border-color: #286090;
-        background: #dbe9ff;
+        border-color: var(--accent-hover);
+        background: var(--accent-soft);
       `}
   }
 `;
@@ -212,7 +212,7 @@ const Pip = styled.div<{ $on: boolean }>`
   max-width: 30%;
   max-height: 30%;
   border-radius: 50%;
-  background: ${(p) => (p.$on ? "#222" : "transparent")};
+  background: ${(p) => (p.$on ? "var(--text)" : "transparent")};
   margin: auto;
 `;
 
@@ -239,12 +239,12 @@ const Dot = styled.div<{ $active: boolean }>`
   width: 10px;
   height: 10px;
   border-radius: 50%;
-  background: ${(p) => (p.$active ? "#337ab7" : "#ddd")};
+  background: ${(p) => (p.$active ? "var(--accent)" : "var(--border)")};
 `;
 
 const RollLabel = styled.span`
   font-size: 0.82em;
-  color: #999;
+  color: var(--text-muted);
 `;
 
 const ActionBtn = styled.button<{ $primary?: boolean }>`
@@ -254,34 +254,34 @@ const ActionBtn = styled.button<{ $primary?: boolean }>`
   font-weight: 500;
   cursor: pointer;
   transition: all 0.15s;
-  border: 1px solid ${(p) => (p.$primary ? "#2e6da4" : "#ddd")};
-  background: ${(p) => (p.$primary ? "#337ab7" : "#fff")};
-  color: ${(p) => (p.$primary ? "#fff" : "#555")};
+  border: 1px solid ${(p) => (p.$primary ? "var(--accent-hover)" : "var(--border)")};
+  background: ${(p) => (p.$primary ? "var(--accent)" : "var(--surface)")};
+  color: ${(p) => (p.$primary ? "#fff" : "var(--text-secondary)")};
   &:disabled {
     opacity: 0.4;
     cursor: not-allowed;
   }
   &:not(:disabled):hover {
-    background: ${(p) => (p.$primary ? "#286090" : "#f5f5f5")};
-    border-color: ${(p) => (p.$primary ? "#204d74" : "#bbb")};
-    color: ${(p) => (p.$primary ? "#fff" : "#333")};
+    background: ${(p) => (p.$primary ? "var(--accent-hover)" : "var(--surface-alt)")};
+    border-color: ${(p) => (p.$primary ? "var(--accent-hover)" : "var(--border)")};
+    color: ${(p) => (p.$primary ? "#fff" : "var(--text)")};
   }
 `;
 
 const Scorecard = styled.div`
-  border: 1px solid #ddd;
+  border: 1px solid var(--border);
   border-radius: 8px;
   overflow: hidden;
   margin-bottom: 20px;
 `;
 
 const SectionTitle = styled.div`
-  background: #f7f7f7;
-  border-bottom: 1px solid #ddd;
+  background: var(--surface-alt);
+  border-bottom: 1px solid var(--border);
   padding: 7px 16px;
   font-size: 0.78em;
   font-weight: 700;
-  color: #888;
+  color: var(--text-muted);
   text-transform: uppercase;
   letter-spacing: 0.06em;
 `;
@@ -290,8 +290,8 @@ const Row = styled.div<{ $clickable?: boolean; $muted?: boolean }>`
   display: flex;
   align-items: center;
   padding: 8px 14px;
-  border-bottom: 1px solid #f0f0f0;
-  background: ${(p) => (p.$muted ? "#fafafa" : "#fff")};
+  border-bottom: 1px solid var(--border-soft);
+  background: ${(p) => (p.$muted ? "var(--surface-alt)" : "var(--surface)")};
   cursor: ${(p) => (p.$clickable ? "pointer" : "default")};
   transition: background 0.1s;
   &:last-child {
@@ -301,7 +301,7 @@ const Row = styled.div<{ $clickable?: boolean; $muted?: boolean }>`
     p.$clickable &&
     css`
       &:hover {
-        background: #eff6ff;
+        background: var(--accent-soft);
       }
     `}
 `;
@@ -313,19 +313,19 @@ const RowLabel = styled.div`
 const RowName = styled.div<{ $faded?: boolean }>`
   font-size: 0.9em;
   font-weight: 500;
-  color: ${(p) => (p.$faded ? "#bbb" : "#333")};
+  color: ${(p) => (p.$faded ? "var(--text-muted)" : "var(--text)")};
 `;
 
 const RowHint = styled.div`
   font-size: 0.75em;
-  color: #bbb;
+  color: var(--text-muted);
   margin-top: 1px;
 `;
 
 const RowScore = styled.div<{ $potential?: boolean; $zero?: boolean; $empty?: boolean }>`
   font-size: 0.9em;
   font-weight: ${(p) => (p.$potential || p.$empty ? "400" : "600")};
-  color: ${(p) => (p.$empty ? "#ddd" : p.$potential ? "#999" : p.$zero ? "#ccc" : "#222")};
+  color: ${(p) => (p.$empty ? "var(--border)" : p.$potential ? "var(--text-muted)" : p.$zero ? "var(--border)" : "var(--text)")};
   min-width: 36px;
   text-align: right;
 `;
@@ -334,8 +334,8 @@ const TotalRow = styled.div`
   display: flex;
   align-items: center;
   padding: 10px 14px;
-  background: #f7f7f7;
-  border-top: 2px solid #ddd;
+  background: var(--surface-alt);
+  border-top: 2px solid var(--border);
   font-weight: 700;
   font-size: 0.95em;
 `;
@@ -348,14 +348,14 @@ const GameOverPanel = styled(Panel)`
 const BigScore = styled.div`
   font-size: 3.5em;
   font-weight: 700;
-  color: #222;
+  color: var(--text);
   line-height: 1;
   margin: 16px 0 8px;
 `;
 
 const ScoreBreakdown = styled.div`
   font-size: 0.85em;
-  color: #aaa;
+  color: var(--text-muted);
   margin-bottom: 28px;
 `;
 
@@ -484,7 +484,7 @@ export default function Yahtzee() {
 
       {gameOver ? (
         <GameOverPanel>
-          <div style={{ fontSize: "1.1em", color: "#555" }}>Game complete</div>
+          <div style={{ fontSize: "1.1em", color: "var(--text-secondary)" }}>Game complete</div>
           <BigScore>{grand}</BigScore>
           <ScoreBreakdown>
             Upper: {upTotal}
@@ -567,7 +567,9 @@ export default function Yahtzee() {
                 <RowName $faded={scored && scores[cat] === 0}>
                   {LABELS[cat]}
                   {cat === "yahtzee" && yahtzeeBonuses > 0 && (
-                    <span style={{ color: "#e67e22", marginLeft: 6, fontSize: "0.82em" }}>+{yahtzeeBonuses * 100}</span>
+                    <span style={{ color: "var(--warning-text)", marginLeft: 6, fontSize: "0.82em" }}>
+                      +{yahtzeeBonuses * 100}
+                    </span>
                   )}
                 </RowName>
                 <RowHint>{HINTS[cat]}</RowHint>

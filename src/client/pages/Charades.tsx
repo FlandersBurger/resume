@@ -19,7 +19,7 @@ const Page = styled.div`
 `;
 
 const Subtitle = styled.p`
-  color: #999;
+  color: var(--text-muted);
   font-size: 0.9em;
   margin-bottom: 32px;
 `;
@@ -34,33 +34,33 @@ const CategoryGrid = styled.div`
 
 const CategoryBtn = styled.button<{ $active: boolean }>`
   padding: 9px 20px;
-  border: 1px solid ${(p) => (p.$active ? "#337ab7" : "#ddd")};
+  border: 1px solid ${(p) => (p.$active ? "var(--accent)" : "var(--border)")};
   border-radius: 6px;
-  background: ${(p) => (p.$active ? "#337ab7" : "#fff")};
-  color: ${(p) => (p.$active ? "#fff" : "#555")};
+  background: ${(p) => (p.$active ? "var(--accent)" : "var(--surface)")};
+  color: ${(p) => (p.$active ? "#fff" : "var(--text-secondary)")};
   font-size: 0.9em;
   font-weight: 500;
   cursor: pointer;
   transition: all 0.15s ease;
   &:hover {
-    background: ${(p) => (p.$active ? "#286090" : "#f5f5f5")};
-    border-color: ${(p) => (p.$active ? "#286090" : "#bbb")};
-    color: ${(p) => (p.$active ? "#fff" : "#333")};
+    background: ${(p) => (p.$active ? "var(--accent-hover)" : "var(--surface-alt)")};
+    border-color: ${(p) => (p.$active ? "var(--accent-hover)" : "var(--border)")};
+    color: ${(p) => (p.$active ? "#fff" : "var(--text)")};
   }
 `;
 
 const WordCard = styled.div`
-  border: 1px solid #ddd;
+  border: 1px solid var(--border);
   border-radius: 8px;
   padding: 52px 32px;
-  background: #fff;
+  background: var(--surface);
   margin-bottom: 16px;
 `;
 
 const WordDisplay = styled.div`
   font-size: 3em;
   font-weight: 700;
-  color: #222;
+  color: var(--text);
   line-height: 1.2;
   word-break: break-word;
   animation: ${popIn} 0.2s ease;
@@ -68,17 +68,17 @@ const WordDisplay = styled.div`
 
 const NextBtn = styled.button`
   padding: 9px 28px;
-  border: 1px solid #ddd;
+  border: 1px solid var(--border);
   border-radius: 6px;
-  background: #fff;
-  color: #555;
+  background: var(--surface);
+  color: var(--text-secondary);
   font-size: 0.9em;
   cursor: pointer;
   transition: all 0.15s ease;
   &:hover {
-    background: #f5f5f5;
-    border-color: #bbb;
-    color: #333;
+    background: var(--surface-alt);
+    border-color: var(--border);
+    color: var(--text);
   }
 `;
 

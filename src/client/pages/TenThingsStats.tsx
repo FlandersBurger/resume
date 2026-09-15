@@ -109,7 +109,7 @@ function StatTable({
             style={onRowClick && row._id ? { cursor: "pointer" } : undefined}
             onClick={onRowClick && row._id ? () => onRowClick(row._id!) : undefined}
           >
-            <td style={{ width: 22, color: "#999", padding: "2px 4px" }}>{i + 1}</td>
+            <td style={{ width: 22, color: "var(--text-muted)", padding: "2px 4px" }}>{i + 1}</td>
             <td
               style={{
                 maxWidth: 160,

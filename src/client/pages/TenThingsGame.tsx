@@ -45,7 +45,7 @@ const SwitchSlider = styled.span<{ checked: boolean }>`
   display: inline-block;
   width: 38px;
   height: 22px;
-  background: ${({ checked }) => (checked ? "#4caf50" : "#ccc")};
+  background: ${({ checked }) => (checked ? "var(--success)" : "var(--border)")};
   border-radius: 22px;
   position: relative;
   transition: background 0.2s;
@@ -123,7 +123,7 @@ const CategoryMainButton = styled.button`
 `;
 
 const CategoryArrow = styled.span`
-  color: #aaa;
+  color: var(--text-muted);
   font-size: 12px;
   margin: 0 2px;
   flex-shrink: 0;

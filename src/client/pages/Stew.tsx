@@ -76,7 +76,7 @@ const Hero = styled.img`
   max-height: 420px;
   object-fit: cover;
   border-radius: 8px;
-  border: 1px solid #ddd;
+  border: 1px solid var(--border);
   display: block;
   margin-bottom: 24px;
 `;
@@ -86,7 +86,7 @@ const RecipeTitle = styled.h2`
 `;
 
 const Tagline = styled.p`
-  color: #777;
+  color: var(--text-secondary);
   font-size: 0.95em;
   margin-bottom: 16px;
 `;
@@ -97,7 +97,7 @@ const Meta = styled.div`
   flex-wrap: wrap;
   margin-bottom: 28px;
   font-size: 0.85em;
-  color: #888;
+  color: var(--text-muted);
 `;
 
 const MetaItem = styled.span`
@@ -110,9 +110,9 @@ const MetaItem = styled.span`
 `;
 
 const Card = styled.div`
-  border: 1px solid #ddd;
+  border: 1px solid var(--border);
   border-radius: 8px;
-  background: #fff;
+  background: var(--surface);
   padding: 16px 20px;
   margin-bottom: 28px;
 `;
@@ -122,7 +122,7 @@ const CardTitle = styled.h5`
   font-size: 0.8em;
   text-transform: uppercase;
   letter-spacing: 0.07em;
-  color: #888;
+  color: var(--text-muted);
   font-weight: 700;
 `;
 
@@ -140,7 +140,7 @@ const IngredientGrid = styled.ul`
 
 const Ingredient = styled.li`
   font-size: 0.9em;
-  color: #444;
+  color: var(--text);
   display: flex;
   align-items: baseline;
   gap: 7px;
@@ -150,7 +150,7 @@ const Ingredient = styled.li`
     width: 5px;
     height: 5px;
     border-radius: 50%;
-    background: #ccc;
+    background: var(--border);
     flex-shrink: 0;
     position: relative;
     top: -1px;
@@ -167,7 +167,7 @@ const StepRow = styled.div`
   display: flex;
   gap: 16px;
   padding: 20px 0;
-  border-bottom: 1px solid #f0f0f0;
+  border-bottom: 1px solid var(--border-soft);
   &:last-child {
     border-bottom: none;
   }
@@ -177,7 +177,7 @@ const StepNum = styled.div`
   width: 28px;
   height: 28px;
   border-radius: 50%;
-  background: #337ab7;
+  background: var(--accent);
   color: #fff;
   font-size: 0.78em;
   font-weight: 700;
@@ -194,7 +194,7 @@ const StepBody = styled.div`
 
 const StepText = styled.p`
   font-size: 0.93em;
-  color: #333;
+  color: var(--text);
   line-height: 1.6;
   margin: 0 0 12px;
 `;
@@ -210,7 +210,7 @@ const StepPhoto = styled.img`
   height: 200px;
   object-fit: cover;
   border-radius: 6px;
-  border: 1px solid #ddd;
+  border: 1px solid var(--border);
   display: block;
   @media (max-width: 480px) {
     height: 160px;

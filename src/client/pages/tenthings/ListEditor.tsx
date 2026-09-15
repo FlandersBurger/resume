@@ -746,7 +746,9 @@ export function ListEditor({
                   </button>
                   {list.categories.includes(cat.value) && cat.subcategories && cat.subcategories.length > 0 && (
                     <>
-                      <span style={{ color: "#aaa", fontSize: 12, margin: "0 2px", flexShrink: 0 }}>›</span>
+                      <span style={{ color: "var(--text-muted)", fontSize: 12, margin: "0 2px", flexShrink: 0 }}>
+                        ›
+                      </span>
                       <div style={{ display: "flex", flexWrap: "wrap", gap: 4, flex: 1 }}>
                         {cat.subcategories.map((sub) => (
                           <button

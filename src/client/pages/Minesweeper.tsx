@@ -8,8 +8,47 @@ const ROWS = 16;
 const MINE_COUNT = 40;
 const NAVBAR_H = 50;
 
-// Classic minesweeper number colors — kept for gameplay clarity
-const NUM_COLORS = ["", "#1565c0", "#2e7d32", "#c62828", "#283593", "#6a1515", "#00695c", "#212121", "#555"];
+// Classic minesweeper number colors — kept for gameplay clarity, brightened for dark mode
+const NUM_COLORS_LIGHT = ["", "#1565c0", "#2e7d32", "#c62828", "#283593", "#6a1515", "#00695c", "#212121", "#555"];
+const NUM_COLORS_DARK = ["", "#64b5f6", "#81c784", "#ef5350", "#7986cb", "#e57373", "#4db6ac", "#eeeeee", "#bbbbbb"];
+
+function getPalette(dark: boolean) {
+  return dark
+    ? {
+        headerBg: "#242424",
+        headerBorder: "#3a3a3a",
+        gridBg: "#1e1e1e",
+        hiddenBg: "#2a2a2a",
+        hiddenBorder: "#444444",
+        revealedBg: "#333333",
+        revealedBorder: "#454545",
+        mineRevealedBg: "#4a1f1f",
+        mineIcon: "#ff8a80",
+        flagIcon: "#ff6659",
+        bestText: "#aaaaaa",
+        faceBg: "#3a3a3a",
+        faceStroke: "#aaaaaa",
+        faceFeature: "#dddddd",
+        numColors: NUM_COLORS_DARK,
+      }
+    : {
+        headerBg: "#ffffff",
+        headerBorder: "#dddddd",
+        gridBg: "#f5f5f5",
+        hiddenBg: "#ffffff",
+        hiddenBorder: "#cccccc",
+        revealedBg: "#e9e9e9",
+        revealedBorder: "#d1d1d1",
+        mineRevealedBg: "#fee2e2",
+        mineIcon: "#991b1b",
+        flagIcon: "#dc2626",
+        bestText: "#555555",
+        faceBg: "#e8e8e8",
+        faceStroke: "#555555",
+        faceFeature: "#222222",
+        numColors: NUM_COLORS_LIGHT,
+      };
+}
 
 type Cell = { mine: boolean; revealed: boolean; flagged: boolean; adjacent: number };
 type GameState = "idle" | "playing" | "won" | "lost";
@@ -100,11 +139,16 @@ function faIcon(ctx: CanvasRenderingContext2D, icon: string, x: number, y: numbe
 const LCD_W_RATIO = 2.5;
 const LCD_H_RATIO = 0.88;
 
-function drawLCD(ctx: CanvasRenderingContext2D, x: number, y: number, value: string, cell: number) {
+function drawLCD(ctx: CanvasRenderingContext2D, x: number, y: number, value: string, cell: number, dark: boolean) {
   const lw = Math.round(cell * LCD_W_RATIO),
     lh = Math.round(cell * LCD_H_RATIO);
   ctx.fillStyle = "#000";
   ctx.fillRect(x, y, lw, lh);
+  if (dark) {
+    ctx.strokeStyle = "#444";
+    ctx.lineWidth = 1;
+    ctx.strokeRect(x + 0.5, y + 0.5, lw - 1, lh - 1);
+  }
   ctx.fillStyle = "#fff";
   const fs = Math.max(8, Math.round(cell * 0.46));
   ctx.font = `${fs}px "Press Start 2P", monospace`;
@@ -113,26 +157,32 @@ function drawLCD(ctx: CanvasRenderingContext2D, x: number, y: number, value: str
   ctx.fillText(value, x + lw / 2, y + lh / 2 + 1);
 }
 
-function drawFace(ctx: CanvasRenderingContext2D, gameState: GameState, w: number, headerH: number) {
+function drawFace(
+  ctx: CanvasRenderingContext2D,
+  gameState: GameState,
+  w: number,
+  headerH: number,
+  palette: ReturnType<typeof getPalette>,
+) {
   const cx = w / 2,
     cy = headerH / 2;
   const fr = headerH * 0.28;
 
-  ctx.fillStyle = "#e8e8e8";
+  ctx.fillStyle = palette.faceBg;
   ctx.beginPath();
   ctx.arc(cx, cy, fr, 0, Math.PI * 2);
   ctx.fill();
-  ctx.strokeStyle = "#555";
+  ctx.strokeStyle = palette.faceStroke;
   ctx.lineWidth = 1.5;
   ctx.stroke();
 
-  ctx.strokeStyle = "#222";
+  ctx.strokeStyle = palette.faceFeature;
   ctx.lineWidth = 1.5;
 
   if (gameState === "won") {
     const gw = fr * 0.65,
       gh = fr * 0.35;
-    ctx.fillStyle = "#222";
+    ctx.fillStyle = palette.faceFeature;
     ctx.fillRect(cx - fr * 0.75, cy - fr * 0.4, gw, gh);
     ctx.fillRect(cx + fr * 0.12, cy - fr * 0.4, gw, gh);
     ctx.beginPath();
@@ -157,7 +207,7 @@ function drawFace(ctx: CanvasRenderingContext2D, gameState: GameState, w: number
     ctx.arc(cx, cy + fr * 0.62, fr * 0.5, Math.PI, 0);
     ctx.stroke();
   } else {
-    ctx.fillStyle = "#222";
+    ctx.fillStyle = palette.faceFeature;
     ctx.beginPath();
     ctx.arc(cx - fr * 0.31, cy - fr * 0.19, fr * 0.12, 0, Math.PI * 2);
     ctx.arc(cx + fr * 0.31, cy - fr * 0.19, fr * 0.12, 0, Math.PI * 2);
@@ -180,8 +230,12 @@ export default function Minesweeper() {
   const layoutRef = useRef<Layout>(computeLayout());
   const rafRef = useRef(0);
   const actionsRef = useRef({ doReveal: (_x: number, _y: number) => {}, doChord: (_x: number, _y: number) => {} });
-  const { currentUser } = useApp();
+  const { currentUser, darkMode } = useApp();
   const bestTimeRef = useRef(0);
+  const darkModeRef = useRef(darkMode);
+  useEffect(() => {
+    darkModeRef.current = darkMode;
+  }, [darkMode]);
 
   useEffect(() => {
     if (!currentUser) return;
@@ -208,15 +262,17 @@ export default function Minesweeper() {
       const ctx = canvas.getContext("2d")!;
       const { grid, gameState, minesLeft, startTime, elapsed } = stateRef.current;
       const { cell, headerH, w, h } = layoutRef.current;
+      const dark = darkModeRef.current;
+      const palette = getPalette(dark);
 
-      // Header — flat white with a single bottom border
-      ctx.fillStyle = "#fff";
+      // Header — flat surface with a single bottom border
+      ctx.fillStyle = palette.headerBg;
       ctx.fillRect(0, 0, w, headerH);
-      ctx.fillStyle = "#ddd";
+      ctx.fillStyle = palette.headerBorder;
       ctx.fillRect(0, headerH - 1, w, 1);
 
       // Grid background
-      ctx.fillStyle = "#f5f5f5";
+      ctx.fillStyle = palette.gridBg;
       ctx.fillRect(0, headerH, w, h - headerH);
 
       const secs =
@@ -225,20 +281,20 @@ export default function Minesweeper() {
       const lcdW = Math.round(cell * LCD_W_RATIO),
         lcdH = Math.round(cell * LCD_H_RATIO);
       const lcdY = Math.round(headerH / 2 - lcdH / 2);
-      drawLCD(ctx, 8, lcdY, String(Math.max(0, minesLeft)).padStart(3, "0"), cell);
-      drawLCD(ctx, w - lcdW - 8, lcdY, String(secs).padStart(3, "0"), cell);
+      drawLCD(ctx, 8, lcdY, String(Math.max(0, minesLeft)).padStart(3, "0"), cell, dark);
+      drawLCD(ctx, w - lcdW - 8, lcdY, String(secs).padStart(3, "0"), cell, dark);
 
       const best = bestTimeRef.current;
       if (best > 0) {
         const smallFs = Math.max(6, Math.round(cell * 0.22));
-        ctx.fillStyle = "#555";
+        ctx.fillStyle = palette.bestText;
         ctx.font = `${smallFs}px "Press Start 2P", monospace`;
         ctx.textAlign = "center";
         ctx.textBaseline = "top";
         ctx.fillText(`BEST ${String(best).padStart(3, "0")}`, w - lcdW / 2 - 8, lcdY + lcdH + 3);
       }
 
-      drawFace(ctx, gameState, w, headerH);
+      drawFace(ctx, gameState, w, headerH, palette);
 
       for (let r = 0; r < ROWS; r++) {
         for (let c = 0; c < COLS; c++) {
@@ -247,30 +303,30 @@ export default function Minesweeper() {
           const cd = grid[r][c];
 
           if (cd.revealed) {
-            ctx.fillStyle = cd.mine ? "#fee2e2" : "#e9e9e9";
+            ctx.fillStyle = cd.mine ? palette.mineRevealedBg : palette.revealedBg;
             ctx.fillRect(x, y, cell, cell);
-            ctx.strokeStyle = "#d1d1d1";
+            ctx.strokeStyle = palette.revealedBorder;
             ctx.lineWidth = 1;
             ctx.strokeRect(x + 0.5, y + 0.5, cell - 1, cell - 1);
 
             if (cd.mine) {
-              faIcon(ctx, "", x + cell / 2, y + cell / 2 + 1, Math.round(cell * 0.5), "#991b1b");
+              faIcon(ctx, "", x + cell / 2, y + cell / 2 + 1, Math.round(cell * 0.5), palette.mineIcon);
             } else if (cd.adjacent > 0) {
-              ctx.fillStyle = NUM_COLORS[cd.adjacent];
+              ctx.fillStyle = palette.numColors[cd.adjacent];
               ctx.font = `bold ${Math.round(cell * 0.52)}px sans-serif`;
               ctx.textAlign = "center";
               ctx.textBaseline = "middle";
               ctx.fillText(String(cd.adjacent), x + cell / 2, y + cell / 2 + 1);
             }
           } else {
-            ctx.fillStyle = "#fff";
+            ctx.fillStyle = palette.hiddenBg;
             ctx.fillRect(x, y, cell, cell);
-            ctx.strokeStyle = "#ccc";
+            ctx.strokeStyle = palette.hiddenBorder;
             ctx.lineWidth = 1;
             ctx.strokeRect(x + 0.5, y + 0.5, cell - 1, cell - 1);
 
             if (cd.flagged) {
-              faIcon(ctx, "", x + cell / 2, y + cell / 2 + 1, Math.round(cell * 0.46), "#dc2626");
+              faIcon(ctx, "", x + cell / 2, y + cell / 2 + 1, Math.round(cell * 0.46), palette.flagIcon);
             }
           }
         }

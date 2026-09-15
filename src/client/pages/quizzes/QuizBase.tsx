@@ -27,7 +27,7 @@ const QuizPhotoPanel = styled.div`
       height: 200px;
       object-fit: contain;
       object-position: center;
-      background: #f5f5f5;
+      background: var(--surface-alt);
     }
   }
 `;
