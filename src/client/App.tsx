@@ -149,6 +149,12 @@ const GlobalStyle = createGlobalStyle`
     .table > tbody > tr > th {
       border-color: var(--border);
     }
+    .table-striped > tbody > tr:nth-of-type(odd) {
+      background-color: var(--surface-alt);
+    }
+    .table-hover > tbody > tr:hover {
+      background-color: var(--border);
+    }
     .form-control,
     input,
     textarea,
