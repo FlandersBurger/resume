@@ -47,10 +47,10 @@ const JobBodyArea = styled.div`
 `;
 
 const JobImageBox = styled.div`
-  box-shadow: 5px 5px 5px #888;
+  box-shadow: 5px 5px 5px rgba(0, 0, 0, 0.25);
   border-radius: 7px;
-  border: 1px solid #ddd;
-  background-color: #fff;
+  border: 1px solid var(--border);
+  background-color: var(--surface);
   padding: 5px;
   margin-top: 10px;
   img {

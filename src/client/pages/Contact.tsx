@@ -20,7 +20,7 @@ const Field = styled.div`
     display: block;
     font-size: 0.78em;
     font-weight: 600;
-    color: #aaa;
+    color: var(--text-muted);
     text-transform: uppercase;
     letter-spacing: 0.06em;
     margin-bottom: 5px;
@@ -40,16 +40,16 @@ const SubjectGrid = styled.div`
 const SubjectCard = styled.button<{ $active: boolean }>`
   text-align: left;
   padding: 11px 13px;
-  border: 1px solid ${(p) => (p.$active ? "#337ab7" : "#ddd")};
+  border: 1px solid ${(p) => (p.$active ? "var(--accent)" : "var(--border)")};
   border-radius: 6px;
-  background: ${(p) => (p.$active ? "#f0f7ff" : "#fff")};
+  background: ${(p) => (p.$active ? "var(--accent-soft)" : "var(--surface)")};
   cursor: pointer;
   width: 100%;
   transition:
     border-color 0.15s ease,
     background 0.15s ease;
   &:hover {
-    border-color: #337ab7;
+    border-color: var(--accent);
   }
 `;
 
@@ -60,12 +60,12 @@ const SubjectLabel = styled.div`
   font-weight: 600;
   font-size: 0.87em;
   margin-bottom: 4px;
-  color: #333;
+  color: var(--text);
 `;
 
 const SubjectDesc = styled.div`
   font-size: 0.76em;
-  color: #999;
+  color: var(--text-muted);
   line-height: 1.35;
 `;
 
@@ -75,7 +75,7 @@ const SuccessBox = styled.div`
   i {
     display: block;
     font-size: 3em;
-    color: #5cb85c;
+    color: var(--success);
     margin-bottom: 16px;
   }
   h4 {
@@ -83,7 +83,7 @@ const SuccessBox = styled.div`
     font-size: 1.2em;
   }
   p {
-    color: #999;
+    color: var(--text-muted);
     margin: 0;
     font-size: 0.9em;
   }

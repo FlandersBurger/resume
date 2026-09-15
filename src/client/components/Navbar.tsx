@@ -28,7 +28,7 @@ const HamBar = styled.span<{ $open: boolean; $which: number }>`
   display: block;
   width: 20px;
   height: 2px;
-  background: #666;
+  background: var(--text-muted, #666);
   border-radius: 1px;
   transition:
     transform 0.25s ease,
@@ -70,8 +70,8 @@ const Drawer = styled.div<{ $open: boolean }>`
     left: 0;
     bottom: 0;
     width: 240px;
-    background: #fff;
-    border-right: 1px solid #ddd;
+    background: var(--bg, #fff);
+    border-right: 1px solid var(--border, #ddd);
     z-index: 99999;
     transform: translateX(${(p) => (p.$open ? "0" : "-100%")});
     transition: transform 0.25s ease;
@@ -89,28 +89,28 @@ const DrawerNav = styled.ul`
   span {
     display: block;
     padding: 10px 20px;
-    color: #555;
+    color: var(--text, #555);
     text-decoration: none;
     cursor: pointer;
     &:hover {
-      background: #f5f5f5;
-      color: #333;
+      background: var(--surface, #f5f5f5);
+      color: var(--link, #333);
     }
   }
 `;
 
 const DrawerGroupHeader = styled.li`
-  border-top: 1px solid #eee;
+  border-top: 1px solid var(--border-soft, #eee);
   padding: 10px 20px;
   font-size: 13px;
-  color: #555;
+  color: var(--text, #555);
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: space-between;
   user-select: none;
   &:hover {
-    background: #f5f5f5;
+    background: var(--surface, #f5f5f5);
   }
 `;
 
@@ -121,7 +121,7 @@ const DrawerGroupItems = styled.ul<{ $open: boolean }>`
   max-height: ${(p) => (p.$open ? "500px" : "0")};
   overflow: hidden;
   transition: max-height 0.2s ease;
-  background: #fafafa;
+  background: var(--surface, #fafafa);
   a,
   span {
     padding-left: 32px;
@@ -129,7 +129,11 @@ const DrawerGroupItems = styled.ul<{ $open: boolean }>`
 `;
 
 const DrawerDivider = styled.li`
-  border-top: 1px solid #eee;
+  border-top: 1px solid var(--border-soft, #eee);
+`;
+
+const ThemeToggle = styled.a`
+  cursor: pointer;
 `;
 
 function DrawerGroup({ label, children }: { label: string; children: React.ReactNode }) {
@@ -143,7 +147,7 @@ function DrawerGroup({ label, children }: { label: string; children: React.React
         }}
       >
         {label}
-        <i className={`fa fa-chevron-${open ? "up" : "down"}`} style={{ fontSize: 11, color: "#aaa" }} />
+        <i className={`fa fa-chevron-${open ? "up" : "down"}`} style={{ fontSize: 11, color: "var(--text-muted)" }} />
       </DrawerGroupHeader>
       <DrawerGroupItems $open={open}>{children}</DrawerGroupItems>
     </>
@@ -183,7 +187,18 @@ function Dropdown({ label, children }: { label: React.ReactNode; children: React
 }
 
 export function Navbar() {
-  const { currentUser, logout, openLogin, loginLoading, openChat, isAdmin, adminMode, toggleAdminMode } = useApp();
+  const {
+    currentUser,
+    logout,
+    openLogin,
+    loginLoading,
+    openChat,
+    isAdmin,
+    adminMode,
+    toggleAdminMode,
+    darkMode,
+    toggleDarkMode,
+  } = useApp();
   const navigate = useNavigate();
   const [mobileOpen, setMobileOpen] = useState(false);
 
@@ -235,6 +250,9 @@ export function Navbar() {
             </li>
           )}
           <DrawerDivider />
+          <li>
+            <span onClick={toggleDarkMode}>{darkMode ? "Light mode" : "Dark mode"}</span>
+          </li>
           <li>
             <span onClick={() => window.print()}>Print resume</span>
           </li>
@@ -324,6 +342,11 @@ export function Navbar() {
               )}
             </ul>
             <ul className="nav navbar-nav navbar-right">
+              <li>
+                <ThemeToggle title={darkMode ? "Switch to light mode" : "Switch to dark mode"} onClick={toggleDarkMode}>
+                  <i className={`fa fa-${darkMode ? "sun" : "moon"}`} />
+                </ThemeToggle>
+              </li>
               {currentUser && (
                 <li>
                   <a style={{ cursor: "pointer" }} title="Chat" onClick={openChat}>

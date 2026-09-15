@@ -20,8 +20,8 @@ const Panel = styled.div<{ $open: boolean }>`
   right: 0;
   width: 340px;
   height: calc(100vh - 50px);
-  background: #fff;
-  border-left: 1px solid #ddd;
+  background: var(--surface);
+  border-left: 1px solid var(--border);
   z-index: 99999;
   transform: translateX(${(p) => (p.$open ? "0" : "100%")});
   transition: transform 0.25s ease;
@@ -37,7 +37,7 @@ const PanelHeader = styled.div`
   align-items: center;
   justify-content: space-between;
   padding: 10px 16px;
-  border-bottom: 1px solid #ddd;
+  border-bottom: 1px solid var(--border);
   flex-shrink: 0;
   h4 {
     margin: 0;
@@ -60,14 +60,14 @@ const MessageRow = styled.div`
   line-height: 1.45;
   word-break: break-word;
   strong {
-    color: #555;
+    color: var(--text-secondary);
     margin-right: 5px;
   }
 `;
 
 const InputArea = styled.div`
   padding: 10px 12px;
-  border-top: 1px solid #ddd;
+  border-top: 1px solid var(--border);
   flex-shrink: 0;
 `;
 

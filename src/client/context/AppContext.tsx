@@ -55,9 +55,11 @@ interface AppContextValue {
   showChat: boolean;
   adminMode: boolean;
   isAdmin: boolean;
+  darkMode: boolean;
   toast: (message: string) => void;
   setUser: (user: User | null) => void;
   flipTheme: () => void;
+  toggleDarkMode: () => void;
   logout: () => void;
   openLogin: () => void;
   closeLogin: () => void;
@@ -78,11 +80,28 @@ export function AppProvider({ children }: { children: ReactNode }) {
   const openChat = useCallback(() => setShowChat(true), []);
   const closeChat = useCallback(() => setShowChat(false), []);
   const [adminMode, setAdminMode] = useState(() => window.localStorage.getItem("adminMode") !== "false");
+  const [darkMode, setDarkMode] = useState(() => {
+    const stored = window.localStorage.getItem("darkMode");
+    if (stored !== null) return stored === "true";
+    return window.matchMedia?.("(prefers-color-scheme: dark)").matches ?? false;
+  });
   const [state, dispatch] = useReducer(reducer, {
     currentUser: null,
     toasts: [],
     themeCounter: 6,
   });
+
+  useEffect(() => {
+    document.documentElement.setAttribute("data-theme", darkMode ? "dark" : "light");
+  }, [darkMode]);
+
+  const toggleDarkMode = useCallback(() => {
+    setDarkMode((prev) => {
+      const next = !prev;
+      window.localStorage.setItem("darkMode", String(next));
+      return next;
+    });
+  }, []);
 
   const toast = useCallback((message: string) => {
     const id = Date.now();
@@ -143,6 +162,8 @@ export function AppProvider({ children }: { children: ReactNode }) {
         adminMode,
         isAdmin,
         toggleAdminMode,
+        darkMode,
+        toggleDarkMode,
       }}
     >
       {children}

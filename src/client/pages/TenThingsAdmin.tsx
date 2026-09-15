@@ -133,7 +133,7 @@ export default function TenThingsAdmin() {
         <tbody>
           {filteredUsers.map((u) => (
             <tr key={u._id}>
-              <td style={{ fontSize: 11, color: "#aaa" }}>{u._id}</td>
+              <td style={{ fontSize: 11, color: "var(--text-muted)" }}>{u._id}</td>
               <td>{u.username}</td>
               <td>{u.displayName}</td>
               <td>{u.email}</td>

@@ -16,10 +16,10 @@ const DoodleCard = styled(Link)<{ $index: number }>`
   align-items: center;
   text-align: center;
   padding: 22px 12px 16px;
-  border: 1px solid #ddd;
+  border: 1px solid var(--border);
   border-radius: 6px;
-  background: #fff;
-  color: #333;
+  background: var(--surface);
+  color: var(--text);
   text-decoration: none;
   opacity: 0;
   animation: ${fadeInUp} 0.3s ease forwards;
@@ -32,14 +32,14 @@ const DoodleCard = styled(Link)<{ $index: number }>`
     box-shadow: 0 3px 14px rgba(0, 0, 0, 0.1);
     transform: translateY(-2px);
     text-decoration: none;
-    color: #222;
+    color: var(--text);
   }
 `;
 
 const CardIcon = styled.div`
   font-size: 2em;
   margin-bottom: 10px;
-  color: #666;
+  color: var(--text-secondary);
 `;
 
 const CardTitle = styled.div`
@@ -49,7 +49,7 @@ const CardTitle = styled.div`
 
 const CardDesc = styled.div`
   font-size: 0.75em;
-  color: #aaa;
+  color: var(--text-muted);
   margin-top: 3px;
   line-height: 1.3;
 `;

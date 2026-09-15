@@ -22,6 +22,8 @@ export const defaultContextValue: AppContextValue = {
   adminMode: true,
   isAdmin: false,
   toggleAdminMode: jest.fn(),
+  darkMode: false,
+  toggleDarkMode: jest.fn(),
 };
 
 jest.mock("../../client/context/AppContext", () => ({

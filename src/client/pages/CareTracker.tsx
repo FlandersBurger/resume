@@ -23,7 +23,7 @@ const Title = styled.h2`
 `;
 
 const Subtitle = styled.div`
-  color: #999;
+  color: var(--text-muted);
   font-size: 0.85em;
   margin-bottom: 18px;
 `;
@@ -39,32 +39,32 @@ const TabsRow = styled.div`
 const Tab = styled.button<{ $active: boolean }>`
   flex: none;
   padding: 8px 14px;
-  border: 1px solid ${(p) => (p.$active ? "#337ab7" : "#ddd")};
+  border: 1px solid ${(p) => (p.$active ? "var(--accent)" : "var(--border)")};
   border-radius: 6px;
-  background: ${(p) => (p.$active ? "#337ab7" : "#fff")};
-  color: ${(p) => (p.$active ? "#fff" : "#333")};
+  background: ${(p) => (p.$active ? "var(--accent)" : "var(--surface)")};
+  color: ${(p) => (p.$active ? "#fff" : "var(--text)")};
   font-size: 0.85em;
   font-weight: ${(p) => (p.$active ? 600 : 400)};
   cursor: pointer;
   white-space: nowrap;
   &:hover {
-    border-color: #337ab7;
+    border-color: var(--accent);
   }
 `;
 
 const JumpDate = styled.input`
   flex: none;
   padding: 7px 10px;
-  border: 1px solid #ddd;
+  border: 1px solid var(--border);
   border-radius: 6px;
   font-size: 0.85em;
-  color: #666;
+  color: var(--text-secondary);
 `;
 
 const Card = styled.div`
-  border: 1px solid #ddd;
+  border: 1px solid var(--border);
   border-radius: 8px;
-  background: #fff;
+  background: var(--surface);
   padding: 16px;
   margin-bottom: 20px;
 `;
@@ -78,15 +78,15 @@ const ChipsRow = styled.div`
 
 const Chip = styled.button<{ $active: boolean }>`
   padding: 6px 12px;
-  border: 1px solid ${(p) => (p.$active ? "#337ab7" : "#ddd")};
+  border: 1px solid ${(p) => (p.$active ? "var(--accent)" : "var(--border)")};
   border-radius: 20px;
-  background: ${(p) => (p.$active ? "#eaf4fb" : "#fff")};
-  color: ${(p) => (p.$active ? "#337ab7" : "#555")};
+  background: ${(p) => (p.$active ? "var(--accent-soft)" : "var(--surface)")};
+  color: ${(p) => (p.$active ? "var(--accent)" : "var(--text-secondary)")};
   font-size: 0.85em;
   font-weight: ${(p) => (p.$active ? 600 : 400)};
   cursor: pointer;
   &:hover {
-    border-color: #337ab7;
+    border-color: var(--accent);
   }
 `;
 
@@ -106,43 +106,46 @@ const Field = styled.div<{ $grow?: boolean }>`
 
 const FieldLabel = styled.label`
   font-size: 0.75em;
-  color: #999;
+  color: var(--text-muted);
   text-transform: uppercase;
   letter-spacing: 0.05em;
 `;
 
 const TextInput = styled.input`
   padding: 8px 10px;
-  border: 1px solid #ddd;
+  border: 1px solid var(--border);
   border-radius: 6px;
   font-size: 0.95em;
-  color: #333;
+  color: var(--text);
+  background: var(--surface);
   &:focus {
     outline: none;
-    border-color: #337ab7;
+    border-color: var(--accent);
   }
 `;
 
 const Select = styled.select`
   padding: 8px 10px;
-  border: 1px solid #ddd;
+  border: 1px solid var(--border);
   border-radius: 6px;
   font-size: 0.95em;
-  color: #333;
+  color: var(--text);
+  background: var(--surface);
 `;
 
 const TextArea = styled.textarea`
   padding: 8px 10px;
-  border: 1px solid #ddd;
+  border: 1px solid var(--border);
   border-radius: 6px;
   font-size: 0.95em;
-  color: #333;
+  color: var(--text);
+  background: var(--surface);
   min-height: 44px;
   resize: vertical;
   width: 100%;
   &:focus {
     outline: none;
-    border-color: #337ab7;
+    border-color: var(--accent);
   }
 `;
 
@@ -155,15 +158,15 @@ const PillsRow = styled.div`
 
 const Pill = styled.button`
   padding: 4px 10px;
-  border: 1px solid #eee;
+  border: 1px solid var(--border-soft);
   border-radius: 14px;
-  background: #f7f7f7;
-  color: #666;
+  background: var(--surface-alt);
+  color: var(--text-secondary);
   font-size: 0.78em;
   cursor: pointer;
   &:hover {
-    border-color: #337ab7;
-    color: #337ab7;
+    border-color: var(--accent);
+    color: var(--accent);
   }
 `;
 
@@ -176,10 +179,10 @@ const ScaleRow = styled.div`
 const ScaleBtn = styled.button<{ $active: boolean }>`
   width: 34px;
   height: 34px;
-  border: 1px solid ${(p) => (p.$active ? "#337ab7" : "#ddd")};
+  border: 1px solid ${(p) => (p.$active ? "var(--accent)" : "var(--border)")};
   border-radius: 6px;
-  background: ${(p) => (p.$active ? "#337ab7" : "#fff")};
-  color: ${(p) => (p.$active ? "#fff" : "#555")};
+  background: ${(p) => (p.$active ? "var(--accent)" : "var(--surface)")};
+  color: ${(p) => (p.$active ? "#fff" : "var(--text-secondary)")};
   font-size: 0.85em;
   font-weight: 600;
   cursor: pointer;
@@ -193,9 +196,9 @@ const SaveRow = styled.div`
 
 const SaveBtn = styled.button`
   padding: 9px 24px;
-  border: 1px solid #337ab7;
+  border: 1px solid var(--accent);
   border-radius: 6px;
-  background: #337ab7;
+  background: var(--accent);
   color: #fff;
   font-size: 0.9em;
   font-weight: 500;
@@ -205,16 +208,16 @@ const SaveBtn = styled.button`
     cursor: default;
   }
   &:hover:not(:disabled) {
-    background: #286090;
+    background: var(--accent-hover);
   }
 `;
 
 const CancelBtn = styled.button`
   padding: 9px 18px;
-  border: 1px solid #ddd;
+  border: 1px solid var(--border);
   border-radius: 6px;
-  background: #fff;
-  color: #666;
+  background: var(--surface);
+  color: var(--text-secondary);
   font-size: 0.9em;
   cursor: pointer;
 `;
@@ -224,7 +227,7 @@ const EntryRow = styled.div`
   align-items: flex-start;
   gap: 12px;
   padding: 10px 0;
-  border-bottom: 1px solid #eee;
+  border-bottom: 1px solid var(--border-soft);
   &:last-child {
     border-bottom: none;
   }
@@ -242,25 +245,25 @@ const EntryBody = styled.div`
 `;
 
 const EntryTime = styled.span`
-  color: #999;
+  color: var(--text-muted);
   font-size: 0.8em;
   margin-right: 8px;
 `;
 
 const EntryType = styled.span`
   font-weight: 600;
-  color: #333;
+  color: var(--text);
   font-size: 0.92em;
 `;
 
 const EntrySummary = styled.div`
-  color: #444;
+  color: var(--text-secondary);
   font-size: 0.92em;
   margin-top: 2px;
 `;
 
 const EntryNotes = styled.div`
-  color: #999;
+  color: var(--text-muted);
   font-size: 0.82em;
   margin-top: 2px;
   font-style: italic;
@@ -275,17 +278,17 @@ const EntryActions = styled.div`
 const IconBtn = styled.button`
   border: none;
   background: none;
-  color: #bbb;
+  color: var(--text-muted);
   cursor: pointer;
   font-size: 0.85em;
   padding: 2px 4px;
   &:hover {
-    color: #337ab7;
+    color: var(--accent);
   }
 `;
 
 const EmptyState = styled.div`
-  color: #aaa;
+  color: var(--text-muted);
   text-align: center;
   padding: 24px 0;
   font-size: 0.9em;

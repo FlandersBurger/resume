@@ -10,9 +10,9 @@ const Page = styled.div`
 `;
 
 const SettingsCard = styled.div`
-  border: 1px solid #ddd;
+  border: 1px solid var(--border);
   border-radius: 8px;
-  background: #fff;
+  background: var(--surface);
   padding: 14px 20px;
   margin-bottom: 24px;
   display: flex;
@@ -35,7 +35,7 @@ const Field = styled.div`
 
 const FieldLabel = styled.label`
   font-size: 0.78em;
-  color: #999;
+  color: var(--text-muted);
   text-transform: uppercase;
   letter-spacing: 0.06em;
 `;
@@ -43,56 +43,57 @@ const FieldLabel = styled.label`
 const NumberInput = styled.input`
   width: 90px;
   padding: 8px 12px;
-  border: 1px solid #ddd;
+  border: 1px solid var(--border);
   border-radius: 6px;
   font-size: 1em;
   text-align: center;
-  color: #333;
+  color: var(--text);
+  background: var(--surface);
   &:disabled {
-    background: #f9f9f9;
-    color: #bbb;
+    background: var(--surface-alt);
+    color: var(--text-muted);
   }
   &:focus {
     outline: none;
-    border-color: #337ab7;
+    border-color: var(--accent);
   }
 `;
 
 const StartBtn = styled.button`
   padding: 10px 32px;
-  border: 1px solid #337ab7;
+  border: 1px solid var(--accent);
   border-radius: 6px;
-  background: #337ab7;
+  background: var(--accent);
   color: #fff;
   font-size: 0.9em;
   font-weight: 500;
   cursor: pointer;
   transition: all 0.15s ease;
   &:hover {
-    background: #286090;
+    background: var(--accent-hover);
   }
 `;
 
 const StopBtn = styled.button`
   padding: 4px 14px;
-  border: 1px solid #c9302c;
+  border: 1px solid var(--danger-hover);
   border-radius: 6px;
-  background: #d9534f;
+  background: var(--danger);
   color: #fff;
   font-size: 0.82em;
   font-weight: 500;
   cursor: pointer;
   transition: all 0.15s ease;
   &:hover {
-    background: #c9302c;
+    background: var(--danger-hover);
   }
 `;
 
 const WorkoutCard = styled.div`
   position: relative;
-  border: 1px solid #ddd;
+  border: 1px solid var(--border);
   border-radius: 8px;
-  background: #fff;
+  background: var(--surface);
   padding: 40px 32px 32px;
   margin-bottom: 20px;
 `;
@@ -103,7 +104,7 @@ const TimerDisplay = styled.div<{ $rest: boolean }>`
   line-height: 1;
   min-width: 1.8ch;
   text-align: right;
-  color: ${(p) => (p.$rest ? "#e8a000" : "#337ab7")};
+  color: ${(p) => (p.$rest ? "var(--warning-text)" : "var(--accent)")};
 `;
 
 const PhaseBadge = styled.span<{ $rest: boolean }>`
@@ -114,15 +115,15 @@ const PhaseBadge = styled.span<{ $rest: boolean }>`
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.08em;
-  border: 1px solid ${(p) => (p.$rest ? "#f5d87a" : "#9fc8e8")};
-  background: ${(p) => (p.$rest ? "#fef9e7" : "#eaf4fb")};
-  color: ${(p) => (p.$rest ? "#e8a000" : "#337ab7")};
+  border: 1px solid ${(p) => (p.$rest ? "var(--warning-border)" : "var(--accent-border)")};
+  background: ${(p) => (p.$rest ? "var(--warning-soft)" : "var(--accent-soft)")};
+  color: ${(p) => (p.$rest ? "var(--warning-text)" : "var(--accent)")};
 `;
 
 const ExerciseName = styled.div`
   font-size: 1.7em;
   font-weight: 600;
-  color: #222;
+  color: var(--text);
   margin-bottom: 6px;
 `;
 
@@ -131,13 +132,13 @@ const ProgressText = styled.div`
   top: 10px;
   right: 14px;
   font-size: 0.8em;
-  color: #bbb;
+  color: var(--text-muted);
 `;
 
 const SideLabel = styled.div`
   font-size: 1em;
   font-weight: 600;
-  color: #666;
+  color: var(--text-secondary);
   margin-top: 8px;
 `;
 
@@ -151,7 +152,7 @@ const ExerciseImg = styled.img`
 const FinishedMsg = styled.div`
   font-size: 1.8em;
   font-weight: 700;
-  color: #3c763d;
+  color: var(--success-text);
   padding: 16px 0;
 `;
 

@@ -14,10 +14,10 @@ const EditPanel = styled.div<{ $active?: boolean }>`
   right: ${({ $active }) => ($active ? "0" : "-100%")};
   width: 95%;
   transition: right 0.3s ease-in-out;
-  background-color: white;
+  background-color: var(--surface);
   z-index: 100;
   border: solid;
-  border-color: black;
+  border-color: var(--text);
   padding: 0 20px 20px;
 `;
 
@@ -29,12 +29,12 @@ const EditPanelHeader = styled.div`
   align-items: center;
   position: sticky;
   top: 0;
-  background: white;
+  background: var(--surface);
   z-index: 10;
   margin: 0 -20px;
   padding: 0 20px;
   border-bottom: solid;
-  border-bottom-color: black;
+  border-bottom-color: var(--text);
 `;
 
 const Overlay = styled.div<{ $visible: boolean }>`
@@ -60,8 +60,8 @@ const ResponseGrid = styled.div`
 
 const ResponseCard = styled.div`
   position: relative;
-  border: 1px solid #ddd;
-  background: white;
+  border: 1px solid var(--border);
+  background: var(--surface);
   padding: 8px;
   display: flex;
   flex-direction: column;
@@ -70,8 +70,8 @@ const ResponseCard = styled.div`
     width: 100%;
     height: 120px;
     object-fit: contain;
-    background: #f7f7f7;
-    border: 1px solid #eee;
+    background: var(--surface-alt);
+    border: 1px solid var(--border-soft);
     margin-bottom: 6px;
   }
   textarea {
