@@ -245,7 +245,10 @@
     "suggestionPrompt": "<b>SUGGESTION</b>\nPlease add your suggestion in your next message, {{name}}!",
     "featurePrompt": "<b>FEATURE</b>\nPlease suggest your feature in your next message, {{name}}!",
     "typoPrompt": "<b>TYPO</b>\nPlease let me know what the typo is in your next message, {{name}}!\nMention the list name too if the typo is not part of: <i>\"{{list}}\"</i>",
-    "bugPrompt": "<b>BUG</b>\nPlease provide some details as to what went wrong in your next message, {{name}}!"
+    "bugPrompt": "<b>BUG</b>\nPlease provide some details as to what went wrong in your next message, {{name}}!",
+    "newListsHeading": "<b>New lists</b>",
+    "updatedListsHeading": "<b>Updated lists</b>",
+    "listUpdatesOptOut": "Switch off these updates through /settings"
   },
   "warnings": {
     "minimum1Category": "A minimum of 1 category is required",

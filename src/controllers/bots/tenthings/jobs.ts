@@ -16,6 +16,7 @@ import { IStats } from "@models/tenthings/stats";
 import { updateMinigames } from "./minigame";
 import { SupportedLanguage } from "./languages";
 import { Game, GameRound, Player, Stats, List } from "@models/index";
+import i18n from "@root/i18n";
 
 // ██████  ███████ ███████ ███████ ████████     ██████   █████  ██ ██      ██    ██     ███████  ██████  ██████  ██████  ███████
 // ██   ██ ██      ██      ██         ██        ██   ██ ██   ██ ██ ██       ██  ██      ██      ██      ██    ██ ██   ██ ██
@@ -280,35 +281,36 @@ const sendListUpdates = async () => {
     platform: "telegram",
     enabled: true,
     listsPlayed: { $gt: 0 },
-  }).select("telegramChatId telegramTopicId telegramChannel settings.languages");
+  }).select("telegramChatId telegramTopicId telegramChannel settings.languages settings.language");
 
-  // Group games by their language set so each distinct combination gets one composed message
-  // instead of recomputing (and resending) the same text per game.
-  const groups = new Map<string, { languages: string[]; channels: Channel[] }>();
+  // Group games by their content-language set + UI language, so each distinct combination
+  // gets one composed (and correctly translated) message instead of recomputing per game.
+  const groups = new Map<string, { languages: string[]; uiLanguage: string; channels: Channel[] }>();
   for (const game of games) {
     const languages = game.settings.languages?.length ? game.settings.languages : [SupportedLanguage.EN];
-    const key = [...languages].sort().join(",");
-    if (!groups.has(key)) groups.set(key, { languages, channels: [] });
+    const uiLanguage = game.settings.language || SupportedLanguage.EN;
+    const key = `${[...languages].sort().join(",")}|${uiLanguage}`;
+    if (!groups.has(key)) groups.set(key, { languages, uiLanguage, channels: [] });
     groups.get(key)!.channels.push(game.telegramChannel);
   }
 
   let sentTo = 0;
-  for (const { languages, channels } of groups.values()) {
+  for (const { languages, uiLanguage, channels } of groups.values()) {
     const relevantNew = newLists.filter(({ language }) => languages.includes(language));
     const relevantUpdated = updatedLists.filter(({ language }) => languages.includes(language));
     if (relevantNew.length === 0 && relevantUpdated.length === 0) continue;
 
     let message = "";
     if (relevantNew.length > 0) {
-      message += "<b>New lists</b>";
+      message += i18n(uiLanguage, "sentences.newListsHeading");
       relevantNew.forEach(({ name }) => (message += `\n- ${name}`));
     }
     if (relevantUpdated.length > 0) {
       if (message) message += "\n\n";
-      message += "<b>Updated lists</b>";
+      message += i18n(uiLanguage, "sentences.updatedListsHeading");
       relevantUpdated.forEach(({ name }) => (message += `\n- ${name}`));
     }
-    message += "\n\n<i>Switch off these updates through /settings</i>";
+    message += `\n\n<i>${i18n(uiLanguage, "sentences.listUpdatesOptOut")}</i>`;
     bot.broadcast(channels, message);
     sentTo += channels.length;
   }
