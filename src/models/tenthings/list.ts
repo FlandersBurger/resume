@@ -39,6 +39,7 @@ export interface IList {
   date: Date;
   modifyDate: Date;
   lastPlayDate: Date;
+  staleNotifiedDate: Date;
   plays: number;
   hints: number;
   skips: number;
@@ -102,6 +103,9 @@ const listSchema = new Schema<IList>(
     date: { type: Date, required: true, default: Date.now },
     modifyDate: { type: Date, required: true, default: Date.now },
     lastPlayDate: { type: Date, required: false },
+    // Last time this list was surfaced in the "stale lists" admin digest (jobs.ts).
+    // Used to cool down repeat mentions so the digest doesn't just keep growing.
+    staleNotifiedDate: { type: Date, required: false },
     plays: { type: Number, required: true, default: 0 },
     hints: { type: Number, required: true, default: 0 },
     skips: { type: Number, required: true, default: 0 },

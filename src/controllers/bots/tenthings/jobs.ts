@@ -17,6 +17,8 @@ import { updateMinigames } from "./minigame";
 import { SupportedLanguage } from "./languages";
 import { Game, GameRound, Player, Stats, List } from "@models/index";
 import i18n from "@root/i18n";
+import { getFrequencyMessage } from "./messages";
+import { capitalize } from "@utils/string-helpers";
 
 // ██████  ███████ ███████ ███████ ████████     ██████   █████  ██ ██      ██    ██     ███████  ██████  ██████  ██████  ███████
 // ██   ██ ██      ██      ██         ██        ██   ██ ██   ██ ██ ██       ██  ██      ██      ██      ██    ██ ██   ██ ██
@@ -317,6 +319,109 @@ const sendListUpdates = async () => {
   bot.notifyAdmin(`List update notice sent to ${sentTo} of ${games.length} eligible games`);
 };
 
+// ███████ ████████  █████  ██      ███████     ██      ██ ███████ ████████ ███████
+// ██         ██    ██   ██ ██      ██          ██      ██ ██         ██    ██
+// ███████    ██    ███████ ██      █████       ██      ██ ███████    ██    ███████
+//      ██    ██    ██   ██ ██      ██          ██      ██      ██    ██         ██
+// ███████    ██    ██   ██ ███████ ███████     ███████ ██ ███████    ██    ███████
+
+// Small calendar of recurring award shows, so lists tagged with the matching award category
+// can be called out right after the ceremony airs instead of waiting for them to age past
+// their frequency cadence like everything else. Approximate air dates; the digest checks a
+// window after each one so it doesn't need to be exact.
+const AWARD_EVENTS: { name: string; month: number; day: number; categoryMatch: RegExp }[] = [
+  { name: "Golden Globes", month: 0, day: 5, categoryMatch: /movies\.awards|television\.awards/ },
+  { name: "Grammys", month: 1, day: 1, categoryMatch: /music\.awards/ },
+  { name: "Oscars", month: 2, day: 10, categoryMatch: /movies\.awards/ },
+  { name: "Emmys", month: 8, day: 15, categoryMatch: /television\.awards/ },
+];
+const AWARD_EVENT_WINDOW_DAYS = 21;
+
+const isRecentAnnualDate = (month: number, day: number, windowDays: number): boolean => {
+  const now = moment();
+  const daysSince = now.diff(moment({ year: now.year(), month, day }), "days");
+  return daysSince >= 0 && daysSince <= windowDays;
+};
+
+// Lists tagged "quarterly"/"annually" (frequency 0/1) that haven't been touched within their
+// cadence. "rarely"/"never" (2/3) are excluded — they have no real cadence to enforce.
+const STALE_CADENCE: Record<number, [number, moment.unitOfTime.DurationConstructor]> = {
+  0: [3, "months"],
+  1: [1, "years"],
+};
+const MAX_STALE_LISTS_PER_SECTION = 10;
+const STALE_RENOTIFY_COOLDOWN_DAYS = 30;
+
+// Surfaces a bounded, prioritized backlog of lists overdue for a refresh, plus a callout for
+// any award lists whose ceremony just happened. Capped per section and re-notified only after
+// a cooldown, so the digest reflects this week's new backlog rather than repeating (and growing
+// with) everything that's ever gone stale.
+const notifyStaleLists = async () => {
+  const cooldownCutoff = moment().subtract(STALE_RENOTIFY_COOLDOWN_DAYS, "days").toDate();
+  const notNotifiedRecently = {
+    $or: [{ staleNotifiedDate: { $exists: false } }, { staleNotifiedDate: { $lt: cooldownCutoff } }],
+  };
+
+  const overdue = await List.find({
+    enabled: true,
+    $and: [
+      notNotifiedRecently,
+      {
+        $or: Object.entries(STALE_CADENCE).map(([frequency, [amount, unit]]) => ({
+          frequency: Number(frequency),
+          modifyDate: { $lt: moment().subtract(amount, unit).toDate() },
+        })),
+      },
+    ],
+  })
+    .select("name frequency plays modifyDate")
+    .sort({ plays: -1 })
+    .limit(MAX_STALE_LISTS_PER_SECTION)
+    .lean();
+
+  const dueEvents = AWARD_EVENTS.filter((event) => isRecentAnnualDate(event.month, event.day, AWARD_EVENT_WINDOW_DAYS));
+  const eventSections: { eventName: string; lists: { _id: Types.ObjectId; name: string }[] }[] = [];
+  for (const event of dueEvents) {
+    const lists = await List.find({ enabled: true, categories: event.categoryMatch, ...notNotifiedRecently })
+      .select("name")
+      .sort({ plays: -1 })
+      .limit(MAX_STALE_LISTS_PER_SECTION)
+      .lean();
+    if (lists.length > 0) eventSections.push({ eventName: event.name, lists });
+  }
+
+  // An overdue list already called out for an event this run doesn't need to also show up in
+  // the generic backlog section.
+  const eventListIds = new Set(eventSections.flatMap(({ lists }) => lists.map((list) => list._id.toString())));
+  const dedupedOverdue = overdue.filter((list) => !eventListIds.has(list._id.toString()));
+
+  if (dedupedOverdue.length === 0 && eventSections.length === 0) {
+    return bot.notifyAdmin("Stale list digest: nothing new to review this week");
+  }
+
+  const listLink = (id: Types.ObjectId, name: string) =>
+    `<a href="https://belgocanadian.com/tenthings?list=${id}">${name}</a>`;
+  let message = "";
+  eventSections.forEach(({ eventName, lists }) => {
+    message += `🏆 <b>${eventName}</b> just happened, these could use fresh results:\n`;
+    lists.forEach((list) => (message += `- ${listLink(list._id, list.name)}\n`));
+    message += "\n";
+  });
+  if (dedupedOverdue.length > 0) {
+    message += `📋 Due for a refresh:\n`;
+    dedupedOverdue.forEach((list) => {
+      message += `- ${listLink(list._id, list.name)} (${list.plays} plays, ${capitalize(getFrequencyMessage(list.frequency))})\n`;
+    });
+  }
+
+  const notifiedIds = [
+    ...dedupedOverdue.map((list) => list._id),
+    ...eventSections.flatMap(({ lists }) => lists.map((list) => list._id)),
+  ];
+  await List.updateMany({ _id: { $in: notifiedIds } }, { $set: { staleNotifiedDate: new Date() } });
+  bot.notifyAdmin(message.trim());
+};
+
 //bot.sendPhoto(parseInt(process.env.MASTER_CHAT || ""), 'https://m.media-amazon.com/images/M/MV5BNmE1OWI2ZGItMDUyOS00MmU5LWE0MzUtYTQ0YzA1YTE5MGYxXkEyXkFqcGdeQXVyMDM5ODIyNw@@._V1._SX40_CR0,0,40,54_.jpg')
 
 //var dailyScore = schedule.scheduleJob('*/10 * * * * *', function() {
@@ -508,6 +613,7 @@ if (process.env.NODE_ENV === "production") {
   jobs.push(schedule.scheduleJob("Update Low Quality Lists", "0 0 8 * * *", updateLowQualityLists));
   jobs.push(schedule.scheduleJob("Update High Quality Lists", "0 15 8 * * *", updateHighQualityLists));
   jobs.push(schedule.scheduleJob("Send List Update Notice", "0 0 12 * * *", sendListUpdates));
+  jobs.push(schedule.scheduleJob("Notify Stale Lists", "0 0 13 * * 1", notifyStaleLists));
 }
 
 // jobs.push(schedule.scheduleJob("Backup Database", "0 0 21 * * *", backupDatabase));
