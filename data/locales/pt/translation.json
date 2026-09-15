@@ -241,7 +241,10 @@
     "suggestionPrompt": "<b>SUGESTÃO</b>\nPor favor, adicione sua sugestão na sua próxima mensagem, {{name}}!",
     "featurePrompt": "<b>RECURSO</b>\nPor favor, sugira seu recurso na sua próxima mensagem, {{name}}!",
     "typoPrompt": "<b>ERRO DE DIGITAÇÃO</b>\nPor favor, me informe qual é o erro de digitação na sua próxima mensagem, {{name}}!\n\nMencione também o nome da lista se o erro de digitação não fizer parte de: <i>\"{{list}}\"</i>",
-    "bugPrompt": "<b>BUG</b>\nPor favor, forneça alguns detalhes sobre o que deu errado na sua próxima mensagem, {{name}}!"
+    "bugPrompt": "<b>BUG</b>\nPor favor, forneça alguns detalhes sobre o que deu errado na sua próxima mensagem, {{name}}!",
+    "newListsHeading": "<b>Novas listas</b>",
+    "updatedListsHeading": "<b>Listas atualizadas</b>",
+    "listUpdatesOptOut": "Desative essas atualizações em /settings"
   },
   "warnings": {
     "minimum1Category": "É necessário pelo menos 1 categoria",

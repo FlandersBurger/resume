@@ -241,7 +241,10 @@
     "suggestionPrompt": "<b>VORSCHLAG</b> Bitte füge deinen Vorschlag in deiner nächsten Nachricht hinzu, {{name}}!",
     "featurePrompt": "<b>FUNKTION</b> Bitte schlage deine Funktion in deiner nächsten Nachricht vor, {{name}}!",
     "typoPrompt": "<b>TIPPFEHLER</b> Bitte teile mir in deiner nächsten Nachricht mit, was der Tippfehler ist, {{name}}! Nenne auch den Namen der Liste, falls der Tippfehler nicht Teil von <i>\"{{list}}\"</i> ist.",
-    "bugPrompt": "<b>FEHLER</b> Bitte gib in deiner nächsten Nachricht Details darüber an, was schiefgelaufen ist, {{name}}!"
+    "bugPrompt": "<b>FEHLER</b> Bitte gib in deiner nächsten Nachricht Details darüber an, was schiefgelaufen ist, {{name}}!",
+    "newListsHeading": "<b>Neue Listen</b>",
+    "updatedListsHeading": "<b>Aktualisierte Listen</b>",
+    "listUpdatesOptOut": "Schalte diese Updates über /settings aus"
   },
   "warnings": {
     "minimum1Category": "Mindestens 1 Kategorie ist erforderlich",

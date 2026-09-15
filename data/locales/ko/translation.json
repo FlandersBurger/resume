@@ -241,7 +241,10 @@
     "suggestionPrompt": "<b>제안</b>\n다음 메시지에 제안을 추가해 주세요, {{name}}!",
     "featurePrompt": "<b>기능</b>\n다음 메시지에 기능을 제안해 주세요, {{name}}!",
     "typoPrompt": "<b>오타</b>\n다음 메시지에 오타를 알려주세요, {{name}}!\n오타가 다음 목록의 일부가 아닌 경우 목록 이름도 함께 알려주세요: <i>\"{{list}}\"</i>",
-    "bugPrompt": "<b>버그</b>\n다음 메시지에 어떤 문제가 발생했는지 자세히 알려주세요, {{name}}!"
+    "bugPrompt": "<b>버그</b>\n다음 메시지에 어떤 문제가 발생했는지 자세히 알려주세요, {{name}}!",
+    "newListsHeading": "<b>새 목록</b>",
+    "updatedListsHeading": "<b>업데이트된 목록</b>",
+    "listUpdatesOptOut": "/settings 에서 이 업데이트를 끌 수 있습니다"
   },
   "warnings": {
     "minimum1Category": "최소 1개 카테고리가 필요합니다.",

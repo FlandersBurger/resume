@@ -241,7 +241,10 @@
     "suggestionPrompt": "<b>SARAN</b>\nSilakan tambahkan saran Anda di pesan Anda berikutnya, {{name}}!",
     "featurePrompt": "<b>FITUR</b>\nSilakan sarankan fitur Anda di pesan Anda berikutnya, {{name}}!",
     "typoPrompt": "<b>KESALAHAN KETIK</b>\nSilakan beri tahu saya apa kesalahan ketiknya di pesan Anda berikutnya, {{name}}!\nSebutkan juga nama daftarnya jika kesalahan ketik tersebut bukan bagian dari: <i>\"{{list}}\"</i>",
-    "bugPrompt": "<b>BUG</b>\nSilakan berikan beberapa detail tentang apa yang salah di pesan Anda berikutnya, {{name}}!"
+    "bugPrompt": "<b>BUG</b>\nSilakan berikan beberapa detail tentang apa yang salah di pesan Anda berikutnya, {{name}}!",
+    "newListsHeading": "<b>Daftar baru</b>",
+    "updatedListsHeading": "<b>Daftar yang diperbarui</b>",
+    "listUpdatesOptOut": "Matikan pembaruan ini melalui /settings"
   },
   "warnings": {
     "minimum1Category": "Setidaknya 1 kategori diperlukan",

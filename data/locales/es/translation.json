@@ -241,7 +241,10 @@
     "suggestionPrompt": "<b>SUGERENCIA</b>\nPor favor, añade tu sugerencia en tu próximo mensaje, {{name}}!",
     "featurePrompt": "<b>FUNCIÓN</b>\nPor favor, sugiere tu función en tu próximo mensaje, {{name}}!",
     "typoPrompt": "<b>ERROR TIPOGRÁFICO</b>\nPor favor, indícame cuál es el error tipográfico en tu próximo mensaje, {{name}}!\n\nMenciona también el nombre de la lista si el error tipográfico no forma parte de: <i>\"{{list}}\"</i>",
-    "bugPrompt": "<b>ERROR</b>\nPor favor, proporciona detalles sobre qué salió mal en tu próximo mensaje, {{name}}!"
+    "bugPrompt": "<b>ERROR</b>\nPor favor, proporciona detalles sobre qué salió mal en tu próximo mensaje, {{name}}!",
+    "newListsHeading": "<b>Listas nuevas</b>",
+    "updatedListsHeading": "<b>Listas actualizadas</b>",
+    "listUpdatesOptOut": "Desactiva estas actualizaciones a través de /settings"
   },
   "warnings": {
     "minimum1Category": "Se requiere un mínimo de 1 categoría",
