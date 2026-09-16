@@ -13,10 +13,11 @@ const EditListPanel = styled.div<{ $active?: boolean }>`
   right: ${({ $active }) => ($active ? "0" : "-100%")};
   width: 95%;
   transition: right 0.3s ease-in-out;
-  background-color: white;
+  background-color: var(--surface);
+  color: var(--text);
   z-index: 100;
   border: solid;
-  border-color: black;
+  border-color: var(--border);
   padding: 0 20px 20px;
 `;
 
@@ -28,7 +29,7 @@ const EditListPanelHeader = styled.div`
   align-items: center;
   position: sticky;
   top: 0;
-  background: white;
+  background: var(--surface);
   z-index: 10;
   margin: 0 -20px;
   padding: 0 20px;
@@ -41,7 +42,7 @@ const EditListPanelHeader = styled.div`
     z-index: 4;
   }
   border-bottom: solid;
-  border-bottom-color: black;
+  border-bottom-color: var(--border);
 `;
 
 const BtnToolbar = styled.div`
