@@ -77,7 +77,7 @@ const InputCell = styled.td`
       white-space: pre-wrap;
     }
   }
-  > * {
+  && > * {
     background-color: transparent;
     border: none;
     box-shadow: none;
