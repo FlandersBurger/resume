@@ -117,6 +117,7 @@ class TelegramBot {
     "Bad Request: TOPIC_CLOSED",
     "Bad Request: CHAT_WRITE_FORBIDDEN",
     "Bad Request: CHAT_SEND_PLAIN_FORBIDDEN",
+    "Bad Request: CHAT_RESTRICTED",
     "Forbidden: bot is not a member of the supergroup chat",
     "Forbidden: bot was kicked from the supergroup chat",
     "Forbidden: bot was kicked from the group chat",
