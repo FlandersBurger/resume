@@ -297,6 +297,7 @@ const sendListUpdates = async () => {
   }
 
   let sentTo = 0;
+  let messages = 0;
   for (const { languages, uiLanguage, channels } of groups.values()) {
     const relevantNew = newLists.filter(({ language }) => languages.includes(language));
     const relevantUpdated = updatedLists.filter(({ language }) => languages.includes(language));
@@ -313,10 +314,21 @@ const sendListUpdates = async () => {
       relevantUpdated.forEach(({ name }) => (message += `\n- ${name}`));
     }
     message += `\n\n<i>${i18n(uiLanguage, "sentences.listUpdatesOptOut")}</i>`;
-    bot.broadcast(channels, message);
+    bot.broadcast(channels, message, { silent: true });
     sentTo += channels.length;
+    messages++;
   }
-  bot.notifyAdmin(`List update notice sent to ${sentTo} of ${games.length} eligible games`);
+
+  // One admin summary instead of a start/finish pair per language group
+  const names = (items: { name: string }[], max = 15) =>
+    items
+      .slice(0, max)
+      .map(({ name }) => name)
+      .join(", ") + (items.length > max ? `, +${items.length - max} more` : "");
+  let summary = `<u>List update notice</u>\nSent to ${sentTo} of ${games.length} eligible games (${messages} language group${messages === 1 ? "" : "s"})`;
+  if (newLists.length > 0) summary += `\n<b>New (${newLists.length}):</b> ${names(newLists)}`;
+  if (updatedLists.length > 0) summary += `\n<b>Updated (${updatedLists.length}):</b> ${names(updatedLists)}`;
+  bot.notifyAdmin(summary);
 };
 
 // ███████ ████████  █████  ██      ███████     ██      ██ ███████ ████████ ███████

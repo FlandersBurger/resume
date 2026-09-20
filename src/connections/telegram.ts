@@ -414,12 +414,12 @@ class TelegramBot {
     }
   };
 
-  public broadcast = async (channels: Channel[], message: string) => {
-    await this.notifyAdmin(`Starting broadcast to ${channels.length} chats`);
+  public broadcast = async (channels: Channel[], message: string, { silent = false } = {}) => {
+    if (!silent) await this.notifyAdmin(`Starting broadcast to ${channels.length} chats`);
     channels.forEach((channel: Channel, index) => {
       setTimeout(() => {
         this.queueMessage(channel, message);
-        if (index === channels.length - 1) {
+        if (!silent && index === channels.length - 1) {
           this.notifyAdmin("Broadcast finished");
         }
       }, index * 100);
