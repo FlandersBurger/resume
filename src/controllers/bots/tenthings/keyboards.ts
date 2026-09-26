@@ -134,37 +134,51 @@ export const playerStatsKeyboard = (game: IGame) =>
   game.provider.keyboardConverter([
     [
       { label: "My Stats", action: "stat", id: "p_" },
-      { label: "Most Minigames", action: "stat", id: "minigames" },
       { label: "Daily Score", action: "score", id: "d" },
-      { label: "Top Daily Score", action: "score", id: "td" },
-      { label: "Top Win Ratio", action: "score", id: "tr" },
     ],
     [
+      { label: "Top Daily Score", action: "score", id: "td" },
       { label: "Top Overall Score", action: "score", id: "ts" },
+    ],
+    [
+      { label: "Top Win Ratio", action: "score", id: "tr" },
       { label: "Top Average", action: "score", id: "ta" },
-      { label: "Best No Hint Streak", action: "stat", id: "hstreak" },
+    ],
+    [
       { label: "Best Answer Streak", action: "stat", id: "astreak" },
       { label: "Best Play Streak", action: "stat", id: "pstreak" },
     ],
     [
-      { label: "Most Skips", action: "stat", id: "skippers" },
-      { label: "Least Skips", action: "stat", id: "unskippers" },
-      { label: "Most Days Played", action: "stat", id: "plays" },
-      { label: "Most Answers", action: "stat", id: "answers" },
-      { label: "Most Snubs", action: "stat", id: "snubs" },
+      { label: "Best No Hint Streak", action: "stat", id: "hstreak" },
+      { label: "Most Minigames", action: "stat", id: "minigames" },
     ],
     [
-      { label: "Least Snubs", action: "stat", id: "unsnubs" },
+      { label: "Most Skips", action: "stat", id: "skippers" },
+      { label: "Least Skips", action: "stat", id: "unskippers" },
+    ],
+    [
       { label: "Most Hints Asked", action: "stat", id: "hints" },
       { label: "Least Hints Asked", action: "stat", id: "unhints" },
+    ],
+    [
+      { label: "Most Snubs", action: "stat", id: "snubs" },
+      { label: "Least Snubs", action: "stat", id: "unsnubs" },
+    ],
+    [
       { label: "Most Wins", action: "stat", id: "wins" },
       { label: "Least Wins", action: "stat", id: "unwins" },
     ],
     [
+      { label: "Most Days Played", action: "stat", id: "plays" },
+      { label: "Most Answers", action: "stat", id: "answers" },
+    ],
+    [
       { label: "Voted Most", action: "stat", id: "mostvoted" },
       { label: "Voted Least", action: "stat", id: "leastvoted" },
+    ],
+    [
       { label: "Most Positive", action: "stat", id: "mostpositive" },
-      { label: "Most Negative", action: "stat", id: "leastnegative" },
+      { label: "Most Negative", action: "stat", id: "mostnegative" },
     ],
   ]);
 
