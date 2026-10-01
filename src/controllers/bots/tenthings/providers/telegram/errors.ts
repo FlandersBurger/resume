@@ -47,7 +47,7 @@ export const adminOnly = async (game: IGame, player: HydratedDocument<IPlayer>) 
       `${i18n(game.settings.language, "warnings.banned", { name: getPlayerName(player) })}\nID: ${player.id}`,
     );
     bot.notifyAdmin(
-      `Banned player: ${getPlayerName(player)}\nID: ${player.id}\nChat: https://belgocanadian.com/tenthings/${game.telegramChatId}`,
+      `Banned player: ${getPlayerName(player)}\nID: ${player.id}\nChat: https://belgocanadian.com/tenthings-game/${game.telegramChatId}`,
     );
     player.banned = true;
   }

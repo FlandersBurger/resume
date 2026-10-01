@@ -336,7 +336,7 @@ export const evaluate = async (msg: TelegramMessage, game: HydratedDocument<IGam
               game.list.name
             }\nMinigame: ${game.minigame.answer}\nTinygame: ${
               game.tinygame.answer
-            }\nhttps://belgocanadian.com/tenthings/${game.telegramChatId}`,
+            }\nhttps://belgocanadian.com/tenthings-game/${game.telegramChatId}`,
           );
         }
         break;
