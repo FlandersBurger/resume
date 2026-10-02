@@ -54,6 +54,20 @@ describe("LoginModal", () => {
     expect(closeLogin).toHaveBeenCalledTimes(1);
   });
 
+  it("calls closeLogin when clicking outside the dialog", async () => {
+    const closeLogin = jest.fn();
+    renderLoginModal({ showLogin: true, closeLogin });
+    await userEvent.click(screen.getByRole("dialog"));
+    expect(closeLogin).toHaveBeenCalledTimes(1);
+  });
+
+  it("does not close when clicking inside the dialog", async () => {
+    const closeLogin = jest.fn();
+    renderLoginModal({ showLogin: true, closeLogin });
+    await userEvent.click(screen.getByText("Login"));
+    expect(closeLogin).not.toHaveBeenCalled();
+  });
+
   it("calls closeLogin when the × button is clicked", async () => {
     const closeLogin = jest.fn();
     renderLoginModal({ showLogin: true, closeLogin });
