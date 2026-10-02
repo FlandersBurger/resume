@@ -1,6 +1,7 @@
 import { FormEvent, useState } from "react";
 import styled from "styled-components";
 import { useFirebaseLogin } from "../hooks/useFirebaseLogin";
+import { useTelegramLogin } from "../hooks/useTelegramLogin";
 
 // Set by vite.config.ts define; false in production builds
 declare const __SHOW_FACEBOOK_LOGIN__: boolean;
@@ -99,6 +100,16 @@ const FacebookIcon = () => (
   </svg>
 );
 
+const TelegramIcon = () => (
+  <svg viewBox="0 0 24 24" aria-hidden="true">
+    <circle cx="12" cy="12" r="12" fill="#2AABEE" />
+    <path
+      fill="#fff"
+      d="M5.43 11.87c3.5-1.52 5.83-2.53 7-3.02 3.33-1.39 4.02-1.63 4.47-1.64.1 0 .32.02.47.14.12.1.15.23.17.33.02.1.04.31.02.48-.18 1.9-.96 6.5-1.36 8.63-.17.9-.5 1.2-.82 1.23-.7.06-1.22-.46-1.9-.9-1.05-.69-1.64-1.12-2.66-1.79-1.18-.78-.42-1.2.26-1.9.18-.18 3.23-2.96 3.29-3.21.01-.03.01-.15-.06-.21-.07-.06-.17-.04-.25-.02-.1.02-1.79 1.14-5.06 3.35-.48.33-.91.49-1.3.48-.43-.01-1.25-.24-1.86-.44-.75-.24-1.35-.37-1.3-.79.03-.22.33-.44.89-.67z"
+    />
+  </svg>
+);
+
 const TITLES: Record<Mode, string> = {
   signIn: "Sign in with email",
   register: "Create account",
@@ -107,6 +118,7 @@ const TITLES: Record<Mode, string> = {
 
 export default function LoginForm({ onSuccess }: { onSuccess?: () => void }) {
   const login = useFirebaseLogin(onSuccess);
+  const telegram = useTelegramLogin();
   const [mode, setMode] = useState<Mode>("signIn");
   const [displayName, setDisplayName] = useState("");
   const [email, setEmail] = useState("");
@@ -130,6 +142,12 @@ export default function LoginForm({ onSuccess }: { onSuccess?: () => void }) {
         <GoogleIcon />
         Sign in with Google
       </ProviderButton>
+      {telegram.ready && (
+        <ProviderButton type="button" onClick={() => telegram.login(login.signInWithTelegram)} disabled={login.pending}>
+          <TelegramIcon />
+          Sign in with Telegram
+        </ProviderButton>
+      )}
       {__SHOW_FACEBOOK_LOGIN__ && (
         <ProviderButton type="button" onClick={login.signInWithFacebook} disabled={login.pending}>
           <FacebookIcon />

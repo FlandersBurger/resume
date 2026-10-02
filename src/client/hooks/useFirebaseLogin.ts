@@ -43,13 +43,11 @@ export function useFirebaseLogin(onSuccess?: () => void) {
   const [pending, setPending] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  async function completeSignIn(firebaseUser: FirebaseUser, displayName = firebaseUser.displayName) {
+  async function finishLogin(getPayload: () => Promise<object>) {
     onSuccess?.();
     setLoginLoading(true);
     try {
-      const idToken = await firebaseUser.getIdToken(true);
-      const { email, photoURL, emailVerified } = firebaseUser;
-      const user = await authenticate({ authType: "firebase", displayName, email, photoURL, emailVerified, idToken });
+      const user = await authenticate(await getPayload());
       setUser(user as any);
       toast("Logged in");
     } catch {
@@ -58,6 +56,13 @@ export function useFirebaseLogin(onSuccess?: () => void) {
       setLoginLoading(false);
     }
   }
+
+  const completeSignIn = (firebaseUser: FirebaseUser, displayName = firebaseUser.displayName) =>
+    finishLogin(async () => {
+      const idToken = await firebaseUser.getIdToken(true);
+      const { email, photoURL, emailVerified } = firebaseUser;
+      return { authType: "firebase", displayName, email, photoURL, emailVerified, idToken };
+    });
 
   async function run(action: () => Promise<void>): Promise<boolean> {
     setError(null);
@@ -85,6 +90,8 @@ export function useFirebaseLogin(onSuccess?: () => void) {
     clearError: () => setError(null),
     signInWithGoogle: () => signInWithProvider(new GoogleAuthProvider()),
     signInWithFacebook: () => signInWithProvider(new FacebookAuthProvider()),
+    // Widget data is verified server-side against the bot token
+    signInWithTelegram: (data: object) => finishLogin(async () => ({ authType: "telegram", data })),
     signInWithEmail: (email: string, password: string) =>
       run(async () => {
         const { user } = await signInWithEmailAndPassword(auth, email, password);

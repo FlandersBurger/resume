@@ -2,9 +2,12 @@ import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import LoginForm from "../../client/components/LoginForm";
 import { useFirebaseLogin } from "../../client/hooks/useFirebaseLogin";
+import { useTelegramLogin } from "../../client/hooks/useTelegramLogin";
 
 jest.mock("../../client/hooks/useFirebaseLogin", () => ({ useFirebaseLogin: jest.fn() }));
+jest.mock("../../client/hooks/useTelegramLogin", () => ({ useTelegramLogin: jest.fn() }));
 
+const mockUseTelegramLogin = useTelegramLogin as jest.MockedFunction<typeof useTelegramLogin>;
 const mockUseFirebaseLogin = useFirebaseLogin as jest.MockedFunction<typeof useFirebaseLogin>;
 
 function makeLogin(overrides: Partial<ReturnType<typeof useFirebaseLogin>> = {}) {
@@ -14,6 +17,7 @@ function makeLogin(overrides: Partial<ReturnType<typeof useFirebaseLogin>> = {})
     clearError: jest.fn(),
     signInWithGoogle: jest.fn(),
     signInWithFacebook: jest.fn(),
+    signInWithTelegram: jest.fn(),
     signInWithEmail: jest.fn(),
     registerWithEmail: jest.fn(),
     resetPassword: jest.fn().mockResolvedValue(true),
@@ -21,7 +25,11 @@ function makeLogin(overrides: Partial<ReturnType<typeof useFirebaseLogin>> = {})
   } as ReturnType<typeof useFirebaseLogin>;
 }
 
-function renderForm(overrides: Partial<ReturnType<typeof useFirebaseLogin>> = {}) {
+function renderForm(overrides: Partial<ReturnType<typeof useFirebaseLogin>> = {}, telegramReady = true) {
+  mockUseTelegramLogin.mockReturnValue({
+    ready: telegramReady,
+    login: (onAuth) => onAuth({ id: 42, hash: "h" }),
+  });
   const login = makeLogin(overrides);
   mockUseFirebaseLogin.mockReturnValue(login);
   render(<LoginForm />);
@@ -41,6 +49,17 @@ describe("LoginForm", () => {
     const login = renderForm();
     await userEvent.click(screen.getByRole("button", { name: "Sign in with Facebook" }));
     expect(login.signInWithFacebook).toHaveBeenCalledTimes(1);
+  });
+
+  it("signs in with Telegram", async () => {
+    const login = renderForm();
+    await userEvent.click(screen.getByRole("button", { name: "Sign in with Telegram" }));
+    expect(login.signInWithTelegram).toHaveBeenCalledWith({ id: 42, hash: "h" });
+  });
+
+  it("hides Telegram sign-in until the Telegram script and bot id are loaded", () => {
+    renderForm({}, false);
+    expect(screen.queryByRole("button", { name: "Sign in with Telegram" })).not.toBeInTheDocument();
   });
 
   it("hides Facebook sign-in when disabled for the build", () => {
