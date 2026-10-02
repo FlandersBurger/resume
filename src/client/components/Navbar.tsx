@@ -136,6 +136,27 @@ const ThemeToggle = styled.a`
   cursor: pointer;
 `;
 
+const ChatLink = styled.a`
+  cursor: pointer;
+  position: relative;
+`;
+
+const UnreadBadge = styled.span`
+  position: absolute;
+  top: 8px;
+  right: 2px;
+  min-width: 16px;
+  height: 16px;
+  padding: 0 4px;
+  border-radius: 8px;
+  background: #d9534f;
+  color: #fff;
+  font-size: 10px;
+  font-weight: 700;
+  line-height: 16px;
+  text-align: center;
+`;
+
 function DrawerGroup({ label, children }: { label: string; children: React.ReactNode }) {
   const [open, setOpen] = useState(false);
   return (
@@ -193,6 +214,7 @@ export function Navbar() {
     openLogin,
     loginLoading,
     openChat,
+    unreadChat,
     isAdmin,
     adminMode,
     toggleAdminMode,
@@ -349,9 +371,10 @@ export function Navbar() {
               </li>
               {currentUser && (
                 <li>
-                  <a style={{ cursor: "pointer" }} title="Chat" onClick={openChat}>
+                  <ChatLink title={unreadChat ? `Chat (${unreadChat} unread)` : "Chat"} onClick={openChat}>
                     <i className="fa fa-comments" />
-                  </a>
+                    {unreadChat > 0 && <UnreadBadge>{unreadChat > 9 ? "9+" : unreadChat}</UnreadBadge>}
+                  </ChatLink>
                 </li>
               )}
               <li>
