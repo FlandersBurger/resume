@@ -6,9 +6,14 @@ import { defaultContextValue, AppContextValue } from "../__mocks__/AppContextMoc
 
 jest.mock("../../client/context/AppContext", () => ({ useApp: jest.fn() }));
 
-// firebaseui tries to access the DOM and network; stub it out entirely
-jest.mock("../../client/hooks/useFirebaseUI", () => ({
-  useFirebaseUI: jest.fn(),
+// LoginForm talks to Firebase; it has its own tests
+jest.mock("../../client/components/LoginForm", () => ({
+  __esModule: true,
+  default: ({ onSuccess }: { onSuccess?: () => void }) => (
+    <button data-testid="login-form" onClick={onSuccess}>
+      form
+    </button>
+  ),
 }));
 
 const mockUseApp = useApp as jest.MockedFunction<typeof useApp>;
@@ -30,9 +35,16 @@ describe("LoginModal", () => {
     expect(screen.getByText("Login")).toBeInTheDocument();
   });
 
-  it("renders the firebaseui container element", () => {
+  it("renders the login form", () => {
     renderLoginModal({ showLogin: true });
-    expect(document.getElementById("firebaseui-modal-container")).toBeInTheDocument();
+    expect(screen.getByTestId("login-form")).toBeInTheDocument();
+  });
+
+  it("closes the modal when the login form succeeds", async () => {
+    const closeLogin = jest.fn();
+    renderLoginModal({ showLogin: true, closeLogin });
+    await userEvent.click(screen.getByTestId("login-form"));
+    expect(closeLogin).toHaveBeenCalledTimes(1);
   });
 
   it("calls closeLogin when the backdrop is clicked", async () => {

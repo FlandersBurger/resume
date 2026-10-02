@@ -5,7 +5,10 @@ import Login from "../../../client/pages/Login";
 import { defaultContextValue, AppContextValue } from "../../__mocks__/AppContextMock";
 
 jest.mock("../../../client/context/AppContext", () => ({ useApp: jest.fn() }));
-jest.mock("../../../client/hooks/useFirebaseUI", () => ({ useFirebaseUI: jest.fn() }));
+jest.mock("../../../client/components/LoginForm", () => ({
+  __esModule: true,
+  default: () => <div data-testid="login-form" />,
+}));
 jest.mock("../../../client/services/users", () => ({
   authenticate: jest.fn(),
   createUser: jest.fn(),
@@ -30,8 +33,8 @@ describe("Login page", () => {
     expect(screen.getByRole("heading", { name: "Login" })).toBeInTheDocument();
   });
 
-  it("renders the firebaseui auth container", () => {
+  it("renders the login form", () => {
     renderLogin();
-    expect(document.getElementById("firebaseui-auth-container")).toBeInTheDocument();
+    expect(screen.getByTestId("login-form")).toBeInTheDocument();
   });
 });

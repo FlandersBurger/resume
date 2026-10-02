@@ -1,10 +1,8 @@
 import { useApp } from "../context/AppContext";
-import { useFirebaseUI } from "../hooks/useFirebaseUI";
+import LoginForm from "./LoginForm";
 
 export default function LoginModal() {
   const { showLogin, closeLogin } = useApp();
-
-  useFirebaseUI("firebaseui-modal-container", showLogin, closeLogin);
 
   if (!showLogin) return null;
 
@@ -29,7 +27,7 @@ export default function LoginModal() {
               </h4>
             </div>
             <div className="modal-body">
-              <div id="firebaseui-modal-container" />
+              <LoginForm onSuccess={closeLogin} />
             </div>
           </div>
         </div>
