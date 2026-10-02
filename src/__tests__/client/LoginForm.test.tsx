@@ -4,6 +4,12 @@ import LoginForm from "../../client/components/LoginForm";
 import { useFirebaseLogin } from "../../client/hooks/useFirebaseLogin";
 
 jest.mock("../../client/hooks/useFirebaseLogin", () => ({ useFirebaseLogin: jest.fn() }));
+jest.mock("../../client/components/TelegramLoginButton", () => ({
+  __esModule: true,
+  default: ({ onAuth }: { onAuth: (data: object) => void }) => (
+    <button onClick={() => onAuth({ id: 42, hash: "h" })}>Log in with Telegram</button>
+  ),
+}));
 
 const mockUseFirebaseLogin = useFirebaseLogin as jest.MockedFunction<typeof useFirebaseLogin>;
 
@@ -14,6 +20,7 @@ function makeLogin(overrides: Partial<ReturnType<typeof useFirebaseLogin>> = {})
     clearError: jest.fn(),
     signInWithGoogle: jest.fn(),
     signInWithFacebook: jest.fn(),
+    signInWithTelegram: jest.fn(),
     signInWithEmail: jest.fn(),
     registerWithEmail: jest.fn(),
     resetPassword: jest.fn().mockResolvedValue(true),
@@ -41,6 +48,12 @@ describe("LoginForm", () => {
     const login = renderForm();
     await userEvent.click(screen.getByRole("button", { name: "Sign in with Facebook" }));
     expect(login.signInWithFacebook).toHaveBeenCalledTimes(1);
+  });
+
+  it("signs in with Telegram", async () => {
+    const login = renderForm();
+    await userEvent.click(screen.getByRole("button", { name: "Log in with Telegram" }));
+    expect(login.signInWithTelegram).toHaveBeenCalledWith({ id: 42, hash: "h" });
   });
 
   it("hides Facebook sign-in when disabled for the build", () => {

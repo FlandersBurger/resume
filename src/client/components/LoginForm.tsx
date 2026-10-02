@@ -1,6 +1,7 @@
 import { FormEvent, useState } from "react";
 import styled from "styled-components";
 import { useFirebaseLogin } from "../hooks/useFirebaseLogin";
+import TelegramLoginButton from "./TelegramLoginButton";
 
 // Set by vite.config.ts define; false in production builds
 declare const __SHOW_FACEBOOK_LOGIN__: boolean;
@@ -35,6 +36,12 @@ const ProviderButton = styled.button`
     height: 18px;
     flex-shrink: 0;
   }
+`;
+
+const TelegramRow = styled.div`
+  display: flex;
+  justify-content: center;
+  margin-bottom: 10px;
 `;
 
 const Divider = styled.div`
@@ -130,6 +137,9 @@ export default function LoginForm({ onSuccess }: { onSuccess?: () => void }) {
         <GoogleIcon />
         Sign in with Google
       </ProviderButton>
+      <TelegramRow>
+        <TelegramLoginButton onAuth={login.signInWithTelegram} />
+      </TelegramRow>
       {__SHOW_FACEBOOK_LOGIN__ && (
         <ProviderButton type="button" onClick={login.signInWithFacebook} disabled={login.pending}>
           <FacebookIcon />
