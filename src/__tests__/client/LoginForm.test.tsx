@@ -43,6 +43,18 @@ describe("LoginForm", () => {
     expect(login.signInWithFacebook).toHaveBeenCalledTimes(1);
   });
 
+  it("hides Facebook sign-in when disabled for the build", () => {
+    const g = globalThis as { __SHOW_FACEBOOK_LOGIN__?: boolean };
+    g.__SHOW_FACEBOOK_LOGIN__ = false;
+    try {
+      renderForm();
+      expect(screen.queryByRole("button", { name: "Sign in with Facebook" })).not.toBeInTheDocument();
+      expect(screen.getByRole("button", { name: "Sign in with Google" })).toBeInTheDocument();
+    } finally {
+      g.__SHOW_FACEBOOK_LOGIN__ = true;
+    }
+  });
+
   it("signs in with email and password", async () => {
     const login = renderForm();
     await userEvent.type(screen.getByLabelText("Email"), "a@b.com");

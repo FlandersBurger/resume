@@ -49,8 +49,12 @@ const serveStaticDirs = (): import("vite").Plugin => {
   };
 };
 
-export default defineConfig({
+export default defineConfig(({ mode }) => ({
   root: "src/client",
+  define: {
+    // Facebook login needs Meta app review before it works in production
+    __SHOW_FACEBOOK_LOGIN__: JSON.stringify(mode !== "production"),
+  },
   plugins: [react(), serveStaticDirs()],
   resolve: {
     alias: {
@@ -72,4 +76,4 @@ export default defineConfig({
       },
     },
   },
-});
+}));

@@ -2,6 +2,9 @@ import { FormEvent, useState } from "react";
 import styled from "styled-components";
 import { useFirebaseLogin } from "../hooks/useFirebaseLogin";
 
+// Set by vite.config.ts define; false in production builds
+declare const __SHOW_FACEBOOK_LOGIN__: boolean;
+
 type Mode = "signIn" | "register" | "reset";
 
 const ProviderButton = styled.button`
@@ -127,10 +130,12 @@ export default function LoginForm({ onSuccess }: { onSuccess?: () => void }) {
         <GoogleIcon />
         Sign in with Google
       </ProviderButton>
-      <ProviderButton type="button" onClick={login.signInWithFacebook} disabled={login.pending}>
-        <FacebookIcon />
-        Sign in with Facebook
-      </ProviderButton>
+      {__SHOW_FACEBOOK_LOGIN__ && (
+        <ProviderButton type="button" onClick={login.signInWithFacebook} disabled={login.pending}>
+          <FacebookIcon />
+          Sign in with Facebook
+        </ProviderButton>
+      )}
 
       <Divider>or</Divider>
 
