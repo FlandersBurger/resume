@@ -1,10 +1,8 @@
 import { useApp } from "../context/AppContext";
-import { useFirebaseUI } from "../hooks/useFirebaseUI";
+import LoginForm from "./LoginForm";
 
 export default function LoginModal() {
   const { showLogin, closeLogin } = useApp();
-
-  useFirebaseUI("firebaseui-modal-container", showLogin, closeLogin);
 
   if (!showLogin) return null;
 
@@ -13,10 +11,11 @@ export default function LoginModal() {
       <div className="modal-backdrop fade in" style={{ zIndex: 1040 }} onClick={closeLogin} />
       <div
         className="modal fade in"
-        style={{ display: "block", zIndex: 1050 }}
+        style={{ display: "block", zIndex: 1050, overflowY: "auto" }}
         role="dialog"
         aria-modal="true"
         aria-labelledby="login-modal-title"
+        onClick={(e) => e.target === e.currentTarget && closeLogin()}
       >
         <div className="modal-dialog" role="document">
           <div className="modal-content">
@@ -29,7 +28,7 @@ export default function LoginModal() {
               </h4>
             </div>
             <div className="modal-body">
-              <div id="firebaseui-modal-container" />
+              <LoginForm onSuccess={closeLogin} />
             </div>
           </div>
         </div>
