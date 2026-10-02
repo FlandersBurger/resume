@@ -14,7 +14,7 @@ type AuthType = "telegram" | "firebase";
 const isAcceptedAuth = (authType: string = ""): authType is AuthType => ["telegram", "firebase"].includes(authType);
 
 usersRoute.get("/bot-info", (_: Request, res: Response) => {
-  res.json({ telegramUsername: bot.getUsername() });
+  res.json({ telegramUsername: bot.getUsername(), telegramBotId: bot.getId() });
 });
 
 usersRoute.get("/", (_: Request, res: Response) => {

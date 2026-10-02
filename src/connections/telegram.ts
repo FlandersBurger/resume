@@ -545,6 +545,7 @@ class TelegramBot {
   };
 
   getUsername = (): string | undefined => this.telegramBotUser?.username;
+  getId = (): number | undefined => this.telegramBotUser?.id;
 
   private getName = (): string => {
     if (this.telegramBotUser) {

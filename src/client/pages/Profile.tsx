@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { useApp } from "../context/AppContext";
 import { updateUser, changeUsername, changePassword, linkTelegram } from "../services/users";
 import { PageContainer } from "../components/layout";
-import TelegramLoginButton, { TelegramAuthData } from "../components/TelegramLoginButton";
+import { TelegramAuthData, useTelegramLogin } from "../hooks/useTelegramLogin";
 
 export default function Profile() {
   const { currentUser, setUser, toast } = useApp();
@@ -32,6 +32,8 @@ export default function Profile() {
       )
       .catch(() => {});
   }, []);
+
+  const telegram = useTelegramLogin();
 
   const handleTelegramLink = async (data: TelegramAuthData) => {
     if (!currentUser) return;
@@ -224,7 +226,15 @@ export default function Profile() {
             <i className="fab fa-telegram" /> Linked (ID: {currentUser.telegramId})
           </p>
         ) : (
-          <TelegramLoginButton onAuth={handleTelegramLink} size="medium" />
+          <div>
+            <button
+              className="btn btn-default"
+              onClick={() => telegram.login(handleTelegramLink)}
+              disabled={!telegram.ready}
+            >
+              <i className="fab fa-telegram" /> Link Telegram account
+            </button>
+          </div>
         )}
       </div>
       <form onSubmit={handleChangePassword}>
