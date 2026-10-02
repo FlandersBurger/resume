@@ -35,6 +35,7 @@ const config: Config = {
     },
     {
       displayName: "client",
+      globals: { __SHOW_FACEBOOK_LOGIN__: true },
       testEnvironment: "jsdom",
       roots: ["<rootDir>/src"],
       testMatch: ["<rootDir>/src/__tests__/client/**/*.test.{ts,tsx}"],
