@@ -19,6 +19,8 @@ export const defaultContextValue: AppContextValue = {
   showChat: false,
   openChat: jest.fn(),
   closeChat: jest.fn(),
+  unreadChat: 0,
+  setUnreadChat: jest.fn(),
   adminMode: true,
   isAdmin: false,
   toggleAdminMode: jest.fn(),

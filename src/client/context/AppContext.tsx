@@ -53,6 +53,7 @@ interface AppContextValue {
   showLogin: boolean;
   loginLoading: boolean;
   showChat: boolean;
+  unreadChat: number;
   adminMode: boolean;
   isAdmin: boolean;
   darkMode: boolean;
@@ -66,6 +67,7 @@ interface AppContextValue {
   setLoginLoading: (v: boolean) => void;
   openChat: () => void;
   closeChat: () => void;
+  setUnreadChat: (count: number) => void;
   toggleAdminMode: () => void;
 }
 
@@ -79,6 +81,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
   const [showChat, setShowChat] = useState(false);
   const openChat = useCallback(() => setShowChat(true), []);
   const closeChat = useCallback(() => setShowChat(false), []);
+  const [unreadChat, setUnreadChat] = useState(0);
   const [adminMode, setAdminMode] = useState(() => window.localStorage.getItem("adminMode") !== "false");
   const [darkMode, setDarkMode] = useState(() => {
     const stored = window.localStorage.getItem("darkMode");
@@ -159,6 +162,8 @@ export function AppProvider({ children }: { children: ReactNode }) {
         showChat,
         openChat,
         closeChat,
+        unreadChat,
+        setUnreadChat,
         adminMode,
         isAdmin,
         toggleAdminMode,

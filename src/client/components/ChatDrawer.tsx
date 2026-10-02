@@ -71,9 +71,29 @@ const InputArea = styled.div`
   flex-shrink: 0;
 `;
 
+const LAST_READ_KEY = "chatLastRead";
+
+function readLastRead(): number | null {
+  try {
+    const stored = window.localStorage.getItem(LAST_READ_KEY);
+    return stored ? Number(stored) : null;
+  } catch {
+    return null;
+  }
+}
+
+function writeLastRead(time: number) {
+  try {
+    window.localStorage.setItem(LAST_READ_KEY, String(time));
+  } catch {
+    // ignore storage failures
+  }
+}
+
 export function ChatDrawer() {
-  const { currentUser, showChat, closeChat } = useApp();
+  const { currentUser, showChat, closeChat, setUnreadChat } = useApp();
   const [posts, setPosts] = useState<Post[]>([]);
+  const [lastRead, setLastRead] = useState<number | null>(readLastRead);
   const [body, setBody] = useState("");
   const listRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
@@ -103,6 +123,28 @@ export function ChatDrawer() {
       listRef.current?.scrollTo({ top: listRef.current.scrollHeight, behavior: "smooth" });
     }
   }, [posts]);
+
+  // Mark everything as read while the drawer is open; on first visit, start from the latest post
+  useEffect(() => {
+    if (!posts.length) return;
+    const latest = Math.max(...posts.map((post) => new Date(post.date).getTime()));
+    if ((showChat || lastRead === null) && latest > (lastRead ?? 0)) {
+      setLastRead(latest);
+      writeLastRead(latest);
+    }
+  }, [posts, showChat, lastRead]);
+
+  useEffect(() => {
+    if (!currentUser || lastRead === null) {
+      setUnreadChat(0);
+      return;
+    }
+    const unread = posts.filter(
+      (post) =>
+        new Date(post.date).getTime() > lastRead && (post.poster?.username ?? post.username) !== currentUser.username,
+    ).length;
+    setUnreadChat(unread);
+  }, [posts, lastRead, currentUser, setUnreadChat]);
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
