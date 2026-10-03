@@ -5,7 +5,8 @@ import jwt from "jwt-simple";
 import { firebaseAuth } from "@root/server";
 
 import { Player, User } from "@models/index";
-import bot, { verifyTelegramUser } from "@root/connections/telegram";
+import bot from "@root/connections/telegram";
+import { isValidTelegramAuth } from "@utils/telegram-auth";
 
 export const usersRoute = Router();
 
@@ -13,7 +14,7 @@ type AuthType = "telegram" | "firebase";
 const isAcceptedAuth = (authType: string = ""): authType is AuthType => ["telegram", "firebase"].includes(authType);
 
 usersRoute.get("/bot-info", (_: Request, res: Response) => {
-  res.json({ telegramUsername: bot.getUsername() });
+  res.json({ telegramUsername: bot.getUsername(), telegramBotId: bot.getId() });
 });
 
 usersRoute.get("/", (_: Request, res: Response) => {
@@ -75,10 +76,19 @@ usersRoute.post("/authenticate", async (req: Request, res: Response) => {
       uid,
     });
   } else {
-    if (verifyTelegramUser(data)) {
+    if (!isValidTelegramAuth(data, process.env.TELEGRAM_TOKEN!)) {
       return res.sendStatus(401);
     }
-    telegramId = user.telegramId;
+    // Only trust the signed widget payload, never the unsigned top-level fields
+    telegramId = data.id;
+    const displayName = [data.first_name, data.last_name].filter(Boolean).join(" ");
+    Object.assign(user, {
+      username: data.username ?? displayName,
+      displayName,
+      email: undefined,
+      photoURL: data.photo_url,
+      emailVerified: false,
+    });
     existingUser = await User.findOne({
       telegramId,
     });
@@ -101,7 +111,7 @@ usersRoute.post("/authenticate", async (req: Request, res: Response) => {
     if (existingUser.banned) {
       return res.sendStatus(403);
     }
-    if (user.photoURL && existingUser.photoURL !== user.photoURL) {
+    if (authType === "firebase" && user.photoURL && existingUser.photoURL !== user.photoURL) {
       existingUser.photoURL = user.photoURL;
       await existingUser.save();
     }
@@ -140,7 +150,7 @@ usersRoute.post("/:id/verification", async (req: Request<{ id: string }>, res: R
 usersRoute.post("/:id/telegram", async (req: Request<{ id: string }>, res: Response) => {
   if (checkUser(req.params.id, res)) {
     const data = req.body;
-    if (verifyTelegramUser(data)) {
+    if (!isValidTelegramAuth(data, process.env.TELEGRAM_TOKEN!)) {
       res.sendStatus(401);
     } else {
       const user = await User.findOne({ _id: res.locals.user._id });

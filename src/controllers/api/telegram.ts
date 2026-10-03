@@ -1,4 +1,5 @@
-import bot, { verifyTelegramUser } from "@root/connections/telegram";
+import bot from "@root/connections/telegram";
+import { isValidTelegramAuth } from "@utils/telegram-auth";
 import { Game, Player, User } from "@root/models";
 import { Router, Request, Response } from "express";
 import { checkUser } from "./users";
@@ -20,7 +21,7 @@ telegramRoute.get("/:id/games", async (req: Request<{ id: string }>, res: Respon
 telegramRoute.post("/:id/link", async (req: Request<{ id: string }>, res: Response) => {
   if (checkUser(req.params.id, res)) {
     const data = req.body;
-    if (verifyTelegramUser(data)) {
+    if (!isValidTelegramAuth(data, process.env.TELEGRAM_TOKEN!)) {
       res.sendStatus(401);
     } else {
       const user = await User.findOne({ _id: res.locals.user._id });

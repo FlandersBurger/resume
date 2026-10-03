@@ -123,6 +123,18 @@ describe("useFirebaseLogin", () => {
     expect(ctx.setLoginLoading).toHaveBeenLastCalledWith(false);
   });
 
+  it("authenticates a Telegram widget login with the backend", async () => {
+    const { result, ctx, onSuccess } = setup();
+    const data = { id: 42, first_name: "Laurent", auth_date: 1, hash: "abc" };
+
+    await act(() => result.current.signInWithTelegram(data));
+
+    expect(onSuccess).toHaveBeenCalled();
+    expect(mockAuthenticate).toHaveBeenCalledWith({ authType: "telegram", data });
+    expect(ctx.setUser).toHaveBeenCalledWith({ _id: "u1" });
+    expect(ctx.toast).toHaveBeenCalledWith("Logged in");
+  });
+
   it("sends a password reset email and reports success", async () => {
     (sendPasswordResetEmail as jest.Mock).mockResolvedValue(undefined);
     const { result, ctx } = setup();
