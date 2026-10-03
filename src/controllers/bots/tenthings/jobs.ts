@@ -526,6 +526,21 @@ const unbanPlayers = async () => {
   bot.notifyAdmin(`${unbannedPlayers.matchedCount} players unbanned`);
 };
 
+// Counts votes server-side: lists carry millions of vote subdocs in total, and pulling the raw
+// arrays into Node to tally them was enough to OOM-kill the app on the production droplet.
+const getVoteTallies = (ids: Types.ObjectId[]) =>
+  List.aggregate<{ _id: Types.ObjectId; votes: number; likes: number }>([
+    { $match: { _id: { $in: ids } } },
+    {
+      $project: {
+        votes: { $size: { $ifNull: ["$votes", []] } },
+        likes: {
+          $size: { $filter: { input: { $ifNull: ["$votes", []] }, as: "v", cond: { $gt: ["$$v.vote", 0] } } },
+        },
+      },
+    },
+  ]);
+
 const MIN_GLOBAL_ROUNDS = 10;
 const MAX_SKIP_RATE = 0.8;
 const MAX_LIKE_RATIO = 0.5;
@@ -548,16 +563,9 @@ const updateLowQualityLists = async () => {
   // A high skip rate alone can mean "hard but loved" rather than "low quality" — corroborate
   // with community sentiment. Lists without enough votes to judge sentiment are flagged on
   // skip rate alone.
-  const candidates = await List.find({ _id: { $in: skipCandidates.map((r) => r._id) } })
-    .select("_id votes")
-    .lean();
+  const candidates = await getVoteTallies(skipCandidates.map((r) => r._id));
   const lowQualityIds = candidates
-    .filter((list) => {
-      const votes = list.votes ?? [];
-      if (votes.length < MIN_VOTES_FOR_LIKE_CHECK) return true;
-      const likeRatio = votes.filter((vote) => vote.vote > 0).length / votes.length;
-      return likeRatio < MAX_LIKE_RATIO;
-    })
+    .filter(({ votes, likes }) => votes < MIN_VOTES_FOR_LIKE_CHECK || likes / votes < MAX_LIKE_RATIO)
     .map((list) => list._id);
   const [flagged, unflagged] = await Promise.all([
     List.updateMany({ _id: { $in: lowQualityIds } }, { $set: { lowQuality: true } }),
@@ -588,16 +596,9 @@ const updateHighQualityLists = async () => {
     { $addFields: { skipRate: { $divide: ["$skipped", "$total"] } } },
     { $match: { skipRate: { $lte: MAX_HIGH_QUALITY_SKIP_RATE } } },
   ]);
-  const candidates = await List.find({ _id: { $in: skipCandidates.map((r) => r._id) } })
-    .select("_id votes")
-    .lean();
+  const candidates = await getVoteTallies(skipCandidates.map((r) => r._id));
   const highQualityIds = candidates
-    .filter((list) => {
-      const votes = list.votes ?? [];
-      if (votes.length < MIN_VOTES_FOR_HIGH_QUALITY) return false;
-      const likeRatio = votes.filter((vote) => vote.vote > 0).length / votes.length;
-      return likeRatio >= MIN_HIGH_QUALITY_LIKE_RATIO;
-    })
+    .filter(({ votes, likes }) => votes >= MIN_VOTES_FOR_HIGH_QUALITY && likes / votes >= MIN_HIGH_QUALITY_LIKE_RATIO)
     .map((list) => list._id);
   const [flagged, unflagged] = await Promise.all([
     List.updateMany({ _id: { $in: highQualityIds } }, { $set: { highQuality: true } }),
