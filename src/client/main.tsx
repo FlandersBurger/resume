@@ -4,6 +4,19 @@ import { BrowserRouter } from "react-router-dom";
 import { HelmetProvider } from "react-helmet-async";
 import App from "./App";
 
+// After a deploy, an open tab still points at the old hashed chunks, which are gone.
+// Reload to pick up the new index.html, at most once per 10s to avoid a reload loop.
+window.addEventListener("vite:preloadError", () => {
+  try {
+    const last = Number(sessionStorage.getItem("chunkReloadAt"));
+    if (Date.now() - last < 10_000) return;
+    sessionStorage.setItem("chunkReloadAt", String(Date.now()));
+  } catch {
+    return;
+  }
+  window.location.reload();
+});
+
 const container = document.getElementById("root");
 if (!container) throw new Error("Root element not found");
 
