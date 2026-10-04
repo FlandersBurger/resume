@@ -31,7 +31,7 @@ export default function Policy() {
 
       <Section>
         <h2>2. Information Collected</h2>
-        <p>When you sign in via Google or Facebook, the following profile information is received:</p>
+        <p>When you sign in via Google, the following profile information is received:</p>
         <ul>
           <li>Display name</li>
           <li>Email address</li>
@@ -102,11 +102,6 @@ export default function Policy() {
           <li>
             <a href="https://policies.google.com/privacy" target="_blank" rel="noreferrer">
               Google Privacy Policy
-            </a>
-          </li>
-          <li>
-            <a href="https://www.facebook.com/policy.php" target="_blank" rel="noreferrer">
-              Facebook Privacy Policy
             </a>
           </li>
         </ul>

@@ -33,7 +33,7 @@ export default function Terms() {
         <h2>2. Description of Service</h2>
         <p>
           This site is a personal resume and portfolio. It includes interactive features such as a trivia game (Ten
-          Things), mini-games, quizzes, and a blog. Some features require you to log in via Google or Facebook.
+          Things), mini-games, quizzes, and a blog. Some features require you to log in via Google.
         </p>
       </Section>
 
