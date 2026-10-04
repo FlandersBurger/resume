@@ -1,7 +1,6 @@
 import { useState } from "react";
 import {
   AuthProvider,
-  FacebookAuthProvider,
   GoogleAuthProvider,
   User as FirebaseUser,
   createUserWithEmailAndPassword,
@@ -89,7 +88,6 @@ export function useFirebaseLogin(onSuccess?: () => void) {
     error,
     clearError: () => setError(null),
     signInWithGoogle: () => signInWithProvider(new GoogleAuthProvider()),
-    signInWithFacebook: () => signInWithProvider(new FacebookAuthProvider()),
     // Widget data is verified server-side against the bot token
     signInWithTelegram: (data: object) => finishLogin(async () => ({ authType: "telegram", data })),
     signInWithEmail: (email: string, password: string) =>
