@@ -259,6 +259,7 @@
     "alreadyRequested": "{{name}}, you already requested this list today",
     "alreadyInQueue": "<b>{{list}}</b> is already in the queue, {{name}}",
     "unfoundList": "This list no longer exists",
+    "discordNotInServer": "I can only play in servers I've been added to, or in a DM with me. <a href=\"{{url}}\">Add Ten Things to this server</a>, then use /start again.",
     "corroborateBanBySamePlayer": "Get someone else to confirm the ban, {{name}}!",
     "noSuggestion": "You didn't suggest anything, {{name}}",
     "noContact": "I'm unable to reach you here, {{name}}. Please join the <a href=\"https://t.me/tenthings\">Ten Things Supergroup</a> and ping an admin there, or contact me directly -> @FlandersBurger",
