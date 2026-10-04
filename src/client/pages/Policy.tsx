@@ -18,7 +18,7 @@ export default function Policy() {
       </Helmet>
       <h1>Privacy Policy</h1>
       <p>
-        <em>Last updated: June 2026</em>
+        <em>Last updated: October 2026</em>
       </p>
 
       <Section>
@@ -31,14 +31,32 @@ export default function Policy() {
 
       <Section>
         <h2>2. Information Collected</h2>
-        <p>When you sign in via Google, the following profile information is received:</p>
+        <p>
+          You can sign in with Google, Telegram, or an email address and password. Depending on the method, the
+          following information is received:
+        </p>
         <ul>
-          <li>Display name</li>
-          <li>Email address</li>
-          <li>Profile picture URL</li>
-          <li>Whether your email address has been verified by the provider</li>
+          <li>
+            <strong>Google</strong> — display name, email address, profile picture URL, and whether your email address
+            has been verified
+          </li>
+          <li>
+            <strong>Telegram</strong> — your Telegram user ID, first and last name, username, and profile picture URL.
+            Your phone number is not shared with this site.
+          </li>
+          <li>
+            <strong>Email and password</strong> — the display name and email address you enter
+          </li>
         </ul>
-        <p>No passwords are collected or stored. Authentication is handled entirely by the third-party provider.</p>
+        <p>
+          Passwords for email sign-in are handled by Firebase Authentication and never reach this site's servers. If you
+          set a separate site password on your profile page, only a salted hash of it is stored, never the password
+          itself.
+        </p>
+        <p>
+          You can also choose to add a birth date and countries to your profile. These are optional and can be removed
+          at any time.
+        </p>
       </Section>
 
       <Section>
@@ -95,13 +113,18 @@ export default function Policy() {
         <h2>6. Third-Party Authentication</h2>
 
         <p>
-          Sign-in is provided by Firebase Authentication (Google). By signing in you are also subject to the privacy
-          policies of the provider you choose:
+          Google and email sign-in are provided by Firebase Authentication (Google). Telegram sign-in uses the Telegram
+          Login Widget. By signing in you are also subject to the privacy policies of the provider you choose:
         </p>
         <ul>
           <li>
             <a href="https://policies.google.com/privacy" target="_blank" rel="noreferrer">
               Google Privacy Policy
+            </a>
+          </li>
+          <li>
+            <a href="https://telegram.org/privacy" target="_blank" rel="noreferrer">
+              Telegram Privacy Policy
             </a>
           </li>
         </ul>
