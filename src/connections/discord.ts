@@ -12,9 +12,11 @@ import {
   ActionRowBuilder,
   ButtonBuilder,
   Options,
+  InteractionContextType,
 } from "discord.js";
 import Queue, { Job } from "bull";
 import redis from "@root/queue";
+import i18n from "@root/i18n";
 import { maskUrls } from "@utils/string-helpers";
 import chalk from "chalk";
 
@@ -93,6 +95,10 @@ export type DiscordButtonInteraction = {
 };
 
 type ButtonHandler = (interaction: DiscordButtonInteraction) => Promise<void>;
+
+// Server install with the same permissions as the "Add to Discord" link on the lists page
+const inviteUrl = () =>
+  `https://discord.com/oauth2/authorize?client_id=${process.env.DISCORD_APP_ID}&permissions=274877975552&integration_type=0&scope=bot+applications.commands`;
 
 const slashCommands = [
   { name: "ping", description: "Check if the bot is alive" },
@@ -183,6 +189,14 @@ class DiscordBot {
       if ((await redis.get("pause")) === "true") return;
 
       await interaction.deferReply({ ephemeral: true });
+
+      // User-installed commands also fire in servers the bot never joined and in group DMs,
+      // where it can neither post nor read guesses. Point the user to the server install instead.
+      if (interaction.inRawGuild() || interaction.context === InteractionContextType.PrivateChannel) {
+        const language = interaction.locale.split("-")[0];
+        await interaction.editReply(this.htmlToMarkdown(i18n(language, "warnings.discordNotInServer", { url: inviteUrl() })));
+        return;
+      }
 
       const domainMessage: DiscordMessage = {
         id: interaction.id,
