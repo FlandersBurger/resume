@@ -13,7 +13,6 @@ import { defaultContextValue } from "../../__mocks__/AppContextMock";
 
 jest.mock("firebase/auth", () => ({
   GoogleAuthProvider: jest.fn(),
-  FacebookAuthProvider: jest.fn(),
   signInWithPopup: jest.fn(),
   signInWithEmailAndPassword: jest.fn(),
   createUserWithEmailAndPassword: jest.fn(),
@@ -106,7 +105,7 @@ describe("useFirebaseLogin", () => {
     (signInWithPopup as jest.Mock).mockRejectedValue({ code: "auth/popup-closed-by-user" });
     const { result } = setup();
 
-    await act(() => result.current.signInWithFacebook());
+    await act(() => result.current.signInWithGoogle());
 
     expect(result.current.error).toBeNull();
   });

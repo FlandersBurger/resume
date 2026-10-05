@@ -18,7 +18,7 @@ export default function Terms() {
       </Helmet>
       <h1>Terms of Service</h1>
       <p>
-        <em>Last updated: June 2026</em>
+        <em>Last updated: October 2026</em>
       </p>
 
       <Section>
@@ -33,7 +33,8 @@ export default function Terms() {
         <h2>2. Description of Service</h2>
         <p>
           This site is a personal resume and portfolio. It includes interactive features such as a trivia game (Ten
-          Things), mini-games, quizzes, and a blog. Some features require you to log in via Google or Facebook.
+          Things), mini-games, quizzes, and a blog. Some features require you to log in with Google, Telegram, or an
+          email address and password.
         </p>
       </Section>
 

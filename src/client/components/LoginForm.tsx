@@ -3,9 +3,6 @@ import styled from "styled-components";
 import { useFirebaseLogin } from "../hooks/useFirebaseLogin";
 import { useTelegramLogin } from "../hooks/useTelegramLogin";
 
-// Set by vite.config.ts define; false in production builds
-declare const __SHOW_FACEBOOK_LOGIN__: boolean;
-
 type Mode = "signIn" | "register" | "reset";
 
 const ProviderButton = styled.button`
@@ -91,15 +88,6 @@ const GoogleIcon = () => (
   </svg>
 );
 
-const FacebookIcon = () => (
-  <svg viewBox="0 0 24 24" aria-hidden="true">
-    <path
-      fill="#1877F2"
-      d="M24 12.07C24 5.4 18.63 0 12 0S0 5.4 0 12.07C0 18.1 4.39 23.1 10.13 24v-8.44H7.08v-3.49h3.04V9.41c0-3.02 1.8-4.7 4.54-4.7 1.31 0 2.68.24 2.68.24v2.97h-1.51c-1.49 0-1.95.93-1.95 1.89v2.26h3.33l-.53 3.49h-2.8V24C19.61 23.1 24 18.1 24 12.07z"
-    />
-  </svg>
-);
-
 const TelegramIcon = () => (
   <svg viewBox="0 0 24 24" aria-hidden="true">
     <circle cx="12" cy="12" r="12" fill="#2AABEE" />
@@ -146,12 +134,6 @@ export default function LoginForm({ onSuccess }: { onSuccess?: () => void }) {
         <ProviderButton type="button" onClick={() => telegram.login(login.signInWithTelegram)} disabled={login.pending}>
           <TelegramIcon />
           Sign in with Telegram
-        </ProviderButton>
-      )}
-      {__SHOW_FACEBOOK_LOGIN__ && (
-        <ProviderButton type="button" onClick={login.signInWithFacebook} disabled={login.pending}>
-          <FacebookIcon />
-          Sign in with Facebook
         </ProviderButton>
       )}
 

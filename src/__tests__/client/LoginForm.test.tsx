@@ -16,7 +16,6 @@ function makeLogin(overrides: Partial<ReturnType<typeof useFirebaseLogin>> = {})
     error: null,
     clearError: jest.fn(),
     signInWithGoogle: jest.fn(),
-    signInWithFacebook: jest.fn(),
     signInWithTelegram: jest.fn(),
     signInWithEmail: jest.fn(),
     registerWithEmail: jest.fn(),
@@ -45,12 +44,6 @@ describe("LoginForm", () => {
     expect(login.signInWithGoogle).toHaveBeenCalledTimes(1);
   });
 
-  it("signs in with Facebook", async () => {
-    const login = renderForm();
-    await userEvent.click(screen.getByRole("button", { name: "Sign in with Facebook" }));
-    expect(login.signInWithFacebook).toHaveBeenCalledTimes(1);
-  });
-
   it("signs in with Telegram", async () => {
     const login = renderForm();
     await userEvent.click(screen.getByRole("button", { name: "Sign in with Telegram" }));
@@ -60,18 +53,6 @@ describe("LoginForm", () => {
   it("hides Telegram sign-in until the Telegram script and bot id are loaded", () => {
     renderForm({}, false);
     expect(screen.queryByRole("button", { name: "Sign in with Telegram" })).not.toBeInTheDocument();
-  });
-
-  it("hides Facebook sign-in when disabled for the build", () => {
-    const g = globalThis as { __SHOW_FACEBOOK_LOGIN__?: boolean };
-    g.__SHOW_FACEBOOK_LOGIN__ = false;
-    try {
-      renderForm();
-      expect(screen.queryByRole("button", { name: "Sign in with Facebook" })).not.toBeInTheDocument();
-      expect(screen.getByRole("button", { name: "Sign in with Google" })).toBeInTheDocument();
-    } finally {
-      g.__SHOW_FACEBOOK_LOGIN__ = true;
-    }
   });
 
   it("signs in with email and password", async () => {
