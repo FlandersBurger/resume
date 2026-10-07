@@ -184,6 +184,10 @@
     "help": {
       "name": "помощь",
       "description": "Список команд"
+    },
+    "share": {
+      "name": "share",
+      "description": "Поделитесь своим ежедневным результатом"
     }
   },
   "sentences": {
@@ -244,7 +248,8 @@
     "bugPrompt": "<b>ОШИБКА</b>\nПожалуйста, предоставьте более подробную информацию о том, что пошло не так, в следующем сообщении, {{name}}!",
     "newListsHeading": "<b>Новые списки</b>",
     "updatedListsHeading": "<b>Обновлённые списки</b>",
-    "listUpdatesOptOut": "Отключите эти уведомления через /settings"
+    "listUpdatesOptOut": "Отключите эти уведомления через /settings",
+    "discordPromo": "Ten Things также есть в Discord! У вас есть друзья или сообщество там? <a href=\"{{url}}\">Добавьте Ten Things на свой сервер Discord</a> и играйте вместе."
   },
   "warnings": {
     "minimum1Category": "Требуется минимум 1 категория",
@@ -266,7 +271,8 @@
     "hintCooldown": "Успокойся с подсказками, подожди еще {{seconds}} секунд.",
     "playerNotFound": "Игрок не найден.",
     "statsListNotFound": "Список не найден.",
-    "statUnknown": "Что-то."
+    "statUnknown": "Что-то.",
+    "discordNotInServer": "Я могу играть только на серверах, на которые меня добавили, или в личных сообщениях со мной. <a href=\"{{url}}\">Добавьте Ten Things на этот сервер</a>, затем снова используйте /start."
   },
   "stats": {
     "stats": "Статистика",

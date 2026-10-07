@@ -113,6 +113,7 @@ export const newRound = async (currentGame: IGame) => {
   game.list.values = sampleSize(game.list.values, 10);
   game.listsPlayed++;
   game.hints = 0;
+  game.roundDate = new Date();
   hintCache[game.id] = 3;
   hintCooldown(game.id);
   game.guessers = [];

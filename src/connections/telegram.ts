@@ -583,6 +583,7 @@ class TelegramBot {
       Command.Tinyskip,
       Command.Commands,
       Command.Me,
+      Command.Share,
       Command.Stats,
     ].map((command) => ({
       command: i18n(language, `commands.${command}.name`),

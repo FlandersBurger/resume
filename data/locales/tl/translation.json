@@ -184,6 +184,10 @@
     "help": {
       "name": "tulong",
       "description": "Listahan ng mga utos"
+    },
+    "share": {
+      "name": "ibahagi",
+      "description": "Ibahagi ang iyong pang-araw-araw na resulta"
     }
   },
   "sentences": {
@@ -244,7 +248,8 @@
     "hintDelay": "Oras hanggang pinapayagan ang isang bagong pahiwatig",
     "newListsHeading": "<b>Mga bagong listahan</b>",
     "updatedListsHeading": "<b>Mga na-update na listahan</b>",
-    "listUpdatesOptOut": "I-off ang mga update na ito sa pamamagitan ng /settings"
+    "listUpdatesOptOut": "I-off ang mga update na ito sa pamamagitan ng /settings",
+    "discordPromo": "Nasa Discord din ang Ten Things! May mga kaibigan ka ba o komunidad doon? <a href=\"{{url}}\">Idagdag ang Ten Things sa iyong Discord server</a> at maglaro nang sama-sama."
   },
   "warnings": {
     "minimum1Category": "Kinakailangan ng hindi kukulangin sa 1 kategorya",
@@ -266,7 +271,8 @@
     "playerNotFound": "Hindi natagpuan ang manlalaro",
     "statsListNotFound": "Hindi natagpuan ang listahan",
     "statUnknown": "Mayroon",
-    "banned": "{{name}}, pinagbawalan ka sa Ten Things. Huwag mag-atubiling magpetisyon ng unban sa @FlandersBurger"
+    "banned": "{{name}}, pinagbawalan ka sa Ten Things. Huwag mag-atubiling magpetisyon ng unban sa @FlandersBurger",
+    "discordNotInServer": "Maaari lang akong maglaro sa mga server na idinagdag ako, o sa isang DM kasama ko. <a href=\"{{url}}\">Idagdag ang Ten Things sa server na ito</a>, pagkatapos ay gamitin muli ang /start."
   },
   "stats": {
     "stats": "Estadistika",

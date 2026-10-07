@@ -184,6 +184,10 @@
     "help": {
       "name": "सहायता",
       "description": "आदेशों की सूची"
+    },
+    "share": {
+      "name": "share",
+      "description": "अपना दैनिक परिणाम साझा करें"
     }
   },
   "sentences": {
@@ -244,7 +248,8 @@
     "bugPrompt": "<b>बग</b>\nकृपया अगले संदेश में बताएं कि क्या गड़बड़ हुई है, {{name}}!",
     "newListsHeading": "<b>नई सूचियाँ</b>",
     "updatedListsHeading": "<b>अद्यतन सूचियाँ</b>",
-    "listUpdatesOptOut": "/settings के माध्यम से ये अपडेट बंद करें"
+    "listUpdatesOptOut": "/settings के माध्यम से ये अपडेट बंद करें",
+    "discordPromo": "टेन थिंग्स डिस्कॉर्ड पर भी है! क्या आपके वहां दोस्त या कोई समुदाय है? <a href=\"{{url}}\">टेन थिंग्स को अपने डिस्कॉर्ड सर्वर में जोड़ें</a> और साथ खेलें।"
   },
   "warnings": {
     "minimum1Category": "न्यूनतम 1 श्रेणी आवश्यक है",
@@ -266,7 +271,8 @@
     "hintCooldown": "संकेतों पर ध्यान देना बंद करो, {{seconds}} सेकंड और इंतज़ार करो",
     "playerNotFound": "खिलाड़ी नहीं मिला",
     "statsListNotFound": "सूची नहीं मिली",
-    "statUnknown": "कुछ"
+    "statUnknown": "कुछ",
+    "discordNotInServer": "मैं केवल उन्हीं सर्वरों में खेल सकता हूँ जिनमें मुझे जोड़ा गया है, या मेरे साथ DM में। <a href=\"{{url}}\">टेन थिंग्स को इस सर्वर में जोड़ें</a>, फिर /start कमांड का दोबारा उपयोग करें।"
   },
   "stats": {
     "stats": "आँकड़े",

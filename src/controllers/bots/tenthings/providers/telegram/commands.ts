@@ -1,8 +1,8 @@
 import { GameType, IGame } from "@models/tenthings/game";
-import { Game, GameRound, List } from "@models/index";
+import { Game, GameRound, List, Player } from "@models/index";
 import { HydratedDocument } from "mongoose";
 import { convertTelegramUserToPlayer, TelegramMessage } from "@tenthings/providers/telegram";
-import { getRules } from "@tenthings/messages";
+import { getDiscordPromo, getRules } from "@tenthings/messages";
 import { deactivate, newRound } from "@tenthings/maingame";
 import { createMinigame, updateMinigames } from "@tenthings/minigame";
 import { createTinygame } from "@tenthings/tinygame";
@@ -19,13 +19,27 @@ import { checkSkipper, processSkip, vetoSkip } from "@tenthings/skips";
 import { getStats } from "@tenthings/providers/telegram/stats";
 import { categoriesKeyboard, searchResultsKeyboard, settingsKeyboard, statsKeyboard } from "@tenthings/keyboards";
 import shuffle from "lodash/shuffle";
-import bot from "@root/connections/telegram";
+import bot, { Channel } from "@root/connections/telegram";
 import {
   checkSuggestionProvided,
   sendSuggestion,
   sendSuggestionMessage,
 } from "@tenthings/providers/telegram/suggestions";
 import { adminOnly } from "@tenthings/providers/telegram/errors";
+import { getPlayerCard, PlayerCardPlayer } from "@tenthings/share";
+import { SupportedLanguage } from "@tenthings/languages";
+
+// Today's standing for /share on both platforms
+export const getDailyRank = async (game: IGame, player: PlayerCardPlayer) => {
+  const [ahead, total] = await Promise.all([
+    Player.countDocuments({ game: game._id, scoreDaily: { $gt: player.scoreDaily } }),
+    Player.countDocuments({ game: game._id, scoreDaily: { $gt: 0 } }),
+  ]);
+  return { ahead, total };
+};
+
+export const getShareMessage = async (game: IGame, player: Parameters<typeof getPlayerName>[0]) =>
+  `<b>${getPlayerName(player)}</b>\n${getPlayerCard(player, player.scoreDaily > 0 ? await getDailyRank(game, player) : undefined)}`;
 
 export enum Command {
   Bug = "bug",
@@ -49,11 +63,13 @@ export enum Command {
   Miniskip = "miniskip",
   Notify = "notify",
   Ping = "ping",
+  Promote = "promote",
   Queue = "queue",
   Resume = "resume",
   Score = "score",
   Search = "search",
   Settings = "settings",
+  Share = "share",
   Skip = "skip",
   Start = "start",
   Stats = "stats",
@@ -69,7 +85,15 @@ export enum Command {
 const commands: Command[] = Object.values(Command);
 const userCommands = commands.filter(
   (command) =>
-    ![Command.Notify, Command.Check, Command.Flush, Command.Minigames, Command.Hello, Command.Resume].includes(command),
+    ![
+      Command.Notify,
+      Command.Promote,
+      Command.Check,
+      Command.Flush,
+      Command.Minigames,
+      Command.Hello,
+      Command.Resume,
+    ].includes(command),
 );
 
 export const translateCommand = (language: string, key: string): Command | undefined =>
@@ -261,7 +285,7 @@ export const evaluate = async (msg: TelegramMessage, game: HydratedDocument<IGam
         break;
       case Command.Notify:
         if (game.telegramChatId === parseInt(process.env.MASTER_CHAT || "")) {
-          Game.find({ enabled: true })
+          Game.find({ enabled: true, platform: "telegram" })
             .select("telegramChatId telegramTopicId telegramChannel")
             .then((games) => {
               bot.broadcast(
@@ -269,6 +293,28 @@ export const evaluate = async (msg: TelegramMessage, game: HydratedDocument<IGam
                 msg.text.replace("/notify ", ""),
               );
             });
+        }
+        break;
+      case Command.Promote:
+        // One-off "Ten Things is on Discord" announcement to the chats that receive list updates,
+        // in each chat's UI language
+        if (game.telegramChatId === parseInt(process.env.MASTER_CHAT || "")) {
+          const games = await Game.find({
+            "settings.updates": true,
+            platform: "telegram",
+            enabled: true,
+            listsPlayed: { $gt: 0 },
+          }).select("telegramChatId telegramTopicId telegramChannel settings.language");
+          const channelsByLanguage = new Map<string, Channel[]>();
+          for (const { telegramChannel, settings } of games) {
+            const language = settings.language || SupportedLanguage.EN;
+            channelsByLanguage.set(language, [...(channelsByLanguage.get(language) ?? []), telegramChannel]);
+          }
+          for (const [language, channels] of channelsByLanguage) {
+            const optOut = i18n(language, "sentences.listUpdatesOptOut");
+            bot.broadcast(channels, `${getDiscordPromo(language)}\n\n<i>${optOut}</i>`, { silent: true });
+          }
+          bot.notifyAdmin(`Discord promo sent to ${games.length} chats in ${channelsByLanguage.size} languages`);
         }
         break;
       /*
@@ -284,6 +330,9 @@ export const evaluate = async (msg: TelegramMessage, game: HydratedDocument<IGam
       */
       case Command.Me:
         getStats(game, `p_${msg.from.id}`, getPlayerName(player));
+        break;
+      case Command.Share:
+        bot.queueMessage(game.telegramChannel, await getShareMessage(game, player));
         break;
       case Command.Score:
         game.provider.dailyScores(game);

@@ -33,5 +33,7 @@
   "flush": "flush",
   "minigames": "minigames",
   "ping": "ping",
-  "hello": "hello"
+  "hello": "hello",
+  "promote": "promote",
+  "teilen": "share"
 }

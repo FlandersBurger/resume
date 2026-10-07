@@ -18,6 +18,7 @@ import Queue, { Job } from "bull";
 import redis from "@root/queue";
 import i18n from "@root/i18n";
 import { maskUrls } from "@utils/string-helpers";
+import { discordInviteUrl } from "@tenthings/links";
 import chalk from "chalk";
 
 export type DiscordUser = {
@@ -96,10 +97,6 @@ export type DiscordButtonInteraction = {
 
 type ButtonHandler = (interaction: DiscordButtonInteraction) => Promise<void>;
 
-// Server install with the same permissions as the "Add to Discord" link on the lists page
-const inviteUrl = () =>
-  `https://discord.com/oauth2/authorize?client_id=${process.env.DISCORD_APP_ID}&permissions=274877975552&integration_type=0&scope=bot+applications.commands`;
-
 const slashCommands = [
   { name: "ping", description: "Check if the bot is alive" },
   { name: "start", description: "Start the game" },
@@ -117,6 +114,7 @@ const slashCommands = [
   { name: "tinyskip", description: "Skip the tinygame" },
   { name: "score", description: "Show daily scores" },
   { name: "me", description: "Show top 10 scores" },
+  { name: "share", description: "Share your daily result" },
   { name: "categories", description: "Show and manage categories" },
   { name: "stats", description: "Show game statistics" },
   { name: "intro", description: "Show introduction" },
@@ -194,7 +192,9 @@ class DiscordBot {
       // where it can neither post nor read guesses. Point the user to the server install instead.
       if (interaction.inRawGuild() || interaction.context === InteractionContextType.PrivateChannel) {
         const language = interaction.locale.split("-")[0];
-        await interaction.editReply(this.htmlToMarkdown(i18n(language, "warnings.discordNotInServer", { url: inviteUrl() })));
+        await interaction.editReply(
+          this.htmlToMarkdown(i18n(language, "warnings.discordNotInServer", { url: discordInviteUrl() })),
+        );
         return;
       }
 
@@ -343,6 +343,7 @@ class DiscordBot {
 
   private htmlToMarkdown = (html: string): string => {
     return html
+      .replace(/<pre>([\s\S]*?)<\/pre>/g, "```\n$1\n```")
       .replace(/<b>([\s\S]*?)<\/b>/g, "**$1**")
       .replace(/<i>([\s\S]*?)<\/i>/g, "*$1*")
       .replace(/<u>([\s\S]*?)<\/u>/g, "__$1__")

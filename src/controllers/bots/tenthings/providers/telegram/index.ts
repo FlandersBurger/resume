@@ -15,6 +15,7 @@ import {
   getStreakMessage,
 } from "@tenthings/messages";
 import { getPlayerName } from "@tenthings/players";
+import { getRoundCard } from "@tenthings/share";
 import { getHint } from "@tenthings/hints";
 import { toTelegramKeyboard } from "./keyboards";
 import { likeListKeyboard, banListKeyboard } from "@tenthings/keyboards";
@@ -59,6 +60,7 @@ export const telegram: Provider = {
   endOfRound: async (game: IGame, list: IList) => {
     let message = getListStats(game.settings.language, list, undefined);
     message += await getDailyScores(game, 5);
+    message += `\n${getRoundCard(game)}`;
     bot.queueMessage(game.telegramChannel, message);
   },
   skipList: (game: IGame) => {
@@ -87,7 +89,7 @@ export const telegram: Provider = {
   },
   dailyWinners: (game: IGame, winners: IPlayer[], score: number) => {
     let message = `<b>${winners.map((winner) => getPlayerName(winner, true)).join(" & ")} won with ${score} points!</b>\n\n`;
-    message += getDailyMessage();
+    message += getDailyMessage(game.settings.language, true);
     // message += `\t - Bitcoin Address: bc1qnr4y95d3w5rwahcypazpjdv33g8wupewmw6rpa3s2927qvgmduqsvcpgfs`;
     //'\n\nCome join us in the <a href="https://t.me/tenthings">Ten Things Supergroup</a>!'
     bot.queueMessage(game.telegramChannel, message);
@@ -95,7 +97,7 @@ export const telegram: Provider = {
   endOfDay: async (game: IGame, winners: IPlayer[], score: number) => {
     let message = await getDailyScores(game);
     message += `\n<b>${winners.map((winner) => getPlayerName(winner, true)).join(" & ")} won with ${score} points!</b>\n\n`;
-    message += getDailyMessage();
+    message += getDailyMessage(game.settings.language, true);
     // message += `\t - Bitcoin Address: bc1qnr4y95d3w5rwahcypazpjdv33g8wupewmw6rpa3s2927qvgmduqsvcpgfs`;
     //'\n\nCome join us in the <a href="https://t.me/tenthings">Ten Things Supergroup</a>!'
     bot.queueMessage(game.telegramChannel, message);

@@ -184,6 +184,10 @@
     "help": {
       "name": "bantuan",
       "description": "Daftar perintah"
+    },
+    "share": {
+      "name": "bagikan",
+      "description": "Bagikan hasil harian Anda"
     }
   },
   "sentences": {
@@ -244,7 +248,8 @@
     "bugPrompt": "<b>BUG</b>\nSilakan berikan beberapa detail tentang apa yang salah di pesan Anda berikutnya, {{name}}!",
     "newListsHeading": "<b>Daftar baru</b>",
     "updatedListsHeading": "<b>Daftar yang diperbarui</b>",
-    "listUpdatesOptOut": "Matikan pembaruan ini melalui /settings"
+    "listUpdatesOptOut": "Matikan pembaruan ini melalui /settings",
+    "discordPromo": "Ten Things juga ada di Discord! Punya teman atau komunitas di sana? <a href=\"{{url}}\">Tambahkan Ten Things ke server Discord Anda</a> dan bermain bersama."
   },
   "warnings": {
     "minimum1Category": "Setidaknya 1 kategori diperlukan",
@@ -266,7 +271,8 @@
     "hintCooldown": "Tenang dengan petunjuknya, tunggu {{seconds}} detik lagi",
     "playerNotFound": "Pemain tidak ditemukan",
     "statsListNotFound": "Daftar tidak ditemukan",
-    "statUnknown": "Sesuatu"
+    "statUnknown": "Sesuatu",
+    "discordNotInServer": "Saya hanya bisa bermain di server yang telah ditambahkan kepada saya, atau melalui DM dengan saya. <a href=\"{{url}}\">Tambahkan Ten Things ke server ini</a>, lalu gunakan /start lagi."
   },
   "stats": {
     "stats": "Statistik",
