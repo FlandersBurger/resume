@@ -60,7 +60,7 @@ export const telegram: Provider = {
   endOfRound: async (game: IGame, list: IList) => {
     let message = getListStats(game.settings.language, list, undefined);
     message += await getDailyScores(game, 5);
-    message += `\n${getRoundCard(game)}`;
+    message += `\n${getRoundCard(game, (guesser) => getPlayerName(guesser as IPlayer))}`;
     bot.queueMessage(game.telegramChannel, message);
   },
   skipList: (game: IGame) => {
