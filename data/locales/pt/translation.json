@@ -184,6 +184,10 @@
     "help": {
       "name": "ajuda",
       "description": "Lista de comandos"
+    },
+    "share": {
+      "name": "compartilhar",
+      "description": "Compartilhe seu resultado diário"
     }
   },
   "sentences": {
@@ -244,7 +248,8 @@
     "bugPrompt": "<b>BUG</b>\nPor favor, forneça alguns detalhes sobre o que deu errado na sua próxima mensagem, {{name}}!",
     "newListsHeading": "<b>Novas listas</b>",
     "updatedListsHeading": "<b>Listas atualizadas</b>",
-    "listUpdatesOptOut": "Desative essas atualizações em /settings"
+    "listUpdatesOptOut": "Desative essas atualizações em /settings",
+    "discordPromo": "O Ten Things também está no Discord! Tem amigos ou uma comunidade por lá? <a href=\"{{url}}\">Adicione o Ten Things ao seu servidor do Discord</a> e joguem juntos."
   },
   "warnings": {
     "minimum1Category": "É necessário pelo menos 1 categoria",
@@ -266,7 +271,8 @@
     "hintCooldown": "Calma com as dicas, espere mais {{seconds}} segundos",
     "playerNotFound": "Jogador não encontrado",
     "statsListNotFound": "Lista não encontrada",
-    "statUnknown": "Algo"
+    "statUnknown": "Algo",
+    "discordNotInServer": "Só posso jogar em servidores nos quais fui adicionado ou em uma mensagem direta comigo. <a href=\"{{url}}\">Adicione o Ten Things a este servidor</a> e use /start novamente."
   },
   "stats": {
     "stats": "Estatísticas",

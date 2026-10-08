@@ -33,5 +33,7 @@
   "ping": "ping",
   "hello": "hello",
   "queue": "queue",
-  "hulp": "help"
+  "hulp": "help",
+  "promote": "promote",
+  "delen": "share"
 }

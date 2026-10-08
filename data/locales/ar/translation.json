@@ -184,6 +184,10 @@
     "help": {
       "name": "مساعدة",
       "description": "قائمة الأوامر"
+    },
+    "share": {
+      "name": "share",
+      "description": "شارك نتيجتك اليومية"
     }
   },
   "sentences": {
@@ -244,7 +248,8 @@
     "bugPrompt": "<b>خلل</b>\nيرجى تقديم بعض التفاصيل حول الخطأ الذي حدث في رسالتك التالية، {{name}}!",
     "newListsHeading": "<b>قوائم جديدة</b>",
     "updatedListsHeading": "<b>قوائم محدثة</b>",
-    "listUpdatesOptOut": "أوقف هذه التحديثات عبر /settings"
+    "listUpdatesOptOut": "أوقف هذه التحديثات عبر /settings",
+    "discordPromo": "لعبة Ten Things متوفرة أيضًا على ديسكورد! هل لديك أصدقاء أو مجتمع هناك؟ <a href=\"{{url}}\"> أضف Ten Things إلى خادم ديسكورد الخاص بك </a> والعبوا معًا."
   },
   "warnings": {
     "minimum1Category": "يجب أن يكون الحد الأدنى لفئة واحدة",
@@ -266,7 +271,8 @@
     "hintCooldown": "اهدأ بشأن التلميحات، انتظر {{seconds}} ثانية أخرى",
     "playerNotFound": "لم يتم العثور على اللاعب",
     "statsListNotFound": "لم يتم العثور على القائمة",
-    "statUnknown": "شيء ما"
+    "statUnknown": "شيء ما",
+    "discordNotInServer": "لا يمكنني اللعب إلا في الخوادم التي تمت إضافتي إليها، أو في رسالة خاصة معي. <a href=\"{{url}}\"> أضف Ten Things إلى هذا الخادم </a>، ثم استخدم الأمر /start مرة أخرى."
   },
   "stats": {
     "stats": "الإحصائيات",

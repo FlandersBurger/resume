@@ -15,6 +15,7 @@ import {
   getStreakMessage,
 } from "@tenthings/messages";
 import { getPlayerName } from "@tenthings/players";
+import { getRoundCard } from "@tenthings/share";
 import { getHint } from "@tenthings/hints";
 import { Player } from "@root/models";
 import { HydratedDocument } from "mongoose";
@@ -65,6 +66,7 @@ export const discord: Provider = {
   endOfRound: async (game: IGame, list: IList) => {
     let message = getListStats(game.settings.language, list, undefined);
     message += await getDailyScores(game, 5);
+    message += `\n${getRoundCard(game)}`;
     bot.sendMessageWithComponents(game.discordChannel, message, likeListKeyboard(game));
   },
   skipList: (game: IGame) => {
@@ -93,13 +95,13 @@ export const discord: Provider = {
   },
   dailyWinners: (game: IGame, winners: IPlayer[], score: number) => {
     let message = `**${winners.map((winner) => getPlayerName(winner, true)).join(" & ")} won with ${score} points!**\n\n`;
-    message += getDailyMessage();
+    message += getDailyMessage(game.settings.language);
     bot.queueMessage(game.discordChannel, message);
   },
   endOfDay: async (game: IGame, winners: IPlayer[], score: number) => {
     let message = await getDailyScores(game);
     message += `\n**${winners.map((winner) => getPlayerName(winner, true)).join(" & ")} won with ${score} points!**\n\n`;
-    message += getDailyMessage();
+    message += getDailyMessage(game.settings.language);
     bot.queueMessage(game.discordChannel, message);
   },
   guessed: (game: IGame, player: IPlayer, match: IGameListValue, score: number, accuracy: string) => {

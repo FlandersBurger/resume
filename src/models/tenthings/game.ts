@@ -60,6 +60,7 @@ export interface IGame {
   adminDisabled: boolean;
   hints: number;
   lastPlayDate: Date;
+  roundDate?: Date; // When the current main game round started
   listsPlayed: number;
   guessers: Types.ObjectId[];
   streak: {
@@ -100,6 +101,7 @@ const gameSchema = new Schema<IGame>(
     adminDisabled: { type: Boolean, required: true, default: false },
     hints: { type: Number, required: true, default: 0 },
     lastPlayDate: { type: Date, required: true, default: Date.now },
+    roundDate: { type: Date, required: false },
     listsPlayed: { type: Number, required: true, default: 0 },
     guessers: [{ type: Schema.Types.ObjectId, ref: "Player", required: true }],
     streak: {

@@ -133,6 +133,10 @@
       "name": "me",
       "description": "My stats"
     },
+    "share": {
+      "name": "share",
+      "description": "Share your daily result"
+    },
     "intro": {
       "name": "intro",
       "description": "What am I?"
@@ -248,7 +252,8 @@
     "bugPrompt": "<b>BUG</b>\nPlease provide some details as to what went wrong in your next message, {{name}}!",
     "newListsHeading": "<b>New lists</b>",
     "updatedListsHeading": "<b>Updated lists</b>",
-    "listUpdatesOptOut": "Switch off these updates through /settings"
+    "listUpdatesOptOut": "Switch off these updates through /settings",
+    "discordPromo": "Ten Things is on Discord too! Got friends or a community there? <a href=\"{{url}}\">Add Ten Things to your Discord server</a> and play together."
   },
   "warnings": {
     "minimum1Category": "A minimum of 1 category is required",

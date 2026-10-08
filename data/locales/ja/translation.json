@@ -188,6 +188,10 @@
     "queue": {
       "name": "キュー",
       "description": "ボットはどこで停止していますか？"
+    },
+    "share": {
+      "name": "share",
+      "description": "毎日の結果をシェアしてください"
     }
   },
   "sentences": {
@@ -248,7 +252,8 @@
     "bugPrompt": "<b>バグ</b>\n次のメッセージで、何が問題だったのか詳細をお知らせください{{name}}！",
     "newListsHeading": "<b>新しいリスト</b>",
     "updatedListsHeading": "<b>更新されたリスト</b>",
-    "listUpdatesOptOut": "/settings でこれらの通知をオフにできます"
+    "listUpdatesOptOut": "/settings でこれらの通知をオフにできます",
+    "discordPromo": "Ten ThingsはDiscordにもあります！友達やコミュニティはありますか？<a href=\"{{url}}\">Ten ThingsをDiscordサーバー</a>に追加して一緒にプレイしましょう。"
   },
   "warnings": {
     "minimum1Category": "最低1つのカテゴリが必要です",
@@ -270,7 +275,8 @@
     "hintCooldown": "ヒントは落ち着いて、あと {{seconds}}秒待ってください",
     "playerNotFound": "プレイヤーが見つかりません",
     "statsListNotFound": "リストが見つかりません",
-    "statUnknown": "何か"
+    "statUnknown": "何か",
+    "discordNotInServer": "私は、追加してもらったサーバーか、私とのDMでしかプレイできません。<a href=\"{{url}}\">Ten Thingsをこのサーバー</a>に追加してから、/startコマンドを再度実行してください。"
   },
   "stats": {
     "stats": "統計情報",

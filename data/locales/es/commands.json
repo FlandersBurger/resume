@@ -33,5 +33,7 @@
   "hola": "hello",
   "cola": "queue",
   "ayuda": "help",
-  "fallo": "bug"
+  "fallo": "bug",
+  "promote": "promote",
+  "compartir": "share"
 }

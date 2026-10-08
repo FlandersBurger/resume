@@ -184,6 +184,10 @@
     "help": {
       "name": "help",
       "description": "Lijst met commando's"
+    },
+    "share": {
+      "name": "delen",
+      "description": "Deel je dagelijkse resultaat"
     }
   },
   "sentences": {
@@ -244,7 +248,8 @@
     "bugPrompt": "<b>BUG</b>\nGeef in je volgende bericht wat meer details over wat er mis is gegaan, {{name}}!",
     "newListsHeading": "<b>Nieuwe lijsten</b>",
     "updatedListsHeading": "<b>Bijgewerkte lijsten</b>",
-    "listUpdatesOptOut": "Zet deze updates uit via /settings"
+    "listUpdatesOptOut": "Zet deze updates uit via /settings",
+    "discordPromo": "Ten Things is ook op Discord! Heb je daar vrienden of een community? <a href=\"{{url}}\">Voeg Ten Things toe aan je Discord-server</a> en speel samen."
   },
   "warnings": {
     "minimum1Category": "Minimaal 1 categorie is vereist",
@@ -266,7 +271,8 @@
     "hintCooldown": "Rustig aan met de hints, wacht nog {{seconds}} seconden",
     "playerNotFound": "Speler niet gevonden",
     "statsListNotFound": "Lijst niet gevonden",
-    "statUnknown": "Iets"
+    "statUnknown": "Iets",
+    "discordNotInServer": "Ik kan alleen spelen op servers waar ik aan ben toegevoegd, of in een DM met mij. <a href=\"{{url}}\">Voeg Ten Things toe aan deze server</a> en gebruik dan /start opnieuw."
   },
   "stats": {
     "stats": "Statistieken",
