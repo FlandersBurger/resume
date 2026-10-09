@@ -3,7 +3,6 @@ import moment from "moment";
 import { parseSymbols } from "@utils/string-helpers";
 import { TEN_THINGS_URL } from "./links";
 
-const MEDALS = ["🥇", "🥈", "🥉"];
 const SHARE_LINK = TEN_THINGS_URL.replace(/^https?:\/\//, "");
 
 // Structural shapes of IGame / IPlayer: importing the models here would add circular imports
@@ -14,7 +13,6 @@ export type RoundCardGame = {
   roundDate?: Date;
   list: { name: string; values: { value: string; guesser?: Guesser }[] };
 };
-export type PlayerCardPlayer = { scoreDaily: number; playStreak?: number };
 
 const guesserId = (guesser?: Guesser): string | undefined =>
   guesser ? String((guesser as { _id?: unknown })._id ?? guesser) : undefined;
@@ -43,19 +41,5 @@ export const getRoundCard = (game: RoundCardGame, nameOf: (guesser: Guesser) => 
   if (game.roundDate) stats.push(`⏱️ ${formatDuration(Date.now() - new Date(game.roundDate).getTime())}`);
   stats.push(`💡 ${game.hints}`, `👥 ${players.size}`);
 
-  return toCard([`Ten Things 🔟 ${game.list.name}`, ...answers, stats.join(" · ")]);
-};
-
-// rank: players ahead of this one today, and how many scored at all (callers query it, keeping this file DB-free)
-export const getPlayerCard = (player: PlayerCardPlayer, rank?: { ahead: number; total: number }): string => {
-  const lines = [`Ten Things 🔟 ${moment().format("YYYY-MM-DD")}`];
-  if (player.scoreDaily > 0 && rank) {
-    lines.push(`${MEDALS[rank.ahead] ?? "🏅"} #${rank.ahead + 1}/${rank.total} · ⭐ ${player.scoreDaily}`);
-  } else {
-    lines.push(`⭐ ${player.scoreDaily}`);
-  }
-  // playStreak is only bumped by the end-of-day job, so today's play isn't in it yet
-  const streak = (player.playStreak ?? 0) + (player.scoreDaily > 0 ? 1 : 0);
-  if (streak > 1) lines.push(`🔥 ${streak}`);
-  return toCard(lines);
+  return toCard(["Ten Things", game.list.name, ...answers, stats.join(" · ")]);
 };

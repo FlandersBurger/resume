@@ -184,10 +184,6 @@
     "help": {
       "name": "सहायता",
       "description": "आदेशों की सूची"
-    },
-    "share": {
-      "name": "share",
-      "description": "अपना दैनिक परिणाम साझा करें"
     }
   },
   "sentences": {

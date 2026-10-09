@@ -184,10 +184,6 @@
     "help": {
       "name": "Hilfe",
       "description": "Befehlsliste"
-    },
-    "share": {
-      "name": "teilen",
-      "description": "Teile dein Tagesergebnis"
     }
   },
   "sentences": {

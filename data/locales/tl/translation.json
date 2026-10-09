@@ -184,10 +184,6 @@
     "help": {
       "name": "tulong",
       "description": "Listahan ng mga utos"
-    },
-    "share": {
-      "name": "ibahagi",
-      "description": "Ibahagi ang iyong pang-araw-araw na resulta"
     }
   },
   "sentences": {

@@ -60,7 +60,6 @@ export const telegram: Provider = {
   endOfRound: async (game: IGame, list: IList) => {
     let message = getListStats(game.settings.language, list, undefined);
     message += await getDailyScores(game, 5);
-    message += `\n${getRoundCard(game, (guesser) => getPlayerName(guesser as IPlayer))}`;
     bot.queueMessage(game.telegramChannel, message);
   },
   skipList: (game: IGame) => {
@@ -164,6 +163,12 @@ export const telegram: Provider = {
       message = `<b>${game.list.name}</b>\n`;
     }
     if (game.telegramChatId === 592503547) console.log(game.list.values);
+    if (long && game.list.values.every(({ guesser }) => guesser)) {
+      // Round complete: the copyable card replaces the plain answer list
+      message += getRoundCard(game, (guesser) => getPlayerName(guesser as IPlayer));
+      bot.queueMessage(game.telegramChannel, message);
+      return;
+    }
     message += game.list.values.reduce((str, { guesser, value }, index) => {
       if (long) {
         if (!guesser) {

@@ -184,10 +184,6 @@
     "help": {
       "name": "Ayuda",
       "description": "Lista de comandos"
-    },
-    "share": {
-      "name": "compartir",
-      "description": "Comparte tu resultado diario"
     }
   },
   "sentences": {

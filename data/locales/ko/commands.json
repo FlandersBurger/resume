@@ -34,6 +34,5 @@
   "hello": "hello",
   "queue": "queue",
   "help": "help",
-  "promote": "promote",
-  "share": "share"
+  "promote": "promote"
 }

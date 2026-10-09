@@ -184,10 +184,6 @@
     "help": {
       "name": "مساعدة",
       "description": "قائمة الأوامر"
-    },
-    "share": {
-      "name": "share",
-      "description": "شارك نتيجتك اليومية"
     }
   },
   "sentences": {
