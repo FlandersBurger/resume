@@ -184,10 +184,6 @@
     "help": {
       "name": "help",
       "description": "Lijst met commando's"
-    },
-    "share": {
-      "name": "delen",
-      "description": "Deel je dagelijkse resultaat"
     }
   },
   "sentences": {

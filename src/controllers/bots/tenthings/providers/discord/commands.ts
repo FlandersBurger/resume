@@ -20,7 +20,7 @@ import { searchResultsKeyboard, settingsKeyboard, statsKeyboard } from "@tenthin
 
 // Re-export the shared Command enum from telegram for consumers of this module
 export { Command, translateCommand } from "@tenthings/providers/telegram/commands";
-import { Command, getShareMessage, translateCommand } from "@tenthings/providers/telegram/commands";
+import { Command, translateCommand } from "@tenthings/providers/telegram/commands";
 
 const commands: Command[] = Object.values(Command);
 const userCommands = commands.filter(
@@ -213,9 +213,6 @@ export const evaluate = async (msg: DiscordMessage, game: HydratedDocument<IGame
         break;
       case Command.Me:
         game.provider.dailyScores(game, 10);
-        break;
-      case Command.Share:
-        game.provider.message(game, await getShareMessage(game, player));
         break;
       case Command.Score:
         game.provider.dailyScores(game);

@@ -184,10 +184,6 @@
     "help": {
       "name": "bantuan",
       "description": "Daftar perintah"
-    },
-    "share": {
-      "name": "bagikan",
-      "description": "Bagikan hasil harian Anda"
     }
   },
   "sentences": {

@@ -1,5 +1,5 @@
 import { GameType, IGame } from "@models/tenthings/game";
-import { Game, GameRound, List, Player } from "@models/index";
+import { Game, GameRound, List } from "@models/index";
 import { HydratedDocument } from "mongoose";
 import { convertTelegramUserToPlayer, TelegramMessage } from "@tenthings/providers/telegram";
 import { getDiscordPromo, getRules } from "@tenthings/messages";
@@ -26,20 +26,7 @@ import {
   sendSuggestionMessage,
 } from "@tenthings/providers/telegram/suggestions";
 import { adminOnly } from "@tenthings/providers/telegram/errors";
-import { getPlayerCard, PlayerCardPlayer } from "@tenthings/share";
 import { SupportedLanguage } from "@tenthings/languages";
-
-// Today's standing for /share on both platforms
-export const getDailyRank = async (game: IGame, player: PlayerCardPlayer) => {
-  const [ahead, total] = await Promise.all([
-    Player.countDocuments({ game: game._id, scoreDaily: { $gt: player.scoreDaily } }),
-    Player.countDocuments({ game: game._id, scoreDaily: { $gt: 0 } }),
-  ]);
-  return { ahead, total };
-};
-
-export const getShareMessage = async (game: IGame, player: Parameters<typeof getPlayerName>[0]) =>
-  `<b>${getPlayerName(player)}</b>\n${getPlayerCard(player, player.scoreDaily > 0 ? await getDailyRank(game, player) : undefined)}`;
 
 export enum Command {
   Bug = "bug",
@@ -69,7 +56,6 @@ export enum Command {
   Score = "score",
   Search = "search",
   Settings = "settings",
-  Share = "share",
   Skip = "skip",
   Start = "start",
   Stats = "stats",
@@ -330,9 +316,6 @@ export const evaluate = async (msg: TelegramMessage, game: HydratedDocument<IGam
       */
       case Command.Me:
         getStats(game, `p_${msg.from.id}`, getPlayerName(player));
-        break;
-      case Command.Share:
-        bot.queueMessage(game.telegramChannel, await getShareMessage(game, player));
         break;
       case Command.Score:
         game.provider.dailyScores(game);

@@ -133,10 +133,6 @@
       "name": "me",
       "description": "My stats"
     },
-    "share": {
-      "name": "share",
-      "description": "Share your daily result"
-    },
     "intro": {
       "name": "intro",
       "description": "What am I?"

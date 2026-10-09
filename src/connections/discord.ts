@@ -114,7 +114,6 @@ const slashCommands = [
   { name: "tinyskip", description: "Skip the tinygame" },
   { name: "score", description: "Show daily scores" },
   { name: "me", description: "Show top 10 scores" },
-  { name: "share", description: "Share your daily result" },
   { name: "categories", description: "Show and manage categories" },
   { name: "stats", description: "Show game statistics" },
   { name: "intro", description: "Show introduction" },

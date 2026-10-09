@@ -184,10 +184,6 @@
     "help": {
       "name": "도움말",
       "description": "명령어 목록"
-    },
-    "share": {
-      "name": "share",
-      "description": "일일 결과를 공유하세요"
     }
   },
   "sentences": {

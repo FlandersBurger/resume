@@ -66,7 +66,6 @@ export const discord: Provider = {
   endOfRound: async (game: IGame, list: IList) => {
     let message = getListStats(game.settings.language, list, undefined);
     message += await getDailyScores(game, 5);
-    message += `\n${getRoundCard(game)}`;
     bot.sendMessageWithComponents(game.discordChannel, message, likeListKeyboard(game));
   },
   skipList: (game: IGame) => {
@@ -127,6 +126,12 @@ export const discord: Provider = {
       message += game.list.description ? `*${parseSymbols(game.list.description)}*\n` : "";
     } else {
       message = `**${game.list.name}**\n`;
+    }
+    if (long && game.list.values.every(({ guesser }) => guesser)) {
+      // Round complete: the copyable card replaces the plain answer list
+      message += getRoundCard(game, (guesser) => getPlayerName(guesser as IPlayer));
+      bot.queueMessage(game.discordChannel, message);
+      return;
     }
     message += game.list.values.reduce((str, { guesser, value }, index) => {
       if (long) {

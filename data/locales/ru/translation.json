@@ -184,10 +184,6 @@
     "help": {
       "name": "помощь",
       "description": "Список команд"
-    },
-    "share": {
-      "name": "share",
-      "description": "Поделитесь своим ежедневным результатом"
     }
   },
   "sentences": {

@@ -188,10 +188,6 @@
     "queue": {
       "name": "キュー",
       "description": "ボットはどこで停止していますか？"
-    },
-    "share": {
-      "name": "share",
-      "description": "毎日の結果をシェアしてください"
     }
   },
   "sentences": {
