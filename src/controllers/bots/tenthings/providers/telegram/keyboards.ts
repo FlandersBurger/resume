@@ -32,11 +32,10 @@ const toTelegramCallbackData = (action: string, id = ""): string => {
 
 export const toTelegramKeyboard = (def: KeyboardDef): Keyboard => ({
   inline_keyboard: def.map((row) =>
-    row.map(
-      (btn): KeyboardButton =>
-        btn.url
-          ? ({ text: btn.label, url: btn.url } as KeyboardButton)
-          : { text: btn.label, callback_data: toTelegramCallbackData(btn.action, btn.id) },
+    row.map((btn): KeyboardButton =>
+      btn.url
+        ? ({ text: btn.label, url: btn.url } as KeyboardButton)
+        : { text: btn.label, callback_data: toTelegramCallbackData(btn.action, btn.id) },
     ),
   ),
 });
@@ -92,7 +91,7 @@ export const curateListKeyboard = (list: IList): Keyboard => ({
         text: "Desc",
         callback_data: JSON.stringify({ type: TelegramCallbackDataType.Description, id: `${list._id}` }),
       },
-      { text: "Curate", url: `https://belgocanadian.com/tenthings?list=${list._id}` } as KeyboardButton,
+      { text: "Curate", url: `https://belgocanadian.com/tenthings-lists?list=${list._id}` } as KeyboardButton,
     ],
   ],
 });

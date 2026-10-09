@@ -76,14 +76,18 @@ tenthingsListsRoute.get("/", async (req: QueryableRequest, res: Response) => {
 
   let lists: FlattenMaps<IList>[];
 
-  if (VIRTUAL_SORT_FIELDS.has(sortBy)) {
-    // Aggregate to sort by computed virtual field, then hydrate with populate
+  if (sortBy === "random" || VIRTUAL_SORT_FIELDS.has(sortBy)) {
+    // Aggregate to sort by computed virtual field (or sample at random), then hydrate with populate
     const sortedIds: { _id: unknown }[] = await List.aggregate([
       { $match: query },
-      { $addFields: VIRTUAL_ADD_FIELDS },
-      { $sort: { [sortBy]: sortDir } },
-      ...(skip ? [{ $skip: skip }] : []),
-      ...(limit ? [{ $limit: limit }] : []),
+      ...(sortBy === "random"
+        ? [{ $sample: { size: limit || 10 } }]
+        : [
+            { $addFields: VIRTUAL_ADD_FIELDS },
+            { $sort: { [sortBy]: sortDir } },
+            ...(skip ? [{ $skip: skip }] : []),
+            ...(limit ? [{ $limit: limit }] : []),
+          ]),
       { $project: { _id: 1 } },
     ]);
     const ids = sortedIds.map((d) => d._id);

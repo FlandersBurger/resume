@@ -13,6 +13,10 @@ tenthingsWebBotRoute.get("/:id", async (req: Request, res: Response) => {
 });
 
 tenthingsWebBotRoute.post("/:id/answer", async (req: Request, res: Response) => {
+  if (!res.locals.isAuthorized) {
+    res.sendStatus(401);
+    return;
+  }
   const game = await getWebGame(Number(req.params.id));
   const player = await convertWebUserToPlayer(game, res.locals.user);
   await queueGuess(game, player, req.body.answer);
@@ -20,6 +24,10 @@ tenthingsWebBotRoute.post("/:id/answer", async (req: Request, res: Response) => 
 });
 
 tenthingsWebBotRoute.post("/:id/hint", async (req: Request, res: Response) => {
+  if (!res.locals.isAuthorized) {
+    res.sendStatus(401);
+    return;
+  }
   const game = await getWebGame(Number(req.params.id));
   const player = await convertWebUserToPlayer(game, res.locals.user);
   await processHint(game, player);
@@ -27,6 +35,10 @@ tenthingsWebBotRoute.post("/:id/hint", async (req: Request, res: Response) => {
 });
 
 tenthingsWebBotRoute.post("/:id/skip", async (req: Request, res: Response) => {
+  if (!res.locals.isAuthorized) {
+    res.sendStatus(401);
+    return;
+  }
   const game = await getWebGame(Number(req.params.id));
   const player = await convertWebUserToPlayer(game, res.locals.user);
   await processSkip(game, player);

@@ -50,14 +50,13 @@ describe("Navbar", () => {
     expect(screen.getAllByText("Logout")[0]).toBeInTheDocument();
   });
 
-  it("shows Ten Things admin menu for admin users", () => {
+  it("links admins to the Ten Things landing page; sub-pages live in its tabs", () => {
     renderNavbar({
       currentUser: { _id: "1", username: "alice", admin: true },
       isAdmin: true,
     });
-    expect(screen.getAllByText("Lists")[0]).toBeInTheDocument();
-    expect(screen.getAllByText("Play")[0]).toBeInTheDocument();
-    expect(screen.getAllByText("Admin")[0]).toBeInTheDocument();
+    expect(screen.getAllByText("Ten Things")[0].closest("a")).toHaveAttribute("href", "/tenthings");
+    expect(screen.queryByText("Sass")).not.toBeInTheDocument();
   });
 
   it("shows Ten Things link for non-admin users", () => {

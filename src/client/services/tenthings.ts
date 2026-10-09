@@ -193,6 +193,11 @@ export async function updateGameSettings(gameId: string, settings: any) {
   return data;
 }
 
+export async function getListTotal() {
+  const { data } = await http.get<number>("/api/tenthings/stats/total");
+  return data;
+}
+
 export async function getPlayStats() {
   const { data } = await http.get("/api/tenthings/stats/play");
   return data;

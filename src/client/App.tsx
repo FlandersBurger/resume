@@ -31,6 +31,8 @@ const Lists = lazy(() => import("./pages/Lists"));
 const CareTracker = lazy(() => import("./pages/CareTracker"));
 const Policy = lazy(() => import("./pages/Policy"));
 const Terms = lazy(() => import("./pages/Terms"));
+const TenThingsLayout = lazy(() => import("./pages/tenthings/TenThingsLayout"));
+const TenThingsHome = lazy(() => import("./pages/tenthings/TenThingsHome"));
 const TenThingsLists = lazy(() => import("./pages/tenthings/TenThingsLists"));
 const TenThingsGame = lazy(() => import("./pages/TenThingsGame"));
 const TenThingsPlay = lazy(() => import("./pages/TenThingsPlay"));
@@ -169,6 +171,11 @@ const GlobalStyle = createGlobalStyle`
     a {
       color: var(--link);
     }
+    a.btn-primary,
+    a.btn-primary:hover,
+    a.btn-primary:focus {
+      color: #fff;
+    }
     hr {
       border-color: var(--border);
     }
@@ -302,13 +309,16 @@ export default function App() {
             <Route path="/stew" element={<Stew />} />
             <Route path="/care" element={<CareTracker />} />
             <Route path="/lists" element={<Lists />} />
-            <Route path="/tenthings" element={<TenThingsLists />} />
-            <Route path="/tenthings-game/:gameId" element={<TenThingsGame />} />
-            <Route path="/tenthings-game" element={<TenThingsGame />} />
-            <Route path="/tenthings-play" element={<TenThingsPlay />} />
-            <Route path="/tenthings-admin" element={<TenThingsAdmin />} />
-            <Route path="/tenthings-sass" element={<TenThingsSass />} />
-            <Route path="/tenthings-stats" element={<TenThingsStats />} />
+            <Route element={<TenThingsLayout />}>
+              <Route path="/tenthings" element={<TenThingsHome />} />
+              <Route path="/tenthings-lists" element={<TenThingsLists />} />
+              <Route path="/tenthings-game/:gameId" element={<TenThingsGame />} />
+              <Route path="/tenthings-game" element={<TenThingsGame />} />
+              <Route path="/tenthings-play" element={<TenThingsPlay />} />
+              <Route path="/tenthings-admin" element={<TenThingsAdmin />} />
+              <Route path="/tenthings-sass" element={<TenThingsSass />} />
+              <Route path="/tenthings-stats" element={<TenThingsStats />} />
+            </Route>
             <Route path="/google" element={<QuizGoogle />} />
             <Route path="/logos" element={<QuizLogos />} />
             <Route path="/animals" element={<QuizAnimals />} />
