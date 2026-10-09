@@ -99,35 +99,6 @@ const DrawerNav = styled.ul`
   }
 `;
 
-const DrawerGroupHeader = styled.li`
-  border-top: 1px solid var(--border-soft, #eee);
-  padding: 10px 20px;
-  font-size: 13px;
-  color: var(--text, #555);
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  user-select: none;
-  &:hover {
-    background: var(--surface, #f5f5f5);
-  }
-`;
-
-const DrawerGroupItems = styled.ul<{ $open: boolean }>`
-  list-style: none;
-  padding: 0;
-  margin: 0;
-  max-height: ${(p) => (p.$open ? "500px" : "0")};
-  overflow: hidden;
-  transition: max-height 0.2s ease;
-  background: var(--surface, #fafafa);
-  a,
-  span {
-    padding-left: 32px;
-  }
-`;
-
 const DrawerDivider = styled.li`
   border-top: 1px solid var(--border-soft, #eee);
 `;
@@ -156,24 +127,6 @@ const UnreadBadge = styled.span`
   line-height: 16px;
   text-align: center;
 `;
-
-function DrawerGroup({ label, children }: { label: string; children: React.ReactNode }) {
-  const [open, setOpen] = useState(false);
-  return (
-    <>
-      <DrawerGroupHeader
-        onClick={(e) => {
-          e.stopPropagation();
-          setOpen((o) => !o);
-        }}
-      >
-        {label}
-        <i className={`fa fa-chevron-${open ? "up" : "down"}`} style={{ fontSize: 11, color: "var(--text-muted)" }} />
-      </DrawerGroupHeader>
-      <DrawerGroupItems $open={open}>{children}</DrawerGroupItems>
-    </>
-  );
-}
 
 function Dropdown({ label, children }: { label: React.ReactNode; children: React.ReactNode }) {
   const [open, setOpen] = useState(false);
@@ -215,7 +168,6 @@ export function Navbar() {
     loginLoading,
     openChat,
     unreadChat,
-    isAdmin,
     adminMode,
     toggleAdminMode,
     darkMode,
@@ -241,36 +193,9 @@ export function Navbar() {
           <li>
             <Link to="/doodles">Doodles</Link>
           </li>
-          {currentUser ? (
-            <DrawerGroup label="Ten Things">
-              <li>
-                <Link to="/tenthings">Lists</Link>
-              </li>
-              <li>
-                <Link to="/tenthings-play">Play</Link>
-              </li>
-              <li>
-                <Link to="/tenthings-game">Games</Link>
-              </li>
-              <li>
-                <Link to="/tenthings-stats">Stats</Link>
-              </li>
-              {isAdmin && (
-                <li>
-                  <Link to="/tenthings-admin">Admin</Link>
-                </li>
-              )}
-              {isAdmin && (
-                <li>
-                  <Link to="/tenthings-sass">Sass</Link>
-                </li>
-              )}
-            </DrawerGroup>
-          ) : (
-            <li>
-              <Link to="/tenthings">Ten Things</Link>
-            </li>
-          )}
+          <li>
+            <Link to="/tenthings">Ten Things</Link>
+          </li>
           <DrawerDivider />
           <li>
             <span onClick={toggleDarkMode}>{darkMode ? "Light mode" : "Dark mode"}</span>
@@ -332,36 +257,9 @@ export function Navbar() {
               <li>
                 <Link to="/doodles">Doodles</Link>
               </li>
-              {currentUser ? (
-                <Dropdown label="Ten Things">
-                  <li>
-                    <Link to="/tenthings">Lists</Link>
-                  </li>
-                  <li>
-                    <Link to="/tenthings-play">Play</Link>
-                  </li>
-                  <li>
-                    <Link to="/tenthings-game">Games</Link>
-                  </li>
-                  <li>
-                    <Link to="/tenthings-stats">Stats</Link>
-                  </li>
-                  {isAdmin && (
-                    <li>
-                      <Link to="/tenthings-admin">Admin</Link>
-                    </li>
-                  )}
-                  {isAdmin && (
-                    <li>
-                      <Link to="/tenthings-sass">Sass</Link>
-                    </li>
-                  )}
-                </Dropdown>
-              ) : (
-                <li>
-                  <Link to="/tenthings">Ten Things</Link>
-                </li>
-              )}
+              <li>
+                <Link to="/tenthings">Ten Things</Link>
+              </li>
             </ul>
             <ul className="nav navbar-nav navbar-right">
               <li>

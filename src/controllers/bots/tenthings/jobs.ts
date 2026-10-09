@@ -412,7 +412,7 @@ const notifyStaleLists = async () => {
   }
 
   const listLink = (id: Types.ObjectId, name: string) =>
-    `<a href="https://belgocanadian.com/tenthings?list=${id}">${name}</a>`;
+    `<a href="https://belgocanadian.com/tenthings-lists?list=${id}">${name}</a>`;
   let message = "";
   eventSections.forEach(({ eventName, lists }) => {
     message += `🏆 <b>${eventName}</b> just happened, these could use fresh results:\n`;
