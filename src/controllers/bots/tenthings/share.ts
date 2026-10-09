@@ -11,7 +11,7 @@ type Guesser = unknown; // player id, or the populated player document
 export type RoundCardGame = {
   hints: number;
   roundDate?: Date;
-  list: { name: string; values: { value: string; guesser?: Guesser }[] };
+  list: { name: string; answers?: number; values: { value: string; guesser?: Guesser }[] };
 };
 
 const guesserId = (guesser?: Guesser): string | undefined =>
@@ -41,5 +41,10 @@ export const getRoundCard = (game: RoundCardGame, nameOf: (guesser: Guesser) => 
   if (game.roundDate) stats.push(`⏱️ ${formatDuration(Date.now() - new Date(game.roundDate).getTime())}`);
   stats.push(`💡 ${game.hints}`, `👥 ${players.size}`);
 
-  return toCard(["Ten Things", game.list.name, ...answers, stats.join(" · ")]);
+  return toCard([
+    "Ten Things",
+    game.list.answers ? `${game.list.name} (${game.list.answers})` : game.list.name,
+    ...answers,
+    stats.join(" · "),
+  ]);
 };
