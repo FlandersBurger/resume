@@ -2,6 +2,7 @@ import { Link } from "react-router-dom";
 import styled from "styled-components";
 import { Helmet } from "react-helmet-async";
 import { PageContainer } from "../components/layout";
+import avatar from "../assets/profile-avatar.jpg";
 
 const HomeHero = styled.div`
   display: flex;
@@ -66,6 +67,7 @@ const HomeInfoItem = styled.div`
   }
   a {
     color: var(--accent-hover);
+    text-decoration: underline;
   }
 `;
 
@@ -141,7 +143,7 @@ export default function Home() {
         `}</script>
       </Helmet>
       <HomeHero>
-        <HomeAvatar src="/profile-avatar.jpg" alt="Laurent Debacker" width={160} height={160} fetchPriority="high" />
+        <HomeAvatar src={avatar} alt="Laurent Debacker" width={160} height={160} fetchPriority="high" />
         <HomeHeroText>
           <h1>Laurent Debacker</h1>
           <h2>Full Stack Developer</h2>

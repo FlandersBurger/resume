@@ -3,6 +3,11 @@ import { createRoot } from "react-dom/client";
 import { BrowserRouter } from "react-router-dom";
 import { HelmetProvider } from "react-helmet-async";
 import App from "./App";
+// Source Sans Pro (the Bootstrap theme font), self-hosted so first paint does not wait on Google Fonts
+import "@fontsource/source-sans-pro/300.css";
+import "@fontsource/source-sans-pro/400.css";
+import "@fontsource/source-sans-pro/700.css";
+import "./styles/bootstrap.css";
 // Font Awesome, reduced to the icons in use (generated at build time, see the plugin in vite.config.ts)
 import "./generated/fontawesome.css";
 
