@@ -40,7 +40,7 @@ const HomeHeroText = styled.div`
 const HomeTagline = styled.p`
   margin: 0;
   font-size: 0.9em;
-  opacity: 0.6;
+  color: var(--text-secondary);
 `;
 
 const HomeInfo = styled.div`
@@ -63,6 +63,25 @@ const HomeInfoItem = styled.div`
     width: 20px;
     text-align: center;
     opacity: 0.7;
+  }
+  a {
+    color: var(--accent-hover);
+  }
+`;
+
+const HomeSocial = styled.span`
+  display: flex;
+  gap: 8px;
+  a {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 28px;
+    min-height: 28px;
+  }
+  .fab {
+    width: auto;
+    opacity: 1;
   }
 `;
 
@@ -122,7 +141,7 @@ export default function Home() {
         `}</script>
       </Helmet>
       <HomeHero>
-        <HomeAvatar src="/profile.jpg" alt="Laurent Debacker" />
+        <HomeAvatar src="/profile-avatar.jpg" alt="Laurent Debacker" width={160} height={160} fetchPriority="high" />
         <HomeHeroText>
           <h1>Laurent Debacker</h1>
           <h2>Full Stack Developer</h2>
@@ -152,17 +171,22 @@ export default function Home() {
         </HomeInfoItem>
         <HomeInfoItem>
           <i className="fa fa-hashtag" />
-          <span>
-            <a href="https://www.linkedin.com/in/laurent-debacker-1633a916" target="_blank" rel="noreferrer">
-              <i className="fab fa-linkedin fa-lg" style={{ marginRight: 10 }} />
+          <HomeSocial>
+            <a
+              href="https://www.linkedin.com/in/laurent-debacker-1633a916"
+              target="_blank"
+              rel="noreferrer"
+              aria-label="LinkedIn"
+            >
+              <i className="fab fa-linkedin fa-lg" />
             </a>
-            <a href="https://github.com/FlandersBurger" target="_blank" rel="noreferrer">
-              <i className="fab fa-github fa-lg" style={{ marginRight: 10 }} />
+            <a href="https://github.com/FlandersBurger" target="_blank" rel="noreferrer" aria-label="GitHub">
+              <i className="fab fa-github fa-lg" />
             </a>
-            <a href="https://www.instagram.com/flandersburger/" target="_blank" rel="noreferrer">
+            <a href="https://www.instagram.com/flandersburger/" target="_blank" rel="noreferrer" aria-label="Instagram">
               <i className="fab fa-instagram fa-lg" />
             </a>
-          </span>
+          </HomeSocial>
         </HomeInfoItem>
       </HomeInfo>
 

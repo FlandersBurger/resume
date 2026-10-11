@@ -2,6 +2,7 @@ require("module-alias/register");
 import "@root/env";
 import express, { NextFunction, Request, Response } from "express";
 import { json } from "body-parser";
+import compression from "compression";
 import { initializeApp, cert } from "firebase-admin/app";
 import { getAuth } from "firebase-admin/auth";
 import { WebSocketServer } from "@root/websockets";
@@ -45,6 +46,7 @@ const firebaseApp = initializeApp(
 export const firebaseAuth = getAuth(firebaseApp);
 
 const app = express();
+app.use(compression());
 app.use(json({ limit: "5mb" }));
 
 app.use(auth);

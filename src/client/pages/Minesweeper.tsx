@@ -2,6 +2,7 @@ import { useEffect, useRef } from "react";
 import styled from "styled-components";
 import { useApp } from "../context/AppContext";
 import { getHighscore, setHighscore } from "../services/games";
+import { useStylesheet } from "../hooks/useStylesheet";
 
 const COLS = 16;
 const ROWS = 16;
@@ -219,6 +220,7 @@ function drawFace(
 }
 
 export default function Minesweeper() {
+  useStylesheet("https://fonts.googleapis.com/css?family=Press+Start+2P&display=swap");
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const stateRef = useRef<State>({
     grid: makeGrid(),

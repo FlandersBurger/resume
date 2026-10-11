@@ -98,12 +98,16 @@ export function ChatDrawer() {
   const listRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
-  useWebSocket({
-    new_post: async (data: unknown) => {
-      const post = await getPost((data as { _id: string })._id);
-      setPosts((prev) => [...prev, post]);
+  // Chat is only available when logged in, so anonymous visitors don't need a socket
+  useWebSocket(
+    {
+      new_post: async (data: unknown) => {
+        const post = await getPost((data as { _id: string })._id);
+        setPosts((prev) => [...prev, post]);
+      },
     },
-  });
+    !!currentUser,
+  );
 
   useEffect(() => {
     if (currentUser) {

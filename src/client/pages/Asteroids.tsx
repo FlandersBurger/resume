@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import styled from "styled-components";
+import { useStylesheet } from "../hooks/useStylesheet";
 
 const AsteroidsCanvas = styled.canvas`
   background-color: transparent;
@@ -31,6 +32,7 @@ function loadAsteroidImages(): Promise<HTMLImageElement[]> {
 }
 
 export default function Asteroids() {
+  useStylesheet("https://fonts.googleapis.com/css?family=Aldrich|Monoton&display=swap");
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [score, setScore] = useState(0);
   const [highscore, setHighscore] = useState(0);

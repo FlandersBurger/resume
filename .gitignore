@@ -48,3 +48,6 @@ dump/
 
 # Local-only compose overrides (e.g. exposing service ports not needed in prod)
 docker-compose.override.yml
+
+# Generated Font Awesome subset (vite.fa-subset.ts)
+src/client/generated
