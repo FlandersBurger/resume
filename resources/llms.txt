@@ -1,0 +1,32 @@
+# Laurent Debacker
+
+> Personal website and resume of Laurent Debacker, a Full Stack Developer based in Duncan, BC, Canada. Belgian-born, in Canada since 2006, Canadian since 2015. Speaks French, English, Dutch, German and West Flemish. The site also hosts Ten Things, a multiplayer trivia game, plus a handful of browser quizzes.
+
+The site is a single-page React application, so page content is rendered client-side. The list of indexable pages is also available at https://belgocanadian.com/sitemap.xml.
+
+## Resume
+
+- [Home](https://belgocanadian.com/home): Short introduction, location, languages and social links
+- [Experience](https://belgocanadian.com/experience): Work history
+- [Skills](https://belgocanadian.com/skills): Technical skills
+- [Hobbies](https://belgocanadian.com/hobbies): Interests outside of work
+- [Contact](https://belgocanadian.com/contact): Contact form
+
+## Ten Things
+
+- [Ten Things](https://belgocanadian.com/tenthings): A multiplayer trivia game where players guess the ten items on a list. Playable as a Telegram bot, a Discord bot and on the web
+
+## Quizzes
+
+- [Google](https://belgocanadian.com/google): Name the place
+- [Logos](https://belgocanadian.com/logos): Identify the brands
+- [Movies](https://belgocanadian.com/movies): Name that film
+- [Flags](https://belgocanadian.com/flags): Match the country
+- [Animals](https://belgocanadian.com/animals): Identify the animal by its call
+- [Skeletons](https://belgocanadian.com/skeletons): Anatomy quiz
+
+## Optional
+
+- [Posts](https://belgocanadian.com/posts): Community message board
+- [Privacy Policy](https://belgocanadian.com/policy)
+- [Terms of Service](https://belgocanadian.com/terms)

@@ -6,6 +6,7 @@ import { initializeApp, cert } from "firebase-admin/app";
 import { getAuth } from "firebase-admin/auth";
 import { WebSocketServer } from "@root/websockets";
 import auth from "@root/auth";
+import securityHeaders from "@root/securityHeaders";
 import http from "http";
 
 import { careLogRoute } from "@api/care-log";
@@ -47,6 +48,8 @@ export const firebaseAuth = getAuth(firebaseApp);
 const app = express();
 app.use(json({ limit: "5mb" }));
 
+app.disable("x-powered-by");
+app.use(securityHeaders);
 app.use(auth);
 app.use("/api/care-log", careLogRoute);
 app.use("/api/email", emailRoute);
