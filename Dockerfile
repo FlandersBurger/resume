@@ -2,8 +2,11 @@ FROM node:24-bookworm-slim AS builder
 WORKDIR /app
 COPY package.json package-lock.json* ./
 RUN npm install
-COPY tsconfig.json vite.config.ts ./
+COPY tsconfig.json vite.config.ts vite.fa-subset.ts ./
 COPY src/ ./src/
+# Inputs for the Font Awesome subsetting done during client:build
+COPY resources/font-awesome/ ./resources/font-awesome/
+COPY data/hobbies.json ./data/hobbies.json
 RUN npm run rebuild && npm run client:build
 
 FROM node:24-bookworm-slim

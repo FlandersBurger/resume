@@ -2,7 +2,7 @@ import { useEffect, useRef, useCallback } from "react";
 
 type MessageHandler = (data: unknown) => void;
 
-export function useWebSocket(handlers: Record<string, MessageHandler>) {
+export function useWebSocket(handlers: Record<string, MessageHandler>, enabled = true) {
   const connectionRef = useRef<WebSocket | null>(null);
   const handlersRef = useRef(handlers);
   handlersRef.current = handlers;
@@ -35,13 +35,14 @@ export function useWebSocket(handlers: Record<string, MessageHandler>) {
   }, []);
 
   useEffect(() => {
+    if (!enabled) return;
     const activeRef = { current: true };
     connect(activeRef);
     return () => {
       activeRef.current = false;
       connectionRef.current?.close();
     };
-  }, [connect]);
+  }, [connect, enabled]);
 
   const send = useCallback((topic: string, data: unknown) => {
     connectionRef.current?.send(JSON.stringify({ topic, data }));

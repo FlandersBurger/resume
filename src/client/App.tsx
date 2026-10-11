@@ -5,13 +5,14 @@ import { Navbar } from "./components/Navbar";
 import { ToastContainer } from "./components/ToastContainer";
 import { ChatDrawer } from "./components/ChatDrawer";
 import Print from "./pages/Print";
+// The landing page is bundled eagerly so its hero image is discovered without a second round trip
+import Home from "./pages/Home";
 import { lazy, Suspense } from "react";
 import { useApp } from "./context/AppContext";
 
 const LoginModal = lazy(() => import("./components/LoginModal"));
 
 const NotFound = lazy(() => import("./pages/NotFound"));
-const Home = lazy(() => import("./pages/Home"));
 const Experience = lazy(() => import("./pages/Experience"));
 const Skills = lazy(() => import("./pages/Skills"));
 const Hobbies = lazy(() => import("./pages/Hobbies"));
@@ -283,7 +284,7 @@ export default function App() {
       <LazyLoginModal />
       <ChatDrawer />
       <Print />
-      <div className="container page">
+      <main className="container page">
         <Suspense fallback={null}>
           <Routes>
             <Route path="/" element={<Navigate to="/home" replace />} />
@@ -328,7 +329,7 @@ export default function App() {
             <Route path="*" element={<NotFound />} />
           </Routes>
         </Suspense>
-      </div>
+      </main>
     </AppProvider>
   );
 }

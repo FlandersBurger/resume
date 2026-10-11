@@ -234,7 +234,13 @@ export function Navbar() {
       <nav className="navbar navbar-default navbar-fixed-top">
         <div className="container-fluid">
           <div className="navbar-header">
-            <NavbarToggle type="button" className="navbar-toggle" onClick={() => setMobileOpen((o) => !o)}>
+            <NavbarToggle
+              type="button"
+              className="navbar-toggle"
+              aria-label="Toggle navigation"
+              aria-expanded={mobileOpen}
+              onClick={() => setMobileOpen((o) => !o)}
+            >
               <HamBar $open={mobileOpen} $which={0} />
               <HamBar $open={mobileOpen} $which={1} />
               <HamBar $open={mobileOpen} $which={2} />
@@ -263,20 +269,36 @@ export function Navbar() {
             </ul>
             <ul className="nav navbar-nav navbar-right">
               <li>
-                <ThemeToggle title={darkMode ? "Switch to light mode" : "Switch to dark mode"} onClick={toggleDarkMode}>
-                  <i className={`fa fa-${darkMode ? "sun" : "moon"}`} />
+                <ThemeToggle
+                  role="button"
+                  title={darkMode ? "Switch to light mode" : "Switch to dark mode"}
+                  aria-label={darkMode ? "Switch to light mode" : "Switch to dark mode"}
+                  onClick={toggleDarkMode}
+                >
+                  <i className={`fa ${darkMode ? "fa-sun" : "fa-moon"}`} />
                 </ThemeToggle>
               </li>
               {currentUser && (
                 <li>
-                  <ChatLink title={unreadChat ? `Chat (${unreadChat} unread)` : "Chat"} onClick={openChat}>
+                  <ChatLink
+                    role="button"
+                    title={unreadChat ? `Chat (${unreadChat} unread)` : "Chat"}
+                    aria-label={unreadChat ? `Chat (${unreadChat} unread)` : "Chat"}
+                    onClick={openChat}
+                  >
                     <i className="fa fa-comments" />
                     {unreadChat > 0 && <UnreadBadge>{unreadChat > 9 ? "9+" : unreadChat}</UnreadBadge>}
                   </ChatLink>
                 </li>
               )}
               <li>
-                <a style={{ cursor: "pointer" }} title="Print resume" onClick={() => window.print()}>
+                <a
+                  role="button"
+                  style={{ cursor: "pointer" }}
+                  title="Print resume"
+                  aria-label="Print resume"
+                  onClick={() => window.print()}
+                >
                   <i className="fa fa-print" />
                 </a>
               </li>
@@ -308,7 +330,7 @@ export function Navbar() {
                     <>
                       <li role="separator" className="divider" />
                       <li>
-                        <a style={{ cursor: "pointer" }} onClick={toggleAdminMode}>
+                        <a role="button" style={{ cursor: "pointer" }} onClick={toggleAdminMode}>
                           Admin mode: {adminMode ? "on" : "off"}
                         </a>
                       </li>
@@ -317,6 +339,7 @@ export function Navbar() {
                   <li role="separator" className="divider" />
                   <li>
                     <a
+                      role="button"
                       style={{ cursor: "pointer" }}
                       onClick={() => {
                         logout();
@@ -330,6 +353,8 @@ export function Navbar() {
               ) : (
                 <li>
                   <a
+                    role="button"
+                    aria-label="Login"
                     style={{ cursor: loginLoading ? "default" : "pointer" }}
                     onClick={loginLoading ? undefined : openLogin}
                   >

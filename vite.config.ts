@@ -2,6 +2,7 @@ import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
 import path from "path";
 import fs from "fs";
+import { fontAwesomeSubset } from "./vite.fa-subset";
 
 // Mirrors the Express static middleware directories so the Vite dev server
 // serves /bootstrap6.min.css, /fontawesome.min.css, /hobbies/... etc.
@@ -51,7 +52,11 @@ const serveStaticDirs = (): import("vite").Plugin => {
 
 export default defineConfig(() => ({
   root: "src/client",
-  plugins: [react(), serveStaticDirs()],
+  plugins: [
+    react(),
+    serveStaticDirs(),
+    fontAwesomeSubset({ scanDirs: ["src/client"], scanFiles: ["data/hobbies.json"] }),
+  ],
   resolve: {
     alias: {
       "@utils": path.resolve(__dirname, "src/utils"),
