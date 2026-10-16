@@ -80,6 +80,7 @@ const HomeSocial = styled.span`
     justify-content: center;
     min-width: 28px;
     min-height: 28px;
+    text-decoration: none;
   }
   .fab {
     width: auto;
