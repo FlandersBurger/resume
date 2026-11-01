@@ -28,7 +28,6 @@
     "bcryptjs": "^3.0.3",
     "bson": "^7.3.3",
     "bull": "^4.16.5",
-    "chalk": "^4.1.2",
     "chart.js": "^4.6.1",
     "compression": "^1.8.2",
     "discord.js": "^14.28.0",

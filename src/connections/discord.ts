@@ -19,7 +19,7 @@ import redis from "@root/queue";
 import i18n from "@root/i18n";
 import { maskUrls } from "@utils/string-helpers";
 import { discordInviteUrl } from "@tenthings/links";
-import chalk from "chalk";
+import { styleText } from "util";
 
 export type DiscordUser = {
   id: string;
@@ -159,7 +159,7 @@ class DiscordBot {
     });
 
     this.client.once(Events.ClientReady, async (readyClient) => {
-      console.log(chalk.blue(`Discord bot ready: ${readyClient.user.tag}`));
+      console.log(styleText("blue", `Discord bot ready: ${readyClient.user.tag}`));
       const appId = process.env.DISCORD_APP_ID;
       if (appId) {
         await this.registerCommands(appId);
@@ -286,7 +286,7 @@ class DiscordBot {
   private registerCommands = async (appId: string) => {
     const rest = new REST().setToken(this.token);
     await rest.put(Routes.applicationCommands(appId), { body: slashCommands });
-    console.log(chalk.blue(`Discord slash commands registered (${slashCommands.length})`));
+    console.log(styleText("blue", `Discord slash commands registered (${slashCommands.length})`));
   };
 
   private toDomainUser = (author: Message["author"]): DiscordUser => ({

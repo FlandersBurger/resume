@@ -15,7 +15,7 @@ import { getListScore, rateList, selectList } from "./lists";
 import { abortSkip, skipCache } from "./skips";
 import i18n from "@root/i18n";
 
-import chalk from "chalk";
+import { styleText } from "util";
 import { notifyAdmin } from "./notify";
 
 export const createMaingame = async (platformSettings: {
@@ -128,7 +128,7 @@ export const newRound = async (currentGame: IGame) => {
     };
   }
   await game.save();
-  console.log(`${game._id} - New round started -> ${chalk.cyan(list.name)}`);
+  console.log(`${game._id} - New round started -> ${styleText("cyan", list.name)}`);
 };
 
 //  █████   ██████ ████████ ██ ██    ██  █████  ████████ ███████
