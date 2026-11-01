@@ -1,4 +1,4 @@
-import chalk from "chalk";
+import { styleText } from "util";
 import { Connection, createConnection } from "mongoose";
 import { createTunnel } from "tunnel-ssh";
 import dns from "dns";
@@ -26,7 +26,7 @@ export type Db = {
 const connect = (db: Db) => {
   connections[db.name] = createConnection(db.url, {});
   connections[db.name].on("open", () => {
-    console.log(`DB ${chalk.green(db.name)} connected`);
+    console.log(`DB ${styleText("green", db.name)} connected`);
   });
 };
 
