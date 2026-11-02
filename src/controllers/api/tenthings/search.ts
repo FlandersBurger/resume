@@ -4,7 +4,7 @@ import { Request, Response, Router } from "express";
 export const tenthingsSearchRoute = Router();
 
 tenthingsSearchRoute.get("/list-names/:name", (req: Request, res: Response) => {
-  List.find({ name: { $regex: req.params.name, $options: "i" } })
+  List.find({ name: { $regex: req.params.name as string, $options: "i" } })
     .select("_id name")
     .limit(10)
     .lean()

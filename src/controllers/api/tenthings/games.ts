@@ -7,7 +7,7 @@ import { setDisabledCategories } from "@root/controllers/bots/tenthings/categori
 export const tenthingsGamesRoute = Router();
 
 async function findGame(id: string) {
-  if (/^-?\d+$/.test(id)) return Game.findOne({ telegramChatId: id });
+  if (/^-?\d+$/.test(id)) return Game.findOne({ telegramChatId: Number(id) });
   if (isValidObjectId(id)) return Game.findOne({ _id: id });
   return null;
 }

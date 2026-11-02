@@ -30,7 +30,7 @@ const resetDailyScore = () => {
   if (moment().utc().hour() === 1) {
     bot.notifyAdmin(`Score Reset Triggered; ${moment().format("DD-MMM-YYYY hh:mm")}`);
     Game.find({
-      lastPlayDate: { $gte: moment().subtract(1, "days") },
+      lastPlayDate: { $gte: moment().subtract(1, "days").toDate() },
     })
       .select("telegramChatId telegramTopicId telegramChannel list date hints")
       .populate("list.creator")
@@ -39,7 +39,7 @@ const resetDailyScore = () => {
         async (games: HydratedDocument<IGame>[]) => {
           const dailyPlayers: IPlayer[] = await Player.find({
             scoreDaily: { $gt: 0 },
-            lastPlayDate: { $gte: moment().subtract(1, "days") },
+            lastPlayDate: { $gte: moment().subtract(1, "days").toDate() },
           })
             .lean()
             .select("_id id")
@@ -48,7 +48,7 @@ const resetDailyScore = () => {
             const players: IPlayer[] = await Player.find({
               game: game._id,
               scoreDaily: { $gt: 0 },
-              lastPlayDate: { $gte: moment().subtract(1, "days") },
+              lastPlayDate: { $gte: moment().subtract(1, "days").toDate() },
             })
               .select("_id id scoreDaily first_name username")
               .exec();
@@ -267,7 +267,7 @@ const updateDailyStats = async (games: IGame[], totalPlayers: number, uniquePlay
 // and curates which lists get mentioned to the languages that game actually plays (game.settings.languages)
 // instead of blasting every game with every list regardless of language.
 const sendListUpdates = async () => {
-  const yesterday = moment().subtract(1, "days");
+  const yesterday = moment().subtract(1, "days").toDate();
   const lists = await List.find({
     $or: [{ date: { $gte: yesterday } }, { modifyDate: { $gte: yesterday }, date: { $lt: yesterday } }],
   })
@@ -275,8 +275,8 @@ const sendListUpdates = async () => {
     .lean();
   if (lists.length === 0) return bot.notifyAdmin("No lists created or modified");
 
-  const newLists = lists.filter(({ date }) => moment(date) >= yesterday);
-  const updatedLists = lists.filter(({ date }) => moment(date) < yesterday);
+  const newLists = lists.filter(({ date }) => date >= yesterday);
+  const updatedLists = lists.filter(({ date }) => date < yesterday);
 
   const games: HydratedDocument<IGame>[] = await Game.find({
     "settings.updates": true,
@@ -446,7 +446,7 @@ const notifyStaleLists = async () => {
 // ███████    ██    ██   ██ ███████ ███████      ██████  ██   ██ ██      ██ ███████ ███████
 
 const deleteStaleGames = () => {
-  Game.find({ lastPlayDate: { $lt: moment().subtract(12, "months") } })
+  Game.find({ lastPlayDate: { $lt: moment().subtract(12, "months").toDate() } })
     .select("_id")
     .then((staleGames: HydratedDocument<IGame>[]) => {
       staleGames.forEach(async (game) => {
@@ -465,11 +465,13 @@ const deleteStaleGames = () => {
 
 const deactivateInactiveChats = () => {
   Game.find({
-    _id: { $nin: [process.env.MASTER_CHAT, process.env.ADMIN_CHAT, process.env.GROUP_CHAT] },
-    lastPlayDate: { $lt: moment().subtract(90, "days") },
+    telegramChatId: {
+      $nin: [process.env.MASTER_CHAT, process.env.ADMIN_CHAT, process.env.GROUP_CHAT].filter(Boolean).map(Number),
+    },
+    lastPlayDate: { $lt: moment().subtract(90, "days").toDate() },
     enabled: true,
   })
-    .select("telegramChatId telegramTopicId telegramChannel enabled settings")
+    .select("platform telegramChatId telegramTopicId telegramChannel discordChannelId webGameId enabled settings")
     .then((games: HydratedDocument<IGame>[]) => {
       games.forEach(deactivate);
       if (games.length > 0) bot.notifyAdmin(`${games.length} inactive chats deactivated`);
@@ -512,8 +514,8 @@ const updatePlayStreak = () => {
 
 const deleteStalePlayers = async () => {
   const results = await Player.deleteMany({
-    date: { $lt: moment().subtract(30, "days") },
-    lastPlayDate: { $lt: moment().subtract(30, "days") },
+    date: { $lt: moment().subtract(30, "days").toDate() },
+    lastPlayDate: { $lt: moment().subtract(30, "days").toDate() },
     answers: 0,
     minigamePlays: 0,
     tinygamePlays: 0,
