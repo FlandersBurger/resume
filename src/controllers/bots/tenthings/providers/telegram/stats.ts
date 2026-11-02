@@ -12,6 +12,7 @@ import { parseSymbols } from "@utils/string-helpers";
 import { getPlayerName } from "@tenthings/players";
 import { getListScore } from "@tenthings/lists";
 import emojis from "@tenthings/emojis";
+import { SupportedLanguage } from "@tenthings/languages";
 
 export const getScores = async (game: IGame, type: string) => {
   const players = await Player.find({ game: game._id }).exec();
@@ -234,7 +235,7 @@ export const getStats = async (game: IGame, data: string, requestor?: string) =>
       message += `${players.filter(({ scoreDaily }) => scoreDaily).length} out of ${
         players.filter(({ present }) => present).length
       } players played today\n`;
-      const availableLanguages = game.settings.languages?.length > 0 ? game.settings.languages : ["EN"];
+      const availableLanguages = game.settings.languages?.length > 0 ? game.settings.languages : [SupportedLanguage.EN];
       const poolSize = await List.countDocuments({
         language: { $in: availableLanguages },
         categories: { $nin: game.disabledCategories },
@@ -257,7 +258,7 @@ export const getStats = async (game: IGame, data: string, requestor?: string) =>
       creatorStats(game, requestor);
       break;
     case "p":
-      const player = await Player.findOne({ game: game._id, id: _id });
+      const player = await Player.findOne({ game: game._id, id: Number(_id) });
       if (!player) {
         game.provider.message(game, i18n(game.settings.language, "warnings.playerNotFound"));
       } else {

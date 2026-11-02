@@ -10,6 +10,7 @@ import uniqBy from "lodash/uniqBy";
 import i18n from "@root/i18n";
 import { removeSpecialCharacters } from "@utils/string-helpers";
 import { notifyAdmin } from "./notify";
+import { SupportedLanguage } from "./languages";
 
 export const getRandomList = async (parameters: QueryOptions = {}): Promise<HydratedDocument<IList> | undefined> => {
   const count = await List.countDocuments(parameters).exec();
@@ -40,8 +41,8 @@ export const rateList = (game: IGame) => {
   game.provider.rateList(game);
 };
 
-const getAvailableLanguages = ({ settings }: { settings: IGameSettings }): string[] =>
-  settings.languages && settings.languages.length > 0 ? settings.languages : ["EN"];
+const getAvailableLanguages = ({ settings }: { settings: IGameSettings }): SupportedLanguage[] =>
+  settings.languages && settings.languages.length > 0 ? settings.languages : [SupportedLanguage.EN];
 
 const MIN_CATEGORY_ROUNDS = 5;
 const MIN_AFFINITY_SCORE = 0.6;

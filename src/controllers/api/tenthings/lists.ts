@@ -78,7 +78,7 @@ tenthingsListsRoute.get("/", async (req: QueryableRequest, res: Response) => {
 
   if (sortBy === "random" || VIRTUAL_SORT_FIELDS.has(sortBy)) {
     // Aggregate to sort by computed virtual field (or sample at random), then hydrate with populate
-    const sortedIds: { _id: unknown }[] = await List.aggregate([
+    const sortedIds = await List.aggregate<{ _id: Types.ObjectId }>([
       { $match: query },
       ...(sortBy === "random"
         ? [{ $sample: { size: limit || 10 } }]
@@ -306,7 +306,7 @@ tenthingsListsRoute.post("/", async (req: Request, res: Response) => {
     const list = await List.findByIdAndUpdate(
       req.body.list._id ? req.body.list._id : new Types.ObjectId(),
       req.body.list,
-      { new: true, upsert: true },
+      { returnDocument: "after", upsert: true },
     );
 
     const updatedList = await getList(list._id);

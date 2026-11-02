@@ -92,7 +92,7 @@ tenthingsTelegramBotRoute.post("/", async (req: Request, res: Response) => {
     case TelegramMessageType.PlayerLeft:
       const game = await Game.findOne({ telegramChatId: domainMessage.message!.chatId });
       if (game) {
-        const player = await Player.findOne({ game: game._id, id: `${domainMessage.message!.from.id}` });
+        const player = await Player.findOne({ game: game._id, id: Number(domainMessage.message!.from.id) });
         if (player) {
           player.present = false;
           player.save();
