@@ -390,7 +390,7 @@ export function ListEditor({
   const [showLanguages, setShowLanguages] = useState(false);
 
   type SortCol = "value" | "blurb" | "creator" | "date" | "modifyDate";
-  const [sortCol, setSortCol] = useState<SortCol | null>(null);
+  const [sortCol, setSortCol] = useState<SortCol | null>("value");
   const [sortDir, setSortDir] = useState<"asc" | "desc">("asc");
 
   const handleSort = (col: SortCol) => {
