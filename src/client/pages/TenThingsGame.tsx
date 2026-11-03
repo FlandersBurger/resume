@@ -94,6 +94,11 @@ const SettingsBody = styled.div`
 
 const CategoryDropdownRoot = styled.div`
   position: relative;
+
+  > .dropdown-toggle {
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
 `;
 
 const CategoryMenu = styled.div`
@@ -414,33 +419,15 @@ export default function TenThingsGame() {
   const getDisabledCategoryLabel = () => {
     if (!game?.disabledCategories?.length) return "No disabled categories";
 
-    const mainCategories = game.disabledCategories.filter((c: string) => !c.includes("."));
-    if (mainCategories.length > 0) {
-      return mainCategories
-        .sort()
-        .map((main: string) => {
-          const option = categories.find((cat) => cat.value === main);
-          const label = option?.label ?? main;
-          const subLabels = (option?.subcategories ?? [])
-            .filter((sub) => game.disabledCategories.includes(sub.value))
-            .map((sub) => sub.label)
-            .sort();
-          return `${label}${subLabels.length ? ` (${subLabels.join(", ")})` : ""}`;
-        })
-        .join(", ");
-    }
-
-    const disabledLabels = game.disabledCategories
-      .map((value: string) => {
-        const [main, sub] = value.split(".");
-        const mainOption = categories.find((cat) => cat.value === main);
-        if (!sub) return mainOption?.label ?? value;
-        const subLabel = mainOption?.subcategories?.find((s) => s.value === value)?.label ?? sub;
-        return `${mainOption?.label ?? main}: ${subLabel}`;
+    // Built from the known category list so stale keys in the game doc are ignored
+    return categories
+      .map((category) => {
+        if (isDisabled(category.value)) return category.label;
+        const subLabels = (category.subcategories ?? []).filter((sub) => isDisabled(sub.value)).map((sub) => sub.label);
+        return subLabels.length ? `${category.label} (${subLabels.join(", ")})` : "";
       })
-      .sort();
-
-    return disabledLabels.join(", ");
+      .filter(Boolean)
+      .join(", ");
   };
 
   const formatDate = (value?: string) => (value ? moment(value).format("DD-MMM-YYYY HH:mm") : "");
@@ -617,7 +604,7 @@ export default function TenThingsGame() {
                         className={`btn dropdown-toggle btn-block text-left ${game.disabledCategories?.length ? "btn-warning" : "btn-default"}`}
                         type="button"
                         onClick={() => setShowCategories((s) => !s)}
-                        title="Disabled categories"
+                        title={getDisabledCategoryLabel()}
                       >
                         {getDisabledCategoryLabel()}
                       </button>
