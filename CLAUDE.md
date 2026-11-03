@@ -24,7 +24,7 @@ npm run client:build # Build to dist/client/
 
 ```bash
 npm test                            # All tests (server + client projects)
-npm test -- --testPathPattern=foo   # Run a single test file by name
+npm test -- --testPathPatterns=foo  # Run a single test file by name
 npm run test:watch                  # Watch mode
 npm run test:coverage               # Coverage report
 ```
