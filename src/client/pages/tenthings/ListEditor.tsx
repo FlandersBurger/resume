@@ -602,6 +602,18 @@ export function ListEditor({
                   / <b>Skips</b> {list.skips}
                 </>
               )}
+              {list.completedRounds != null && (
+                <>
+                  {" "}
+                  / <b>Completed</b> {list.completedRounds}
+                </>
+              )}
+              {list.skippedRounds != null && (
+                <>
+                  {" "}
+                  / <b>Skipped</b> {list.skippedRounds}
+                </>
+              )}
               {!!list.bans && (
                 <>
                   {" "}
@@ -628,7 +640,7 @@ export function ListEditor({
                   / <b>Score</b> {pct(list.score)}
                 </>
               )}
-              {(list.upvotes || list.downvotes) && (
+              {!!(list.upvotes || list.downvotes) && (
                 <>
                   {" / "}
                   <b>Upvotes</b> {list.upvotes ?? 0} / <b>Downvotes</b> {list.downvotes ?? 0}

@@ -64,6 +64,26 @@ const VIRTUAL_ADD_FIELDS = {
   },
 };
 
+// Attach completed/skipped round counts (from GameRound history) to each list.
+const withRoundCounts = async <T extends { _id: Types.ObjectId }>(lists: T[]) => {
+  const roundCounts = await GameRound.aggregate<{ _id: { listId: Types.ObjectId; outcome: string }; count: number }>([
+    { $match: { listId: { $in: lists.map((list) => list._id) }, outcome: { $in: ["completed", "skipped"] } } },
+    { $group: { _id: { listId: "$listId", outcome: "$outcome" }, count: { $sum: 1 } } },
+  ]);
+  const roundCountMap = new Map<string, { completedRounds: number; skippedRounds: number }>();
+  for (const { _id, count } of roundCounts) {
+    const key = String(_id.listId);
+    const entry = roundCountMap.get(key) ?? { completedRounds: 0, skippedRounds: 0 };
+    if (_id.outcome === "completed") entry.completedRounds = count;
+    else entry.skippedRounds = count;
+    roundCountMap.set(key, entry);
+  }
+  return lists.map((list) => ({
+    ...list,
+    ...(roundCountMap.get(String(list._id)) ?? { completedRounds: 0, skippedRounds: 0 }),
+  }));
+};
+
 tenthingsListsRoute.get("/", async (req: QueryableRequest, res: Response) => {
   const authorized = !!res.locals.isAuthorized;
   const page = parseInt(req.query.page ?? 1);
@@ -108,22 +128,7 @@ tenthingsListsRoute.get("/", async (req: QueryableRequest, res: Response) => {
       .lean({ virtuals: true });
   }
 
-  const roundCounts = await GameRound.aggregate<{ _id: { listId: Types.ObjectId; outcome: string }; count: number }>([
-    { $match: { listId: { $in: lists.map((list) => list._id) }, outcome: { $in: ["completed", "skipped"] } } },
-    { $group: { _id: { listId: "$listId", outcome: "$outcome" }, count: { $sum: 1 } } },
-  ]);
-  const roundCountMap = new Map<string, { completedRounds: number; skippedRounds: number }>();
-  for (const { _id, count } of roundCounts) {
-    const key = String(_id.listId);
-    const entry = roundCountMap.get(key) ?? { completedRounds: 0, skippedRounds: 0 };
-    if (_id.outcome === "completed") entry.completedRounds = count;
-    else entry.skippedRounds = count;
-    roundCountMap.set(key, entry);
-  }
-  const listsWithRoundCounts = lists.map((list) => ({
-    ...list,
-    ...(roundCountMap.get(String(list._id)) ?? { completedRounds: 0, skippedRounds: 0 }),
-  }));
+  const listsWithRoundCounts = await withRoundCounts(lists);
 
   const result = authorized
     ? listsWithRoundCounts
@@ -147,14 +152,14 @@ tenthingsListsRoute.get("/:id", async (req: Request<{ id: string }>, res: Respon
     const listNames = await List.find({}).select("_id name").lean();
     return res.json(listNames);
   }
-  const list = await getList(new Types.ObjectId(req.params.id));
-  if (!list) return res.sendStatus(404);
-  else if (!authorized) {
+  const found = await getList(new Types.ObjectId(req.params.id));
+  if (!found) return res.sendStatus(404);
+  const [list] = await withRoundCounts([found]);
+  if (!authorized) {
     const { values: _v, creator: _c, ...publicList } = list as any;
     return res.json(publicList);
-  } else {
-    return res.json(list);
   }
+  return res.json(list);
 });
 
 tenthingsListsRoute.post("/:id/blurbs/:type", async (req: Request<{ id: string; type: string }>, res: Response) => {
