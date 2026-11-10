@@ -32,17 +32,14 @@ export const sendSuggestion = async (
         message += `Current list: <a href="https://belgocanadian.com/tenthings-lists?list=${game.list._id}">${parseSymbols(game.list.name)}</a>\n`;
       }
       const chatLink = await bot.getChat(game.telegramChannel);
-      if (chatLink !== null) {
-        game.provider.message(
-          game,
-          `${message}${i18n(game.settings.language, "warnings.thankYou", { name: playerName })}`,
-        );
-      } else {
-        game.provider.message(
-          game,
-          `${message}${i18n(game.settings.language, "warnings.noContact", { name: playerName })}`,
-        );
-      }
+      const reply = i18n(game.settings.language, chatLink !== null ? "warnings.thankYou" : "warnings.noContact", {
+        name: playerName,
+      });
+      const addListHint =
+        command === Command.Suggestion
+          ? `\n\n${i18n(game.settings.language, "sentences.addListYourself", { url: "https://belgocanadian.com/tenthings-lists" })}`
+          : "";
+      game.provider.message(game, `${message}${reply}${addListHint}`);
       message += `<i>${playerName}</i>`;
       bot.notify(message);
       message += chatLink ? `\n${chatLink}` : "";
