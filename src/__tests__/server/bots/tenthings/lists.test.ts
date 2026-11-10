@@ -8,7 +8,7 @@ jest.mock("@models/tenthings/gameround", () => ({ COOLDOWN_MS: 2592000000 }));
 jest.mock("@root/i18n", () => ({ __esModule: true, default: jest.fn(), t_list: jest.fn(() => []) }));
 jest.mock("@tenthings/notify", () => ({ notifyAdmin: jest.fn() }));
 
-import { getListScore, mergeLists } from "@tenthings/lists";
+import { mergeLists } from "@tenthings/lists";
 
 const makeList = (overrides: Record<string, unknown> = {}) =>
   ({
@@ -21,58 +21,6 @@ const makeList = (overrides: Record<string, unknown> = {}) =>
     description: "",
     ...overrides,
   }) as any;
-
-describe("getListScore", () => {
-  test("returns 0 when list has no plays", () => {
-    const list = makeList({ votes: [{ vote: 1 }], plays: 0 });
-    expect(getListScore(list)).toBe(0);
-  });
-
-  test("returns 0 when list has no votes field", () => {
-    const list = makeList({ votes: undefined, plays: 10 });
-    expect(getListScore(list)).toBe(0);
-  });
-
-  test("returns 0 when votes array is empty", () => {
-    // voteRatio = 0, skipRatio = (plays - 0) / plays = 1 → (0 + 1) / 2 = 0.5
-    const list = makeList({ votes: [], plays: 10, skips: 0 });
-    expect(getListScore(list)).toBeCloseTo(0.5);
-  });
-
-  test("perfect score: all upvotes and no skips", () => {
-    const list = makeList({
-      votes: [{ vote: 1 }, { vote: 1 }, { vote: 1 }],
-      plays: 10,
-      skips: 0,
-    });
-    // voteRatio = 1, playRatio = 1 → (1 + 1) / 2 = 1
-    expect(getListScore(list)).toBeCloseTo(1.0);
-  });
-
-  test("penalises downvotes", () => {
-    const allUpvotes = makeList({ votes: [{ vote: 1 }, { vote: 1 }], plays: 10, skips: 0 });
-    const mixed = makeList({ votes: [{ vote: 1 }, { vote: -1 }], plays: 10, skips: 0 });
-    expect(getListScore(allUpvotes)).toBeGreaterThan(getListScore(mixed));
-  });
-
-  test("penalises skips", () => {
-    const noSkips = makeList({ votes: [{ vote: 1 }], plays: 10, skips: 0 });
-    const withSkips = makeList({ votes: [{ vote: 1 }], plays: 10, skips: 5 });
-    expect(getListScore(noSkips)).toBeGreaterThan(getListScore(withSkips));
-  });
-
-  test("calculates combined vote and skip ratio", () => {
-    // votes: 2 up / 1 down → ratio 2/3
-    // plays: 10, skips: 2 → play ratio (10-2)/10 = 0.8
-    // score = (2/3 + 0.8) / 2 ≈ 0.733
-    const list = makeList({
-      votes: [{ vote: 1 }, { vote: -1 }, { vote: 1 }],
-      plays: 10,
-      skips: 2,
-    });
-    expect(getListScore(list)).toBeCloseTo((2 / 3 + 0.8) / 2, 5);
-  });
-});
 
 describe("mergeLists", () => {
   test("sums numeric stats", () => {

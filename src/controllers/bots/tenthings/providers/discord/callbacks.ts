@@ -4,7 +4,7 @@ import { Types } from "mongoose";
 import { Game, GameRound, List } from "@models/index";
 import { IVote } from "@models/tenthings/list";
 import { GameType } from "@models/tenthings/game";
-import { getListScore } from "@tenthings/lists";
+import { getListScore } from "@models/tenthings/listMetrics";
 import { votersCache } from "@tenthings/cache";
 import { parseSymbols } from "@utils/string-helpers";
 import { makePercentage } from "@root/utils/number-helpers";

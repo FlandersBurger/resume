@@ -11,7 +11,8 @@ import { IPlayer } from "@models/tenthings/player";
 import { Guess, getAnswerScore } from "./guesses";
 import { getSnubbedMessage } from "./messages";
 import { hintCache, hintCooldown } from "./hints";
-import { getListScore, rateList, selectList } from "./lists";
+import { rateList, selectList } from "./lists";
+import { recordPlayUpdate } from "@models/tenthings/listMetrics";
 import { abortSkip, skipCache } from "./skips";
 import i18n from "@root/i18n";
 
@@ -96,11 +97,10 @@ export const newRound = async (currentGame: IGame) => {
   if (game.pickedLists.length > 0) {
     game.pickedLists = game.pickedLists.filter((pickedList) => pickedList != list._id);
   }
+  // selectList loads the List without its votes, so the play and score are written inside Mongo.
   list.plays++;
-  list.score = getListScore(list);
   try {
-    await list.validate();
-    await list.save();
+    await List.updateOne({ _id: list._id }, recordPlayUpdate);
   } catch (error) {
     notifyAdmin(`New Round List Error\n${error}\n\n${list}`);
   }

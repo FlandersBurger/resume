@@ -1,4 +1,5 @@
 import { IList } from "@models/tenthings/list";
+import { getListMetrics } from "@models/tenthings/listMetrics";
 import { capitalize } from "@utils/string-helpers";
 import { getFrequencyMessage } from "@tenthings/messages";
 import emojis from "@tenthings/emojis";
@@ -42,56 +43,59 @@ export const toTelegramKeyboard = (def: KeyboardDef): Keyboard => ({
 
 // ── Telegram-only: list curation keyboard (admin panel) ───────────────────────
 
-export const curateListKeyboard = (list: IList): Keyboard => ({
-  inline_keyboard: [
-    [
-      {
-        text: `${emojis.thumbsUp} (${list.votes ? list.votes.filter(({ vote }) => vote > 0).length : 0})`,
-        callback_data: JSON.stringify({ type: TelegramCallbackDataType.Vote, id: `1_${list._id}` }),
-      },
-      {
-        text: `${emojis.thumbsDown} (${list.votes ? list.votes.filter(({ vote }) => vote < 0).length : 0})`,
-        callback_data: JSON.stringify({ type: TelegramCallbackDataType.Vote, id: `-1_${list._id}` }),
-      },
-      {
-        text: emojis.difficulty0 + (list.difficulty === 0 ? emojis.green : ""),
-        callback_data: JSON.stringify({ type: TelegramCallbackDataType.Difficulty, id: `0_${list._id}` }),
-      },
-      {
-        text: emojis.difficulty1 + (list.difficulty === 1 ? emojis.green : ""),
-        callback_data: JSON.stringify({ type: TelegramCallbackDataType.Difficulty, id: `1_${list._id}` }),
-      },
-      {
-        text: emojis.difficulty2 + (list.difficulty === 2 ? emojis.green : ""),
-        callback_data: JSON.stringify({ type: TelegramCallbackDataType.Difficulty, id: `2_${list._id}` }),
-      },
-    ] as KeyboardButton[],
-    [
-      {
-        text: capitalize(getFrequencyMessage(0)) + (list.frequency === 0 ? emojis.green : ""),
-        callback_data: JSON.stringify({ type: TelegramCallbackDataType.Frequency, id: `0_${list._id}` }),
-      },
-      {
-        text: capitalize(getFrequencyMessage(1)) + (list.frequency === 1 ? emojis.green : ""),
-        callback_data: JSON.stringify({ type: TelegramCallbackDataType.Frequency, id: `1_${list._id}` }),
-      },
-      {
-        text: capitalize(getFrequencyMessage(2)) + (list.frequency === 2 ? emojis.green : ""),
-        callback_data: JSON.stringify({ type: TelegramCallbackDataType.Frequency, id: `2_${list._id}` }),
-      },
-      {
-        text: capitalize(getFrequencyMessage(3)) + (list.frequency === 3 ? emojis.green : ""),
-        callback_data: JSON.stringify({ type: TelegramCallbackDataType.Frequency, id: `3_${list._id}` }),
-      },
-    ] as KeyboardButton[],
-    [
-      { text: "Values", callback_data: JSON.stringify({ type: TelegramCallbackDataType.Values, id: `${list._id}` }) },
-      { text: "Stats", callback_data: JSON.stringify({ type: TelegramCallbackDataType.Stats, id: `l_${list._id}` }) },
-      {
-        text: "Desc",
-        callback_data: JSON.stringify({ type: TelegramCallbackDataType.Description, id: `${list._id}` }),
-      },
-      { text: "Curate", url: `https://belgocanadian.com/tenthings-lists?list=${list._id}` } as KeyboardButton,
+export const curateListKeyboard = (list: IList): Keyboard => {
+  const { upvotes, downvotes } = getListMetrics(list);
+  return {
+    inline_keyboard: [
+      [
+        {
+          text: `${emojis.thumbsUp} (${upvotes})`,
+          callback_data: JSON.stringify({ type: TelegramCallbackDataType.Vote, id: `1_${list._id}` }),
+        },
+        {
+          text: `${emojis.thumbsDown} (${downvotes})`,
+          callback_data: JSON.stringify({ type: TelegramCallbackDataType.Vote, id: `-1_${list._id}` }),
+        },
+        {
+          text: emojis.difficulty0 + (list.difficulty === 0 ? emojis.green : ""),
+          callback_data: JSON.stringify({ type: TelegramCallbackDataType.Difficulty, id: `0_${list._id}` }),
+        },
+        {
+          text: emojis.difficulty1 + (list.difficulty === 1 ? emojis.green : ""),
+          callback_data: JSON.stringify({ type: TelegramCallbackDataType.Difficulty, id: `1_${list._id}` }),
+        },
+        {
+          text: emojis.difficulty2 + (list.difficulty === 2 ? emojis.green : ""),
+          callback_data: JSON.stringify({ type: TelegramCallbackDataType.Difficulty, id: `2_${list._id}` }),
+        },
+      ] as KeyboardButton[],
+      [
+        {
+          text: capitalize(getFrequencyMessage(0)) + (list.frequency === 0 ? emojis.green : ""),
+          callback_data: JSON.stringify({ type: TelegramCallbackDataType.Frequency, id: `0_${list._id}` }),
+        },
+        {
+          text: capitalize(getFrequencyMessage(1)) + (list.frequency === 1 ? emojis.green : ""),
+          callback_data: JSON.stringify({ type: TelegramCallbackDataType.Frequency, id: `1_${list._id}` }),
+        },
+        {
+          text: capitalize(getFrequencyMessage(2)) + (list.frequency === 2 ? emojis.green : ""),
+          callback_data: JSON.stringify({ type: TelegramCallbackDataType.Frequency, id: `2_${list._id}` }),
+        },
+        {
+          text: capitalize(getFrequencyMessage(3)) + (list.frequency === 3 ? emojis.green : ""),
+          callback_data: JSON.stringify({ type: TelegramCallbackDataType.Frequency, id: `3_${list._id}` }),
+        },
+      ] as KeyboardButton[],
+      [
+        { text: "Values", callback_data: JSON.stringify({ type: TelegramCallbackDataType.Values, id: `${list._id}` }) },
+        { text: "Stats", callback_data: JSON.stringify({ type: TelegramCallbackDataType.Stats, id: `l_${list._id}` }) },
+        {
+          text: "Desc",
+          callback_data: JSON.stringify({ type: TelegramCallbackDataType.Description, id: `${list._id}` }),
+        },
+        { text: "Curate", url: `https://belgocanadian.com/tenthings-lists?list=${list._id}` } as KeyboardButton,
+      ],
     ],
-  ],
-});
+  };
+};

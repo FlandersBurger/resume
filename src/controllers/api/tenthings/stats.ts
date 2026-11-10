@@ -4,6 +4,14 @@ export const tenthingsStatsRoute = Router();
 
 import { Types } from "mongoose";
 import { Game, GameRound, List, Stats } from "@root/models";
+import {
+  getListMetrics,
+  listMetricsFields,
+  playedRounds,
+  RANKED_MIN_ACTUAL_PLAYS,
+  roundTally,
+  RoundTally,
+} from "@models/tenthings/listMetrics";
 
 tenthingsStatsRoute.get("/total", async (_: Request, res: Response) => {
   const total = await List.countDocuments({});
@@ -144,7 +152,8 @@ tenthingsStatsRoute.get("/list-rankings/:stat", async (req: Request<{ stat: stri
   const languages = languageParam ? languageParam.split(",").filter(Boolean) : [];
   const categories = categoriesParam ? categoriesParam.split(",").filter(Boolean) : [];
 
-  const match: Record<string, unknown> = { plays: { $gte: 100 } };
+  // plays bounds actual plays from above, so this prefilter is safe; actual plays are checked below
+  const match: Record<string, unknown> = { plays: { $gte: RANKED_MIN_ACTUAL_PLAYS } };
   if (languages.length) match.language = { $in: languages };
   if (categories.length) match.categories = { $in: categories };
   if (creatorParam) match.creator = new Types.ObjectId(creatorParam);
@@ -162,17 +171,17 @@ tenthingsStatsRoute.get("/list-rankings/:stat", async (req: Request<{ stat: stri
   if (!VOTE_STATS.has(req.params.stat)) {
     // Fast path: load only the fields we need, no votes array
     const lists = await List.find(match).select("name plays skips hints bans").lean();
-    const valid = lists.filter((l) => l.plays - (l.skips ?? 0) >= 100);
+    const valid = lists.filter((l) => getListMetrics(l).actualPlays >= RANKED_MIN_ACTUAL_PLAYS);
 
     const valueOf = (l: (typeof valid)[number]): number => {
-      const actual = l.plays - (l.skips ?? 0);
+      const { actualPlays, difficulty } = getListMetrics(l);
       switch (req.params.stat) {
         case "mostplayed":
-          return actual;
+          return actualPlays;
         case "mostskipped":
-          return pct(l.skips, actual);
+          return pct(l.skips, actualPlays);
         case "mosthinted":
-          return pct(l.hints / 6, actual);
+          return pct(difficulty, 1);
         default:
           return l.bans ?? 0; // mostbanned / leastbanned
       }
@@ -189,26 +198,13 @@ tenthingsStatsRoute.get("/list-rankings/:stat", async (req: Request<{ stat: stri
       { $project: { name: 1, plays: 1, skips: 1, votes: 1 } },
       {
         $addFields: {
-          actualPlays: { $subtract: ["$plays", { $ifNull: ["$skips", 0] }] },
-          upvotes: {
-            $size: { $filter: { input: { $ifNull: ["$votes", []] }, as: "v", cond: { $gt: ["$$v.vote", 0] } } },
-          },
-          downvotes: {
-            $size: { $filter: { input: { $ifNull: ["$votes", []] }, as: "v", cond: { $lt: ["$$v.vote", 0] } } },
-          },
+          actualPlays: listMetricsFields.actualPlays,
+          upvotes: listMetricsFields.upvotes,
+          downvotes: listMetricsFields.downvotes,
+          likeRatio: { $multiply: [listMetricsFields.likeRatio, 100] }, // shown as a percentage
         },
       },
-      {
-        $addFields: {
-          likeRatio: {
-            $let: {
-              vars: { total: { $add: ["$upvotes", "$downvotes"] } },
-              in: { $cond: [{ $gt: ["$$total", 0] }, { $multiply: [{ $divide: ["$upvotes", "$$total"] }, 100] }, 0] },
-            },
-          },
-        },
-      },
-      { $match: { actualPlays: { $gte: 100 } } },
+      { $match: { actualPlays: { $gte: RANKED_MIN_ACTUAL_PLAYS } } },
       { $sort: { [config.sortField]: config.dir } },
       { $limit: 10 },
       { $project: { _id: 1, name: 1, value: { $round: [`$${config.sortField}`, 1] } } },
@@ -222,19 +218,9 @@ tenthingsStatsRoute.get("/list-rankings/:stat", async (req: Request<{ stat: stri
 });
 
 tenthingsStatsRoute.get("/skip-rate-trend", async (_: Request, res: Response) => {
-  const result = await GameRound.aggregate<{
-    _id: { year: number; month: number };
-    skipped: number;
-    total: number;
-  }>([
-    { $match: { outcome: { $in: ["completed", "skipped"] }, playedAt: { $gt: new Date(0) } } },
-    {
-      $group: {
-        _id: { year: { $year: "$playedAt" }, month: { $month: "$playedAt" } },
-        skipped: { $sum: { $cond: [{ $eq: ["$outcome", "skipped"] }, 1, 0] } },
-        total: { $sum: 1 },
-      },
-    },
+  const result = await GameRound.aggregate<RoundTally<{ year: number; month: number }>>([
+    { $match: playedRounds({ playedAt: { $gt: new Date(0) } }) },
+    roundTally({ year: { $year: "$playedAt" }, month: { $month: "$playedAt" } }),
     { $sort: { "_id.year": 1, "_id.month": 1 } },
   ]);
   res.json(
@@ -251,15 +237,9 @@ tenthingsStatsRoute.get("/low-quality", async (_: Request, res: Response) => {
   const lowQualityLists = await List.find({ lowQuality: true }).select("name").lean();
   if (!lowQualityLists.length) return res.json([]);
   const ids = lowQualityLists.map((l) => l._id);
-  const skipRates = await GameRound.aggregate<{ _id: Types.ObjectId; skipped: number; total: number }>([
-    { $match: { listId: { $in: ids }, outcome: { $in: ["completed", "skipped"] } } },
-    {
-      $group: {
-        _id: "$listId",
-        skipped: { $sum: { $cond: [{ $eq: ["$outcome", "skipped"] }, 1, 0] } },
-        total: { $sum: 1 },
-      },
-    },
+  const skipRates = await GameRound.aggregate<RoundTally<Types.ObjectId>>([
+    { $match: playedRounds({ listId: { $in: ids } }) },
+    roundTally("$listId"),
   ]);
   const rateMap = new Map(skipRates.map((r) => [String(r._id), Math.round((r.skipped / r.total) * 100)]));
   const rows = lowQualityLists

@@ -10,7 +10,7 @@ import i18n from "@root/i18n";
 import { makePercentage, makeReadable } from "@root/utils/number-helpers";
 import { parseSymbols } from "@utils/string-helpers";
 import { getPlayerName } from "@tenthings/players";
-import { getListScore } from "@tenthings/lists";
+import { getListMetrics, playedRounds, RANKED_MIN_ACTUAL_PLAYS } from "@models/tenthings/listMetrics";
 import emojis from "@tenthings/emojis";
 import { SupportedLanguage } from "@tenthings/languages";
 
@@ -82,24 +82,20 @@ export const getScores = async (game: IGame, type: string) => {
 };
 
 export const getListStats = (language: string, list: IList, requestor: string | undefined): string => {
+  const metrics = getListMetrics(list);
   var message = "";
   message += requestor ? `<i>${i18n(language, "sentences.requestedBy", { requestor })}</i>\n` : "";
   message += `${i18n(language, "stats.misc", { something: list.name })}\n`;
   message += `\t${i18n(language, "createdOn")}: ${moment(list.date).format("DD-MMM-YYYY")}\n`;
   message += `\t${i18n(language, "modifiedOn")}: ${moment(list.modifyDate).format("DD-MMM-YYYY")}\n`;
-  message += `\t${i18n(language, "score")}: ${makePercentage(getListScore(list))}\n`;
-  message += `\t${i18n(language, "votes")}: ${list.votes.filter(({ vote }) => vote > 0).length} ${emojis.thumbsUp} / ${
-    list.votes.filter(({ vote }) => vote < 0).length
-  } ${emojis.thumbsDown}\n`;
+  message += `\t${i18n(language, "score")}: ${makePercentage(metrics.score)}\n`;
+  message += `\t${i18n(language, "votes")}: ${metrics.upvotes} ${emojis.thumbsUp} / ${metrics.downvotes} ${emojis.thumbsDown}\n`;
   message += `\t${i18n(language, "values")}: ${list.values.length}\n`;
-  message += `\t${i18n(language, "plays")}: ${list.plays} (${
-    list.plays ? makePercentage((list.plays - list.skips) / list.plays) : ""
-  })\n`;
+  message += `\t${i18n(language, "plays")}: ${list.plays} (${list.plays ? makePercentage(metrics.playRatio) : ""})\n`;
   message += `\t${i18n(language, "skips")}: ${list.skips}\n`;
   message += `\t${i18n(language, "hints")}: ${list.hints}\n`;
   if (requestor) {
-    if (list.plays)
-      message += `\t${i18n(language, "difficulty")}: ${makePercentage(list.hints / 6 / (list.plays - list.skips))}\n`;
+    if (list.plays) message += `\t${i18n(language, "difficulty")}: ${makePercentage(metrics.difficulty)}\n`;
     message += `\t${i18n(language, "createdOn")}: ${moment(list.date).format("DD-MMM-YYYY")}\n`;
     message += `\t${i18n(language, "modifiedOn")}: ${moment(list.modifyDate).format("DD-MMM-YYYY")}\n`;
   }
@@ -242,10 +238,7 @@ export const getStats = async (game: IGame, data: string, requestor?: string) =>
         ...(game.platform === "web" ? { starred: true } : {}),
       });
       const cooldownRounds = Math.max(10, Math.floor(poolSize / 2));
-      const recentRounds = await GameRound.find({
-        gameId: game._id,
-        outcome: { $in: ["completed", "skipped"] },
-      })
+      const recentRounds = await GameRound.find(playedRounds({ gameId: game._id }))
         .sort({ playedAt: -1 })
         .limit(cooldownRounds)
         .distinct("listId");
@@ -480,12 +473,12 @@ const listStats = async (
   const lists = await List.find({
     language: { $in: game.settings.languages },
     categories: { $nin: game.disabledCategories },
-    plays: { $gte: 100 },
+    plays: { $gte: RANKED_MIN_ACTUAL_PLAYS },
   })
     .select(`${field} ${divisor} name actualPlays`)
     .lean({ virtuals: true });
   lists
-    .filter(({ actualPlays }) => actualPlays >= 100)
+    .filter(({ actualPlays }) => actualPlays >= RANKED_MIN_ACTUAL_PLAYS)
     .sort((a: IList, b: IList) => {
       const aField: number = a[field] as number;
       const bField: number = b[field] as number;

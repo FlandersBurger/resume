@@ -11,6 +11,7 @@ import i18n from "@root/i18n";
 import { removeSpecialCharacters } from "@utils/string-helpers";
 import { notifyAdmin } from "./notify";
 import { SupportedLanguage } from "./languages";
+import { playedRounds, roundTally } from "@models/tenthings/listMetrics";
 
 export const getRandomList = async (parameters: QueryOptions = {}): Promise<HydratedDocument<IList> | undefined> => {
   const count = await List.countDocuments(parameters).exec();
@@ -23,18 +24,6 @@ export const getRandomList = async (parameters: QueryOptions = {}): Promise<Hydr
     .skip(Math.floor(Math.random() * count))
     .exec();
   return lists[0];
-};
-
-export const getListScore = (list: IList): number => {
-  //((upvotes / (upvotes + downvotes)) + (skips / plays)) / 2
-  //(upvote ratio in regards to total votes + skip ratio in regards to plays) / 2
-  if (list.votes && list.plays) {
-    const upvotes = list.votes.filter((vote) => vote.vote > 0);
-    const voteRatio = list.votes.length > 0 ? upvotes.length / list.votes.length : 0;
-    const score = (voteRatio + (list.plays - (list.skips ?? 0)) / list.plays) / 2;
-    return score ? score : 0;
-  }
-  return 0;
 };
 
 export const rateList = (game: IGame) => {
@@ -50,15 +39,9 @@ const MIN_SKIP_HEAVY_ROUNDS = 2;
 
 const getPreferredCategories = async (gameId: Types.ObjectId): Promise<string[]> => {
   const affinity = await GameRound.aggregate<{ _id: string }>([
-    { $match: { gameId, outcome: { $in: ["completed", "skipped"] } } },
+    { $match: playedRounds({ gameId }) },
     { $unwind: "$categories" },
-    {
-      $group: {
-        _id: "$categories",
-        completed: { $sum: { $cond: [{ $eq: ["$outcome", "completed"] }, 1, 0] } },
-        total: { $sum: 1 },
-      },
-    },
+    roundTally("$categories"),
     { $match: { total: { $gte: MIN_CATEGORY_ROUNDS } } },
     { $addFields: { affinity: { $divide: ["$completed", "$total"] } } },
     { $match: { affinity: { $gte: MIN_AFFINITY_SCORE } } },
@@ -72,15 +55,8 @@ const getPreferredCategories = async (gameId: Types.ObjectId): Promise<string[]>
 // to a single game rather than global.
 const getSkipHeavyListIds = async (gameId: Types.ObjectId): Promise<Types.ObjectId[]> => {
   const results = await GameRound.aggregate<{ _id: Types.ObjectId }>([
-    { $match: { gameId, outcome: { $in: ["completed", "skipped"] } } },
-    {
-      $group: {
-        _id: "$listId",
-        completed: { $sum: { $cond: [{ $eq: ["$outcome", "completed"] }, 1, 0] } },
-        skipped: { $sum: { $cond: [{ $eq: ["$outcome", "skipped"] }, 1, 0] } },
-        total: { $sum: 1 },
-      },
-    },
+    { $match: playedRounds({ gameId }) },
+    roundTally("$listId"),
     { $match: { total: { $gte: MIN_SKIP_HEAVY_ROUNDS }, $expr: { $gt: ["$skipped", "$completed"] } } },
   ]);
   return results.map((r) => r._id);
@@ -113,7 +89,7 @@ const getExcludedListIds = async (
   };
   const [poolSize, recentRounds, banned, skipHeavy] = await Promise.all([
     List.countDocuments(poolQuery),
-    GameRound.find({ gameId: game._id, outcome: { $in: ["completed", "skipped"] } })
+    GameRound.find(playedRounds({ gameId: game._id }))
       .sort({ playedAt: -1 })
       .limit(5000)
       .select("listId")

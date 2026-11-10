@@ -8,7 +8,7 @@ import find from "lodash/find";
 
 import moment from "moment";
 import { getDifficultyMessage, getFrequencyMessage } from "@tenthings/messages";
-import { getListScore } from "@tenthings/lists";
+import { getListScore } from "@models/tenthings/listMetrics";
 
 import i18n from "@root/i18n";
 

@@ -4,7 +4,7 @@ import { IGame } from "@models/tenthings/game";
 import { IPlayer } from "@models/tenthings/player";
 import { HydratedDocument, Types } from "mongoose";
 import { newRound } from "./maingame";
-import { getListScore } from "./lists";
+import { getListScore } from "@models/tenthings/listMetrics";
 
 import i18n from "@root/i18n";
 import { notifyAdmin } from "./notify";
