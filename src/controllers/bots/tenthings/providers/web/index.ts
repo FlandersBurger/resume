@@ -28,7 +28,6 @@ export const web: Provider = {
     publish("tenthings_message", { message: "List skipped" });
   },
   dailyScores: () => {},
-  dailyWinners: () => {},
   endOfDay: async () => {},
   guessed: async (game: IGame, player: IPlayer, match: IGameListValue, ..._: any) => {
     await publish("tenthings_message", {

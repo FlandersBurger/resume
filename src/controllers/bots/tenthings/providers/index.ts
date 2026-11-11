@@ -12,7 +12,6 @@ export type Provider = {
   endOfRound: (game: IGame, list: IList) => Promise<void>;
   skipList: (game: IGame) => void;
   dailyScores: (game: IGame, limit?: number) => void;
-  dailyWinners: (game: IGame, winners: IPlayer[], score: number) => void;
   endOfDay: (game: IGame, winners: IPlayer[], score: number) => Promise<void>;
   guessed: (game: IGame, player: IPlayer, match: IGameListValue, score: number, accuracy: string) => void;
   mainGameMessage: (game: IGame, long?: boolean) => void;
