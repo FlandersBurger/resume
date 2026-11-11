@@ -16,7 +16,14 @@ import Unsplash from "@root/connections/unsplash";
 import { IList, IListValue } from "@models/tenthings/list";
 import { GameRound, List, User } from "@models/index";
 import { parseSymbols, removeAllButLetters } from "@utils/string-helpers";
-import { getList, getListScore, getRandomList, mergeLists } from "@tenthings/lists";
+import { getList, getRandomList, mergeLists } from "@tenthings/lists";
+import {
+  listMetricsFields,
+  playedRounds,
+  refreshScoreUpdate,
+  roundTally,
+  RoundTally,
+} from "@models/tenthings/listMetrics";
 import { curateListKeyboard } from "@tenthings/providers/telegram/keyboards";
 import { every } from "lodash";
 import { telegram } from "@tenthings/providers/telegram";
@@ -27,37 +34,12 @@ const MIN_LIST_VALUES = 10;
 
 const VIRTUAL_SORT_FIELDS = new Set(["likeRatio", "upvotes", "downvotes", "answers", "playRatio", "quality"]);
 
-const safeVotes = { $ifNull: ["$votes", []] };
-const safeValues = { $ifNull: ["$values", []] };
-
 const VIRTUAL_ADD_FIELDS = {
-  answers: { $size: safeValues },
-  upvotes: { $size: { $filter: { input: safeVotes, as: "v", cond: { $gt: ["$$v.vote", 0] } } } },
-  downvotes: { $size: { $filter: { input: safeVotes, as: "v", cond: { $lt: ["$$v.vote", 0] } } } },
-  likeRatio: {
-    $let: {
-      vars: { votes: safeVotes },
-      in: {
-        $cond: {
-          if: { $eq: [{ $size: "$$votes" }, 0] },
-          then: 0,
-          else: {
-            $divide: [
-              { $size: { $filter: { input: "$$votes", as: "v", cond: { $gt: ["$$v.vote", 0] } } } },
-              { $size: "$$votes" },
-            ],
-          },
-        },
-      },
-    },
-  },
-  playRatio: {
-    $cond: {
-      if: { $eq: ["$plays", 0] },
-      then: 0,
-      else: { $divide: [{ $subtract: ["$plays", { $ifNull: ["$skips", 0] }] }, "$plays"] },
-    },
-  },
+  answers: { $size: { $ifNull: ["$values", []] } },
+  upvotes: listMetricsFields.upvotes,
+  downvotes: listMetricsFields.downvotes,
+  likeRatio: listMetricsFields.likeRatio,
+  playRatio: listMetricsFields.playRatio,
   // Combined tri-state used by the quality column/filter: -1 low, 0 neutral, 1 high.
   quality: {
     $cond: [{ $eq: ["$lowQuality", true] }, -1, { $cond: [{ $eq: ["$highQuality", true] }, 1, 0] }],
@@ -66,18 +48,13 @@ const VIRTUAL_ADD_FIELDS = {
 
 // Attach completed/skipped round counts (from GameRound history) to each list.
 const withRoundCounts = async <T extends { _id: Types.ObjectId }>(lists: T[]) => {
-  const roundCounts = await GameRound.aggregate<{ _id: { listId: Types.ObjectId; outcome: string }; count: number }>([
-    { $match: { listId: { $in: lists.map((list) => list._id) }, outcome: { $in: ["completed", "skipped"] } } },
-    { $group: { _id: { listId: "$listId", outcome: "$outcome" }, count: { $sum: 1 } } },
+  const tallies = await GameRound.aggregate<RoundTally<Types.ObjectId>>([
+    { $match: playedRounds({ listId: { $in: lists.map((list) => list._id) } }) },
+    roundTally("$listId"),
   ]);
-  const roundCountMap = new Map<string, { completedRounds: number; skippedRounds: number }>();
-  for (const { _id, count } of roundCounts) {
-    const key = String(_id.listId);
-    const entry = roundCountMap.get(key) ?? { completedRounds: 0, skippedRounds: 0 };
-    if (_id.outcome === "completed") entry.completedRounds = count;
-    else entry.skippedRounds = count;
-    roundCountMap.set(key, entry);
-  }
+  const roundCountMap = new Map(
+    tallies.map(({ _id, completed, skipped }) => [String(_id), { completedRounds: completed, skippedRounds: skipped }]),
+  );
   return lists.map((list) => ({
     ...list,
     ...(roundCountMap.get(String(list._id)) ?? { completedRounds: 0, skippedRounds: 0 }),
@@ -303,7 +280,8 @@ tenthingsListsRoute.post("/", async (req: Request, res: Response) => {
     const previousModifyDate = moment(req.body.list.modifyDate);
     req.body.list.modifyDate = new Date();
     req.body.list.search = removeAllButLetters(req.body.list.name);
-    req.body.list.score = getListScore(req.body.list);
+    // The editor never holds the List's votes, so the score is recomputed in Mongo after saving.
+    delete req.body.list.score;
     req.body.list.values
       .filter(({ creator }: { creator: Types.ObjectId }) => !creator)
       .forEach((value: IListValue) => (value.creator = req.body.list.creator));
@@ -313,6 +291,7 @@ tenthingsListsRoute.post("/", async (req: Request, res: Response) => {
       req.body.list,
       { returnDocument: "after", upsert: true },
     );
+    if (list) await List.updateOne({ _id: list._id }, refreshScoreUpdate);
 
     const updatedList = await getList(list._id);
     if (!updatedList) res.sendStatus(404);

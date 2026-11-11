@@ -3,6 +3,7 @@ import mongooseLeanVirtuals from "mongoose-lean-virtuals";
 import db from "@root/db";
 import { IUser } from "@models/user";
 import { SupportedLanguage } from "@tenthings/languages";
+import { getListMetrics } from "./listMetrics";
 
 export interface IVote {
   voter: number | string;
@@ -136,23 +137,22 @@ listSchema.virtual("blurbs").get(function (this: IList) {
   return this.values ? this.values.filter((item) => item.blurb).length : 0;
 });
 listSchema.virtual("playRatio").get(function (this: IList) {
-  return this.plays ? (this.plays - (this.skips ?? 0)) / this.plays : 0;
+  return getListMetrics(this).playRatio;
 });
 listSchema.virtual("actualPlays").get(function (this: IList) {
-  return this.plays ? this.plays - (this.skips ?? 0) : 0;
+  return getListMetrics(this).actualPlays;
 });
 listSchema.virtual("upvotes").get(function (this: IList) {
-  return this.votes ? this.votes.filter(({ vote }) => vote > 0).length : 0;
+  return getListMetrics(this).upvotes;
 });
 listSchema.virtual("downvotes").get(function (this: IList) {
-  return this.votes ? this.votes.filter(({ vote }) => vote < 0).length : 0;
+  return getListMetrics(this).downvotes;
 });
 listSchema.virtual("likeRatio").get(function (this: IList) {
-  if (!this.votes) return 0;
-  return this.votes.filter(({ vote }) => vote > 0).length / this.votes.length;
+  return getListMetrics(this).likeRatio;
 });
 listSchema.virtual("calculatedDifficulty").get(function (this: IList) {
-  return this.plays ? (this.hints ?? 0) / 6 / (this.plays - (this.skips ?? 0)) : 0;
+  return getListMetrics(this).difficulty;
 });
 
 listSchema.plugin(mongooseLeanVirtuals);

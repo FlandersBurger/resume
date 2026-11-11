@@ -19,6 +19,7 @@ import { Game, GameRound, Player, Stats, List } from "@models/index";
 import i18n from "@root/i18n";
 import { getFrequencyMessage } from "./messages";
 import { capitalize } from "@utils/string-helpers";
+import { listMetricsFields, playedRounds, roundTally } from "@models/tenthings/listMetrics";
 
 // ██████  ███████ ███████ ███████ ████████     ██████   █████  ██ ██      ██    ██     ███████  ██████  ██████  ██████  ███████
 // ██   ██ ██      ██      ██         ██        ██   ██ ██   ██ ██ ██       ██  ██      ██      ██      ██    ██ ██   ██ ██
@@ -531,43 +532,40 @@ const unbanPlayers = async () => {
 // Counts votes server-side: lists carry millions of vote subdocs in total, and pulling the raw
 // arrays into Node to tally them was enough to OOM-kill the app on the production droplet.
 const getVoteTallies = (ids: Types.ObjectId[]) =>
-  List.aggregate<{ _id: Types.ObjectId; votes: number; likes: number }>([
+  List.aggregate<{ _id: Types.ObjectId; votes: number; likeRatio: number }>([
     { $match: { _id: { $in: ids } } },
     {
       $project: {
-        votes: { $size: { $ifNull: ["$votes", []] } },
-        likes: {
-          $size: { $filter: { input: { $ifNull: ["$votes", []] }, as: "v", cond: { $gt: ["$$v.vote", 0] } } },
-        },
+        votes: { $add: [listMetricsFields.upvotes, listMetricsFields.downvotes] },
+        likeRatio: listMetricsFields.likeRatio,
       },
     },
   ]);
 
 const MIN_GLOBAL_ROUNDS = 10;
+
+// Lists with enough played Rounds across all Games whose skip rate passes `skipRateMatch`.
+const getListsBySkipRate = (skipRateMatch: object) =>
+  GameRound.aggregate<{ _id: Types.ObjectId }>([
+    { $match: playedRounds() },
+    roundTally("$listId"),
+    { $match: { total: { $gte: MIN_GLOBAL_ROUNDS } } },
+    { $addFields: { skipRate: { $divide: ["$skipped", "$total"] } } },
+    { $match: { skipRate: skipRateMatch } },
+  ]);
+
 const MAX_SKIP_RATE = 0.8;
 const MAX_LIKE_RATIO = 0.5;
 const MIN_VOTES_FOR_LIKE_CHECK = 5;
 
 const updateLowQualityLists = async () => {
-  const skipCandidates = await GameRound.aggregate<{ _id: Types.ObjectId }>([
-    { $match: { outcome: { $in: ["completed", "skipped"] } } },
-    {
-      $group: {
-        _id: "$listId",
-        skipped: { $sum: { $cond: [{ $eq: ["$outcome", "skipped"] }, 1, 0] } },
-        total: { $sum: 1 },
-      },
-    },
-    { $match: { total: { $gte: MIN_GLOBAL_ROUNDS } } },
-    { $addFields: { skipRate: { $divide: ["$skipped", "$total"] } } },
-    { $match: { skipRate: { $gte: MAX_SKIP_RATE } } },
-  ]);
+  const skipCandidates = await getListsBySkipRate({ $gte: MAX_SKIP_RATE });
   // A high skip rate alone can mean "hard but loved" rather than "low quality" — corroborate
   // with community sentiment. Lists without enough votes to judge sentiment are flagged on
   // skip rate alone.
   const candidates = await getVoteTallies(skipCandidates.map((r) => r._id));
   const lowQualityIds = candidates
-    .filter(({ votes, likes }) => votes < MIN_VOTES_FOR_LIKE_CHECK || likes / votes < MAX_LIKE_RATIO)
+    .filter(({ votes, likeRatio }) => votes < MIN_VOTES_FOR_LIKE_CHECK || likeRatio < MAX_LIKE_RATIO)
     .map((list) => list._id);
   const [flagged, unflagged] = await Promise.all([
     List.updateMany({ _id: { $in: lowQualityIds } }, { $set: { lowQuality: true } }),
@@ -585,22 +583,10 @@ const MIN_VOTES_FOR_HIGH_QUALITY = 5;
 // "high quality" claim is riskier to get wrong, so it always requires corroborating votes —
 // no votes means no flag, regardless of how low the skip rate is.
 const updateHighQualityLists = async () => {
-  const skipCandidates = await GameRound.aggregate<{ _id: Types.ObjectId }>([
-    { $match: { outcome: { $in: ["completed", "skipped"] } } },
-    {
-      $group: {
-        _id: "$listId",
-        skipped: { $sum: { $cond: [{ $eq: ["$outcome", "skipped"] }, 1, 0] } },
-        total: { $sum: 1 },
-      },
-    },
-    { $match: { total: { $gte: MIN_GLOBAL_ROUNDS } } },
-    { $addFields: { skipRate: { $divide: ["$skipped", "$total"] } } },
-    { $match: { skipRate: { $lte: MAX_HIGH_QUALITY_SKIP_RATE } } },
-  ]);
+  const skipCandidates = await getListsBySkipRate({ $lte: MAX_HIGH_QUALITY_SKIP_RATE });
   const candidates = await getVoteTallies(skipCandidates.map((r) => r._id));
   const highQualityIds = candidates
-    .filter(({ votes, likes }) => votes >= MIN_VOTES_FOR_HIGH_QUALITY && likes / votes >= MIN_HIGH_QUALITY_LIKE_RATIO)
+    .filter(({ votes, likeRatio }) => votes >= MIN_VOTES_FOR_HIGH_QUALITY && likeRatio >= MIN_HIGH_QUALITY_LIKE_RATIO)
     .map((list) => list._id);
   const [flagged, unflagged] = await Promise.all([
     List.updateMany({ _id: { $in: highQualityIds } }, { $set: { highQuality: true } }),
