@@ -239,6 +239,7 @@
     "gameStarted": "{{gameName}} begonnen",
     "banListPrompt": "Wil je \"{{list}}\" permanent uit dit spel bannen?",
     "suggestionPrompt": "<b>SUGGESTIE</b>\nVoeg je suggestie toe in je volgende bericht, {{name}}!",
+    "addListYourself": "💡 Je kunt de lijst zelf aan Ten Things toevoegen: log in op <a href=\"{{url}}\">belgocanadian.com/tenthings-lists</a> en klik op \"New list\".",
     "featurePrompt": "<b>FUNCTIE</b>\nStel je functie voor in je volgende bericht, {{name}}!",
     "typoPrompt": "<b>TYPFOUT</b>\nLaat me in je volgende bericht weten wat de typfout is, {{name}}!\nVermeld ook de lijstnaam als de typfout geen deel uitmaakt van: <i>\"{{list}}\"</i>",
     "bugPrompt": "<b>BUG</b>\nGeef in je volgende bericht wat meer details over wat er mis is gegaan, {{name}}!",

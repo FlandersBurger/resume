@@ -5,6 +5,8 @@ on:
     branches: [master]
     paths:
       - "data/locales/master/**"
+  # Rerun by hand after fixing a translation the verify step rejected; a failed run commits nothing.
+  workflow_dispatch:
 
 permissions:
   contents: write
