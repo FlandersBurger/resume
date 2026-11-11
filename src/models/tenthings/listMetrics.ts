@@ -102,6 +102,9 @@ export const refreshScoreUpdate = [{ $set: { score: scoreExpr } }];
 /** Pipeline update recording one more play, then refreshing the score. */
 export const recordPlayUpdate = [{ $set: { plays: { $add: [field("plays"), 1] } } }, ...refreshScoreUpdate];
 
+/** Mongoose refuses array (pipeline) updates without this option; pass it with every update above. */
+export const pipelineUpdateOptions = { updatePipeline: true };
+
 // ── Round history ─────────────────────────────────────────────────────────────────────────
 
 /** Outcomes of Rounds that were actually played, as opposed to Ban records. */

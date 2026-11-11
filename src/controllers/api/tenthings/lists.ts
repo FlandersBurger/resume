@@ -20,6 +20,7 @@ import { getList, getRandomList, mergeLists } from "@tenthings/lists";
 import {
   listMetricsFields,
   playedRounds,
+  pipelineUpdateOptions,
   refreshScoreUpdate,
   roundTally,
   RoundTally,
@@ -291,7 +292,7 @@ tenthingsListsRoute.post("/", async (req: Request, res: Response) => {
       req.body.list,
       { returnDocument: "after", upsert: true },
     );
-    if (list) await List.updateOne({ _id: list._id }, refreshScoreUpdate);
+    if (list) await List.updateOne({ _id: list._id }, refreshScoreUpdate, pipelineUpdateOptions);
 
     const updatedList = await getList(list._id);
     if (!updatedList) res.sendStatus(404);
