@@ -20,6 +20,7 @@ import {
   subcategoriesKeyboard,
 } from "@tenthings/keyboards";
 import type { Renderer } from "@tenthings/engine/rendering";
+import { renderRoundEvent } from "../roundRendering";
 import { adminOnly } from "./errors";
 
 const onOff = (game: IGame, on: boolean) => i18n(game.settings.language, on ? "on" : "off");
@@ -162,6 +163,8 @@ export const renderTelegram: Renderer = async (game, events, { action, origin })
       case "flushed":
         bot.queueMessage(channel, "Flushed this chat");
         break;
+      default:
+        await renderRoundEvent(game, event);
     }
   }
 };

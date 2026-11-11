@@ -1,5 +1,7 @@
 import { Game } from "@models/index";
-import { activate, createMaingame, newRound } from "@tenthings/maingame";
+import { activate, createMaingame } from "@tenthings/maingame";
+import { SYSTEM_ACTOR } from "@tenthings/engine/actions";
+import { dispatch } from "@tenthings/engine/queue";
 
 import discordBot, { DiscordMessage } from "@root/connections/discord";
 import { Command, evaluate, translateCommand } from "@tenthings/providers/discord/commands";
@@ -41,11 +43,7 @@ export const initDiscordBot = () => {
         } catch (err) {
           console.log("Attempting to reset Discord game:", existingGame._id);
           console.error(err);
-          existingGame.streak = {
-            player: undefined,
-            count: 0,
-          };
-          await newRound(existingGame);
+          dispatch({ type: "startRound", gameId: String(existingGame._id), actor: SYSTEM_ACTOR, replace: true });
           return;
         }
         await evaluate(msg, existingGame, false);

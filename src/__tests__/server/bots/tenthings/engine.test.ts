@@ -10,6 +10,8 @@ jest.mock("@tenthings/providers/discord", () => ({ discord: {} }));
 jest.mock("@root/queue", () => ({ __esModule: true, default: {} }));
 jest.mock("@root/i18n", () => ({ __esModule: true, default: jest.fn((_, key: string) => key) }));
 jest.mock("@tenthings/notify", () => ({ notifyAdmin: jest.fn() }));
+// Guesses are queued through the Engine queue; nothing here should reach Redis.
+jest.mock("@tenthings/engine/queue", () => ({ dispatch: jest.fn(), queueGuessJob: jest.fn() }));
 
 import db from "@root/db";
 import { Game, GameRound, List, Player } from "@models/index";
@@ -56,7 +58,8 @@ const setup = async () => {
   return { game, player, list, actor, admin, gameId: String(game._id), listId: String(list._id) };
 };
 
-const run = (action: Action) => runAction(action);
+const scheduler = { schedule: jest.fn(async () => undefined) };
+const run = (action: Action) => runAction(action, scheduler);
 
 describe("vote", () => {
   test("records the Vote and stores the score from every Vote on the List", async () => {
@@ -301,16 +304,20 @@ test("showUpcoming lists the Picked Lists in queue order", async () => {
   ]);
 });
 
-test("flush clears the queue and the Game's Rounds but keeps its Bans", async () => {
+test("flush clears the queue and the Game's Rounds but keeps its Bans and the Round in progress", async () => {
   const { game, list, gameId, listId, admin } = await setup();
   await Game.updateOne({ _id: game._id }, { pickedLists: [listId] });
   await GameRound.insertMany([
     { gameId: game._id, listId: list._id, outcome: "completed", language: "EN" },
     { gameId: game._id, listId: list._id, outcome: "banned", language: "EN" },
+    { gameId: game._id, listId: list._id, outcome: "inProgress", language: "EN" },
   ]);
   expect((await run({ type: "flush", gameId, actor: admin })).events).toEqual([{ type: "flushed" }]);
   expect((await Game.findById(gameId).lean())!.pickedLists).toEqual([]);
-  expect((await GameRound.find({ gameId: game._id }).lean()).map((r) => r.outcome)).toEqual(["banned"]);
+  expect((await GameRound.find({ gameId: game._id }).lean()).map((r) => r.outcome).sort()).toEqual([
+    "banned",
+    "inProgress",
+  ]);
 });
 
 test("an Action on a Game that no longer exists does nothing", async () => {

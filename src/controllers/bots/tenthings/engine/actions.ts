@@ -14,6 +14,11 @@ export type Actor = {
   isAdmin?: boolean;
 };
 
+/** The actor of Actions the Engine schedules itself (timers), rather than a Player. */
+export const SYSTEM_ACTOR: Actor = { playerId: "system", name: "Ten Things" };
+
+export const isSystemActor = (actor: Actor) => actor.playerId === SYSTEM_ACTOR.playerId;
+
 export const TOGGLE_SETTINGS = ["intro", "sass", "snubs", "updates"] as const;
 export type ToggleSettingKey = (typeof TOGGLE_SETTINGS)[number];
 
@@ -41,6 +46,15 @@ export type Action = { gameId: string; actor: Actor } & (
   | { type: "search"; query: string }
   | { type: "showUpcoming" }
   | { type: "flush" }
+  /** Start a Round, unless one is in progress. `replace` drops the one in progress instead (recovery only). */
+  | { type: "startRound"; replace?: boolean }
+  /** A Guess that matched an Answer of the main game. */
+  | { type: "guess"; listId: string; match: Guess["match"] }
+  | { type: "hint" }
+  | { type: "skip" }
+  | { type: "veto" }
+  /** Timer: the Skip countdown of Round `roundId` has run out. */
+  | { type: "skipCountdownEnded"; roundId: string }
 );
 
 export type ActionType = Action["type"];

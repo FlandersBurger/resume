@@ -11,7 +11,7 @@ import { getDifficultyMessage, getFrequencyMessage } from "@tenthings/messages";
 import i18n from "@root/i18n";
 
 import { getScores, getStats } from "@tenthings/providers/telegram/stats";
-import { ActionOrigin, Actor, isToggleSetting } from "@tenthings/engine/actions";
+import { ActionOrigin, Actor, isToggleSetting, SYSTEM_ACTOR } from "@tenthings/engine/actions";
 import { dispatch } from "@tenthings/engine/queue";
 import { getLanguageCounts } from "@tenthings/languageCounts";
 import { curateListKeyboard } from "./keyboards";
@@ -28,7 +28,6 @@ import {
 import bot, { TelegramUser } from "@root/connections/telegram";
 import { adminOnly } from "@root/controllers/bots/tenthings/providers/telegram/errors";
 import { convertTelegramUserToPlayer } from ".";
-import { newRound } from "../../maingame";
 import { TelegramCallbackDataType, TelegramCallbackDataTypeDelay, callbackDateTypeDelays } from "./callback-types";
 
 export { TelegramCallbackDataType, TelegramCallbackDataTypeDelay, callbackDateTypeDelays } from "./callback-types";
@@ -52,12 +51,7 @@ export default async (callbackQuery: TelegramCallbackData) => {
   try {
     await game.validate();
   } catch (err) {
-    game.guessers = [];
-    game.streak = {
-      player: undefined,
-      count: 0,
-    };
-    newRound(game);
+    dispatch({ type: "startRound", gameId: String(game._id), actor: SYSTEM_ACTOR, replace: true });
     console.log("Game reset in callback:", game._id);
     return;
   }

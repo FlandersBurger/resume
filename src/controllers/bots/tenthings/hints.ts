@@ -3,7 +3,6 @@ import { GameType, IGame } from "@models/tenthings/game";
 import { IPlayer } from "@models/tenthings/player";
 import { parseSymbols, conceal, concealMiddle, SPECIAL_CHARACTERS } from "@utils/string-helpers";
 import uniq from "lodash/uniq";
-import { logHint } from "./lists";
 import i18n from "@root/i18n";
 
 export const MAX_HINTS = 6;
@@ -21,15 +20,13 @@ export const hintCooldown = (gameId: string) => {
   }
 };
 
+/** A minigame or tinygame Hint. Main game Hints are an Engine Action. */
 export const processHint = async (
   game: HydratedDocument<IGame>,
   player: HydratedDocument<IPlayer>,
-  type: GameType = GameType.MAINGAME,
+  type: GameType.MINIGAME | GameType.TINYGAME,
 ) => {
-  if (
-    (type === GameType.MAINGAME && game.hints >= MAX_HINTS) ||
-    (type !== GameType.MAINGAME && game[type].hints >= MAX_HINTS)
-  ) {
+  if (game[type].hints >= MAX_HINTS) {
     game.provider.message(game, i18n(game.settings.language, "warnings.tooManyHints"));
   } else if (hintCache[game._id.toString()] && hintCache[game._id.toString()] > 0) {
     game.provider.message(
@@ -51,11 +48,6 @@ export const processHint = async (
       case GameType.TINYGAME:
         game.tinygame.hints++;
         game.provider.tinyGameMessage(game);
-        break;
-      default:
-        game.hints++;
-        game.provider.mainGameMessage(game, false);
-        logHint(game.list._id);
         break;
     }
     hintCache[game._id.toString()] = game.settings.hintDelay;

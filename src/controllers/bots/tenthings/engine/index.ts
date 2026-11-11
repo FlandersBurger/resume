@@ -7,13 +7,14 @@ import moment, { Moment } from "moment";
 import { HydratedDocument } from "mongoose";
 import { Game, GameRound, List, Player } from "@models/index";
 import { IGame } from "@models/tenthings/game";
-import { IList } from "@models/tenthings/list";
 import { getListScore } from "@models/tenthings/listMetrics";
 import categories, { setDisabledCategories } from "@tenthings/categories";
 import { isBotLanguage, isSupportedLanguage, SupportedLanguage } from "@tenthings/languages";
-import { getRandomList, searchList } from "@tenthings/lists";
+import { searchList } from "@tenthings/lists";
 import { Action, DELAY_CHOICES, isDelaySetting, isToggleSetting } from "./actions";
 import { EngineEvent } from "./events";
+import { banCurrentRound, roundHandlers, RoundActionType } from "./round";
+import { Scheduler } from "./scheduler";
 
 export type { Action } from "./actions";
 export type { EngineEvent } from "./events";
@@ -43,6 +44,7 @@ type GameDoc = HydratedDocument<IGame>;
 type Handler<T extends Action["type"]> = (
   game: GameDoc,
   action: Extract<Action, { type: T }>,
+  scheduler: Scheduler,
 ) => Promise<EngineEvent[]>;
 
 const ADMIN_ONLY: ReadonlySet<Action["type"]> = new Set([
@@ -79,7 +81,7 @@ const isCategory = (category: string) => {
   return sub === undefined || categories[main].includes(sub);
 };
 
-const handlers: { [T in Action["type"]]: Handler<T> } = {
+const handlers: { [T in Exclude<Action["type"], RoundActionType>]: Handler<T> } = {
   vote: async (_game, { listId, voterId, vote, actor }) => {
     if (isVoteThrottled(voterId)) return [];
     const list = await List.findById(listId).select("name votes modifyDate score skips plays").exec();
@@ -187,7 +189,7 @@ const handlers: { [T in Action["type"]]: Handler<T> } = {
   },
 
   // Not admin-only as such: where a second Player corroborates, any Player may confirm.
-  confirmBan: async (game, { listId, actor }) => {
+  confirmBan: async (game, { listId, actor }, scheduler) => {
     const corroborate = banNeedsCorroboration(game);
     if (!corroborate && !actor.isAdmin)
       return [{ type: "adminOnly", playerId: actor.playerId, playerName: actor.name }];
@@ -201,16 +203,18 @@ const handlers: { [T in Action["type"]]: Handler<T> } = {
     if (!list) return [{ type: "listNotFound" }];
     if (await GameRound.exists({ gameId: game._id, listId: list._id, outcome: "banned" }))
       return [{ type: "listAlreadyBanned", listName: list.name }];
-    await GameRound.create({
-      gameId: game._id,
-      listId: list._id,
-      outcome: "banned",
-      categories: list.categories ?? [],
-      language: list.language,
-      answersRevealed: 0,
-      hintsUsed: 0,
-      playedAt: new Date(),
-    });
+    // Banning the List being played ends its Round, which then stands as the Ban record.
+    if (!(await banCurrentRound(game, list._id, scheduler)))
+      await GameRound.create({
+        gameId: game._id,
+        listId: list._id,
+        outcome: "banned",
+        categories: list.categories ?? [],
+        language: list.language,
+        answersRevealed: 0,
+        hintsUsed: 0,
+        playedAt: new Date(),
+      });
     await List.updateOne({ _id: list._id }, { $inc: { bans: 1 } });
     console.log(`${game._id} (${game.settings.language}) banned ${list.name}`);
     return [{ type: "listBanned", listId: String(list._id), listName: list.name }];
@@ -243,19 +247,31 @@ const handlers: { [T in Action["type"]]: Handler<T> } = {
     return [{ type: "upcomingLists", listNames: listNames.slice(0, MAX_PICKED_LISTS) }];
   },
 
-  // Owner only (the adapter checks): start this Game over, keeping its Bans.
+  // Owner only (the adapter checks): start this Game over, keeping its Bans and the Round in progress.
   flush: async (game) => {
-    game.list = (await getRandomList()) as IList as IGame["list"];
     game.pickedLists = [];
-    await GameRound.deleteMany({ gameId: game._id, outcome: { $ne: "banned" } });
+    await GameRound.deleteMany({ gameId: game._id, outcome: { $nin: ["banned", "inProgress"] } });
     await game.save();
     return [{ type: "flushed" }];
   },
 };
 
-/** Apply one Action. Returns the Game as it stands afterwards (null if it doesn't exist) and the Events. */
-export const runAction = async (action: Action): Promise<{ game: GameDoc | null; events: EngineEvent[] }> => {
-  const game = await Game.findById(action.gameId).exec();
+const allHandlers = { ...handlers, ...roundHandlers } as { [T in Action["type"]]: Handler<T> };
+
+/**
+ * Apply one Action; `scheduler` takes the Actions it sets up for later. Returns the Game as it
+ * stands afterwards (null if it doesn't exist) and the Events.
+ */
+export const runAction = async (
+  action: Action,
+  scheduler: Scheduler,
+): Promise<{ game: GameDoc | null; events: EngineEvent[] }> => {
+  // Populated for the renderers, which show the List with its creator and who guessed what.
+  const game = await Game.findById(action.gameId)
+    .populate("list.creator")
+    .populate("list.values.guesser")
+    .populate("streak.player")
+    .exec();
   if (!game) return { game: null, events: [] };
   if (ADMIN_ONLY.has(action.type) && !action.actor.isAdmin) {
     return {
@@ -263,6 +279,6 @@ export const runAction = async (action: Action): Promise<{ game: GameDoc | null;
       events: [{ type: "adminOnly", playerId: action.actor.playerId, playerName: action.actor.name }],
     };
   }
-  const handler = handlers[action.type] as Handler<typeof action.type>;
-  return { game, events: await handler(game, action) };
+  const handler = allHandlers[action.type] as Handler<typeof action.type>;
+  return { game, events: await handler(game, action, scheduler) };
 };

@@ -9,7 +9,6 @@ import orderBy from "lodash/orderBy";
 import uniqBy from "lodash/uniqBy";
 import i18n from "@root/i18n";
 import { removeSpecialCharacters } from "@utils/string-helpers";
-import { notifyAdmin } from "./notify";
 import { SupportedLanguage } from "./languages";
 import { playedRounds, roundTally } from "@models/tenthings/listMetrics";
 
@@ -200,22 +199,6 @@ const curateList = async () => {
 };
 curateList();
 */
-
-export const logHint = async (listId: Types.ObjectId) => {
-  let list = await List.findOne({ _id: listId }).select("_id name hints").exec();
-  if (list) {
-    if (!list.hints) {
-      list.hints = 0;
-    }
-    list.hints++;
-    try {
-      await list.validate();
-      await list.save();
-    } catch (err) {
-      return notifyAdmin(`Hint List Error:\n${list.name}`);
-    }
-  }
-};
 
 export const getList = async (listId: Types.ObjectId): Promise<IList | undefined> => {
   const list = await List.findOne({ _id: listId })

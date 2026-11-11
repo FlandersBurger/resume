@@ -5,7 +5,7 @@ import { convertDiscordUserToPlayer } from ".";
 import bot, { DiscordButtonInteraction } from "@root/connections/discord";
 import i18n from "@root/i18n";
 import { processHint } from "@tenthings/hints";
-import { checkSkipper, processSkip, vetoSkip } from "@tenthings/skips";
+import { checkSkipper } from "@tenthings/skips";
 import { getStats, getScores } from "@tenthings/providers/telegram/stats";
 import { Action, Actor, isDelaySetting, isToggleSetting } from "@tenthings/engine/actions";
 import { dispatch } from "@tenthings/engine/queue";
@@ -90,7 +90,7 @@ export default async (interaction: DiscordButtonInteraction) => {
       const game = await getPopulatedGame(interaction.channelId);
       if (!game) break;
       const player = await getPlayer(game, interaction);
-      if (player) await processHint(game, player);
+      if (player) dispatch({ type: "hint", gameId: String(game._id), actor: toActor(player, interaction) });
       break;
     }
 
@@ -98,9 +98,7 @@ export default async (interaction: DiscordButtonInteraction) => {
       const game = await getPopulatedGame(interaction.channelId);
       if (!game) break;
       const player = await getPlayer(game, interaction);
-      if (player && (await checkSkipper(game, player))) {
-        processSkip(game, player);
-      }
+      if (player) dispatch({ type: "skip", gameId: String(game._id), actor: toActor(player, interaction) });
       break;
     }
 
@@ -108,7 +106,7 @@ export default async (interaction: DiscordButtonInteraction) => {
       const game = await getPopulatedGame(interaction.channelId);
       if (!game) break;
       const player = await getPlayer(game, interaction);
-      if (player) await vetoSkip(game, player);
+      if (player) dispatch({ type: "veto", gameId: String(game._id), actor: toActor(player, interaction) });
       break;
     }
 
