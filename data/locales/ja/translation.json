@@ -249,7 +249,8 @@
     "newListsHeading": "<b>新しいリスト</b>",
     "updatedListsHeading": "<b>更新されたリスト</b>",
     "listUpdatesOptOut": "/settings でこれらの通知をオフにできます",
-    "discordPromo": "Ten ThingsはDiscordにもあります！友達やコミュニティはありますか？<a href=\"{{url}}\">Ten ThingsをDiscordサーバー</a>に追加して一緒にプレイしましょう。"
+    "discordPromo": "Ten ThingsはDiscordにもあります！友達やコミュニティはありますか？<a href=\"{{url}}\">Ten ThingsをDiscordサーバー</a>に追加して一緒にプレイしましょう。",
+    "addListYourself": "💡 ご自身で Ten Things に追加することもできます。<a href=\"{{url}}\">belgocanadian.com/tenthings-lists</a> にログインして、「新しいリスト」をクリックしてください。"
   },
   "warnings": {
     "minimum1Category": "最低1つのカテゴリが必要です",

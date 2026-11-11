@@ -245,7 +245,8 @@
     "newListsHeading": "<b>Novas listas</b>",
     "updatedListsHeading": "<b>Listas atualizadas</b>",
     "listUpdatesOptOut": "Desative essas atualizações em /settings",
-    "discordPromo": "O Ten Things também está no Discord! Tem amigos ou uma comunidade por lá? <a href=\"{{url}}\">Adicione o Ten Things ao seu servidor do Discord</a> e joguem juntos."
+    "discordPromo": "O Ten Things também está no Discord! Tem amigos ou uma comunidade por lá? <a href=\"{{url}}\">Adicione o Ten Things ao seu servidor do Discord</a> e joguem juntos.",
+    "addListYourself": "💡 Você pode adicioná-lo à lista Dez Coisas você mesmo: faça login em <a href=\"{{url}}\">belgocanadian.com/tenthings-lists</a> e clique em \"Nova lista\"."
   },
   "warnings": {
     "minimum1Category": "É necessário pelo menos 1 categoria",

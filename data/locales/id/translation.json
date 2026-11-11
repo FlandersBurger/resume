@@ -245,7 +245,8 @@
     "newListsHeading": "<b>Daftar baru</b>",
     "updatedListsHeading": "<b>Daftar yang diperbarui</b>",
     "listUpdatesOptOut": "Matikan pembaruan ini melalui /settings",
-    "discordPromo": "Ten Things juga ada di Discord! Punya teman atau komunitas di sana? <a href=\"{{url}}\">Tambahkan Ten Things ke server Discord Anda</a> dan bermain bersama."
+    "discordPromo": "Ten Things juga ada di Discord! Punya teman atau komunitas di sana? <a href=\"{{url}}\">Tambahkan Ten Things ke server Discord Anda</a> dan bermain bersama.",
+    "addListYourself": "💡 Anda dapat menambahkannya sendiri ke Sepuluh Hal: masuk di <a href=\"{{url}}\">belgocanadian.com/tenthings-lists</a> dan klik \"Daftar baru\"."
   },
   "warnings": {
     "minimum1Category": "Setidaknya 1 kategori diperlukan",

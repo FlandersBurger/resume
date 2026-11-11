@@ -245,7 +245,8 @@
     "newListsHeading": "<b>새 목록</b>",
     "updatedListsHeading": "<b>업데이트된 목록</b>",
     "listUpdatesOptOut": "/settings 에서 이 업데이트를 끌 수 있습니다",
-    "discordPromo": "Ten Things는 Discord에서도 즐길 수 있습니다! Discord에 친구나 커뮤니티가 있나요? <a href=\"{{url}}\">Ten Things를 Discord 서버에 추가하고</a> 함께 플레이하세요."
+    "discordPromo": "Ten Things는 Discord에서도 즐길 수 있습니다! Discord에 친구나 커뮤니티가 있나요? <a href=\"{{url}}\">Ten Things를 Discord 서버에 추가하고</a> 함께 플레이하세요.",
+    "addListYourself": "💡 직접 Ten Things에 추가하려면 <a href=\"{{url}}\">belgocanadian.com/tenthings-lists</a>에 로그인하고 \"새 목록\"을 클릭하세요."
   },
   "warnings": {
     "minimum1Category": "최소 1개 카테고리가 필요합니다.",

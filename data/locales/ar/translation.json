@@ -245,7 +245,8 @@
     "newListsHeading": "<b>قوائم جديدة</b>",
     "updatedListsHeading": "<b>قوائم محدثة</b>",
     "listUpdatesOptOut": "أوقف هذه التحديثات عبر /settings",
-    "discordPromo": "لعبة Ten Things متوفرة أيضًا على ديسكورد! هل لديك أصدقاء أو مجتمع هناك؟ <a href=\"{{url}}\"> أضف Ten Things إلى خادم ديسكورد الخاص بك </a> والعبوا معًا."
+    "discordPromo": "لعبة Ten Things متوفرة أيضًا على ديسكورد! هل لديك أصدقاء أو مجتمع هناك؟ <a href=\"{{url}}\"> أضف Ten Things إلى خادم ديسكورد الخاص بك </a> والعبوا معًا.",
+    "addListYourself": "💡 يمكنك إضافته إلى قائمة \"عشرة أشياء\" بنفسك: قم بتسجيل الدخول على <a href=\"{{url}}\">belgocanadian.com/tenthings-lists</a> وانقر على \"قائمة جديدة\"."
   },
   "warnings": {
     "minimum1Category": "يجب أن يكون الحد الأدنى لفئة واحدة",

@@ -243,6 +243,7 @@
     "gameStarted": "{{gameName}} started",
     "banListPrompt": "Do you want to permanently ban \"{{list}}\" from this game?",
     "suggestionPrompt": "<b>SUGGESTION</b>\nPlease add your suggestion in your next message, {{name}}!",
+    "addListYourself": "💡 You can add it to Ten Things yourself: log in at <a href=\"{{url}}\">belgocanadian.com/tenthings-lists</a> and hit \"New list\".",
     "featurePrompt": "<b>FEATURE</b>\nPlease suggest your feature in your next message, {{name}}!",
     "typoPrompt": "<b>TYPO</b>\nPlease let me know what the typo is in your next message, {{name}}!\nMention the list name too if the typo is not part of: <i>\"{{list}}\"</i>",
     "bugPrompt": "<b>BUG</b>\nPlease provide some details as to what went wrong in your next message, {{name}}!",
