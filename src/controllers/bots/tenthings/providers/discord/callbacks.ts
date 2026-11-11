@@ -1,5 +1,5 @@
 import { HydratedDocument } from "mongoose";
-import { Game, GameRound, List } from "@models/index";
+import { Game } from "@models/index";
 import { GameType, IGame } from "@models/tenthings/game";
 import { convertDiscordUserToPlayer } from ".";
 import bot, { DiscordButtonInteraction } from "@root/connections/discord";
@@ -12,7 +12,6 @@ import { dispatch } from "@tenthings/engine/queue";
 import { getLanguageCounts } from "@tenthings/languageCounts";
 import {
   categoriesKeyboard,
-  confirmBanKeyboard,
   delayKeyboard,
   languageKeyboard,
   languagesKeyboard,
@@ -168,62 +167,16 @@ export default async (interaction: DiscordButtonInteraction) => {
     case "ban": {
       const game = await Game.findOne({ discordChannelId: interaction.channelId });
       if (!game) break;
-      if (!(await bot.checkAdmin(interaction.guildId, interaction.userId))) break;
-
       const [listId] = rest;
-      const foundList = await List.findOne({ _id: listId }).exec();
-      if (!foundList) break;
-
-      if (await GameRound.exists({ gameId: game._id, listId: foundList._id, outcome: "banned" })) {
-        bot.queueMessage(
-          game.discordChannel,
-          i18n(game.settings.language, "sentences.alreadyBannedList", { list: foundList.name }),
-        );
-      } else {
-        bot.sendMessageWithComponents(
-          game.discordChannel,
-          i18n(game.settings.language, "sentences.confirmBan", {
-            list: foundList.name,
-            user: interaction.displayName,
-          }),
-          confirmBanKeyboard(game, listId),
-        );
-      }
+      await dispatchAsAdmin(game, interaction, { type: "requestBan", listId });
       break;
     }
 
     case "confirmban": {
       const game = await Game.findOne({ discordChannelId: interaction.channelId });
       if (!game) break;
-      if (!(await bot.checkAdmin(interaction.guildId, interaction.userId))) break;
-
       const [listId] = rest;
-      const banTarget = await List.findOne({ _id: listId }).select("_id bans name").exec();
-      if (!banTarget) break;
-
-      if (await GameRound.exists({ gameId: game._id, listId: banTarget._id, outcome: "banned" })) {
-        bot.queueMessage(
-          game.discordChannel,
-          i18n(game.settings.language, "sentences.alreadyBannedList", { list: banTarget.name }),
-        );
-      } else {
-        await GameRound.create({
-          gameId: game._id,
-          listId: banTarget._id,
-          outcome: "banned",
-          categories: banTarget.categories ?? [],
-          language: banTarget.language,
-          answersRevealed: 0,
-          hintsUsed: 0,
-          playedAt: new Date(),
-        });
-        banTarget.bans++;
-        await banTarget.save();
-        bot.queueMessage(
-          game.discordChannel,
-          i18n(game.settings.language, "sentences.listBanned", { list: banTarget.name }),
-        );
-      }
+      await dispatchAsAdmin(game, interaction, { type: "confirmBan", listId });
       break;
     }
 

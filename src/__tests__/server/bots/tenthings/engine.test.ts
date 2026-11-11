@@ -9,11 +9,12 @@ jest.mock("@tenthings/providers/telegram", () => ({ telegram: {} }));
 jest.mock("@tenthings/providers/discord", () => ({ discord: {} }));
 jest.mock("@root/queue", () => ({ __esModule: true, default: {} }));
 jest.mock("@root/i18n", () => ({ __esModule: true, default: jest.fn((_, key: string) => key) }));
+jest.mock("@tenthings/notify", () => ({ notifyAdmin: jest.fn() }));
 
 import db from "@root/db";
 import { Game, GameRound, List, Player } from "@models/index";
 import { getListScore } from "@models/tenthings/listMetrics";
-import { Action, lastVotes, MAX_PICKED_LISTS, runAction } from "@tenthings/engine";
+import { Action, lastVotes, MAX_PICKED_LISTS, pendingBans, runAction } from "@tenthings/engine";
 import { sanitizeSettingsUpdate } from "@tenthings/engine/actions";
 import { SupportedLanguage } from "@tenthings/languages";
 import { MEMORY_MONGO_TIMEOUT, openOnMemoryMongo } from "../../../helpers/memoryMongo";
@@ -31,6 +32,7 @@ afterAll(async () => {
 beforeEach(async () => {
   await db.master.db!.dropDatabase();
   lastVotes.clear();
+  pendingBans.clear();
 });
 
 const setup = async () => {
@@ -197,6 +199,118 @@ describe("admin-only Actions", () => {
     expect((await toggle("music.kazoo")).events).toEqual([]);
     expect((await toggle("nonsense")).events).toEqual([]);
   });
+});
+
+describe("ban", () => {
+  const isBanned = (gameId: string, listId: string) => GameRound.exists({ gameId, listId, outcome: "banned" });
+
+  test("requesting a Ban needs an admin", async () => {
+    const { gameId, listId, actor } = await setup();
+    expect((await run({ type: "requestBan", gameId, actor, listId })).events).toEqual([
+      { type: "adminOnly", playerId: actor.playerId, playerName: "Ann" },
+    ]);
+  });
+
+  test("in a Telegram group a second Player confirms the Ban", async () => {
+    const { game, gameId, listId, admin } = await setup();
+    expect((await run({ type: "requestBan", gameId, actor: admin, listId })).events).toEqual([
+      { type: "banRequested", listId, listName: "Planets", playerName: "Ann", corroborate: true },
+    ]);
+    // The requester can't corroborate their own Ban.
+    expect((await run({ type: "confirmBan", gameId, actor: admin, listId })).events).toEqual([
+      { type: "banConfirmedBySamePlayer", playerName: "Ann" },
+    ]);
+    const bob = await Player.create({ game: game._id, first_name: "Bob", id: 43 });
+    const second = { playerId: String(bob._id), name: "Bob" };
+    expect((await run({ type: "confirmBan", gameId, actor: second, listId })).events).toEqual([
+      { type: "listBanned", listId, listName: "Planets" },
+    ]);
+    expect(await isBanned(gameId, listId)).toBeTruthy();
+    expect((await List.findById(listId).lean())!.bans).toBe(1);
+    // The request is used up.
+    expect((await run({ type: "confirmBan", gameId, actor: second, listId })).events).toEqual([
+      { type: "banRequestMissing" },
+    ]);
+  });
+
+  test("in a personal chat the requester confirms their own Ban", async () => {
+    const { game, gameId, listId, admin } = await setup();
+    await Game.updateOne({ _id: game._id }, { telegramChatId: 42 });
+    await run({ type: "requestBan", gameId, actor: admin, listId });
+    expect((await run({ type: "confirmBan", gameId, actor: admin, listId })).events).toEqual([
+      { type: "listBanned", listId, listName: "Planets" },
+    ]);
+  });
+
+  test("on Discord only an admin confirms", async () => {
+    const { game, gameId, listId, actor, admin } = await setup();
+    await Game.updateOne({ _id: game._id }, { platform: "discord", $unset: { telegramChatId: 1 } });
+    await run({ type: "requestBan", gameId, actor: admin, listId });
+    expect((await run({ type: "confirmBan", gameId, actor, listId })).events).toEqual([
+      { type: "adminOnly", playerId: actor.playerId, playerName: "Ann" },
+    ]);
+    expect(await isBanned(gameId, listId)).toBeNull();
+    expect((await run({ type: "confirmBan", gameId, actor: admin, listId })).events).toEqual([
+      { type: "listBanned", listId, listName: "Planets" },
+    ]);
+  });
+
+  test("a List the Game already banned isn't banned again", async () => {
+    const { game, list, gameId, listId, admin } = await setup();
+    await GameRound.create({ gameId: game._id, listId: list._id, outcome: "banned", language: "EN" });
+    expect((await run({ type: "requestBan", gameId, actor: admin, listId })).events).toEqual([
+      { type: "listAlreadyBanned", listName: "Planets" },
+    ]);
+  });
+});
+
+describe("search", () => {
+  test("finds Lists by name and counts the search", async () => {
+    const { player, gameId, listId, actor } = await setup();
+    await List.syncIndexes(); // search falls back to the text index, which dropDatabase removed
+    await List.create({ name: "Rivers" });
+    expect((await run({ type: "search", gameId, actor, query: "plan" })).events).toEqual([
+      { type: "searchResults", query: "plan", playerName: "Ann", lists: [{ id: listId, name: "Planets" }] },
+    ]);
+    expect((await Player.findById(player._id).lean())!.searches).toBe(1);
+  });
+
+  test("an empty search asks for a search term", async () => {
+    const { gameId, actor } = await setup();
+    expect((await run({ type: "search", gameId, actor, query: " " })).events).toEqual([
+      { type: "searchEmpty", playerName: "Ann" },
+    ]);
+  });
+
+  test("a full queue takes no searches", async () => {
+    const { game, gameId, actor } = await setup();
+    const others = await List.insertMany(Array.from({ length: MAX_PICKED_LISTS }, (_, i) => ({ name: `L${i}` })));
+    await Game.updateOne({ _id: game._id }, { pickedLists: others.map((l) => l._id) });
+    expect((await run({ type: "search", gameId, actor, query: "plan" })).events).toEqual([
+      { type: "pickRejected", reason: "queueFull", playerName: "Ann" },
+    ]);
+  });
+});
+
+test("showUpcoming lists the Picked Lists in queue order", async () => {
+  const { game, gameId, list, actor } = await setup();
+  const [a, b] = await List.insertMany([{ name: "A" }, { name: "B" }]);
+  await Game.updateOne({ _id: game._id }, { pickedLists: [b._id, list._id, a._id] });
+  expect((await run({ type: "showUpcoming", gameId, actor })).events).toEqual([
+    { type: "upcomingLists", listNames: ["B", "Planets", "A"] },
+  ]);
+});
+
+test("flush clears the queue and the Game's Rounds but keeps its Bans", async () => {
+  const { game, list, gameId, listId, admin } = await setup();
+  await Game.updateOne({ _id: game._id }, { pickedLists: [listId] });
+  await GameRound.insertMany([
+    { gameId: game._id, listId: list._id, outcome: "completed", language: "EN" },
+    { gameId: game._id, listId: list._id, outcome: "banned", language: "EN" },
+  ]);
+  expect((await run({ type: "flush", gameId, actor: admin })).events).toEqual([{ type: "flushed" }]);
+  expect((await Game.findById(gameId).lean())!.pickedLists).toEqual([]);
+  expect((await GameRound.find({ gameId: game._id }).lean()).map((r) => r.outcome)).toEqual(["banned"]);
 });
 
 test("an Action on a Game that no longer exists does nothing", async () => {

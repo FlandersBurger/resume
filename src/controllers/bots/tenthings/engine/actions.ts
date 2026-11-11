@@ -36,6 +36,11 @@ export type Action = { gameId: string; actor: Actor } & (
   | { type: "toggleTriviaLanguage"; language: string }
   | { type: "setBotLanguage"; language: string }
   | { type: "toggleCategory"; category: string }
+  | { type: "requestBan"; listId: string }
+  | { type: "confirmBan"; listId: string }
+  | { type: "search"; query: string }
+  | { type: "showUpcoming" }
+  | { type: "flush" }
 );
 
 export type ActionType = Action["type"];

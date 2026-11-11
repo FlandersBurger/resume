@@ -1,6 +1,5 @@
 import some from "lodash/some";
 import { IGame, IGameList } from "@models/tenthings/game";
-import { IList } from "@models/tenthings/list";
 import categories from "@tenthings/categories";
 import languages, {
   Language,
@@ -64,7 +63,7 @@ export const tinyGameKeyboard = (game: IGame) =>
 // ── Search results ────────────────────────────────────────────────────────────
 
 // Caller is responsible for any shuffle/limit before passing lists
-export const searchResultsKeyboard = (game: IGame, lists: IList[]) =>
+export const searchResultsKeyboard = (game: IGame, lists: { _id: unknown; name: string }[]) =>
   game.provider.keyboardConverter(
     lists.map((list) => [
       {
