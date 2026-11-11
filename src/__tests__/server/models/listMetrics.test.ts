@@ -4,6 +4,7 @@ import {
   getListMetrics,
   getListScore,
   listMetricsFields,
+  pipelineUpdateOptions,
   playedRounds,
   recordPlayUpdate,
   refreshScoreUpdate,
@@ -83,10 +84,20 @@ describe("listMetricsFields matches getListMetrics", () => {
 });
 
 describe("pipeline updates", () => {
+  // Through a Mongoose model, as the callers run them: Mongoose has its own rules for array updates.
+  const ListModel = () => conn.models.List ?? conn.model("List", new mongoose.Schema({}, { strict: false }), "lists");
+
+  test("Mongoose refuses the pipelines without pipelineUpdateOptions", async () => {
+    const { insertedId } = await lists().insertOne({ ...fixtures["typical list"] });
+    await expect(async () => ListModel().updateOne({ _id: insertedId }, refreshScoreUpdate)).rejects.toThrow(
+      /updatePipeline/,
+    );
+  });
+
   test("refreshScoreUpdate stores the score getListScore would compute", async () => {
     const fixture = fixtures["typical list"];
     const { insertedId } = await lists().insertOne({ ...fixture, score: 0 });
-    await lists().updateOne({ _id: insertedId }, refreshScoreUpdate);
+    await ListModel().updateOne({ _id: insertedId }, refreshScoreUpdate, pipelineUpdateOptions);
     const stored = await lists().findOne({ _id: insertedId });
     expect(stored!.score).toBeCloseTo(getListScore(fixture), 10);
   });
@@ -94,7 +105,7 @@ describe("pipeline updates", () => {
   test("recordPlayUpdate counts the play and scores from votes the caller never loaded", async () => {
     const fixture = fixtures["typical list"];
     const { insertedId } = await lists().insertOne({ ...fixture, score: 0 });
-    await lists().updateOne({ _id: insertedId }, recordPlayUpdate);
+    await ListModel().updateOne({ _id: insertedId }, recordPlayUpdate, pipelineUpdateOptions);
     const stored = await lists().findOne({ _id: insertedId });
     expect(stored!.plays).toBe(fixture.plays! + 1);
     expect(stored!.score).toBeCloseTo(getListScore({ ...fixture, plays: fixture.plays! + 1 }), 10);

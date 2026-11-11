@@ -12,7 +12,7 @@ import { Guess, getAnswerScore } from "./guesses";
 import { getSnubbedMessage } from "./messages";
 import { hintCache, hintCooldown } from "./hints";
 import { rateList, selectList } from "./lists";
-import { recordPlayUpdate } from "@models/tenthings/listMetrics";
+import { pipelineUpdateOptions, recordPlayUpdate } from "@models/tenthings/listMetrics";
 import { abortSkip, skipCache } from "./skips";
 import i18n from "@root/i18n";
 
@@ -100,7 +100,7 @@ export const newRound = async (currentGame: IGame) => {
   // selectList loads the List without its votes, so the play and score are written inside Mongo.
   list.plays++;
   try {
-    await List.updateOne({ _id: list._id }, recordPlayUpdate);
+    await List.updateOne({ _id: list._id }, recordPlayUpdate, pipelineUpdateOptions);
   } catch (error) {
     notifyAdmin(`New Round List Error\n${error}\n\n${list}`);
   }
