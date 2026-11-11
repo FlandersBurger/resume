@@ -3,6 +3,7 @@ import { isValidObjectId } from "mongoose";
 
 import { Game, Player } from "@models/index";
 import { setDisabledCategories } from "@root/controllers/bots/tenthings/categories";
+import { sanitizeSettingsUpdate } from "@tenthings/engine/actions";
 
 export const tenthingsGamesRoute = Router();
 
@@ -75,8 +76,8 @@ tenthingsGamesRoute.put("/:id/settings", async (req: Request<{ id: string }>, re
     game.adminDisabled = !!req.body.adminDisabled;
     if (game.adminDisabled) game.enabled = false;
   }
-  const { adminDisabled: _adminDisabled, ...settingsBody } = req.body;
-  game.settings = { ...game.settings, ...settingsBody };
+  // Only known settings with valid values; anything else in the body is dropped.
+  Object.assign(game.settings, sanitizeSettingsUpdate(req.body));
   await game.save();
   return res.json({ ...game.settings, adminDisabled: game.adminDisabled, enabled: game.enabled });
 });

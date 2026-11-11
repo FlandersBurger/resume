@@ -22,11 +22,7 @@ export interface IGameSettings extends Record<string, boolean | string[] | strin
   hintDelay: number; // How long a player has to wait before being able to ask for a hint
 }
 
-export enum GameType {
-  MAINGAME = "maingame",
-  MINIGAME = "minigame",
-  TINYGAME = "tinygame",
-}
+export { GameType } from "./gameType";
 
 export interface IGameListValue {
   value: string;

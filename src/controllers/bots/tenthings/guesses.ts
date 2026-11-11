@@ -1,11 +1,11 @@
 const FuzzyMatching = require("fuzzy-matching");
-import Queue, { Job } from "bull";
 import find from "lodash/find";
+import { queueGuessJob } from "./engine/queue";
+import type { Guess } from "./engine/actions";
 
 import { Game, Player } from "@models/index";
 import { GameType, IGame } from "@models/tenthings/game";
 import { removeAllButLetters } from "@utils/string-helpers";
-import { Types } from "mongoose";
 import { IPlayer } from "@models/tenthings/player";
 import { MAX_HINTS } from "./hints";
 import sass from "./sass";
@@ -16,33 +16,10 @@ import { getPlayerName } from "./players";
 import { styleText } from "util";
 import { notifyAdmin } from "./notify";
 
-export type Guess = {
-  gameId: Types.ObjectId;
-  listId: Types.ObjectId;
-  playerId: Types.ObjectId;
-  match: {
-    type: GameType;
-    value: string;
-    distance: number;
-  };
-};
+export type { Guess } from "./engine/actions";
 
-const guessQueue = new Queue("processGuess", {
-  redis: {
-    port: parseInt(process.env.REDIS_PORT || "6379"),
-    host: process.env.REDIS_HOST || "localhost",
-    password: process.env.REDIS_PASSWORD,
-    maxRetriesPerRequest: null,
-    enableReadyCheck: false,
-  },
-});
-
-guessQueue.on("completed", function (job: Job) {
-  //Job finished we remove it
-  job.remove();
-});
-
-export const getCount = () => guessQueue.count();
+/** A Guess older than this when its turn comes is dropped: the Round has likely moved on. */
+const STALE_GUESS_MS = 30_000;
 
 export const queueGuess = async (game: IGame, player: IPlayer, answer: string) => {
   const values = [
@@ -58,9 +35,9 @@ export const queueGuess = async (game: IGame, player: IPlayer, answer: string) =
   if (correctMatch) {
     if (player)
       queueingGuess({
-        gameId: game._id,
-        listId: game.list._id,
-        playerId: player._id,
+        gameId: String(game._id),
+        listId: String(game.list._id),
+        playerId: String(player._id),
         match: {
           ...correctMatch,
           distance: 1,
@@ -85,9 +62,9 @@ export const queueGuess = async (game: IGame, player: IPlayer, answer: string) =
       const matchedValue = fuzzyMatch.get(truncatedAnswer, { min: 0.75 });
       const guess = {
         answer: truncatedAnswer,
-        gameId: game._id,
-        playerId: player._id,
-        listId: game.list._id,
+        gameId: String(game._id),
+        playerId: String(player._id),
+        listId: String(game.list._id),
         match: matchedValue,
       };
       if (guess.match.distance >= 0.75) {
@@ -113,16 +90,14 @@ export const queueGuess = async (game: IGame, player: IPlayer, answer: string) =
 };
 
 const queueingGuess = (guess: Guess) => {
-  guessQueue.add(guess);
+  queueGuessJob(guess);
 };
 
-guessQueue.process(async (job) => {
-  const { data } = job;
-  const jobAgeMs = Date.now() - job.timestamp;
-  if (jobAgeMs > 30000) {
-    console.log(
-      `[guessQueue.process] Skipping stale job (${Math.round(jobAgeMs / 1000)}s old, created before this session)`,
-    );
+/** Run a queued Guess; `queuedAt` is when it was queued (ms). Called by the Engine worker. */
+export const processGuessJob = async (data: Guess, queuedAt: number) => {
+  const jobAgeMs = Date.now() - queuedAt;
+  if (jobAgeMs > STALE_GUESS_MS) {
+    console.log(`[processGuessJob] Skipping stale guess (${Math.round(jobAgeMs / 1000)}s old)`);
     return;
   }
   try {
@@ -146,7 +121,7 @@ guessQueue.process(async (job) => {
     notifyAdmin(`Error in ProcessGuess`);
     console.error(err);
   }
-});
+};
 
 const processGuess = async (guess: Guess) => {
   const game = await Game.findOne({ _id: guess.gameId })

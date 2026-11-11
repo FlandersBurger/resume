@@ -170,7 +170,8 @@ export const deactivate = (game: HydratedDocument<IGame>) => {
 //  ██████ ██   ██ ███████  ██████ ██   ██
 
 export const checkMaingame = async (game: HydratedDocument<IGame>, player: HydratedDocument<IPlayer>, guess: Guess) => {
-  if (guess.listId !== game.list._id) return;
+  // game.list._id is stored as a string, whatever IGameList says.
+  if (guess.listId !== String(game.list._id)) return;
   try {
     game.lastPlayDate = moment().toDate();
     player.lastPlayDate = moment().toDate();
