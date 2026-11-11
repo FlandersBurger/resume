@@ -16,6 +16,7 @@ import {
   subcategoriesKeyboard,
 } from "@tenthings/keyboards";
 import type { Renderer } from "@tenthings/engine/rendering";
+import { renderRoundEvent } from "../roundRendering";
 
 const onOff = (game: IGame, on: boolean) => i18n(game.settings.language, on ? "on" : "off");
 
@@ -135,6 +136,8 @@ export const renderDiscord: Renderer = async (game, events, { action }) => {
         );
         break;
       }
+      default:
+        await renderRoundEvent(game, event);
     }
   }
 };

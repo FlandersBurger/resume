@@ -1,7 +1,9 @@
 import { Router, Request, Response } from "express";
 import moment from "moment";
 import { Game, Player } from "@models/index";
-import { activate, createMaingame, newRound } from "@tenthings/maingame";
+import { activate, createMaingame } from "@tenthings/maingame";
+import { SYSTEM_ACTOR } from "@tenthings/engine/actions";
+import { dispatch } from "@tenthings/engine/queue";
 
 import bot from "@root/connections/telegram";
 import { getQueue } from "@tenthings/providers/telegram/queue";
@@ -137,11 +139,7 @@ tenthingsTelegramBotRoute.post("/", async (req: Request, res: Response) => {
         } catch (err) {
           console.log("Attempting to reset game:", existingGame._id);
           console.error(err);
-          existingGame.streak = {
-            player: undefined,
-            count: 0,
-          };
-          await newRound(existingGame);
+          dispatch({ type: "startRound", gameId: String(existingGame._id), actor: SYSTEM_ACTOR, replace: true });
           if (!res.headersSent) res.sendStatus(200);
           return;
         }

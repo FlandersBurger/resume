@@ -3,19 +3,19 @@ import { Game } from "@models/index";
 import { HydratedDocument } from "mongoose";
 import { convertTelegramUserToPlayer, TelegramMessage } from "@tenthings/providers/telegram";
 import { getDiscordPromo, getRules } from "@tenthings/messages";
-import { deactivate, newRound } from "@tenthings/maingame";
+import { deactivate } from "@tenthings/maingame";
 import { createMinigame, updateMinigames } from "@tenthings/minigame";
 import { createTinygame } from "@tenthings/tinygame";
 import { processHint } from "@tenthings/hints";
 import { queueGuess } from "@tenthings/guesses";
-import type { Actor } from "@tenthings/engine/actions";
+import { Actor, SYSTEM_ACTOR } from "@tenthings/engine/actions";
 import { dispatch } from "@tenthings/engine/queue";
 
 import i18n from "@root/i18n";
 
 import { getPlayerName } from "@tenthings/players";
 import { getQueue } from "@tenthings/providers/telegram/queue";
-import { checkSkipper, processSkip, vetoSkip } from "@tenthings/skips";
+import { checkSkipper } from "@tenthings/skips";
 import { getStats } from "@tenthings/providers/telegram/stats";
 import { categoriesKeyboard, settingsKeyboard, statsKeyboard } from "@tenthings/keyboards";
 import bot, { Channel } from "@root/connections/telegram";
@@ -120,11 +120,12 @@ export const evaluate = async (msg: TelegramMessage, game: HydratedDocument<IGam
     console.error("bad game", game._id);
     return;
   }
-  if (isNew || game.list.values.length === 0) {
-    await newRound(game);
-  }
   // Owner-only commands pass isAdmin = true once the adapter has checked the sender.
   const actor = (isAdmin?: boolean): Actor => ({ playerId: String(player._id), name: getPlayerName(player), isAdmin });
+  const gameId = String(game._id);
+  if (isNew || game.list.values.length === 0) {
+    dispatch({ type: "startRound", gameId, actor: SYSTEM_ACTOR });
+  }
   if (command) {
     if (command && commands.includes(command) && msg.telegramTopicId && msg.telegramTopicId !== game.telegramTopicId) {
       game.telegramTopicId = msg.telegramTopicId;
@@ -172,10 +173,9 @@ export const evaluate = async (msg: TelegramMessage, game: HydratedDocument<IGam
         }
         break;
       case Command.Start:
-        if (!game.list) {
-          newRound(game);
-          break;
-        }
+        // Starts a Round if there's none in progress, or shows the one there is.
+        dispatch({ type: "startRound", gameId, actor: actor() });
+        break;
       case Command.List:
         try {
           game.provider.mainGameMessage(game);
@@ -184,9 +184,7 @@ export const evaluate = async (msg: TelegramMessage, game: HydratedDocument<IGam
         }
         break;
       case Command.Skip:
-        if (await checkSkipper(game, player)) {
-          processSkip(game, player);
-        }
+        dispatch({ type: "skip", gameId, actor: actor() });
         break;
       case Command.Miniskip:
         if (await checkSkipper(game, player)) {
@@ -205,7 +203,7 @@ export const evaluate = async (msg: TelegramMessage, game: HydratedDocument<IGam
         }
         break;
       case Command.Veto:
-        vetoSkip(game, player);
+        dispatch({ type: "veto", gameId, actor: actor() });
         break;
       case Command.Stats:
         bot.sendKeyboard(
@@ -223,10 +221,10 @@ export const evaluate = async (msg: TelegramMessage, game: HydratedDocument<IGam
         }
         break;
       case Command.Search:
-        dispatch({ type: "search", gameId: String(game._id), actor: actor(), query: msg.text ?? "" });
+        dispatch({ type: "search", gameId, actor: actor(), query: msg.text ?? "" });
         break;
       case Command.Hint:
-        processHint(game, player);
+        dispatch({ type: "hint", gameId, actor: actor() });
         break;
       case Command.Minihint:
         processHint(game, player, GameType.MINIGAME);
@@ -339,7 +337,7 @@ export const evaluate = async (msg: TelegramMessage, game: HydratedDocument<IGam
         break;
       case Command.Flush:
         if (msg.from.id === parseInt(process.env.MASTER_CHAT || ""))
-          dispatch({ type: "flush", gameId: String(game._id), actor: actor(true) });
+          dispatch({ type: "flush", gameId, actor: actor(true) });
         break;
       case Command.Minigames:
         if (msg.from.id === parseInt(process.env.MASTER_CHAT || "")) {
@@ -362,7 +360,7 @@ export const evaluate = async (msg: TelegramMessage, game: HydratedDocument<IGam
         }, console.error);
         break;
       case Command.Lists:
-        dispatch({ type: "showUpcoming", gameId: String(game._id), actor: actor() });
+        dispatch({ type: "showUpcoming", gameId, actor: actor() });
         break;
       default:
         break;

@@ -3,6 +3,7 @@
 
 import Queue from "bull";
 import type { Action, ActionOrigin, Guess } from "./actions";
+import type { Scheduler } from "./scheduler";
 
 export type EngineJob = { kind: "guess"; guess: Guess } | { kind: "action"; action: Action; origin: ActionOrigin };
 
@@ -20,6 +21,11 @@ export const engineQueue = new Queue<EngineJob>("tenthingsEngine", {
 /** Queue an Action. Its Events are rendered on the Game's platform once it has run. */
 export const dispatch = (action: Action, origin: ActionOrigin = {}) =>
   engineQueue.add({ kind: "action", action, origin });
+
+/** Scheduled Actions are delayed jobs on the same queue, so they survive a restart and keep their place in line. */
+export const bullScheduler: Scheduler = {
+  schedule: (action, delayMs) => engineQueue.add({ kind: "action", action, origin: {} }, { delay: delayMs }),
+};
 
 export const queueGuessJob = (guess: Guess) => engineQueue.add({ kind: "guess", guess });
 

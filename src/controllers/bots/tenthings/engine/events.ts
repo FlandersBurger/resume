@@ -4,6 +4,8 @@
 
 import type { DelaySettingKey, ToggleSettingKey } from "./actions";
 
+export type SkipThrottleLevel = "short" | "threat" | "long";
+
 export type PickRejection = "queueFull" | "alreadyRequested" | "alreadyInQueue";
 
 export type EngineEvent =
@@ -27,6 +29,27 @@ export type EngineEvent =
   | { type: "searchEmpty"; playerName: string }
   | { type: "searchResults"; query: string; playerName: string; lists: { id: string; name: string }[] }
   | { type: "upcomingLists"; listNames: string[] }
-  | { type: "flushed" };
+  | { type: "flushed" }
+  // ── Rounds ──
+  | { type: "roundStarted"; roundId: string; listId: string; listName: string }
+  /** A Player asked for a Round while one is in progress. */
+  | { type: "roundInProgress" }
+  | { type: "answerGuessed"; playerId: string; value: string; score: number; accuracy: string }
+  /** The Answer was already guessed by someone else (or by the same Player). */
+  | { type: "answerSnubbed"; playerId: string; value: string }
+  | { type: "roundCompleted"; roundId: string; listId: string }
+  | { type: "hintGiven" }
+  | { type: "hintRefused"; reason: "tooMany" }
+  | { type: "hintRefused"; reason: "cooldown"; seconds: number }
+  | { type: "skipRequested"; listName: string; seconds: number }
+  /** The Player who asked for the Skip asked again. */
+  | { type: "skipRepeated" }
+  /** A Player skipping too often is held back for `delay` seconds. */
+  | { type: "skipThrottled"; playerName: string; level: SkipThrottleLevel; delay: number }
+  | { type: "listSkipped"; roundId: string; listId: string; listName: string }
+  | { type: "skipVetoed"; playerName: string; vetoDelay: number }
+  /** An Answer during the Skip countdown cancelled it. */
+  | { type: "skipAborted"; playerName: string; vetoDelay: number }
+  | { type: "skipNotFound"; playerName: string };
 
 export type EventType = EngineEvent["type"];

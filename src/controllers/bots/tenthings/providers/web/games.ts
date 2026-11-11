@@ -1,5 +1,7 @@
 import { Game } from "@root/models";
-import { createMaingame, newRound } from "@tenthings/maingame";
+import { createMaingame } from "@tenthings/maingame";
+import { SYSTEM_ACTOR } from "@tenthings/engine/actions";
+import { dispatch } from "@tenthings/engine/queue";
 import { IGame } from "@models/tenthings/game";
 import { HydratedDocument } from "mongoose";
 import { getHint } from "@tenthings/hints";
@@ -11,9 +13,10 @@ export const getWebGame = async (webGameId: number = 1): Promise<HydratedDocumen
   if (!game) {
     game = await createMaingame({ platform: "web", webGameId });
   }
+  // A no-op while a Round is in progress, or when the next one is already on its way.
   const valuesLeft = game.list.values.filter(({ guesser }: any) => !guesser).length;
   if (game.list.values.length === 0 || valuesLeft === 0) {
-    newRound(game);
+    dispatch({ type: "startRound", gameId: String(game._id), actor: SYSTEM_ACTOR });
   }
   return game;
 };

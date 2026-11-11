@@ -1,0 +1,85 @@
+// Renders the Engine's Round Events on any platform, through the Game's provider: the
+// messages are the same ones the provider sent before Rounds moved onto the Engine.
+
+import { List, Player } from "@models/index";
+import { IGame } from "@models/tenthings/game";
+import { IPlayer } from "@models/tenthings/player";
+import i18n from "@root/i18n";
+import { parseSymbols } from "@utils/string-helpers";
+import type { EngineEvent } from "@tenthings/engine/events";
+import type { Renderer } from "@tenthings/engine/rendering";
+import { rateList } from "@tenthings/lists";
+import { getSnubbedMessage } from "@tenthings/messages";
+import { SKIP_THROTTLE_MESSAGES } from "@tenthings/skips";
+
+/** Renders `event` if it's a Round Event; returns whether it was. */
+export const renderRoundEvent = async (game: IGame, event: EngineEvent): Promise<boolean> => {
+  const { language } = game.settings;
+  const say = (key: string, options?: Record<string, unknown>) =>
+    game.provider.message(game, i18n(language, key, options));
+  switch (event.type) {
+    case "roundStarted":
+      game.provider.newRound(game, game.list);
+      return true;
+    case "roundInProgress":
+      game.provider.mainGameMessage(game);
+      return true;
+    case "answerGuessed": {
+      const match = game.list.values.find(({ value }) => value === event.value);
+      // The guesser is the Player the Engine just set, so it's a full document.
+      if (match) game.provider.guessed(game, match.guesser as IPlayer, match, event.score, event.accuracy);
+      return true;
+    }
+    case "answerSnubbed": {
+      if (!game.settings.snubs) return true;
+      const match = game.list.values.find(({ value }) => value === event.value);
+      const loser = await Player.findById(event.playerId).exec();
+      if (match && loser)
+        game.provider.message(game, getSnubbedMessage(parseSymbols(match.value), loser, match.guesser as IPlayer));
+      return true;
+    }
+    case "roundCompleted": {
+      game.provider.mainGameMessage(game);
+      const list = await List.findById(event.listId).exec();
+      if (list) await game.provider.endOfRound(game, list);
+      rateList(game);
+      return true;
+    }
+    case "hintGiven":
+      game.provider.mainGameMessage(game, false);
+      return true;
+    case "hintRefused":
+      if (event.reason === "tooMany") say("warnings.tooManyHints");
+      else say("warnings.hintCooldown", { seconds: event.seconds });
+      return true;
+    case "skipRequested":
+      say("sentences.skipConfirm", { list: event.listName, skipDelay: event.seconds });
+      return true;
+    case "skipRepeated":
+      say("sentences.skipDenial");
+      return true;
+    case "skipThrottled":
+      say(SKIP_THROTTLE_MESSAGES[event.level], { name: event.playerName, delay: event.delay });
+      return true;
+    case "listSkipped":
+      game.provider.skipList(game);
+      game.provider.dailyScores(game, 5);
+      return true;
+    case "skipVetoed":
+      say("sentences.skipVeto", { name: event.playerName, vetoDelay: event.vetoDelay });
+      return true;
+    case "skipAborted":
+      say("sentences.skipAbort", { name: event.playerName, vetoDelay: event.vetoDelay });
+      return true;
+    case "skipNotFound":
+      say("sentences.skipNotFound", { name: event.playerName });
+      return true;
+    default:
+      return false;
+  }
+};
+
+/** A renderer for platforms that only play Rounds (the web game). */
+export const renderRounds: Renderer = async (game, events) => {
+  for (const event of events) await renderRoundEvent(game, event);
+};

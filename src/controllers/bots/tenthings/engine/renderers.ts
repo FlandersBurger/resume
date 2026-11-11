@@ -10,8 +10,10 @@ export const getRenderer = async (platform: Platform): Promise<Renderer | undefi
       return (await import("@tenthings/providers/telegram/renderer")).renderTelegram;
     case "discord":
       return (await import("@tenthings/providers/discord/renderer")).renderDiscord;
+    case "web":
+      // The web game only plays Rounds so far.
+      return (await import("@tenthings/providers/roundRendering")).renderRounds;
     default:
-      // The web game doesn't send these Actions yet.
       return undefined;
   }
 };
