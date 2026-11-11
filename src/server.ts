@@ -31,6 +31,7 @@ import { usersRoute } from "@api/users";
 import { tenthingsTelegramBotRoute } from "@api/tenthings/telegram";
 import { initDiscordBot } from "@api/tenthings/discord";
 import { redisConnect, subscribe } from "@root/queue";
+import { startEngineWorker } from "@tenthings/engine/worker";
 import bot from "./connections/telegram";
 import { tenthingsWebBotRoute } from "@api/tenthings/web";
 
@@ -89,6 +90,7 @@ export const websocketServer = new WebSocketServer(server);
 server.listen(port, async () => {
   console.log("Server", process.pid, "listening on", port);
   redisConnect();
+  startEngineWorker();
   if (process.env.NODE_ENV === "production") {
     bot.notifyAdmin("<b>Started Ten Things</b>");
     initDiscordBot();
