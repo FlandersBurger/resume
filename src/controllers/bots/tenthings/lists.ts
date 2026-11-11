@@ -73,33 +73,10 @@ const getHighQualityProbability = (listsPlayed: number): number => {
   return Math.max(0, 1 - progress);
 };
 
-const getExcludedListIds = async (
-  game: IGame,
-): Promise<{
-  recent: Types.ObjectId[];
-  banned: Types.ObjectId[];
-  skipHeavy: Types.ObjectId[];
-  cooldownRounds: number;
-}> => {
-  const availableLanguages = getAvailableLanguages(game);
-  const poolQuery = {
-    language: { $in: availableLanguages },
-    categories: { $nin: game.disabledCategories },
-    ...(game.platform === "web" ? { starred: true } : {}),
-  };
-  const [poolSize, recentRounds, banned, skipHeavy] = await Promise.all([
-    List.countDocuments(poolQuery),
-    GameRound.find(playedRounds({ gameId: game._id }))
-      .sort({ playedAt: -1 })
-      .limit(5000)
-      .select("listId")
-      .lean(),
-    GameRound.distinct("listId", { gameId: game._id, outcome: "banned" }),
-    getSkipHeavyListIds(game._id),
-  ]);
-  const cooldownRounds = Math.max(10, Math.floor(poolSize / 2));
-  return { recent: recentRounds.slice(0, cooldownRounds).map((r) => r.listId), banned, skipHeavy, cooldownRounds };
-};
+/** The fields list selection needs from every List in a Game's pool. */
+type PoolList = Pick<IList, "_id" | "categories" | "lowQuality" | "highQuality" | "starred">;
+
+const pickRandom = <T>(items: T[]): T | undefined => items[Math.floor(Math.random() * items.length)];
 
 export const selectList = async (game: IGame): Promise<HydratedDocument<IList>> => {
   const availableLanguages = getAvailableLanguages(game);
@@ -114,31 +91,44 @@ export const selectList = async (game: IGame): Promise<HydratedDocument<IList>> 
     return list;
   }
 
-  const [{ recent, banned, skipHeavy }, preferredCategories] = await Promise.all([
-    getExcludedListIds(game),
-    getPreferredCategories(game._id),
-  ]);
-  const baseQuery = {
-    _id: { $nin: [...recent, ...banned, ...skipHeavy] },
+  // Lists have no index on language, so every query on the pool scans the whole collection
+  // (seconds each). Read the pool once and choose in memory, instead of a count and a skip per try.
+  const poolQuery = {
     language: { $in: availableLanguages },
     categories: { $nin: game.disabledCategories },
-    lowQuality: { $ne: true },
     ...(game.platform === "web" ? { starred: true } : {}),
   };
+  const [pool, recentRounds, banned, skipHeavy, preferredCategories] = await Promise.all([
+    List.find(poolQuery).select("_id categories lowQuality highQuality starred").lean<PoolList[]>(),
+    GameRound.find(playedRounds({ gameId: game._id }))
+      .sort({ playedAt: -1 })
+      .limit(5000)
+      .select("listId")
+      .lean(),
+    GameRound.distinct("listId", { gameId: game._id, outcome: "banned" }),
+    getSkipHeavyListIds(game._id),
+    getPreferredCategories(game._id),
+  ]);
+  const cooldownRounds = Math.max(10, Math.floor(pool.length / 2));
+  const excluded = new Set(
+    [...recentRounds.slice(0, cooldownRounds).map((r) => r.listId), ...banned, ...skipHeavy].map(String),
+  );
+  const eligible = pool.filter((l) => !l.lowQuality && !excluded.has(String(l._id)));
 
-  const findFromPool = async (query: QueryOptions): Promise<HydratedDocument<IList> | undefined> => {
-    const preferred =
-      preferredCategories.length > 0
-        ? await getRandomList({ ...query, categories: { $nin: game.disabledCategories, $in: preferredCategories } })
-        : undefined;
-    return preferred ?? (await getRandomList(query));
-  };
+  // Prefer a List in a category this Game tends to complete, when there is one.
+  const pickFrom = (lists: PoolList[]) =>
+    pickRandom(lists.filter((l) => l.categories?.some((c) => preferredCategories.includes(c)))) ?? pickRandom(lists);
 
-  let list: HydratedDocument<IList> | undefined;
+  let chosen: PoolList | undefined;
   if (Math.random() < getHighQualityProbability(game.listsPlayed)) {
-    list = await findFromPool({ ...baseQuery, $or: [{ highQuality: true }, { starred: true }] });
+    chosen = pickFrom(eligible.filter((l) => l.highQuality || l.starred));
   }
-  if (!list) list = await findFromPool(baseQuery);
+  chosen ??= pickFrom(eligible);
+
+  let list = chosen
+    ? ((await List.findById(chosen._id).select("-votes").populate("creator").populate("values.creator").exec()) ??
+      undefined)
+    : undefined;
 
   if (!list) {
     // Cooldown exhausted — ignore cooldown, still filter low-quality
