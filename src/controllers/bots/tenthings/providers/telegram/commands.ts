@@ -1,5 +1,5 @@
 import { GameType, IGame } from "@models/tenthings/game";
-import { Game, GameRound, List } from "@models/index";
+import { Game } from "@models/index";
 import { HydratedDocument } from "mongoose";
 import { convertTelegramUserToPlayer, TelegramMessage } from "@tenthings/providers/telegram";
 import { getDiscordPromo, getRules } from "@tenthings/messages";
@@ -8,8 +8,8 @@ import { createMinigame, updateMinigames } from "@tenthings/minigame";
 import { createTinygame } from "@tenthings/tinygame";
 import { processHint } from "@tenthings/hints";
 import { queueGuess } from "@tenthings/guesses";
-import { getRandomList, searchList } from "@tenthings/lists";
-import { IList } from "@models/tenthings/list";
+import type { Actor } from "@tenthings/engine/actions";
+import { dispatch } from "@tenthings/engine/queue";
 
 import i18n from "@root/i18n";
 
@@ -17,8 +17,7 @@ import { getPlayerName } from "@tenthings/players";
 import { getQueue } from "@tenthings/providers/telegram/queue";
 import { checkSkipper, processSkip, vetoSkip } from "@tenthings/skips";
 import { getStats } from "@tenthings/providers/telegram/stats";
-import { categoriesKeyboard, searchResultsKeyboard, settingsKeyboard, statsKeyboard } from "@tenthings/keyboards";
-import shuffle from "lodash/shuffle";
+import { categoriesKeyboard, settingsKeyboard, statsKeyboard } from "@tenthings/keyboards";
 import bot, { Channel } from "@root/connections/telegram";
 import {
   checkSuggestionProvided,
@@ -124,6 +123,8 @@ export const evaluate = async (msg: TelegramMessage, game: HydratedDocument<IGam
   if (isNew || game.list.values.length === 0) {
     await newRound(game);
   }
+  // Owner-only commands pass isAdmin = true once the adapter has checked the sender.
+  const actor = (isAdmin?: boolean): Actor => ({ playerId: String(player._id), name: getPlayerName(player), isAdmin });
   if (command) {
     if (command && commands.includes(command) && msg.telegramTopicId && msg.telegramTopicId !== game.telegramTopicId) {
       game.telegramTopicId = msg.telegramTopicId;
@@ -222,43 +223,7 @@ export const evaluate = async (msg: TelegramMessage, game: HydratedDocument<IGam
         }
         break;
       case Command.Search:
-        const search = msg.text;
-        if (game.pickedLists.length >= 10)
-          return bot.queueMessage(
-            game.telegramChannel,
-            `${i18n(game.settings.language, "sentences.queueFull", { name: getPlayerName(player) })}\n -> /lists`,
-          );
-        if (search) {
-          player.searches++;
-          await player.save();
-          console.log(`${game._id} - Search for ${search}`);
-
-          const foundLists = await searchList(search, game);
-          if (foundLists.length > 0) {
-            const keyboard = searchResultsKeyboard(game, shuffle(foundLists).slice(0, 10));
-            bot.sendKeyboard(
-              game.telegramChannel,
-              `${i18n(
-                game.settings.language,
-                `sentences.${game.telegramChatId === parseInt(process.env.ADMIN_CHAT || "") ? "curate" : "queue"}List`,
-              )}\n<i>(${search})</i>`,
-              keyboard,
-            );
-          } else {
-            bot.queueMessage(
-              game.telegramChannel,
-              i18n(game.settings.language, "sentences.noSearchResults", {
-                search,
-                name: getPlayerName(player),
-              }),
-            );
-          }
-        } else {
-          bot.queueMessage(
-            game.telegramChannel,
-            i18n(game.settings.language, "sentences.emptySearch", { name: getPlayerName(player) }),
-          );
-        }
+        dispatch({ type: "search", gameId: String(game._id), actor: actor(), query: msg.text ?? "" });
         break;
       case Command.Hint:
         processHint(game, player);
@@ -373,13 +338,8 @@ export const evaluate = async (msg: TelegramMessage, game: HydratedDocument<IGam
         }
         break;
       case Command.Flush:
-        if (msg.from.id === parseInt(process.env.MASTER_CHAT || "")) {
-          game.list = (await getRandomList()) as IList;
-          game.pickedLists = [];
-          await GameRound.deleteMany({ gameId: game._id, outcome: { $ne: "banned" } });
-          game.save();
-          bot.queueMessage(game.telegramChannel, "Flushed this chat");
-        }
+        if (msg.from.id === parseInt(process.env.MASTER_CHAT || ""))
+          dispatch({ type: "flush", gameId: String(game._id), actor: actor(true) });
         break;
       case Command.Minigames:
         if (msg.from.id === parseInt(process.env.MASTER_CHAT || "")) {
@@ -402,16 +362,7 @@ export const evaluate = async (msg: TelegramMessage, game: HydratedDocument<IGam
         }, console.error);
         break;
       case Command.Lists:
-        if (game.pickedLists.length > 0) {
-          const upcomingLists = await List.find({ _id: { $in: game.pickedLists } });
-          let message = `${i18n(game.settings.language, "sentences.upcomingLists")}\n`;
-          for (const list of upcomingLists.slice(0, 10)) {
-            message += `- ${list.name}\n`;
-          }
-          bot.queueMessage(game.telegramChannel, message);
-        } else {
-          bot.queueMessage(game.telegramChannel, i18n(game.settings.language, "sentences.noUpcomingLists"));
-        }
+        dispatch({ type: "showUpcoming", gameId: String(game._id), actor: actor() });
         break;
       default:
         break;

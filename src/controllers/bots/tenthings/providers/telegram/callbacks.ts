@@ -10,7 +10,6 @@ import { getDifficultyMessage, getFrequencyMessage } from "@tenthings/messages";
 
 import i18n from "@root/i18n";
 
-import { initiateBan, processBan } from "@tenthings/providers/telegram/bans";
 import { getScores, getStats } from "@tenthings/providers/telegram/stats";
 import { ActionOrigin, Actor, isToggleSetting } from "@tenthings/engine/actions";
 import { dispatch } from "@tenthings/engine/queue";
@@ -73,6 +72,9 @@ export default async (callbackQuery: TelegramCallbackData) => {
     name: callbackQuery.from.name ?? player.first_name,
     isAdmin,
   });
+  // Only the main group chat restricts Bans to its admins; everywhere else any Player may ban.
+  const mayBan = async () =>
+    game.telegramChatId !== parseInt(process.env.GROUP_CHAT || "") || (await bot.checkAdmin(game, callbackQuery.from));
   const origin: ActionOrigin = {
     callbackQueryId: callbackQuery.callbackQueryId,
     messageId: callbackQuery.id,
@@ -220,14 +222,11 @@ export default async (callbackQuery: TelegramCallbackData) => {
       }
       break;
     case TelegramCallbackDataType.Ban:
-      if (!game) return;
-      initiateBan(game, callbackQuery);
+      dispatch({ type: "requestBan", gameId, actor: actor(await mayBan()), listId: callbackQuery.data }, origin);
       bot.answerCallback(callbackQuery.callbackQueryId, "");
       break;
     case TelegramCallbackDataType.ConfirmBan:
-      if (!game) return;
-      if (!game) return;
-      processBan(game, callbackQuery);
+      dispatch({ type: "confirmBan", gameId, actor: actor(await mayBan()), listId: callbackQuery.data }, origin);
       bot.answerCallback(callbackQuery.callbackQueryId, "");
       break;
     case TelegramCallbackDataType.Values:

@@ -7,7 +7,14 @@ import bot from "@root/connections/discord";
 import { makePercentage } from "@root/utils/number-helpers";
 import { parseSymbols } from "@utils/string-helpers";
 import { getLanguageCounts } from "@tenthings/languageCounts";
-import { languageKeyboard, languagesKeyboard, settingsKeyboard, subcategoriesKeyboard } from "@tenthings/keyboards";
+import {
+  confirmBanKeyboard,
+  languageKeyboard,
+  languagesKeyboard,
+  searchResultsKeyboard,
+  settingsKeyboard,
+  subcategoriesKeyboard,
+} from "@tenthings/keyboards";
 import type { Renderer } from "@tenthings/engine/rendering";
 
 const onOff = (game: IGame, on: boolean) => i18n(game.settings.language, on ? "on" : "off");
@@ -30,6 +37,53 @@ export const renderDiscord: Renderer = async (game, events, { action }) => {
         break;
       case "listNotFound":
         if (action.type === "pick") bot.queueMessage(channel, i18n(language, "warnings.unfoundList"));
+        break;
+      case "banRequested":
+        bot.sendMessageWithComponents(
+          channel,
+          i18n(language, "sentences.confirmBan", { list: event.listName, user: event.playerName }),
+          confirmBanKeyboard(game, event.listId),
+        );
+        break;
+      case "banRequestMissing":
+      case "banConfirmedBySamePlayer":
+        // Discord Bans don't need a second Player, and a stale confirm button does nothing.
+        break;
+      case "listBanned":
+        bot.queueMessage(channel, i18n(language, "sentences.listBanned", { list: event.listName }));
+        break;
+      case "listAlreadyBanned":
+        bot.queueMessage(channel, i18n(language, "sentences.alreadyBannedList", { list: event.listName }));
+        break;
+      case "searchEmpty":
+        bot.queueMessage(channel, i18n(language, "sentences.emptySearch", { name: event.playerName }));
+        break;
+      case "searchResults": {
+        if (event.lists.length === 0) {
+          bot.queueMessage(
+            channel,
+            i18n(language, "sentences.noSearchResults", { search: event.query, name: event.playerName }),
+          );
+          break;
+        }
+        const results = event.lists.slice(0, 10).map(({ id, name }) => ({ _id: id, name }));
+        bot.sendMessageWithComponents(
+          channel,
+          `${i18n(language, "sentences.queueList")}\n*(${event.query})*\n${results.map((l, i) => `${i + 1}. ${l.name}`).join("\n")}`,
+          searchResultsKeyboard(game, results.slice(0, 5)),
+        );
+        break;
+      }
+      case "upcomingLists":
+        bot.queueMessage(
+          channel,
+          event.listNames.length > 0
+            ? `${i18n(language, "sentences.upcomingLists")}\n${event.listNames.map((name) => `- ${name}\n`).join("")}`
+            : i18n(language, "sentences.noUpcomingLists"),
+        );
+        break;
+      case "flushed":
+        bot.queueMessage(channel, "Flushed this chat");
         break;
       case "adminOnly":
         // Discord ignores admin-only presses from other players, without a warning.

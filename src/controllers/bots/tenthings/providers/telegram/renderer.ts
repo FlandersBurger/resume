@@ -2,6 +2,7 @@
 // and posts the messages the chat should see.
 
 import moment from "moment";
+import shuffle from "lodash/shuffle";
 import { Player } from "@models/index";
 import { IGame } from "@models/tenthings/game";
 import i18n from "@root/i18n";
@@ -10,7 +11,14 @@ import { makePercentage } from "@root/utils/number-helpers";
 import { parseSymbols } from "@utils/string-helpers";
 import emojis from "@tenthings/emojis";
 import { getLanguageCounts } from "@tenthings/languageCounts";
-import { languageKeyboard, languagesKeyboard, settingsKeyboard, subcategoriesKeyboard } from "@tenthings/keyboards";
+import {
+  confirmBanKeyboard,
+  languageKeyboard,
+  languagesKeyboard,
+  searchResultsKeyboard,
+  settingsKeyboard,
+  subcategoriesKeyboard,
+} from "@tenthings/keyboards";
 import type { Renderer } from "@tenthings/engine/rendering";
 import { adminOnly } from "./errors";
 
@@ -22,6 +30,7 @@ export const renderTelegram: Renderer = async (game, events, { action, origin })
   const answer = (text: string) => origin.callbackQueryId && bot.answerCallback(origin.callbackQueryId, text);
   const editKeyboard = (keyboard: ReturnType<typeof settingsKeyboard>) =>
     origin.messageId && bot.queueEditKeyboard(channel, origin.messageId, keyboard);
+  const deleteButtonMessage = () => origin.messageId && bot.deleteMessage(channel, origin.messageId);
 
   for (const event of events) {
     switch (event.type) {
@@ -42,6 +51,7 @@ export const renderTelegram: Renderer = async (game, events, { action, origin })
       case "listNotFound":
         if (action.type === "vote") answer("Can't find list 😱");
         else bot.queueMessage(channel, i18n(language, "warnings.unfoundList"));
+        if (action.type === "confirmBan") deleteButtonMessage();
         break;
       case "adminOnly": {
         const player = await Player.findById(event.playerId).exec();
@@ -49,6 +59,10 @@ export const renderTelegram: Renderer = async (game, events, { action, origin })
         break;
       }
       case "pickRejected":
+        if (action.type === "search") {
+          bot.queueMessage(channel, `${i18n(language, "sentences.queueFull", { name: event.playerName })}\n -> /lists`);
+          break;
+        }
         bot.queueMessage(
           channel,
           i18n(
@@ -90,6 +104,63 @@ export const renderTelegram: Renderer = async (game, events, { action, origin })
       case "categoryToggled":
         answer(`${i18n(language, event.category, { ns: "categories" })} -> ${onOff(game, event.on)}`);
         editKeyboard(subcategoriesKeyboard(game, event.category.split(".")[0]));
+        break;
+      case "banRequested":
+        bot.sendKeyboard(
+          channel,
+          i18n(language, `sentences.${event.corroborate ? "corroborateBan" : "confirmBan"}`, {
+            list: event.listName,
+            user: event.playerName,
+          }),
+          confirmBanKeyboard(game, event.listId),
+        );
+        break;
+      case "banRequestMissing":
+        deleteButtonMessage();
+        break;
+      case "banConfirmedBySamePlayer":
+        bot.queueMessage(channel, i18n(language, "warnings.corroborateBanBySamePlayer", { name: event.playerName }));
+        break;
+      case "listBanned":
+        bot.queueMessage(channel, i18n(language, "sentences.listBanned", { list: event.listName }));
+        deleteButtonMessage();
+        break;
+      case "listAlreadyBanned":
+        bot.queueMessage(channel, i18n(language, "sentences.alreadyBannedList", { list: event.listName }));
+        deleteButtonMessage();
+        break;
+      case "searchEmpty":
+        bot.queueMessage(channel, i18n(language, "sentences.emptySearch", { name: event.playerName }));
+        break;
+      case "searchResults": {
+        if (event.lists.length === 0) {
+          bot.queueMessage(
+            channel,
+            i18n(language, "sentences.noSearchResults", { search: event.query, name: event.playerName }),
+          );
+          break;
+        }
+        const results = shuffle(event.lists)
+          .slice(0, 10)
+          .map(({ id, name }) => ({ _id: id, name }));
+        const isAdminChat = game.telegramChatId === parseInt(process.env.ADMIN_CHAT || "");
+        bot.sendKeyboard(
+          channel,
+          `${i18n(language, `sentences.${isAdminChat ? "curate" : "queue"}List`)}\n<i>(${event.query})</i>`,
+          searchResultsKeyboard(game, results),
+        );
+        break;
+      }
+      case "upcomingLists":
+        bot.queueMessage(
+          channel,
+          event.listNames.length > 0
+            ? `${i18n(language, "sentences.upcomingLists")}\n${event.listNames.map((name) => `- ${name}\n`).join("")}`
+            : i18n(language, "sentences.noUpcomingLists"),
+        );
+        break;
+      case "flushed":
+        bot.queueMessage(channel, "Flushed this chat");
         break;
     }
   }

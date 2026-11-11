@@ -1,6 +1,5 @@
 import { GameType, IGame } from "@models/tenthings/game";
-import { GameRound, List } from "@models/index";
-import { HydratedDocument, FlattenMaps } from "mongoose";
+import { HydratedDocument } from "mongoose";
 import { convertDiscordUserToPlayer, DiscordMessage } from "@tenthings/providers/discord";
 import { getRules } from "@tenthings/messages";
 import { deactivate, newRound } from "@tenthings/maingame";
@@ -8,15 +7,15 @@ import { createMinigame, updateMinigames } from "@tenthings/minigame";
 import { createTinygame } from "@tenthings/tinygame";
 import { processHint } from "@tenthings/hints";
 import { queueGuess } from "@tenthings/guesses";
-import { getRandomList, searchList } from "@tenthings/lists";
-import { IList } from "@models/tenthings/list";
+import type { Actor } from "@tenthings/engine/actions";
+import { dispatch } from "@tenthings/engine/queue";
 
 import i18n from "@root/i18n";
 
 import { getPlayerName } from "@tenthings/players";
 import { checkSkipper, processSkip, vetoSkip } from "@tenthings/skips";
 import bot from "@root/connections/discord";
-import { searchResultsKeyboard, settingsKeyboard, statsKeyboard } from "@tenthings/keyboards";
+import { settingsKeyboard, statsKeyboard } from "@tenthings/keyboards";
 
 // Re-export the shared Command enum from telegram for consumers of this module
 export { Command, translateCommand } from "@tenthings/providers/telegram/commands";
@@ -60,6 +59,8 @@ export const evaluate = async (msg: DiscordMessage, game: HydratedDocument<IGame
     await newRound(game);
   }
 
+  // Owner-only commands pass isAdmin = true once the adapter has checked the sender.
+  const actor = (isAdmin?: boolean): Actor => ({ playerId: String(player._id), name: getPlayerName(player), isAdmin });
   if (command) {
     switch (command) {
       case Command.Error:
@@ -163,44 +164,7 @@ export const evaluate = async (msg: DiscordMessage, game: HydratedDocument<IGame
         }
         break;
       case Command.Search:
-        const search = msg.text;
-        if (game.pickedLists.length >= 10) {
-          bot.queueMessage(
-            game.discordChannel,
-            `${i18n(game.settings.language, "sentences.queueFull", { name: getPlayerName(player) })}\n -> /lists`,
-          );
-          return;
-        }
-        if (search) {
-          player.searches++;
-          await player.save();
-          console.log(`${game._id} - Discord search for ${search}`);
-          const foundLists = await searchList(search, game);
-          if (foundLists.length > 0) {
-            const listNames = foundLists
-              .slice(0, 10)
-              .map((list, i) => `${i + 1}. ${list.name}`)
-              .join("\n");
-            bot.sendMessageWithComponents(
-              game.discordChannel,
-              `${i18n(game.settings.language, "sentences.queueList")}\n*(${search})*\n${listNames}`,
-              searchResultsKeyboard(game, foundLists.slice(0, 5)),
-            );
-          } else {
-            bot.queueMessage(
-              game.discordChannel,
-              i18n(game.settings.language, "sentences.noSearchResults", {
-                search,
-                name: getPlayerName(player),
-              }),
-            );
-          }
-        } else {
-          bot.queueMessage(
-            game.discordChannel,
-            i18n(game.settings.language, "sentences.emptySearch", { name: getPlayerName(player) }),
-          );
-        }
+        dispatch({ type: "search", gameId: String(game._id), actor: actor(), query: msg.text ?? "" });
         break;
       case Command.Hint:
         processHint(game, player);
@@ -243,13 +207,8 @@ export const evaluate = async (msg: DiscordMessage, game: HydratedDocument<IGame
         }
         break;
       case Command.Flush:
-        if (msg.from.id === process.env.DISCORD_ADMIN_USER_ID) {
-          game.list = (await getRandomList()) as FlattenMaps<IList>;
-          game.pickedLists = [];
-          await GameRound.deleteMany({ gameId: game._id, outcome: { $ne: "banned" } });
-          game.save();
-          bot.queueMessage(game.discordChannel, "Flushed this chat");
-        }
+        if (msg.from.id === process.env.DISCORD_ADMIN_USER_ID)
+          dispatch({ type: "flush", gameId: String(game._id), actor: actor(true) });
         break;
       case Command.Minigames:
         if (msg.from.id === process.env.DISCORD_ADMIN_USER_ID) {
@@ -263,16 +222,7 @@ export const evaluate = async (msg: DiscordMessage, game: HydratedDocument<IGame
         bot.queueMessage(game.discordChannel, "You already had me but you got greedy, now you ruined it");
         break;
       case Command.Lists:
-        if (game.pickedLists.length > 0) {
-          const upcomingLists = await List.find({ _id: { $in: game.pickedLists } });
-          let message = `${i18n(game.settings.language, "sentences.upcomingLists")}\n`;
-          for (const list of upcomingLists.slice(0, 10)) {
-            message += `- ${list.name}\n`;
-          }
-          bot.queueMessage(game.discordChannel, message);
-        } else {
-          bot.queueMessage(game.discordChannel, i18n(game.settings.language, "sentences.noUpcomingLists"));
-        }
+        dispatch({ type: "showUpcoming", gameId: String(game._id), actor: actor() });
         break;
       default:
         break;

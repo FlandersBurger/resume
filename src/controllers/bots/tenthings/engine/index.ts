@@ -7,9 +7,11 @@ import moment, { Moment } from "moment";
 import { HydratedDocument } from "mongoose";
 import { Game, GameRound, List, Player } from "@models/index";
 import { IGame } from "@models/tenthings/game";
+import { IList } from "@models/tenthings/list";
 import { getListScore } from "@models/tenthings/listMetrics";
 import categories, { setDisabledCategories } from "@tenthings/categories";
 import { isBotLanguage, isSupportedLanguage, SupportedLanguage } from "@tenthings/languages";
+import { getRandomList, searchList } from "@tenthings/lists";
 import { Action, DELAY_CHOICES, isDelaySetting, isToggleSetting } from "./actions";
 import { EngineEvent } from "./events";
 
@@ -31,6 +33,12 @@ setInterval(() => {
   for (const [voterId, votedAt] of lastVotes) if (votedAt.isBefore(cutoff)) lastVotes.delete(voterId);
 }, 5 * 60_000).unref(); // housekeeping only: never keeps the process alive
 
+/** Ban requests waiting for confirmation, "gameId:listId" → the requesting Player. Lost on restart. */
+export const pendingBans = new Map<string, string>();
+
+/** Telegram group chats need a second Player to confirm a Ban; elsewhere the confirming admin decides. */
+const banNeedsCorroboration = (game: IGame) => game.platform === "telegram" && !game.isPersonalChat;
+
 type GameDoc = HydratedDocument<IGame>;
 type Handler<T extends Action["type"]> = (
   game: GameDoc,
@@ -43,6 +51,8 @@ const ADMIN_ONLY: ReadonlySet<Action["type"]> = new Set([
   "toggleTriviaLanguage",
   "setBotLanguage",
   "toggleCategory",
+  "requestBan",
+  "flush",
 ]);
 
 /**
@@ -157,6 +167,89 @@ const handlers: { [T in Action["type"]]: Handler<T> } = {
     setDisabledCategories(game, category);
     await game.save();
     return [{ type: "categoryToggled", category, on: !game.disabledCategories.includes(category) }];
+  },
+
+  requestBan: async (game, { listId, actor }) => {
+    const list = await List.findById(listId).select("name").exec();
+    if (!list) return [{ type: "listNotFound" }];
+    if (await GameRound.exists({ gameId: game._id, listId: list._id, outcome: "banned" }))
+      return [{ type: "listAlreadyBanned", listName: list.name }];
+    pendingBans.set(`${game._id}:${list._id}`, actor.playerId);
+    return [
+      {
+        type: "banRequested",
+        listId: String(list._id),
+        listName: list.name,
+        playerName: actor.name,
+        corroborate: banNeedsCorroboration(game),
+      },
+    ];
+  },
+
+  // Not admin-only as such: where a second Player corroborates, any Player may confirm.
+  confirmBan: async (game, { listId, actor }) => {
+    const corroborate = banNeedsCorroboration(game);
+    if (!corroborate && !actor.isAdmin)
+      return [{ type: "adminOnly", playerId: actor.playerId, playerName: actor.name }];
+    const key = `${game._id}:${listId}`;
+    const requester = pendingBans.get(key);
+    if (!requester) return [{ type: "banRequestMissing" }];
+    if (corroborate && requester === actor.playerId)
+      return [{ type: "banConfirmedBySamePlayer", playerName: actor.name }];
+    pendingBans.delete(key);
+    const list = await List.findById(listId).select("name language categories").exec();
+    if (!list) return [{ type: "listNotFound" }];
+    if (await GameRound.exists({ gameId: game._id, listId: list._id, outcome: "banned" }))
+      return [{ type: "listAlreadyBanned", listName: list.name }];
+    await GameRound.create({
+      gameId: game._id,
+      listId: list._id,
+      outcome: "banned",
+      categories: list.categories ?? [],
+      language: list.language,
+      answersRevealed: 0,
+      hintsUsed: 0,
+      playedAt: new Date(),
+    });
+    await List.updateOne({ _id: list._id }, { $inc: { bans: 1 } });
+    console.log(`${game._id} (${game.settings.language}) banned ${list.name}`);
+    return [{ type: "listBanned", listId: String(list._id), listName: list.name }];
+  },
+
+  search: async (game, { query, actor }) => {
+    if (game.pickedLists.length >= MAX_PICKED_LISTS)
+      return [{ type: "pickRejected", reason: "queueFull", playerName: actor.name }];
+    if (!query.trim()) return [{ type: "searchEmpty", playerName: actor.name }];
+    await Player.updateOne({ _id: actor.playerId }, { $inc: { searches: 1 } });
+    console.log(`${game._id} - Search for ${query}`);
+    const lists = await searchList(query, game);
+    return [
+      {
+        type: "searchResults",
+        query,
+        playerName: actor.name,
+        lists: lists.map((l) => ({ id: String(l._id), name: l.name })),
+      },
+    ];
+  },
+
+  showUpcoming: async (game) => {
+    const lists = await List.find({ _id: { $in: game.pickedLists } })
+      .select("name")
+      .lean();
+    // In queue order: the query returns them in storage order.
+    const names = new Map(lists.map((l) => [String(l._id), l.name]));
+    const listNames = game.pickedLists.flatMap((id) => names.get(String(id)) ?? []);
+    return [{ type: "upcomingLists", listNames: listNames.slice(0, MAX_PICKED_LISTS) }];
+  },
+
+  // Owner only (the adapter checks): start this Game over, keeping its Bans.
+  flush: async (game) => {
+    game.list = (await getRandomList()) as IList as IGame["list"];
+    game.pickedLists = [];
+    await GameRound.deleteMany({ gameId: game._id, outcome: { $ne: "banned" } });
+    await game.save();
+    return [{ type: "flushed" }];
   },
 };
 
