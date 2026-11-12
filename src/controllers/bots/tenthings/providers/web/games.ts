@@ -3,12 +3,14 @@ import { createMaingame } from "@tenthings/maingame";
 import { SYSTEM_ACTOR } from "@tenthings/engine/actions";
 import { dispatch } from "@tenthings/engine/queue";
 import { IGame } from "@models/tenthings/game";
+import { getBlurbType } from "@models/tenthings/list";
 import { HydratedDocument } from "mongoose";
-import { maskAnswers } from "@tenthings/hints";
+import { MAX_HINTS, getHint } from "@tenthings/hints";
+import type { WebAnswerView, WebGameView } from "@utils/tenthings-web";
 
 export const getWebGame = async (webGameId: number = 1): Promise<HydratedDocument<IGame>> => {
   let game = await Game.findOne({ platform: "web", webGameId })
-    .populate("list.creator")
+    .populate("list.creator", "username")
     .populate("list.values.guesser", "username first_name");
   if (!game) {
     game = await createMaingame({ platform: "web", webGameId });
@@ -21,11 +23,41 @@ export const getWebGame = async (webGameId: number = 1): Promise<HydratedDocumen
   return game;
 };
 
-/** The web Game as Players may see it: unguessed Answers leave the server masked. */
-export const getGameWithHints = (game: HydratedDocument<IGame>) => {
-  const leanGame = game.toJSON();
+type Named = { username?: string; first_name?: string };
+const nameOf = (person: unknown) => {
+  const { username, first_name } = (person ?? {}) as Named;
+  return username || first_name || "";
+};
+
+/**
+ * The web Game as a Player may see it: only what the page shows. Unguessed Answers leave the
+ * server masked with the Round's Hints, without their value or Blurb.
+ */
+export const toWebGameView = (game: IGame): WebGameView => {
+  const { list, hints } = game;
+  const answers = (list?.values ?? []).map((answer, i): WebAnswerView => {
+    const _id = String((answer as { _id?: unknown })._id ?? i);
+    if (!answer.guesser) return { _id, maskedValue: getHint(hints, answer.value), guessed: false };
+    return {
+      _id,
+      maskedValue: answer.value,
+      guessed: true,
+      value: answer.value,
+      blurb: answer.blurb || undefined,
+      blurbType: answer.blurb ? getBlurbType(answer.blurb) : undefined,
+      guesser: nameOf(answer.guesser),
+    };
+  });
   return {
-    ...leanGame,
-    list: { ...leanGame.list, values: maskAnswers(leanGame.list.values, leanGame.hints, { reveal: false }) },
+    webGameId: game.webGameId ?? 1,
+    hints,
+    hintsLeft: Math.max(0, MAX_HINTS - hints),
+    list: {
+      _id: list?._id ? String(list._id) : undefined,
+      name: list?.name,
+      description: list?.description || undefined,
+      creator: nameOf(list?.creator) || undefined,
+      answers,
+    },
   };
 };
