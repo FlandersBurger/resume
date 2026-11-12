@@ -16,7 +16,7 @@ import Unsplash from "@root/connections/unsplash";
 import { IList, IListValue } from "@models/tenthings/list";
 import { GameRound, List, User } from "@models/index";
 import { parseSymbols, removeAllButLetters } from "@utils/string-helpers";
-import { getList, getRandomList, mergeLists } from "@tenthings/lists";
+import { getList, getRandomList, invalidateListPool, mergeLists } from "@tenthings/lists";
 import {
   listMetricsFields,
   playedRounds,
@@ -30,6 +30,12 @@ import { every } from "lodash";
 import { telegram } from "@tenthings/providers/telegram";
 
 export const tenthingsListsRoute = Router();
+
+// Any write to the Lists makes the in-memory List pool stale, once the write is done.
+tenthingsListsRoute.use((req, res, next) => {
+  if (req.method !== "GET") res.on("finish", invalidateListPool);
+  next();
+});
 
 const MIN_LIST_VALUES = 10;
 
