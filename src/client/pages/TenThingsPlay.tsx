@@ -1,8 +1,7 @@
-import { useEffect, useState, useRef } from "react";
+import { useState, useRef } from "react";
 import styled from "styled-components";
-import { getTenthings, answerTenthings, getTenthingsHint, skipTenthingsList } from "../services/games";
 import { useApp } from "../context/AppContext";
-import { useWebSocket } from "../hooks/useWebSocket";
+import { useWebGame } from "./tenthings/useWebGame";
 
 const TenThingsPlayPage = styled.div``;
 
@@ -72,96 +71,30 @@ const Blurb = styled.div`
   }
 `;
 
-interface GameValue {
-  _id: string;
-  /** Only sent once the Answer is guessed. */
-  value?: string;
-  maskedValue: string;
-  blurb?: string;
-  blurbType?: string;
-  guesser?: { username?: string; first_name?: string };
-}
-
-interface Game {
-  hints: number;
-  list?: {
-    _id?: string;
-    name?: string;
-    description?: string;
-    answers?: number;
-    creator?: { username?: string };
-    values?: GameValue[];
-  };
-}
-
 /** The web Game this page plays. */
 const WEB_GAME_ID = 1;
 
-/** What the server publishes after each Action on a web Game (see providers/web/renderer.ts). */
-interface WebEventsMessage {
-  webGameId: number;
-  events: { type: string }[];
-  notices: string[];
-}
-
 export default function TenThingsPlay() {
-  const { currentUser, toast } = useApp();
-  const [game, setGame] = useState<Game | null>(null);
+  const { currentUser } = useApp();
+  const { view, sending, guess: sendGuess, hint, skip } = useWebGame(WEB_GAME_ID, !!currentUser);
   const [guess, setGuess] = useState("");
-  const [loading, setLoading] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
-
-  const loadGame = async () => {
-    if (!currentUser) return;
-    const data = await getTenthings();
-    setGame(data);
-  };
-
-  // Keep a stable ref so intervals always call the latest loadGame
-  const loadGameRef = useRef(loadGame);
-  loadGameRef.current = loadGame;
-
-  useWebSocket({
-    // Sent once an Action on the Game has run, so the reload sees its result.
-    tenthings_events: (data: unknown) => {
-      const { webGameId, notices } = data as WebEventsMessage;
-      if (webGameId !== WEB_GAME_ID) return;
-      notices.forEach((notice) => toast(notice));
-      loadGameRef.current();
-    },
-    // Messages that don't come from an Action (List selection warnings, sass).
-    tenthings_message: (data: unknown) => {
-      const { webGameId, message } = (data ?? {}) as { webGameId?: number; message?: string };
-      if (webGameId !== undefined && webGameId !== WEB_GAME_ID) return;
-      if (message) toast(message);
-    },
-  });
-
-  useEffect(() => {
-    loadGame();
-  }, [currentUser]);
 
   const handleCheckAnswer = async () => {
     if (!guess.trim()) return;
     const answer = guess;
     setGuess("");
-    setLoading(true);
-    try {
-      // The Guess is queued; its Events reload the Game once it has run.
-      await answerTenthings(WEB_GAME_ID, answer);
-    } finally {
-      setLoading(false);
-      inputRef.current?.focus();
-    }
+    await sendGuess(answer);
+    inputRef.current?.focus();
   };
 
   const handleHint = async () => {
-    await getTenthingsHint();
+    await hint();
     inputRef.current?.focus();
   };
 
   const handleSkip = async () => {
-    await skipTenthingsList();
+    await skip();
     inputRef.current?.focus();
   };
 
@@ -171,16 +104,17 @@ export default function TenThingsPlay() {
 
   if (!currentUser) return <h2 className="text-muted">Log in to play.</h2>;
 
-  const values = game?.list?.values ?? [];
-  const guessedCount = values.filter((v) => v.guesser).length;
-  const total = values.length || game?.list?.answers || 0;
+  const list = view?.list;
+  const answers = list?.answers ?? [];
+  const guessedCount = answers.filter((a) => a.guessed).length;
+  const total = answers.length;
   const progress = total > 0 ? (guessedCount / total) * 100 : 0;
 
   return (
     <TenThingsPlayPage className="page container-fluid">
       {/* Header */}
       <div style={{ display: "flex", alignItems: "baseline", gap: 12, marginBottom: 4 }}>
-        <h2 style={{ margin: 0 }}>{game?.list?.name ?? "Loading..."}</h2>
+        <h2 style={{ margin: 0 }}>{list?.name ?? "Loading..."}</h2>
         {total > 0 && (
           <span className="text-muted" style={{ fontSize: 14 }}>
             {guessedCount} / {total}
@@ -188,15 +122,15 @@ export default function TenThingsPlay() {
         )}
       </div>
 
-      {game?.list?.description && (
+      {list?.description && (
         <p className="text-muted" style={{ marginBottom: 4 }}>
-          {game.list.description}
+          {list.description}
         </p>
       )}
-      {game?.list?.creator?.username && (
+      {list?.creator && (
         <p style={{ marginBottom: 8, fontSize: 13 }}>
           <span className="text-muted">By </span>
-          {game.list.creator.username}
+          {list.creator}
         </p>
       )}
 
@@ -221,18 +155,18 @@ export default function TenThingsPlay() {
           autoComplete="off"
         />
         <div className="input-group-btn">
-          <button className="btn btn-success" onClick={handleCheckAnswer} disabled={!guess.trim() || loading}>
-            <i className={`fas ${loading ? "fa-spinner fa-spin" : "fa-paper-plane"}`} />
+          <button className="btn btn-success" onClick={handleCheckAnswer} disabled={!guess.trim() || sending}>
+            <i className={`fas ${sending ? "fa-spinner fa-spin" : "fa-paper-plane"}`} />
           </button>
         </div>
       </div>
 
       {/* Controls */}
       <div className="btn-group" style={{ marginBottom: 16 }}>
-        <button className="btn btn-primary" onClick={handleHint} disabled={(game?.hints ?? 0) >= 6}>
-          <i className="fas fa-lightbulb" /> Hint ({game?.hints ?? 0}/6)
+        <button className="btn btn-primary" onClick={handleHint} disabled={!view || view.hintsLeft === 0}>
+          <i className="fas fa-lightbulb" /> Hint ({view?.hints ?? 0}/{(view?.hints ?? 0) + (view?.hintsLeft ?? 0)})
         </button>
-        {game?.list?._id && (
+        {list?._id && (
           <button className="btn btn-default" onClick={handleSkip}>
             <i className="fas fa-forward" /> Skip
           </button>
@@ -240,30 +174,30 @@ export default function TenThingsPlay() {
       </div>
 
       <PlayListGroup>
-        {values.map((item) => (
-          <PlayListGroupItem key={item._id} $guessed={!!item.guesser}>
+        {answers.map((item) => (
+          <PlayListGroupItem key={item._id} $guessed={item.guessed}>
             <AnswerRow>
-              <h4>{item.guesser ? item.value : item.maskedValue}</h4>
-              <div style={{ display: "flex", alignItems: "center", gap: 6, flexShrink: 0 }}>
-                {item.guesser && item.blurb && item.blurbType !== "text" && (
-                  <span>
-                    {item.blurbType === "image" && <i className="fas fa-image text-muted" />}
-                    {item.blurbType === "youtube" && <i className="fab fa-youtube text-danger" />}
-                    {item.blurbType === "spotify" && <i className="fab fa-spotify text-success" />}
-                    {item.blurbType === "link" && <i className="fas fa-link text-muted" />}
-                  </span>
-                )}
-                {item.guesser && (
-                  <span className="label label-success">{item.guesser.username || item.guesser.first_name}</span>
-                )}
-              </div>
+              <h4>{item.maskedValue}</h4>
+              {item.guessed && (
+                <div style={{ display: "flex", alignItems: "center", gap: 6, flexShrink: 0 }}>
+                  {item.blurb && item.blurbType !== "text" && (
+                    <span>
+                      {item.blurbType === "image" && <i className="fas fa-image text-muted" />}
+                      {item.blurbType === "youtube" && <i className="fab fa-youtube text-danger" />}
+                      {item.blurbType === "spotify" && <i className="fab fa-spotify text-success" />}
+                      {item.blurbType === "link" && <i className="fas fa-link text-muted" />}
+                    </span>
+                  )}
+                  <span className="label label-success">{item.guesser}</span>
+                </div>
+              )}
             </AnswerRow>
-            {item.guesser && item.blurb && item.blurbType === "image" && (
+            {item.guessed && item.blurb && item.blurbType === "image" && (
               <Blurb>
                 <img src={item.blurb} alt={item.value} />
               </Blurb>
             )}
-            {item.guesser && item.blurb && item.blurbType === "text" && <Blurb>{item.blurb}</Blurb>}
+            {item.guessed && item.blurb && item.blurbType === "text" && <Blurb>{item.blurb}</Blurb>}
           </PlayListGroupItem>
         ))}
       </PlayListGroup>

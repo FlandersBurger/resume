@@ -12,11 +12,10 @@ import type { Renderer } from "@tenthings/engine/rendering";
 import { getGuessedMessage, getSnubbedMessage } from "@tenthings/messages";
 import { getPlayerName } from "@tenthings/players";
 import { roundNotice } from "../roundRendering";
+import { WEB_EVENTS_TOPIC, type WebEventsMessage as SharedWebEventsMessage } from "@utils/tenthings-web";
 
-/** The WebSocket topic the web game's Events go out on. */
-export const WEB_EVENTS_TOPIC = "tenthings_events";
-
-export type WebEventsMessage = { webGameId: number; events: EngineEvent[]; notices: string[] };
+export { WEB_EVENTS_TOPIC };
+export type WebEventsMessage = SharedWebEventsMessage<EngineEvent>;
 
 /** The chat messages are HTML; the web game shows notices as plain text. */
 const toText = (html: string) =>

@@ -1,7 +1,8 @@
 import http from "./http";
+import type { WebGameView } from "@utils/tenthings-web";
 
-export async function getTenthings(id = 1) {
-  const { data } = await http.get(`/api/tenthings/web/${id}`);
+export async function getTenthings(id = 1): Promise<WebGameView> {
+  const { data } = await http.get<WebGameView>(`/api/tenthings/web/${id}`);
   return data;
 }
 
