@@ -1,7 +1,7 @@
 // Processes the Engine queue, one job at a time (ADR-0002). Start it once, in the server.
 
 import { GameType } from "@models/tenthings/gameType";
-import { isStaleGuess, processGuessJob } from "@tenthings/guesses";
+import { isStaleGuess } from "@tenthings/guesses";
 import { notifyAdmin } from "@tenthings/notify";
 import { runAction } from ".";
 import type { Action, ActionOrigin } from "./actions";
@@ -25,14 +25,19 @@ export const startEngineWorker = () =>
     const { data } = job;
     if (data.kind === "action") return handle(data.action, data.origin);
     const { guess } = data;
-    // Minigame and tinygame Guesses aren't on the Engine yet.
-    if (guess.match.type !== GameType.MAINGAME) return processGuessJob(guess, job.timestamp);
     if (isStaleGuess(job.timestamp)) return;
+    const actor = { playerId: guess.playerId, name: "" };
+    const { type, value, distance } = guess.match;
+    if (type !== GameType.MAINGAME)
+      return handle(
+        { type: "sideGameGuess", gameId: guess.gameId, actor, sideGame: type, answer: value, distance },
+        {},
+      );
     return handle(
       {
         type: "guess",
         gameId: guess.gameId,
-        actor: { playerId: guess.playerId, name: "" },
+        actor,
         listId: guess.listId,
         match: guess.match,
       },

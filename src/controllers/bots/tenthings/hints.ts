@@ -1,61 +1,8 @@
-import { HydratedDocument } from "mongoose";
-import { GameType, IGame } from "@models/tenthings/game";
-import { IPlayer } from "@models/tenthings/player";
 import { parseSymbols, conceal, concealMiddle, SPECIAL_CHARACTERS } from "@utils/string-helpers";
 import uniq from "lodash/uniq";
-import i18n from "@root/i18n";
 
 export const MAX_HINTS = 6;
 const VOWELS = "aeiouAEIOUàèìòùÀÈÌÒÙáéíóúýÁÉÍÓÚÝâêîôûÂÊÎÔÛãñõÃÑÕäëïöüÿÄËÏÖÜŸçÇßØøÅåÆæœ";
-export const hintCache: { [key: string]: number } = {};
-
-export const hintCooldown = (gameId: string) => {
-  if (hintCache[gameId] > 0) {
-    hintCache[gameId]--;
-    setTimeout(() => {
-      hintCooldown(gameId);
-    }, 1000);
-  } else {
-    delete hintCache[gameId];
-  }
-};
-
-/** A minigame or tinygame Hint. Main game Hints are an Engine Action. */
-export const processHint = async (
-  game: HydratedDocument<IGame>,
-  player: HydratedDocument<IPlayer>,
-  type: GameType.MINIGAME | GameType.TINYGAME,
-) => {
-  if (game[type].hints >= MAX_HINTS) {
-    game.provider.message(game, i18n(game.settings.language, "warnings.tooManyHints"));
-  } else if (hintCache[game._id.toString()] && hintCache[game._id.toString()] > 0) {
-    game.provider.message(
-      game,
-      i18n(game.settings.language, "warnings.hintCooldown", { seconds: hintCache[game._id.toString()] }),
-    );
-  } else {
-    if (player) {
-      if (player.hints) player.hints++;
-      else player.hints = 1;
-      player.hintStreak = 0;
-      await player.save();
-    }
-    switch (type) {
-      case GameType.MINIGAME:
-        game.minigame.hints++;
-        game.provider.miniGameMessage(game);
-        break;
-      case GameType.TINYGAME:
-        game.tinygame.hints++;
-        game.provider.tinyGameMessage(game);
-        break;
-    }
-    hintCache[game._id.toString()] = game.settings.hintDelay;
-    hintCooldown(game._id.toString());
-    await game.save();
-  }
-  return true;
-};
 
 export const getHint = (hints: number, value: string): string => {
   if (value === undefined) return "";

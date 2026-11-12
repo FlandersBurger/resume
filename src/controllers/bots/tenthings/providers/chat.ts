@@ -241,11 +241,8 @@ export const createChatProvider = (platform: ChatPlatform): Provider => {
         ),
         () => miniGameKeyboard(game),
       ),
-    miniGameGuessed: (game, player, score, accuracy) =>
-      send(
-        game,
-        sideGameGuessedMessage(game, "sentences.minigameAnswered", game.minigame.answer, player, score, accuracy),
-      ),
+    miniGameGuessed: (game, player, answer, score, accuracy) =>
+      send(game, sideGameGuessedMessage(game, "sentences.minigameAnswered", answer, player, score, accuracy)),
     tinyGameMessage: (game) =>
       sendWithRoundButtons(
         game,
@@ -258,11 +255,8 @@ export const createChatProvider = (platform: ChatPlatform): Provider => {
         ),
         () => tinyGameKeyboard(game),
       ),
-    tinyGameGuessed: (game, player, score, accuracy) =>
-      send(
-        game,
-        sideGameGuessedMessage(game, "sentences.tinygameAnswered", game.tinygame.answer, player, score, accuracy),
-      ),
+    tinyGameGuessed: (game, player, answer, score, accuracy) =>
+      send(game, sideGameGuessedMessage(game, "sentences.tinygameAnswered", answer, player, score, accuracy)),
     rateList: (game) => {
       // Platforms with buttons on Round messages already put the vote buttons on the end-of-Round stats.
       if (buttonsOnRoundMessages) return;

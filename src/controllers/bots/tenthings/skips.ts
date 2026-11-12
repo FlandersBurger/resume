@@ -1,12 +1,7 @@
-// Skip spam protection, shared by the main game's Skip (in the Engine) and the minigame and
-// tinygame skips. Main game Skips, Vetoes and their countdown live in the Engine.
+// Skip spam protection for the Engine's Skips: of Rounds, Minigames and Tinygames.
 
 import moment, { Moment } from "moment";
-import { IGame } from "@models/tenthings/game";
-import { IPlayer } from "@models/tenthings/player";
 import type { SkipThrottleLevel } from "./engine/events";
-import i18n from "@root/i18n";
-import { getPlayerName } from "./players";
 
 /** Seconds a skipper is held back after a skip, and how far that grows with each skip in between. */
 const FIRST_HOLD = 15;
@@ -49,20 +44,4 @@ export const SKIP_THROTTLE_MESSAGES: Record<SkipThrottleLevel, string> = {
   short: "sentences.skipShortBan",
   threat: "sentences.skipBanThreat",
   long: "sentences.skipLongBan",
-};
-
-/** For the minigame and tinygame skips: whether the Player may skip, warning them when they may not. */
-export const checkSkipper = (game: IGame, player: IPlayer) => {
-  if (game.isPersonalChat) return true;
-  const verdict = throttleSkip(String(player._id));
-  if (!verdict.allowed && verdict.warning) {
-    game.provider.message(
-      game,
-      i18n(game.settings.language, SKIP_THROTTLE_MESSAGES[verdict.warning.level], {
-        name: getPlayerName(player),
-        delay: verdict.warning.delay,
-      }),
-    );
-  }
-  return verdict.allowed;
 };

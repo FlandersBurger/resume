@@ -11,10 +11,6 @@ jest.mock("@models/tenthings/game", () => ({
   GameType: { MAINGAME: "maingame", MINIGAME: "minigame", TINYGAME: "tinygame" },
 }));
 jest.mock("@tenthings/sass", () => jest.fn());
-jest.mock("@tenthings/maingame", () => ({ checkMaingame: jest.fn(), newRound: jest.fn() }));
-jest.mock("@tenthings/minigame", () => ({ checkMinigame: jest.fn() }));
-jest.mock("@tenthings/tinygame", () => ({ checkTinygame: jest.fn() }));
-jest.mock("@tenthings/notify", () => ({ notifyAdmin: jest.fn() }));
 jest.mock("@tenthings/hints", () => ({ MAX_HINTS: 6 }));
 jest.mock("@tenthings/players", () => ({ getPlayerName: jest.fn(() => "TestPlayer") }));
 

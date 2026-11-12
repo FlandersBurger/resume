@@ -1,8 +1,8 @@
-// Renders the Engine's Round Events on any platform, through the Game's provider: the
-// messages are the same ones the provider sent before Rounds moved onto the Engine.
+// Renders the Engine's Round, Minigame and Tinygame Events on any platform, through the Game's
+// provider: the messages are the same ones the provider sent before they moved onto the Engine.
 
 import { List, Player } from "@models/index";
-import { IGame } from "@models/tenthings/game";
+import { GameType, IGame } from "@models/tenthings/game";
 import { IPlayer } from "@models/tenthings/player";
 import i18n from "@root/i18n";
 import { parseSymbols } from "@utils/string-helpers";
@@ -12,7 +12,7 @@ import { rateList } from "@tenthings/lists";
 import { getSnubbedMessage } from "@tenthings/messages";
 import { SKIP_THROTTLE_MESSAGES } from "@tenthings/skips";
 
-/** Renders `event` if it's a Round Event; returns whether it was. */
+/** Renders `event` if it's a Round, Minigame or Tinygame Event; returns whether it was. */
 export const renderRoundEvent = async (game: IGame, event: EngineEvent): Promise<boolean> => {
   const { language } = game.settings;
   const say = (key: string, options?: Record<string, unknown>) =>
@@ -74,10 +74,32 @@ export const renderRoundEvent = async (game: IGame, event: EngineEvent): Promise
     case "skipNotFound":
       say("sentences.skipNotFound", { name: event.playerName });
       return true;
+    case "sideGameStarted":
+      if (event.fallback)
+        say(event.fallback === "language" ? "warnings.noListsForLanguage" : "warnings.noListsForCategory");
+      showSideGame(game, event.sideGame);
+      return true;
+    case "sideGameShown":
+    case "sideGameHintGiven":
+      showSideGame(game, event.sideGame);
+      return true;
+    case "sideGameGuessed": {
+      const player = await Player.findById(event.playerId).exec();
+      if (!player) return true;
+      const guessed = event.sideGame === GameType.MINIGAME ? "miniGameGuessed" : "tinyGameGuessed";
+      game.provider[guessed](game, player, event.answer, event.score, event.accuracy);
+      return true;
+    }
+    case "sideGameSkipped":
+      game.provider.message(game, `The ${event.sideGame} answer was:\n<i>${event.answer}</i>`);
+      return true;
     default:
       return false;
   }
 };
+
+const showSideGame = (game: IGame, sideGame: GameType.MINIGAME | GameType.TINYGAME) =>
+  sideGame === GameType.MINIGAME ? game.provider.miniGameMessage(game) : game.provider.tinyGameMessage(game);
 
 /** A renderer for platforms that only play Rounds (the web game). */
 export const renderRounds: Renderer = async (game, events) => {

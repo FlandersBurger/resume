@@ -15,6 +15,7 @@ import { Action, DELAY_CHOICES, isDelaySetting, isToggleSetting } from "./action
 import { EngineEvent } from "./events";
 import { banCurrentRound, roundHandlers, RoundActionType } from "./round";
 import { Scheduler } from "./scheduler";
+import { sideGameHandlers, SideGameActionType } from "./sideGames";
 
 export type { Action } from "./actions";
 export type { EngineEvent } from "./events";
@@ -81,7 +82,7 @@ const isCategory = (category: string) => {
   return sub === undefined || categories[main].includes(sub);
 };
 
-const handlers: { [T in Exclude<Action["type"], RoundActionType>]: Handler<T> } = {
+const handlers: { [T in Exclude<Action["type"], RoundActionType | SideGameActionType>]: Handler<T> } = {
   vote: async (_game, { listId, voterId, vote, actor }) => {
     if (isVoteThrottled(voterId)) return [];
     const list = await List.findById(listId).select("name votes modifyDate score skips plays").exec();
@@ -256,7 +257,7 @@ const handlers: { [T in Exclude<Action["type"], RoundActionType>]: Handler<T> } 
   },
 };
 
-const allHandlers = { ...handlers, ...roundHandlers } as { [T in Action["type"]]: Handler<T> };
+const allHandlers = { ...handlers, ...roundHandlers, ...sideGameHandlers } as { [T in Action["type"]]: Handler<T> };
 
 /**
  * Apply one Action; `scheduler` takes the Actions it sets up for later. Returns the Game as it

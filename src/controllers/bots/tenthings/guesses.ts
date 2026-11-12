@@ -3,17 +3,11 @@ import find from "lodash/find";
 import { queueGuessJob } from "./engine/queue";
 import type { Guess } from "./engine/actions";
 
-import { Game, Player } from "@models/index";
 import { GameType, IGame } from "@models/tenthings/game";
 import { removeAllButLetters } from "@utils/string-helpers";
 import { IPlayer } from "@models/tenthings/player";
 import { MAX_HINTS } from "./hints";
 import sass from "./sass";
-import { checkMinigame } from "./minigame";
-import { checkTinygame } from "./tinygame";
-import { getPlayerName } from "./players";
-import { styleText } from "util";
-import { notifyAdmin } from "./notify";
 
 export type { Guess } from "./engine/actions";
 
@@ -96,65 +90,8 @@ const queueingGuess = (guess: Guess) => {
 export const isStaleGuess = (queuedAt: number) => {
   const jobAgeMs = Date.now() - queuedAt;
   if (jobAgeMs <= STALE_GUESS_MS) return false;
-  console.log(`[processGuessJob] Skipping stale guess (${Math.round(jobAgeMs / 1000)}s old)`);
+  console.log(`[engine] Skipping stale guess (${Math.round(jobAgeMs / 1000)}s old)`);
   return true;
-};
-
-/**
- * Run a queued minigame or tinygame Guess; `queuedAt` is when it was queued (ms). Called by
- * the Engine worker, which runs main game Guesses itself.
- */
-export const processGuessJob = async (data: Guess, queuedAt: number) => {
-  if (isStaleGuess(queuedAt)) return;
-  try {
-    await processGuess(data);
-  } catch (err) {
-    notifyAdmin(`Error in ProcessGuess`);
-    console.error(err);
-  }
-};
-
-const processGuess = async (guess: Guess) => {
-  const game = await Game.findOne({ _id: guess.gameId })
-    .populate("list.creator")
-    .populate("list.values.guesser")
-    .populate("streak.player");
-  if (!game) {
-    console.error(`Game not found`);
-    return console.error(guess);
-  } else {
-    try {
-      await game.validate();
-    } catch (err) {
-      // A streak whose Player is gone: clear it rather than drop the Guess.
-      game.streak = {
-        player: undefined,
-        count: 0,
-      };
-    }
-  }
-  let player;
-  try {
-    player = await Player.findById(guess.playerId);
-  } catch (err) {
-    console.error(`Error with player in ProcessGuess`);
-    console.error(guess);
-  }
-  if (!player) {
-    console.error(`Player not found for ${guess.playerId}`);
-    return;
-  }
-  if (guess.match.type === GameType.MINIGAME) {
-    await checkMinigame(game, player, guess);
-    console.log(
-      `${guess.gameId} (${game.settings.language}) - ${styleText("grey", "Minigame")} "${styleText("blueBright", game.minigame.answer)}" by ${getPlayerName(player)}`,
-    );
-  } else if (guess.match.type === GameType.TINYGAME) {
-    await checkTinygame(game, player, guess);
-    console.log(
-      `${guess.gameId} (${game.settings.language}) - ${styleText("magenta", "Tinygame")} "${styleText("blueBright", game.tinygame.answer)}" by ${getPlayerName(player)}`,
-    );
-  }
 };
 
 export const getAnswerScore = (hintCount: number, accuracy: number, playerCount: number = 1) =>

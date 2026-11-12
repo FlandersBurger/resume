@@ -4,8 +4,6 @@ import { GameType, IGame } from "@models/tenthings/game";
 import { convertDiscordUserToPlayer } from ".";
 import bot, { DiscordButtonInteraction } from "@root/connections/discord";
 import i18n from "@root/i18n";
-import { processHint } from "@tenthings/hints";
-import { checkSkipper } from "@tenthings/skips";
 import { getStats, getScores } from "@tenthings/providers/telegram/stats";
 import { Action, Actor, isDelaySetting, isToggleSetting } from "@tenthings/engine/actions";
 import { dispatch } from "@tenthings/engine/queue";
@@ -114,7 +112,13 @@ export default async (interaction: DiscordButtonInteraction) => {
       const game = await getPopulatedGame(interaction.channelId);
       if (!game) break;
       const player = await getPlayer(game, interaction);
-      if (player) await processHint(game, player, GameType.MINIGAME);
+      if (player)
+        dispatch({
+          type: "sideGameHint",
+          gameId: String(game._id),
+          actor: toActor(player, interaction),
+          sideGame: GameType.MINIGAME,
+        });
       break;
     }
 
@@ -122,11 +126,13 @@ export default async (interaction: DiscordButtonInteraction) => {
       const game = await getPopulatedGame(interaction.channelId);
       if (!game) break;
       const player = await getPlayer(game, interaction);
-      if (player && (await checkSkipper(game, player))) {
-        bot.queueMessage(game.discordChannel, `The minigame answer was:\n*${game.minigame.answer}*`);
-        const { createMinigame } = await import("@tenthings/minigame");
-        setTimeout(() => createMinigame(game), 200);
-      }
+      if (player)
+        dispatch({
+          type: "sideGameSkip",
+          gameId: String(game._id),
+          actor: toActor(player, interaction),
+          sideGame: GameType.MINIGAME,
+        });
       break;
     }
 
@@ -134,7 +140,13 @@ export default async (interaction: DiscordButtonInteraction) => {
       const game = await getPopulatedGame(interaction.channelId);
       if (!game) break;
       const player = await getPlayer(game, interaction);
-      if (player) await processHint(game, player, GameType.TINYGAME);
+      if (player)
+        dispatch({
+          type: "sideGameHint",
+          gameId: String(game._id),
+          actor: toActor(player, interaction),
+          sideGame: GameType.TINYGAME,
+        });
       break;
     }
 
@@ -142,11 +154,13 @@ export default async (interaction: DiscordButtonInteraction) => {
       const game = await getPopulatedGame(interaction.channelId);
       if (!game) break;
       const player = await getPlayer(game, interaction);
-      if (player && (await checkSkipper(game, player))) {
-        bot.queueMessage(game.discordChannel, `The tinygame answer was:\n*${game.tinygame.answer}*`);
-        const { createTinygame } = await import("@tenthings/tinygame");
-        setTimeout(() => createTinygame(game), 200);
-      }
+      if (player)
+        dispatch({
+          type: "sideGameSkip",
+          gameId: String(game._id),
+          actor: toActor(player, interaction),
+          sideGame: GameType.TINYGAME,
+        });
       break;
     }
 

@@ -1,5 +1,5 @@
 import moment from "moment";
-import { HydratedDocument, QueryOptions } from "mongoose";
+import { QueryOptions } from "mongoose";
 import uniq from "lodash/uniq";
 import sampleSize from "lodash/sampleSize";
 
@@ -8,13 +8,15 @@ import { notifyAdmin } from "./notify";
 import { IGame } from "@models/tenthings/game";
 import { Language } from "./languages";
 import { IList } from "@models/tenthings/list";
-import { IPlayer } from "@models/tenthings/player";
-import { Guess, getAnswerScore } from "./guesses";
 import { IMinigame } from "@models/tenthings/minigame";
 import { parseSymbols } from "@utils/string-helpers";
-import i18n from "@root/i18n";
 
-export const createMinigame = async (game: HydratedDocument<IGame>) => {
+/**
+ * Draws a new Minigame onto `game` (unsaved). Returns the fallback taken when nothing fit the
+ * Game's languages or categories.
+ */
+export const drawMinigame = async (game: IGame): Promise<"language" | "category" | undefined> => {
+  let fallback: "language" | "category" | undefined;
   const availableLanguages =
     game.settings.languages && game.settings.languages.length > 0 ? game.settings.languages : ["EN"];
   let minigames = await getMinigames({
@@ -26,13 +28,13 @@ export const createMinigame = async (game: HydratedDocument<IGame>) => {
       categories: { $nin: game.disabledCategories },
       language: "EN",
     });
-    if (minigames.length > 0) game.provider.message(game, i18n(game.settings.language, "warnings.noListsForLanguage"));
+    if (minigames.length > 0) fallback = "language";
   }
   if (minigames.length === 0) {
     minigames = await getMinigames({
       language: "EN",
     });
-    if (minigames.length > 0) game.provider.message(game, i18n(game.settings.language, "warnings.noListsForCategory"));
+    if (minigames.length > 0) fallback = "category";
   }
   let minigame = minigames[Math.floor(Math.random() * minigames.length)];
 
@@ -40,14 +42,8 @@ export const createMinigame = async (game: HydratedDocument<IGame>) => {
   game.minigame.hints = 0;
   game.minigame.date = moment().toDate();
   game.minigame.lists = sampleSize(minigame.lists, 10);
-  game.provider.miniGameMessage(game);
-  try {
-    await game.save();
-  } catch (err) {
-    console.error(`Minigame Error\n${JSON.stringify(err)}`);
-    throw err;
-  }
-  return true;
+  game.minigame.nextHintAt = undefined;
+  return fallback;
 };
 
 type Answer = {
@@ -134,24 +130,4 @@ const getMinigames = async (parameters: QueryOptions): Promise<IMinigame[]> => {
   let minigames = await Minigame.find(parameters).lean();
   if (minigames.length === 0) minigames = await Minigame.find({}).lean();
   return minigames;
-};
-
-// Count the possible minigames
-// getMinigames({}).then((minigames) => console.log(minigames.length));
-
-export const checkMinigame = async (game: HydratedDocument<IGame>, player: HydratedDocument<IPlayer>, guess: Guess) => {
-  if (guess.match.value !== game.minigame.answer) return;
-  const score: number = getAnswerScore(game.minigame.hints, guess.match.distance);
-  player.score += score;
-  player.scoreDaily += score;
-  if (game.minigame.hints === 0) player.hintStreak++;
-  player.minigamePlays++;
-  if (player.infractions > 0) player.infractions--;
-  await player.save();
-  game.minigame.plays++;
-  await game.save();
-  game.provider.miniGameGuessed(game, player, score, (guess.match.distance * 100).toFixed(0));
-  setTimeout(() => {
-    createMinigame(game);
-  }, 1000);
 };
