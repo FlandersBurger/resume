@@ -3,6 +3,8 @@ import { createPortal } from "react-dom";
 import styled from "styled-components";
 import { TenThingsList, CategoryOption, Language } from "../../services/tenthings";
 import { TenThingsTableContainer } from "./SharedStyles";
+import { ListFilter, activeFilterCount, toggleSort } from "./listQuery";
+import { categoryLabel, formatDate, formatPct } from "./format";
 
 const ListRowTooltip = styled.div`
   position: fixed;
@@ -66,8 +68,11 @@ interface Props {
   lists: TenThingsList[];
   count: number;
   loading: boolean;
-  search: string;
-  searchField: string;
+  /** Search, filters and sort; change them through onFilterChange. */
+  filter: ListFilter;
+  onFilterChange: (patch: Partial<ListFilter>) => void;
+  /** Shows the "My lists" filter. */
+  canFilterMine?: boolean;
   highlightedIds: string[];
   highlightedCount: number;
   isAdmin: boolean;
@@ -75,21 +80,8 @@ interface Props {
   canAddList: boolean;
   canViewCreator?: boolean;
   canOpenEditor?: boolean;
-  filterCount?: number;
   categoryOptions?: CategoryOption[];
   languageOptions?: Language[];
-  languageFilter?: string[];
-  categoryFilter?: string[];
-  qualityFilter?: string[];
-  sortField: string;
-  sortDir: "asc" | "desc";
-  onSortChange: (field: string) => void;
-  myListsOnly?: boolean;
-  onMyListsToggle?: () => void;
-  onLanguageFilterChange?: (langs: string[]) => void;
-  onCategoryFilterChange?: (cats: string[]) => void;
-  onQualityFilterChange?: (states: string[]) => void;
-  onSearchChange: (s: string, field: string) => void;
   onSelect: (list: TenThingsList) => void;
   onToggleHighlight: (id: string) => void;
   onLoadMore: () => void;
@@ -105,8 +97,9 @@ export function ListTable({
   lists,
   count,
   loading,
-  search,
-  searchField,
+  filter,
+  onFilterChange,
+  canFilterMine = false,
   highlightedIds,
   highlightedCount,
   isAdmin,
@@ -114,21 +107,8 @@ export function ListTable({
   canAddList,
   canViewCreator = true,
   canOpenEditor = true,
-  filterCount = 0,
   categoryOptions = [],
   languageOptions = [],
-  languageFilter = [],
-  categoryFilter = [],
-  qualityFilter = [],
-  sortField,
-  sortDir,
-  onSortChange,
-  myListsOnly = false,
-  onMyListsToggle,
-  onLanguageFilterChange,
-  onCategoryFilterChange,
-  onQualityFilterChange,
-  onSearchChange,
   onSelect,
   onToggleHighlight,
   onLoadMore,
@@ -139,6 +119,24 @@ export function ListTable({
   onFavorite,
   onDeleteList,
 }: Props) {
+  const {
+    search,
+    searchField,
+    languages: languageFilter,
+    categories: categoryFilter,
+    quality: qualityFilter,
+    sortBy: sortField,
+    sortDir,
+    mine: myListsOnly,
+  } = filter;
+  const filterCount = activeFilterCount(filter);
+  const onSortChange = (column: string) => onFilterChange(toggleSort(filter, column));
+  const onSearchChange = (s: string, field: ListFilter["searchField"]) => onFilterChange({ search: s, searchField: field });
+  const onLanguageFilterChange = (languages: string[]) => onFilterChange({ languages });
+  const onCategoryFilterChange = (categories: string[]) => onFilterChange({ categories });
+  const onQualityFilterChange = (quality: string[]) => onFilterChange({ quality });
+  const onMyListsToggle = canFilterMine ? () => onFilterChange({ mine: !myListsOnly }) : undefined;
+
   const [tooltip, setTooltip] = useState<{ text: string; x: number; y: number } | null>(null);
   const [showFilters, setShowFilters] = useState(false);
 
@@ -149,33 +147,7 @@ export function ListTable({
         style={{ marginLeft: 4 }}
       />
     ) : null;
-  const fmt = (d?: string) => {
-    if (!d) return "";
-    const date = new Date(d);
-    const day = String(date.getDate()).padStart(2, "0");
-    const month = date.toLocaleString("en", { month: "short" });
-    const year = date.getFullYear();
-    return `${day}-${month}-${year}`;
-  };
-  const pct = (n?: number) => (n != null ? `${Math.round(n * 100)}%` : "");
-
-  const getCategoryLabel = (cats: string[]) => {
-    if (!cats || cats.length === 0) return "";
-    const mainCats = cats.filter((c) => !c.includes("."));
-    return mainCats
-      .sort()
-      .map((cat) => {
-        const opt = categoryOptions.find((o) => o.value === cat);
-        const label = opt?.label ?? cat;
-        const subCats = cats
-          .filter((c) => c.startsWith(cat + "."))
-          .map((c) => opt?.subcategories?.find((s) => s.value === c)?.label ?? c.split(".")[1]);
-        return label + (subCats.length > 0 ? ` (${subCats.sort().join(", ")})` : "");
-      })
-      .join(", ");
-  };
-
-  const handleSearchField = (field: string) => {
+  const handleSearchField = (field: ListFilter["searchField"]) => {
     onSearchChange(search, field);
   };
 
@@ -522,7 +494,7 @@ export function ListTable({
                 )}
                 <td onClick={() => canOpenEditor && onSelect(list)}>{list.name}</td>
                 <td className="hidden-sm visible-md visible-lg" onClick={() => canOpenEditor && onSelect(list)}>
-                  {getCategoryLabel(list.categories)}
+                  {categoryLabel(list.categories ?? [], categoryOptions)}
                 </td>
                 <td className="hidden-sm hidden-md visible-lg" onClick={() => canOpenEditor && onSelect(list)}>
                   {canViewCreator ? list.creator?.username : null}
@@ -531,10 +503,10 @@ export function ListTable({
                   className="hidden-xs visible-sm visible-md visible-lg"
                   onClick={() => canOpenEditor && onSelect(list)}
                 >
-                  {fmt(list.date)}
+                  {formatDate(list.date)}
                 </td>
                 <td className="hidden-sm hidden-md visible-lg" onClick={() => canOpenEditor && onSelect(list)}>
-                  {fmt(list.modifyDate)}
+                  {formatDate(list.modifyDate)}
                 </td>
                 <td onClick={() => canOpenEditor && onSelect(list)}>{list.answers}</td>
                 <td
@@ -550,7 +522,7 @@ export function ListTable({
                   {list.downvotes != null && <span className="label label-danger">{list.downvotes}</span>}
                 </td>
                 <td className="hidden-sm visible-md visible-lg" onClick={() => canOpenEditor && onSelect(list)}>
-                  {pct(list.likeRatio)}
+                  {formatPct(list.likeRatio)}
                 </td>
                 <td className="hidden-sm visible-md visible-lg" onClick={() => canOpenEditor && onSelect(list)}>
                   {list.completedRounds ?? ""}
