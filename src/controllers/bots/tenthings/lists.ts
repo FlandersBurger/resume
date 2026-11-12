@@ -90,8 +90,8 @@ export const selectList = async (game: IGame): Promise<HydratedDocument<IList>> 
     return list;
   }
 
-  // Lists have no index on language, so every query on the pool scans the whole collection
-  // (seconds each). Read the pool once and choose in memory, instead of a count and a skip per try.
+  // Read the pool once (on the language index) and choose in memory, instead of a count and a skip
+  // per try: this runs on the Engine queue, ahead of every Game's Guesses.
   const poolQuery = {
     language: { $in: availableLanguages },
     categories: { $nin: game.disabledCategories },
