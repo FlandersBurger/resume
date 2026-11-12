@@ -73,7 +73,48 @@ const getHighQualityProbability = (listsPlayed: number): number => {
 };
 
 /** The fields list selection needs from every List in a Game's pool. */
-type PoolList = Pick<IList, "_id" | "categories" | "lowQuality" | "highQuality" | "starred">;
+type PoolList = Pick<IList, "_id" | "language" | "categories" | "lowQuality" | "highQuality" | "starred">;
+
+/** How long the List pool is served before it's read again (in the background). */
+export const LIST_POOL_REFRESH_MS = 5 * 60_000;
+
+let listPool: { lists: PoolList[]; loadedAt: number } | undefined;
+let loadingListPool: Promise<PoolList[]> | undefined;
+
+const loadListPool = () =>
+  (loadingListPool ??= List.find({})
+    .select("_id language categories lowQuality highQuality starred")
+    .lean<PoolList[]>()
+    .exec()
+    .then((lists) => {
+      listPool = { lists, loadedAt: Date.now() };
+      return lists;
+    })
+    .finally(() => {
+      loadingListPool = undefined;
+    }));
+
+/**
+ * Every List's selection fields, from memory. Reading them scans the whole lists collection
+ * (seconds), and a new Round reads them on the Engine queue, ahead of every Game's Guesses, so
+ * they're read once and refreshed in the background: a new Round only waits for the first read.
+ */
+export const getListPool = async (): Promise<PoolList[]> => {
+  if (!listPool) return loadListPool();
+  if (Date.now() - listPool.loadedAt > LIST_POOL_REFRESH_MS)
+    loadListPool().catch((error) => console.error("List pool refresh failed", error));
+  return listPool.lists;
+};
+
+/** Lists were added, changed or removed: the pool is read again on its next use. */
+export const invalidateListPool = () => {
+  if (listPool) listPool.loadedAt = 0;
+};
+
+/** Forget the pool entirely (tests, whose Lists change between cases). */
+export const resetListPool = () => {
+  listPool = undefined;
+};
 
 const pickRandom = <T>(items: T[]): T | undefined => items[Math.floor(Math.random() * items.length)];
 
@@ -90,15 +131,14 @@ export const selectList = async (game: IGame): Promise<HydratedDocument<IList>> 
     return list;
   }
 
-  // Lists have no index on language, so every query on the pool scans the whole collection
-  // (seconds each). Read the pool once and choose in memory, instead of a count and a skip per try.
-  const poolQuery = {
-    language: { $in: availableLanguages },
-    categories: { $nin: game.disabledCategories },
-    ...(game.platform === "web" ? { starred: true } : {}),
-  };
-  const [pool, recentRounds, banned, skipHeavy, preferredCategories] = await Promise.all([
-    List.find(poolQuery).select("_id categories lowQuality highQuality starred").lean<PoolList[]>(),
+  // The pool comes from memory (getListPool); the per-Game reads below are indexed by Game.
+  const disabledCategories = new Set(game.disabledCategories);
+  const inPool = (l: PoolList) =>
+    availableLanguages.includes(l.language as SupportedLanguage) &&
+    !l.categories?.some((c) => disabledCategories.has(c)) &&
+    (game.platform !== "web" || !!l.starred);
+  const [allLists, recentRounds, banned, skipHeavy, preferredCategories] = await Promise.all([
+    getListPool(),
     GameRound.find(playedRounds({ gameId: game._id }))
       .sort({ playedAt: -1 })
       .limit(5000)
@@ -108,26 +148,37 @@ export const selectList = async (game: IGame): Promise<HydratedDocument<IList>> 
     getSkipHeavyListIds(game._id),
     getPreferredCategories(game._id),
   ]);
+  const pool = allLists.filter(inPool);
   const cooldownRounds = Math.max(10, Math.floor(pool.length / 2));
   const excluded = new Set(
     [...recentRounds.slice(0, cooldownRounds).map((r) => r.listId), ...banned, ...skipHeavy].map(String),
   );
-  const eligible = pool.filter((l) => !l.lowQuality && !excluded.has(String(l._id)));
 
   // Prefer a List in a category this Game tends to complete, when there is one.
   const pickFrom = (lists: PoolList[]) =>
     pickRandom(lists.filter((l) => l.categories?.some((c) => preferredCategories.includes(c)))) ?? pickRandom(lists);
+  const choose = () => {
+    const eligible = pool.filter((l) => !l.lowQuality && !excluded.has(String(l._id)));
+    let chosen: PoolList | undefined;
+    if (Math.random() < getHighQualityProbability(game.listsPlayed)) {
+      chosen = pickFrom(eligible.filter((l) => l.highQuality || l.starred));
+    }
+    return chosen ?? pickFrom(eligible);
+  };
 
-  let chosen: PoolList | undefined;
-  if (Math.random() < getHighQualityProbability(game.listsPlayed)) {
-    chosen = pickFrom(eligible.filter((l) => l.highQuality || l.starred));
+  let list: HydratedDocument<IList> | undefined;
+  // The pool can be a few minutes old: a List deleted since is passed over.
+  for (let tries = 0; !list && tries < 3; tries++) {
+    const chosen = choose();
+    if (!chosen) break;
+    list =
+      (await List.findById(chosen._id).select("-votes").populate("creator").populate("values.creator").exec()) ??
+      undefined;
+    if (!list) {
+      excluded.add(String(chosen._id));
+      invalidateListPool();
+    }
   }
-  chosen ??= pickFrom(eligible);
-
-  let list = chosen
-    ? ((await List.findById(chosen._id).select("-votes").populate("creator").populate("values.creator").exec()) ??
-      undefined)
-    : undefined;
 
   if (!list) {
     // Cooldown exhausted — ignore cooldown, still filter low-quality
