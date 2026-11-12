@@ -1,4 +1,4 @@
-import http, { setAuthToken, clearAuthToken } from "./http";
+import http from "./http";
 
 export interface User {
   _id: string;
@@ -31,13 +31,6 @@ export async function toggleBan(id: string): Promise<void> {
   await http.post(`/api/users/ban/${id}`);
 }
 
-export async function authenticate(payload: object): Promise<User> {
-  const { data: token } = await http.post<string>("/api/users/authenticate", { user: payload });
-  window.localStorage.setItem("token", token);
-  setAuthToken(token);
-  return getUser();
-}
-
 export async function linkTelegram(userId: string, telegramData: object): Promise<User> {
   await http.post(`/api/users/${userId}/telegram`, telegramData);
   return getUser();
@@ -60,17 +53,4 @@ export async function changePassword(userId: string, oldPassword: string, newPas
 export async function changeUsername(userId: string, newUsername: string): Promise<User> {
   await http.post(`/api/users/${userId}/username`, { newUsername });
   return getUser();
-}
-
-export async function createUser(username: string, password: string): Promise<User> {
-  await http.post("/api/users", { username, password });
-  const { data: token } = await http.get<string>(`/api/users/${username}/login`);
-  window.localStorage.setItem("token", token);
-  setAuthToken(token);
-  return getUser();
-}
-
-export function logout() {
-  window.localStorage.clear();
-  clearAuthToken();
 }

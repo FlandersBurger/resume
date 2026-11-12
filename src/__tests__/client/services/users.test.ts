@@ -2,16 +2,13 @@ import {
   getUser,
   getUsers,
   toggleBan,
-  authenticate,
   linkTelegram,
   updateUser,
   checkPassword,
   changePassword,
   changeUsername,
-  createUser,
-  logout,
 } from "../../../client/services/users";
-import http, { setAuthToken, clearAuthToken } from "../../../client/services/http";
+import http from "../../../client/services/http";
 
 jest.mock("../../../client/services/http", () => ({
   __esModule: true,
@@ -22,13 +19,9 @@ jest.mock("../../../client/services/http", () => ({
     delete: jest.fn(),
     defaults: { headers: { common: {} } },
   },
-  setAuthToken: jest.fn(),
-  clearAuthToken: jest.fn(),
 }));
 
 const mockHttp = http as jest.Mocked<typeof http>;
-const mockSetAuthToken = setAuthToken as jest.MockedFunction<typeof setAuthToken>;
-const mockClearAuthToken = clearAuthToken as jest.MockedFunction<typeof clearAuthToken>;
 
 const user = { _id: "u1", username: "alice" };
 
@@ -60,20 +53,6 @@ describe("toggleBan", () => {
     mockHttp.post.mockResolvedValueOnce({ data: undefined });
     await toggleBan("u1");
     expect(mockHttp.post).toHaveBeenCalledWith("/api/users/ban/u1");
-  });
-});
-
-describe("authenticate", () => {
-  it("POSTs credentials, stores token, calls setAuthToken, and returns user", async () => {
-    mockHttp.post.mockResolvedValueOnce({ data: "jwt-token" });
-    mockHttp.get.mockResolvedValueOnce({ data: user });
-    const result = await authenticate({ authType: "password", username: "alice", password: "pw" });
-    expect(mockHttp.post).toHaveBeenCalledWith("/api/users/authenticate", {
-      user: { authType: "password", username: "alice", password: "pw" },
-    });
-    expect(localStorage.getItem("token")).toBe("jwt-token");
-    expect(mockSetAuthToken).toHaveBeenCalledWith("jwt-token");
-    expect(result).toEqual(user);
   });
 });
 
@@ -122,29 +101,5 @@ describe("changeUsername", () => {
     const result = await changeUsername("u1", "bob");
     expect(mockHttp.post).toHaveBeenCalledWith("/api/users/u1/username", { newUsername: "bob" });
     expect(result.username).toBe("bob");
-  });
-});
-
-describe("createUser", () => {
-  it("registers, fetches login token, stores it, and returns user", async () => {
-    mockHttp.post.mockResolvedValueOnce({ data: undefined }); // register
-    mockHttp.get
-      .mockResolvedValueOnce({ data: "new-token" }) // login
-      .mockResolvedValueOnce({ data: user }); // getUser
-    const result = await createUser("alice", "pw");
-    expect(mockHttp.post).toHaveBeenCalledWith("/api/users", { username: "alice", password: "pw" });
-    expect(mockHttp.get).toHaveBeenCalledWith("/api/users/alice/login");
-    expect(localStorage.getItem("token")).toBe("new-token");
-    expect(mockSetAuthToken).toHaveBeenCalledWith("new-token");
-    expect(result).toEqual(user);
-  });
-});
-
-describe("logout", () => {
-  it("clears localStorage and calls clearAuthToken", () => {
-    localStorage.setItem("token", "abc");
-    logout();
-    expect(localStorage.getItem("token")).toBeNull();
-    expect(mockClearAuthToken).toHaveBeenCalledTimes(1);
   });
 });
