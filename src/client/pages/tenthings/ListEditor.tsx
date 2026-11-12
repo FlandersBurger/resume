@@ -3,6 +3,7 @@ import styled from "styled-components";
 import { TenThingsList, TenThingsValue, Language, CategoryOption, getBlurbs } from "../../services/tenthings";
 import { removeAllButLetters } from "@utils/string-helpers";
 import { TenThingsTableContainer } from "./SharedStyles";
+import { categoryLabel, formatDate, formatPct } from "./format";
 
 const EditListPanel = styled.div<{ $active?: boolean }>`
   top: 50px;
@@ -194,21 +195,12 @@ interface Props {
   onDelete?: () => void;
 }
 
-const fmt = (d?: string | Date) => {
-  if (!d) return "";
-  const date = new Date(d);
-  if (isNaN(date.getTime())) return "";
-  return `${String(date.getDate()).padStart(2, "0")}-${date.toLocaleString("en", { month: "short" })}-${date.getFullYear()}`;
-};
-
 const fmtCreated = (v: TenThingsValue) => {
-  if (v.date) return fmt(v.date);
+  if (v.date) return formatDate(v.date);
   // Fall back to the timestamp embedded in the MongoDB ObjectId
-  if (v._id && /^[0-9a-f]{24}$/i.test(v._id)) return fmt(new Date(parseInt(v._id.substring(0, 8), 16) * 1000));
+  if (v._id && /^[0-9a-f]{24}$/i.test(v._id)) return formatDate(new Date(parseInt(v._id.substring(0, 8), 16) * 1000));
   return "";
 };
-
-const pct = (n?: number) => (n != null ? `${Math.round(n * 100)}%` : "");
 
 function AutoTextarea({
   value,
@@ -338,7 +330,7 @@ const ValueRow = memo(
           {fmtCreated(v)}
         </td>
         <td className="hidden-xs hidden-sm visible-md visible-lg" style={{ whiteSpace: "nowrap", fontSize: 12 }}>
-          {fmt(v.modifyDate)}
+          {formatDate(v.modifyDate)}
         </td>
         <ImageCell style={{ width: 36 }} onClick={() => v.blurb && onBlurbClick(v)}>
           {v.blurb && (
@@ -517,27 +509,14 @@ export function ListEditor({
     onSave(updated);
   };
 
-  const getCategoryLabel = () => {
-    if (!list.categories.length)
-      return (
-        <>
-          <i className="fas fa-tags" /> Select...
-        </>
-      );
-    const mainCats = list.categories.filter((c) => !c.includes("."));
-    const label = mainCats
-      .sort()
-      .map((cat) => {
-        const opt = categoryOptions.find((o) => o.value === cat);
-        const lbl = opt?.label ?? cat;
-        const subs = list.categories
-          .filter((c) => c.startsWith(cat + "."))
-          .map((c) => opt?.subcategories?.find((s) => s.value === c)?.label ?? c.split(".")[1]);
-        return lbl + (subs.length ? ` (${subs.sort().join(", ")})` : "");
-      })
-      .join(", ");
-    return <>{label}</>;
-  };
+  const getCategoryLabel = () =>
+    list.categories.length ? (
+      categoryLabel(list.categories, categoryOptions)
+    ) : (
+      <>
+        <i className="fas fa-tags" /> Select...
+      </>
+    );
 
   const difficultyIcons = [
     { icon: "fa-smile-beam", title: "Easy" },
@@ -569,13 +548,13 @@ export function ListEditor({
             {list.date && (
               <>
                 {" "}
-                / <b>Created on</b> {fmt(list.date)}
+                / <b>Created on</b> {formatDate(list.date)}
               </>
             )}
             {list.modifyDate && list.modifyDate !== list.date && (
               <>
                 {" "}
-                / <b>Last modified on</b> {fmt(list.modifyDate)}
+                / <b>Last modified on</b> {formatDate(list.modifyDate)}
               </>
             )}
             {" / "}
@@ -619,13 +598,13 @@ export function ListEditor({
               {list.playRatio != null && (
                 <>
                   {" "}
-                  / <b>Play Ratio</b> {pct(list.playRatio)}
+                  / <b>Play Ratio</b> {formatPct(list.playRatio)}
                 </>
               )}
               {list.score != null && (
                 <>
                   {" "}
-                  / <b>Score</b> {pct(list.score)}
+                  / <b>Score</b> {formatPct(list.score)}
                 </>
               )}
               {!!(list.upvotes || list.downvotes) && (
@@ -635,7 +614,7 @@ export function ListEditor({
                   {list.likeRatio != null && (
                     <>
                       {" "}
-                      / <b>Like Ratio</b> {pct(list.likeRatio)}
+                      / <b>Like Ratio</b> {formatPct(list.likeRatio)}
                     </>
                   )}
                 </>
@@ -643,7 +622,7 @@ export function ListEditor({
               {list.calculatedDifficulty != null && (
                 <>
                   {" "}
-                  / <b>Difficulty</b> {pct(list.calculatedDifficulty)}
+                  / <b>Difficulty</b> {formatPct(list.calculatedDifficulty)}
                 </>
               )}
             </span>
