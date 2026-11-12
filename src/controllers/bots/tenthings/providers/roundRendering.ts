@@ -7,16 +7,47 @@ import { IPlayer } from "@models/tenthings/player";
 import i18n from "@root/i18n";
 import { parseSymbols } from "@utils/string-helpers";
 import type { EngineEvent } from "@tenthings/engine/events";
-import type { Renderer } from "@tenthings/engine/rendering";
 import { rateList } from "@tenthings/lists";
 import { getSnubbedMessage } from "@tenthings/messages";
 import { SKIP_THROTTLE_MESSAGES } from "@tenthings/skips";
+
+/**
+ * The one-line notice some Round Events come down to (a refused Hint, a Skip's progress), the
+ * same on every platform; undefined for the other Events.
+ */
+export const roundNotice = (language: string, event: EngineEvent): string | undefined => {
+  switch (event.type) {
+    case "hintRefused":
+      return event.reason === "tooMany"
+        ? i18n(language, "warnings.tooManyHints")
+        : i18n(language, "warnings.hintCooldown", { seconds: event.seconds });
+    case "skipRequested":
+      return i18n(language, "sentences.skipConfirm", { list: event.listName, skipDelay: event.seconds });
+    case "skipRepeated":
+      return i18n(language, "sentences.skipDenial");
+    case "skipThrottled":
+      return i18n(language, SKIP_THROTTLE_MESSAGES[event.level], { name: event.playerName, delay: event.delay });
+    case "skipVetoed":
+      return i18n(language, "sentences.skipVeto", { name: event.playerName, vetoDelay: event.vetoDelay });
+    case "skipAborted":
+      return i18n(language, "sentences.skipAbort", { name: event.playerName, vetoDelay: event.vetoDelay });
+    case "skipNotFound":
+      return i18n(language, "sentences.skipNotFound", { name: event.playerName });
+    default:
+      return undefined;
+  }
+};
 
 /** Renders `event` if it's a Round, Minigame or Tinygame Event; returns whether it was. */
 export const renderRoundEvent = async (game: IGame, event: EngineEvent): Promise<boolean> => {
   const { language } = game.settings;
   const say = (key: string, options?: Record<string, unknown>) =>
     game.provider.message(game, i18n(language, key, options));
+  const notice = roundNotice(language, event);
+  if (notice !== undefined) {
+    game.provider.message(game, notice);
+    return true;
+  }
   switch (event.type) {
     case "roundStarted":
       game.provider.newRound(game, game.list);
@@ -48,31 +79,9 @@ export const renderRoundEvent = async (game: IGame, event: EngineEvent): Promise
     case "hintGiven":
       game.provider.mainGameMessage(game, false);
       return true;
-    case "hintRefused":
-      if (event.reason === "tooMany") say("warnings.tooManyHints");
-      else say("warnings.hintCooldown", { seconds: event.seconds });
-      return true;
-    case "skipRequested":
-      say("sentences.skipConfirm", { list: event.listName, skipDelay: event.seconds });
-      return true;
-    case "skipRepeated":
-      say("sentences.skipDenial");
-      return true;
-    case "skipThrottled":
-      say(SKIP_THROTTLE_MESSAGES[event.level], { name: event.playerName, delay: event.delay });
-      return true;
     case "listSkipped":
       game.provider.skipList(game);
       game.provider.dailyScores(game, 5);
-      return true;
-    case "skipVetoed":
-      say("sentences.skipVeto", { name: event.playerName, vetoDelay: event.vetoDelay });
-      return true;
-    case "skipAborted":
-      say("sentences.skipAbort", { name: event.playerName, vetoDelay: event.vetoDelay });
-      return true;
-    case "skipNotFound":
-      say("sentences.skipNotFound", { name: event.playerName });
       return true;
     case "sideGameStarted":
       if (event.fallback)
@@ -100,8 +109,3 @@ export const renderRoundEvent = async (game: IGame, event: EngineEvent): Promise
 
 const showSideGame = (game: IGame, sideGame: GameType.MINIGAME | GameType.TINYGAME) =>
   sideGame === GameType.MINIGAME ? game.provider.miniGameMessage(game) : game.provider.tinyGameMessage(game);
-
-/** A renderer for platforms that only play Rounds (the web game). */
-export const renderRounds: Renderer = async (game, events) => {
-  for (const event of events) await renderRoundEvent(game, event);
-};

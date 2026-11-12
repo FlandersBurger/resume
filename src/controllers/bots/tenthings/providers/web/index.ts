@@ -1,42 +1,27 @@
 import { publish } from "@root/queue";
-import { IGame, IGameList, IGameListValue } from "@root/models/tenthings/game";
-import { IList } from "@root/models/tenthings/list";
+import { IGame } from "@root/models/tenthings/game";
 import { Provider } from "..";
 import { IUser } from "@root/models/user";
 import { Player } from "@root/models";
-import { maskUrls, parseSymbols } from "@utils/string-helpers";
+import { maskUrls } from "@utils/string-helpers";
 import { HydratedDocument } from "mongoose";
 import { IPlayer } from "@root/models/tenthings/player";
-import { getGuessedMessage } from "../../messages";
-import { getPlayerName } from "../../players";
 
+// The web game's Round messages come from its Engine renderer (./renderer); this Provider only
+// carries the messages that don't come from the Engine yet (List selection warnings, sass).
 export const web: Provider = {
   type: "web",
   keyboardConverter: (def) => def,
-  message: async (_game: IGame, message) => {
-    await publish("tenthings_message", { message });
+  message: async (game: IGame, message) => {
+    await publish("tenthings_message", { webGameId: game.webGameId, message });
   },
-  newRound: (game: IGame, list: IList | IGameList) => {
-    console.log("New round started", game._id, list.name);
-  },
-  endOfRound: async (game: IGame, list: IList) => {
-    console.log("Round ended", game._id, list.name);
-    await publish("tenthings_message", { message: "Round ended" });
-  },
-  skipList: (game: IGame) => {
-    console.log("List skipped", game.list.name);
-    publish("tenthings_message", { message: "List skipped" });
-  },
+  newRound: () => {},
+  endOfRound: async () => {},
+  skipList: () => {},
   dailyScores: () => {},
   endOfDay: async () => {},
-  guessed: async (game: IGame, player: IPlayer, match: IGameListValue, ..._: any) => {
-    await publish("tenthings_message", {
-      message: getGuessedMessage(game.settings.language, parseSymbols(match.value), getPlayerName(player, true)),
-    });
-  },
-  mainGameMessage: async () => {
-    await publish("tenthings_message", {});
-  },
+  guessed: () => {},
+  mainGameMessage: () => {},
   miniGameMessage: () => {},
   miniGameGuessed: () => {},
   tinyGameMessage: () => {},

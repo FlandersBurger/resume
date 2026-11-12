@@ -93,6 +93,16 @@ interface Game {
   };
 }
 
+/** The web Game this page plays. */
+const WEB_GAME_ID = 1;
+
+/** What the server publishes after each Action on a web Game (see providers/web/renderer.ts). */
+interface WebEventsMessage {
+  webGameId: number;
+  events: { type: string }[];
+  notices: string[];
+}
+
 export default function TenThingsPlay() {
   const { currentUser, toast } = useApp();
   const [game, setGame] = useState<Game | null>(null);
@@ -111,10 +121,18 @@ export default function TenThingsPlay() {
   loadGameRef.current = loadGame;
 
   useWebSocket({
-    tenthings_message: (data: any) => {
-      if ((data as any)?.message) toast((data as any).message);
-      // Small delay to let the queue finish before reloading
-      setTimeout(() => loadGameRef.current(), 300);
+    // Sent once an Action on the Game has run, so the reload sees its result.
+    tenthings_events: (data: unknown) => {
+      const { webGameId, notices } = data as WebEventsMessage;
+      if (webGameId !== WEB_GAME_ID) return;
+      notices.forEach((notice) => toast(notice));
+      loadGameRef.current();
+    },
+    // Messages that don't come from an Action (List selection warnings, sass).
+    tenthings_message: (data: unknown) => {
+      const { webGameId, message } = (data ?? {}) as { webGameId?: number; message?: string };
+      if (webGameId !== undefined && webGameId !== WEB_GAME_ID) return;
+      if (message) toast(message);
     },
   });
 
@@ -128,9 +146,8 @@ export default function TenThingsPlay() {
     setGuess("");
     setLoading(true);
     try {
-      await answerTenthings(1, answer);
-      // Reload after short delay to let the queue process the guess
-      setTimeout(loadGame, 800);
+      // The Guess is queued; its Events reload the Game once it has run.
+      await answerTenthings(WEB_GAME_ID, answer);
     } finally {
       setLoading(false);
       inputRef.current?.focus();
@@ -139,13 +156,11 @@ export default function TenThingsPlay() {
 
   const handleHint = async () => {
     await getTenthingsHint();
-    await loadGame();
     inputRef.current?.focus();
   };
 
   const handleSkip = async () => {
     await skipTenthingsList();
-    await loadGame();
     inputRef.current?.focus();
   };
 
