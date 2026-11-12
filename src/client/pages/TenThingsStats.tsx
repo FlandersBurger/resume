@@ -1,5 +1,4 @@
 import { useEffect, useState } from "react";
-import styled from "styled-components";
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -23,30 +22,16 @@ import {
   getLowQualityLists,
   getCategories,
   getLanguages,
-  getList,
   LIST_STAT_KEYS,
   ListStatKey,
   RankRow,
   CategoryOption,
   Language,
-  TenThingsList,
 } from "../services/tenthings";
 import { useApp } from "../context/AppContext";
-import { ListEditor } from "./tenthings/ListEditor";
+import { ListEditorDrawer } from "./tenthings/ListEditorDrawer";
 
 ChartJS.register(CategoryScale, LinearScale, BarElement, LineElement, PointElement, Title, Tooltip, Legend, Filler);
-
-const Overlay = styled.div<{ $visible: boolean }>`
-  position: fixed;
-  width: 100%;
-  height: 100%;
-  top: 0;
-  left: 0;
-  background-color: rgba(0, 0, 0, 0.5);
-  z-index: 99;
-  cursor: pointer;
-  display: ${({ $visible }) => ($visible ? "block" : "none")};
-`;
 
 type PlayRow = { month: number; year: number; uniquePlayers: number; listsPlayed: number };
 type SkipTrendRow = { year: number; month: number; skipRate: number; total: number };
@@ -133,7 +118,7 @@ function StatTable({
 }
 
 export default function TenThingsStats() {
-  const { currentUser, isAdmin } = useApp();
+  const { currentUser } = useApp();
   const [playStats, setPlayStats] = useState<PlayRow[]>([]);
   const [langStats, setLangStats] = useState<YearLangRow[]>([]);
   const [gameStats, setGameStats] = useState<YearLangRow[]>([]);
@@ -146,9 +131,7 @@ export default function TenThingsStats() {
   const [languageFilter, setLanguageFilter] = useState<string[]>([]);
   const [categoryFilter, setCategoryFilter] = useState<string[]>([]);
   const [myListsOnly, setMyListsOnly] = useState(false);
-  const [selectedList, setSelectedList] = useState<TenThingsList | null>(null);
-  const [editorVisible, setEditorVisible] = useState(false);
-  const [editorMounted, setEditorMounted] = useState(false);
+  const [openListId, setOpenListId] = useState<string | null>(null);
 
   useEffect(() => {
     if (!currentUser) return;
@@ -188,20 +171,7 @@ export default function TenThingsStats() {
     })();
   }, [languageFilter, categoryFilter, myListsOnly, currentUser]);
 
-  const handleRowClick = async (id: string) => {
-    const data = await getList(id);
-    setSelectedList(data);
-    setEditorMounted(true);
-    requestAnimationFrame(() => requestAnimationFrame(() => setEditorVisible(true)));
-  };
-
-  const handleEditorClose = () => {
-    setEditorVisible(false);
-    setTimeout(() => {
-      setSelectedList(null);
-      setEditorMounted(false);
-    }, 320);
-  };
+  const handleRowClick = (id: string) => setOpenListId(id);
 
   if (!currentUser) return <h2 className="text-muted">Log in to view stats.</h2>;
 
@@ -471,22 +441,8 @@ export default function TenThingsStats() {
         </>
       )}
 
-      {/* ── ListEditor ───────────────────────────────────────────── */}
-      {editorMounted && selectedList && (
-        <ListEditor
-          list={selectedList}
-          active={editorVisible}
-          isAdmin={isAdmin}
-          readOnly={false}
-          languageOptions={languageOptions}
-          categoryOptions={categoryOptions}
-          onClose={handleEditorClose}
-          onChange={setSelectedList}
-          onBlur={() => {}}
-          onDelete={() => {}}
-        />
-      )}
-      {editorMounted && <Overlay $visible={editorVisible} onClick={handleEditorClose} />}
+      {/* Stats is for looking: the List opens read-only. */}
+      <ListEditorDrawer listId={openListId} readOnly onClose={() => setOpenListId(null)} />
     </div>
   );
 }

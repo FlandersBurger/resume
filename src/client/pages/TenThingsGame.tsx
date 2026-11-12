@@ -9,15 +9,13 @@ import {
   getCategories,
   getGame,
   getLanguages,
-  getList,
   getMyGames,
   updateGameCategory,
   updateGameSettings,
-  updateList,
 } from "../services/tenthings";
 import moment from "moment";
 import { useApp } from "../context/AppContext";
-import { ListEditor } from "./tenthings/ListEditor";
+import { ListEditorDrawer } from "./tenthings/ListEditorDrawer";
 
 const MetricRow = styled.div`
   display: grid;
@@ -229,17 +227,6 @@ const PlayersTable = styled.table`
   margin-bottom: 0;
 `;
 
-const EditorBackdrop = styled.div<{ $visible: boolean }>`
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background-color: rgba(0, 0, 0, 0.5);
-  z-index: 99;
-  display: ${({ $visible }) => ($visible ? "block" : "none")};
-`;
-
 export default function TenThingsGame() {
   const { gameId } = useParams<{ gameId: string }>();
   const navigate = useNavigate();
@@ -249,9 +236,7 @@ export default function TenThingsGame() {
   const [categories, setCategories] = useState<CategoryOption[]>([]);
   const [languages, setLanguages] = useState<Language[]>([]);
   const [showCategories, setShowCategories] = useState(false);
-  const [editorList, setEditorList] = useState<TenThingsList | null>(null);
-  const [editorMounted, setEditorMounted] = useState(false);
-  const [editorVisible, setEditorVisible] = useState(false);
+  const [editorOpen, setEditorOpen] = useState(false);
   const [settingsSaving, setSettingsSaving] = useState(false);
   const [showLangDropdown, setShowLangDropdown] = useState(false);
   const [showGameDropdown, setShowGameDropdown] = useState(false);
@@ -373,33 +358,13 @@ export default function TenThingsGame() {
 
   const isDisabled = (category: string): boolean => !!game?.disabledCategories?.includes(category);
 
-  const openListEditor = async () => {
-    if (!isAdmin) return;
-    const listId = game?.list?._id;
-    if (!listId) return;
-    try {
-      const list = await getList(listId);
-      setEditorList(list);
-      setEditorMounted(true);
-      requestAnimationFrame(() => requestAnimationFrame(() => setEditorVisible(true)));
-    } catch {
-      toast("Failed to load list editor");
-    }
+  const openListEditor = () => {
+    if (isAdmin && game?.list?._id) setEditorOpen(true);
   };
 
-  const closeListEditor = () => {
-    setEditorVisible(false);
-    setTimeout(() => {
-      setEditorList(null);
-      setEditorMounted(false);
-    }, 320);
-  };
-
-  const saveListEditor = async (listToSave: TenThingsList) => {
-    try {
-      const saved = await updateList(listToSave);
-      setEditorList(saved);
-      setGame((prev: any) =>
+  /** Keep the Round's List snapshot in step with what the admin just saved. */
+  const handleListSaved = (saved: TenThingsList) => {
+    setGame((prev: any) =>
         prev
           ? {
               ...prev,
@@ -410,10 +375,7 @@ export default function TenThingsGame() {
               },
             }
           : prev,
-      );
-    } catch {
-      toast("Failed to save list");
-    }
+    );
   };
 
   const getDisabledCategoryLabel = () => {
@@ -843,22 +805,12 @@ export default function TenThingsGame() {
         </p>
       )}
 
-      {isAdmin && editorMounted && editorList && (
-        <>
-          <ListEditor
-            list={editorList}
-            active={editorVisible}
-            isAdmin={isAdmin}
-            readOnly={false}
-            languageOptions={languages}
-            categoryOptions={categories}
-            onClose={closeListEditor}
-            onChange={setEditorList}
-            onBlur={saveListEditor}
-            onDelete={() => {}}
-          />
-          <EditorBackdrop $visible={editorVisible} onClick={closeListEditor} />
-        </>
+      {isAdmin && (
+        <ListEditorDrawer
+          listId={editorOpen ? (game?.list?._id ?? null) : null}
+          onClose={() => setEditorOpen(false)}
+          onSaved={handleListSaved}
+        />
       )}
     </PageContainer>
   );
