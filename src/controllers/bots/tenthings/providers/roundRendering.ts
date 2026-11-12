@@ -1,5 +1,5 @@
-// Renders the Engine's Round, Minigame and Tinygame Events on any platform, through the Game's
-// provider: the messages are the same ones the provider sent before they moved onto the Engine.
+// Renders the Engine's Events about Rounds, the Minigame and Tinygame, and the Game itself on any
+// platform, through the Game's provider: the same messages as before they moved onto the Engine.
 
 import { List, Player } from "@models/index";
 import { GameType, IGame } from "@models/tenthings/game";
@@ -33,12 +33,14 @@ export const roundNotice = (language: string, event: EngineEvent): string | unde
       return i18n(language, "sentences.skipAbort", { name: event.playerName, vetoDelay: event.vetoDelay });
     case "skipNotFound":
       return i18n(language, "sentences.skipNotFound", { name: event.playerName });
+    case "allListsPlayed":
+      return i18n(language, "sentences.allListsPlayed");
     default:
       return undefined;
   }
 };
 
-/** Renders `event` if it's a Round, Minigame or Tinygame Event; returns whether it was. */
+/** Renders `event` if it's one of the Events above; returns whether it was. */
 export const renderRoundEvent = async (game: IGame, event: EngineEvent): Promise<boolean> => {
   const { language } = game.settings;
   const say = (key: string, options?: Record<string, unknown>) =>
@@ -99,6 +101,19 @@ export const renderRoundEvent = async (game: IGame, event: EngineEvent): Promise
       game.provider[guessed](game, player, event.answer, event.score, event.accuracy);
       return true;
     }
+    case "dayEnded":
+      game.provider.endOfDay(game, event);
+      // The new day's Hints, on the Round still in progress.
+      if (game.list.values.length > 0) game.provider.mainGameMessage(game);
+      return true;
+    case "gameActivated":
+      say("sentences.gameStarted");
+      return true;
+    case "gameDeactivated":
+      say("sentences.inactivity");
+      return true;
+    case "settingsUpdated":
+      return true;
     case "sideGameSkipped":
       game.provider.message(game, `The ${event.sideGame} answer was:\n<i>${event.answer}</i>`);
       return true;

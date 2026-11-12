@@ -3,7 +3,6 @@ import { Game } from "@models/index";
 import { HydratedDocument } from "mongoose";
 import { convertTelegramUserToPlayer, TelegramMessage } from "@tenthings/providers/telegram";
 import { getDiscordPromo, getRules } from "@tenthings/messages";
-import { deactivate } from "@tenthings/maingame";
 import { updateMinigames } from "@tenthings/minigame";
 import { queueGuess } from "@tenthings/guesses";
 import { Actor, SYSTEM_ACTOR } from "@tenthings/engine/actions";
@@ -164,7 +163,7 @@ export const evaluate = async (msg: TelegramMessage, game: HydratedDocument<IGam
         break;
       case Command.Stop:
         if (await bot.checkAdmin(game, msg.from)) {
-          deactivate(game);
+          dispatch({ type: "deactivate", gameId, actor: actor(true), reason: "stopped" });
         } else {
           adminOnly(game, player);
         }

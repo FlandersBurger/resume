@@ -12,7 +12,11 @@ export type Provider = {
   endOfRound: (game: IGame, list: IList) => Promise<void>;
   skipList: (game: IGame) => void;
   dailyScores: (game: IGame, limit?: number) => void;
-  endOfDay: (game: IGame, winners: IPlayer[], score: number) => Promise<void>;
+  /** The day's Daily scores, highest first, and its winners (names as shown). */
+  endOfDay: (
+    game: IGame,
+    day: { scores: { name: string; score: number }[]; winners: { name: string }[]; score: number },
+  ) => void;
   guessed: (game: IGame, player: IPlayer, match: IGameListValue, score: number, accuracy: string) => void;
   mainGameMessage: (game: IGame, long?: boolean) => void;
   miniGameMessage: (game: IGame) => void;

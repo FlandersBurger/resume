@@ -156,7 +156,8 @@ describe("guess", () => {
     expect(scheduled).toMatchObject([{ action: { type: "startRound" }, delayMs: NEXT_ROUND_DELAY_MS }]);
     // Between Rounds, Guesses count for nothing.
     expect((await run(guess(gameId, ann, listId, "Venus"))).events).toEqual([]);
-    expect(await fireScheduled()).toMatchObject([{ type: "roundStarted" }]);
+    // The only List was just played, so the next Round replays it, and says so.
+    expect(await fireScheduled()).toMatchObject([{ type: "allListsPlayed" }, { type: "roundStarted" }]);
     expect(await inProgress(gameId)).not.toBeNull();
   });
 });

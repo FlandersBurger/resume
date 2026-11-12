@@ -4,10 +4,10 @@ import moment from "moment";
 import bot, { Channel } from "@root/connections/telegram";
 import minBy from "lodash/minBy";
 import maxBy from "lodash/maxBy";
-import max from "lodash/max";
 import uniqBy from "lodash/uniqBy";
 import uniq from "lodash/uniq";
-import { deactivate } from "./maingame";
+import { SYSTEM_ACTOR } from "./engine/actions";
+import { dispatch } from "./engine/queue";
 import { IGame } from "@models/tenthings/game";
 import { makeReadable } from "@root/utils/number-helpers";
 import { HydratedDocument, Types } from "mongoose";
@@ -27,69 +27,32 @@ import { listMetricsFields, playedRounds, roundTally } from "@models/tenthings/l
 // ██   ██ ██           ██ ██         ██        ██   ██ ██   ██ ██ ██         ██             ██ ██      ██    ██ ██   ██ ██
 // ██   ██ ███████ ███████ ███████    ██        ██████  ██   ██ ██ ███████    ██        ███████  ██████  ██████  ██   ██ ███████
 
-const resetDailyScore = () => {
-  if (moment().utc().hour() === 1) {
-    bot.notifyAdmin(`Score Reset Triggered; ${moment().format("DD-MMM-YYYY hh:mm")}`);
-    Game.find({
-      lastPlayDate: { $gte: moment().subtract(1, "days").toDate() },
-    })
-      .select("telegramChatId telegramTopicId telegramChannel list date hints")
-      .populate("list.creator")
-      .populate("list.values.guesser")
-      .then(
-        async (games: HydratedDocument<IGame>[]) => {
-          const dailyPlayers: IPlayer[] = await Player.find({
-            scoreDaily: { $gt: 0 },
-            lastPlayDate: { $gte: moment().subtract(1, "days").toDate() },
-          })
-            .lean()
-            .select("_id id")
-            .exec();
-          for (let game of games) {
-            const players: IPlayer[] = await Player.find({
-              game: game._id,
-              scoreDaily: { $gt: 0 },
-              lastPlayDate: { $gte: moment().subtract(1, "days").toDate() },
-            })
-              .select("_id id scoreDaily first_name username")
-              .exec();
-            const highScore = players.reduce((highScore, { scoreDaily }) => max([highScore, scoreDaily]) as number, 0);
-            let winners = players.filter((player) => player.scoreDaily === highScore);
-            await game.provider.endOfDay(game, winners, highScore);
-            await Player.updateMany({ game: game._id, scoreDaily: 0 }, { $set: { playStreak: 0 } });
-            await Player.updateMany(
-              {
-                game: game._id,
-                _id: { $in: winners.map((winner) => winner._id) },
-              },
-              { $inc: { wins: 1 } },
-            ).exec();
-            await Player.updateMany(
-              { game: game._id, scoreDaily: { $gt: 0 } },
-              {
-                $inc: { plays: 1, playStreak: 1 },
-                $set: { scoreDaily: 0 },
-              },
-            ).exec();
-            if (game.hints < 4) {
-              game.hints = 4;
-            }
-            game.provider.mainGameMessage(game);
-            game.save();
-          }
-          try {
-            updateDailyStats(games, dailyPlayers.length, uniqBy(dailyPlayers, (player) => player.id).length);
-          } catch (error) {
-            if (error) return bot.notifyAdmin(`Daily stat update issue\n${error}`);
-          }
-        },
-        (err: Error) => {
-          console.error(err);
-          bot.notifyAdmin(`Update daily score error\n${err}`);
-        },
-      );
-  } else {
+const resetDailyScore = async () => {
+  if (moment().utc().hour() !== 1) {
     bot.notifyAdmin(`Schedule incorrectly triggered: ${moment().format("DD-MMM-YYYY hh:mm")}`);
+    return;
+  }
+  bot.notifyAdmin(`Score Reset Triggered; ${moment().format("DD-MMM-YYYY hh:mm")}`);
+  try {
+    const since = moment().subtract(1, "days").toDate();
+    const games = await Game.find({ lastPlayDate: { $gte: since } })
+      .select("_id date")
+      .exec();
+    // Counted before the Engine resets the Daily scores.
+    const dailyPlayers: IPlayer[] = await Player.find({ scoreDaily: { $gt: 0 }, lastPlayDate: { $gte: since } })
+      .lean()
+      .select("_id id")
+      .exec();
+    // Each Game's day ends in the Engine, in line with its Guesses (ADR-0002).
+    for (const game of games) await dispatch({ type: "endDay", gameId: String(game._id), actor: SYSTEM_ACTOR });
+    try {
+      await updateDailyStats(games, dailyPlayers.length, uniqBy(dailyPlayers, (player) => player.id).length);
+    } catch (error) {
+      bot.notifyAdmin(`Daily stat update issue\n${error}`);
+    }
+  } catch (err) {
+    console.error(err);
+    bot.notifyAdmin(`Update daily score error\n${err}`);
   }
 };
 
@@ -472,9 +435,10 @@ const deactivateInactiveChats = () => {
     lastPlayDate: { $lt: moment().subtract(90, "days").toDate() },
     enabled: true,
   })
-    .select("platform telegramChatId telegramTopicId telegramChannel discordChannelId webGameId enabled settings")
+    .select("_id")
     .then((games: HydratedDocument<IGame>[]) => {
-      games.forEach(deactivate);
+      for (const game of games)
+        dispatch({ type: "deactivate", gameId: String(game._id), actor: SYSTEM_ACTOR, reason: "inactive" });
       if (games.length > 0) bot.notifyAdmin(`${games.length} inactive chats deactivated`);
     });
 };

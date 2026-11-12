@@ -17,7 +17,7 @@ const handle = async (action: Action, origin: ActionOrigin) => {
   const startedAt = Date.now();
   try {
     const { game, events } = await runAction(action, bullScheduler);
-    if (!game || events.length === 0) return;
+    if (!game || events.length === 0 || origin.silent) return;
     const render = await getRenderer(game.platform);
     await render?.(game, events, { action, origin });
   } catch (error) {

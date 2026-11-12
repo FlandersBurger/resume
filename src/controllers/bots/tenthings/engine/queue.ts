@@ -22,6 +22,25 @@ export const engineQueue = new Queue<EngineJob>("tenthingsEngine", {
 export const dispatch = (action: Action, origin: ActionOrigin = {}) =>
   engineQueue.add({ kind: "action", action, origin });
 
+/**
+ * Queue an Action and wait until it has run, for callers that answer with the result (the web
+ * admin panel). Rejects if it hasn't run within `timeoutMs`.
+ */
+export const dispatchAndWait = async (action: Action, origin: ActionOrigin = {}, timeoutMs = 10_000) => {
+  // Kept for a while once done: removed at once, a job that finishes before finished() looks
+  // would never be seen to finish.
+  const job = await engineQueue.add({ kind: "action", action, origin }, { removeOnComplete: 100, removeOnFail: 100 });
+  let timer: NodeJS.Timeout | undefined;
+  const timeout = new Promise<never>((_, reject) => {
+    timer = setTimeout(() => reject(new Error(`Engine action ${action.type} timed out`)), timeoutMs);
+  });
+  try {
+    await Promise.race([job.finished(), timeout]);
+  } finally {
+    clearTimeout(timer);
+  }
+};
+
 /** Scheduled Actions are delayed jobs on the same queue, so they survive a restart and keep their place in line. */
 export const bullScheduler: Scheduler = {
   schedule: (action, delayMs) => engineQueue.add({ kind: "action", action, origin: {} }, { delay: delayMs }),

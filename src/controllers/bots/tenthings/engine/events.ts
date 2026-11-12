@@ -57,6 +57,19 @@ export type EngineEvent =
   | { type: "sideGameShown"; sideGame: SideGame }
   | { type: "sideGameHintGiven"; sideGame: SideGame }
   | { type: "sideGameGuessed"; sideGame: SideGame; answer: string; playerId: string; score: number; accuracy: string }
-  | { type: "sideGameSkipped"; sideGame: SideGame; answer: string };
+  | { type: "sideGameSkipped"; sideGame: SideGame; answer: string }
+  // ── The Game itself ──
+  /** Every List has been played recently: the new Round's List is one played before. */
+  | { type: "allListsPlayed" }
+  /** The day's Daily scores, highest first, and who won it with `score`. Names are as shown. */
+  | {
+      type: "dayEnded";
+      scores: { playerId: string; name: string; score: number }[];
+      winners: { playerId: string; name: string }[];
+      score: number;
+    }
+  | { type: "gameActivated" }
+  | { type: "gameDeactivated"; reason: "stopped" | "inactive" }
+  | { type: "settingsUpdated" };
 
 export type EventType = EngineEvent["type"];

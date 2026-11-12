@@ -147,3 +147,19 @@ describe("the List status", () => {
     expect(html).toMatch(/^<b>Planets<\/b>\n\t2: \S+\n$/);
   });
 });
+
+describe("the end of the day", () => {
+  it("shows the Daily scores it's given, since the Players' are reset by then", () => {
+    const { sent, provider } = fakePlatform();
+    provider.endOfDay(makeGame(provider), {
+      scores: [
+        { name: "Ann", score: 30 },
+        { name: "Bob", score: 10 },
+      ],
+      winners: [{ name: "Ann" }],
+      score: 30,
+    });
+    expect(sent[0].html).toContain("\t1: Ann - 30\n\t2: Bob - 10\n");
+    expect(sent[0].html).toContain("<b>Ann won with 30 points!</b>");
+  });
+});

@@ -2,10 +2,23 @@ import { Router, Request, Response } from "express";
 import { isValidObjectId } from "mongoose";
 
 import { Game, Player } from "@models/index";
-import { setDisabledCategories } from "@root/controllers/bots/tenthings/categories";
-import { sanitizeSettingsUpdate } from "@tenthings/engine/actions";
+import { Action, Actor, SettingsUpdate } from "@tenthings/engine/actions";
+import { dispatchAndWait } from "@tenthings/engine/queue";
 
 export const tenthingsGamesRoute = Router();
+
+/** The signed-in site admin, as the Engine's actor. */
+const adminActor = (res: Response): Actor => ({
+  playerId: String(res.locals.user?._id ?? "admin"),
+  name: res.locals.user?.username ?? "admin",
+  isAdmin: true,
+});
+
+/** Run an admin panel change through the Engine, without telling the Game's chat, and reload the Game. */
+const runSilently = async (gameId: string, action: Action) => {
+  await dispatchAndWait(action, { silent: true });
+  return Game.findById(gameId);
+};
 
 async function findGame(id: string) {
   if (/^-?\d+$/.test(id)) return Game.findOne({ telegramChatId: Number(id) });
@@ -62,9 +75,14 @@ tenthingsGamesRoute.post(
     if (!res.locals.isAdmin) return res.sendStatus(401);
     const game = await findGame(req.params.id);
     if (!game) return res.sendStatus(404);
-    setDisabledCategories(game, req.params.category);
-    const updatedGame = await game.save();
-    return res.json(updatedGame.disabledCategories);
+    const gameId = String(game._id);
+    const updatedGame = await runSilently(gameId, {
+      type: "toggleCategory",
+      gameId,
+      actor: adminActor(res),
+      category: req.params.category,
+    });
+    return res.json(updatedGame?.disabledCategories ?? game.disabledCategories);
   },
 );
 
@@ -72,12 +90,15 @@ tenthingsGamesRoute.put("/:id/settings", async (req: Request<{ id: string }>, re
   if (!res.locals.isAdmin) return res.sendStatus(401);
   const game = await findGame(req.params.id);
   if (!game) return res.sendStatus(404);
-  if (req.body.adminDisabled !== undefined) {
-    game.adminDisabled = !!req.body.adminDisabled;
-    if (game.adminDisabled) game.enabled = false;
-  }
-  // Only known settings with valid values; anything else in the body is dropped.
-  Object.assign(game.settings, sanitizeSettingsUpdate(req.body));
-  await game.save();
-  return res.json({ ...game.settings, adminDisabled: game.adminDisabled, enabled: game.enabled });
+  const gameId = String(game._id);
+  const updated = await runSilently(gameId, {
+    type: "updateSettings",
+    gameId,
+    actor: adminActor(res),
+    // The Engine keeps only known settings with valid values.
+    settings: req.body as SettingsUpdate,
+    ...(req.body.adminDisabled !== undefined ? { adminDisabled: !!req.body.adminDisabled } : {}),
+  });
+  if (!updated) return res.sendStatus(404);
+  return res.json({ ...updated.toObject().settings, adminDisabled: updated.adminDisabled, enabled: updated.enabled });
 });

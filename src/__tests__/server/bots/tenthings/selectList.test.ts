@@ -50,7 +50,7 @@ const makeLists = (lists: Record<string, unknown>[]) =>
 /** The names selectList serves over many draws. */
 const served = async (game: Awaited<ReturnType<typeof makeGame>>, draws = 40) => {
   const names = new Set<string>();
-  for (let i = 0; i < draws; i++) names.add((await selectList(game)).name);
+  for (let i = 0; i < draws; i++) names.add((await selectList(game)).list.name);
   return names;
 };
 
@@ -109,21 +109,20 @@ test("new Games get high-quality or starred Lists", async () => {
 test("serves the first Picked List before anything else", async () => {
   const lists = await makeLists([{ name: "A" }, { name: "Picked" }]);
   const game = await makeGame({ pickedLists: [lists[1]._id] });
-  expect((await selectList(game)).name).toBe("Picked");
+  expect(await selectList(game)).toMatchObject({ list: { name: "Picked" }, allListsPlayed: false });
 });
 
 test("when every List is on cooldown, says so and serves one anyway", async () => {
   const game = await makeGame();
   const [only] = await makeLists([{ name: "Only" }]);
   await GameRound.create({ gameId: game._id, listId: only._id, outcome: "completed", language: "EN" });
-  expect((await selectList(game)).name).toBe("Only");
-  expect(game.provider.message).toHaveBeenCalledWith(game, "sentences.allListsPlayed");
+  expect(await selectList(game)).toMatchObject({ list: { name: "Only" }, allListsPlayed: true });
 });
 
 test("the served List is loaded in full, without its votes", async () => {
   const game = await makeGame();
   await makeLists([{ name: "Full", values: [{ value: "x" }], votes: [{ voter: "a", vote: 1 }] }]);
-  const list = await selectList(game);
+  const { list } = await selectList(game);
   expect(list.values.map((v) => v.value)).toEqual(["x"]);
   expect(list.votes).toBeUndefined();
 });
