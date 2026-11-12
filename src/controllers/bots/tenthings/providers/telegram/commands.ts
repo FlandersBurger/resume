@@ -4,9 +4,7 @@ import { HydratedDocument } from "mongoose";
 import { convertTelegramUserToPlayer, TelegramMessage } from "@tenthings/providers/telegram";
 import { getDiscordPromo, getRules } from "@tenthings/messages";
 import { deactivate } from "@tenthings/maingame";
-import { createMinigame, updateMinigames } from "@tenthings/minigame";
-import { createTinygame } from "@tenthings/tinygame";
-import { processHint } from "@tenthings/hints";
+import { updateMinigames } from "@tenthings/minigame";
 import { queueGuess } from "@tenthings/guesses";
 import { Actor, SYSTEM_ACTOR } from "@tenthings/engine/actions";
 import { dispatch } from "@tenthings/engine/queue";
@@ -15,7 +13,6 @@ import i18n from "@root/i18n";
 
 import { getPlayerName } from "@tenthings/players";
 import { getQueue } from "@tenthings/providers/telegram/queue";
-import { checkSkipper } from "@tenthings/skips";
 import { getStats } from "@tenthings/providers/telegram/stats";
 import { categoriesKeyboard, settingsKeyboard, statsKeyboard } from "@tenthings/keyboards";
 import bot, { Channel } from "@root/connections/telegram";
@@ -187,20 +184,10 @@ export const evaluate = async (msg: TelegramMessage, game: HydratedDocument<IGam
         dispatch({ type: "skip", gameId, actor: actor() });
         break;
       case Command.Miniskip:
-        if (await checkSkipper(game, player)) {
-          bot.queueMessage(game.telegramChannel, `The minigame answer was:\n<i>${game.minigame.answer}</i>`);
-          setTimeout(() => {
-            createMinigame(game);
-          }, 200);
-        }
+        dispatch({ type: "sideGameSkip", gameId, actor: actor(), sideGame: GameType.MINIGAME });
         break;
       case Command.Tinyskip:
-        if (await checkSkipper(game, player)) {
-          bot.queueMessage(game.telegramChannel, `The tinygame answer was:\n<i>${game.tinygame.answer}</i>`);
-          setTimeout(() => {
-            createTinygame(game);
-          }, 200);
-        }
+        dispatch({ type: "sideGameSkip", gameId, actor: actor(), sideGame: GameType.TINYGAME });
         break;
       case Command.Veto:
         dispatch({ type: "veto", gameId, actor: actor() });
@@ -227,10 +214,10 @@ export const evaluate = async (msg: TelegramMessage, game: HydratedDocument<IGam
         dispatch({ type: "hint", gameId, actor: actor() });
         break;
       case Command.Minihint:
-        processHint(game, player, GameType.MINIGAME);
+        dispatch({ type: "sideGameHint", gameId, actor: actor(), sideGame: GameType.MINIGAME });
         break;
       case Command.Tinyhint:
-        processHint(game, player, GameType.TINYGAME);
+        dispatch({ type: "sideGameHint", gameId, actor: actor(), sideGame: GameType.TINYGAME });
         break;
       case Command.Notify:
         if (game.telegramChatId === parseInt(process.env.MASTER_CHAT || "")) {
@@ -284,18 +271,10 @@ export const evaluate = async (msg: TelegramMessage, game: HydratedDocument<IGam
         game.provider.dailyScores(game);
         break;
       case Command.Minigame:
-        if (!game.minigame.answer) {
-          createMinigame(game);
-        } else {
-          game.provider.miniGameMessage(game);
-        }
+        dispatch({ type: "showSideGame", gameId, actor: actor(), sideGame: GameType.MINIGAME });
         break;
       case Command.Tinygame:
-        if (!game.tinygame.answer) {
-          createTinygame(game);
-        } else {
-          game.provider.tinyGameMessage(game);
-        }
+        dispatch({ type: "showSideGame", gameId, actor: actor(), sideGame: GameType.TINYGAME });
         break;
       case Command.Categories:
         if (game.telegramChatId != parseInt(process.env.GROUP_CHAT || "")) {

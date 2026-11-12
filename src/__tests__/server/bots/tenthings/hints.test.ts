@@ -4,7 +4,7 @@ jest.mock("@models/tenthings/game", () => ({
 jest.mock("@models/tenthings/player", () => ({}));
 jest.mock("@tenthings/lists", () => ({ logHint: jest.fn() }));
 
-import { getHint, hintCache, hintCooldown, MAX_HINTS } from "@tenthings/hints";
+import { getHint, MAX_HINTS } from "@tenthings/hints";
 
 describe("getHint", () => {
   describe("hint level 0 — fully concealed", () => {
@@ -84,45 +84,5 @@ describe("getHint", () => {
       // length < 3, concealMiddle returns as-is
       expect(getHint(2, "AB")).toBe("AB");
     });
-  });
-});
-
-describe("hintCooldown", () => {
-  beforeEach(() => {
-    jest.useFakeTimers();
-  });
-
-  afterEach(() => {
-    jest.useRealTimers();
-    Object.keys(hintCache).forEach((k) => delete hintCache[k]);
-  });
-
-  test("decrements cache count each second", () => {
-    hintCache["game1"] = 3;
-    hintCooldown("game1");
-    // hintCooldown decrements immediately, then schedules the next tick
-    expect(hintCache["game1"]).toBe(2);
-
-    jest.advanceTimersByTime(1000);
-    expect(hintCache["game1"]).toBe(1);
-
-    jest.advanceTimersByTime(1000);
-    expect(hintCache["game1"]).toBe(0);
-  });
-
-  test("deletes key from cache when count reaches zero", () => {
-    hintCache["game1"] = 1;
-    hintCooldown("game1");
-
-    jest.advanceTimersByTime(1000);
-    expect(hintCache["game1"]).toBeUndefined();
-  });
-
-  test("does nothing when cache entry is already zero", () => {
-    hintCache["game1"] = 0;
-    hintCooldown("game1");
-
-    jest.advanceTimersByTime(1000);
-    expect(hintCache["game1"]).toBeUndefined();
   });
 });

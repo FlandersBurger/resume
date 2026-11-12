@@ -73,6 +73,7 @@ export interface IGame {
     lists: string[];
     plays: number;
     hints: number;
+    nextHintAt?: Date;
   };
   tinygame: {
     answer: string;
@@ -80,6 +81,7 @@ export interface IGame {
     clues: string[];
     plays: number;
     hints: number;
+    nextHintAt?: Date;
   };
   settings: IGameSettings;
 }
@@ -128,6 +130,7 @@ const gameSchema = new Schema<IGame>(
       lists: [{ type: String, required: false }],
       plays: { type: Number, default: 0 },
       hints: { type: Number, default: 0 },
+      nextHintAt: { type: Date, required: false },
     },
     tinygame: {
       answer: { type: String, required: false },
@@ -135,6 +138,7 @@ const gameSchema = new Schema<IGame>(
       clues: [{ type: String, required: false }],
       plays: { type: Number, default: 0 },
       hints: { type: Number, default: 0 },
+      nextHintAt: { type: Date, required: false },
     },
     settings: {
       intro: { type: Boolean, required: true, default: false },

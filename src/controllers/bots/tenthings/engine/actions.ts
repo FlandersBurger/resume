@@ -55,7 +55,19 @@ export type Action = { gameId: string; actor: Actor } & (
   | { type: "veto" }
   /** Timer: the Skip countdown of Round `roundId` has run out. */
   | { type: "skipCountdownEnded"; roundId: string }
+  // ── Minigame and Tinygame ──
+  /** Show the side game, starting one if there's none. */
+  | { type: "showSideGame"; sideGame: SideGame }
+  /** Timer: start the next side game, unless one has been started meanwhile. */
+  | { type: "startSideGame"; sideGame: SideGame }
+  /** A Guess that matched `answer`, the side game's answer when it was queued. */
+  | { type: "sideGameGuess"; sideGame: SideGame; answer: string; distance: number }
+  | { type: "sideGameHint"; sideGame: SideGame }
+  | { type: "sideGameSkip"; sideGame: SideGame }
 );
+
+/** The puzzles played alongside the Rounds. Also the Game fields that hold them. */
+export type SideGame = GameType.MINIGAME | GameType.TINYGAME;
 
 export type ActionType = Action["type"];
 

@@ -107,7 +107,7 @@ const skipRound = async (game: GameDoc, round: RoundDoc, playerIds: Types.Object
 };
 
 /** Saves the Game, first clearing a streak that no longer validates (a Player who was deleted). */
-const saveGame = async (game: GameDoc) => {
+export const saveGame = async (game: GameDoc) => {
   try {
     await game.validate();
   } catch (err) {

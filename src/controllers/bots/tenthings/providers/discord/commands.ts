@@ -3,9 +3,7 @@ import { HydratedDocument } from "mongoose";
 import { convertDiscordUserToPlayer, DiscordMessage } from "@tenthings/providers/discord";
 import { getRules } from "@tenthings/messages";
 import { deactivate } from "@tenthings/maingame";
-import { createMinigame, updateMinigames } from "@tenthings/minigame";
-import { createTinygame } from "@tenthings/tinygame";
-import { processHint } from "@tenthings/hints";
+import { updateMinigames } from "@tenthings/minigame";
 import { queueGuess } from "@tenthings/guesses";
 import { Actor, SYSTEM_ACTOR } from "@tenthings/engine/actions";
 import { dispatch } from "@tenthings/engine/queue";
@@ -13,7 +11,6 @@ import { dispatch } from "@tenthings/engine/queue";
 import i18n from "@root/i18n";
 
 import { getPlayerName } from "@tenthings/players";
-import { checkSkipper } from "@tenthings/skips";
 import bot from "@root/connections/discord";
 import { settingsKeyboard, statsKeyboard } from "@tenthings/keyboards";
 
@@ -121,20 +118,10 @@ export const evaluate = async (msg: DiscordMessage, game: HydratedDocument<IGame
         dispatch({ type: "skip", gameId, actor: actor() });
         break;
       case Command.Miniskip:
-        if (await checkSkipper(game, player)) {
-          bot.queueMessage(game.discordChannel, `The minigame answer was:\n*${game.minigame.answer}*`);
-          setTimeout(() => {
-            createMinigame(game);
-          }, 200);
-        }
+        dispatch({ type: "sideGameSkip", gameId, actor: actor(), sideGame: GameType.MINIGAME });
         break;
       case Command.Tinyskip:
-        if (await checkSkipper(game, player)) {
-          bot.queueMessage(game.discordChannel, `The tinygame answer was:\n*${game.tinygame.answer}*`);
-          setTimeout(() => {
-            createTinygame(game);
-          }, 200);
-        }
+        dispatch({ type: "sideGameSkip", gameId, actor: actor(), sideGame: GameType.TINYGAME });
         break;
       case Command.Veto:
         dispatch({ type: "veto", gameId, actor: actor() });
@@ -167,10 +154,10 @@ export const evaluate = async (msg: DiscordMessage, game: HydratedDocument<IGame
         dispatch({ type: "hint", gameId, actor: actor() });
         break;
       case Command.Minihint:
-        processHint(game, player, GameType.MINIGAME);
+        dispatch({ type: "sideGameHint", gameId, actor: actor(), sideGame: GameType.MINIGAME });
         break;
       case Command.Tinyhint:
-        processHint(game, player, GameType.TINYGAME);
+        dispatch({ type: "sideGameHint", gameId, actor: actor(), sideGame: GameType.TINYGAME });
         break;
       case Command.Me:
         game.provider.dailyScores(game, 10);
@@ -179,18 +166,10 @@ export const evaluate = async (msg: DiscordMessage, game: HydratedDocument<IGame
         game.provider.dailyScores(game);
         break;
       case Command.Minigame:
-        if (!game.minigame.answer) {
-          createMinigame(game);
-        } else {
-          game.provider.miniGameMessage(game);
-        }
+        dispatch({ type: "showSideGame", gameId, actor: actor(), sideGame: GameType.MINIGAME });
         break;
       case Command.Tinygame:
-        if (!game.tinygame.answer) {
-          createTinygame(game);
-        } else {
-          game.provider.tinyGameMessage(game);
-        }
+        dispatch({ type: "showSideGame", gameId, actor: actor(), sideGame: GameType.TINYGAME });
         break;
       case Command.Categories:
         bot.queueMessage(game.discordChannel, game.provider.categoriesMessage(game));
