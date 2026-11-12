@@ -31,6 +31,7 @@ import { usersRoute } from "@api/users";
 import { tenthingsTelegramBotRoute } from "@api/tenthings/telegram";
 import { initDiscordBot } from "@api/tenthings/discord";
 import { redisConnect, subscribe } from "@root/queue";
+import { WEB_EVENTS_TOPIC, WebEventsMessage } from "@tenthings/providers/web/renderer";
 import { startEngineWorker } from "@tenthings/engine/worker";
 import bot from "./connections/telegram";
 import { tenthingsWebBotRoute } from "@api/tenthings/web";
@@ -97,6 +98,9 @@ server.listen(port, async () => {
   }
   await subscribe("new_post", (post: any) => {
     websocketServer.broadcast("new_post", post);
+  });
+  await subscribe(WEB_EVENTS_TOPIC, (message: WebEventsMessage) => {
+    websocketServer.broadcast(WEB_EVENTS_TOPIC, message);
   });
   await subscribe("tenthings_message", (message: any) => {
     websocketServer.broadcast("tenthings_message", message);

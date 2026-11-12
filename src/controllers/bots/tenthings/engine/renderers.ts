@@ -11,8 +11,7 @@ export const getRenderer = async (platform: Platform): Promise<Renderer | undefi
     case "discord":
       return (await import("@tenthings/providers/discord/renderer")).renderDiscord;
     case "web":
-      // The web game only plays Rounds so far.
-      return (await import("@tenthings/providers/roundRendering")).renderRounds;
+      return (await import("@tenthings/providers/web/renderer")).renderWeb;
     default:
       return undefined;
   }
