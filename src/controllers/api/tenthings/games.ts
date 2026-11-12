@@ -4,6 +4,7 @@ import { isValidObjectId } from "mongoose";
 import { Game, Player } from "@models/index";
 import { Action, Actor, SettingsUpdate } from "@tenthings/engine/actions";
 import { dispatchAndWait } from "@tenthings/engine/queue";
+import { maskAnswers } from "@tenthings/hints";
 
 export const tenthingsGamesRoute = Router();
 
@@ -66,7 +67,10 @@ tenthingsGamesRoute.get("/:id", async (req: Request<{ id: string }>, res: Respon
     if (!playerExists) return res.sendStatus(403);
   }
   const players = await Player.find({ game: game._id }).lean();
-  return res.json({ ...game.toObject(), players });
+  const leanGame = game.toObject();
+  // Players of this Game must not see the current Round's unguessed Answers; site admins may.
+  const values = maskAnswers(leanGame.list.values, leanGame.hints, { reveal: !!res.locals.isAdmin });
+  return res.json({ ...leanGame, list: { ...leanGame.list, values }, players });
 });
 
 tenthingsGamesRoute.post(

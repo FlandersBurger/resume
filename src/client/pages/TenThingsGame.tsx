@@ -706,18 +706,23 @@ export default function TenThingsGame() {
                     {(() => {
                       const sortedValues = (game.list?.values || [])
                         .slice()
-                        .sort((a: any, b: any) => String(a.value).localeCompare(String(b.value)));
+                        .sort((a: any, b: any) =>
+                          String(a.value ?? a.maskedValue).localeCompare(String(b.value ?? b.maskedValue)),
+                        );
                       const leftColumn = sortedValues.slice(0, 5);
                       const rightColumn = sortedValues.slice(5, 10);
 
                       const renderValueRow = (item: any, idx: number) => {
                         const guessed = !!(item.guesser?.username || item.guesser?.first_name || item.guesser?._id);
                         return (
-                          <ValueItem key={`${item.value}-${idx}`} className="list-group-item">
+                          <ValueItem key={item._id ?? idx} className="list-group-item">
                             <ValueStatus className={`label ${guessed ? "label-success" : "label-default"}`}>
                               {guessed ? "Guessed" : "Open"}
                             </ValueStatus>
-                            <ValueText $guessed={guessed}>{item.value}</ValueText>
+                            {/* The server only sends unguessed Answers in full to site admins. */}
+                            <ValueText $guessed={guessed}>
+                              {guessed || isAdmin ? (item.value ?? item.maskedValue) : item.maskedValue}
+                            </ValueText>
                           </ValueItem>
                         );
                       };

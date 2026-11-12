@@ -4,7 +4,7 @@ import { SYSTEM_ACTOR } from "@tenthings/engine/actions";
 import { dispatch } from "@tenthings/engine/queue";
 import { IGame } from "@models/tenthings/game";
 import { HydratedDocument } from "mongoose";
-import { getHint } from "@tenthings/hints";
+import { maskAnswers } from "@tenthings/hints";
 
 export const getWebGame = async (webGameId: number = 1): Promise<HydratedDocument<IGame>> => {
   let game = await Game.findOne({ platform: "web", webGameId })
@@ -21,11 +21,11 @@ export const getWebGame = async (webGameId: number = 1): Promise<HydratedDocumen
   return game;
 };
 
+/** The web Game as Players may see it: unguessed Answers leave the server masked. */
 export const getGameWithHints = (game: HydratedDocument<IGame>) => {
   const leanGame = game.toJSON();
-  leanGame.list.values = leanGame.list.values.map((value) => ({
-    ...value,
-    maskedValue: getHint(leanGame.hints, value.value),
-  }));
-  return leanGame;
+  return {
+    ...leanGame,
+    list: { ...leanGame.list, values: maskAnswers(leanGame.list.values, leanGame.hints, { reveal: false }) },
+  };
 };
