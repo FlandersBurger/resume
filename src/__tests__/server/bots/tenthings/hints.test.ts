@@ -4,7 +4,7 @@ jest.mock("@models/tenthings/game", () => ({
 jest.mock("@models/tenthings/player", () => ({}));
 jest.mock("@tenthings/lists", () => ({ logHint: jest.fn() }));
 
-import { getHint, MAX_HINTS } from "@tenthings/hints";
+import { getHint, maskAnswers, MAX_HINTS } from "@tenthings/hints";
 
 describe("getHint", () => {
   describe("hint level 0 — fully concealed", () => {
@@ -84,5 +84,32 @@ describe("getHint", () => {
       // length < 3, concealMiddle returns as-is
       expect(getHint(2, "AB")).toBe("AB");
     });
+  });
+});
+
+describe("maskAnswers", () => {
+  const values = [
+    { _id: "a", value: "Nurse", blurb: "Caring", guesser: { username: "kim" } },
+    { _id: "b", value: "Novelist", blurb: "Writes books" },
+  ];
+
+  test("keeps guessed Answers in full", () => {
+    const [guessed] = maskAnswers(values, 0, { reveal: false });
+    expect(guessed).toMatchObject({ value: "Nurse", blurb: "Caring", maskedValue: "Nurse" });
+  });
+
+  test("sends only the masked form of unguessed Answers, without their Blurb", () => {
+    const [, open] = maskAnswers(values, 0, { reveal: false });
+    expect(open).toEqual({ _id: "b", maskedValue: "⁎⁎⁎⁎⁎⁎⁎⁎" });
+  });
+
+  test("masks with the Round's Hints", () => {
+    const [, open] = maskAnswers(values, 2, { reveal: false });
+    expect(open.maskedValue).toBe(getHint(2, "Novelist"));
+  });
+
+  test("reveal keeps unguessed Answers in full alongside their masked form", () => {
+    const [, open] = maskAnswers(values, 0, { reveal: true });
+    expect(open).toMatchObject({ value: "Novelist", blurb: "Writes books", maskedValue: "⁎⁎⁎⁎⁎⁎⁎⁎" });
   });
 });

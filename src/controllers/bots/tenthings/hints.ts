@@ -4,6 +4,27 @@ import uniq from "lodash/uniq";
 export const MAX_HINTS = 6;
 const VOWELS = "aeiouAEIOUàèìòùÀÈÌÒÙáéíóúýÁÉÍÓÚÝâêîôûÂÊÎÔÛãñõÃÑÕäëïöüÿÄËÏÖÜŸçÇßØøÅåÆæœ";
 
+interface AnswerLike {
+  value: string;
+  blurb?: string;
+  guesser?: unknown;
+}
+
+/**
+ * A Round's Answers as they may leave the server. Guessed Answers go out in full. Unguessed
+ * Answers go out only as `maskedValue` (masked with the Round's Hints), without the value or
+ * Blurb, unless `reveal` is set (site admins).
+ */
+export const maskAnswers = <T extends AnswerLike>(values: T[], hints: number, { reveal }: { reveal: boolean }) =>
+  values.map((answer) => {
+    if (answer.guesser) return { ...answer, maskedValue: answer.value };
+    const maskedValue = getHint(hints, answer.value);
+    if (reveal) return { ...answer, maskedValue };
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const { value, blurb, ...rest } = answer;
+    return { ...rest, maskedValue };
+  });
+
 export const getHint = (hints: number, value: string): string => {
   if (value === undefined) return "";
   let i = 0;

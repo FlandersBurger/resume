@@ -74,7 +74,8 @@ const Blurb = styled.div`
 
 interface GameValue {
   _id: string;
-  value: string;
+  /** Only sent once the Answer is guessed. */
+  value?: string;
   maskedValue: string;
   blurb?: string;
   blurbType?: string;
