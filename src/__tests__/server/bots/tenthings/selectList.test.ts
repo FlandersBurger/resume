@@ -13,7 +13,7 @@ jest.mock("@root/i18n", () => ({ __esModule: true, default: jest.fn((_, key: str
 
 import db from "@root/db";
 import { Game, GameRound, List } from "@models/index";
-import { selectList } from "@tenthings/lists";
+import { invalidateListPool, resetListPool, selectList } from "@tenthings/lists";
 import { SupportedLanguage } from "@tenthings/languages";
 import { MEMORY_MONGO_TIMEOUT, openOnMemoryMongo } from "../../../helpers/memoryMongo";
 
@@ -29,6 +29,7 @@ afterAll(async () => {
 
 beforeEach(async () => {
   await db.master.db!.dropDatabase();
+  resetListPool();
 });
 
 // Past the onboarding ramp, so selection isn't limited to high-quality Lists.
@@ -125,4 +126,36 @@ test("the served List is loaded in full, without its votes", async () => {
   const list = await selectList(game);
   expect(list.values.map((v) => v.value)).toEqual(["x"]);
   expect(list.votes).toBeUndefined();
+});
+
+describe("the List pool", () => {
+  test("is read once, so a new Round doesn't read every List again", async () => {
+    const game = await makeGame();
+    await makeLists([{ name: "First" }]);
+    await selectList(game);
+    await makeLists([{ name: "Later" }]);
+    expect(await served(game)).toEqual(new Set(["First"]));
+  });
+
+  test("is read again once Lists change", async () => {
+    const game = await makeGame();
+    await makeLists([{ name: "First" }]);
+    await selectList(game);
+    await makeLists([{ name: "Later" }]);
+    invalidateListPool();
+    await selectList(game); // still the old pool, while the new one loads
+    await new Promise((resolve) => setTimeout(resolve, 200));
+    expect(await served(game)).toContain("Later");
+  });
+
+  test("passes over a List deleted since it was read", async () => {
+    const game = await makeGame();
+    const [gone] = await makeLists([{ name: "Gone" }, { name: "Kept" }]);
+    await selectList(game);
+    await List.deleteOne({ _id: gone._id });
+    jest.mocked(game.provider.message).mockClear();
+    expect(await served(game)).toEqual(new Set(["Kept"]));
+    // Not mistaken for every List having been played.
+    expect(game.provider.message).not.toHaveBeenCalled();
+  });
 });

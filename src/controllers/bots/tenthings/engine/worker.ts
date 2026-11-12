@@ -8,7 +8,13 @@ import type { Action, ActionOrigin } from "./actions";
 import { bullScheduler, engineQueue } from "./queue";
 import { getRenderer } from "./renderers";
 
+/** A job that runs longer than this holds up every Game's Guesses: logged, to find what's slow. */
+const SLOW_JOB_MS = 2000;
+/** A job that waited longer than this for its turn shows the queue falling behind. */
+const LATE_JOB_MS = 5000;
+
 const handle = async (action: Action, origin: ActionOrigin) => {
+  const startedAt = Date.now();
   try {
     const { game, events } = await runAction(action, bullScheduler);
     if (!game || events.length === 0) return;
@@ -17,12 +23,18 @@ const handle = async (action: Action, origin: ActionOrigin) => {
   } catch (error) {
     notifyAdmin(`Engine action failed: ${action.type}\n${error}`);
     console.error(error);
+  } finally {
+    const ms = Date.now() - startedAt;
+    if (ms > SLOW_JOB_MS) console.warn(`[engine] Slow ${action.type} (${ms}ms) in ${action.gameId}`);
   }
 };
 
 export const startEngineWorker = () =>
   engineQueue.process(async (job) => {
     const { data } = job;
+    const waitedMs = Date.now() - job.timestamp - (job.opts.delay ?? 0);
+    if (waitedMs > LATE_JOB_MS)
+      console.warn(`[engine] ${data.kind === "action" ? data.action.type : "guess"} waited ${waitedMs}ms for its turn`);
     if (data.kind === "action") return handle(data.action, data.origin);
     const { guess } = data;
     if (isStaleGuess(job.timestamp)) return;
