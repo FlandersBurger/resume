@@ -188,8 +188,10 @@ interface Props {
   categoryOptions: CategoryOption[];
   onClose: () => void;
   onChange: (list: TenThingsList) => void;
-  onBlur: (list: TenThingsList) => void;
-  onDelete: () => void;
+  /** Every change that should persist; the drawer decides whether and how to save it. */
+  onSave: (list: TenThingsList) => void;
+  /** Shows the delete button when given. */
+  onDelete?: () => void;
 }
 
 const fmt = (d?: string | Date) => {
@@ -380,7 +382,7 @@ export function ListEditor({
   categoryOptions,
   onClose,
   onChange,
-  onBlur,
+  onSave,
   onDelete,
 }: Props) {
   const [newItem, setNewItem] = useState({ value: "", blurb: "" });
@@ -441,15 +443,6 @@ export function ListEditor({
   const newValueInputRef = useRef<HTMLTextAreaElement>(null);
   const newBlurbInputRef = useRef<HTMLTextAreaElement>(null);
 
-  // Only save when all mandatory fields are filled
-  const canSave = () => list.values.length >= 10 && list.name && list.categories.length > 0;
-
-  const handleBlur = (updatedList: TenThingsList) => {
-    if (canSave()) {
-      onBlur(updatedList);
-    }
-  };
-
   // Check if a value already exists (case-insensitive, ignoring special characters)
   const hasDuplicate = (value: string) => {
     const normalized = removeAllButLetters(value);
@@ -470,10 +463,8 @@ export function ListEditor({
   listRef.current = list;
   const onChangeRef = useRef(onChange);
   onChangeRef.current = onChange;
-  const onBlurRef = useRef(onBlur);
-  onBlurRef.current = onBlur;
-  const handleBlurRef = useRef(handleBlur);
-  handleBlurRef.current = handleBlur;
+  const onSaveRef = useRef(onSave);
+  onSaveRef.current = onSave;
 
   const addValue = () => {
     if (!newItem.value) return;
@@ -489,10 +480,7 @@ export function ListEditor({
     setNewItem({ value: "", blurb: "" });
     // Refocus on value input for quick entry
     setTimeout(() => newValueInputRef.current?.focus(), 0);
-    // Autosave when reaching 10 values with mandatory fields filled
-    if (updatedList.values.length >= 10 && updatedList.name && updatedList.categories.length > 0) {
-      handleBlurRef.current(updatedList);
-    }
+    onSaveRef.current(updatedList);
   };
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>, field: "value" | "blurb") => {
@@ -512,21 +500,21 @@ export function ListEditor({
     const l = listRef.current;
     const updated = { ...l, values: l.values.map((v, i) => (i === index ? { ...v, ...patch } : v)) };
     onChangeRef.current(updated);
-    onBlurRef.current(updated);
+    onSaveRef.current(updated);
   }, []); // stable — reads latest list via ref
 
   const removeValue = useCallback((index: number) => {
     const l = listRef.current;
     const updated = { ...l, values: l.values.filter((_, i) => i !== index) };
     onChangeRef.current(updated);
-    onBlurRef.current(updated);
+    onSaveRef.current(updated);
   }, []); // stable — reads latest list via ref
 
   const toggleCategory = (cat: string) => {
     const cats = list.categories.includes(cat) ? list.categories.filter((c) => c !== cat) : [...list.categories, cat];
     const updated = { ...list, categories: cats };
     onChange(updated);
-    handleBlur(updated);
+    onSave(updated);
   };
 
   const getCategoryLabel = () => {
@@ -682,7 +670,7 @@ export function ListEditor({
           value={list.name}
           disabled={readOnly}
           onChange={(e) => onChange({ ...list, name: e.target.value })}
-          onBlur={() => handleBlurRef.current(listRef.current)}
+          onBlur={() => onSaveRef.current(listRef.current)}
           autoComplete="off"
         />
       </div>
@@ -695,7 +683,7 @@ export function ListEditor({
           placeholder="Description displays when the list is introduced to the players."
           disabled={readOnly}
           onChange={(v) => onChange({ ...list, description: v })}
-          onBlur={() => handleBlurRef.current(listRef.current)}
+          onBlur={() => onSaveRef.current(listRef.current)}
         />
       </div>
 
@@ -723,7 +711,7 @@ export function ListEditor({
                     e.preventDefault();
                     const updated = { ...list, language: l.code };
                     onChange(updated);
-                    handleBlurRef.current(updated);
+                    onSaveRef.current(updated);
                     setShowLanguages(false);
                   }}
                 >
@@ -794,7 +782,7 @@ export function ListEditor({
               onClick={() => {
                 const updated = { ...list, difficulty: i };
                 onChange(updated);
-                handleBlurRef.current(updated);
+                onSaveRef.current(updated);
               }}
             >
               <i className={`fas ${d.icon}`} />
@@ -814,7 +802,7 @@ export function ListEditor({
               onClick={() => {
                 const updated = { ...list, frequency: i };
                 onChange(updated);
-                handleBlurRef.current(updated);
+                onSaveRef.current(updated);
               }}
             >
               <i className={`fas ${f.icon}`} />
@@ -850,9 +838,9 @@ export function ListEditor({
         )}
 
         {/* Delete */}
-        {list._id !== "new" && (
+        {list._id !== "new" && onDelete && (
           <div className="btn-group" role="group">
-            <button className="btn btn-danger" onClick={onDelete} disabled={readOnly}>
+            <button className="btn btn-danger" onClick={onDelete} disabled={readOnly} title="Delete list">
               <i className="fas fa-trash" />
             </button>
           </div>

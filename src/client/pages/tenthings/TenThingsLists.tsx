@@ -1,11 +1,8 @@
 import { useEffect, useState, useCallback, useRef } from "react";
 import { useSearchParams } from "react-router-dom";
-import styled from "styled-components";
 import { Helmet } from "react-helmet-async";
 import {
   getLists,
-  getList,
-  createList,
   updateList,
   deleteList,
   mergeLists,
@@ -17,22 +14,9 @@ import {
 } from "../../services/tenthings";
 import { useApp } from "../../context/AppContext";
 import { ListTable } from "./ListTable";
-import { ListEditor } from "./ListEditor";
+import { ListEditorDrawer } from "./ListEditorDrawer";
 import { DeleteListsModal } from "./DeleteListsModal";
 
-const Overlay = styled.div<{ $visible: boolean }>`
-  position: fixed;
-  width: 100%;
-  height: 100%;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background-color: rgba(0, 0, 0, 0.5);
-  z-index: 99;
-  cursor: pointer;
-  display: ${({ $visible }) => ($visible ? "block" : "none")};
-`;
 
 export default function TenThingsLists() {
   const { currentUser, toast, isAdmin } = useApp();
@@ -40,7 +24,11 @@ export default function TenThingsLists() {
 
   const [lists, setLists] = useState<TenThingsList[]>([]);
   const [count, setCount] = useState(0);
-  const [selectedList, setSelectedList] = useState<TenThingsList | null>(null);
+  // The List open in the editor drawer, "new" for a blank one. A link with ?list=<id> opens it.
+  const [openListId, setOpenListId] = useState<string | null>(() => {
+    const id = searchParams.get("list");
+    return id && id !== "new" ? id : null;
+  });
   const [search, setSearch] = useState(searchParams.get("search") || "");
   const [searchField, setSearchField] = useState(searchParams.get("field") || "name");
   const [page, setPage] = useState(1);
@@ -69,16 +57,7 @@ export default function TenThingsLists() {
       setSortDir("asc");
     }
   };
-  const [editorVisible, setEditorVisible] = useState(false);
-  const [editorMounted, setEditorMounted] = useState(false);
   const [deleteModalLists, setDeleteModalLists] = useState<TenThingsList[]>([]);
-
-  const readOnly =
-    !currentUser ||
-    (!isAdmin &&
-      !!selectedList &&
-      selectedList._id !== "new" &&
-      String(selectedList.creator._id) !== String(currentUser._id));
 
   const INITIAL_LIMIT = 50;
   const PAGE_LIMIT = 50;
@@ -175,34 +154,24 @@ export default function TenThingsLists() {
 
   useEffect(() => {
     fetchLists(1);
-    const listId = searchParams.get("list");
-    if (listId && listId !== "new") {
-      getList(listId).then((l) => {
-        setSelectedList(l);
-        setEditorMounted(true);
-        requestAnimationFrame(() => requestAnimationFrame(() => setEditorVisible(true)));
-      });
-    }
   }, [fetchLists]);
 
-  const handleSelectList = async (list: TenThingsList) => {
-    try {
-      const data = await getList(list._id);
-      setSelectedList(data);
-      setSearchParams({ list: data._id });
-      setEditorMounted(true);
-      requestAnimationFrame(() => requestAnimationFrame(() => setEditorVisible(true)));
-    } catch {
-      toast("Failed to load list");
-    }
+  const openList = (id: string) => {
+    setOpenListId(id);
+    setSearchParams(
+      (prev) => {
+        const next = new URLSearchParams(prev);
+        next.set("list", id);
+        return next;
+      },
+      { replace: true },
+    );
   };
 
+  const handleSelectList = (list: TenThingsList) => openList(list._id);
+
   const handleClose = () => {
-    setEditorVisible(false);
-    setTimeout(() => {
-      setSelectedList(null);
-      setEditorMounted(false);
-    }, 320);
+    setOpenListId(null);
     setSearchParams(
       (prev) => {
         const next = new URLSearchParams(prev);
@@ -214,52 +183,18 @@ export default function TenThingsLists() {
   };
 
   const handleAddList = () => {
-    if (!currentUser) return;
-    setSelectedList({
-      _id: "new",
-      name: "",
-      language: "EN",
-      categories: [],
-      answers: 0,
-      isDynamic: true,
-      creator: { _id: currentUser._id, username: currentUser.username },
-      values: [],
-    });
-    setSearchParams({ list: "new" });
-    setEditorMounted(true);
-    requestAnimationFrame(() => requestAnimationFrame(() => setEditorVisible(true)));
+    if (currentUser) openList("new");
   };
 
-  const handleSave = async (listToSave?: TenThingsList) => {
-    const target = listToSave ?? selectedList;
-    if (!target || !currentUser) return;
-    try {
-      console.log("Saving list", target);
-      if (target._id === "new") {
-        const created = await createList(currentUser._id, target);
-        setSelectedList(created);
-        setSearchParams({ list: created._id });
-        toast("List created");
-      } else {
-        const updated = await updateList(target);
-        setSelectedList(updated);
-      }
-      fetchLists(1);
-    } catch {
-      toast("Failed to save list");
-    }
-  };
-
-  const handleDelete = async () => {
-    if (!selectedList || selectedList._id === "new") return;
-    setDeleteModalLists([selectedList]);
+  const handleSaved = (saved: TenThingsList, created: boolean) => {
+    if (created) openList(saved._id);
+    fetchLists(1);
   };
 
   const handleFavorite = async (list: TenThingsList) => {
     try {
       const updated = await updateList({ ...list, starred: !list.starred });
       setLists((prev) => prev.map((l) => (l._id === updated._id ? updated : l)));
-      if (selectedList?._id === updated._id) setSelectedList(updated);
     } catch {
       toast("Failed to update list");
     }
@@ -279,7 +214,7 @@ export default function TenThingsLists() {
     try {
       for (const l of deleteModalLists) {
         await deleteList(l._id);
-        if (selectedList?._id === l._id) handleClose();
+        if (openListId === l._id) handleClose();
       }
       setHighlightedIds((prev) => prev.filter((id) => !deleteModalLists.some((l) => l._id === id)));
       setDeleteModalLists([]);
@@ -410,25 +345,13 @@ export default function TenThingsLists() {
           />
         </div>
 
-        {editorMounted && selectedList && (
-          <div>
-            <ListEditor
-              list={selectedList}
-              active={editorVisible}
-              isAdmin={isAdmin}
-              readOnly={readOnly}
-              languageOptions={languageOptions}
-              categoryOptions={categoryOptions}
-              onClose={handleClose}
-              onChange={setSelectedList}
-              onBlur={(list) => handleSave(list)}
-              onDelete={handleDelete}
-            />
-          </div>
-        )}
+        <ListEditorDrawer
+          listId={openListId}
+          onClose={handleClose}
+          onSaved={handleSaved}
+          onDelete={(list) => setDeleteModalLists([list])}
+        />
       </div>
-
-      {editorMounted && <Overlay $visible={editorVisible} onClick={handleClose} />}
 
       {deleteModalLists.length > 0 && (
         <DeleteListsModal lists={deleteModalLists} onConfirm={confirmDelete} onCancel={() => setDeleteModalLists([])} />
