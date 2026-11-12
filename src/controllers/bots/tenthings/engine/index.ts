@@ -16,6 +16,7 @@ import { EngineEvent } from "./events";
 import { banCurrentRound, roundHandlers, RoundActionType } from "./round";
 import { Scheduler } from "./scheduler";
 import { sideGameHandlers, SideGameActionType } from "./sideGames";
+import { lifecycleHandlers, LifecycleActionType } from "./lifecycle";
 
 export type { Action } from "./actions";
 export type { EngineEvent } from "./events";
@@ -56,6 +57,7 @@ const ADMIN_ONLY: ReadonlySet<Action["type"]> = new Set([
   "toggleCategory",
   "requestBan",
   "flush",
+  "updateSettings",
 ]);
 
 /**
@@ -82,7 +84,9 @@ const isCategory = (category: string) => {
   return sub === undefined || categories[main].includes(sub);
 };
 
-const handlers: { [T in Exclude<Action["type"], RoundActionType | SideGameActionType>]: Handler<T> } = {
+const handlers: {
+  [T in Exclude<Action["type"], RoundActionType | SideGameActionType | LifecycleActionType>]: Handler<T>;
+} = {
   vote: async (_game, { listId, voterId, vote, actor }) => {
     if (isVoteThrottled(voterId)) return [];
     const list = await List.findById(listId).select("name votes modifyDate score skips plays").exec();
@@ -257,7 +261,9 @@ const handlers: { [T in Exclude<Action["type"], RoundActionType | SideGameAction
   },
 };
 
-const allHandlers = { ...handlers, ...roundHandlers, ...sideGameHandlers } as { [T in Action["type"]]: Handler<T> };
+const allHandlers = { ...handlers, ...roundHandlers, ...sideGameHandlers, ...lifecycleHandlers } as {
+  [T in Action["type"]]: Handler<T>;
+};
 
 /**
  * Apply one Action; `scheduler` takes the Actions it sets up for later. Returns the Game as it

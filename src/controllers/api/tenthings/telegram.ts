@@ -1,7 +1,7 @@
 import { Router, Request, Response } from "express";
 import moment from "moment";
 import { Game, Player } from "@models/index";
-import { activate, createMaingame } from "@tenthings/maingame";
+import { createMaingame } from "@tenthings/maingame";
 import { SYSTEM_ACTOR } from "@tenthings/engine/actions";
 import { dispatch } from "@tenthings/engine/queue";
 
@@ -129,7 +129,8 @@ tenthingsTelegramBotRoute.post("/", async (req: Request, res: Response) => {
               )) ||
             ["list", "start", "minigame", "tinygame", "hint", "skip"].includes(msg.command)
           ) {
-            await activate(existingGame, true);
+            // Queued ahead of the command's own Action, so the Game is on when that runs.
+            await dispatch({ type: "activate", gameId: String(existingGame._id), actor: SYSTEM_ACTOR });
             await evaluate(msg, existingGame, false);
           }
         }

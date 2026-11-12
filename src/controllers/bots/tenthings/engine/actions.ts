@@ -64,6 +64,15 @@ export type Action = { gameId: string; actor: Actor } & (
   | { type: "sideGameGuess"; sideGame: SideGame; answer: string; distance: number }
   | { type: "sideGameHint"; sideGame: SideGame }
   | { type: "sideGameSkip"; sideGame: SideGame }
+  // ── The Game itself ──
+  /** Timer (daily): crown the day's winners and start a new day of Daily scores. */
+  | { type: "endDay" }
+  /** Turn the Game back on (a Player used it again). Not after an admin turned it off. */
+  | { type: "activate" }
+  /** Turn the Game off: `stopped` by an admin, or `inactive` for too long. */
+  | { type: "deactivate"; reason: "stopped" | "inactive" }
+  /** The web admin panel's settings form. `adminDisabled` turns the Game off and keeps it off. */
+  | { type: "updateSettings"; settings: SettingsUpdate; adminDisabled?: boolean }
 );
 
 /** The puzzles played alongside the Rounds. Also the Game fields that hold them. */
@@ -79,6 +88,8 @@ export type ActionOrigin = {
   messageId?: string;
   /** When that message was sent (ISO string). */
   sentAt?: string;
+  /** From outside the chat (the web admin panel): the chat isn't told. */
+  silent?: boolean;
 };
 
 /** A Guess that matched an Answer, waiting in the queue. Ids are strings: jobs travel as JSON. */
@@ -89,7 +100,7 @@ export type Guess = {
   match: { type: GameType; value: string; distance: number };
 };
 
-type SettingsUpdate = Partial<
+export type SettingsUpdate = Partial<
   Record<ToggleSettingKey, boolean> &
     Record<DelaySettingKey, number> & { language: BotLanguage; languages: SupportedLanguage[] }
 >;

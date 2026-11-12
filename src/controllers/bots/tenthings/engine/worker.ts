@@ -11,7 +11,7 @@ import { getRenderer } from "./renderers";
 const handle = async (action: Action, origin: ActionOrigin) => {
   try {
     const { game, events } = await runAction(action, bullScheduler);
-    if (!game || events.length === 0) return;
+    if (!game || events.length === 0 || origin.silent) return;
     const render = await getRenderer(game.platform);
     await render?.(game, events, { action, origin });
   } catch (error) {

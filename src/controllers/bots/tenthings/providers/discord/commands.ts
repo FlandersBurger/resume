@@ -2,7 +2,6 @@ import { GameType, IGame } from "@models/tenthings/game";
 import { HydratedDocument } from "mongoose";
 import { convertDiscordUserToPlayer, DiscordMessage } from "@tenthings/providers/discord";
 import { getRules } from "@tenthings/messages";
-import { deactivate } from "@tenthings/maingame";
 import { updateMinigames } from "@tenthings/minigame";
 import { queueGuess } from "@tenthings/guesses";
 import { Actor, SYSTEM_ACTOR } from "@tenthings/engine/actions";
@@ -95,7 +94,7 @@ export const evaluate = async (msg: DiscordMessage, game: HydratedDocument<IGame
         break;
       case Command.Stop:
         if (await bot.checkAdmin(null, msg.from.id)) {
-          deactivate(game);
+          dispatch({ type: "deactivate", gameId, actor: actor(true), reason: "stopped" });
         } else {
           game.provider.message(
             game,

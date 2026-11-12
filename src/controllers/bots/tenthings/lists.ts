@@ -7,7 +7,6 @@ import some from "lodash/some";
 import sampleSize from "lodash/sampleSize";
 import orderBy from "lodash/orderBy";
 import uniqBy from "lodash/uniqBy";
-import i18n from "@root/i18n";
 import { removeSpecialCharacters } from "@utils/string-helpers";
 import { SupportedLanguage } from "./languages";
 import { playedRounds, roundTally } from "@models/tenthings/listMetrics";
@@ -77,7 +76,11 @@ type PoolList = Pick<IList, "_id" | "categories" | "lowQuality" | "highQuality" 
 
 const pickRandom = <T>(items: T[]): T | undefined => items[Math.floor(Math.random() * items.length)];
 
-export const selectList = async (game: IGame): Promise<HydratedDocument<IList>> => {
+/**
+ * The List for `game`'s next Round. `allListsPlayed`: every eligible List was played recently,
+ * so it's one played before.
+ */
+export const selectList = async (game: IGame): Promise<{ list: HydratedDocument<IList>; allListsPlayed: boolean }> => {
   const availableLanguages = getAvailableLanguages(game);
 
   if (game.pickedLists.length > 0) {
@@ -87,7 +90,7 @@ export const selectList = async (game: IGame): Promise<HydratedDocument<IList>> 
       console.log(`Moving to next picked list`);
       return await selectList(game);
     }
-    return list;
+    return { list, allListsPlayed: false };
   }
 
   // Lists have no index on language, so every query on the pool scans the whole collection
@@ -129,9 +132,9 @@ export const selectList = async (game: IGame): Promise<HydratedDocument<IList>> 
       undefined)
     : undefined;
 
+  const allListsPlayed = !list;
   if (!list) {
     // Cooldown exhausted — ignore cooldown, still filter low-quality
-    game.provider.message(game, i18n(game.settings.language, "sentences.allListsPlayed"));
     const exhaustedQuery = {
       _id: { $nin: [...banned, ...skipHeavy] },
       categories: { $nin: game.disabledCategories },
@@ -143,7 +146,7 @@ export const selectList = async (game: IGame): Promise<HydratedDocument<IList>> 
     if (!list) list = await getRandomList({ _id: { $nin: banned }, language: "EN" });
   }
 
-  return list!;
+  return { list: list!, allListsPlayed };
 };
 
 const sampleLists = async (query: QueryOptions<IList>, sampledLists: IList[]): Promise<IList[]> => {

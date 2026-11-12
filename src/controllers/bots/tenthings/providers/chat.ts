@@ -70,17 +70,34 @@ const hintLines = (game: IGame, prefix: string, suffix = "") =>
     )
     .join("");
 
+export type DailyScore = { name: string; score: number };
+
+/** The Daily scores, highest first: all of them, or the top `limit`. */
+const scoreboardMessage = (language: string, scores: DailyScore[], limit = 0) =>
+  scores
+    .slice(0, limit ? limit : scores.length)
+    .reduce(
+      (str, { name, score }, index) => `${str}\t${index + 1}: ${name} - ${score}\n`,
+      i18n(language, `sentences.dailyScores${limit ? "WithLimit" : ""}`, { limit }) + `\n`,
+    );
+
 export const dailyScoresMessage = async ({ _id, settings }: IGame, limit = 0) => {
   const players = await Player.find({ game: _id, scoreDaily: { $gt: 0 } }).exec();
-  return players
-    .filter(({ scoreDaily }) => scoreDaily)
+  const scores = players
     .sort((player1, player2) => player2.scoreDaily - player1.scoreDaily)
-    .slice(0, limit ? limit : players.length)
-    .reduce(
-      (str, player, index) => `${str}\t${index + 1}: ${getPlayerName(player)} - ${player.scoreDaily}\n`,
-      i18n(settings.language, `sentences.dailyScores${limit ? "WithLimit" : ""}`, { limit }) + `\n`,
-    );
+    .map((player) => ({ name: getPlayerName(player), score: player.scoreDaily }));
+  return scoreboardMessage(settings.language, scores, limit);
 };
+
+/** The end of the day: the day's Daily scores (gone from the Players by now) and its winners. */
+export const endOfDayMessage = (
+  game: IGame,
+  { scores, winners, score }: { scores: DailyScore[]; winners: { name: string }[]; score: number },
+  promoteDiscord: boolean,
+) =>
+  scoreboardMessage(game.settings.language, scores) +
+  `\n<b>${winners.map(({ name }) => name).join(" & ")} won with ${score} points!</b>\n\n` +
+  getDailyMessage(game.settings.language, promoteDiscord);
 
 export const newRoundMessage = (game: IGame, list: IList | IGameList) =>
   `<b>${i18n(game.settings.language, "sentences.newRound")}</b>\n${categoryLine(game, list)}` +
@@ -142,9 +159,6 @@ export const skippedListMessage = (game: IGame) =>
       }</i>\n`,
     `${i18n(game.settings.language, "sentences.skippedList", { list: game.list.name })}\n`,
   );
-
-const winnersLine = (winners: IPlayer[], score: number) =>
-  `<b>${winners.map((winner) => getPlayerName(winner, true)).join(" & ")} won with ${score} points!</b>\n\n`;
 
 const sideGameMessage = (game: IGame, titleKey: string, lines: string[], hints: number, answer: string) =>
   `<b>${i18n(game.settings.language, titleKey)}</b>\n` +
@@ -217,13 +231,7 @@ export const createChatProvider = (platform: ChatPlatform): Provider => {
       );
     },
     dailyScores: async (game, limit) => send(game, await dailyScoresMessage(game, limit)),
-    endOfDay: async (game, winners, score) => {
-      const message =
-        (await dailyScoresMessage(game)) +
-        `\n${winnersLine(winners, score)}` +
-        getDailyMessage(game.settings.language, platform.promoteDiscord);
-      send(game, message);
-    },
+    endOfDay: (game, day) => send(game, endOfDayMessage(game, day, platform.promoteDiscord)),
     guessed: (game, player, match, score, accuracy) => {
       send(game, guessedMessage(game, player, match, score, accuracy, platform.linkPreviews));
       if (!platform.linkPreviews && match.blurb && isUrl(match.blurb)) platform.sendMedia(game, match.blurb);

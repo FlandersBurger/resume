@@ -1,5 +1,5 @@
 import { Game } from "@models/index";
-import { activate, createMaingame } from "@tenthings/maingame";
+import { createMaingame } from "@tenthings/maingame";
 import { SYSTEM_ACTOR } from "@tenthings/engine/actions";
 import { dispatch } from "@tenthings/engine/queue";
 
@@ -24,7 +24,8 @@ export const initDiscordBot = () => {
       await evaluate(msg, newGame, true);
     } else {
       if (!existingGame.enabled) {
-        if (msg.command) {
+        // An admin turned it off: only an admin turns it back on (the admin panel).
+        if (!existingGame.adminDisabled && msg.command) {
           const command = translateCommand(existingGame.settings.language, msg.command);
           if (
             (command &&
@@ -33,7 +34,8 @@ export const initDiscordBot = () => {
               )) ||
             ["list", "start", "minigame", "tinygame", "hint", "skip"].includes(msg.command)
           ) {
-            await activate(existingGame, true);
+            // Queued ahead of the command's own Action, so the Game is on when that runs.
+            await dispatch({ type: "activate", gameId: String(existingGame._id), actor: SYSTEM_ACTOR });
             await evaluate(msg, existingGame, false);
           }
         }

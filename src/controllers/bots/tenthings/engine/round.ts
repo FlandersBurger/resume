@@ -128,7 +128,7 @@ export const roundHandlers: { [T in RoundActionType]: RoundHandler<T> } = {
     // Whatever is still marked in progress is replaced, or left over from a List that's gone.
     await GameRound.deleteMany({ gameId: game._id, outcome: "inProgress" });
 
-    const list = await selectList(game);
+    const { list, allListsPlayed } = await selectList(game);
     // selectList loads the List without its votes, so the play and score are written inside Mongo.
     list.plays++;
     try {
@@ -158,7 +158,10 @@ export const roundHandlers: { [T in RoundActionType]: RoundHandler<T> } = {
     });
     await saveGame(game);
     console.log(`${game._id} - New round started -> ${styleText("cyan", list.name)}`);
-    return [{ type: "roundStarted", roundId: String(round._id), listId: String(list._id), listName: list.name }];
+    return [
+      ...(allListsPlayed ? [{ type: "allListsPlayed" } as const] : []),
+      { type: "roundStarted", roundId: String(round._id), listId: String(list._id), listName: list.name },
+    ];
   },
 
   guess: async (game, { actor, listId, match: guess }, scheduler) => {
