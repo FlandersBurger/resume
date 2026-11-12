@@ -1,18 +1,8 @@
 import { createContext, useContext, useReducer, useCallback, ReactNode, useEffect, useState } from "react";
-import axios from "axios";
-import { getUser } from "../services/users";
+import type { User } from "../services/users";
+import { restoreSession, signOut } from "../services/session";
 
-export interface User {
-  _id: string;
-  username: string;
-  displayName?: string;
-  email?: string;
-  photoURL?: string;
-  admin?: boolean;
-  telegramId?: string;
-  birthDate?: string;
-  flags?: string[];
-}
+export type { User };
 
 interface Toast {
   id: number;
@@ -129,19 +119,12 @@ export function AppProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const logout = useCallback(() => {
-    window.localStorage.clear();
-    delete axios.defaults.headers.common["X-Auth"];
+    signOut();
     dispatch({ type: "SET_USER", user: null });
-    import("../services/firebase").then(({ firebaseSignOut }) => firebaseSignOut().catch(() => {}));
   }, []);
 
   useEffect(() => {
-    const token = window.localStorage.getItem("token");
-    if (token) {
-      getUser()
-        .then((user) => dispatch({ type: "SET_USER", user }))
-        .catch(() => window.localStorage.removeItem("token"));
-    }
+    restoreSession().then((user) => user && dispatch({ type: "SET_USER", user }));
   }, []);
 
   const isAdmin = !!state.currentUser?.admin && adminMode;

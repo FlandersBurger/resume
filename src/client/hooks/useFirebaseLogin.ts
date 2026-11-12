@@ -10,7 +10,7 @@ import {
   updateProfile,
 } from "firebase/auth";
 import { auth } from "../services/firebase";
-import { authenticate } from "../services/users";
+import { signIn } from "../services/session";
 import { useApp } from "../context/AppContext";
 
 const ERROR_MESSAGES: Record<string, string> = {
@@ -46,8 +46,7 @@ export function useFirebaseLogin(onSuccess?: () => void) {
     onSuccess?.();
     setLoginLoading(true);
     try {
-      const user = await authenticate(await getPayload());
-      setUser(user as any);
+      setUser(await signIn(await getPayload()));
       toast("Logged in");
     } catch {
       toast("Login failed");

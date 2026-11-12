@@ -1,5 +1,6 @@
 import axios from "axios";
 
+/** The axios instance every request goes through. The session module sets its auth header. */
 const http = axios.create({ baseURL: "/" });
 
 export function setAuthToken(token: string) {
@@ -9,9 +10,5 @@ export function setAuthToken(token: string) {
 export function clearAuthToken() {
   delete http.defaults.headers.common["X-Auth"];
 }
-
-// Restore token from localStorage on load
-const stored = window.localStorage.getItem("token");
-if (stored) setAuthToken(stored);
 
 export default http;

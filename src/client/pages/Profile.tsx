@@ -39,7 +39,7 @@ export default function Profile() {
     if (!currentUser) return;
     try {
       const updated = await linkTelegram(currentUser._id, data);
-      setUser(updated as any);
+      setUser(updated);
       toast("Telegram account linked");
     } catch {
       toast("Failed to link Telegram account");
@@ -54,7 +54,7 @@ export default function Profile() {
         flags: updatedFlags ?? flags,
         birthDate: (updatedBirthDate ?? birthDate) || undefined,
       } as any);
-      setUser(updated as any);
+      setUser(updated);
     } catch (err: any) {
       toast("Failed to update profile: " + (err?.response?.status ?? err?.message ?? "unknown error"));
     }
@@ -86,7 +86,7 @@ export default function Profile() {
   const handleChangeUsername = async () => {
     try {
       const updated = await changeUsername(currentUser._id, newUsername);
-      setUser(updated as any);
+      setUser(updated);
       toast("Username updated");
       setUsernameToggle(true);
     } catch {

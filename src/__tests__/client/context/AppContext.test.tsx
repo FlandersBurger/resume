@@ -1,19 +1,12 @@
 import { renderHook, act } from "@testing-library/react";
 import { AppProvider, useApp } from "../../../client/context/AppContext";
 
-jest.mock("../../../client/services/firebase", () => ({
-  firebaseSignOut: jest.fn().mockResolvedValue(undefined),
-}));
+import { restoreSession, signOut } from "../../../client/services/session";
 
-jest.mock("../../../client/services/users", () => ({
-  getUser: jest.fn().mockResolvedValue({ _id: "u1", username: "alice" }),
+jest.mock("../../../client/services/session", () => ({
+  restoreSession: jest.fn().mockResolvedValue(null),
+  signOut: jest.fn(),
 }));
-
-// Provide a real-ish axios defaults object so logout's delete doesn't throw
-jest.mock("axios", () => {
-  const actual = jest.requireActual("axios");
-  return { ...actual, defaults: { headers: { common: {} } } };
-});
 
 function wrapper({ children }: { children: React.ReactNode }) {
   return <AppProvider>{children}</AppProvider>;
@@ -148,8 +141,14 @@ describe("AppProvider / useApp", () => {
     expect(result.current.loginLoading).toBe(false);
   });
 
-  it("logout clears currentUser and localStorage", () => {
-    localStorage.setItem("token", "abc");
+  it("restores the stored session on load", async () => {
+    (restoreSession as jest.Mock).mockResolvedValueOnce({ _id: "u1", username: "alice" });
+    const { result } = renderHook(() => useApp(), { wrapper });
+    await act(async () => {});
+    expect(result.current.currentUser).toEqual({ _id: "u1", username: "alice" });
+  });
+
+  it("logout ends the session and clears currentUser", () => {
     const { result } = renderHook(() => useApp(), { wrapper });
     act(() => {
       result.current.setUser({ _id: "u1", username: "alice" });
@@ -158,6 +157,6 @@ describe("AppProvider / useApp", () => {
       result.current.logout();
     });
     expect(result.current.currentUser).toBeNull();
-    expect(localStorage.getItem("token")).toBeNull();
+    expect(signOut).toHaveBeenCalled();
   });
 });
