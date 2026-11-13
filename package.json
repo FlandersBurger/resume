@@ -37,7 +37,7 @@
     "firebase": "^13.3.0",
     "firebase-admin": "^14.5.1",
     "fuzzy-matching": "^0.4.3",
-    "i18next": "^26.7.1",
+    "i18next": "^27.1.1",
     "i18next-fs-backend": "^2.6.11",
     "jwt-simple": "^0.6.1",
     "lodash": "^4.18.1",
