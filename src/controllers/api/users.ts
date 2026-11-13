@@ -1,7 +1,7 @@
 import { Router, Request, Response, QueryableRequest } from "express";
 
 import bcrypt from "bcryptjs";
-import jwt from "jwt-simple";
+import { issueToken } from "@root/tokens";
 import { firebaseAuth } from "@root/server";
 
 import { Player, User } from "@models/index";
@@ -105,7 +105,7 @@ usersRoute.post("/authenticate", async (req: Request, res: Response) => {
     });
     await newUser.save();
     bot.notifyAdmin(`New user registered with ${authType}: ` + user.displayName);
-    const token = jwt.encode({ userid: newUser.id }, process.env.SECRET!);
+    const token = issueToken(newUser.id);
     return res.json(token);
   } else {
     if (existingUser.banned) {
@@ -116,7 +116,7 @@ usersRoute.post("/authenticate", async (req: Request, res: Response) => {
       await existingUser.save();
     }
     console.log(existingUser.username + " authenticated with " + authType);
-    const token = jwt.encode({ userid: existingUser.id }, process.env.SECRET!);
+    const token = issueToken(existingUser.id);
     return res.json(token);
   }
 });

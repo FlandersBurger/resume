@@ -94,3 +94,45 @@ describe("signOut", () => {
     expect(firebaseSignOut).toHaveBeenCalled();
   });
 });
+
+describe("token renewal", () => {
+  /** Makes `http` answer every request itself, with `headers` on the response. */
+  const respondWith = (http: ReturnType<typeof load>["http"], headers: Record<string, string>) => {
+    http.defaults.adapter = async (config) => ({ data: "", status: 200, statusText: "OK", headers, config });
+  };
+
+  it("keeps the fresh token the server sends back", async () => {
+    localStorage.setItem("token", "old");
+    const { http, header } = load();
+    respondWith(http, { "x-auth-renewed": "fresh" });
+    await http.get("/api/users");
+    expect(localStorage.getItem("token")).toBe("fresh");
+    expect(header()).toBe("fresh");
+  });
+
+  it("leaves the token alone when nothing comes back", async () => {
+    localStorage.setItem("token", "old");
+    const { http, header } = load();
+    respondWith(http, {});
+    await http.get("/api/users");
+    expect(localStorage.getItem("token")).toBe("old");
+    expect(header()).toBe("old");
+  });
+
+  it("doesn't sign back in someone who signed out while the request was out", async () => {
+    localStorage.setItem("token", "old");
+    const { http, session } = load();
+    let answer!: () => void;
+    http.defaults.adapter = (config) =>
+      new Promise((resolve) => {
+        answer = () =>
+          resolve({ data: "", status: 200, statusText: "OK", headers: { "x-auth-renewed": "fresh" }, config });
+      });
+    const request = http.get("/api/users");
+    await new Promise((r) => setTimeout(r, 0));
+    session.signOut();
+    answer();
+    await request;
+    expect(localStorage.getItem("token")).toBeNull();
+  });
+});
