@@ -74,46 +74,89 @@ const getHighQualityProbability = (listsPlayed: number): number => {
 /** The fields list selection needs from every List in a Game's pool. */
 type PoolList = Pick<IList, "_id" | "language" | "categories" | "lowQuality" | "highQuality" | "starred">;
 
+/**
+ * A value read once, then served from memory and read again in the background once it is
+ * `maxAgeMs` old: only the first read is waited for.
+ */
+const cachedRead = <T>(load: () => Promise<T>, maxAgeMs: number) => {
+  let value: { data: T; loadedAt: number } | undefined;
+  let loading: Promise<T> | undefined;
+  const read = () =>
+    (loading ??= load()
+      .then((data) => {
+        value = { data, loadedAt: Date.now() };
+        return data;
+      })
+      .finally(() => {
+        loading = undefined;
+      }));
+  return {
+    get: async (): Promise<T> => {
+      if (!value) return read();
+      if (Date.now() - value.loadedAt > maxAgeMs)
+        read().catch((error) => console.error("Background refresh failed", error));
+      return value.data;
+    },
+    /** Read again on the next use (served as it is until then). */
+    invalidate: () => {
+      if (value) value.loadedAt = 0;
+    },
+  };
+};
+
 /** How long the List pool is served before it's read again (in the background). */
 export const LIST_POOL_REFRESH_MS = 5 * 60_000;
 
-let listPool: { lists: PoolList[]; loadedAt: number } | undefined;
-let loadingListPool: Promise<PoolList[]> | undefined;
-
-const loadListPool = () =>
-  (loadingListPool ??= List.find({})
-    .select("_id language categories lowQuality highQuality starred")
-    .lean<PoolList[]>()
-    .exec()
-    .then((lists) => {
-      listPool = { lists, loadedAt: Date.now() };
-      return lists;
-    })
-    .finally(() => {
-      loadingListPool = undefined;
-    }));
-
 /**
- * Every List's selection fields, from memory. Reading them scans the whole lists collection
- * (seconds), and a new Round reads them on the Engine queue, ahead of every Game's Guesses, so
- * they're read once and refreshed in the background: a new Round only waits for the first read.
+ * Every List's selection fields. Reading them scans the whole lists collection (seconds), and a
+ * new Round reads them on the Engine queue, ahead of every Game's Guesses.
  */
-export const getListPool = async (): Promise<PoolList[]> => {
-  if (!listPool) return loadListPool();
-  if (Date.now() - listPool.loadedAt > LIST_POOL_REFRESH_MS)
-    loadListPool().catch((error) => console.error("List pool refresh failed", error));
-  return listPool.lists;
-};
+const readListPool = () =>
+  cachedRead(
+    () => List.find({}).select("_id language categories lowQuality highQuality starred").lean<PoolList[]>().exec(),
+    LIST_POOL_REFRESH_MS,
+  );
+let listPool = readListPool();
+
+export const getListPool = () => listPool.get();
 
 /** Lists were added, changed or removed: the pool is read again on its next use. */
-export const invalidateListPool = () => {
-  if (listPool) listPool.loadedAt = 0;
+export const invalidateListPool = () => listPool.invalidate();
+
+/**
+ * How long a Game's preferred categories and skip-heavy Lists are served before they're read
+ * again. Both tally every Round the Game ever played (seconds, for an old busy Game), and one
+ * more Round barely moves them.
+ */
+export const GAME_HISTORY_REFRESH_MS = 30 * 60_000;
+
+type GameHistory = { skipHeavy: Types.ObjectId[]; preferredCategories: string[] };
+let gameHistories = new Map<string, ReturnType<typeof cachedRead<GameHistory>>>();
+
+const getGameHistory = (gameId: Types.ObjectId) => {
+  const key = String(gameId);
+  let history = gameHistories.get(key);
+  if (!history) {
+    history = cachedRead(async () => {
+      const [skipHeavy, preferredCategories] = await Promise.all([
+        getSkipHeavyListIds(gameId),
+        getPreferredCategories(gameId),
+      ]);
+      return { skipHeavy, preferredCategories };
+    }, GAME_HISTORY_REFRESH_MS);
+    gameHistories.set(key, history);
+  }
+  return history.get();
 };
 
-/** Forget the pool entirely (tests, whose Lists change between cases). */
-export const resetListPool = () => {
-  listPool = undefined;
+/** Forget everything selection keeps in memory (tests, whose Lists and Rounds change between cases). */
+export const resetSelectionCaches = () => {
+  listPool = readListPool();
+  gameHistories = new Map();
 };
+
+/** A selectList slower than this logs how long each of its reads took. */
+const SLOW_SELECTION_MS = 1000;
 
 const pickRandom = <T>(items: T[]): T | undefined => items[Math.floor(Math.random() * items.length)];
 
@@ -134,28 +177,37 @@ export const selectList = async (game: IGame): Promise<{ list: HydratedDocument<
     return { list, allListsPlayed: false };
   }
 
-  // The pool comes from memory (getListPool); the per-Game reads below are indexed by Game.
+  const startedAt = Date.now();
+  const timings: Record<string, number> = {};
+  const timed = async <T>(name: string, read: Promise<T>) => {
+    const readStartedAt = Date.now();
+    const result = await read;
+    timings[name] = (timings[name] ?? 0) + Date.now() - readStartedAt;
+    return result;
+  };
+
+  // The pool and the Game's history come from memory; its recent Rounds and Bans are indexed reads.
   const disabledCategories = new Set(game.disabledCategories);
   const inPool = (l: PoolList) =>
     availableLanguages.includes(l.language as SupportedLanguage) &&
     !l.categories?.some((c) => disabledCategories.has(c)) &&
     (game.platform !== "web" || !!l.starred);
-  const [allLists, recentRounds, banned, skipHeavy, preferredCategories] = await Promise.all([
-    getListPool(),
-    GameRound.find(playedRounds({ gameId: game._id }))
-      .sort({ playedAt: -1 })
-      .limit(5000)
-      .select("listId")
-      .lean(),
-    GameRound.distinct("listId", { gameId: game._id, outcome: "banned" }),
-    getSkipHeavyListIds(game._id),
-    getPreferredCategories(game._id),
+  const pool = (await timed("pool", getListPool())).filter(inPool);
+  const cooldownRounds = Math.min(5000, Math.max(10, Math.floor(pool.length / 2)));
+  // Bans aren't cached: a Ban takes effect from the next Round.
+  const [recentRounds, banned, { skipHeavy, preferredCategories }] = await Promise.all([
+    timed(
+      "recent",
+      GameRound.find(playedRounds({ gameId: game._id }))
+        .sort({ playedAt: -1 })
+        .limit(cooldownRounds)
+        .select("listId")
+        .lean(),
+    ),
+    timed("banned", GameRound.distinct("listId", { gameId: game._id, outcome: "banned" })),
+    timed("history", getGameHistory(game._id)),
   ]);
-  const pool = allLists.filter(inPool);
-  const cooldownRounds = Math.max(10, Math.floor(pool.length / 2));
-  const excluded = new Set(
-    [...recentRounds.slice(0, cooldownRounds).map((r) => r.listId), ...banned, ...skipHeavy].map(String),
-  );
+  const excluded = new Set([...recentRounds.map((r) => r.listId), ...banned, ...skipHeavy].map(String));
 
   // Prefer a List in a category this Game tends to complete, when there is one.
   const pickFrom = (lists: PoolList[]) =>
@@ -175,8 +227,10 @@ export const selectList = async (game: IGame): Promise<{ list: HydratedDocument<
     const chosen = choose();
     if (!chosen) break;
     list =
-      (await List.findById(chosen._id).select("-votes").populate("creator").populate("values.creator").exec()) ??
-      undefined;
+      (await timed(
+        "load",
+        List.findById(chosen._id).select("-votes").populate("creator").populate("values.creator").exec(),
+      )) ?? undefined;
     if (!list) {
       excluded.add(String(chosen._id));
       invalidateListPool();
@@ -197,6 +251,11 @@ export const selectList = async (game: IGame): Promise<{ list: HydratedDocument<
     if (!list) list = await getRandomList({ _id: { $nin: banned }, language: "EN" });
   }
 
+  const ms = Date.now() - startedAt;
+  if (ms > SLOW_SELECTION_MS) {
+    const parts = Object.entries(timings).map(([name, partMs]) => `${name} ${partMs}ms`);
+    console.warn(`[engine] Slow selectList (${ms}ms) in ${game._id}: ${parts.join(", ")}`);
+  }
   return { list: list!, allListsPlayed };
 };
 

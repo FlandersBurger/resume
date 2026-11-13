@@ -23,7 +23,7 @@ import { Action, Actor, SYSTEM_ACTOR } from "@tenthings/engine/actions";
 import { pendingBans, runAction } from "@tenthings/engine";
 import { CORROBORATED_SKIP_MS, NEXT_ROUND_DELAY_MS } from "@tenthings/engine/round";
 import { MAX_HINTS } from "@tenthings/hints";
-import { resetListPool } from "@tenthings/lists";
+import { resetSelectionCaches } from "@tenthings/lists";
 import { SupportedLanguage } from "@tenthings/languages";
 import { MEMORY_MONGO_TIMEOUT, openOnMemoryMongo } from "../../../helpers/memoryMongo";
 
@@ -56,7 +56,7 @@ const fireScheduled = async () => {
 
 beforeEach(async () => {
   await db.master.db!.dropDatabase();
-  resetListPool();
+  resetSelectionCaches();
   scheduled = [];
   pendingBans.clear();
 });

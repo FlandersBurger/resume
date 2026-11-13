@@ -13,7 +13,7 @@ jest.mock("@root/i18n", () => ({ __esModule: true, default: jest.fn((_, key: str
 
 import db from "@root/db";
 import { Game, GameRound, List } from "@models/index";
-import { invalidateListPool, resetListPool, selectList } from "@tenthings/lists";
+import { GAME_HISTORY_REFRESH_MS, invalidateListPool, resetSelectionCaches, selectList } from "@tenthings/lists";
 import { SupportedLanguage } from "@tenthings/languages";
 import { MEMORY_MONGO_TIMEOUT, openOnMemoryMongo } from "../../../helpers/memoryMongo";
 
@@ -29,7 +29,7 @@ afterAll(async () => {
 
 beforeEach(async () => {
   await db.master.db!.dropDatabase();
-  resetListPool();
+  resetSelectionCaches();
 });
 
 // Past the onboarding ramp, so selection isn't limited to high-quality Lists.
@@ -156,5 +156,61 @@ describe("the List pool", () => {
     expect(await served(game)).toEqual(new Set(["Kept"]));
     // Not mistaken for every List having been played.
     expect(game.provider.message).not.toHaveBeenCalled();
+  });
+});
+
+describe("a Game's history", () => {
+  // 32 Lists, so the cooldown is the 16 most recent Rounds.
+  const makeABAndFiller = () =>
+    makeLists([{ name: "A" }, { name: "B" }, ...Array.from({ length: 30 }, (_, i) => ({ name: `F${i}` }))]);
+  // The Game skipped B twice, long enough ago that 16 newer Rounds took B off cooldown.
+  const skipB = async (game: Awaited<ReturnType<typeof makeGame>>, [, b, ...filler]: { _id: unknown }[]) =>
+    GameRound.insertMany([
+      ...[1, 2].map((i) => ({
+        gameId: game._id,
+        listId: b._id,
+        outcome: "skipped",
+        language: "EN",
+        playedAt: new Date(Date.now() - 3_600_000 * i),
+      })),
+      ...filler.slice(0, 16).map((l, i) => ({
+        gameId: game._id,
+        listId: l._id,
+        outcome: "completed",
+        language: "EN",
+        playedAt: new Date(Date.now() - 1000 * (i + 1)),
+      })),
+    ]);
+
+  afterEach(() => {
+    jest.restoreAllMocks();
+  });
+
+  test("is read once, so a new Round doesn't tally every past Round again", async () => {
+    const game = await makeGame();
+    const lists = await makeABAndFiller();
+    await selectList(game);
+    await skipB(game, lists);
+    expect(await served(game, 200)).toContain("B");
+  });
+
+  test("is read again after a while", async () => {
+    const game = await makeGame();
+    const lists = await makeABAndFiller();
+    await selectList(game);
+    await skipB(game, lists);
+    const later = Date.now() + GAME_HISTORY_REFRESH_MS + 1000;
+    jest.spyOn(Date, "now").mockReturnValue(later);
+    await selectList(game); // still the old history, while the new one loads
+    await new Promise((resolve) => setTimeout(resolve, 200));
+    expect(await served(game, 200)).not.toContain("B");
+  });
+
+  test("doesn't hold up a Ban: it applies from the next Round", async () => {
+    const game = await makeGame();
+    const lists = await makeABAndFiller();
+    await selectList(game);
+    await GameRound.create({ gameId: game._id, listId: lists[1]._id, outcome: "banned", language: "EN" });
+    expect(await served(game, 200)).not.toContain("B");
   });
 });
