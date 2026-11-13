@@ -69,7 +69,7 @@ export const sideGameHandlers: { [T in SideGameActionType]: Handler<T> } = {
     await endSideGame(game, sideGame, scheduler, NEXT_SIDE_GAME_AFTER_GUESS_MS);
     await Promise.all([player.save(), saveGame(game)]);
     console.log(
-      `${game._id} (${game.settings.language}) - ${styleText("grey", sideGame)} "${styleText("blueBright", answer)}" by ${player.first_name}`,
+      `${game._id} (${game.settings.language}) - ${styleText("gray", sideGame)} "${styleText("blueBright", answer)}" by ${player.first_name}`,
     );
     return [
       {

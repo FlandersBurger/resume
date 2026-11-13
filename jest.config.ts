@@ -46,6 +46,7 @@ const config: Config = {
           {
             tsconfig: {
               jsx: "react-jsx",
+              target: "es2022",
               module: "commonjs",
               moduleResolution: "node",
               types: ["jest", "@testing-library/jest-dom"],

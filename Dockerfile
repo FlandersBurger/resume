@@ -1,4 +1,4 @@
-FROM node:24-bookworm-slim AS builder
+FROM node:26-bookworm-slim AS builder
 WORKDIR /app
 COPY package.json package-lock.json* ./
 RUN npm install
@@ -9,7 +9,7 @@ COPY resources/font-awesome/ ./resources/font-awesome/
 COPY data/hobbies.json ./data/hobbies.json
 RUN npm run rebuild && npm run client:build
 
-FROM node:24-bookworm-slim
+FROM node:26-bookworm-slim
 WORKDIR /app
 COPY package.json package-lock.json* ./
 RUN npm install --omit=dev --ignore-scripts
