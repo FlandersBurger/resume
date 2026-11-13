@@ -121,19 +121,6 @@ usersRoute.post("/authenticate", async (req: Request, res: Response) => {
   }
 });
 
-usersRoute.get("/:id/login", async (req: Request, res: Response) => {
-  const foundUser = await User.findOne({ _id: req.params.id });
-  if (!foundUser) {
-    res.sendStatus(404);
-  } else if (foundUser.banned) {
-    res.sendStatus(401);
-  } else {
-    console.log(foundUser.username + " logged in");
-    const token = jwt.encode({ userid: foundUser.id }, process.env.SECRET!);
-    res.json(token);
-  }
-});
-
 usersRoute.post("/:id/verification", async (req: Request<{ id: string }>, res: Response) => {
   if (checkUser(req.params.id, res)) {
     const user = await User.findOne({ _id: res.locals.user?._id }).select("password");
