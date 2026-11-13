@@ -2,10 +2,13 @@ import os from "os";
 import mongoose, { Connection } from "mongoose";
 import { MongoMemoryServer } from "mongodb-memory-server-core";
 
-/** Same major version as production. The first run downloads the binary (~2 min), later runs reuse it. */
-const MONGO_VERSION = "8.0.26";
+/**
+ * Same major version as production. Downloaded once per machine by the server tests' global setup
+ * (downloadMongo.ts), then reused.
+ */
+export const MONGO_VERSION = "8.0.26";
 
-/** Generous: covers the one-off binary download on a fresh machine or CI runner. */
+/** Generous, in case the binary is still being fetched (it should already be, by the global setup). */
 export const MEMORY_MONGO_TIMEOUT = 300_000;
 
 /**

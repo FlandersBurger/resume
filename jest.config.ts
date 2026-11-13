@@ -8,6 +8,8 @@ const config: Config = {
     {
       displayName: "server",
       testEnvironment: "node",
+      // Fetch the memory MongoDB binary once, before the workers start.
+      globalSetup: "<rootDir>/src/__tests__/helpers/downloadMongo.ts",
       roots: ["<rootDir>/src"],
       testMatch: ["<rootDir>/src/__tests__/utils/**/*.test.ts", "<rootDir>/src/__tests__/server/**/*.test.ts"],
       transform: {
