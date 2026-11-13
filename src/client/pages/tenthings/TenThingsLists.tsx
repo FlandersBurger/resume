@@ -1,21 +1,18 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import { Helmet } from "react-helmet-async";
 import {
   updateList,
   deleteList,
   mergeLists,
-  getCategories,
-  getLanguages,
   TenThingsList,
-  CategoryOption,
-  Language,
 } from "../../services/tenthings";
 import { useApp } from "../../context/AppContext";
 import { ListTable } from "./ListTable";
 import { ListEditorDrawer } from "./ListEditorDrawer";
 import { DeleteListsModal } from "./DeleteListsModal";
 import { useListQuery } from "./useListQuery";
+import { useTenThingsReference } from "../../hooks/useTenThingsReference";
 
 
 export default function TenThingsLists() {
@@ -29,18 +26,8 @@ export default function TenThingsLists() {
     return id && id !== "new" ? id : null;
   });
   const [highlightedIds, setHighlightedIds] = useState<string[]>([]);
-  const [categoryOptions, setCategoryOptions] = useState<CategoryOption[]>([]);
-  const [languageOptions, setLanguageOptions] = useState<Language[]>([]);
+  const { categoryOptions, languageOptions } = useTenThingsReference();
   const [deleteModalLists, setDeleteModalLists] = useState<TenThingsList[]>([]);
-
-  useEffect(() => {
-    getCategories()
-      .then(setCategoryOptions)
-      .catch(() => setCategoryOptions([]));
-    getLanguages()
-      .then(setLanguageOptions)
-      .catch(() => setLanguageOptions([]));
-  }, []);
 
   const openList = (id: string) => {
     setOpenListId(id);

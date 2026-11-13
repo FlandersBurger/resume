@@ -2,13 +2,9 @@ import { useEffect, useRef, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import styled from "styled-components";
 import {
-  CategoryOption,
-  Language,
   MyGame,
   TenThingsList,
-  getCategories,
   getGame,
-  getLanguages,
   getMyGames,
   updateGameCategory,
   updateGameSettings,
@@ -16,6 +12,7 @@ import {
 import moment from "moment";
 import { useApp } from "../context/AppContext";
 import { ListEditorDrawer } from "./tenthings/ListEditorDrawer";
+import { useTenThingsReference } from "../hooks/useTenThingsReference";
 
 const MetricRow = styled.div`
   display: grid;
@@ -233,8 +230,8 @@ export default function TenThingsGame() {
   const { currentUser, toast, isAdmin } = useApp();
   const [game, setGame] = useState<any>(null);
   const [myGames, setMyGames] = useState<MyGame[]>([]);
-  const [categories, setCategories] = useState<CategoryOption[]>([]);
-  const [languages, setLanguages] = useState<Language[]>([]);
+  // Only the admin settings use them.
+  const { categoryOptions: categories, languageOptions: languages } = useTenThingsReference(isAdmin);
   const [showCategories, setShowCategories] = useState(false);
   const [editorOpen, setEditorOpen] = useState(false);
   const [settingsSaving, setSettingsSaving] = useState(false);
@@ -318,23 +315,16 @@ export default function TenThingsGame() {
   }, [currentUser]);
 
   // Load game data when gameId changes
+  // Switching Games quickly must not leave an earlier Game on screen: only the latest load lands.
   useEffect(() => {
-    const load = async () => {
-      if (!currentUser || !gameId) return;
-      try {
-        const [gameData, cats, langs] = await Promise.all([
-          getGame(gameId),
-          isAdmin ? getCategories() : Promise.resolve([]),
-          isAdmin ? getLanguages() : Promise.resolve([]),
-        ]);
-        setGame(gameData);
-        if (cats.length) setCategories(cats);
-        if (langs.length) setLanguages(langs);
-      } catch {
-        toast("Failed to load game");
-      }
+    if (!currentUser || !gameId) return;
+    let live = true;
+    getGame(gameId)
+      .then((gameData) => live && setGame(gameData))
+      .catch(() => live && toast("Failed to load game"));
+    return () => {
+      live = false;
     };
-    load();
   }, [currentUser, gameId]);
 
   useEffect(() => {

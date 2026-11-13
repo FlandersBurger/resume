@@ -5,12 +5,10 @@ import { Helmet } from "react-helmet-async";
 import {
   getLists,
   getListTotal,
-  getLanguages,
-  getCategories,
   CategoryOption,
-  Language,
   TenThingsList,
 } from "../../services/tenthings";
+import { useTenThingsReference } from "../../hooks/useTenThingsReference";
 import { useApp } from "../../context/AppContext";
 
 const TELEGRAM_URL = "https://t.me/joinchat/I1Di-1MXGXkjhgNPXi6Vfg";
@@ -299,23 +297,17 @@ export default function TenThingsHome() {
   const { currentUser, openLogin } = useApp();
   const [searchParams] = useSearchParams();
   const [total, setTotal] = useState<number | null>(null);
-  const [languages, setLanguages] = useState<Language[]>([]);
-  const [categoryCount, setCategoryCount] = useState<number | null>(null);
   const [sample, setSample] = useState<{ language: string; lists: TenThingsList[] } | null>(null);
 
   const legacyListLink = LIST_PARAMS.some((p) => searchParams.has(p));
+  const { categoryOptions, languageOptions: languages } = useTenThingsReference(!legacyListLink);
+  const categoryCount = categoryOptions.length ? countLeaves(categoryOptions) : null;
 
   useEffect(() => {
     if (legacyListLink) return;
     getListTotal()
       .then(setTotal)
       .catch(() => setTotal(null));
-    getLanguages()
-      .then(setLanguages)
-      .catch(() => setLanguages([]));
-    getCategories()
-      .then((c) => setCategoryCount(countLeaves(c)))
-      .catch(() => setCategoryCount(null));
     getSampleLists()
       .then(setSample)
       .catch(() => setSample(null));

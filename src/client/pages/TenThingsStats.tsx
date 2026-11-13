@@ -20,14 +20,11 @@ import {
   getListRanking,
   getSkipRateTrend,
   getLowQualityLists,
-  getCategories,
-  getLanguages,
   LIST_STAT_KEYS,
   ListStatKey,
   RankRow,
-  CategoryOption,
-  Language,
 } from "../services/tenthings";
+import { useTenThingsReference } from "../hooks/useTenThingsReference";
 import { useApp } from "../context/AppContext";
 import { ListEditorDrawer } from "./tenthings/ListEditorDrawer";
 
@@ -126,8 +123,7 @@ export default function TenThingsStats() {
   const [skipTrend, setSkipTrend] = useState<SkipTrendRow[]>([]);
   const [lowQualityLists, setLowQualityLists] = useState<RankRow[]>([]);
   const [listRankings, setListRankings] = useState<Record<string, RankRow[]>>({});
-  const [categoryOptions, setCategoryOptions] = useState<CategoryOption[]>([]);
-  const [languageOptions, setLanguageOptions] = useState<Language[]>([]);
+  const { categoryOptions, languageOptions } = useTenThingsReference(!!currentUser);
   const [languageFilter, setLanguageFilter] = useState<string[]>([]);
   const [categoryFilter, setCategoryFilter] = useState<string[]>([]);
   const [myListsOnly, setMyListsOnly] = useState(false);
@@ -140,16 +136,11 @@ export default function TenThingsStats() {
     getGameStats().then((d) => setGameStats(d || []));
     getSkipRateTrend().then((d) => setSkipTrend(d || []));
     getLowQualityLists().then((d) => setLowQualityLists(d || []));
-    getCategories()
-      .then(setCategoryOptions)
-      .catch(() => setCategoryOptions([]));
-    getLanguages()
-      .then(setLanguageOptions)
-      .catch(() => setLanguageOptions([]));
   }, [currentUser]);
 
   useEffect(() => {
     if (!currentUser) return;
+    let live = true;
     setListRankings({});
     const opts = {
       language: languageFilter,
@@ -157,18 +148,24 @@ export default function TenThingsStats() {
       creator: myListsOnly ? currentUser._id : undefined,
     };
     getListCategoryStats(opts)
-      .then((d) => setCategoryStats(d || []))
-      .catch(() => setCategoryStats([]));
+      .then((d) => live && setCategoryStats(d || []))
+      .catch(() => live && setCategoryStats([]));
+    // One at a time, to spare the server. A filter change stops the run, so an older filter's
+    // rankings never land on top of the new one's.
     (async () => {
       for (const stat of LIST_STAT_KEYS) {
+        if (!live) return;
         try {
           const rows = await getListRanking(stat, opts);
-          setListRankings((prev) => ({ ...prev, [stat]: rows }));
+          if (live) setListRankings((prev) => ({ ...prev, [stat]: rows }));
         } catch {
           // leave this stat empty rather than stopping the whole loop
         }
       }
     })();
+    return () => {
+      live = false;
+    };
   }, [languageFilter, categoryFilter, myListsOnly, currentUser]);
 
   const handleRowClick = (id: string) => setOpenListId(id);
