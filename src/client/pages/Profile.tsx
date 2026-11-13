@@ -81,7 +81,7 @@ export default function Profile() {
     ? allCountries.filter((c) => c.name.toLowerCase().includes(flagSearch.toLowerCase()) && !flags.includes(c.code))
     : [];
 
-  if (!currentUser) return <h1 className="text-danger">You are not logged in</h1>;
+  if (!currentUser) return null; // guarded by the route
 
   const handleChangeUsername = async () => {
     try {

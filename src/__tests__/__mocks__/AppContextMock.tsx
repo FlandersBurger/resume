@@ -5,6 +5,7 @@ export type AppContextValue = ReturnType<typeof useApp>;
 
 export const defaultContextValue: AppContextValue = {
   currentUser: null,
+  sessionRestored: true,
   toasts: [],
   themeCounter: 1,
   showLogin: false,

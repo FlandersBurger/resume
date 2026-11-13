@@ -170,7 +170,7 @@ export default function TenThingsStats() {
 
   const handleRowClick = (id: string) => setOpenListId(id);
 
-  if (!currentUser) return <h2 className="text-muted">Log in to view stats.</h2>;
+  if (!currentUser) return null; // guarded by the route
 
   // ── Play stats ──
   const playYears = uniq(playStats.map((r) => r.year)).sort();

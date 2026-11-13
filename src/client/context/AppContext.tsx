@@ -38,6 +38,8 @@ function reducer(state: AppState, action: Action): AppState {
 
 interface AppContextValue {
   currentUser: User | null;
+  /** False until the stored session has been checked; until then `currentUser` may still arrive. */
+  sessionRestored: boolean;
   toasts: Toast[];
   themeCounter: number;
   showLogin: boolean;
@@ -72,6 +74,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
   const openChat = useCallback(() => setShowChat(true), []);
   const closeChat = useCallback(() => setShowChat(false), []);
   const [unreadChat, setUnreadChat] = useState(0);
+  const [sessionRestored, setSessionRestored] = useState(false);
   const [adminMode, setAdminMode] = useState(() => window.localStorage.getItem("adminMode") !== "false");
   const [darkMode, setDarkMode] = useState(() => {
     const stored = window.localStorage.getItem("darkMode");
@@ -124,7 +127,10 @@ export function AppProvider({ children }: { children: ReactNode }) {
   }, []);
 
   useEffect(() => {
-    restoreSession().then((user) => user && dispatch({ type: "SET_USER", user }));
+    restoreSession().then((user) => {
+      if (user) dispatch({ type: "SET_USER", user });
+      setSessionRestored(true);
+    });
   }, []);
 
   const isAdmin = !!state.currentUser?.admin && adminMode;
@@ -133,6 +139,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
     <AppContext.Provider
       value={{
         ...state,
+        sessionRestored,
         showLogin,
         loginLoading,
         setLoginLoading,

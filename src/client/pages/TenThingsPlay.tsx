@@ -102,7 +102,7 @@ export default function TenThingsPlay() {
     if (e.key === "Enter") handleCheckAnswer();
   };
 
-  if (!currentUser) return <h2 className="text-muted">Log in to play.</h2>;
+  if (!currentUser) return null; // guarded by the route
 
   const list = view?.list;
   const answers = list?.answers ?? [];
