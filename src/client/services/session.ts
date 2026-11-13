@@ -21,6 +21,18 @@ function clearSession() {
 const stored = window.localStorage.getItem(TOKEN_KEY);
 if (stored) setAuthToken(stored);
 
+// Tokens expire unless used: the server sends a fresh one (X-Auth-Renewed) when the one a
+// request carried is past half its life. Keep it, unless the session changed while the request
+// was out (signed out, or signed in again).
+http.interceptors.response.use((response) => {
+  const renewed = response.headers?.["x-auth-renewed"];
+  const sent = response.config?.headers?.["X-Auth"];
+  if (typeof renewed === "string" && renewed && sent && sent === window.localStorage.getItem(TOKEN_KEY)) {
+    startSession(renewed);
+  }
+  return response;
+});
+
 /** Exchange a sign-in payload (Firebase or Telegram) for a session, and return the User. */
 export async function signIn(payload: object): Promise<User> {
   const { data: token } = await http.post<string>("/api/users/authenticate", { user: payload });
