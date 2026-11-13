@@ -43,7 +43,7 @@ export default function TenThingsAdmin() {
     }
   };
 
-  if (!isAdmin) return <h2 className="text-danger">Admin only</h2>;
+  if (!isAdmin) return null; // guarded by the route
 
   const filteredUsers = users
     .filter(

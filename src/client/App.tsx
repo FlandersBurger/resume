@@ -4,6 +4,7 @@ import { AppProvider } from "./context/AppContext";
 import { Navbar } from "./components/Navbar";
 import { ToastContainer } from "./components/ToastContainer";
 import { ChatDrawer } from "./components/ChatDrawer";
+import { RequireAdmin, RequireUser } from "./components/RequireUser";
 import Print from "./pages/Print";
 // The landing page is bundled eagerly so its hero image is discovered without a second round trip
 import Home from "./pages/Home";
@@ -296,7 +297,14 @@ export default function App() {
             <Route path="/hobbies/:hobby" element={<Hobbies />} />
             <Route path="/contact" element={<Contact />} />
             <Route path="/posts" element={<Posts />} />
-            <Route path="/profile" element={<Profile />} />
+            <Route
+              path="/profile"
+              element={
+                <RequireUser message="Log in to see your profile.">
+                  <Profile />
+                </RequireUser>
+              }
+            />
             <Route path="/login" element={<Navigate to="/home" replace />} />
             <Route path="/policy" element={<Policy />} />
             <Route path="/terms" element={<Terms />} />
@@ -313,12 +321,30 @@ export default function App() {
             <Route element={<TenThingsLayout />}>
               <Route path="/tenthings" element={<TenThingsHome />} />
               <Route path="/tenthings-lists" element={<TenThingsLists />} />
-              <Route path="/tenthings-game/:gameId" element={<TenThingsGame />} />
-              <Route path="/tenthings-game" element={<TenThingsGame />} />
-              <Route path="/tenthings-play" element={<TenThingsPlay />} />
-              <Route path="/tenthings-admin" element={<TenThingsAdmin />} />
-              <Route path="/tenthings-sass" element={<TenThingsSass />} />
-              <Route path="/tenthings-stats" element={<TenThingsStats />} />
+              <Route element={<RequireUser message="Log in to view your game." />}>
+                <Route path="/tenthings-game/:gameId" element={<TenThingsGame />} />
+                <Route path="/tenthings-game" element={<TenThingsGame />} />
+              </Route>
+              <Route
+                path="/tenthings-play"
+                element={
+                  <RequireUser message="Log in to play.">
+                    <TenThingsPlay />
+                  </RequireUser>
+                }
+              />
+              <Route
+                path="/tenthings-stats"
+                element={
+                  <RequireUser message="Log in to view stats.">
+                    <TenThingsStats />
+                  </RequireUser>
+                }
+              />
+              <Route element={<RequireAdmin />}>
+                <Route path="/tenthings-admin" element={<TenThingsAdmin />} />
+                <Route path="/tenthings-sass" element={<TenThingsSass />} />
+              </Route>
             </Route>
             <Route path="/google" element={<QuizGoogle />} />
             <Route path="/logos" element={<QuizLogos />} />

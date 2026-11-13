@@ -119,10 +119,9 @@ describe("TenThingsPlay", () => {
     expect(toast).toHaveBeenCalledWith("Couldn't send your guess");
   });
 
-  it("asks a signed-out visitor to log in, without loading the Game", () => {
+  it("loads nothing without a signed-in User", () => {
     mockUseApp.mockReturnValue({ ...defaultContextValue, currentUser: null, toast: jest.fn() });
     render(<TenThingsPlay />);
-    expect(screen.getByText("Log in to play.")).toBeInTheDocument();
     expect(mockGetTenthings).not.toHaveBeenCalled();
   });
 });

@@ -148,6 +148,16 @@ describe("AppProvider / useApp", () => {
     expect(result.current.currentUser).toEqual({ _id: "u1", username: "alice" });
   });
 
+  it("says when the stored session has been checked, signed in or not", async () => {
+    let finish!: (user: null) => void;
+    (restoreSession as jest.Mock).mockReturnValueOnce(new Promise((r) => (finish = r)));
+    const { result } = renderHook(() => useApp(), { wrapper });
+    expect(result.current.sessionRestored).toBe(false);
+    await act(async () => finish(null));
+    expect(result.current.sessionRestored).toBe(true);
+    expect(result.current.currentUser).toBeNull();
+  });
+
   it("logout ends the session and clears currentUser", () => {
     const { result } = renderHook(() => useApp(), { wrapper });
     act(() => {

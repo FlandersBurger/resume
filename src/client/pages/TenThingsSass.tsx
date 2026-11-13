@@ -190,7 +190,7 @@ export default function TenThingsSass() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isAdmin]);
 
-  if (!isAdmin) return <h2 className="text-danger">Admin only</h2>;
+  if (!isAdmin) return null; // guarded by the route
 
   const openEditor = (entry?: SassEntry) => {
     setEditing(toDraft(entry));

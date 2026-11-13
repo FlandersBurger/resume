@@ -385,7 +385,7 @@ export default function TenThingsGame() {
   const formatDate = (value?: string) => (value ? moment(value).format("DD-MMM-YYYY HH:mm") : "");
   const formatShortDate = (value?: string) => (value ? moment(value).format("DD-MMM-YYYY") : "");
 
-  if (!currentUser) return <h2 className="text-muted">Log in to view your game.</h2>;
+  if (!currentUser) return null; // guarded by the route
   if (!currentUser.telegramId && !isAdmin)
     return <h2 className="text-muted">Link your Telegram account in your profile to view your game.</h2>;
 
