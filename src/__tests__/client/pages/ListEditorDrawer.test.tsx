@@ -11,6 +11,7 @@ import {
 } from "../../../client/services/tenthings";
 import { defaultContextValue } from "../../__mocks__/AppContextMock";
 
+import { resetTenThingsReference } from "../../../client/hooks/useTenThingsReference";
 jest.mock("../../../client/context/AppContext", () => ({ useApp: jest.fn() }));
 jest.mock("../../../client/services/tenthings", () => ({
   getList: jest.fn(),
@@ -52,6 +53,7 @@ function setup({ isAdmin = false, user = me as typeof me | null } = {}) {
 const settle = () => act(async () => new Promise((r) => setTimeout(r, 40)));
 
 beforeEach(() => {
+    resetTenThingsReference();
   jest.clearAllMocks();
   (getCategories as jest.Mock).mockResolvedValue([{ value: "work", label: "Work" }]);
   (getLanguages as jest.Mock).mockResolvedValue([{ code: "EN", name: "English", native: "English" }]);

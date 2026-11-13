@@ -5,6 +5,7 @@ import TenThingsHome from "../../../client/pages/tenthings/TenThingsHome";
 import { getLists, getListTotal, getLanguages, getCategories } from "../../../client/services/tenthings";
 import { defaultContextValue, AppContextValue } from "../../__mocks__/AppContextMock";
 
+import { resetTenThingsReference } from "../../../client/hooks/useTenThingsReference";
 jest.mock("../../../client/context/AppContext", () => ({ useApp: jest.fn() }));
 jest.mock("../../../client/services/tenthings", () => ({
   getLists: jest.fn(),
@@ -35,6 +36,7 @@ function renderHome(path = "/tenthings", overrides: Partial<AppContextValue> = {
 
 describe("TenThingsHome", () => {
   beforeEach(() => {
+    resetTenThingsReference();
     jest.clearAllMocks();
     (getListTotal as jest.Mock).mockResolvedValue(4321);
     (getLanguages as jest.Mock).mockResolvedValue([

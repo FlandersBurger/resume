@@ -2,16 +2,13 @@ import { useEffect, useRef, useState } from "react";
 import styled from "styled-components";
 import { useApp, User } from "../../context/AppContext";
 import {
-  CategoryOption,
-  Language,
   TenThingsList,
   createList,
-  getCategories,
-  getLanguages,
   getList,
   updateList,
 } from "../../services/tenthings";
 import { ListEditor } from "./ListEditor";
+import { useTenThingsReference } from "../../hooks/useTenThingsReference";
 
 /** Matches the ListEditor panel's slide transition. */
 const SLIDE_MS = 320;
@@ -65,7 +62,6 @@ export function ListEditorDrawer({ listId, readOnly: forceReadOnly = false, onCl
   const { currentUser, isAdmin, toast } = useApp();
   const [list, setList] = useState<TenThingsList | null>(null);
   const [visible, setVisible] = useState(false);
-  const [options, setOptions] = useState<{ categories: CategoryOption[]; languages: Language[] } | null>(null);
 
   const listRef = useRef(list);
   listRef.current = list;
@@ -110,13 +106,8 @@ export function ListEditorDrawer({ listId, readOnly: forceReadOnly = false, onCl
     // eslint-disable-next-line react-hooks/exhaustive-deps -- reload only when the requested List changes
   }, [listId]);
 
-  // Categories and languages for the pickers, loaded the first time the drawer opens.
-  useEffect(() => {
-    if (!list || options) return;
-    Promise.all([getCategories().catch(() => []), getLanguages().catch(() => [])]).then(([categories, languages]) =>
-      setOptions({ categories, languages }),
-    );
-  }, [list, options]);
+  // Categories and languages for the pickers, loaded the first time a drawer opens.
+  const { categoryOptions, languageOptions } = useTenThingsReference(!!list);
 
   const readOnly = forceReadOnly || !list || !canEdit(list, currentUser, isAdmin);
 
@@ -165,8 +156,8 @@ export function ListEditorDrawer({ listId, readOnly: forceReadOnly = false, onCl
         active={visible}
         isAdmin={isAdmin}
         readOnly={readOnly}
-        languageOptions={options?.languages ?? []}
-        categoryOptions={options?.categories ?? []}
+        languageOptions={languageOptions}
+        categoryOptions={categoryOptions}
         onClose={onClose}
         onChange={setList}
         onSave={save}
