@@ -13,6 +13,7 @@ jest.mock("@tenthings/notify", () => ({ notifyAdmin: jest.fn() }));
 jest.mock("@tenthings/engine/queue", () => ({ dispatch: jest.fn(), queueGuessJob: jest.fn() }));
 
 import db from "@root/db";
+import { resetSelectionCaches } from "@tenthings/lists";
 import { Game, List, Minigame, Player } from "@models/index";
 import { GameType } from "@models/tenthings/gameType";
 import { Action, Actor, SideGame } from "@tenthings/engine/actions";
@@ -44,6 +45,7 @@ const run = (action: Action) => runAction(action, scheduler);
 beforeEach(async () => {
   await db.master.db!.dropDatabase();
   scheduled = [];
+  resetSelectionCaches();
 });
 
 const MINI = GameType.MINIGAME as SideGame;

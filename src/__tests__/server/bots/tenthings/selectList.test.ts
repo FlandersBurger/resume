@@ -13,7 +13,15 @@ jest.mock("@root/i18n", () => ({ __esModule: true, default: jest.fn((_, key: str
 
 import db from "@root/db";
 import { Game, GameRound, List } from "@models/index";
-import { GAME_HISTORY_REFRESH_MS, invalidateListPool, resetSelectionCaches, selectList } from "@tenthings/lists";
+import {
+  GAME_HISTORY_REFRESH_MS,
+  invalidateListPool,
+  recentPlayedRounds,
+  resetSelectionCaches,
+  searchList,
+  selectList,
+} from "@tenthings/lists";
+import { drawTinygame } from "@tenthings/tinygame";
 import { SupportedLanguage } from "@tenthings/languages";
 import { MEMORY_MONGO_TIMEOUT, openOnMemoryMongo } from "../../../helpers/memoryMongo";
 
@@ -213,4 +221,68 @@ describe("a Game's history", () => {
     await GameRound.create({ gameId: game._id, listId: lists[1]._id, outcome: "banned", language: "EN" });
     expect(await served(game, 200)).not.toContain("B");
   });
+});
+
+describe("searching for Lists", () => {
+  beforeEach(async () => {
+    await List.syncIndexes(); // dropDatabase removed the text index search falls back to
+  });
+
+  const names = async (game: Awaited<ReturnType<typeof makeGame>>, query: string) =>
+    (await searchList(query, game)).map((l) => l.name).sort();
+
+  test("finds names containing the search, in the Game's languages", async () => {
+    const game = await makeGame();
+    await makeLists([{ name: "Best Albums" }, { name: "ALBUMS of 1999" }, { name: "Rivers" }]);
+    await makeLists([{ name: "Beste albums", language: "NL" }]);
+    expect(await names(game, "album")).toEqual(["ALBUMS of 1999", "Best Albums"]);
+  });
+
+  test("fills up with disabled categories only once the Game's own run out", async () => {
+    const game = await makeGame({ disabledCategories: ["sports"] });
+    await makeLists(Array.from({ length: 10 }, (_, i) => ({ name: `Album ${i}` })));
+    await makeLists([{ name: "Album sport", categories: ["sports"] }]);
+    expect(await names(game, "album")).not.toContain("Album sport");
+    await List.deleteMany({ name: "Album 0" });
+    resetSelectionCaches();
+    expect(await names(game, "album")).toContain("Album sport");
+  });
+
+  test("falls back to the text index when no name matches", async () => {
+    const game = await makeGame();
+    await makeLists([{ name: "Planets", values: [{ value: "Jupiter" }] }, { name: "Rivers" }]);
+    expect(await names(game, "Jupiter")).toEqual(["Planets"]);
+  });
+});
+
+test("the Tinygame is drawn from the Game's languages and categories", async () => {
+  const game = await makeGame({ disabledCategories: ["sports"] });
+  await makeLists([
+    { name: "Planets", values: [{ value: "Mars" }] },
+    { name: "Teams", categories: ["sports"], values: [{ value: "Ajax" }] },
+    { name: "Planeten", language: "NL", values: [{ value: "Mars" }] },
+  ]);
+  for (let i = 0; i < 10; i++) {
+    await drawTinygame(game);
+    expect(game.tinygame.answer).toBe("Planets");
+  }
+});
+
+test("a Game's recent Rounds are read from the index alone", async () => {
+  await GameRound.syncIndexes(); // dropDatabase removed the indexes
+  const game = await makeGame();
+  const [list] = await makeLists([{ name: "L" }]);
+  await GameRound.insertMany(
+    Array.from({ length: 20 }, (_, i) => ({
+      gameId: game._id,
+      listId: list._id,
+      outcome: i % 2 ? "completed" : "skipped",
+      language: "EN",
+      playedAt: new Date(Date.now() - i * 1000),
+    })),
+  );
+  const explained = (await recentPlayedRounds(game._id, 10).explain("executionStats")) as unknown as {
+    executionStats: { nReturned: number; totalDocsExamined: number };
+  };
+  expect(explained.executionStats).toMatchObject({ nReturned: 10, totalDocsExamined: 0 });
 });

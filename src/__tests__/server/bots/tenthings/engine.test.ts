@@ -14,6 +14,7 @@ jest.mock("@tenthings/notify", () => ({ notifyAdmin: jest.fn() }));
 jest.mock("@tenthings/engine/queue", () => ({ dispatch: jest.fn(), queueGuessJob: jest.fn() }));
 
 import db from "@root/db";
+import { resetSelectionCaches } from "@tenthings/lists";
 import { Game, GameRound, List, Player } from "@models/index";
 import { getListScore } from "@models/tenthings/listMetrics";
 import { Action, lastVotes, MAX_PICKED_LISTS, pendingBans, runAction } from "@tenthings/engine";
@@ -33,6 +34,7 @@ afterAll(async () => {
 
 beforeEach(async () => {
   await db.master.db!.dropDatabase();
+  resetSelectionCaches();
   lastVotes.clear();
   pendingBans.clear();
 });

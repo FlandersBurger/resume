@@ -19,24 +19,24 @@ export const drawMinigame = async (game: IGame): Promise<"language" | "category"
   let fallback: "language" | "category" | undefined;
   const availableLanguages =
     game.settings.languages && game.settings.languages.length > 0 ? game.settings.languages : ["EN"];
-  let minigames = await getMinigames({
+  let minigame = await sampleMinigame({
     categories: { $nin: game.disabledCategories },
     language: { $in: availableLanguages },
   });
-  if (minigames.length === 0) {
-    minigames = await getMinigames({
+  if (!minigame) {
+    minigame = await sampleMinigame({
       categories: { $nin: game.disabledCategories },
       language: "EN",
     });
-    if (minigames.length > 0) fallback = "language";
+    if (minigame) fallback = "language";
   }
-  if (minigames.length === 0) {
-    minigames = await getMinigames({
+  if (!minigame) {
+    minigame = await sampleMinigame({
       language: "EN",
     });
-    if (minigames.length > 0) fallback = "category";
+    if (minigame) fallback = "category";
   }
-  let minigame = minigames[Math.floor(Math.random() * minigames.length)];
+  if (!minigame) throw new Error("No Minigames");
 
   game.minigame.answer = minigame.answer;
   game.minigame.hints = 0;
@@ -126,8 +126,9 @@ export const updateMinigames = async () => {
   notifyAdmin(`Minigames total: ${total} updated: ${count.updated} new: ${count.new}`);
 };
 
-const getMinigames = async (parameters: QueryOptions): Promise<IMinigame[]> => {
-  let minigames = await Minigame.find(parameters).lean();
-  if (minigames.length === 0) minigames = await Minigame.find({}).lean();
-  return minigames;
+/** One random Minigame matching `parameters`, picked inside Mongo rather than loading them all. */
+const sampleMinigame = async (parameters: QueryOptions): Promise<IMinigame | undefined> => {
+  const [minigame] = await Minigame.aggregate<IMinigame>([{ $match: parameters }, { $sample: { size: 1 } }]);
+  // As before: nothing matching means any Minigame at all.
+  return minigame ?? (await Minigame.aggregate<IMinigame>([{ $sample: { size: 1 } }]))[0];
 };
