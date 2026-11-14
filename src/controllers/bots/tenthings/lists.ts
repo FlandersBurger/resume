@@ -72,7 +72,7 @@ const getHighQualityProbability = (listsPlayed: number): number => {
 };
 
 /** The fields list selection needs from every List in a Game's pool. */
-type PoolList = Pick<IList, "_id" | "language" | "categories" | "lowQuality" | "highQuality" | "starred">;
+type PoolList = Pick<IList, "_id" | "name" | "language" | "categories" | "lowQuality" | "highQuality" | "starred">;
 
 /**
  * A value read once, then served from memory and read again in the background once it is
@@ -113,7 +113,7 @@ export const LIST_POOL_REFRESH_MS = 5 * 60_000;
  */
 const readListPool = () =>
   cachedRead(
-    () => List.find({}).select("_id language categories lowQuality highQuality starred").lean<PoolList[]>().exec(),
+    () => List.find({}).select("_id name language categories lowQuality highQuality starred").lean<PoolList[]>().exec(),
     LIST_POOL_REFRESH_MS,
   );
 let listPool = readListPool();
@@ -154,6 +154,14 @@ export const resetSelectionCaches = () => {
   listPool = readListPool();
   gameHistories = new Map();
 };
+
+/** The Lists of a Game's `limit` most recent played Rounds, read from the GameRound index alone. */
+export const recentPlayedRounds = (gameId: Types.ObjectId, limit: number) =>
+  GameRound.find(playedRounds({ gameId }))
+    .sort({ playedAt: -1 })
+    .limit(limit)
+    .select("listId -_id")
+    .lean<{ listId: Types.ObjectId }[]>();
 
 /** A selectList slower than this logs how long each of its reads took. */
 const SLOW_SELECTION_MS = 1000;
@@ -196,14 +204,7 @@ export const selectList = async (game: IGame): Promise<{ list: HydratedDocument<
   const cooldownRounds = Math.min(5000, Math.max(10, Math.floor(pool.length / 2)));
   // Bans aren't cached: a Ban takes effect from the next Round.
   const [recentRounds, banned, { skipHeavy, preferredCategories }] = await Promise.all([
-    timed(
-      "recent",
-      GameRound.find(playedRounds({ gameId: game._id }))
-        .sort({ playedAt: -1 })
-        .limit(cooldownRounds)
-        .select("listId")
-        .lean(),
-    ),
+    timed("recent", recentPlayedRounds(game._id, cooldownRounds)),
     timed("banned", GameRound.distinct("listId", { gameId: game._id, outcome: "banned" })),
     timed("history", getGameHistory(game._id)),
   ]);
@@ -259,44 +260,63 @@ export const selectList = async (game: IGame): Promise<{ list: HydratedDocument<
   return { list: list!, allListsPlayed };
 };
 
-const sampleLists = async (query: QueryOptions<IList>, sampledLists: IList[]): Promise<IList[]> => {
-  let foundLists = await List.find({ ...query, _id: { $nin: sampledLists.map(({ _id }) => _id) } })
-    .select("name")
-    .lean();
-  return [...sampledLists, ...sampleSize(foundLists, 10 - sampledLists.length)];
-};
+type ListName = Pick<IList, "_id" | "name">;
 
-export const searchList = async (search: string, game: IGame): Promise<IList[]> => {
+const MAX_SEARCH_RESULTS = 10;
+
+/**
+ * Up to 10 Lists for a search, in this order: names containing it in the Game's categories, the
+ * text index in its categories, then both again in any category. Names are matched in the List
+ * pool: a "contains" match can't use an index, so in Mongo it scans every List.
+ */
+export const searchList = async (search: string, game: IGame): Promise<ListName[]> => {
   const availableLanguages = getAvailableLanguages(game);
-  const sanitizedSearch = removeSpecialCharacters(search);
-  let foundLists = await sampleLists(
-    {
-      categories: { $nin: game.disabledCategories },
-      language: { $in: availableLanguages },
-      name: { $regex: sanitizedSearch, $options: "i" },
-    },
-    [],
-  );
-  if (foundLists.length >= 10) return foundLists;
-  foundLists = await sampleLists(
-    {
-      categories: { $nin: game.disabledCategories },
+  const pattern = new RegExp(removeSpecialCharacters(search), "i");
+  const disabledCategories = new Set(game.disabledCategories);
+  const found = new Map<string, ListName>();
+  /** Adds a random few of `lists` not found yet; true once there are enough. */
+  const add = (lists: ListName[]) => {
+    const fresh = lists.filter((l) => !found.has(String(l._id)));
+    for (const { _id, name } of sampleSize(fresh, MAX_SEARCH_RESULTS - found.size))
+      found.set(String(_id), { _id, name });
+    return found.size >= MAX_SEARCH_RESULTS;
+  };
+  const byText = (query: QueryOptions<IList>) =>
+    List.find({
+      ...query,
       language: { $in: availableLanguages },
       $text: { $search: `"${search}"` },
-    },
-    foundLists,
+      _id: { $nin: [...found.values()].map(({ _id }) => _id) },
+    })
+      .select("name")
+      .lean<ListName[]>();
+
+  const byName = (await getListPool()).filter(
+    (l) => availableLanguages.includes(l.language as SupportedLanguage) && pattern.test(l.name ?? ""),
   );
-  if (foundLists.length >= 10) return foundLists;
-  foundLists = await sampleLists(
-    { language: { $in: availableLanguages }, name: { $regex: sanitizedSearch, $options: "i" } },
-    foundLists,
-  );
-  if (foundLists.length >= 10) return foundLists;
-  foundLists = await sampleLists(
-    { language: { $in: availableLanguages }, $text: { $search: `"${search}"` } },
-    foundLists,
-  );
-  return foundLists;
+  const done =
+    add(byName.filter((l) => !l.categories?.some((c) => disabledCategories.has(c)))) ||
+    add(await byText({ categories: { $nin: game.disabledCategories } })) ||
+    add(byName);
+  if (!done) add(await byText({}));
+  return [...found.values()];
+};
+
+/**
+ * A random List from the pool that `matches`, loaded with its values (without votes), or
+ * undefined when none does. A List deleted since the pool was read is passed over.
+ */
+export const getRandomPoolList = async (
+  matches: (list: PoolList) => boolean,
+): Promise<HydratedDocument<IList> | undefined> => {
+  const candidates = (await getListPool()).filter(matches);
+  for (let tries = 0; tries < 3 && candidates.length > 0; tries++) {
+    const [chosen] = candidates.splice(Math.floor(Math.random() * candidates.length), 1);
+    const list = await List.findById(chosen._id).select("-votes").exec();
+    if (list) return list;
+    invalidateListPool();
+  }
+  return undefined;
 };
 
 /*

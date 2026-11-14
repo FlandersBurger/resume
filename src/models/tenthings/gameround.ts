@@ -58,6 +58,8 @@ const gameRoundSchema = new Schema<IGameRound>({
 
 gameRoundSchema.index({ gameId: 1, playedAt: -1 });
 gameRoundSchema.index({ gameId: 1, outcome: 1 });
+// A Game's most recent played Lists (the List cooldown), read from the index alone.
+gameRoundSchema.index({ gameId: 1, playedAt: -1, outcome: 1, listId: 1 });
 gameRoundSchema.index({ gameId: 1, listId: 1, outcome: 1 });
 gameRoundSchema.index({ listId: 1, outcome: 1, playedAt: -1 });
 
