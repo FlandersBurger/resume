@@ -32,9 +32,10 @@ type Handler<T extends SideGameActionType> = (
 ) => Promise<EngineEvent[]>;
 
 const startSideGame = async (game: GameDoc, sideGame: SideGame): Promise<EngineEvent[]> => {
-  const fallback = sideGame === GameType.MINIGAME ? await drawMinigame(game) : await drawTinygame(game);
+  if (sideGame === GameType.MINIGAME) await drawMinigame(game);
+  else await drawTinygame(game);
   await saveGame(game);
-  return [{ type: "sideGameStarted", sideGame, ...(fallback ? { fallback } : {}) }];
+  return [{ type: "sideGameStarted", sideGame }];
 };
 
 /** Ends the side game in play (an answer or a Skip): no later Guess can score on it. */

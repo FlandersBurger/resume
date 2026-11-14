@@ -99,8 +99,6 @@ export const renderRoundEvent = async (game: IGame, event: EngineEvent): Promise
       game.provider.dailyScores(game, 5);
       return true;
     case "sideGameStarted":
-      if (event.fallback)
-        say(event.fallback === "language" ? "warnings.noListsForLanguage" : "warnings.noListsForCategory");
       showSideGame(game, event.sideGame);
       return true;
     case "sideGameShown":

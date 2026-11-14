@@ -262,8 +262,6 @@
     "noContact": "Ik kan je hier niet bereiken, {{name}}. Word lid van de <a href=\"https://t.me/tenthings\">Ten Things Supergroep</a> en tag daar een beheerder, of neem rechtstreeks contact met me op -> @FlandersBurger",
     "thankYou": "Bedankt, {{name}}",
     "contactDirectly": "Laat het me direct weten als het een probleem is met jouw specifieke chat -> @FlandersBurger",
-    "noListsForLanguage": "Er zijn niet genoeg lijsten beschikbaar in de door jou gekozen talen om een minigame te laten werken, standaard ingesteld op Engels",
-    "noListsForCategory": "Er zijn niet genoeg lijsten beschikbaar in de door jou gekozen categorieën om een minigame te laten werken, standaard ingesteld op alle lijsten",
     "tooManyHints": "Wat? Nog een hint? Ik negeer dat verzoek gewoon",
     "hintCooldown": "Rustig aan met de hints, wacht nog {{seconds}} seconden",
     "playerNotFound": "Speler niet gevonden",

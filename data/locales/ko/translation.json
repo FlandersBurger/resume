@@ -262,8 +262,6 @@
     "noContact": "{{name}}님, 여기서는 연락이 되지 않습니다. <a href=\"https://t.me/tenthings\">Ten Things 슈퍼그룹</a>에 가입하셔서 관리자에게 핑을 보내시거나, 저에게 직접 연락해 주세요 -> @FlandersBurger",
     "thankYou": "감사합니다, {{name}}님",
     "contactDirectly": "특정 채팅에 문제가 있는 경우 저에게 직접 알려주세요 -> @FlandersBurger",
-    "noListsForLanguage": "선택하신 언어로 된 목록이 부족하여 미니게임을 실행할 수 없습니다. 영어로 기본 설정됩니다.",
-    "noListsForCategory": "선택하신 카테고리로 된 목록이 부족하여 미니게임을 실행할 수 없습니다. 모든 목록으로 기본 설정됩니다.",
     "tooManyHints": "뭐라고요? 또 힌트를 주시려는 건가요? 그 요청은 그냥 무시할게요.",
     "hintCooldown": "힌트는 그만하고 {{seconds}}초만 더 기다려 주세요.",
     "playerNotFound": "플레이어를 찾을 수 없습니다.",
