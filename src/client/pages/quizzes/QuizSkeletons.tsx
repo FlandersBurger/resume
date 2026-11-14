@@ -1,6 +1,27 @@
 import { useEffect, useState } from "react";
 import { Helmet } from "react-helmet-async";
 import { getQuizFiles } from "../../services/quizzes";
+import { type ImageCredit, skeletonCredits } from "./skeletonCredits";
+
+function ImageCreditLine({ credit }: { credit: ImageCredit }) {
+  return (
+    <small className="text-muted" style={{ display: "block", marginTop: 4 }}>
+      Photo:{" "}
+      <a href={credit.source} target="_blank" rel="noopener noreferrer">
+        {credit.author}
+      </a>
+      ,{" "}
+      {credit.licenseUrl ? (
+        <a href={credit.licenseUrl} target="_blank" rel="noopener noreferrer">
+          {credit.license}
+        </a>
+      ) : (
+        credit.license
+      )}
+      , via Wikimedia Commons
+    </small>
+  );
+}
 
 function shuffle<T>(arr: T[]): T[] {
   return [...arr].sort(() => Math.random() - 0.5);
@@ -59,6 +80,7 @@ export default function QuizSkeletons() {
             <div className="panel-heading">{i + 1}</div>
             <div className="panel-body">
               <img className="img-responsive img-rounded" src={`/skeletons/${animal.image}`} alt={animal.name} />
+              {skeletonCredits[animal.image] && <ImageCreditLine credit={skeletonCredits[animal.image]} />}
               <div className="input-group" style={{ marginTop: 8 }}>
                 {animal.answers.map((answer) => {
                   let btnClass = "btn-default";
