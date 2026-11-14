@@ -12,6 +12,12 @@ import { getSnubbedMessage } from "@tenthings/messages";
 import { SKIP_THROTTLE_MESSAGES } from "@tenthings/skips";
 
 /**
+ * The pause between the final Guess's message, the end-of-Round messages and the vote prompt,
+ * so they reach the chat in that order. Both pauses together stay under NEXT_ROUND_DELAY_MS.
+ */
+export const ROUND_END_MESSAGE_GAP_MS = 1_000;
+
+/**
  * The one-line notice some Round Events come down to (a refused Hint, a Skip's progress), the
  * same on every platform; undefined for the other Events.
  */
@@ -71,13 +77,20 @@ export const renderRoundEvent = async (game: IGame, event: EngineEvent): Promise
         game.provider.message(game, getSnubbedMessage(parseSymbols(match.value), loser, match.guesser as IPlayer));
       return true;
     }
-    case "roundCompleted": {
-      game.provider.mainGameMessage(game);
-      const list = await List.findById(event.listId).exec();
-      if (list) await game.provider.endOfRound(game, list);
-      rateList(game);
+    case "roundCompleted":
+      // Sent in one burst, these can overtake the final Guess's message on the way to the chat,
+      // so they follow it a beat later; timers, so the Engine queue isn't held up meanwhile.
+      setTimeout(async () => {
+        try {
+          game.provider.mainGameMessage(game);
+          const list = await List.findById(event.listId).exec();
+          if (list) await game.provider.endOfRound(game, list);
+          setTimeout(() => rateList(game), ROUND_END_MESSAGE_GAP_MS);
+        } catch (error) {
+          console.error(error);
+        }
+      }, ROUND_END_MESSAGE_GAP_MS);
       return true;
-    }
     case "hintGiven":
       game.provider.mainGameMessage(game, false);
       return true;
