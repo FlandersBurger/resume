@@ -9,6 +9,8 @@ import { WebSocketServer } from "@root/websockets";
 import auth from "@root/auth";
 import securityHeaders from "@root/securityHeaders";
 import http from "http";
+import { inspect } from "util";
+import { redactSecrets } from "@root/http-client";
 
 import { careLogRoute } from "@api/care-log";
 import { emailRoute } from "@api/email";
@@ -80,7 +82,7 @@ app.use(sitemapRoute);
 app.use(staticRoute);
 
 app.use((err: Error, _req: Request, res: Response, _next: NextFunction) => {
-  console.error(err.stack);
+  console.error(describeError(err));
   res.status(500).send("Something broke!");
 });
 const port = process.env.PORT || 3000;
@@ -107,13 +109,15 @@ server.listen(port, async () => {
   });
 });
 
+// Errors from libraries can carry request URLs, so these go through redactSecrets before they're logged.
+const describeError = (error: unknown) =>
+  redactSecrets(error instanceof Error ? (error.stack ?? error.message) : inspect(error, { depth: 2 }));
+
 process
-  .on("unhandledRejection", (reason, p) => {
-    console.error(reason, "Unhandled Rejection at Promise", p);
-    console.trace();
+  .on("unhandledRejection", (reason) => {
+    console.error("Unhandled Rejection:", describeError(reason));
   })
   .on("uncaughtException", (err) => {
-    console.error(err, "Uncaught Exception thrown");
-    console.trace();
+    console.error("Uncaught Exception:", describeError(err));
     process.exit(1);
   });

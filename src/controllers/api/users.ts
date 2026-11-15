@@ -39,11 +39,8 @@ usersRoute.post("/ban/:id", async (req: Request, res: Response) => {
   else {
     const user = await User.findOne({ _id: req.params.id });
     if (user) {
-      console.log(user);
       user.banned = !user.banned;
-      try {
-        await user.save();
-      } catch (e) {}
+      await user.save();
       res.sendStatus(200);
     } else {
       res.sendStatus(404);

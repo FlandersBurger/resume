@@ -4,6 +4,7 @@ import { IGame } from "@root/models/tenthings/game";
 import { IPlayer } from "@root/models/tenthings/player";
 import { Player } from "@root/models";
 import { HydratedDocument } from "mongoose";
+import { debugLog } from "@root/debug-log";
 import { createChatProvider } from "../chat";
 import { toTelegramKeyboard } from "./keyboards";
 
@@ -46,7 +47,7 @@ export const convertTelegramUserToPlayer = async (
       ...from,
     });
     const savedPlayer = await player.save();
-    console.log(`${game._id} - Player ${from.id} created`);
+    debugLog(`${game._id} - Player ${from.id} created`);
     return savedPlayer;
   } else if (player && from.first_name) {
     player.first_name = maskUrls(from.first_name);
