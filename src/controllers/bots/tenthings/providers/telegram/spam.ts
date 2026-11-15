@@ -1,7 +1,6 @@
 import moment from "moment";
-import { TelegramMessage } from "@tenthings/providers/telegram";
 
-import bot from "@root/connections/telegram";
+import bot, { TelegramUser } from "@root/connections/telegram";
 
 const cache: {
   [key: string]: {
@@ -21,14 +20,19 @@ setInterval(() => {
   }
 }, 60_000);
 
+/** The raw Telegram update, before toDomainMessage: the chat sits at `message.chat.id`. */
+type RawMessage = { from: TelegramUser; chat: { id: number }; message_thread_id?: number };
+
+/** True when the sender is flooding and the update should be ignored. Warns them in the chat at 20 and 30. */
 export const checkSpam = (body: {
-  message?: TelegramMessage;
-  callback_query?: { from: TelegramMessage["from"]; message: TelegramMessage };
+  message?: RawMessage;
+  callback_query?: { from: TelegramUser; message: RawMessage };
 }) => {
-  const from = body.message ? body.message.from.id : body.callback_query!.from.id;
-  const name =
-    body.message && body.message.from.username ? `@${body.message.from.username}` : body.message?.from.first_name;
-  const chat = body.message ? body.message.chatId : body.callback_query!.message.chatId;
+  const sender = body.message?.from ?? body.callback_query!.from;
+  const message = body.message ?? body.callback_query!.message;
+  const from = sender.id;
+  const name = sender.username ? `@${sender.username}` : sender.first_name;
+  const channel = { chat: message.chat.id, topic: message.message_thread_id };
 
   if (cache[from]) {
     if (cache[from].lastMessage < moment().subtract(10, "seconds")) {
@@ -40,30 +44,14 @@ export const checkSpam = (body: {
     } else if (cache[from].count <= 30) {
       cache[from].count++;
       if (cache[from].count === 20) {
-        bot.queueMessage({ chat }, `You sure seem to be sending a lot of messages, ${name}. I'm keeping an eye on you`);
+        bot.queueMessage(channel, `You sure seem to be sending a lot of messages, ${name}. I'm keeping an eye on you`);
       } else if (cache[from].count === 30) {
         cache[from].lastMessage = moment();
         bot.queueMessage(
-          { chat },
+          channel,
           `Ok, ${name}, calm down, I can't keep up.  Please stay silent for 10 seconds so I can process your stuff`,
         );
       }
-    } else if (cache[from].count > 35) {
-      cache[from].count++;
-      if (cache[from].count === 35) {
-        bot.exportChatInviteLink({ chat }).then((url: string | undefined) => {
-          bot.notifyAdmin(
-            `Possible spammer: ${name} (${from}) in chat ${chat} ${
-              chat == parseInt(process.env.GROUP_CHAT || "") ? " - The main chat!" : ""
-            }\n\n${body.message}\n\nURL: ${url ? url : "N/A"}`,
-          );
-        });
-        /*
-                } else if (cache[from].count % 10 === 0) {
-                  bot.notifyAdmin(`Possible spammer: ${name} (${from}) -> ${cache[from].count} messages`);*/
-      }
-      cache[from].lastMessage = moment();
-      return true;
     } else {
       return true;
     }
