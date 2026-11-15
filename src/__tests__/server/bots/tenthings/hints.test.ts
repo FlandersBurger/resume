@@ -113,3 +113,13 @@ describe("maskAnswers", () => {
     expect(open).toMatchObject({ value: "Novelist", blurb: "Writes books", maskedValue: "⁎⁎⁎⁎⁎⁎⁎⁎" });
   });
 });
+
+describe("getHint as plain text", () => {
+  it("keeps symbols as they are, at every Hint count", () => {
+    for (let hints = 0; hints <= MAX_HINTS; hints++) {
+      const hint = getHint(hints, "Tamataki & Chamataki #1 <3");
+      expect(hint).toContain(" & ");
+      expect(hint).not.toMatch(/&amp;|&num;|&lt;|&gt;/);
+    }
+  });
+});

@@ -1,4 +1,4 @@
-import { parseSymbols, conceal, concealMiddle, SPECIAL_CHARACTERS } from "@utils/string-helpers";
+import { conceal, concealMiddle, SPECIAL_CHARACTERS } from "@utils/string-helpers";
 import uniq from "lodash/uniq";
 
 export const MAX_HINTS = 6;
@@ -25,6 +25,10 @@ export const maskAnswers = <T extends AnswerLike>(values: T[], hints: number, { 
     return { ...rest, maskedValue };
   });
 
+/**
+ * `value` masked for a Round with `hints` Hints given, as plain text. Chat messages are HTML, so
+ * they escape it (parseSymbols); the web shows it as is.
+ */
 export const getHint = (hints: number, value: string): string => {
   if (value === undefined) return "";
   let i = 0;
@@ -80,7 +84,7 @@ export const getHint = (hints: number, value: string): string => {
         break;
     }
   }
-  return parseSymbols(str);
+  return str;
 };
 
 export const getMaxHints = () => MAX_HINTS;
