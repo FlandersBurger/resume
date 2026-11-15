@@ -66,7 +66,7 @@ const isUrl = (blurb: string) => blurb.substring(0, 4) === "http";
 const hintLines = (game: IGame, prefix: string, suffix = "") =>
   game.list.values
     .map(({ guesser, value }, index) =>
-      guesser ? "" : `${prefix}${index + 1}: ${getHint(game.hints, value)}${suffix}`,
+      guesser ? "" : `${prefix}${index + 1}: ${parseSymbols(getHint(game.hints, value))}${suffix}`,
     )
     .join("");
 
@@ -121,7 +121,7 @@ export const listStatusMessage = (game: IGame, long = true) => {
     (str, { guesser, value }, index) =>
       guesser
         ? `${str}\t${index + 1}: ${parseSymbols(value)} - <i>${getPlayerName(guesser as IPlayer)}</i>\n`
-        : `${str}\t<b>${index + 1}:</b> <b>${getHint(game.hints, value)}</b>\n`,
+        : `${str}\t<b>${index + 1}:</b> <b>${parseSymbols(getHint(game.hints, value))}</b>\n`,
     message,
   );
 };
@@ -163,7 +163,7 @@ export const skippedListMessage = (game: IGame) =>
 const sideGameMessage = (game: IGame, titleKey: string, lines: string[], hints: number, answer: string) =>
   `<b>${i18n(game.settings.language, titleKey)}</b>\n` +
   lines.map((line) => `- ${line}\n`).join("") +
-  `\n<b>${getHint(hints, answer)}</b>`;
+  `\n<b>${parseSymbols(getHint(hints, answer))}</b>`;
 
 const sideGameGuessedMessage = (
   game: IGame,

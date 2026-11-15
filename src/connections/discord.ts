@@ -20,6 +20,7 @@ import i18n from "@root/i18n";
 import { maskUrls } from "@utils/string-helpers";
 import { discordInviteUrl } from "@tenthings/links";
 import { styleText } from "util";
+import { htmlToMarkdown } from "./discordMarkdown";
 
 export type DiscordUser = {
   id: string;
@@ -340,16 +341,7 @@ class DiscordBot {
     }
   };
 
-  private htmlToMarkdown = (html: string): string => {
-    return html
-      .replace(/<pre>([\s\S]*?)<\/pre>/g, "```\n$1\n```")
-      .replace(/<b>([\s\S]*?)<\/b>/g, "**$1**")
-      .replace(/<i>([\s\S]*?)<\/i>/g, "*$1*")
-      .replace(/<u>([\s\S]*?)<\/u>/g, "__$1__")
-      .replace(/<a href="[^"]*">&#8204;<\/a>/g, "") // invisible link (used for images in Telegram)
-      .replace(/<a href="([^"]*)">([\s\S]*?)<\/a>/g, "[$2]($1)")
-      .replace(/<[^>]+>/g, ""); // strip remaining tags
-  };
+  private htmlToMarkdown = htmlToMarkdown;
 
   public sendMessage = async (channel: DiscordChannel, message: string) => {
     await this.doSendMessage(channel.channelId, message);

@@ -146,6 +146,16 @@ describe("the List status", () => {
     expect(html).not.toContain("Mercury");
     expect(html).toMatch(/^<b>Planets<\/b>\n\t2: \S+\n$/);
   });
+
+  it("escapes the symbols hints keep, for the HTML chats", () => {
+    const game = makeGame({} as IGame["provider"]);
+    game.list.values[1].value = "AT&T <Mobility>";
+    for (const html of [listStatusMessage(game), listStatusMessage(game, false)]) {
+      expect(html).toContain("&amp;");
+      expect(html).not.toMatch(/&(?!amp;|lt;|gt;|num;)/);
+      expect(html).not.toContain("<Mobility");
+    }
+  });
 });
 
 describe("the end of the day", () => {
