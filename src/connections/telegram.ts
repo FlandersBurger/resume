@@ -1,5 +1,3 @@
-import { AxiosError } from "axios";
-
 import Queue, { Job } from "bull";
 import i18n from "@root/i18n";
 import redis from "@root/queue";
@@ -13,6 +11,7 @@ import { Command } from "@root/controllers/bots/tenthings/providers/telegram/com
 import { IGame } from "@root/models/tenthings/game";
 import { TelegramCallbackData } from "@tenthings/providers/telegram/callbacks";
 import { convertTelegramUserToPlayer, TelegramMessage } from "@root/controllers/bots/tenthings/providers/telegram";
+import { classifyTelegramError, describeFailure, Failure } from "@root/connections/telegram-errors";
 import { styleText } from "util";
 
 const BANNED_TELEGRAM_USERS = [1726294650, 6758829541];
@@ -94,32 +93,38 @@ export type Channel = {
 
 type ReplyMarkup = Keyboard;
 
+type MessageOptions = { replyMessageId?: string; replyMarkup?: ReplyMarkup };
+
+type CallOptions = {
+  /** The chat the call is about: named in logs, muted when it's gone. */
+  channel?: Channel;
+  /** How many times to retry a transient failure. Only for calls that are safe to repeat. */
+  retries?: number;
+  /** What was being sent, quoted in the admin alert when the failure is unknown. */
+  content?: string;
+  /** Sends it again later when Telegram rate-limits us. */
+  requeue?: () => void;
+  /** The caller handles these failures itself: no log, alert or muting. */
+  expect?: (failure: Failure) => boolean;
+};
+
+type CallResult<T> = { ok: true; result: T } | { ok: false; failure: Failure };
+
+const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
+
+/** Telegram takes objects (keyboards, scopes) as JSON in the query string. */
+const toQuery = (params: Record<string, unknown>) =>
+  Object.fromEntries(
+    Object.entries(params)
+      .filter(([, value]) => value !== undefined)
+      .map(([key, value]) => [key, typeof value === "object" ? JSON.stringify(value) : value]),
+  );
+
+const stripHtml = (text: string) => text.replace(/<[^>]*>/g, "");
+
 class TelegramBot {
   private baseUrl: string;
   private telegramBotUser: TelegramUser | undefined;
-  private muteReasons: string[] = [
-    "Bad Request: not enough rights to send text messages to the chat",
-    "Bad Request: chat not found",
-    "Bad Request: TOPIC_CLOSED",
-    "Bad Request: CHAT_WRITE_FORBIDDEN",
-    "Bad Request: CHAT_SEND_PLAIN_FORBIDDEN",
-    "Bad Request: CHAT_RESTRICTED",
-    "Forbidden: bot is not a member of the supergroup chat",
-    "Forbidden: bot was kicked from the supergroup chat",
-    "Forbidden: bot was kicked from the group chat",
-    "Forbidden: bot was blocked by the user",
-    "Forbidden: the group chat was deleted",
-    "Forbidden: user is deactivated",
-  ];
-  private ignoreReasons: string[] = [
-    "Bad Request: group chat was upgraded to a supergroup chat",
-    "Bad Request: not enough rights to send animations to the chat",
-    "Bad Request: message to delete not found",
-    "Bad Request: message to edit not found",
-    "Bad Request: query is too old and response timeout expired or query ID is invalid",
-    "Bad Request: message is not modified: specified new message content and reply markup are exactly the same as a specified new message content and reply markup are exactly the same as a current content and reply markup of the message",
-    "Bad Request: message is not modified: specified new message content and reply markup are exactly the same as a current content and reply markup of the message",
-  ];
   private paused: boolean = false;
   private timeoutUntil: Moment | undefined;
 
@@ -129,214 +134,151 @@ class TelegramBot {
   }
 
   private init = async () => {
-    const { data } = await httpClient().get(`${this.baseUrl}/getMe`);
-    this.telegramBotUser = data.result;
-    this.introduceYourself();
-    this.resumeQueue();
     const bot = this;
     globalQueue.on("failed", function (job: Job, error: any) {
       bot.notifyAdmin(`Error in global queue: ${job.data.message}`);
-      console.error(error);
+      console.error("Global queue job failed:", error?.message);
     });
     chatQueue.on("failed", function (job: Job, error: any) {
       bot.notifyAdmin(`Error in chat queue: ${job.data.message}`);
-      console.error(error);
+      console.error("Chat queue job failed:", error?.message);
     });
-  };
-
-  private errorHandler = (channel: Channel, source: string, error: any, message?: string, requeue?: () => void) => {
-    const reason = error?.response?.data?.description;
-    const isAdminChat = channel.chat === parseInt(process.env.MASTER_CHAT || "");
-
-    if (reason) {
-      if (this.muteReasons.includes(reason)) {
-        botMuted(channel.chat);
-      } else if (reason.includes("too long")) {
-        if (message && !isAdminChat) {
-          this.notifyAdmin(`Too long: ${message.substring(0, 500)}...`);
-        }
-      } else if (reason.includes("Bad Request: message thread not found")) {
-        noTopic(channel.chat);
-      } else if (reason.includes("can't parse")) {
-        const stripped = message?.replace(/<[^>]*>/g, "") ?? "";
-        if (isAdminChat) {
-          console.error(`Admin chat parse fail — message contained bad HTML: ${stripped.substring(0, 500)}`);
-        } else {
-          this.notifyAdmin(`Send Message to ${channel.chat} parse Fail: ${stripped.substring(0, 500)}`);
-        }
-      } else if (error.response.data.description.startsWith("Too Many Requests: retry after ")) {
-        if (!this.paused) {
-          this.paused = true;
-          globalQueue.pause();
-          const timeout = parseInt(error.response.data.description.match(/retry after (\d+)/)![1]);
-          this.timeoutUntil = moment().add(timeout, "seconds");
-          if (timeout > 100) this.notifyAdmin(`Pausing queue for ${timeout} seconds due to too many requests`);
-          else console.log(`${channel.chat} - Pausing queue for ${timeout} seconds due to too many requests`);
-          setTimeout(this.resumeQueue, timeout * 1000);
-        }
-        if (requeue) requeue();
-        else if (message) this.queueMessage(channel, message);
-      } else if (
-        error.response?.data?.description ===
-        `Bad Request: invalid file HTTP URL specified: Wrong port number specified in the URL`
-      ) {
-        this.notifyAdmin(`Invalid URL for ${source} in ${channel.chat}: ${message}`);
-      } else if (!this.ignoreReasons.includes(reason) && !isAdminChat) {
-        bot.notifyAdmin(`Error from "${source}" in channel ${channel.chat}:\n${parseSymbols(reason)}`);
+    this.resumeQueue();
+    // Keep trying until Telegram answers: a network blip at boot shouldn't leave the bot nameless.
+    for (let attempt = 0; ; attempt++) {
+      const response = await this.call<TelegramUser>("getMe", {});
+      if (response.ok) {
+        this.telegramBotUser = response.result;
+        this.introduceYourself();
+        return;
       }
-    } else if (!isAdminChat) {
-      bot.notifyAdmin(
-        `Unknown error from "${source}" in channel ${channel.chat}\nCode:${parseSymbols(error.code)}\nMessage:${parseSymbols(error.message)}`,
-      );
-      console.error(`${source} error`, error);
-    } else {
-      console.error(`Admin chat ${source} error (${error.code}):`, error.message);
+      if (response.failure.kind !== "transient") return;
+      await sleep(Math.min(2 ** attempt, 60) * 1000);
     }
   };
 
-  private handleSendError = (
-    channel: Channel,
-    source: string,
-    error: any,
-    content: string,
-    retries: number,
-    onRetry: (retries: number) => void,
-    onRequeue: () => void,
-  ) => {
-    if (error.response) {
-      if (error.response.data.description === "Bad Gateway") {
-        if (retries < 3) {
-          setTimeout(() => onRetry(retries + 1), (retries + 1) * 500);
-        } else {
-          this.errorHandler(channel, `${source} (failed 3 times)`, error, content, onRequeue);
-        }
-      } else {
-        this.errorHandler(channel, source, error, content, onRequeue);
-      }
-    } else {
-      // Network error (ETIMEDOUT, ECONNABORTED) — retry with exponential backoff
-      if (retries < 6) {
-        setTimeout(() => onRetry(retries + 1), Math.pow(2, retries) * 1000);
-      } else {
-        console.error(
-          `${source} gave up after ${retries} retries (${error.code}) for channel ${channel.chat}`,
-          error.message,
-        );
-      }
-    }
-  };
-
-  public setWebhook = async (api: string): Promise<any> => {
-    //var url = 'https://api.telegram.org/beta/bot' + bot.token + '/setWebhook?url=https://belgocanadian.com/bots/' + api;
-    const allowed_updates = JSON.stringify(["message", "callback_query", "chat_member"]);
-    const url = `${this.baseUrl}/setWebhook?url=https://belgocanadian.com/bots/${api}&allowed_updates=${allowed_updates}`;
+  /**
+   * Every request to the Bot API goes through here. A transient failure is retried `retries` times with
+   * backoff (1s, 2s, 4s…); whatever still fails is logged as one line, and only failures nobody expected
+   * reach the admin chat. Never throws.
+   */
+  private call = async <T = any>(
+    method: string,
+    params: Record<string, unknown>,
+    options: CallOptions = {},
+    attempt = 0,
+  ): Promise<CallResult<T>> => {
     try {
-      return await httpClient().get(url);
-    } catch (error: AxiosError | any) {
-      this.notifyAdmin("Set Webhook Fail");
-      console.error(error.response.data);
+      const { data } = await httpClient().get(`${this.baseUrl}/${method}`, { params: toQuery(params) });
+      return { ok: true, result: data.result };
+    } catch (error) {
+      const failure = classifyTelegramError(error);
+      if (options.expect?.(failure)) return { ok: false, failure };
+      const retries = options.retries ?? 0;
+      if (failure.kind === "transient" && attempt < retries) {
+        console.warn(describeFailure(method, options.channel?.chat, failure, `retry ${attempt + 1}/${retries}`));
+        await sleep(2 ** attempt * 1000);
+        return this.call<T>(method, params, options, attempt + 1);
+      }
+      this.handleFailure(method, failure, options, attempt);
+      return { ok: false, failure };
     }
+  };
+
+  private handleFailure = (method: string, failure: Failure, options: CallOptions, attempts: number) => {
+    const { channel, content, requeue } = options;
+    const chat = channel?.chat;
+    const isAdminChat = chat === parseInt(process.env.MASTER_CHAT || "");
+    switch (failure.kind) {
+      case "transient":
+        console.warn(describeFailure(method, chat, failure, attempts > 0 ? `gave up after ${attempts} retries` : ""));
+        return;
+      case "rateLimited":
+        this.pauseQueue(failure.retryAfter!, chat);
+        requeue?.();
+        return;
+      case "chatGone":
+        console.warn(describeFailure(method, chat, failure));
+        if (chat !== undefined) botMuted(chat, failure.reason);
+        return;
+      case "topicGone":
+        console.warn(describeFailure(method, chat, failure));
+        if (chat !== undefined) noTopic(chat);
+        return;
+      case "ignorable":
+        return;
+      case "unknown":
+        console.error(describeFailure(method, chat, failure));
+        if (!isAdminChat) {
+          const quoted = content ? `\n${stripHtml(content).substring(0, 300)}` : "";
+          this.notifyAdmin(
+            parseSymbols(
+              `Error from "${method}" in channel ${chat ?? "-"}:\n${failure.reason ?? failure.code}${quoted}`,
+            ),
+          );
+        }
+        return;
+    }
+  };
+
+  private pauseQueue = (seconds: number, chat?: number) => {
+    if (this.paused) return;
+    this.paused = true;
+    globalQueue.pause();
+    this.timeoutUntil = moment().add(seconds, "seconds");
+    if (seconds > 100) this.notifyAdmin(`Pausing queue for ${seconds} seconds due to too many requests`);
+    else console.log(`${chat} - Pausing queue for ${seconds} seconds due to too many requests`);
+    setTimeout(this.resumeQueue, seconds * 1000);
+  };
+
+  public setWebhook = async (api: string) => {
+    const response = await this.call("setWebhook", {
+      url: `https://belgocanadian.com/bots/${api}`,
+      allowed_updates: ["message", "callback_query", "chat_member"],
+    });
+    return response.ok ? response.result : undefined;
   };
 
   public getWebhook = async () => {
-    const url = `${this.baseUrl}/getWebhookInfo`;
-    try {
-      const { data } = await httpClient().get(url);
-      return data.result;
-    } catch (error: AxiosError | any) {
-      this.notifyAdmin("Get Webhook Fail");
-      console.error(error.response.data);
-    }
-    return;
+    const response = await this.call("getWebhookInfo", {}, { retries: 1 });
+    return response.ok ? response.result : undefined;
   };
 
   public deleteWebhook = async () => {
-    const url = `${this.baseUrl}/deleteWebhook`;
-    try {
-      await httpClient().get(url);
-    } catch (error: AxiosError | any) {
-      this.notifyAdmin("Delete Webhook Fail");
-      console.error(error.response.data);
-    }
+    await this.call("deleteWebhook", {});
   };
 
-  private buildMessageUrl = (
-    endpoint: string,
-    channel: Channel,
-    payload: string,
-    options: { replyMessageId?: string; replyMarkup?: ReplyMarkup } = {},
-  ): string => {
-    let url = `${this.baseUrl}/${endpoint}?chat_id=${channel.chat}&disable_notification=true&${payload}`;
-    if (channel.topic) url += `&message_thread_id=${channel.topic}`;
-    if (options.replyMessageId) {
-      url += `&reply_markup=${JSON.stringify({ force_reply: true, selective: true })}`;
-      url += `&reply_parameters=${JSON.stringify({ message_id: options.replyMessageId, allow_sending_without_reply: true })}`;
-    }
-    if (options.replyMarkup) url += `&reply_markup=${JSON.stringify(options.replyMarkup)}`;
-    return url;
-  };
+  private messageParams = (channel: Channel, options: MessageOptions = {}) => ({
+    chat_id: channel.chat,
+    disable_notification: true,
+    message_thread_id: channel.topic,
+    ...(options.replyMessageId
+      ? {
+          reply_markup: { force_reply: true, selective: true },
+          reply_parameters: { message_id: options.replyMessageId, allow_sending_without_reply: true },
+        }
+      : {}),
+    ...(options.replyMarkup ? { reply_markup: options.replyMarkup } : {}),
+  });
 
-  public sendMessage = async (
-    channel: Channel,
-    message: string,
-    options: { replyMessageId?: string; replyMarkup?: ReplyMarkup } = {},
-    retries: number = 0,
-  ) => {
-    const url = this.buildMessageUrl(
+  public sendMessage = async (channel: Channel, message: string, options: MessageOptions = {}) => {
+    await this.call(
       "sendMessage",
-      channel,
-      `parse_mode=html&text=${encodeURIComponent(message)}`,
-      options,
+      { ...this.messageParams(channel, options), parse_mode: "html", text: message },
+      { channel, retries: 6, content: message, requeue: () => this.queueMessage(channel, message) },
     );
-    httpClient()
-      .get(url)
-      .catch((error) =>
-        this.handleSendError(
-          channel,
-          "Send message",
-          error,
-          message,
-          retries,
-          (r) => this.sendMessage(channel, message, options, r),
-          () => this.queueMessage(channel, message),
-        ),
-      );
   };
 
-  public sendRichMessage = async (
-    channel: Channel,
-    html: string,
-    options: { replyMessageId?: string; replyMarkup?: ReplyMarkup } = {},
-    retries: number = 0,
-  ) => {
-    const url = this.buildMessageUrl(
+  public sendRichMessage = async (channel: Channel, html: string, options: MessageOptions = {}) => {
+    await this.call(
       "sendRichMessage",
-      channel,
-      `rich_message=${encodeURIComponent(JSON.stringify({ html }))}`,
-      options,
+      { ...this.messageParams(channel, options), rich_message: { html } },
+      { channel, retries: 6, content: html, requeue: () => this.queueRichMessage(channel, html) },
     );
-    httpClient()
-      .get(url)
-      .catch((error) =>
-        this.handleSendError(
-          channel,
-          "Send rich message",
-          error,
-          html,
-          retries,
-          (r) => this.sendRichMessage(channel, html, options, r),
-          () => this.queueRichMessage(channel, html),
-        ),
-      );
   };
 
   public deleteMessage = async (channel: Channel, message_id: string) => {
-    const url = `${this.baseUrl}/deleteMessage?chat_id=${channel.chat}&message_id=${message_id}`;
-    try {
-      await httpClient().get(url);
-    } catch (error: AxiosError | any) {
-      this.errorHandler(channel, "Delete message", error);
-    }
+    await this.call("deleteMessage", { chat_id: channel.chat, message_id }, { channel, retries: 3 });
   };
 
   public queueMessage = async (channel: Channel, message: string) => {
@@ -369,12 +311,11 @@ class TelegramBot {
     if (!minutes) minutes = 1;
     let date = new Date();
     const untilDate = Math.floor(date.setTime(date.getTime() + minutes * 60 * 1000) / 1000);
-    const url = `${this.baseUrl}/kickChatMember?chat_id=${channel.chat}&user_id=${userId}&until_date=${untilDate}`;
-    try {
-      await httpClient().get(url);
-    } catch (error: AxiosError | any) {
-      this.errorHandler(channel, "Kick user", error);
-    }
+    await this.call(
+      "kickChatMember",
+      { chat_id: channel.chat, user_id: userId, until_date: untilDate },
+      { channel, retries: 1 },
+    );
   };
 
   public notifyCosmicForce = async (msg: string, keyboard?: Keyboard) => {
@@ -412,75 +353,64 @@ class TelegramBot {
     });
   };
 
-  public exportChatInviteLink = async (channel: Channel) => {
-    const url = `${this.baseUrl}/exportChatInviteLink?chat_id=${channel.chat}`;
-    try {
-      const { data } = await httpClient().get(encodeURI(url));
-      return data.result;
-    } catch (error: AxiosError | any) {
-      this.errorHandler(channel, "Export chat invite link", error);
-    }
+  public exportChatInviteLink = async (channel: Channel): Promise<string | undefined> => {
+    const response = await this.call<string>(
+      "exportChatInviteLink",
+      { chat_id: channel.chat },
+      { channel, retries: 1 },
+    );
+    return response.ok ? response.result : undefined;
   };
 
   public getChat = async (channel: Channel): Promise<string | null> => {
-    const url = `${bot.baseUrl}/getChat?chat_id=${channel.chat}`;
-    try {
-      const { data } = await httpClient().get(encodeURI(url));
-      if (data.result.invite_link) return `Group Chat: ${data.result.invite_link}`;
-      else if (data.result.title) return `Group Chat: ${data.result.title}`;
-      else if (data.result.username) return `Private Chat: @${data.result.username}`;
-      else if (data.result.first_name) return `Private Chat: ${data.result.first_name}`;
-      else if (data.result.type === "private") return `Private Chat`;
-    } catch (error: any) {
-      if (error.response.data.error_code === 400) {
-        chatNotFound(channel.chat);
-      } else {
-        this.errorHandler(channel, "Get chat", error);
-      }
+    const response = await this.call(
+      "getChat",
+      { chat_id: channel.chat },
+      { channel, retries: 1, expect: (failure) => failure.status === 400 },
+    );
+    if (!response.ok) {
+      if (response.failure.status === 400) chatNotFound(channel.chat);
       return null;
     }
+    const chat = response.result;
+    if (chat.invite_link) return `Group Chat: ${chat.invite_link}`;
+    else if (chat.title) return `Group Chat: ${chat.title}`;
+    else if (chat.username) return `Private Chat: @${chat.username}`;
+    else if (chat.first_name) return `Private Chat: ${chat.first_name}`;
+    else if (chat.type === "private") return `Private Chat`;
     return "";
   };
 
   public getChatMember = async (channel: Channel, userId: number) => {
-    const url = `${this.baseUrl}/getChatMember?chat_id=${channel.chat}&user_id=${userId}`;
-    try {
-      const response = await httpClient().get(url);
-      return (
-        response &&
-        response.data &&
-        response.data.result &&
-        !["restricted", "left", "kicked"].includes(response.data.result.status)
-      );
-    } catch (error: AxiosError | any) {
-      this.errorHandler(channel, "Get chat member", error);
-    }
+    const response = await this.call(
+      "getChatMember",
+      { chat_id: channel.chat, user_id: userId },
+      { channel, retries: 1 },
+    );
+    if (!response.ok) return undefined;
+    return !["restricted", "left", "kicked"].includes(response.result?.status);
   };
 
   public checkAdmin = async (game: IGame, user: TelegramUser) => {
     if (user.id === parseInt(process.env.MASTER_CHAT || "")) return true;
     if (game.telegramChannel.chat > 0) return true;
     const player = await convertTelegramUserToPlayer(game, user);
-    // if (player && player.admin !== undefined) return player.admin;
-    const url = `${this.baseUrl}/getChatMember?chat_id=${game.telegramChannel.chat}&user_id=${user.id}`;
-    try {
-      const response = await httpClient().get(url);
-      const admin =
-        response &&
-        response.data &&
-        response.data.result &&
-        ["creator", "administrator"].includes(response.data.result.status);
-      if (player) {
-        player.admin = admin;
-        await player.save();
-      }
-      return admin;
-    } catch (error: AxiosError | any) {
-      if (error.response.data.description === "Bad Request: CHAT_ADMIN_REQUIRED") {
-        return true;
-      }
-      this.errorHandler(game.telegramChannel, "Check admin", error);
+    const response = await this.call(
+      "getChatMember",
+      { chat_id: game.telegramChannel.chat, user_id: user.id },
+      {
+        channel: game.telegramChannel,
+        retries: 1,
+        expect: (failure) => failure.reason === "Bad Request: CHAT_ADMIN_REQUIRED",
+      },
+    );
+    if (!response.ok) return response.failure.reason === "Bad Request: CHAT_ADMIN_REQUIRED" ? true : undefined;
+    const admin = ["creator", "administrator"].includes(response.result?.status);
+    if (player) {
+      player.admin = admin;
+      await player.save();
     }
+    return admin;
   };
 
   public sendKeyboard = async (channel: Channel, message: string, keyboard: Keyboard) => {
@@ -488,60 +418,48 @@ class TelegramBot {
   };
 
   public sendPhoto = async (channel: Channel, photo: string) => {
-    let url = `${this.baseUrl}/sendPhoto?chat_id=${channel.chat}&photo=${photo}`;
-    if (channel.topic) url += `&message_thread_id=${channel.topic}`;
-    try {
-      await httpClient().get(encodeURI(url));
-    } catch (error: AxiosError | any) {
-      this.errorHandler(channel, "Send photo", error, photo);
-    }
+    await this.call(
+      "sendPhoto",
+      { chat_id: channel.chat, photo, message_thread_id: channel.topic },
+      { channel, retries: 3, content: photo },
+    );
   };
 
   public sendAnimation = async (channel: Channel, animation: string) => {
-    let url = `${this.baseUrl}/sendAnimation?chat_id=${channel.chat}&animation=${animation}`;
-    if (channel.topic) url += `&message_thread_id=${channel.topic}`;
-    try {
-      await httpClient().get(encodeURI(url));
-    } catch (error: AxiosError | any) {
-      this.errorHandler(channel, "Send animation", error, animation);
-    }
+    await this.call(
+      "sendAnimation",
+      { chat_id: channel.chat, animation, message_thread_id: channel.topic },
+      { channel, retries: 3, content: animation },
+    );
   };
 
   public editKeyboard = async (channel: Channel, message_id: string, keyboard: Keyboard) => {
-    let url = `${this.baseUrl}/editMessageReplyMarkup?chat_id=${channel.chat}&message_id=${message_id}`;
-    if (keyboard) url += `&reply_markup=${JSON.stringify(keyboard)}`;
-    try {
-      await httpClient().get(encodeURI(url));
-    } catch (error: AxiosError | any) {
-      this.errorHandler(channel, "Edit keyboard", error);
-    }
+    await this.call(
+      "editMessageReplyMarkup",
+      { chat_id: channel.chat, message_id, reply_markup: keyboard },
+      { channel, retries: 3 },
+    );
   };
 
   public queueEditKeyboard = (channel: Channel, message_id: string, keyboard: Keyboard) => {
-    chatQueue.add("", { channel, message_id, action: "editMessage", chat: channel.chat, keyboard }, {});
+    chatQueue.add("", { channel, message_id, action: Actions.EditKeyboard, chat: channel.chat, keyboard }, {});
   };
 
   public editMessage = async (channel: Channel, message_id: string, message: string, keyboard?: Keyboard) => {
-    let url = `${this.baseUrl}/editMessageText?chat_id=${channel.chat}&message_id=${message_id}&text=${message}`;
-    if (keyboard) url += `&reply_markup=${JSON.stringify(keyboard)}`;
-    try {
-      await httpClient().get(encodeURI(url));
-    } catch (error: AxiosError | any) {
-      this.errorHandler(channel, "Edit message", error);
-    }
+    await this.call(
+      "editMessageText",
+      { chat_id: channel.chat, message_id, text: message, reply_markup: keyboard },
+      { channel, retries: 3, content: message },
+    );
   };
 
   public queueEditMessage = (channel: Channel, message_id: string, message: string, keyboard: Keyboard) => {
     chatQueue.add("", { channel, message_id, action: "editMessage", chat: channel.chat, message, keyboard }, {});
   };
 
+  /** Not retried: Telegram rejects an answer that comes late. */
   public answerCallback = async (callback_query_id: string, text: string) => {
-    const url = `${this.baseUrl}/answerCallbackQuery?callback_query_id=${callback_query_id}&text=${text}`;
-    try {
-      await httpClient().get(encodeURI(url));
-    } catch (error: AxiosError | any) {
-      this.errorHandler({ chat: 0 }, "Answer callback", error);
-    }
+    await this.call("answerCallbackQuery", { callback_query_id, text });
   };
 
   getUsername = (): string | undefined => this.telegramBotUser?.username;
@@ -565,8 +483,8 @@ class TelegramBot {
   };
 
   public reset = async () => {
-    await httpClient().get(`${this.baseUrl}/setWebhook?url=`);
-    await httpClient().get(`${this.baseUrl}/getUpdates?offset=-5`);
+    await this.call("setWebhook", { url: "" });
+    await this.call("getUpdates", { offset: -5 });
     await this.init();
   };
 
@@ -588,16 +506,11 @@ class TelegramBot {
       command: i18n(language, `commands.${command}.name`),
       description: i18n(language, `commands.${command}.description`),
     }));
-    const scope = {
-      type: "chat",
-      chat_id: channel.chat,
-    };
-    const url = `${this.baseUrl}/setMyCommands?commands=${JSON.stringify(commands)}&scope=${JSON.stringify(scope)}`;
-    try {
-      await httpClient().get(encodeURI(url));
-    } catch (error: AxiosError | any) {
-      this.errorHandler(channel, "Set commands", error);
-    }
+    await this.call(
+      "setMyCommands",
+      { commands, scope: { type: "chat", chat_id: channel.chat } },
+      { channel, retries: 1 },
+    );
   };
 
   private toDomainUser = (from: TelegramUser) => ({

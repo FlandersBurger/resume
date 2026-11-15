@@ -8,6 +8,6 @@ export const getQueue = async () => {
   let message = `<b>Queue</b>\n`;
   message += `${engineCount} answers and actions queued\n`;
   message += `${outgoing} outgoing messages queued (max 25/sec)\n`;
-  message += `${webhook.pending_update_count ?? 0} incoming messages pending in Telegram (max 100/sec)`;
+  message += `${webhook?.pending_update_count ?? 0} incoming messages pending in Telegram (max 100/sec)`;
   return message;
 };
