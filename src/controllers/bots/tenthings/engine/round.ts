@@ -16,6 +16,7 @@ import { notifyAdmin } from "@tenthings/notify";
 import { getPlayerName } from "@tenthings/players";
 import { throttleSkip } from "@tenthings/skips";
 import { styleText } from "util";
+import { debugLog } from "@root/debug-log";
 import { Action, isSystemActor, SYSTEM_ACTOR } from "./actions";
 import { EngineEvent } from "./events";
 import { Scheduler } from "./scheduler";
@@ -183,15 +184,15 @@ export const roundHandlers: { [T in RoundActionType]: RoundHandler<T> } = {
     if (!game.guessers.some((guesser) => guesser.equals(player._id))) game.guessers.push(player._id);
     const value = game.list.values.find(({ value }) => value === guess.value);
     if (!value) return events;
-    console.log(
-      `${game._id} (${game.settings.language}) - ${styleText("cyan", game.list.name)} "${styleText("blueBright", guess.value)}" by ${getPlayerName(player)}`,
-    );
 
     if (value.guesser) {
       player.snubs++;
       await Promise.all([saveGame(game), player.save()]);
       return [...events, { type: "answerSnubbed", playerId: String(player._id), value: value.value }];
     }
+    debugLog(
+      `${game._id} (${game.settings.language}) - ${styleText("cyan", game.list.name)} "${styleText("blueBright", guess.value)}" by ${getPlayerName(player)}`,
+    );
 
     value.guesser = player;
     player.answers++;

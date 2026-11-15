@@ -3,6 +3,7 @@
 
 import { HydratedDocument } from "mongoose";
 import { styleText } from "util";
+import { debugLog } from "@root/debug-log";
 import { Player } from "@models/index";
 import { IGame } from "@models/tenthings/game";
 import { GameType } from "@models/tenthings/gameType";
@@ -69,7 +70,7 @@ export const sideGameHandlers: { [T in SideGameActionType]: Handler<T> } = {
     game[sideGame].plays++;
     await endSideGame(game, sideGame, scheduler, NEXT_SIDE_GAME_AFTER_GUESS_MS);
     await Promise.all([player.save(), saveGame(game)]);
-    console.log(
+    debugLog(
       `${game._id} (${game.settings.language}) - ${styleText("gray", sideGame)} "${styleText("blueBright", answer)}" by ${player.first_name}`,
     );
     return [

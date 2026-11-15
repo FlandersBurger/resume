@@ -97,7 +97,7 @@ tenthingsTelegramBotRoute.post("/", async (req: Request, res: Response) => {
         const player = await Player.findOne({ game: game._id, id: Number(domainMessage.message!.from.id) });
         if (player) {
           player.present = false;
-          player.save();
+          await player.save();
         }
       }
       res.sendStatus(200);
@@ -138,8 +138,7 @@ tenthingsTelegramBotRoute.post("/", async (req: Request, res: Response) => {
         try {
           await existingGame.validate();
         } catch (err) {
-          console.log("Attempting to reset game:", existingGame._id);
-          console.error(err);
+          console.error(`Attempting to reset game ${existingGame._id}:`, (err as Error).message);
           dispatch({ type: "startRound", gameId: String(existingGame._id), actor: SYSTEM_ACTOR, replace: true });
           if (!res.headersSent) res.sendStatus(200);
           return;
@@ -156,42 +155,6 @@ tenthingsTelegramBotRoute.get("/", (req: Request, res: Response) => {
     res.status(200).send(req.query["hub.challenge"]);
   } else {
     res.sendStatus(200);
-  }
-});
-
-/*
- ██     ██ ███████ ██████  ██   ██  ██████   ██████  ██   ██ 
- ██     ██ ██      ██   ██ ██   ██ ██    ██ ██    ██ ██  ██  
- ██  █  ██ █████   ██████  ███████ ██    ██ ██    ██ █████   
- ██ ███ ██ ██      ██   ██ ██   ██ ██    ██ ██    ██ ██  ██  
-  ███ ███  ███████ ██████  ██   ██  ██████   ██████  ██   ██ 
-*/
-// Creates the endpoint for our webhook
-tenthingsTelegramBotRoute.post("/webhook", (req: Request, res: Response) => {
-  const body = req.body;
-  if (body.object === "page") {
-    // Iterates over each entry - there may be multiple if batched
-    body.entry.forEach(({ messaging }: any) => {
-      // Gets the message. entry.messaging is an array, but
-      // will only ever contain one message, so we get index 0
-      const webhook_event = messaging[0];
-      console.log(webhook_event);
-      // Get the sender PSID
-      const sender_psid = webhook_event.sender.id;
-      console.log(`Sender PSID: ${sender_psid}`);
-      // Check if the event is a message or postback and
-      // pass the event to the appropriate handler function
-      if (webhook_event.message) {
-        console.log(webhook_event.message);
-      } else if (webhook_event.postback) {
-        console.log(webhook_event.postback);
-      }
-    });
-    // Returns a '200 OK' response to all requests
-    res.status(200).send("EVENT_RECEIVED");
-  } else {
-    // Returns a '404 Not Found' if event is not a page subscription
-    res.sendStatus(404);
   }
 });
 
