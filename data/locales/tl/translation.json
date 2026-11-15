@@ -261,8 +261,6 @@
     "noContact": "Hindi kita makontak dito, {{name}}. Sumali ka sa <a href=\"https://t.me/tenthings\">Ten Things Supergroup</a> at mag-ping sa admin doon, o direktang makipag-ugnayan sa akin -> @FlandersBurger",
     "thankYou": "Salamat, {{name}}",
     "contactDirectly": "Pakisabihan mo ako nang direkta kung may problema sa partikular mong chat -> @FlandersBurger",
-    "noListsForLanguage": "Hindi sapat ang mga listahang available sa mga napili mong wika para gumana ang isang minigame, default sa English",
-    "noListsForCategory": "Hindi sapat ang mga listahang available sa mga napili mong kategorya para gumana ang isang minigame, default sa lahat ng listahan",
     "tooManyHints": "Ano? Isa pang pahiwatig? Hindi ko na lang papansinin ang kahilingang iyan",
     "hintCooldown": "Kumalma ka sa mga pahiwatig, maghintay ng {{seconds}} segundo pa",
     "playerNotFound": "Hindi natagpuan ang manlalaro",

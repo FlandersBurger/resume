@@ -267,8 +267,6 @@
     "noContact": "I'm unable to reach you here, {{name}}. Please join the <a href=\"https://t.me/tenthings\">Ten Things Supergroup</a> and ping an admin there, or contact me directly -> @FlandersBurger",
     "thankYou": "Thank you, {{name}}",
     "contactDirectly": "Please let me know directly if it's an issue with your specific chat -> @FlandersBurger",
-    "noListsForLanguage": "Not enough lists available in your chosen languages to make a minigame work, defaulting to English",
-    "noListsForCategory": "Not enough lists available in your chosen categories to make a minigame work, defaulting to all lists",
     "tooManyHints": "What? Another hint? I'm just gonna ignore that request",
     "hintCooldown": "Calm down with the hints, wait {{seconds}} more seconds",
     "playerNotFound": "Player not found",

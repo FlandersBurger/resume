@@ -262,8 +262,6 @@
     "noContact": "No puedo comunicarme contigo aquí, {{name}}. Únete al <a href=\"https://t.me/tenthings\">Supergrupo de Ten Things</a> y menciona a un administrador allí, o contáctame directamente: @FlandersBurger",
     "thankYou": "Gracias, {{name}}",
     "contactDirectly": "Por favor, avísame directamente si el problema está en tu chat: @FlandersBurger",
-    "noListsForLanguage": "No hay suficientes listas disponibles en los idiomas seleccionados para que funcione el minijuego; se usará el inglés por defecto.",
-    "noListsForCategory": "No hay suficientes listas disponibles en las categorías seleccionadas para que funcione el minijuego; se usarán todas las listas por defecto.",
     "tooManyHints": "¿Qué? ¿Otra pista? Voy a ignorar esa solicitud.",
     "hintCooldown": "Tranquilízate con las pistas, espera {{seconds}} segundos más.",
     "playerNotFound": "Jugador no encontrado.",

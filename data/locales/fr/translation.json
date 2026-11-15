@@ -262,8 +262,6 @@
     "noContact": "Je ne parviens pas à vous joindre ici, {{name}}. Veuillez rejoindre le <a href=\"https://t.me/tenthings\">Supergroupe Ten Things</a> et mentionner un administrateur, ou contactez-moi directement : @FlandersBurger",
     "thankYou": "Merci, {{name}}",
     "contactDirectly": "Veuillez me signaler directement tout problème lié à votre chat : @FlandersBurger",
-    "noListsForLanguage": "Nombre insuffisant de listes dans les langues choisies pour le fonctionnement du mini-jeu ; utilisation de l'anglais par défaut.",
-    "noListsForCategory": "Nombre insuffisant de listes dans les catégories choisies pour le fonctionnement du mini-jeu ; utilisation de toutes les listes par défaut.",
     "tooManyHints": "Quoi ? Un autre indice ? Je vais simplement ignorer cette requête.",
     "hintCooldown": "Du calme avec les indices, attendez {{seconds}} secondes de plus.",
     "playerNotFound": "Joueur introuvable.",

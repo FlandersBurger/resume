@@ -262,8 +262,6 @@
     "noContact": "Saya tidak dapat menghubungi Anda di sini, {{name}}. Silakan bergabung dengan <a href=\"https://t.me/tenthings\">Supergrup Ten Things</a> dan ping admin di sana, atau hubungi saya langsung -> @FlandersBurger",
     "thankYou": "Terima kasih, {{name}}",
     "contactDirectly": "Silakan beri tahu saya langsung jika ada masalah dengan obrolan spesifik Anda -> @FlandersBurger",
-    "noListsForLanguage": "Tidak cukup daftar yang tersedia dalam bahasa pilihan Anda untuk membuat minigame berfungsi, default ke bahasa Inggris",
-    "noListsForCategory": "Tidak cukup daftar yang tersedia dalam kategori pilihan Anda untuk membuat minigame berfungsi, default ke semua daftar",
     "tooManyHints": "Apa? Petunjuk lain? Aku akan mengabaikan permintaan itu saja",
     "hintCooldown": "Tenang dengan petunjuknya, tunggu {{seconds}} detik lagi",
     "playerNotFound": "Pemain tidak ditemukan",

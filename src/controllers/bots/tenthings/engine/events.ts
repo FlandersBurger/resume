@@ -52,8 +52,7 @@ export type EngineEvent =
   | { type: "skipAborted"; playerName: string; vetoDelay: number }
   | { type: "skipNotFound"; playerName: string }
   // ── Minigame and Tinygame (their Hints and Skips reuse hintRefused and skipThrottled) ──
-  /** `fallback`: no puzzle fit the Game's languages or categories, so an English one was drawn. */
-  | { type: "sideGameStarted"; sideGame: SideGame; fallback?: "language" | "category" }
+  | { type: "sideGameStarted"; sideGame: SideGame }
   | { type: "sideGameShown"; sideGame: SideGame }
   | { type: "sideGameHintGiven"; sideGame: SideGame }
   | { type: "sideGameGuessed"; sideGame: SideGame; answer: string; playerId: string; score: number; accuracy: string }

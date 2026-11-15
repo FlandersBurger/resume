@@ -12,30 +12,16 @@ import { IMinigame } from "@models/tenthings/minigame";
 import { parseSymbols } from "@utils/string-helpers";
 
 /**
- * Draws a new Minigame onto `game` (unsaved). Returns the fallback taken when nothing fit the
- * Game's languages or categories.
+ * Draws a new Minigame onto `game` (unsaved): one in the Game's languages and enabled
+ * categories, or any Minigame when none fits.
  */
-export const drawMinigame = async (game: IGame): Promise<"language" | "category" | undefined> => {
-  let fallback: "language" | "category" | undefined;
+export const drawMinigame = async (game: IGame) => {
   const availableLanguages =
     game.settings.languages && game.settings.languages.length > 0 ? game.settings.languages : ["EN"];
-  let minigame = await sampleMinigame({
+  const minigame = await sampleMinigame({
     categories: { $nin: game.disabledCategories },
     language: { $in: availableLanguages },
   });
-  if (!minigame) {
-    minigame = await sampleMinigame({
-      categories: { $nin: game.disabledCategories },
-      language: "EN",
-    });
-    if (minigame) fallback = "language";
-  }
-  if (!minigame) {
-    minigame = await sampleMinigame({
-      language: "EN",
-    });
-    if (minigame) fallback = "category";
-  }
   if (!minigame) throw new Error("No Minigames");
 
   game.minigame.answer = minigame.answer;
@@ -43,7 +29,6 @@ export const drawMinigame = async (game: IGame): Promise<"language" | "category"
   game.minigame.date = moment().toDate();
   game.minigame.lists = sampleSize(minigame.lists, 10);
   game.minigame.nextHintAt = undefined;
-  return fallback;
 };
 
 type Answer = {
@@ -129,6 +114,6 @@ export const updateMinigames = async () => {
 /** One random Minigame matching `parameters`, picked inside Mongo rather than loading them all. */
 const sampleMinigame = async (parameters: QueryOptions): Promise<IMinigame | undefined> => {
   const [minigame] = await Minigame.aggregate<IMinigame>([{ $match: parameters }, { $sample: { size: 1 } }]);
-  // As before: nothing matching means any Minigame at all.
+  // Nothing matching means any Minigame at all.
   return minigame ?? (await Minigame.aggregate<IMinigame>([{ $sample: { size: 1 } }]))[0];
 };
