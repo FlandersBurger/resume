@@ -7,7 +7,7 @@ import maxBy from "lodash/maxBy";
 import uniqBy from "lodash/uniqBy";
 import uniq from "lodash/uniq";
 import { SYSTEM_ACTOR } from "./engine/actions";
-import { dispatch } from "./engine/queue";
+import { dispatchSpaced } from "./engine/queue";
 import { IGame } from "@models/tenthings/game";
 import { makeReadable } from "@root/utils/number-helpers";
 import { HydratedDocument, Types } from "mongoose";
@@ -43,8 +43,9 @@ const resetDailyScore = async () => {
       .lean()
       .select("_id id")
       .exec();
-    // Each Game's day ends in the Engine, in line with its Guesses (ADR-0002).
-    for (const game of games) await dispatch({ type: "endDay", gameId: String(game._id), actor: SYSTEM_ACTOR });
+    // Each Game's day ends in the Engine, in line with its Guesses (ADR-0002), spread out so
+    // hundreds of them don't hold up every Guess.
+    await dispatchSpaced(games.map((game) => ({ type: "endDay", gameId: String(game._id), actor: SYSTEM_ACTOR })));
     try {
       await updateDailyStats(games, dailyPlayers.length, uniqBy(dailyPlayers, (player) => player.id).length);
     } catch (error) {
@@ -437,8 +438,14 @@ const deactivateInactiveChats = () => {
   })
     .select("_id")
     .then((games: HydratedDocument<IGame>[]) => {
-      for (const game of games)
-        dispatch({ type: "deactivate", gameId: String(game._id), actor: SYSTEM_ACTOR, reason: "inactive" });
+      dispatchSpaced(
+        games.map((game) => ({
+          type: "deactivate",
+          gameId: String(game._id),
+          actor: SYSTEM_ACTOR,
+          reason: "inactive",
+        })),
+      );
       if (games.length > 0) bot.notifyAdmin(`${games.length} inactive chats deactivated`);
     });
 };

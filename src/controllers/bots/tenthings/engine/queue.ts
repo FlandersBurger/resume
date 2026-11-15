@@ -46,6 +46,20 @@ export const bullScheduler: Scheduler = {
   schedule: (action, delayMs) => engineQueue.add({ kind: "action", action, origin: {} }, { delay: delayMs }),
 };
 
+/** The gap between Actions dispatched in bulk: a Guess arriving meanwhile waits behind one at most. */
+export const BULK_ACTION_GAP_MS = 100;
+
+/**
+ * Queue many Actions at once (the end of the day for every Game), spread `gapMs` apart rather
+ * than all queued ahead of every Game's Guesses.
+ */
+export const dispatchSpaced = (actions: Action[], gapMs = BULK_ACTION_GAP_MS) =>
+  Promise.all(
+    actions.map((action, i) =>
+      engineQueue.add({ kind: "action", action, origin: {} }, i === 0 ? undefined : { delay: i * gapMs }),
+    ),
+  );
+
 export const queueGuessJob = (guess: Guess) => engineQueue.add({ kind: "guess", guess });
 
 /** Jobs waiting in the queue: watch this to know whether one-at-a-time still keeps up. */
