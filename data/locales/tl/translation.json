@@ -246,7 +246,8 @@
     "updatedListsHeading": "<b>Mga na-update na listahan</b>",
     "listUpdatesOptOut": "I-off ang mga update na ito sa pamamagitan ng /settings",
     "discordPromo": "Nasa Discord din ang Ten Things! May mga kaibigan ka ba o komunidad doon? <a href=\"{{url}}\">Idagdag ang Ten Things sa iyong Discord server</a> at maglaro nang sama-sama.",
-    "addListYourself": "💡 Maaari mo itong idagdag sa Ten Things mismo: mag-log in sa <a href=\"{{url}}\">belgocanadian.com/tenthings-lists</a> at pindutin ang \"Bagong listahan\"."
+    "addListYourself": "💡 Maaari mo itong idagdag sa Ten Things mismo: mag-log in sa <a href=\"{{url}}\">belgocanadian.com/tenthings-lists</a> at pindutin ang \"Bagong listahan\".",
+    "alsoCorrect": "Tama rin:"
   },
   "warnings": {
     "minimum1Category": "Kinakailangan ng hindi kukulangin sa 1 kategorya",
@@ -294,5 +295,29 @@
   "skipDelay": "Laktawan ang pagkaantala",
   "vetoDelay": "Pagkaantala ng veto",
   "triviaLangauges": "Mga trivia na wika\n#___#\nPahiwatig na pagkaantala\n#___#\nOras hanggang sa malaktawan ang isang listahan\n#___#\nOras hanggang ang isang bagong paglaktaw ay pinapayagan pagkatapos ma-veto\n#___#\nOras hanggang pinapayagan ang isang bagong pahiwatig",
-  "hintDelay": "Pahiwatig na pagkaantala"
+  "hintDelay": "Pahiwatig na pagkaantala",
+  "pity": "awa",
+  "pityAnswers": "Mga sagot na awa",
+  "pityGuessed": [
+    "Tama si {{answer}}, wala lang sa listahan ngayon. May awa, {{guesser}}!",
+    "Magandang desisyon, {{guesser}}! Binibilang si {{answer}}, wala lang sa napiling sampu",
+    "Nasa buong listahan si {{answer}},{{guesser}}. Kumuha ng awa",
+    "Wala sa round na ito, pero hindi rin mali. Awa para kay {{answer}}, {{guesser}}",
+    "Malalim na pinaghirapan ni {{guesser}} si {{answer}}. Iginawad ang awa",
+    "Bonus na nahanap! Tama si {{answer}}, {{guesser}}",
+    "{{answer}}: tamang sagot, maling round. May punto, {{guesser}}",
+    "Wala sa board pero nasa listahan: {{answer}}. Maganda, {{guesser}}",
+    "Tamang listahan, maling sampu, {{guesser}}. May puntos pa rin si {{answer}}",
+    "Nasa bench si {{answer}} ngayong round, si {{guesser}}. May awa sa pagpansin nito",
+    "{{answer}}? Teknikal na tama, si {{guesser}}. Narito ang iyong consolation point",
+    "Nahanap ni {{guesser}} si {{answer}}, ang sagot na walang humiling. May awa",
+    "Malapit nang maging kapaki-pakinabang, si {{guesser}}. May awa si {{answer}}",
+    "Hindi nakapasok si {{answer}}, pero may participation point si {{guesser}}",
+    "Mga puntos para sa pagkamalikhain, si {{guesser}}: Tama si {{answer}}, wala lang dito",
+    "Masyadong maraming alam si {{guesser}}. Hindi napili si {{answer}} sa pagkakataong ito",
+    "Hipster pick, {{guesser}}: Tama si {{answer}} bago ito naging cool",
+    "{{answer}}, {{guesser}}? Ang lalim ng hiwa. May awa ka na",
+    "Magandang pagsubok, {{guesser}}: Nabibilang si {{answer}}, pero kaunti lang",
+    "Lumabagal ang pagkakasulat ni {{guesser}} kay {{answer}}. Tama pa rin, kaya +1"
+  ]
 }

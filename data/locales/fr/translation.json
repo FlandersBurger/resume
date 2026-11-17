@@ -246,7 +246,8 @@
     "updatedListsHeading": "<b>Listes mises à jour</b>",
     "listUpdatesOptOut": "Désactivez ces mises à jour via /settings",
     "discordPromo": "Ten Things est aussi sur Discord ! Vous avez des amis ou une communauté là-bas ? <a href=\"{{url}}\">Ajoutez Ten Things à votre serveur Discord</a> et jouez ensemble.",
-    "addListYourself": "💡 Vous pouvez l'ajouter vous-même à Ten Things : connectez-vous sur <a href=\"{{url}}\">belgocanadian.com/tenthings-lists</a> et cliquez sur \"Nouvelle liste\"."
+    "addListYourself": "💡 Vous pouvez l'ajouter vous-même à Ten Things : connectez-vous sur <a href=\"{{url}}\">belgocanadian.com/tenthings-lists</a> et cliquez sur \"Nouvelle liste\".",
+    "alsoCorrect": "Aussi correct :"
   },
   "warnings": {
     "minimum1Category": "Un minimum d'une catégorie est requis",
@@ -294,5 +295,29 @@
   "skipDelay": "Délai de saut",
   "vetoDelay": "Délai de veto",
   "hintDelay": "Délai d'indice",
-  "triviaLangauges": "Anecdotes sur les langues"
+  "triviaLangauges": "Anecdotes sur les langues",
+  "pity": "Point de consolation",
+  "pityAnswers": "Réponses de consolation",
+  "pityGuessed": [
+    "{{answer}} est correct, mais ne figure pas dans la liste d'aujourd'hui. Bravo, {{guesser}} !",
+    "Bien vu, {{guesser}} ! {{answer}} compte, mais ne fait pas partie des dix sélectionnés.",
+    "{{answer}} était dans la liste complète, {{guesser}}. Point de consolation.",
+    "Pas dans ce tour, mais pas faux non plus. Point de consolation pour {{answer}} et {{guesser}}.",
+    "{{guesser}} a bien cherché avec {{answer}}. Point de consolation attribué.",
+    "Bonus ! {{answer}} est correct, {{guesser}}.",
+    "{{answer}} : bonne réponse, mauvais tour. Point, {{guesser}}.",
+    "Hors du plateau, mais dans la liste : {{answer}}. Bien joué, {{guesser}}",
+    "Bonne liste, dix mauvaises réponses, {{guesser}}. {{answer}} te vaut quand même un point.",
+    "{{answer}} était sur le banc ce tour-ci, {{guesser}}. Point de consolation pour l'avoir repéré.",
+    "{{answer}} ? Techniquement correct, {{guesser}}. Voici ton point de consolation.",
+    "{{guesser}} a trouvé {{answer}}, la réponse que personne n'a demandée. Point de consolation.",
+    "Si près d'être utile, {{guesser}}. {{answer}} te vaut un point de consolation.",
+    "{{answer}} n'a pas été retenu, mais {{guesser}} obtient un point de participation.",
+    "Points pour la créativité, {{guesser}} : {{answer}} a raison, mais pas ici.",
+    "{{guesser}} en sait trop. {{answer}} n'a pas été choisi cette fois-ci.\n#__# Choix hipster, {{guesser}} : {{answer}} avait raison avant que ce soit à la mode.",
+    "{{answer}}, {{guesser}} ? La référence pointue. On mérite un point de consolation.",
+    "Bien essayé, {{guesser}} : {{answer}} compte, mais de peu.",
+    "{{guesser}} a improvisé avec {{answer}}. Il a quand même raison, donc +1.",
+    null
+  ]
 }

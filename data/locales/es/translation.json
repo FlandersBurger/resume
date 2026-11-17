@@ -246,7 +246,8 @@
     "updatedListsHeading": "<b>Listas actualizadas</b>",
     "listUpdatesOptOut": "Desactiva estas actualizaciones a través de /settings",
     "discordPromo": "¡Ten Things también está en Discord! ¿Tienes amigos o una comunidad allí? <a href=\"{{url}}\">Añade Ten Things a tu servidor de Discord</a> y jueguen juntos.",
-    "addListYourself": "💡 Puedes agregarlo tú mismo a Ten Things: inicia sesión en <a href=\"{{url}}\">belgocanadian.com/tenthings-lists</a> y haz clic en \"Nueva lista\"."
+    "addListYourself": "💡 Puedes agregarlo tú mismo a Ten Things: inicia sesión en <a href=\"{{url}}\">belgocanadian.com/tenthings-lists</a> y haz clic en \"Nueva lista\".",
+    "alsoCorrect": "También correctas:"
   },
   "warnings": {
     "minimum1Category": "Se requiere un mínimo de 1 categoría",
@@ -294,5 +295,29 @@
   "skipDelay": "Retraso de salto",
   "vetoDelay": "Retraso de veto",
   "hintDelay": "Retraso de sugerencia",
-  "triviaLangauges": "Curiosidades sobre idiomas"
+  "triviaLangauges": "Curiosidades sobre idiomas",
+  "pity": "¡Qué lástima!",
+  "pityAnswers": "Respuestas de lástima",
+  "pityGuessed": [
+    "{{answer}} es correcta, pero no está en la lista de hoy. ¡Un punto por lástima para {{guesser}}!",
+    "¡Bien hecho, {{guesser}}! {{answer}} cuenta, pero no está entre las diez elegidas.",
+    "{{answer}} estaba en la lista completa, {{guesser}}. ¡Un punto por lástima!",
+    "No está en esta ronda, pero tampoco está mal. Punto por lástima para {{answer}}, {{guesser}}.",
+    "{{guesser}} se esfuerza al máximo con {{answer}}. Punto por lástima otorgado.",
+    "¡Hallazgo extra! {{answer}} es correcta, {{guesser}}.",
+    "{{answer}}: respuesta correcta, ronda incorrecta. ¡Un punto para {{guesser}}!",
+    "Fuera del tablero, pero en la lista: {{answer}}. ¡Bien hecho, {{guesser}}!",
+    "Lista correcta, diez incorrectos, {{guesser}}. {{answer}} aún te da un punto.",
+    "{{answer}} estuvo en el banquillo esta ronda, {{guesser}}. Punto por lástima por detectarlo.",
+    "{{answer}}? Técnicamente correcto, {{guesser}}. Aquí tienes tu punto de consolación.",
+    "{{guesser}} encontró {{answer}}, la respuesta que nadie pidió. Punto por lástima.",
+    "Casi fue útil, {{guesser}}. {{answer}} te da un punto por lástima.",
+    "{{answer}} no pasó el corte, pero {{guesser}} obtiene un punto por participación.",
+    "Puntos por creatividad, {{guesser}}: {{answer}} tiene razón, solo que no aquí.",
+    "{{guesser}} sabe demasiado. {{answer}} no fue elegida esta vez",
+    "Elección hipster, {{guesser}}: {{answer}} era correcta antes de que se pusiera de moda",
+    "{{answer}}, {{guesser}}? La joya oculta. Un punto de lástima",
+    "Buen intento, {{guesser}}: {{answer}} cuenta, pero solo un poco",
+    "{{guesser}} se salió del guion con {{answer}}. Sigue siendo correcta, así que +1"
+  ]
 }

@@ -246,7 +246,8 @@
     "updatedListsHeading": "<b>Listas atualizadas</b>",
     "listUpdatesOptOut": "Desative essas atualizações em /settings",
     "discordPromo": "O Ten Things também está no Discord! Tem amigos ou uma comunidade por lá? <a href=\"{{url}}\">Adicione o Ten Things ao seu servidor do Discord</a> e joguem juntos.",
-    "addListYourself": "💡 Você pode adicioná-lo à lista Dez Coisas você mesmo: faça login em <a href=\"{{url}}\">belgocanadian.com/tenthings-lists</a> e clique em \"Nova lista\"."
+    "addListYourself": "💡 Você pode adicioná-lo à lista Dez Coisas você mesmo: faça login em <a href=\"{{url}}\">belgocanadian.com/tenthings-lists</a> e clique em \"Nova lista\".",
+    "alsoCorrect": "Também correto:"
   },
   "warnings": {
     "minimum1Category": "É necessário pelo menos 1 categoria",
@@ -294,5 +295,29 @@
   "skipDelay": "Atraso de pular",
   "vetoDelay": "Atraso de veto",
   "hintDelay": "Atraso de dica",
-  "triviaLangauges": "Curiosidades sobre idiomas"
+  "triviaLangauges": "Curiosidades sobre idiomas",
+  "pity": "Ponto de pena",
+  "pityAnswers": "Respostas de pena",
+  "pityGuessed": [
+    "{{answer}} está correto, mas não está na lista de hoje. Um ponto de pena, {{guesser}}!",
+    "Boa escolha, {{guesser}}! {{answer}} conta, mas não está entre as dez escolhidas.",
+    "{{answer}} estava na lista completa, {{guesser}}. Um ponto de pena concedido.",
+    "Não está nesta rodada, mas também não está errado. Ponto de pena para {{answer}} e {{guesser}}.",
+    "{{guesser}} se esforça bastante com {{answer}}. Ponto de pena concedido.",
+    "Descoberta bônus! {{answer}} está correto, {{guesser}}.",
+    "{{answer}}: resposta correta, rodada errada. Você tem um ponto, {{guesser}}",
+    "Fora do quadro, mas na lista: {{answer}}. Boa, {{guesser}}",
+    "Lista certa, dez errados, {{guesser}}. {{answer}} ainda te dá um ponto",
+    "{{answer}} estava no banco nesta rodada, {{guesser}}. Ponto de consolação por ter percebido",
+    "{{answer}}? Tecnicamente correto, {{guesser}}. Aqui está seu ponto de consolação",
+    "{{guesser}} encontrou {{answer}}, a resposta que ninguém pediu. Ponto de consolação",
+    "Tão perto de ser útil, {{guesser}}. {{answer}} te dá um ponto de pena",
+    "{{answer}} não foi selecionado, mas {{guesser}} ganha um ponto de participação",
+    "Pontos pela criatividade, {{guesser}}: {{answer}} está certo, só não aqui",
+    "{{guesser}} sabe demais. {{answer}} não foi escolhido desta vez",
+    "Escolha hipster, {{guesser}}: {{answer}} estava certo antes de ser moda",
+    "{{answer}}, {{guesser}}? A escolha obscura. Ganhe um ponto de pena",
+    "Boa tentativa, {{guesser}}: {{answer}} conta, mas só um pouquinho",
+    "{{guesser}} saiu do roteiro com {{answer}}. Ainda está certo, então +1"
+  ]
 }

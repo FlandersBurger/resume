@@ -246,7 +246,8 @@
     "updatedListsHeading": "<b>Daftar yang diperbarui</b>",
     "listUpdatesOptOut": "Matikan pembaruan ini melalui /settings",
     "discordPromo": "Ten Things juga ada di Discord! Punya teman atau komunitas di sana? <a href=\"{{url}}\">Tambahkan Ten Things ke server Discord Anda</a> dan bermain bersama.",
-    "addListYourself": "💡 Anda dapat menambahkannya sendiri ke Sepuluh Hal: masuk di <a href=\"{{url}}\">belgocanadian.com/tenthings-lists</a> dan klik \"Daftar baru\"."
+    "addListYourself": "💡 Anda dapat menambahkannya sendiri ke Sepuluh Hal: masuk di <a href=\"{{url}}\">belgocanadian.com/tenthings-lists</a> dan klik \"Daftar baru\".",
+    "alsoCorrect": "Juga benar:"
   },
   "warnings": {
     "minimum1Category": "Setidaknya 1 kategori diperlukan",
@@ -294,5 +295,29 @@
   "skipDelay": "Penundaan lewati",
   "vetoDelay": "Penundaan veto",
   "hintDelay": "Penundaan petunjuk",
-  "triviaLangauges": "Bahasa Trivia"
+  "triviaLangauges": "Bahasa Trivia",
+  "pity": "Kasihan",
+  "pityAnswers": "Jawaban kasihan",
+  "pityGuessed": [
+    "{{answer}} benar, hanya saja tidak ada dalam daftar hari ini. Dapatkan poin kasihan, {{guesser}}!",
+    "Pilihan bagus, {{guesser}}! {{answer}} dihitung, hanya saja tidak termasuk dalam sepuluh yang dipilih",
+    "{{answer}} ada dalam daftar lengkap, {{guesser}}. Dapatkan poin kasihan",
+    "Tidak di ronde ini, tetapi juga tidak salah. Poin kasihan untuk {{answer}}, {{guesser}}",
+    "{{guesser}} menggali lebih dalam dengan {{answer}}. Poin kasihan diberikan",
+    "Temuan bonus! {{answer}} benar, {{guesser}}",
+    "{{answer}}: jawaban benar, ronde salah. Dapatkan poin, {{guesser}}",
+    "Tidak ada di papan tetapi ada dalam daftar: {{answer}}. Bagus sekali, {{guesser}}",
+    "Daftar yang benar, sepuluh yang salah, {{guesser}}. {{answer}} tetap memberimu satu poin",
+    "{{answer}} ada di bangku cadangan putaran ini, {{guesser}}. Poin belasungkawa karena menemukannya",
+    "{{answer}}? Secara teknis benar, {{guesser}}. Ini poin hiburanmu",
+    "{{guesser}} menemukan {{answer}}, jawaban yang tidak diminta siapa pun. Poin belasungkawa",
+    "Hampir bermanfaat, {{guesser}}. {{answer}} memberimu poin belasungkawa",
+    "{{answer}} tidak lolos seleksi, tetapi {{guesser}} mendapat poin partisipasi",
+    "Poin untuk kreativitas, {{guesser}}: {{answer}} benar, hanya saja tidak di sini",
+    "{{guesser}} tahu terlalu banyak. {{answer}} tidak terpilih kali ini",
+    "Pilihan hipster, {{guesser}}: {{answer}} benar sebelum menjadi tren",
+    "{{answer}}, {{guesser}}? Pilihan yang jarang dibahas. Ada poin belas kasihan",
+    "Usaha yang bagus, {{guesser}}: {{answer}} dihitung, tetapi hanya sedikit",
+    "{{guesser}} menyimpang dari skrip dengan {{answer}}. Tetap benar, jadi +1"
+  ]
 }

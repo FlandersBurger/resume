@@ -246,7 +246,8 @@
     "updatedListsHeading": "<b>업데이트된 목록</b>",
     "listUpdatesOptOut": "/settings 에서 이 업데이트를 끌 수 있습니다",
     "discordPromo": "Ten Things는 Discord에서도 즐길 수 있습니다! Discord에 친구나 커뮤니티가 있나요? <a href=\"{{url}}\">Ten Things를 Discord 서버에 추가하고</a> 함께 플레이하세요.",
-    "addListYourself": "💡 직접 Ten Things에 추가하려면 <a href=\"{{url}}\">belgocanadian.com/tenthings-lists</a>에 로그인하고 \"새 목록\"을 클릭하세요."
+    "addListYourself": "💡 직접 Ten Things에 추가하려면 <a href=\"{{url}}\">belgocanadian.com/tenthings-lists</a>에 로그인하고 \"새 목록\"을 클릭하세요.",
+    "alsoCorrect": "또한 정답:"
   },
   "warnings": {
     "minimum1Category": "최소 1개 카테고리가 필요합니다.",
@@ -294,5 +295,29 @@
   "skipDelay": "스킵 지연",
   "vetoDelay": "거부 지연",
   "hintDelay": "힌트 지연",
-  "triviaLangauges": "잡학 언어"
+  "triviaLangauges": "잡학 언어",
+  "pity": "안타까움",
+  "pityAnswers": "안타까움 답변",
+  "pityGuessed": [
+    "{{answer}}은 맞지만 오늘의 목록에는 없습니다. 안타까움 점수 1점, {{guesser}}!",
+    "잘 맞췄어요, {{guesser}}! {{answer}}은 맞지만 선택된 10개에는 없습니다.",
+    "{{answer}}은 전체 목록에 있었습니다, {{guesser}}. 안타까움 점수 1점",
+    "이번 라운드에는 없지만 틀린 것도 아닙니다. 안타까움 점수 1점, {{answer}}, {{guesser}}",
+    "{{guesser}}은 {{answer}}를 잘 찾아냈습니다. 안타까움 점수 1점",
+    "보너스 발견! {{answer}}이 맞습니다, {{guesser}}",
+    "{{answer}}: 정답이지만 이번 라운드에는 없습니다. 점수 1점, {{guesser}}",
+    "목록에는 있지만 보드에는 없는 것: {{answer}}. 잘했어, {{guesser}}",
+    "목록은 맞았는데 10개 틀렸네, {{guesser}}. {{answer}} 그래도 1점 줄게.",
+    "{{answer}}은 이번 라운드에서 벤치에 앉아 있었네, {{guesser}}. 알아맞혀서 미안한 마음에 1점 줄게.",
+    "{{answer}}? 기술적으로는 맞았네, {{guesser}}. 위로 점수 줄게.",
+    "{{guesser}}은 아무도 묻지 않은 답인 {{answer}}을 찾았네. 미안한 마음에 1점 줄게.",
+    "유용해질 뻔했는데, {{guesser}}. {{answer}} 미안한 마음에 1점 줄게.",
+    "{{answer}}은 탈락했지만, {{guesser}}은 참여 점수 줄게.",
+    "창의력 점수 줬어, {{guesser}}: {{answer}}은 맞았지만, 여기서는 아니었네.",
+    "{{guesser}}은 너무 많이 알고 있네. {{answer}}은 이번에는 선택되지 않았습니다.",
+    "힙스터 선택, {{guesser}}: {{answer}}은 유행하기 전에 이미 정답이었습니다.",
+    "{{answer}}, {{guesser}}? 숨겨진 정답이네요. 동정 점수 하나 드립니다.",
+    "잘했어요, {{guesser}}: {{answer}}도 맞지만, 아주 조금만 맞습니다.",
+    "{{guesser}}은 {{answer}}에서 틀렸지만, 그래도 맞으니 +1점 드립니다."
+  ]
 }

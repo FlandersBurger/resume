@@ -250,7 +250,8 @@
     "updatedListsHeading": "<b>更新されたリスト</b>",
     "listUpdatesOptOut": "/settings でこれらの通知をオフにできます",
     "discordPromo": "Ten ThingsはDiscordにもあります！友達やコミュニティはありますか？<a href=\"{{url}}\">Ten ThingsをDiscordサーバー</a>に追加して一緒にプレイしましょう。",
-    "addListYourself": "💡 ご自身で Ten Things に追加することもできます。<a href=\"{{url}}\">belgocanadian.com/tenthings-lists</a> にログインして、「新しいリスト」をクリックしてください。"
+    "addListYourself": "💡 ご自身で Ten Things に追加することもできます。<a href=\"{{url}}\">belgocanadian.com/tenthings-lists</a> にログインして、「新しいリスト」をクリックしてください。",
+    "alsoCorrect": "正解："
   },
   "warnings": {
     "minimum1Category": "最低1つのカテゴリが必要です",
@@ -294,5 +295,29 @@
     "スキップが拒否された場合、新しいスキップは15秒間無視されます。",
     "毎日午前0時（協定世界時）に、その日のスコアがリセットされ、勝者が記録されます。",
     "スパム投稿者は、少なくとも10秒間沈黙するまで無視されます。"
+  ],
+  "pity": "残念",
+  "pityAnswers": "残念回答",
+  "pityGuessed": [
+    "{{answer}} は正解ですが、今日のリストには含まれていません。残念ポイントを差し上げます、{{guesser}}！",
+    "ナイスコール、{{guesser}}！ {{answer}} は正解ですが、選ばれた10個には含まれていません。",
+    "{{answer}} はリストに含まれていました、{{guesser}}。残念ポイントを差し上げます。",
+    "今回のラウンドには含まれていませんが、間違いでもありません。{{answer}}、{{guesser}} に残念ポイントを差し上げます。",
+    "{{guesser}} は{{answer}} で深みを出しました。残念ポイントを差し上げます。",
+    "ボーナス発見！ {{answer}} は正解です、{{guesser}}",
+    "{{answer}}：正解ですが、ラウンドが違います。ポイントを差し上げます、{{guesser}}",
+    "ボード外ですが、リストに含まれています：{{answer}}。ナイスコール、{{guesser}}",
+    "リストは合っていますが、10個が違います、{{guesser}}。 {{answer}} はそれでもポイント獲得",
+    "{{answer}} は今ラウンドはベンチ入りでした、{{guesser}}。見つけたお情けポイント",
+    "{{answer}}? 技術的には正解です、{{guesser}}。慰めのポイントを差し上げます",
+    "{{guesser}} は誰も求めていない答え {{answer}} を見つけました。お情けポイント",
+    "惜しかったですね、{{guesser}}。{{answer}} お情けポイント",
+    "{{answer}} は選ばれませんでしたが、{{guesser}} は参加ポイントを獲得",
+    "創造性ポイント、{{guesser}}: {{answer}} は正解ですが、ここでは違います",
+    "{{guesser}} は知識が豊富すぎます。{{answer}} は今回は選ばれませんでした",
+    "ヒップスターのチョイス、{{guesser}}: {{answer}} は流行る前から正解でした",
+    "{{answer}}、{{guesser}}? ディープカット。同情ポイントを差し上げます",
+    "いい試みでしたね、{{guesser}}: {{answer}}はカウントされますが、ほんの少しだけです",
+    "{{guesser}}は{{answer}}で台本から外れました。それでも正解なので、+1です"
   ]
 }

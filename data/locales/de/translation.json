@@ -246,7 +246,8 @@
     "updatedListsHeading": "<b>Aktualisierte Listen</b>",
     "listUpdatesOptOut": "Schalte diese Updates über /settings aus",
     "discordPromo": "Ten Things ist auch auf Discord! Hast du dort Freunde oder eine Community? <a href=\"{{url}}\">Füge Ten Things deinem Discord-Server hinzu</a> und spielt zusammen.",
-    "addListYourself": "💡 Sie können es selbst zu Ten Things hinzufügen: Melden Sie sich unter <a href=\"{{url}}\">belgocanadian.com/tenthings-lists</a> an und klicken Sie auf \"Neue Liste\"."
+    "addListYourself": "💡 Sie können es selbst zu Ten Things hinzufügen: Melden Sie sich unter <a href=\"{{url}}\">belgocanadian.com/tenthings-lists</a> an und klicken Sie auf \"Neue Liste\".",
+    "alsoCorrect": "Auch richtig:"
   },
   "warnings": {
     "minimum1Category": "Mindestens 1 Kategorie ist erforderlich",
@@ -294,5 +295,29 @@
   "skipDelay": "Verzögerung überspringen",
   "vetoDelay": "Veto-Verzögerung",
   "hintDelay": "Hinweis-Verzögerung",
-  "triviaLangauges": "Trivia-Sprachen"
+  "triviaLangauges": "Trivia-Sprachen",
+  "pity": "Schade",
+  "pityAnswers": "Schadeantworten",
+  "pityGuessed": [
+    "{{answer}} ist richtig, nur nicht auf der heutigen Liste. Ein Schadepunkt für {{guesser}}!\n\n#__# Gut gewählt, {{guesser}}! {{answer}} zählt, ist aber nicht unter den zehn ausgewählten Antworten.",
+    "{{answer}} war auf der vollständigen Liste, {{guesser}}. Ein Schadepunkt.\n\nNicht in dieser Runde, aber auch nicht falsch. Schadepunkt für {{answer}}, {{guesser}}.",
+    "{{guesser}} gräbt tief mit {{answer}}. Schadepunkt vergeben.\n\nBonusfund! {{answer}} ist richtig, {{guesser}}.",
+    "{{answer}}: Richtige Antwort, falsche Runde. Ein Punkt für {{guesser}}.\n\nNicht auf dem Brett, aber auf der Liste: {{answer}}. Gut gemacht, {{guesser}}.\n\n#__# Richtige Liste, falsche zehn Antworten, {{guesser}}. {{answer}} bringt dir immer noch einen Punkt.",
+    "{{answer}} war diese Runde auf der Bank, {{guesser}}. Ein Trostpunkt fürs Erkennen.",
+    "{{answer}}? Streng genommen korrekt, {{guesser}}. Hier ist dein Trostpunkt.",
+    "{{guesser}} hat {{answer}} gefunden, die Antwort, nach der niemand gefragt hat. Ein Trostpunkt.",
+    "So nah dran, nützlich zu sein, {{guesser}}. {{answer}} bringt dir einen Trostpunkt.",
+    "{{answer}} hat es nicht in die engere Auswahl geschafft, aber {{guesser}} erhält einen Teilnahmepunkt.\n#__# Punkte für Kreativität, {{guesser}}: {{answer}} ist richtig, nur nicht hier.",
+    "{{guesser}} weiß zu viel. {{answer}} wurde dieses Mal nicht ausgewählt.\n#__# Hipster-Tipp, {{guesser}}: {{answer}} war richtig, bevor es cool war.",
+    "{{answer}}, {{guesser}}? Die Geheimtipps. Ein Mitleidspunkt\n#__# Guter Versuch, {{guesser}}: {{answer}} zählt, aber nur ein bisschen\n#__# {{guesser}} ist mit {{answer}} vom Skript abgewichen. Immer noch richtig, also +1",
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null
+  ]
 }

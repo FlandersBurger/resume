@@ -246,7 +246,8 @@
     "newListsHeading": "<b>Nieuwe lijsten</b>",
     "updatedListsHeading": "<b>Bijgewerkte lijsten</b>",
     "listUpdatesOptOut": "Zet deze updates uit via /settings",
-    "discordPromo": "Ten Things is ook op Discord! Heb je daar vrienden of een community? <a href=\"{{url}}\">Voeg Ten Things toe aan je Discord-server</a> en speel samen."
+    "discordPromo": "Ten Things is ook op Discord! Heb je daar vrienden of een community? <a href=\"{{url}}\">Voeg Ten Things toe aan je Discord-server</a> en speel samen.",
+    "alsoCorrect": "Ook correct:"
   },
   "warnings": {
     "minimum1Category": "Minimaal 1 categorie is vereist",
@@ -294,5 +295,29 @@
   "skipDelay": "Skipvertraging",
   "vetoDelay": "Vetovertraging",
   "hintDelay": "Hintvertraging",
-  "triviaLangauges": "Trivia-talen"
+  "triviaLangauges": "Trivia-talen",
+  "pity": "jammer",
+  "pityAnswers": "Antwoorden voor jammer",
+  "pityGuessed": [
+    "{{answer}} heeft gelijk, maar staat niet op de lijst van vandaag. Een jammerpuntje, {{guesser}}!",
+    "Goed gezien, {{guesser}}! {{answer}} telt mee, maar staat niet in de gekozen tien",
+    "{{answer}} stond op de volledige lijst, {{guesser}}. Een jammerpuntje",
+    "Niet in deze ronde, maar ook niet fout. Jammerpuntje voor {{answer}}, {{guesser}}",
+    "{{guesser}} graaft diep met {{answer}}. Jammerpuntje toegekend",
+    "Bonusvondst! {{answer}} heeft gelijk, {{guesser}}",
+    "{{answer}}: goed antwoord, verkeerde ronde. Je hebt een punt, {{guesser}}",
+    "Buiten het bord, maar wel op de lijst: {{answer}}. Goed zo, {{guesser}}",
+    "Juiste lijst, verkeerde tien, {{guesser}}. {{answer}} levert je nog steeds een punt op",
+    "{{answer}} zat deze ronde op de reservebank, {{guesser}}. Jammerpuntje voor het opmerken ervan",
+    "{{answer}}? Technisch correct, {{guesser}}. Hier is je troostpuntje",
+    "{{guesser}} vond {{answer}}, het antwoord waar niemand om vroeg. Jammerpuntje",
+    "Bijna nuttig, {{guesser}}. {{answer}} levert je een medelijdenpunt op",
+    "{{answer}} heeft de selectie niet gehaald, maar {{guesser}} krijgt een deelnamepunt",
+    "Punten voor creativiteit, {{guesser}}: {{answer}} heeft gelijk, maar niet hier",
+    "{{guesser}} weet te veel. {{answer}} is deze keer niet gekozen",
+    "Hipsterkeuze, {{guesser}}: {{answer}} had gelijk voordat het cool was",
+    "{{answer}}, {{guesser}}? De underdog. Neem een medelijdenpunt",
+    "Goed geprobeerd, {{guesser}}: {{answer}} telt mee, maar slechts een beetje",
+    "{{guesser}} week af van het script met {{answer}}. Nog steeds gelijk, dus +1"
+  ]
 }
