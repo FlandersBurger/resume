@@ -1,4 +1,4 @@
-import { List, GameRound } from "@models/index";
+import { Game, GameRound, List } from "@models/index";
 import { HydratedDocument, QueryOptions, Types } from "mongoose";
 import { IList } from "@models/tenthings/list";
 import { IGame, IGameSettings } from "@models/tenthings/game";
@@ -147,6 +147,25 @@ const getGameHistory = (gameId: Types.ObjectId) => {
     gameHistories.set(key, history);
   }
   return history.get();
+};
+
+/** Games played this recently get their history read at startup, before their next Round asks. */
+const WARM_GAMES_PLAYED_WITHIN_MS = 24 * 60 * 60_000;
+
+/**
+ * Read the List pool and recently played Games' history into memory, one at a time and off the
+ * Engine queue, so the first Round after a restart doesn't wait seconds for them. A Round that
+ * starts meanwhile shares the read already under way.
+ */
+export const warmSelectionCaches = async () => {
+  const startedAt = Date.now();
+  await getListPool();
+  const games = await Game.find({ lastPlayDate: { $gte: new Date(Date.now() - WARM_GAMES_PLAYED_WITHIN_MS) } })
+    .sort({ lastPlayDate: -1 })
+    .select("_id")
+    .lean();
+  for (const { _id } of games) await getGameHistory(_id);
+  console.log(`List selection warmed for ${games.length} Games in ${Date.now() - startedAt}ms`);
 };
 
 /** Forget everything selection keeps in memory (tests, whose Lists and Rounds change between cases). */
