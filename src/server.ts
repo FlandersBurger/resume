@@ -35,6 +35,7 @@ import { initDiscordBot } from "@api/tenthings/discord";
 import { redisConnect, subscribe } from "@root/queue";
 import { WEB_EVENTS_TOPIC, WebEventsMessage } from "@tenthings/providers/web/renderer";
 import { startEngineWorker } from "@tenthings/engine/worker";
+import { warmSelectionCaches } from "@tenthings/lists";
 import bot from "./connections/telegram";
 import { tenthingsWebBotRoute } from "@api/tenthings/web";
 
@@ -94,6 +95,7 @@ server.listen(port, async () => {
   console.log("Server", process.pid, "listening on", port);
   redisConnect();
   startEngineWorker();
+  warmSelectionCaches().catch((error) => console.error("Warming List selection failed", error));
   if (process.env.NODE_ENV === "production") {
     bot.notifyAdmin("<b>Started Ten Things</b>");
     initDiscordBot();

@@ -20,7 +20,9 @@ import {
   resetSelectionCaches,
   searchList,
   selectList,
+  warmSelectionCaches,
 } from "@tenthings/lists";
+import { getLanguageCounts } from "@tenthings/languageCounts";
 import { drawTinygame } from "@tenthings/tinygame";
 import { SupportedLanguage } from "@tenthings/languages";
 import { MEMORY_MONGO_TIMEOUT, openOnMemoryMongo } from "../../../helpers/memoryMongo";
@@ -285,4 +287,47 @@ test("a Game's recent Rounds are read from the index alone", async () => {
     executionStats: { nReturned: number; totalDocsExamined: number };
   };
   expect(explained.executionStats).toMatchObject({ nReturned: 10, totalDocsExamined: 0 });
+});
+
+describe("warming up at startup", () => {
+  // The Game skipped B twice (skip-heavy), behind 16 newer Rounds that took B off cooldown.
+  const skipHeavyB = async (game: Awaited<ReturnType<typeof makeGame>>) => {
+    const [, b, ...filler] = await makeLists([
+      { name: "A" },
+      { name: "B" },
+      ...Array.from({ length: 30 }, (_, i) => ({ name: `F${i}` })),
+    ]);
+    const rounds = [
+      ...[1, 2].map((i) => ({ listId: b._id, outcome: "skipped", playedAt: new Date(Date.now() - 3_600_000 * i) })),
+      ...filler
+        .slice(0, 16)
+        .map((l, i) => ({ listId: l._id, outcome: "completed", playedAt: new Date(Date.now() - 1000 * (i + 1)) })),
+    ];
+    await GameRound.insertMany(rounds.map((r) => ({ ...r, gameId: game._id, language: "EN" })));
+  };
+
+  test("reads the history of Games played in the last day, before their next Round", async () => {
+    const game = await makeGame({ lastPlayDate: new Date() });
+    await skipHeavyB(game);
+    await warmSelectionCaches();
+    // Read before B stopped being skip-heavy: still left out, so it came from the warm-up.
+    await GameRound.deleteMany({ gameId: game._id, outcome: "skipped" });
+    expect(await served(game, 200)).not.toContain("B");
+  });
+
+  test("leaves Games that haven't played lately to their next Round", async () => {
+    const game = await makeGame({ lastPlayDate: new Date(Date.now() - 3 * 24 * 3_600_000) });
+    await skipHeavyB(game);
+    await warmSelectionCaches();
+    await GameRound.deleteMany({ gameId: game._id, outcome: "skipped" });
+    expect(await served(game, 200)).toContain("B");
+  });
+});
+
+test("counts Lists per language, leaving out languages without any", async () => {
+  await makeLists([{ name: "A" }, { name: "B" }, { name: "C", language: "NL" }]);
+  expect(await getLanguageCounts()).toEqual([
+    { _id: "EN", count: 2 },
+    { _id: "NL", count: 1 },
+  ]);
 });
