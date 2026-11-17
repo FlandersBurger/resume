@@ -10,6 +10,7 @@ on:
 
 permissions:
   contents: write
+  actions: write # to start the Build that deploys the translations
 
 env:
   TELEGRAM_TOKEN: ${{ secrets.TELEGRAM_TOKEN }}
@@ -39,12 +40,25 @@ jobs:
         run: npm run translate:verify
 
       - name: Commit translations
+        id: commit
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git add data/locales/
-          git diff --cached --quiet || git commit -m "chore: update translations [skip ci]"
+          if git diff --cached --quiet; then
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+          else
+            git commit -m "chore: update translations [skip ci]"
+            echo "changed=true" >> "$GITHUB_OUTPUT"
+          fi
           git push
+
+      # A push by Actions doesn't start the Build, so the translations would wait for the next deploy.
+      - name: Deploy translations
+        if: steps.commit.outputs.changed == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh workflow run build.yml --ref master -f reason="Deploy translations"
 
       - name: Notify Telegram on failure
         if: failure()
