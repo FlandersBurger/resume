@@ -62,7 +62,7 @@ beforeEach(async () => {
 });
 
 /** A Game with two Players, mid-Round on "Planets" (the only List). */
-const setup = async ({ personal = false } = {}) => {
+const setup = async ({ personal = false, values = [{ value: "Mercury" }, { value: "Venus" }] } = {}) => {
   const game = await Game.create({
     telegramChatId: personal ? 592 : -1001,
     platform: "telegram",
@@ -79,7 +79,7 @@ const setup = async ({ personal = false } = {}) => {
     language: SupportedLanguage.EN,
     categories: ["science"],
     plays: 10,
-    values: [{ value: "Mercury" }, { value: "Venus" }],
+    values,
   });
   const gameId = String(game._id);
   const actorOf = (p: typeof ann): Actor => ({ playerId: String(p._id), name: p.first_name });
@@ -159,6 +159,61 @@ describe("guess", () => {
     // The only List was just played, so the next Round replays it, and says so.
     expect(await fireScheduled()).toMatchObject([{ type: "allListsPlayed" }, { type: "roundStarted" }]);
     expect(await inProgress(gameId)).not.toBeNull();
+  });
+});
+
+describe("Pity Answers", () => {
+  /** A Round on a List of 12: ten Answers and two extras. */
+  const setupWithExtras = async () => {
+    const values = Array.from({ length: 12 }, (_, i) => ({ value: `Moon ${i}`, blurb: `Blurb ${i}` }));
+    const context = await setup({ values });
+    const stored = (await Game.findById(context.gameId).lean())!;
+    return { ...context, answers: stored.list.values, extras: stored.list.extras! };
+  };
+
+  test("the Values not picked for the Round are kept as extras, with their Blurbs", async () => {
+    const { answers, extras } = await setupWithExtras();
+    expect(answers).toHaveLength(10);
+    expect(extras).toHaveLength(2);
+    const all = [...answers, ...extras].map(({ value }) => value).sort();
+    expect(all).toEqual(Array.from({ length: 12 }, (_, i) => `Moon ${i}`).sort());
+    expect(extras[0].blurb).toBe(`Blurb ${extras[0].value.split(" ")[1]}`);
+  });
+
+  test("the first to name an extra gets a pity point, and streaks are left alone", async () => {
+    const { gameId, listId, ann, extras } = await setupWithExtras();
+    await Player.updateOne({ _id: ann.playerId }, { hintStreak: 3, streak: 2 });
+    const { events } = await run(guess(gameId, ann, listId, extras[0].value));
+    expect(events).toEqual([{ type: "pityAnswerGuessed", playerId: ann.playerId, value: extras[0].value, score: 1 }]);
+    expect((await Player.findById(ann.playerId).lean())!).toMatchObject({
+      pityAnswers: 1,
+      score: 1,
+      scoreDaily: 1,
+      highScore: 1,
+      answers: 0,
+      hintStreak: 3,
+      streak: 2,
+    });
+    const stored = (await Game.findById(gameId).lean())!;
+    expect(String(stored.list.extras![0].guesser)).toBe(ann.playerId);
+    expect(stored.streak?.count ?? 0).toBe(0);
+  });
+
+  test("naming an extra someone already got is a snub", async () => {
+    const { gameId, listId, ann, bob, extras } = await setupWithExtras();
+    await run(guess(gameId, ann, listId, extras[0].value));
+    expect((await run(guess(gameId, bob, listId, extras[0].value))).events).toEqual([
+      { type: "answerSnubbed", playerId: bob.playerId, value: extras[0].value },
+    ]);
+    expect((await Player.findById(bob.playerId).lean())!).toMatchObject({ snubs: 1, pityAnswers: 0, score: 0 });
+  });
+
+  test("the Round ends on its ten Answers, whatever extras are left", async () => {
+    const { gameId, listId, ann, answers, extras } = await setupWithExtras();
+    await run(guess(gameId, ann, listId, extras[0].value));
+    let events: Awaited<ReturnType<typeof run>>["events"] = [];
+    for (const { value } of answers) ({ events } = await run(guess(gameId, ann, listId, value)));
+    expect(events.map((e) => e.type)).toEqual(["answerGuessed", "roundCompleted"]);
   });
 });
 

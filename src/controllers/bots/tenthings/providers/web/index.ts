@@ -21,6 +21,7 @@ export const web: Provider = {
   dailyScores: () => {},
   endOfDay: () => {},
   guessed: () => {},
+  pityGuessed: () => {},
   mainGameMessage: () => {},
   miniGameMessage: () => {},
   miniGameGuessed: () => {},

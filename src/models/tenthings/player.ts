@@ -22,6 +22,8 @@ export interface IPlayer {
   lists: number;
   hints: number;
   snubs: number;
+  /** Right Answers that weren't one of the Round's ten, named first. */
+  pityAnswers: number;
   skips: number;
   vetoes: number;
   infractions: number;
@@ -61,6 +63,7 @@ const playerSchema = new Schema<IPlayer>(
     lists: { type: Number, required: false, default: 0 },
     hints: { type: Number, required: false, default: 0 },
     snubs: { type: Number, required: false, default: 0 },
+    pityAnswers: { type: Number, required: false, default: 0 },
     skips: { type: Number, required: false, default: 0 },
     vetoes: { type: Number, required: false, default: 0 },
     infractions: { type: Number, required: false, default: 0 },

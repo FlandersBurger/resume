@@ -18,6 +18,8 @@ export type Provider = {
     day: { scores: { name: string; score: number }[]; winners: { name: string }[]; score: number },
   ) => void;
   guessed: (game: IGame, player: IPlayer, match: IGameListValue, score: number, accuracy: string) => void;
+  /** `match` is one of the List's other Values, not one of the Round's ten: a Pity Answer. */
+  pityGuessed: (game: IGame, player: IPlayer, match: IGameListValue, score: number) => void;
   mainGameMessage: (game: IGame, long?: boolean) => void;
   miniGameMessage: (game: IGame) => void;
   miniGameGuessed: (game: IGame, player: IPlayer, answer: string, score: number, accuracy: string) => void;

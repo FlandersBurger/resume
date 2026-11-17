@@ -9,9 +9,9 @@ import { publish } from "@root/queue";
 import { parseSymbols } from "@utils/string-helpers";
 import type { EngineEvent } from "@tenthings/engine/events";
 import type { Renderer } from "@tenthings/engine/rendering";
-import { getGuessedMessage, getSnubbedMessage } from "@tenthings/messages";
+import { getGuessedMessage, getPityMessage, getSnubbedMessage } from "@tenthings/messages";
 import { getPlayerName } from "@tenthings/players";
-import { roundNotice } from "../roundRendering";
+import { findAnswer, roundNotice } from "../roundRendering";
 import { WEB_EVENTS_TOPIC, type WebEventsMessage as SharedWebEventsMessage } from "@utils/tenthings-web";
 
 export { WEB_EVENTS_TOPIC };
@@ -27,8 +27,7 @@ const toText = (html: string) =>
     .replace(/&quot;/g, '"')
     .replace(/&#39;/g, "'");
 
-const guesserOf = (game: IGame, value: string) =>
-  game.list.values.find((answer) => answer.value === value)?.guesser as IPlayer | undefined;
+const guesserOf = (game: IGame, value: string) => findAnswer(game, value)?.guesser as IPlayer | undefined;
 
 /** What a player should read about `event`, if anything (the page reloads the Game either way). */
 export const webNotice = async (game: IGame, event: EngineEvent): Promise<string | undefined> => {
@@ -41,6 +40,10 @@ export const webNotice = async (game: IGame, event: EngineEvent): Promise<string
     case "answerGuessed": {
       const guesser = guesserOf(game, event.value);
       return guesser && getGuessedMessage(language, parseSymbols(event.value), getPlayerName(guesser, true));
+    }
+    case "pityAnswerGuessed": {
+      const guesser = guesserOf(game, event.value);
+      return guesser && getPityMessage(language, parseSymbols(event.value), getPlayerName(guesser, true));
     }
     case "answerSnubbed": {
       if (!game.settings.snubs) return undefined;

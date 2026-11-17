@@ -277,6 +277,7 @@ export const runAction = async (
   const game = await Game.findById(action.gameId)
     .populate("list.creator")
     .populate("list.values.guesser")
+    .populate("list.extras.guesser")
     .populate("streak.player")
     .exec();
   if (!game) return { game: null, events: [] };

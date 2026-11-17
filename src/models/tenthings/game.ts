@@ -38,6 +38,8 @@ export interface IGameList {
   answers: number;
   creator: Types.ObjectId | IUser;
   values: IGameListValue[];
+  /** The List's other Values, not picked for the Round: naming one first earns a Pity Answer. */
+  extras?: IGameListValue[];
 }
 
 export interface IGame {
@@ -116,6 +118,13 @@ const gameSchema = new Schema<IGame>(
       answers: Number,
       creator: { type: Schema.Types.ObjectId, ref: "User", required: false },
       values: [
+        {
+          value: String,
+          blurb: String,
+          guesser: { type: Schema.Types.ObjectId, ref: "Player", required: false },
+        },
+      ],
+      extras: [
         {
           value: String,
           blurb: String,

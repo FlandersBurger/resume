@@ -2,6 +2,7 @@ import { useState, useRef } from "react";
 import styled from "styled-components";
 import { useApp } from "../context/AppContext";
 import { useWebGame } from "./tenthings/useWebGame";
+import type { WebAnswerView } from "@utils/tenthings-web";
 
 const TenThingsPlayPage = styled.div``;
 
@@ -106,6 +107,7 @@ export default function TenThingsPlay() {
 
   const list = view?.list;
   const answers = list?.answers ?? [];
+  const extras = list?.extras ?? [];
   const guessedCount = answers.filter((a) => a.guessed).length;
   const total = answers.length;
   const progress = total > 0 ? (guessedCount / total) * 100 : 0;
@@ -173,34 +175,48 @@ export default function TenThingsPlay() {
         )}
       </div>
 
-      <PlayListGroup>
-        {answers.map((item) => (
-          <PlayListGroupItem key={item._id} $guessed={item.guessed}>
-            <AnswerRow>
-              <h4>{item.maskedValue}</h4>
-              {item.guessed && (
-                <div style={{ display: "flex", alignItems: "center", gap: 6, flexShrink: 0 }}>
-                  {item.blurb && item.blurbType !== "text" && (
-                    <span>
-                      {item.blurbType === "image" && <i className="fas fa-image text-muted" />}
-                      {item.blurbType === "youtube" && <i className="fab fa-youtube text-danger" />}
-                      {item.blurbType === "spotify" && <i className="fab fa-spotify text-success" />}
-                      {item.blurbType === "link" && <i className="fas fa-link text-muted" />}
-                    </span>
-                  )}
-                  <span className="label label-success">{item.guesser}</span>
-                </div>
-              )}
-            </AnswerRow>
-            {item.guessed && item.blurb && item.blurbType === "image" && (
-              <Blurb>
-                <img src={item.blurb} alt={item.value} />
-              </Blurb>
-            )}
-            {item.guessed && item.blurb && item.blurbType === "text" && <Blurb>{item.blurb}</Blurb>}
-          </PlayListGroupItem>
-        ))}
-      </PlayListGroup>
+      <PlayListGroup>{answers.map((item) => renderAnswer(item))}</PlayListGroup>
+
+      {extras.length > 0 && (
+        <>
+          <p className="text-muted" style={{ marginBottom: 4 }}>
+            <i>Also correct:</i>
+          </p>
+          <PlayListGroup data-testid="pity-answers">{extras.map((item) => renderAnswer(item, true))}</PlayListGroup>
+        </>
+      )}
     </TenThingsPlayPage>
+  );
+}
+
+function renderAnswer(item: WebAnswerView, isExtra = false) {
+  return (
+    <PlayListGroupItem key={item._id} $guessed={item.guessed}>
+      <AnswerRow>
+        <h4>
+          {isExtra && "☆ "}
+          {item.maskedValue}
+        </h4>
+        {item.guessed && (
+          <div style={{ display: "flex", alignItems: "center", gap: 6, flexShrink: 0 }}>
+            {item.blurb && item.blurbType !== "text" && (
+              <span>
+                {item.blurbType === "image" && <i className="fas fa-image text-muted" />}
+                {item.blurbType === "youtube" && <i className="fab fa-youtube text-danger" />}
+                {item.blurbType === "spotify" && <i className="fab fa-spotify text-success" />}
+                {item.blurbType === "link" && <i className="fas fa-link text-muted" />}
+              </span>
+            )}
+            <span className="label label-success">{item.guesser}</span>
+          </div>
+        )}
+      </AnswerRow>
+      {item.guessed && item.blurb && item.blurbType === "image" && (
+        <Blurb>
+          <img src={item.blurb} alt={item.value} />
+        </Blurb>
+      )}
+      {item.guessed && item.blurb && item.blurbType === "text" && <Blurb>{item.blurb}</Blurb>}
+    </PlayListGroupItem>
   );
 }

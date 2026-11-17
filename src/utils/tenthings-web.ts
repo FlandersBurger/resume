@@ -17,17 +17,17 @@ export type WebBlurbType = "text" | "image" | "youtube" | "spotify" | "link";
  * An Answer as a Player may see it. `maskedValue` is always there; the value and the Blurb only
  * once the Answer is guessed.
  */
-export type WebAnswerView =
-  | { _id: string; maskedValue: string; guessed: false }
-  | {
-      _id: string;
-      maskedValue: string;
-      guessed: true;
-      value: string;
-      blurb?: string;
-      blurbType?: WebBlurbType;
-      guesser: string;
-    };
+export type WebGuessedAnswerView = {
+  _id: string;
+  maskedValue: string;
+  guessed: true;
+  value: string;
+  blurb?: string;
+  blurbType?: WebBlurbType;
+  guesser: string;
+};
+
+export type WebAnswerView = { _id: string; maskedValue: string; guessed: false } | WebGuessedAnswerView;
 
 /** A web Game as a Player may see it. */
 export type WebGameView = {
@@ -41,5 +41,7 @@ export type WebGameView = {
     /** The creator's username. */
     creator?: string;
     answers: WebAnswerView[];
+    /** The List's other Values guessed this Round (Pity Answers); unguessed ones never leave the server. */
+    extras?: WebGuessedAnswerView[];
   };
 };
