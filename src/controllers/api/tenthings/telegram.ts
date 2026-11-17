@@ -112,6 +112,7 @@ tenthingsTelegramBotRoute.post("/", async (req: Request, res: Response) => {
     const existingGame = await Game.findOne({ telegramChatId: msg.chatId })
       .populate("list.creator")
       .populate("list.values.guesser")
+      .populate("list.extras.guesser")
       .exec();
 
     if (!existingGame) {

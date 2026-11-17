@@ -15,7 +15,7 @@ import db from "@root/db";
 import { Player } from "@models/index";
 import { IGame } from "@models/tenthings/game";
 import { IPlayer } from "@models/tenthings/player";
-import { ChatPlatform, createChatProvider, listStatusMessage } from "@tenthings/providers/chat";
+import { ChatPlatform, createChatProvider, listStatusMessage, skippedListMessage } from "@tenthings/providers/chat";
 import { KeyboardDef } from "@tenthings/keyboards";
 import { MEMORY_MONGO_TIMEOUT, openOnMemoryMongo } from "../../../helpers/memoryMongo";
 
@@ -112,6 +112,59 @@ describe("a guessed Answer with an image Blurb", () => {
     provider.guessed(game, ann, game.list.values[0], 3, "100%");
     expect(sent[0].html).not.toContain("<a href");
     expect(sent[1]).toEqual({ media: "https://example.com/mercury.png" });
+  });
+});
+
+describe("Pity Answers", () => {
+  const bob = { _id: new Types.ObjectId(), first_name: "Bob", scoreDaily: 5 } as unknown as IPlayer;
+  const withExtras = (provider: IGame["provider"]) => {
+    const game = makeGame(provider);
+    game.list.extras = [
+      { value: "Pluto", guesser: bob, blurb: "Demoted in 2006" },
+      { value: "Ceres", blurb: "Never shown" },
+    ];
+    return game;
+  };
+
+  it("are announced with their Blurb, a pity point and the open hints", () => {
+    const { sent, provider } = fakePlatform();
+    const game = withExtras(provider);
+    provider.pityGuessed(game, bob, game.list.extras![0], 1);
+    expect(sent).toHaveLength(1);
+    expect(sent[0].html).toContain("<b>pityGuessed</b>");
+    expect(sent[0].html).toContain("<i>Demoted in 2006</i>");
+    expect(sent[0].html).toContain("<u>4 + point (pity)</u>");
+    expect(sent[0].html).toContain("<b>Planets</b>\n\t2: ");
+  });
+
+  it("send an image Blurb as media where links don't preview", () => {
+    const { sent, provider } = fakePlatform(discordLike);
+    const game = withExtras(provider);
+    const extra = { value: "Pluto", guesser: bob, blurb: "https://example.com/pluto.png" };
+    provider.pityGuessed(game, bob, extra, 1);
+    expect(sent[0].html).not.toContain("<a href");
+    expect(sent[1]).toEqual({ media: "https://example.com/pluto.png" });
+  });
+
+  it("are listed under the List once guessed, and the others aren't", () => {
+    const game = withExtras({} as IGame["provider"]);
+    for (const html of [listStatusMessage(game), skippedListMessage(game)]) {
+      expect(html).toMatch(/<i>sentences\.alsoCorrect<\/i>\n\t☆ Pluto - <i>Bob<\/i>\n$/);
+      expect(html).not.toContain("Ceres");
+    }
+  });
+
+  it("are listed on the round card once the Round is over", () => {
+    const game = withExtras({} as IGame["provider"]);
+    game.list.values[1].guesser = ann;
+    const html = listStatusMessage(game);
+    expect(html).toContain("2. Venus - Ann\n☆ Pluto - Bob\n");
+    expect(html).toContain("👥 1");
+    expect(html).not.toContain("Ceres");
+  });
+
+  it("add nothing to a List without any", () => {
+    expect(listStatusMessage(makeGame({} as IGame["provider"]))).not.toContain("alsoCorrect");
   });
 });
 

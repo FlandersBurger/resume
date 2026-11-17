@@ -37,6 +37,8 @@ export type EngineEvent =
   | { type: "answerGuessed"; playerId: string; value: string; score: number; accuracy: string }
   /** The Answer was already guessed by someone else (or by the same Player). */
   | { type: "answerSnubbed"; playerId: string; value: string }
+  /** One of the List's Values that isn't one of the Round's ten, named first: a Pity Answer. */
+  | { type: "pityAnswerGuessed"; playerId: string; value: string; score: number }
   | { type: "roundCompleted"; roundId: string; listId: string }
   | { type: "hintGiven" }
   | { type: "hintRefused"; reason: "tooMany" }

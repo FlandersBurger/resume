@@ -114,6 +114,7 @@ const getPlayerStats = (player: IPlayer, requestor: string | undefined): string 
   message += "Correct answers given: " + player.answers + "\n";
   message += `Minigame Answers Given: ${player.minigamePlays}\n`;
   message += "Correct answers snubbed: " + player.snubs + "\n";
+  message += "Pity answers given: " + (player.pityAnswers ?? 0) + "\n";
   message += "Hints asked: " + player.hints + "\n";
   message += "Suggestions given: " + player.suggestions + "\n";
   message += "Lists played: " + player.lists + "\n";

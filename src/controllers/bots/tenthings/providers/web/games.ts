@@ -2,16 +2,17 @@ import { Game } from "@root/models";
 import { createMaingame } from "@tenthings/maingame";
 import { SYSTEM_ACTOR } from "@tenthings/engine/actions";
 import { dispatch } from "@tenthings/engine/queue";
-import { IGame } from "@models/tenthings/game";
+import { IGame, IGameListValue } from "@models/tenthings/game";
 import { getBlurbType } from "@models/tenthings/list";
 import { HydratedDocument } from "mongoose";
 import { MAX_HINTS, getHint } from "@tenthings/hints";
-import type { WebAnswerView, WebGameView } from "@utils/tenthings-web";
+import type { WebAnswerView, WebGameView, WebGuessedAnswerView } from "@utils/tenthings-web";
 
 export const getWebGame = async (webGameId: number = 1): Promise<HydratedDocument<IGame>> => {
   let game = await Game.findOne({ platform: "web", webGameId })
     .populate("list.creator", "username")
-    .populate("list.values.guesser", "username first_name");
+    .populate("list.values.guesser", "username first_name")
+    .populate("list.extras.guesser", "username first_name");
   if (!game) {
     game = await createMaingame({ platform: "web", webGameId });
   }
@@ -35,19 +36,25 @@ const nameOf = (person: unknown) => {
  */
 export const toWebGameView = (game: IGame): WebGameView => {
   const { list, hints } = game;
-  const answers = (list?.values ?? []).map((answer, i): WebAnswerView => {
-    const _id = String((answer as { _id?: unknown })._id ?? i);
-    if (!answer.guesser) return { _id, maskedValue: getHint(hints, answer.value), guessed: false };
-    return {
-      _id,
-      maskedValue: answer.value,
-      guessed: true,
-      value: answer.value,
-      blurb: answer.blurb || undefined,
-      blurbType: answer.blurb ? getBlurbType(answer.blurb) : undefined,
-      guesser: nameOf(answer.guesser),
-    };
+  const guessedView = (answer: IGameListValue, _id: string): WebGuessedAnswerView => ({
+    _id,
+    maskedValue: answer.value,
+    guessed: true,
+    value: answer.value,
+    blurb: answer.blurb || undefined,
+    blurbType: answer.blurb ? getBlurbType(answer.blurb) : undefined,
+    guesser: nameOf(answer.guesser),
   });
+  const idOf = (answer: IGameListValue, i: number) => String((answer as { _id?: unknown })._id ?? i);
+  const answers = (list?.values ?? []).map((answer, i): WebAnswerView => {
+    const _id = idOf(answer, i);
+    if (!answer.guesser) return { _id, maskedValue: getHint(hints, answer.value), guessed: false };
+    return guessedView(answer, _id);
+  });
+  // Only the guessed ones: the others aren't even hinted at.
+  const extras = (list?.extras ?? [])
+    .map((answer, i) => (answer.guesser ? guessedView(answer, idOf(answer, i)) : undefined))
+    .filter((answer): answer is WebGuessedAnswerView => !!answer);
   return {
     webGameId: game.webGameId ?? 1,
     hints,
@@ -58,6 +65,7 @@ export const toWebGameView = (game: IGame): WebGameView => {
       description: list?.description || undefined,
       creator: nameOf(list?.creator) || undefined,
       answers,
+      extras,
     },
   };
 };

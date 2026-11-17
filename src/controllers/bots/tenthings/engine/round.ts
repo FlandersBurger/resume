@@ -2,7 +2,7 @@
 // A Round is recorded as an `inProgress` GameRound when it starts (ADR-0001); that record
 // also holds the Round's own state (a pending Skip, the last Veto, the Hint cooldown).
 
-import sampleSize from "lodash/sampleSize";
+import shuffle from "lodash/shuffle";
 import { HydratedDocument, Types } from "mongoose";
 import { GameRound, List, Player } from "@models/index";
 import { IGame } from "@models/tenthings/game";
@@ -23,12 +23,16 @@ import { Scheduler } from "./scheduler";
 
 type GameDoc = HydratedDocument<IGame>;
 type RoundDoc = HydratedDocument<IGameRound>;
+type PlayerDoc = HydratedDocument<IPlayer>;
 type RoundHandler<T extends Action["type"]> = (
   game: GameDoc,
   action: Extract<Action, { type: T }>,
   scheduler: Scheduler,
 ) => Promise<EngineEvent[]>;
 
+const ANSWERS_PER_ROUND = 10;
+/** What naming one of the List's other Values first is worth. */
+export const PITY_SCORE = 1;
 /** No Hint in the first seconds of a Round. */
 const FIRST_HINT_AFTER_MS = 3_000;
 /** The finished Round stays on screen this long before the next one starts. */
@@ -118,6 +122,28 @@ export const saveGame = async (game: GameDoc) => {
   await game.save();
 };
 
+/**
+ * A Guess of one of the List's Values that isn't one of the Round's ten: the first Player to name
+ * it gets a Pity Answer, and anyone after is snubbed. Streaks are left alone, and the Round
+ * doesn't end on it.
+ */
+const guessExtra = async (game: GameDoc, player: PlayerDoc, guess: string): Promise<EngineEvent[]> => {
+  const extra = game.list.extras?.find(({ value }) => value === guess);
+  if (!extra) return [];
+  if (extra.guesser) {
+    player.snubs++;
+    await Promise.all([saveGame(game), player.save()]);
+    return [{ type: "answerSnubbed", playerId: String(player._id), value: extra.value }];
+  }
+  extra.guesser = player;
+  player.pityAnswers++;
+  player.score += PITY_SCORE;
+  player.scoreDaily += PITY_SCORE;
+  player.highScore = Math.max(player.highScore, player.scoreDaily);
+  await Promise.all([saveGame(game), player.save()]);
+  return [{ type: "pityAnswerGuessed", playerId: String(player._id), value: extra.value, score: PITY_SCORE }];
+};
+
 const isVetoActive = (game: GameDoc, round: RoundDoc) =>
   !!round.vetoedAt && Date.now() < round.vetoedAt.getTime() + game.settings.vetoDelay * 1000;
 
@@ -142,7 +168,10 @@ export const roundHandlers: { [T in RoundActionType]: RoundHandler<T> } = {
     const now = new Date();
     game.list = JSON.parse(JSON.stringify(list));
     game.list.answers = game.list.values.length;
-    game.list.values = sampleSize(game.list.values, 10);
+    // Ten of the Values are the Round's Answers; the rest can still be named for a Pity Answer.
+    const values = shuffle(game.list.values);
+    game.list.values = values.slice(0, ANSWERS_PER_ROUND);
+    game.list.extras = values.slice(ANSWERS_PER_ROUND);
     game.listsPlayed++;
     game.hints = 0;
     game.roundDate = now;
@@ -183,7 +212,7 @@ export const roundHandlers: { [T in RoundActionType]: RoundHandler<T> } = {
     }
     if (!game.guessers.some((guesser) => guesser.equals(player._id))) game.guessers.push(player._id);
     const value = game.list.values.find(({ value }) => value === guess.value);
-    if (!value) return events;
+    if (!value) return [...events, ...(await guessExtra(game, player, guess.value))];
 
     if (value.guesser) {
       player.snubs++;

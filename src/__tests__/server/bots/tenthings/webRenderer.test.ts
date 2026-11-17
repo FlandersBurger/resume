@@ -27,7 +27,7 @@ const ann = { _id: new Types.ObjectId(), first_name: "Ann" };
 const game = {
   webGameId: 1,
   settings: { language: "EN", snubs: false },
-  list: { values: [{ value: "Venus", guesser: ann }] },
+  list: { values: [{ value: "Venus", guesser: ann }], extras: [{ value: "Pluto", guesser: ann }] },
 } as unknown as IGame;
 
 const render = (events: EngineEvent[]) =>
@@ -66,4 +66,12 @@ it("says who guessed an Answer and when the Round is over", async () => {
 it("leaves out snubs when the Game turned them off", async () => {
   await render([{ type: "answerSnubbed", playerId: String(new Types.ObjectId()), value: "Venus" }]);
   expect(mockPublish.mock.calls[0][1]).toMatchObject({ notices: [] });
+});
+
+it("says who found a Pity Answer", async () => {
+  await render([{ type: "pityAnswerGuessed", playerId: String(ann._id), value: "Pluto", score: 1 }]);
+  const { notices } = mockPublish.mock.calls[0][1] as { notices: string[] };
+  expect(notices).toHaveLength(1);
+  expect(notices[0]).toContain("Pluto");
+  expect(notices[0]).toContain("Ann");
 });

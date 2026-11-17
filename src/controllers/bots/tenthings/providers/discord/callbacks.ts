@@ -23,6 +23,7 @@ const getPopulatedGame = (channelId: string) =>
   Game.findOne({ discordChannelId: channelId })
     .populate("list.creator")
     .populate("list.values.guesser")
+    .populate("list.extras.guesser")
     .populate("streak.player")
     .exec();
 

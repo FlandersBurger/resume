@@ -355,16 +355,16 @@ export default function TenThingsGame() {
   /** Keep the Round's List snapshot in step with what the admin just saved. */
   const handleListSaved = (saved: TenThingsList) => {
     setGame((prev: any) =>
-        prev
-          ? {
-              ...prev,
-              list: {
-                ...prev.list,
-                name: saved.name,
-                categories: saved.categories,
-              },
-            }
-          : prev,
+      prev
+        ? {
+            ...prev,
+            list: {
+              ...prev.list,
+              name: saved.name,
+              categories: saved.categories,
+            },
+          }
+        : prev,
     );
   };
 
@@ -719,6 +719,7 @@ export default function TenThingsGame() {
                             { label: "Score", field: "score" },
                             { label: "Hints", field: "hints" },
                             { label: "Snubs", field: "snubs" },
+                            { label: "Pity", field: "pityAnswers" },
                             { label: "Skips", field: "skips" },
                             { label: "Vetoes", field: "vetoes" },
                             { label: "Sug", field: "suggestions" },
@@ -763,6 +764,7 @@ export default function TenThingsGame() {
                               <td>{player.score}</td>
                               <td>{player.hints}</td>
                               <td>{player.snubs}</td>
+                              <td>{player.pityAnswers ?? 0}</td>
                               <td>{player.skips}</td>
                               <td>{player.vetoes}</td>
                               <td>{player.suggestions}</td>

@@ -15,6 +15,7 @@ import {
   getDifficultyMessage,
   getFrequencyMessage,
   getGuessedMessage,
+  getPityMessage,
   getStreakMessage,
 } from "@tenthings/messages";
 import { getPlayerName } from "@tenthings/players";
@@ -117,12 +118,42 @@ export const listStatusMessage = (game: IGame, long = true) => {
   if (game.list.values.every(({ guesser }) => guesser))
     // Round complete: the copyable card replaces the plain answer list
     return message + getRoundCard(game, (guesser) => getPlayerName(guesser as IPlayer));
-  return game.list.values.reduce(
-    (str, { guesser, value }, index) =>
-      guesser
-        ? `${str}\t${index + 1}: ${parseSymbols(value)} - <i>${getPlayerName(guesser as IPlayer)}</i>\n`
-        : `${str}\t<b>${index + 1}:</b> <b>${parseSymbols(getHint(game.hints, value))}</b>\n`,
-    message,
+  return (
+    game.list.values.reduce(
+      (str, { guesser, value }, index) =>
+        guesser
+          ? `${str}\t${index + 1}: ${parseSymbols(value)} - <i>${getPlayerName(guesser as IPlayer)}</i>\n`
+          : `${str}\t<b>${index + 1}:</b> <b>${parseSymbols(getHint(game.hints, value))}</b>\n`,
+      message,
+    ) + extrasLines(game)
+  );
+};
+
+/** A guessed Answer's Blurb: text in italics, or an image link that previews where links do. */
+const blurbHtml = (blurb: string | undefined, linkPreviews: boolean) =>
+  !blurb
+    ? ""
+    : isUrl(blurb)
+      ? linkPreviews
+        ? `<a href="${blurb}">&#8204;</a>`
+        : ""
+      : `\n<i>${parseSymbols(blurb)}</i>`;
+
+/** What's left of the Round after a Guess: the open hints, or that it's over. */
+const roundLeftLines = (game: IGame) =>
+  game.list.values.some(({ guesser }) => !guesser)
+    ? `\n<b>${game.list.name}</b>${hintLines(game, "\n\t")}`
+    : `\n${i18n(game.settings.language, "sentences.roundOver")}`;
+
+/** The List's other Values guessed this Round, for the bottom of a List; empty if none. */
+export const extrasLines = (game: IGame) => {
+  const guessed = (game.list.extras ?? []).filter(({ guesser }) => guesser);
+  if (guessed.length === 0) return "";
+  return (
+    `\n<i>${i18n(game.settings.language, "sentences.alsoCorrect")}</i>\n` +
+    guessed
+      .map(({ value, guesser }) => `\t☆ ${parseSymbols(value)} - <i>${getPlayerName(guesser as IPlayer)}</i>\n`)
+      .join("")
   );
 };
 
@@ -134,20 +165,26 @@ export const guessedMessage = (
   accuracy: string,
   linkPreviews: boolean,
 ) => {
-  const blurb = !match.blurb
-    ? ""
-    : isUrl(match.blurb)
-      ? linkPreviews
-        ? `<a href="${match.blurb}">&#8204;</a>`
-        : ""
-      : `\n<i>${parseSymbols(match.blurb)}</i>`;
   let message = `<b>${getGuessedMessage(game.settings.language, parseSymbols(match.value), getPlayerName(player, true))}</b>`;
   message += "\n--- " + getStreakMessage(game.streak.count) + " ---\n";
-  message += blurb;
+  message += blurbHtml(match.blurb, linkPreviews);
   message += `\n<u>${player.scoreDaily - score} + ${i18n(game.settings.language, "point", { count: score })} (${accuracy})</u>`;
-  message += game.list.values.some(({ guesser }) => !guesser)
-    ? `\n<b>${game.list.name}</b>${hintLines(game, "\n\t")}`
-    : `\n${i18n(game.settings.language, "sentences.roundOver")}`;
+  message += roundLeftLines(game);
+  return message;
+};
+
+export const pityGuessedMessage = (
+  game: IGame,
+  player: IPlayer,
+  match: IGameListValue,
+  score: number,
+  linkPreviews: boolean,
+) => {
+  const { language } = game.settings;
+  let message = `<b>${getPityMessage(language, parseSymbols(match.value), getPlayerName(player, true))}</b>`;
+  message += blurbHtml(match.blurb, linkPreviews);
+  message += `\n<u>${player.scoreDaily - score} + ${i18n(language, "point", { count: score })} (${i18n(language, "pity")})</u>`;
+  message += roundLeftLines(game);
   return message;
 };
 
@@ -158,7 +195,7 @@ export const skippedListMessage = (game: IGame) =>
         guesser ? getPlayerName(guesser as IPlayer) : i18n(game.settings.language, "sentences.notGuessed")
       }</i>\n`,
     `${i18n(game.settings.language, "sentences.skippedList", { list: game.list.name })}\n`,
-  );
+  ) + extrasLines(game);
 
 const sideGameMessage = (game: IGame, titleKey: string, lines: string[], hints: number, answer: string) =>
   `<b>${i18n(game.settings.language, titleKey)}</b>\n` +
@@ -234,6 +271,10 @@ export const createChatProvider = (platform: ChatPlatform): Provider => {
     endOfDay: (game, day) => send(game, endOfDayMessage(game, day, platform.promoteDiscord)),
     guessed: (game, player, match, score, accuracy) => {
       send(game, guessedMessage(game, player, match, score, accuracy, platform.linkPreviews));
+      if (!platform.linkPreviews && match.blurb && isUrl(match.blurb)) platform.sendMedia(game, match.blurb);
+    },
+    pityGuessed: (game, player, match, score) => {
+      send(game, pityGuessedMessage(game, player, match, score, platform.linkPreviews));
       if (!platform.linkPreviews && match.blurb && isUrl(match.blurb)) platform.sendMedia(game, match.blurb);
     },
     mainGameMessage: (game, long = true) => send(game, listStatusMessage(game, long)),

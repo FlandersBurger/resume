@@ -66,3 +66,24 @@ it("says how many Hints are left, and leaves out the rest of the Game", () => {
   expect(toWebGameView(game(0))).not.toHaveProperty("settings");
   expect(toWebGameView(game(0))).not.toHaveProperty("playedLists");
 });
+
+it("sends the guessed Pity Answers in full, and nothing of the others", () => {
+  const withExtras = game(MAX_HINTS);
+  withExtras.list.extras = [
+    { _id: "e1", value: "Pluto", blurb: "Demoted", guesser: ann },
+    { _id: "e2", value: "Ceres", blurb: "Dwarf" },
+  ] as unknown as IGame["list"]["extras"];
+  const view = toWebGameView(withExtras);
+  expect(view.list.extras).toEqual([
+    {
+      _id: "e1",
+      maskedValue: "Pluto",
+      guessed: true,
+      value: "Pluto",
+      blurb: "Demoted",
+      blurbType: "text",
+      guesser: "Ann",
+    },
+  ]);
+  expect(JSON.stringify(view)).not.toMatch(/Ceres|Dwarf/);
+});

@@ -13,8 +13,13 @@ jest.mock("@models/tenthings/game", () => ({
 jest.mock("@tenthings/sass", () => jest.fn());
 jest.mock("@tenthings/hints", () => ({ MAX_HINTS: 6 }));
 jest.mock("@tenthings/players", () => ({ getPlayerName: jest.fn(() => "TestPlayer") }));
+jest.mock("@tenthings/engine/queue", () => ({ queueGuessJob: jest.fn() }));
 
-import { getAnswerScore } from "@tenthings/guesses";
+import { getAnswerScore, queueGuess } from "@tenthings/guesses";
+import { queueGuessJob } from "@tenthings/engine/queue";
+import sass from "@tenthings/sass";
+import type { IGame } from "@models/tenthings/game";
+import type { IPlayer } from "@models/tenthings/player";
 
 // MAX_HINTS = 6
 // formula: Math.round(((MAX_HINTS - hints + playerCount) / (MAX_HINTS + playerCount)) * 10 * accuracy)
@@ -71,5 +76,59 @@ describe("getAnswerScore", () => {
         expect(Number.isInteger(score)).toBe(true);
       }
     }
+  });
+});
+
+describe("queueGuess", () => {
+  const player = { _id: "p1" } as unknown as IPlayer;
+  /** A Round with Titan among its ten, and Triton among the List's other Values. */
+  const game = () =>
+    ({
+      _id: "g1",
+      minigame: {},
+      tinygame: {},
+      list: { _id: "l1", values: [{ value: "Titan" }, { value: "Europa" }], extras: [{ value: "Triton" }] },
+    }) as unknown as IGame;
+  const queued = () => (queueGuessJob as jest.Mock).mock.calls.map(([guess]) => guess.match);
+
+  beforeEach(() => {
+    jest.useFakeTimers();
+    (queueGuessJob as jest.Mock).mockClear();
+    (sass as unknown as jest.Mock).mockClear();
+  });
+  afterEach(() => jest.useRealTimers());
+
+  test("a right spelling of an extra is queued right away", async () => {
+    await queueGuess(game(), player, "Tri-ton!");
+    expect(queued()).toEqual([{ type: "maingame", value: "Triton", distance: 1 }]);
+  });
+
+  test("a close spelling of an extra is queued after the fuzzy delay", async () => {
+    await queueGuess(game(), player, "Triten");
+    expect(queued()).toEqual([]);
+    jest.runAllTimers();
+    expect(queued()).toMatchObject([{ type: "maingame", value: "Triton" }]);
+    expect(sass).not.toHaveBeenCalled();
+  });
+
+  test("a close spelling goes to one of the ten, even when an extra is closer", async () => {
+    // On its own, Triton is the closer match for "Titon" (0.83 against Titan's 0.8).
+    await queueGuess(game(), player, "Titon");
+    jest.runAllTimers();
+    expect(queued()).toMatchObject([{ value: "Titan", distance: 0.8 }]);
+  });
+
+  test("a right spelling of an extra beats a close spelling of one of the ten", async () => {
+    const tenNearTriton = game();
+    tenNearTriton.list.values[1].value = "Tritan";
+    await queueGuess(tenNearTriton, player, "Triton");
+    expect(queued()).toEqual([{ type: "maingame", value: "Triton", distance: 1 }]);
+  });
+
+  test("nothing close gets sass", async () => {
+    await queueGuess(game(), player, "Neptune");
+    jest.runAllTimers();
+    expect(queued()).toEqual([]);
+    expect(sass).toHaveBeenCalled();
   });
 });

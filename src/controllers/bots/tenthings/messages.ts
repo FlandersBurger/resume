@@ -14,6 +14,13 @@ export const getGuessedMessage = (language: string, answer: string, guesser: str
   return i18n(language, "sentences.guessedBy", { answer, guesser });
 };
 
+/** One of the Pity Answer messages, at random. */
+export const getPityMessage = (language: string, answer: string, guesser: string): string => {
+  const messages: unknown = i18n(language, "pityGuessed", { answer, guesser, returnObjects: true });
+  if (!Array.isArray(messages) || messages.length === 0) return String(messages);
+  return messages[Math.floor(Math.random() * messages.length)];
+};
+
 export const getSnubbedMessage = (match: string, loser: IPlayer, winner: IPlayer): string => {
   if (!winner) return "";
   const loserName = getPlayerName(loser);

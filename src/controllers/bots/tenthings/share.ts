@@ -11,7 +11,12 @@ type Guesser = unknown; // player id, or the populated player document
 export type RoundCardGame = {
   hints: number;
   roundDate?: Date;
-  list: { name: string; answers?: number; values: { value: string; guesser?: Guesser }[] };
+  list: {
+    name: string;
+    answers?: number;
+    values: { value: string; guesser?: Guesser }[];
+    extras?: { value: string; guesser?: Guesser }[];
+  };
 };
 
 const guesserId = (guesser?: Guesser): string | undefined =>
@@ -35,6 +40,10 @@ export const getRoundCard = (game: RoundCardGame, nameOf: (guesser: Guesser) => 
   const answers = game.list.values.map(
     ({ value, guesser }, index) => `${index + 1}. ${parseSymbols(value)}${guesser ? ` - ${nameOf(guesser)}` : ""}`,
   );
+  // The Pity Answers, after the ten; their guessers don't count as the Round's players.
+  const extras = (game.list.extras ?? [])
+    .filter(({ guesser }) => guesser)
+    .map(({ value, guesser }) => `☆ ${parseSymbols(value)} - ${nameOf(guesser)}`);
   const players = new Set(game.list.values.map(({ guesser }) => guesserId(guesser)).filter(Boolean));
 
   const stats = [];
@@ -45,6 +54,7 @@ export const getRoundCard = (game: RoundCardGame, nameOf: (guesser: Guesser) => 
     "Ten Things",
     game.list.answers ? `${game.list.name} (${game.list.answers})` : game.list.name,
     ...answers,
+    ...extras,
     stats.join(" · "),
   ]);
 };

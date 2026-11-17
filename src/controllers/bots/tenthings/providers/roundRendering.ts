@@ -46,6 +46,11 @@ export const roundNotice = (language: string, event: EngineEvent): string | unde
   }
 };
 
+/** The Round's Answer, or one of the List's other Values, with `value`. */
+export const findAnswer = (game: IGame, value: string) =>
+  game.list.values.find((answer) => answer.value === value) ??
+  game.list.extras?.find((answer) => answer.value === value);
+
 /** Renders `event` if it's one of the Events above; returns whether it was. */
 export const renderRoundEvent = async (game: IGame, event: EngineEvent): Promise<boolean> => {
   const { language } = game.settings;
@@ -69,9 +74,14 @@ export const renderRoundEvent = async (game: IGame, event: EngineEvent): Promise
       if (match) game.provider.guessed(game, match.guesser as IPlayer, match, event.score, event.accuracy);
       return true;
     }
+    case "pityAnswerGuessed": {
+      const match = game.list.extras?.find(({ value }) => value === event.value);
+      if (match) game.provider.pityGuessed(game, match.guesser as IPlayer, match, event.score);
+      return true;
+    }
     case "answerSnubbed": {
       if (!game.settings.snubs) return true;
-      const match = game.list.values.find(({ value }) => value === event.value);
+      const match = findAnswer(game, event.value);
       const loser = await Player.findById(event.playerId).exec();
       if (match && loser)
         game.provider.message(game, getSnubbedMessage(parseSymbols(match.value), loser, match.guesser as IPlayer));
