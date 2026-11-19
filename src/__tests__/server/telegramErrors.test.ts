@@ -1,5 +1,5 @@
 import { AxiosError, AxiosHeaders } from "axios";
-import { classifyTelegramError, describeFailure } from "@root/connections/telegram-errors";
+import { classifyTelegramError, describeFailure, mayHaveArrived } from "@root/connections/telegram-errors";
 import { HttpError, redactSecrets, redactUrl } from "@root/http-client";
 
 const TOKEN_URL = "https://api.telegram.org/bot123456789:FAKEtokenFAKEtokenFAKEtokenFAKE_-x/sendAnimation";
@@ -20,6 +20,17 @@ describe("classifyTelegramError", () => {
   it("treats Telegram's gateway errors as transient", () => {
     expect(classifyTelegramError(telegramAnswer(502, "Bad Gateway")).kind).toBe("transient");
     expect(classifyTelegramError({ response: { status: 504 } }).kind).toBe("transient");
+  });
+
+  it("knows when a failed send may still have reached the chat", () => {
+    const may = (error: object) => mayHaveArrived(classifyTelegramError(error));
+    expect(may({ code: "ECONNABORTED", message: "timeout of 15000ms exceeded" })).toBe(true);
+    expect(may({ code: "ECONNRESET" })).toBe(true);
+    expect(may({ response: { status: 504 } })).toBe(true);
+    expect(may({ code: "ECONNREFUSED" })).toBe(false);
+    expect(may({ code: "ENOTFOUND" })).toBe(false);
+    expect(may(telegramAnswer(502, "Bad Gateway"))).toBe(false);
+    expect(may(telegramAnswer(400, "Bad Request: chat not found"))).toBe(false);
   });
 
   it("reads the wait from a rate limit", () => {
