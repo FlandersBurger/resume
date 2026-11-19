@@ -79,6 +79,18 @@ export const classifyTelegramError = (error: unknown): Failure => {
   return { ...failure, kind: "unknown" };
 };
 
+/** Network failures that happen before the request leaves: Telegram can't have seen it. */
+const NEVER_SENT_CODES = ["ECONNREFUSED", "ENOTFOUND", "EAI_AGAIN", "ENETUNREACH", "EHOSTUNREACH"];
+
+/**
+ * Whether a transient failure may have come after Telegram acted on the request: the answer timed out, the
+ * connection dropped mid-way, or Telegram's gateway timed out. Sending a message again then risks posting it
+ * twice, the second copy seconds later, after whatever the chat got in the meantime.
+ */
+export const mayHaveArrived = (failure: Failure) =>
+  failure.kind === "transient" &&
+  (failure.status === 504 || (failure.status === undefined && !NEVER_SENT_CODES.includes(failure.code ?? "")));
+
 /** One log line for a failure: method, chat and cause. Never the URL, which carries the bot token. */
 export const describeFailure = (method: string, chat: number | undefined, failure: Failure, note?: string) =>
   [

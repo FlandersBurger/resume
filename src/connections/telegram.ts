@@ -11,7 +11,7 @@ import { Command } from "@root/controllers/bots/tenthings/providers/telegram/com
 import { IGame } from "@root/models/tenthings/game";
 import { TelegramCallbackData } from "@tenthings/providers/telegram/callbacks";
 import { convertTelegramUserToPlayer, TelegramMessage } from "@root/controllers/bots/tenthings/providers/telegram";
-import { classifyTelegramError, describeFailure, Failure } from "@root/connections/telegram-errors";
+import { classifyTelegramError, describeFailure, Failure, mayHaveArrived } from "@root/connections/telegram-errors";
 import { styleText } from "util";
 
 const BANNED_TELEGRAM_USERS = [1726294650, 6758829541];
@@ -100,6 +100,8 @@ type CallOptions = {
   channel?: Channel;
   /** How many times to retry a transient failure. Only for calls that are safe to repeat. */
   retries?: number;
+  /** The call posts something: not retried once it may have reached Telegram, or the chat gets it twice. */
+  posts?: boolean;
   /** What was being sent, quoted in the admin alert when the failure is unknown. */
   content?: string;
   /** Sends it again later when Telegram rate-limits us. */
@@ -175,6 +177,10 @@ class TelegramBot {
       const failure = classifyTelegramError(error);
       if (options.expect?.(failure)) return { ok: false, failure };
       const retries = options.retries ?? 0;
+      if (options.posts && mayHaveArrived(failure)) {
+        console.warn(describeFailure(method, options.channel?.chat, failure, "not retried: may have arrived"));
+        return { ok: false, failure };
+      }
       if (failure.kind === "transient" && attempt < retries) {
         console.warn(describeFailure(method, options.channel?.chat, failure, `retry ${attempt + 1}/${retries}`));
         await sleep(2 ** attempt * 1000);
@@ -265,7 +271,7 @@ class TelegramBot {
     await this.call(
       "sendMessage",
       { ...this.messageParams(channel, options), parse_mode: "html", text: message },
-      { channel, retries: 6, content: message, requeue: () => this.queueMessage(channel, message) },
+      { channel, retries: 6, posts: true, content: message, requeue: () => this.queueMessage(channel, message) },
     );
   };
 
@@ -273,7 +279,7 @@ class TelegramBot {
     await this.call(
       "sendRichMessage",
       { ...this.messageParams(channel, options), rich_message: { html } },
-      { channel, retries: 6, content: html, requeue: () => this.queueRichMessage(channel, html) },
+      { channel, retries: 6, posts: true, content: html, requeue: () => this.queueRichMessage(channel, html) },
     );
   };
 
@@ -421,7 +427,7 @@ class TelegramBot {
     await this.call(
       "sendPhoto",
       { chat_id: channel.chat, photo, message_thread_id: channel.topic },
-      { channel, retries: 3, content: photo },
+      { channel, retries: 3, posts: true, content: photo },
     );
   };
 
@@ -429,7 +435,7 @@ class TelegramBot {
     await this.call(
       "sendAnimation",
       { chat_id: channel.chat, animation, message_thread_id: channel.topic },
-      { channel, retries: 3, content: animation },
+      { channel, retries: 3, posts: true, content: animation },
     );
   };
 
