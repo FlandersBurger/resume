@@ -1,0 +1,12 @@
+# Check out and commit every text file with LF, whatever core.autocrlf says: Prettier writes LF,
+# and the app is built and run on Linux. Without this, Windows checkouts mix CRLF and LF and
+# files show up as modified with no real change.
+* text=auto eol=lf
+
+*.png binary
+*.jpg binary
+*.webp binary
+*.gif binary
+*.ico binary
+*.wav binary
+*.woff2 binary
