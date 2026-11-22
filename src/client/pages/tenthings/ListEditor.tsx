@@ -288,11 +288,15 @@ const ValueRow = memo(
   }) {
     const [localValue, setLocalValue] = useState(v.value);
     const [localBlurb, setLocalBlurb] = useState(v.blurb ?? "");
-    // Keep local state in sync when parent resets (e.g. after save)
-    const prevId = useRef(v._id);
-    if (v._id !== prevId.current) {
-      prevId.current = v._id;
+    // Follow the answer when it changes outside this row: a save, fetched blurbs, Claude's fixes.
+    // Typing only reaches the list on blur, so this never overwrites an edit in progress.
+    const prev = useRef({ value: v.value, blurb: v.blurb ?? "" });
+    if (v.value !== prev.current.value) {
+      prev.current.value = v.value;
       setLocalValue(v.value);
+    }
+    if ((v.blurb ?? "") !== prev.current.blurb) {
+      prev.current.blurb = v.blurb ?? "";
       setLocalBlurb(v.blurb ?? "");
     }
 
@@ -401,6 +405,11 @@ export function ListEditor({
   const [wikiUrl, setWikiUrl] = useState("");
   const [wikiStatus, setWikiStatus] = useState("");
   const wikiKey = `tenthings-wiki-url:${list._id}`;
+  const [showBlurbMenu, setShowBlurbMenu] = useState(false);
+  const blurbRef = useRef<HTMLDivElement>(null);
+  const blurbSources = BLURB_TYPES.filter(
+    (bt) => (isAdmin || !bt.adminOnly) && list.categories.some((c) => bt.categories.includes(c.split(".")[0])),
+  );
 
   type SortCol = "value" | "blurb" | "creator" | "date" | "modifyDate";
   const [sortCol, setSortCol] = useState<SortCol | null>("value");
@@ -464,6 +473,7 @@ export function ListEditor({
     const handler = (e: MouseEvent) => {
       if (langRef.current && !langRef.current.contains(e.target as Node)) setShowLanguages(false);
       if (catRef.current && !catRef.current.contains(e.target as Node)) setShowCategories(false);
+      if (blurbRef.current && !blurbRef.current.contains(e.target as Node)) setShowBlurbMenu(false);
     };
     document.addEventListener("mousedown", handler);
     return () => document.removeEventListener("mousedown", handler);
@@ -860,30 +870,59 @@ export function ListEditor({
           ))}
         </div>
 
-        {/* Blurb retrieval */}
-        {list._id !== "new" && (
-          <div className="btn-group" role="group">
-            {BLURB_TYPES.filter(
-              (bt) =>
-                (isAdmin || !bt.adminOnly) && list.categories.some((c) => bt.categories.includes(c.split(".")[0])),
-            ).map((bt) => (
-              <button
-                key={bt.api}
-                className="btn btn-default"
-                disabled={gettingBlurbs || readOnly}
-                onClick={async () => {
-                  setGettingBlurbs(true);
-                  try {
-                    const updated = await getBlurbs(list._id, bt.api);
-                    onChange(updated);
-                  } finally {
-                    setGettingBlurbs(false);
-                  }
-                }}
-              >
-                {gettingBlurbs ? <i className="fas fa-spinner fa-spin" /> : bt.text}
-              </button>
-            ))}
+        {/* Blurb retrieval: every source in one menu */}
+        {list._id !== "new" && (blurbSources.length > 0 || isAdmin) && (
+          <div ref={blurbRef} className={`dropdown btn-group${showBlurbMenu ? " open" : ""}`}>
+            <button
+              className="btn btn-default dropdown-toggle"
+              type="button"
+              disabled={gettingBlurbs || readOnly}
+              onClick={() => setShowBlurbMenu((s) => !s)}
+              title="Fill empty blurbs from an image or video source"
+            >
+              {gettingBlurbs ? <i className="fas fa-spinner fa-spin" /> : <i className="fas fa-images" />} Get blurbs{" "}
+              <span className="caret" />
+            </button>
+            <ul className="dropdown-menu">
+              {blurbSources.map((bt) => (
+                <li key={bt.api}>
+                  <a
+                    href="#"
+                    onClick={async (e) => {
+                      e.preventDefault();
+                      setShowBlurbMenu(false);
+                      setGettingBlurbs(true);
+                      try {
+                        const updated = await getBlurbs(list._id, bt.api);
+                        onChange(updated);
+                      } finally {
+                        setGettingBlurbs(false);
+                      }
+                    }}
+                  >
+                    {bt.text}
+                  </a>
+                </li>
+              ))}
+              {isAdmin && (
+                <>
+                  {blurbSources.length > 0 && <li role="separator" className="divider" />}
+                  <li>
+                    <a
+                      href="#"
+                      onClick={(e) => {
+                        e.preventDefault();
+                        setShowBlurbMenu(false);
+                        if (!wikiUrl) setWikiUrl(localStorage.getItem(wikiKey) ?? "");
+                        setShowWiki(true);
+                      }}
+                    >
+                      From a Fandom wiki…
+                    </a>
+                  </li>
+                </>
+              )}
+            </ul>
           </div>
         )}
 
@@ -898,19 +937,6 @@ export function ListEditor({
             >
               <i className="fas fa-paste" /> Paste answers
             </button>
-            {list._id !== "new" && (
-              <button
-                className={`btn ${showWiki ? "btn-primary" : "btn-default"}`}
-                disabled={readOnly}
-                onClick={() => {
-                  if (!showWiki && !wikiUrl) setWikiUrl(localStorage.getItem(wikiKey) ?? "");
-                  setShowWiki((s) => !s);
-                }}
-                title="Get images from a Fandom or other MediaWiki wiki"
-              >
-                Get Fandom pics
-              </button>
-            )}
           </div>
         )}
 
@@ -953,6 +979,17 @@ export function ListEditor({
             <span className="input-group-btn">
               <button className="btn btn-default" disabled={!wikiUrl || gettingBlurbs} onClick={getWikiImages}>
                 {gettingBlurbs ? <i className="fas fa-spinner fa-spin" /> : "Fill empty blurbs"}
+              </button>
+              <button
+                className="btn btn-default"
+                title="Close"
+                aria-label="Close wiki images"
+                onClick={() => {
+                  setShowWiki(false);
+                  setWikiStatus("");
+                }}
+              >
+                <i className="fas fa-times" />
               </button>
             </span>
           </div>
