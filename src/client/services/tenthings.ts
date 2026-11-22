@@ -1,4 +1,5 @@
 import http from "./http";
+import type { ListSuggestions } from "@utils/list-suggestions";
 
 export interface TenThingsList {
   _id: string;
@@ -295,5 +296,28 @@ export async function getListRanking(
   if (options.creator) params.append("creator", options.creator);
   const query = params.toString();
   const { data } = await http.get<RankRow[]>(`/api/tenthings/stats/list-rankings/${stat}${query ? `?${query}` : ""}`);
+  return data;
+}
+
+let claudeStatus: Promise<boolean> | undefined;
+
+/** Whether the signed-in user may ask Claude to review lists; asked once per page load. */
+export function getClaudeEnabled() {
+  claudeStatus ??= http
+    .get<{ enabled: boolean }>("/api/tenthings/lists/claude/status")
+    .then(({ data }) => data.enabled)
+    .catch(() => {
+      claudeStatus = undefined;
+      return false;
+    });
+  return claudeStatus;
+}
+
+/** Claude's suggested changes to a list, not yet applied, and what the run cost in dollars. */
+export async function suggestListChanges(id: string, options: { instruction?: string; webSearch?: boolean }) {
+  const { data } = await http.post<{ suggestions: ListSuggestions; cost: number }>(
+    `/api/tenthings/lists/${id}/claude`,
+    options,
+  );
   return data;
 }

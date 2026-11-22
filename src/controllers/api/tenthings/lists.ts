@@ -9,6 +9,8 @@ import YouTube from "@root/connections/youtube";
 import Wikipedia from "@root/connections/wikipedia";
 import Pexels from "@root/connections/pexels";
 import Unsplash from "@root/connections/unsplash";
+import * as Claude from "@root/connections/claude";
+import { reconcileSuggestions } from "@utils/list-suggestions";
 import MediaWiki from "@root/connections/mediawiki";
 // const Spotify = require('@/controllers/connections/spotify');
 // const spotify = new Spotify();
@@ -145,6 +147,40 @@ tenthingsListsRoute.get("/:id", async (req: Request<{ id: string }>, res: Respon
     return res.json(publicList);
   }
   return res.json(list);
+});
+
+/** Claude reviews are billed to the site owner's API key, so only the owner (CLAUDE_OWNER_ID) can run them. */
+const canUseClaude = (res: Response) =>
+  Claude.isConfigured() &&
+  !!process.env.CLAUDE_OWNER_ID &&
+  res.locals.isAuthorized &&
+  String(res.locals.user?._id) === process.env.CLAUDE_OWNER_ID;
+
+tenthingsListsRoute.get("/claude/status", (_req: Request, res: Response) => {
+  res.json({ enabled: canUseClaude(res) });
+});
+
+tenthingsListsRoute.post("/:id/claude", async (req: Request<{ id: string }>, res: Response) => {
+  if (!canUseClaude(res)) {
+    res.sendStatus(401);
+    return;
+  }
+  const list = await List.findOne({ _id: req.params.id }).lean();
+  if (!list) {
+    res.sendStatus(404);
+    return;
+  }
+  const values = list.values.map(({ value }) => value);
+  try {
+    const { suggestions, cost } = await Claude.suggestListChanges(
+      { ...list, values },
+      { instruction: String(req.body?.instruction ?? "").trim(), webSearch: !!req.body?.webSearch },
+    );
+    res.json({ suggestions: reconcileSuggestions(suggestions, values), cost });
+  } catch (error) {
+    console.error(error);
+    res.status(502).json({ error: error instanceof Error ? error.message : "Claude couldn't review this list." });
+  }
 });
 
 tenthingsListsRoute.post("/:id/blurbs/:type", async (req: Request<{ id: string; type: string }>, res: Response) => {
