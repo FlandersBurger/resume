@@ -4,6 +4,7 @@ import { TenThingsList, TenThingsValue, Language, CategoryOption, getBlurbs } fr
 import { removeAllButLetters } from "@utils/string-helpers";
 import { TenThingsTableContainer } from "./SharedStyles";
 import { categoryLabel, formatDate, formatPct } from "./format";
+import { PasteAnswersModal } from "./PasteAnswersModal";
 
 const EditListPanel = styled.div<{ $active?: boolean }>`
   top: 50px;
@@ -382,6 +383,11 @@ export function ListEditor({
   const [selectedItem, setSelectedItem] = useState<TenThingsValue | null>(null);
   const [gettingBlurbs, setGettingBlurbs] = useState(false);
   const [showLanguages, setShowLanguages] = useState(false);
+  const [showPaste, setShowPaste] = useState(false);
+  const [showWiki, setShowWiki] = useState(false);
+  const [wikiUrl, setWikiUrl] = useState("");
+  const [wikiStatus, setWikiStatus] = useState("");
+  const wikiKey = `tenthings-wiki-url:${list._id}`;
 
   type SortCol = "value" | "blurb" | "creator" | "date" | "modifyDate";
   const [sortCol, setSortCol] = useState<SortCol | null>("value");
@@ -475,6 +481,33 @@ export function ListEditor({
     onSaveRef.current(updatedList);
   };
 
+  const addValues = (values: string[]) => {
+    const updatedList = {
+      ...listRef.current,
+      values: [...listRef.current.values, ...values.map((value) => ({ value, blurb: "" }))],
+    };
+    onChangeRef.current(updatedList);
+    onSaveRef.current(updatedList);
+    setShowPaste(false);
+  };
+
+  const getWikiImages = async () => {
+    const missing = list.values.filter((v) => !v.blurb).length;
+    setGettingBlurbs(true);
+    setWikiStatus("");
+    try {
+      localStorage.setItem(wikiKey, wikiUrl);
+      const updated = await getBlurbs(list._id, "fandom", wikiUrl);
+      onChange(updated);
+      const found = missing - updated.values.filter((v) => !v.blurb).length;
+      setWikiStatus(`Found images for ${found} of ${missing} answers without a blurb.`);
+    } catch (error: any) {
+      setWikiStatus(error?.response?.data?.error ?? "Couldn't read that wiki.");
+    } finally {
+      setGettingBlurbs(false);
+    }
+  };
+
   const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>, field: "value" | "blurb") => {
     if (e.key === "Tab") {
       e.preventDefault();
@@ -534,6 +567,13 @@ export function ListEditor({
   return (
     <EditListPanel $active={active}>
       {selectedItem && <BlurbModal item={selectedItem} onClose={() => setSelectedItem(null)} />}
+      {showPaste && (
+        <PasteAnswersModal
+          existing={list.values.map((v) => v.value)}
+          onAdd={addValues}
+          onClose={() => setShowPaste(false)}
+        />
+      )}
       {/* Header */}
       <EditListPanelHeader>
         <h1>{list.name || "N/A"}</h1>
@@ -816,6 +856,33 @@ export function ListEditor({
           </div>
         )}
 
+        {/* Admin-only bulk tools */}
+        {isAdmin && (
+          <div className="btn-group" role="group">
+            <button
+              className="btn btn-default"
+              disabled={readOnly || !list.name || list.categories.length === 0}
+              onClick={() => setShowPaste(true)}
+              title="Add many answers at once from pasted text"
+            >
+              <i className="fas fa-paste" /> Paste answers
+            </button>
+            {list._id !== "new" && (
+              <button
+                className={`btn ${showWiki ? "btn-primary" : "btn-default"}`}
+                disabled={readOnly}
+                onClick={() => {
+                  if (!showWiki && !wikiUrl) setWikiUrl(localStorage.getItem(wikiKey) ?? "");
+                  setShowWiki((s) => !s);
+                }}
+                title="Get images from a Fandom or other MediaWiki wiki"
+              >
+                Get Fandom pics
+              </button>
+            )}
+          </div>
+        )}
+
         {/* Delete */}
         {list._id !== "new" && onDelete && (
           <div className="btn-group" role="group">
@@ -825,6 +892,28 @@ export function ListEditor({
           </div>
         )}
       </BtnToolbar>
+
+      {isAdmin && showWiki && list._id !== "new" && (
+        <div style={{ marginTop: 10 }}>
+          <div className="input-group">
+            <span className="input-group-addon">Wiki page</span>
+            <input
+              className="form-control"
+              placeholder="Any page on the wiki, e.g. https://dragonprince.fandom.com/wiki/Category:Characters"
+              value={wikiUrl}
+              onChange={(e) => setWikiUrl(e.target.value)}
+              onKeyDown={(e) => e.key === "Enter" && wikiUrl && !gettingBlurbs && getWikiImages()}
+              autoComplete="off"
+            />
+            <span className="input-group-btn">
+              <button className="btn btn-default" disabled={!wikiUrl || gettingBlurbs} onClick={getWikiImages}>
+                {gettingBlurbs ? <i className="fas fa-spinner fa-spin" /> : "Fill empty blurbs"}
+              </button>
+            </span>
+          </div>
+          {wikiStatus && <small style={{ color: "var(--text-muted)" }}>{wikiStatus}</small>}
+        </div>
+      )}
 
       <hr />
 

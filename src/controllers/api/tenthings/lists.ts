@@ -9,6 +9,7 @@ import YouTube from "@root/connections/youtube";
 import Wikipedia from "@root/connections/wikipedia";
 import Pexels from "@root/connections/pexels";
 import Unsplash from "@root/connections/unsplash";
+import MediaWiki from "@root/connections/mediawiki";
 // const Spotify = require('@/controllers/connections/spotify');
 // const spotify = new Spotify();
 // spotify.init();
@@ -148,9 +149,34 @@ tenthingsListsRoute.get("/:id", async (req: Request<{ id: string }>, res: Respon
 
 tenthingsListsRoute.post("/:id/blurbs/:type", async (req: Request<{ id: string; type: string }>, res: Response) => {
   if (!res.locals.isAuthorized) res.sendStatus(401);
+  else if (req.params.type === "fandom" && !res.locals.isAdmin) res.sendStatus(401);
   else {
     let list = await List.findOne({ _id: req.params.id });
-    if (list) {
+    if (list && req.params.type === "fandom") {
+      let images: Map<string, string>;
+      try {
+        images = await MediaWiki.getImages(
+          String(req.body?.wikiUrl ?? ""),
+          list.values.filter(({ blurb }) => !blurb).map(({ value }) => value),
+        );
+      } catch (error) {
+        res.status(400).json({ error: error instanceof Error ? error.message : "Couldn't read that wiki." });
+        return;
+      }
+      let changed = false;
+      for (const value of list.values) {
+        const image = !value.blurb && images.get(value.value.trim());
+        if (image) {
+          value.blurb = image;
+          value.modifyDate = new Date();
+          changed = true;
+        }
+      }
+      if (changed) await list.save();
+      const freshList = await getList(list._id);
+      if (freshList) res.json(freshList);
+      else res.sendStatus(404);
+    } else if (list) {
       let changed = false;
       for (let value of list.values) {
         if (!value.blurb) {

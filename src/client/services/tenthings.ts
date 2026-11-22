@@ -116,8 +116,10 @@ export async function deleteList(id: string) {
   await http.delete(`/api/tenthings/lists/${id}`);
 }
 
-export async function getBlurbs(id: string, type: string) {
-  const res = await http.post(`/api/tenthings/lists/${id}/blurbs/${type}`);
+/** `wikiUrl` is any page on the wiki to pull images from, for the "fandom" type. */
+export async function getBlurbs(id: string, type: string, wikiUrl?: string) {
+  const url = `/api/tenthings/lists/${id}/blurbs/${type}`;
+  const res = wikiUrl ? await http.post(url, { wikiUrl }) : await http.post(url);
   return res.data as TenThingsList;
 }
 

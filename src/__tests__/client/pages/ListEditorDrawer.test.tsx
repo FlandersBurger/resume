@@ -53,7 +53,7 @@ function setup({ isAdmin = false, user = me as typeof me | null } = {}) {
 const settle = () => act(async () => new Promise((r) => setTimeout(r, 40)));
 
 beforeEach(() => {
-    resetTenThingsReference();
+  resetTenThingsReference();
   jest.clearAllMocks();
   (getCategories as jest.Mock).mockResolvedValue([{ value: "work", label: "Work" }]);
   (getLanguages as jest.Mock).mockResolvedValue([{ code: "EN", name: "English", native: "English" }]);
@@ -99,7 +99,9 @@ describe("ListEditorDrawer", () => {
     fireEvent.blur(name);
     await settle();
 
-    expect(mockUpdateList).toHaveBeenCalledWith(expect.objectContaining({ _id: "list1", name: "Jobs beginning with N" }));
+    expect(mockUpdateList).toHaveBeenCalledWith(
+      expect.objectContaining({ _id: "list1", name: "Jobs beginning with N" }),
+    );
     expect(onSaved).toHaveBeenCalledWith(expect.objectContaining({ name: "Jobs beginning with N" }), false);
   });
 
@@ -118,7 +120,9 @@ describe("ListEditorDrawer", () => {
   it("only creates a new List once it is complete, and only once", async () => {
     setup();
     let finishCreate!: (l: TenThingsList) => void;
-    mockCreateList.mockImplementation((_userId, l) => new Promise((r) => (finishCreate = () => r({ ...l, _id: "created" }))));
+    mockCreateList.mockImplementation(
+      (_userId, l) => new Promise((r) => (finishCreate = () => r({ ...l, _id: "created" }))),
+    );
     mockUpdateList.mockImplementation(async (l) => l);
     const onSaved = jest.fn();
     const { container } = render(<ListEditorDrawer listId="new" onClose={jest.fn()} onSaved={onSaved} />);
@@ -203,5 +207,32 @@ describe("ListEditorDrawer", () => {
     await settle();
     fireEvent.click(screen.getByTestId("list-editor-backdrop"));
     expect(onClose).toHaveBeenCalled();
+  });
+
+  it("hides the paste and Fandom tools from non-admins", async () => {
+    setup();
+    mockGetList.mockResolvedValue(existing());
+    render(<ListEditorDrawer listId="list1" onClose={jest.fn()} />);
+    await settle();
+
+    expect(screen.queryByRole("button", { name: /Paste answers/ })).not.toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: "Get Fandom pics" })).not.toBeInTheDocument();
+  });
+
+  it("lets an admin paste many answers and saves them at once", async () => {
+    setup({ isAdmin: true });
+    mockGetList.mockResolvedValue(existing());
+    mockUpdateList.mockImplementation(async (l) => l);
+    render(<ListEditorDrawer listId="list1" onClose={jest.fn()} />);
+    await settle();
+
+    fireEvent.click(screen.getByRole("button", { name: /Paste answers/ }));
+    fireEvent.change(screen.getByPlaceholderText(/Paste a list/), { target: { value: "Nurse, Notary, answer 1" } });
+    fireEvent.click(screen.getByRole("button", { name: "Add 2 answers" }));
+    await settle();
+
+    const saved = mockUpdateList.mock.calls.at(-1)[0];
+    expect(saved.values.map((v: { value: string }) => v.value).slice(-2)).toEqual(["Nurse", "Notary"]);
+    expect(saved.values).toHaveLength(12);
   });
 });
