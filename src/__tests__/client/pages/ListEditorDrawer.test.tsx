@@ -6,6 +6,7 @@ import {
   createList,
   getCategories,
   getLanguages,
+  getBlurbs,
   getClaudeEnabled,
   getList,
   suggestListChanges,
@@ -220,7 +221,7 @@ describe("ListEditorDrawer", () => {
     await settle();
 
     expect(screen.queryByRole("button", { name: /Paste answers/ })).not.toBeInTheDocument();
-    expect(screen.queryByRole("button", { name: "Get Fandom pics" })).not.toBeInTheDocument();
+    expect(screen.queryByText("From a Fandom wiki…")).not.toBeInTheDocument();
   });
 
   it("lets an admin paste many answers and saves them at once", async () => {
@@ -271,5 +272,41 @@ describe("ListEditorDrawer", () => {
     expect(saved.values[0]).toEqual({ _id: "v0", value: "Notary" });
     expect(saved.values.at(-1)).toEqual({ value: "Nurse", blurb: "" });
     expect(saved.values).toHaveLength(11);
+  });
+
+  it("shows fetched blurbs in the answer rows", async () => {
+    setup();
+    mockGetList.mockResolvedValue(existing({ categories: ["movies"] }));
+    const url = "https://image.tmdb.org/poster.jpg";
+    (getBlurbs as jest.Mock).mockImplementation(async () => {
+      const fetched = existing({ categories: ["movies"] });
+      fetched.values[0] = { ...fetched.values[0], blurb: url };
+      return fetched;
+    });
+    render(<ListEditorDrawer listId="list1" onClose={jest.fn()} />);
+    await settle();
+
+    fireEvent.click(screen.getByRole("button", { name: /Get blurbs/ }));
+    fireEvent.click(screen.getByRole("link", { name: "Get movie posters" }));
+    await settle();
+
+    expect(screen.getByDisplayValue(url)).toBeInTheDocument();
+  });
+
+  it("puts every blurb source in one menu, with the wiki option for admins", async () => {
+    setup({ isAdmin: true });
+    mockGetList.mockResolvedValue(existing({ categories: ["movies"] }));
+    render(<ListEditorDrawer listId="list1" onClose={jest.fn()} />);
+    await settle();
+
+    fireEvent.click(screen.getByRole("button", { name: /Get blurbs/ }));
+    expect(screen.getAllByRole("link").map((a) => a.textContent)).toEqual(
+      expect.arrayContaining(["Get movie posters", "Get actor pics", "From a Fandom wiki…"]),
+    );
+
+    fireEvent.click(screen.getByRole("link", { name: "From a Fandom wiki…" }));
+    expect(screen.getByPlaceholderText(/Any page on the wiki/)).toBeInTheDocument();
+    fireEvent.click(screen.getByRole("button", { name: "Close wiki images" }));
+    expect(screen.queryByPlaceholderText(/Any page on the wiki/)).not.toBeInTheDocument();
   });
 });
