@@ -121,6 +121,14 @@ describe("getBlurbs", () => {
     await getBlurbs("l1", "wikipedia");
     expect(mockHttp.post).toHaveBeenCalledWith("/api/tenthings/lists/l1/blurbs/wikipedia");
   });
+
+  it("sends the wiki to read images from", async () => {
+    mockHttp.post.mockResolvedValueOnce({ data: sampleList });
+    await getBlurbs("l1", "fandom", "https://dragonprince.fandom.com/wiki/Category:Characters");
+    expect(mockHttp.post).toHaveBeenCalledWith("/api/tenthings/lists/l1/blurbs/fandom", {
+      wikiUrl: "https://dragonprince.fandom.com/wiki/Category:Characters",
+    });
+  });
 });
 
 describe("getCategories", () => {
