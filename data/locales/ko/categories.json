@@ -176,7 +176,8 @@
     "venues": "경기장",
     "basketball": "농구",
     "cricket": "크리켓",
-    "football": "축구"
+    "football": "축구",
+    "tennis": "테니스"
   },
   "literature": {
     "name": "문학",
