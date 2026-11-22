@@ -4,6 +4,9 @@ import { TenThingsList, TenThingsValue, Language, CategoryOption, getBlurbs } fr
 import { removeAllButLetters } from "@utils/string-helpers";
 import { TenThingsTableContainer } from "./SharedStyles";
 import { categoryLabel, formatDate, formatPct } from "./format";
+import { ClaudeUpdateModal } from "./ClaudeUpdateModal";
+import { getClaudeEnabled } from "../../services/tenthings";
+import { applySuggestions, ListSuggestions } from "@utils/list-suggestions";
 import { PasteAnswersModal } from "./PasteAnswersModal";
 
 const EditListPanel = styled.div<{ $active?: boolean }>`
@@ -383,6 +386,16 @@ export function ListEditor({
   const [selectedItem, setSelectedItem] = useState<TenThingsValue | null>(null);
   const [gettingBlurbs, setGettingBlurbs] = useState(false);
   const [showLanguages, setShowLanguages] = useState(false);
+  const [showClaude, setShowClaude] = useState(false);
+  const [claudeEnabled, setClaudeEnabled] = useState(false);
+
+  useEffect(() => {
+    let live = true;
+    getClaudeEnabled().then((enabled) => live && setClaudeEnabled(enabled));
+    return () => {
+      live = false;
+    };
+  }, []);
   const [showPaste, setShowPaste] = useState(false);
   const [showWiki, setShowWiki] = useState(false);
   const [wikiUrl, setWikiUrl] = useState("");
@@ -508,6 +521,16 @@ export function ListEditor({
     }
   };
 
+  const applyClaude = (picked: Pick<ListSuggestions, "add" | "remove" | "fix">) => {
+    const updatedList = {
+      ...listRef.current,
+      values: applySuggestions(listRef.current.values, picked, (value) => ({ value, blurb: "" })),
+    };
+    onChangeRef.current(updatedList);
+    onSaveRef.current(updatedList);
+    setShowClaude(false);
+  };
+
   const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>, field: "value" | "blurb") => {
     if (e.key === "Tab") {
       e.preventDefault();
@@ -567,6 +590,14 @@ export function ListEditor({
   return (
     <EditListPanel $active={active}>
       {selectedItem && <BlurbModal item={selectedItem} onClose={() => setSelectedItem(null)} />}
+      {showClaude && (
+        <ClaudeUpdateModal
+          listId={list._id}
+          frequency={list.frequency}
+          onApply={applyClaude}
+          onClose={() => setShowClaude(false)}
+        />
+      )}
       {showPaste && (
         <PasteAnswersModal
           existing={list.values.map((v) => v.value)}
@@ -880,6 +911,20 @@ export function ListEditor({
                 Get Fandom pics
               </button>
             )}
+          </div>
+        )}
+
+        {/* Owner-only: billed to the site's API key */}
+        {claudeEnabled && list._id !== "new" && (
+          <div className="btn-group" role="group">
+            <button
+              className="btn btn-default"
+              disabled={readOnly}
+              onClick={() => setShowClaude(true)}
+              title="Ask Claude to suggest answers to add, remove or fix"
+            >
+              <i className="fas fa-magic" /> Update with Claude
+            </button>
           </div>
         )}
 

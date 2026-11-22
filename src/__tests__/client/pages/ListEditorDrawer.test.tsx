@@ -6,7 +6,9 @@ import {
   createList,
   getCategories,
   getLanguages,
+  getClaudeEnabled,
   getList,
+  suggestListChanges,
   updateList,
 } from "../../../client/services/tenthings";
 import { defaultContextValue } from "../../__mocks__/AppContextMock";
@@ -18,6 +20,8 @@ jest.mock("../../../client/services/tenthings", () => ({
   createList: jest.fn(),
   updateList: jest.fn(),
   getBlurbs: jest.fn(),
+  getClaudeEnabled: jest.fn().mockResolvedValue(false),
+  suggestListChanges: jest.fn(),
   getCategories: jest.fn(),
   getLanguages: jest.fn(),
 }));
@@ -234,5 +238,38 @@ describe("ListEditorDrawer", () => {
     const saved = mockUpdateList.mock.calls.at(-1)[0];
     expect(saved.values.map((v: { value: string }) => v.value).slice(-2)).toEqual(["Nurse", "Notary"]);
     expect(saved.values).toHaveLength(12);
+  });
+
+  it("offers Claude only when the server allows it, and saves the picked changes", async () => {
+    setup({ isAdmin: true });
+    mockGetList.mockResolvedValue(existing());
+    mockUpdateList.mockImplementation(async (l) => l);
+    const { unmount } = render(<ListEditorDrawer listId="list1" onClose={jest.fn()} />);
+    await settle();
+    expect(screen.queryByRole("button", { name: /Update with Claude/ })).not.toBeInTheDocument();
+    unmount();
+
+    (getClaudeEnabled as jest.Mock).mockResolvedValueOnce(true);
+    (suggestListChanges as jest.Mock).mockResolvedValue({
+      suggestions: {
+        add: [{ value: "Nurse", reason: "r", source: "" }],
+        remove: [],
+        fix: [{ value: "Answer 0", to: "Notary", reason: "r", source: "" }],
+        note: "",
+      },
+      cost: 0.01,
+    });
+    render(<ListEditorDrawer listId="list1" onClose={jest.fn()} />);
+    await settle();
+
+    fireEvent.click(screen.getByRole("button", { name: /Update with Claude/ }));
+    fireEvent.click(screen.getByRole("button", { name: "Suggest" }));
+    fireEvent.click(await screen.findByRole("button", { name: "Apply 2 changes" }));
+    await settle();
+
+    const saved = mockUpdateList.mock.calls.at(-1)[0];
+    expect(saved.values[0]).toEqual({ _id: "v0", value: "Notary" });
+    expect(saved.values.at(-1)).toEqual({ value: "Nurse", blurb: "" });
+    expect(saved.values).toHaveLength(11);
   });
 });
