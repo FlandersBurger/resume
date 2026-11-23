@@ -116,6 +116,7 @@
     "colonialism": "Colonialism",
     "conflict": "Conflict",
     "epochs": "Epochs",
+    "former_countries": "Former countries",
     "historic_events": "Historic events",
     "historic_figures": "Historic figures",
     "historic_places": "Historic places",
@@ -139,6 +140,7 @@
   "gaming": {
     "name": "Gaming",
     "card_games": "Card games",
+    "characters": "Characters",
     "consoles": "Consoles",
     "content": "Content",
     "fps": "FPS",
@@ -217,6 +219,7 @@
     "human_rights": "Human rights",
     "infrastructure": "Infrastructure",
     "leaders": "Leaders",
+    "people": "People",
     "politics": "Politics",
     "social_movements": "Social movements",
     "tourism": "Tourism",
