@@ -3,6 +3,7 @@ import { MEMORY_MONGO_TIMEOUT, startMemoryMongo } from "../../helpers/memoryMong
 import {
   getListMetrics,
   getListScore,
+  getSkipRateBounds,
   listMetricsFields,
   pipelineUpdateOptions,
   playedRounds,
@@ -137,5 +138,28 @@ describe("round history", () => {
   test("playedRounds keeps the caller's filter", () => {
     const listId = new mongoose.Types.ObjectId();
     expect(playedRounds({ listId })).toEqual({ listId, outcome: { $in: ["completed", "skipped"] } });
+  });
+});
+
+describe("getSkipRateBounds", () => {
+  test("a few Rounds give a wide range around the raw rate", () => {
+    const { lower, upper } = getSkipRateBounds({ skipped: 2, total: 10 });
+    expect(lower).toBeLessThan(0.2);
+    expect(upper).toBeGreaterThan(0.3);
+  });
+
+  test("many Rounds narrow it to the raw rate", () => {
+    const { lower, upper } = getSkipRateBounds({ skipped: 200, total: 1000 });
+    expect(lower).toBeCloseTo(0.2, 1);
+    expect(upper).toBeCloseTo(0.2, 1);
+  });
+
+  test("stays within 0 and 1 at the extremes", () => {
+    expect(getSkipRateBounds({ skipped: 0, total: 10 }).lower).toBeCloseTo(0, 10);
+    expect(getSkipRateBounds({ skipped: 10, total: 10 }).upper).toBeCloseTo(1, 10);
+  });
+
+  test("no Rounds say nothing", () => {
+    expect(getSkipRateBounds({ skipped: 0, total: 0 })).toEqual({ lower: 0, upper: 1 });
   });
 });
