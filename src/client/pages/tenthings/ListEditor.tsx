@@ -67,6 +67,43 @@ const BtnIcon = styled.button`
 
 const EditorTableContainer = styled(TenThingsTableContainer)``;
 
+const CategoryMenu = styled.div`
+  padding: 10px 12px;
+  width: min(680px, 92vw);
+  max-height: 75vh;
+  overflow-y: auto;
+`;
+
+const CategoryGrid = styled.div`
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(115px, 1fr));
+  gap: 4px;
+
+  .btn {
+    font-weight: bold;
+  }
+`;
+
+const SubcategorySection = styled.div`
+  margin-top: 10px;
+  padding-top: 8px;
+  border-top: 1px solid var(--border);
+`;
+
+const SubcategoryHeading = styled.div`
+  font-size: 12px;
+  font-weight: bold;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  margin-bottom: 4px;
+`;
+
+const ChipRow = styled.div`
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+`;
+
 const InputCell = styled.td`
   && {
     padding: 0 5px 0 0 !important;
@@ -790,41 +827,39 @@ export function ListEditor({
           >
             {getCategoryLabel()}
           </button>
-          <div className="dropdown-menu" style={{ padding: "8px 12px", minWidth: 500 }}>
-            <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
+          <CategoryMenu className="dropdown-menu">
+            <CategoryGrid>
               {categoryOptions.map((cat) => (
-                <div key={cat.value} style={{ display: "flex", alignItems: "flex-start", gap: 4 }}>
-                  <button
-                    type="button"
-                    className={`btn btn-xs ${list.categories.includes(cat.value) ? "btn-primary" : "btn-default"}`}
-                    style={{ fontWeight: "bold", minWidth: 90, flexShrink: 0 }}
-                    onClick={() => toggleCategory(cat.value)}
-                  >
-                    {cat.label}
-                  </button>
-                  {list.categories.includes(cat.value) && cat.subcategories && cat.subcategories.length > 0 && (
-                    <>
-                      <span style={{ color: "var(--text-muted)", fontSize: 12, margin: "0 2px", flexShrink: 0 }}>
-                        ›
-                      </span>
-                      <div style={{ display: "flex", flexWrap: "wrap", gap: 4, flex: 1 }}>
-                        {cat.subcategories.map((sub) => (
-                          <button
-                            key={sub.value}
-                            type="button"
-                            className={`btn btn-xs ${list.categories.includes(sub.value) ? "btn-primary" : "btn-default"}`}
-                            onClick={() => toggleCategory(sub.value)}
-                          >
-                            {sub.label}
-                          </button>
-                        ))}
-                      </div>
-                    </>
-                  )}
-                </div>
+                <button
+                  key={cat.value}
+                  type="button"
+                  className={`btn btn-sm ${list.categories.includes(cat.value) ? "btn-primary" : "btn-default"}`}
+                  onClick={() => toggleCategory(cat.value)}
+                >
+                  {cat.label}
+                </button>
               ))}
-            </div>
-          </div>
+            </CategoryGrid>
+            {categoryOptions
+              .filter((cat) => list.categories.includes(cat.value) && cat.subcategories?.length)
+              .map((cat) => (
+                <SubcategorySection key={cat.value}>
+                  <SubcategoryHeading>{cat.label}</SubcategoryHeading>
+                  <ChipRow>
+                    {cat.subcategories!.map((sub) => (
+                      <button
+                        key={sub.value}
+                        type="button"
+                        className={`btn btn-xs ${list.categories.includes(sub.value) ? "btn-primary" : "btn-default"}`}
+                        onClick={() => toggleCategory(sub.value)}
+                      >
+                        {sub.label}
+                      </button>
+                    ))}
+                  </ChipRow>
+                </SubcategorySection>
+              ))}
+          </CategoryMenu>
         </div>
 
         {/* Difficulty */}
