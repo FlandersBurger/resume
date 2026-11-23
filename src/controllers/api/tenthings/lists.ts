@@ -10,6 +10,7 @@ import Wikipedia from "@root/connections/wikipedia";
 import Pexels from "@root/connections/pexels";
 import Unsplash from "@root/connections/unsplash";
 import * as Claude from "@root/connections/claude";
+import categories from "@tenthings/categories";
 import { reconcileSuggestions } from "@utils/list-suggestions";
 import MediaWiki from "@root/connections/mediawiki";
 // const Spotify = require('@/controllers/connections/spotify');
@@ -170,16 +171,21 @@ tenthingsListsRoute.post("/:id/claude", async (req: Request<{ id: string }>, res
     res.sendStatus(404);
     return;
   }
-  const values = list.values.map(({ value }) => value);
+  const vetted = { ...list, values: list.values.map(({ value, blurb }) => ({ value, blurb })) };
+  const validCategories = Object.entries(categories).flatMap(([category, subcategories]) => [
+    category,
+    ...subcategories.map((subcategory) => `${category}.${subcategory}`),
+  ]);
   try {
-    const { suggestions, cost } = await Claude.suggestListChanges(
-      { ...list, values },
-      { instruction: String(req.body?.instruction ?? "").trim(), webSearch: !!req.body?.webSearch },
+    const { suggestions, cost } = await Claude.vetList(
+      vetted,
+      validCategories,
+      String(req.body?.instruction ?? "").trim(),
     );
-    res.json({ suggestions: reconcileSuggestions(suggestions, values), cost });
+    res.json({ suggestions: reconcileSuggestions(suggestions, vetted, validCategories), cost });
   } catch (error) {
     console.error(error);
-    res.status(502).json({ error: error instanceof Error ? error.message : "Claude couldn't review this list." });
+    res.status(502).json({ error: error instanceof Error ? error.message : "Claude couldn't vet this list." });
   }
 });
 

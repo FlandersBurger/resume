@@ -4,9 +4,9 @@ import { TenThingsList, TenThingsValue, Language, CategoryOption, getBlurbs } fr
 import { removeAllButLetters } from "@utils/string-helpers";
 import { TenThingsTableContainer } from "./SharedStyles";
 import { categoryLabel, formatDate, formatPct } from "./format";
-import { ClaudeUpdateModal } from "./ClaudeUpdateModal";
+import { VetModal } from "./VetModal";
 import { getClaudeEnabled } from "../../services/tenthings";
-import { applySuggestions, ListSuggestions } from "@utils/list-suggestions";
+import { applySuggestions, PickedSuggestions } from "@utils/list-suggestions";
 import { PasteAnswersModal } from "./PasteAnswersModal";
 
 const EditListPanel = styled.div<{ $active?: boolean }>`
@@ -531,11 +531,8 @@ export function ListEditor({
     }
   };
 
-  const applyClaude = (picked: Pick<ListSuggestions, "add" | "remove" | "fix">) => {
-    const updatedList = {
-      ...listRef.current,
-      values: applySuggestions(listRef.current.values, picked, (value) => ({ value, blurb: "" })),
-    };
+  const applyClaude = (picked: PickedSuggestions) => {
+    const updatedList = applySuggestions(listRef.current, picked, (value, blurb): TenThingsValue => ({ value, blurb }));
     onChangeRef.current(updatedList);
     onSaveRef.current(updatedList);
     setShowClaude(false);
@@ -601,9 +598,9 @@ export function ListEditor({
     <EditListPanel $active={active}>
       {selectedItem && <BlurbModal item={selectedItem} onClose={() => setSelectedItem(null)} />}
       {showClaude && (
-        <ClaudeUpdateModal
-          listId={list._id}
-          frequency={list.frequency}
+        <VetModal
+          list={list}
+          categoryOptions={categoryOptions}
           onApply={applyClaude}
           onClose={() => setShowClaude(false)}
         />
@@ -947,9 +944,9 @@ export function ListEditor({
               className="btn btn-default"
               disabled={readOnly}
               onClick={() => setShowClaude(true)}
-              title="Ask Claude to suggest answers to add, remove or fix"
+              title="Have Claude check the answers, blurbs, description, categories and settings"
             >
-              <i className="fas fa-magic" /> Update with Claude
+              <i className="fas fa-magic" /> Vet
             </button>
           </div>
         )}

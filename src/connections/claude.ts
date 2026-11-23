@@ -1,49 +1,82 @@
 import Anthropic from "@anthropic-ai/sdk";
-import { ListSuggestions } from "@utils/list-suggestions";
+import { DIFFICULTIES, FREQUENCIES, ListSuggestions } from "@utils/list-suggestions";
 
 const MODEL = "claude-opus-5-5";
 /** Claude Opus 5.5 rates per token, and web search per request, to show what a run cost. */
 const PRICE = { input: 4 / 1e6, cacheWrite: 5 / 1e6, cacheRead: 0.2 / 1e6, output: 20 / 1e6, search: 10 / 1000 };
-const MAX_SEARCHES = 5;
+/** Search results are long and billed as input, so Claude gets a few searches and is told to use them sparingly. */
+const MAX_SEARCHES = 3;
 const MAX_CONTINUATIONS = 5;
+/** Enough of each blurb for Claude to see the list's style without paying for long ones in full. */
+const BLURB_PREVIEW = 160;
 
-export interface ListForReview {
+export interface ListForVet {
   name: string;
   description?: string;
   language: string;
   categories: string[];
+  difficulty?: number;
   frequency?: number;
-  values: string[];
+  values: { value: string; blurb?: string }[];
 }
 
-export interface SuggestOptions {
-  instruction?: string;
-  webSearch?: boolean;
-}
-
-const FREQUENCY = ["changes frequently", "changes about once a year", "rarely changes", "never changes"];
+const stringField = (description: string) => ({ type: "string", description }) as const;
 
 const suggestion = {
   type: "object",
   additionalProperties: false,
   required: ["value", "reason", "source"],
   properties: {
-    value: { type: "string", description: "The answer exactly as it should appear in the list." },
-    reason: { type: "string", description: "Why, in at most 15 words." },
-    source: { type: "string", description: "A URL that backs this up, or an empty string." },
+    value: stringField("The answer exactly as it should appear in the list."),
+    reason: stringField("Why, in at most 15 words."),
+    source: stringField("A URL from a search that backs this up, or an empty string."),
   },
 } as const;
 
-const SUBMIT_TOOL: Anthropic.Beta.BetaTool = {
-  name: "submit_suggestions",
-  description: "Hand back the suggested changes to the list. Call this exactly once, when you are done.",
+const withFields = (extra: Record<string, { type: "string"; description: string }>) => ({
+  ...suggestion,
+  required: [...suggestion.required, ...Object.keys(extra)],
+  properties: { ...suggestion.properties, ...extra },
+});
+
+const setting = (to: object, description: string) => ({
+  description: `${description} null when it's fine as it is.`,
+  anyOf: [
+    {
+      type: "object",
+      additionalProperties: false,
+      required: ["to", "reason"],
+      properties: { to, reason: stringField("Why, in at most 15 words.") },
+    },
+    { type: "null" },
+  ],
+});
+
+const submitTool = (validCategories: string[]): Anthropic.Beta.BetaTool => ({
+  name: "submit_vet",
+  description: "Hand back the vetting results. Call this exactly once, when you are done.",
   strict: true,
   input_schema: {
     type: "object",
     additionalProperties: false,
-    required: ["add", "remove", "fix", "note"],
+    required: [
+      "add",
+      "remove",
+      "fix",
+      "blurbs",
+      "name",
+      "description",
+      "categories",
+      "difficulty",
+      "frequency",
+      "note",
+    ],
     properties: {
-      add: { type: "array", description: "Answers missing from the list.", items: suggestion },
+      add: {
+        type: "array",
+        description: "Answers missing from the list.",
+        items: withFields({ blurb: stringField("A blurb for it in the list's style, or an empty string.") }),
+      },
       remove: {
         type: "array",
         description: "Existing answers that are wrong or outside the list's scope. `value` is the existing answer.",
@@ -52,38 +85,58 @@ const SUBMIT_TOOL: Anthropic.Beta.BetaTool = {
       fix: {
         type: "array",
         description: "Existing answers to rename. `value` is the existing answer, `to` the corrected one.",
-        items: {
-          ...suggestion,
-          required: [...suggestion.required, "to"],
-          properties: { ...suggestion.properties, to: { type: "string", description: "The corrected answer." } },
-        },
+        items: withFields({ to: stringField("The corrected answer.") }),
       },
-      note: { type: "string", description: "One or two sentences for the editor, or an empty string." },
+      blurbs: {
+        type: "array",
+        description: "Blurbs for existing answers that have none. `value` is the existing answer.",
+        items: withFields({ blurb: stringField("The blurb.") }),
+      },
+      name: setting(stringField("The better list name."), "A clearer list name."),
+      description: setting(stringField("The better description."), "A better description."),
+      categories: setting(
+        { type: "array", items: { type: "string", enum: validCategories } },
+        "The full set of categories the list should have.",
+      ),
+      difficulty: setting(
+        { type: "integer", enum: DIFFICULTIES.map((_, i) => i) },
+        `How hard the list is: ${DIFFICULTIES.map((d, i) => `${i} ${d}`).join(", ")}.`,
+      ),
+      frequency: setting(
+        { type: "integer", enum: FREQUENCIES.map((_, i) => i) },
+        `How often the answers change: ${FREQUENCIES.map((f, i) => `${i} ${f}`).join(", ")}.`,
+      ),
+      note: stringField("One or two sentences for the editor, or an empty string."),
     },
   },
-};
+});
 
-const SYSTEM = `You review lists for Ten Things, a multiplayer trivia game. Each round shows players a list's name and they try to guess the answers on it by typing them in a chat. Guesses are matched loosely (case, accents and punctuation are ignored, and close spellings count), so an answer should be the name most people would type: short, canonical, and without qualifiers players wouldn't think of.
+const SYSTEM = `You vet lists for Ten Things, a multiplayer trivia game. Each round shows players a list's name (and its description), picks 10 of its answers at random, and players try to guess those 10 by typing them in a chat. Guesses are matched loosely (case, accents and punctuation are ignored, and close spellings count), so an answer should be the name most people would type: short, canonical, without qualifiers players wouldn't think of. After an answer is guessed, its blurb is shown: a short fun fact or bit of context, or a link to an image or video.
 
-Your job is to suggest changes to one list:
-- add: answers that belong on the list but are missing.
-- remove: answers that are wrong, out of date, duplicated, or outside what the list's name and description describe.
-- fix: answers with a misspelling, or a form players are unlikely to type (e.g. "Lord Viren" when everyone says "Viren").
+Vet the whole list:
+- answers: a good list beats a complete one. Because any answer can be one of a round's 10, every answer must be one that players who know the topic could think of; an answer nobody would guess stalls the round. First decide what kind of list it is:
+  - a closed set (the planets, the members of a band, a season's episodes, the countries in a region): keep it complete, and add what's missing.
+  - an open-ended pick (an actor's films, a band's songs, a show's characters, "famous" anything): keep only the entries the topic is known for. Suggest removing obscure ones (Losin' It on a Tom Cruise films list), and add only well-known missing ones (Top Gun if it were absent).
+  Also remove answers that are wrong, out of date, duplicated or outside the list's scope, and fix misspellings and forms players are unlikely to type (e.g. "Lord Viren" when everyone says "Viren"). Never cut a list below 10 answers.
+- blurbs: write blurbs for answers that have none, and for answers you add, matching the style and length of the list's existing blurbs (a sentence or two when there are none yet). Write text only and never make up a URL. If the existing blurbs are mostly images or videos, skip blurbs and say in the note which image source would suit the list (movie posters, TV posters, actor pictures, book covers, music videos, Wikipedia, Unsplash, Pexels, or a Fandom wiki).
+- settings: suggest a clearer name, a better description (it introduces the list to players and should make the scope unambiguous), the right categories (only from the allowed ones, as the complete set), how hard the list is, and how often its answers change. Leave a setting null when it's fine.
 
-Only suggest changes you are confident in. An answer being obscure is not a reason to remove it. Keep the list's language: answers in a list marked NL are in Dutch, and so on. If the list's scope is unclear, say so in the note rather than guessing. When you are done, call submit_suggestions once with everything, using empty arrays for kinds with no suggestions.`;
+Keep the list's language: text for a list marked NL is in Dutch, and so on. Only suggest changes you are confident in. Most lists need no web search: search only when answers change over time or you are unsure about specific ones, and keep it to a couple of searches. When you are done, call submit_vet once with everything, using empty arrays and null where you have nothing to suggest.`;
 
-const describeList = (list: ListForReview, instruction?: string) =>
+const preview = (blurb = "") => (blurb.length > BLURB_PREVIEW ? `${blurb.slice(0, BLURB_PREVIEW)}…` : blurb);
+
+const describeList = (list: ListForVet, validCategories: string[], instruction?: string) =>
   [
     `List name: ${list.name}`,
-    list.description ? `Description: ${list.description}` : "",
+    `Description: ${list.description || "(none)"}`,
     `Language: ${list.language}`,
     `Categories: ${list.categories.join(", ") || "none"}`,
-    list.frequency != null && FREQUENCY[list.frequency]
-      ? `How often the answers change: ${FREQUENCY[list.frequency]}`
-      : "",
-    `Current answers (${list.values.length}):`,
-    ...list.values.map((value) => `- ${value}`),
-    instruction ? `\nThe editor asks: ${instruction}` : "",
+    `Difficulty: ${DIFFICULTIES[list.difficulty ?? -1] ?? "not set"}`,
+    `How often the answers change: ${FREQUENCIES[list.frequency ?? -1] ?? "not set"}`,
+    `Allowed categories: ${validCategories.join(", ")}`,
+    `\nAnswers (${list.values.length}), each with its blurb:`,
+    ...list.values.map(({ value, blurb }) => `- ${value} | ${preview(blurb) || "(no blurb)"}`),
+    instruction ? `\nThe editor also asks: ${instruction}` : "",
   ]
     .filter(Boolean)
     .join("\n");
@@ -100,18 +153,23 @@ export const isConfigured = () => !!process.env.ANTHROPIC_API_KEY;
 let client: Anthropic | undefined;
 
 /**
- * Asks Claude to review a list and returns its suggested additions, removals and renames, with what
- * the run cost in dollars. Nothing is saved: the editor reviews the suggestions and applies them.
+ * Asks Claude to vet a list (answers, blurbs and settings) and returns its suggestions, unreconciled, with
+ * what the run cost in dollars. Nothing is saved: the editor reviews the suggestions and applies them.
  */
-export const suggestListChanges = async (
-  list: ListForReview,
-  { instruction, webSearch = false }: SuggestOptions = {},
+export const vetList = async (
+  list: ListForVet,
+  validCategories: string[],
+  instruction?: string,
 ): Promise<{ suggestions: ListSuggestions; cost: number }> => {
   client ??= new Anthropic();
-  const tools: Anthropic.Beta.BetaToolUnion[] = [SUBMIT_TOOL];
-  if (webSearch) tools.unshift({ type: "web_search_20260209", name: "web_search", max_uses: MAX_SEARCHES });
-
-  const messages: Anthropic.Beta.BetaMessageParam[] = [{ role: "user", content: describeList(list, instruction) }];
+  const submit = submitTool(validCategories);
+  const tools: Anthropic.Beta.BetaToolUnion[] = [
+    { type: "web_search_20260209", name: "web_search", max_uses: MAX_SEARCHES },
+    submit,
+  ];
+  const messages: Anthropic.Beta.BetaMessageParam[] = [
+    { role: "user", content: describeList(list, validCategories, instruction) },
+  ];
   let cost = 0;
   let nudged = false;
 
@@ -130,11 +188,11 @@ export const suggestListChanges = async (
       .finalMessage();
     cost += costOf(response.usage);
 
-    if (response.stop_reason === "refusal") throw new Error("Claude declined to review this list.");
+    if (response.stop_reason === "refusal") throw new Error("Claude declined to vet this list.");
     if (response.stop_reason === "max_tokens") throw new Error("Claude's answer was cut off.");
 
     const submitted = response.content.find(
-      (block): block is Anthropic.Beta.BetaToolUseBlock => block.type === "tool_use" && block.name === SUBMIT_TOOL.name,
+      (block): block is Anthropic.Beta.BetaToolUseBlock => block.type === "tool_use" && block.name === submit.name,
     );
     if (submitted) return { suggestions: submitted.input as ListSuggestions, cost };
 
@@ -143,7 +201,7 @@ export const suggestListChanges = async (
     // A paused server-tool turn resumes from the assistant content alone.
     if (response.stop_reason === "pause_turn") continue;
     nudged = true;
-    messages.push({ role: "user", content: "Call submit_suggestions with your suggestions." });
+    messages.push({ role: "user", content: `Call ${submit.name} with your results.` });
   }
-  throw new Error("Claude didn't return any suggestions.");
+  throw new Error("Claude didn't return any results.");
 };
