@@ -130,3 +130,21 @@ export const roundTally = (groupBy: unknown) => ({
 });
 
 export type RoundTally<Id = unknown> = { _id: Id; completed: number; skipped: number; total: number };
+
+/** How sure a skip-rate bound is: z = 1 is about 84% one-sided. */
+const SKIP_RATE_BOUND_Z = 1;
+
+/**
+ * The range a List's true skip rate plausibly lies in, given `skipped` out of `total` played
+ * Rounds (Wilson score interval). Judge quality on these, not the raw rate: on a few Rounds the
+ * raw rate is mostly luck, and the range is wide enough to say so.
+ */
+export const getSkipRateBounds = ({ skipped, total }: { skipped: number; total: number }) => {
+  if (total <= 0) return { lower: 0, upper: 1 };
+  const z = SKIP_RATE_BOUND_Z;
+  const rate = skipped / total;
+  const denominator = 1 + (z * z) / total;
+  const centre = rate + (z * z) / (2 * total);
+  const margin = z * Math.sqrt((rate * (1 - rate)) / total + (z * z) / (4 * total * total));
+  return { lower: (centre - margin) / denominator, upper: (centre + margin) / denominator };
+};

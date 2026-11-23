@@ -71,6 +71,13 @@ const getHighQualityProbability = (listsPlayed: number): number => {
   return Math.max(0, 1 - progress);
 };
 
+/**
+ * Low-quality Lists are left out of selection, so their skip rate would never get the chance to
+ * recover: this share of picks (past the ramp) serves one anyway. A setting object so tests can
+ * pin it.
+ */
+export const selectionOdds = { lowQualityRetry: 0.03 };
+
 /** The fields list selection needs from every List in a Game's pool. */
 type PoolList = Pick<IList, "_id" | "name" | "language" | "categories" | "lowQuality" | "highQuality" | "starred">;
 
@@ -233,9 +240,15 @@ export const selectList = async (game: IGame): Promise<{ list: HydratedDocument<
   const pickFrom = (lists: PoolList[]) =>
     pickRandom(lists.filter((l) => l.categories?.some((c) => preferredCategories.includes(c)))) ?? pickRandom(lists);
   const choose = () => {
-    const eligible = pool.filter((l) => !l.lowQuality && !excluded.has(String(l._id)));
+    const available = pool.filter((l) => !excluded.has(String(l._id)));
+    const eligible = available.filter((l) => !l.lowQuality);
+    const highQualityProbability = getHighQualityProbability(game.listsPlayed);
     let chosen: PoolList | undefined;
-    if (Math.random() < getHighQualityProbability(game.listsPlayed)) {
+    // Games past the ramp now and then get a low-quality List again, so its flag is retested.
+    if (highQualityProbability === 0 && Math.random() < selectionOdds.lowQualityRetry) {
+      chosen = pickFrom(available.filter((l) => l.lowQuality));
+    }
+    if (!chosen && Math.random() < highQualityProbability) {
       chosen = pickFrom(eligible.filter((l) => l.highQuality || l.starred));
     }
     return chosen ?? pickFrom(eligible);

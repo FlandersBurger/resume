@@ -19,7 +19,13 @@ import { Game, GameRound, Player, Stats, List } from "@models/index";
 import i18n from "@root/i18n";
 import { getFrequencyMessage } from "./messages";
 import { capitalize } from "@utils/string-helpers";
-import { listMetricsFields, playedRounds, roundTally } from "@models/tenthings/listMetrics";
+import {
+  getSkipRateBounds,
+  listMetricsFields,
+  playedRounds,
+  roundTally,
+  RoundTally,
+} from "@models/tenthings/listMetrics";
 
 // ██████  ███████ ███████ ███████ ████████     ██████   █████  ██ ██      ██    ██     ███████  ██████  ██████  ██████  ███████
 // ██   ██ ██      ██      ██         ██        ██   ██ ██   ██ ██ ██       ██  ██      ██      ██      ██    ██ ██   ██ ██
@@ -515,22 +521,22 @@ const getVoteTallies = (ids: Types.ObjectId[]) =>
 
 const MIN_GLOBAL_ROUNDS = 10;
 
-// Lists with enough played Rounds across all Games whose skip rate passes `skipRateMatch`.
-const getListsBySkipRate = (skipRateMatch: object) =>
-  GameRound.aggregate<{ _id: Types.ObjectId }>([
+// Lists with enough played Rounds across all Games whose skip-rate bounds pass `passes`.
+const getListsBySkipRate = async (passes: (bounds: { lower: number; upper: number }) => boolean) => {
+  const tallies = await GameRound.aggregate<RoundTally<Types.ObjectId>>([
     { $match: playedRounds() },
     roundTally("$listId"),
     { $match: { total: { $gte: MIN_GLOBAL_ROUNDS } } },
-    { $addFields: { skipRate: { $divide: ["$skipped", "$total"] } } },
-    { $match: { skipRate: skipRateMatch } },
   ]);
+  return tallies.filter((tally) => passes(getSkipRateBounds(tally)));
+};
 
-const MAX_SKIP_RATE = 0.8;
+const MIN_SKIP_RATE = 0.8;
 const MAX_LIKE_RATIO = 0.5;
 const MIN_VOTES_FOR_LIKE_CHECK = 5;
 
 const updateLowQualityLists = async () => {
-  const skipCandidates = await getListsBySkipRate({ $gte: MAX_SKIP_RATE });
+  const skipCandidates = await getListsBySkipRate(({ lower }) => lower >= MIN_SKIP_RATE);
   // A high skip rate alone can mean "hard but loved" rather than "low quality" — corroborate
   // with community sentiment. Lists without enough votes to judge sentiment are flagged on
   // skip rate alone.
@@ -554,7 +560,7 @@ const MIN_VOTES_FOR_HIGH_QUALITY = 5;
 // "high quality" claim is riskier to get wrong, so it always requires corroborating votes —
 // no votes means no flag, regardless of how low the skip rate is.
 const updateHighQualityLists = async () => {
-  const skipCandidates = await getListsBySkipRate({ $lte: MAX_HIGH_QUALITY_SKIP_RATE });
+  const skipCandidates = await getListsBySkipRate(({ upper }) => upper <= MAX_HIGH_QUALITY_SKIP_RATE);
   const candidates = await getVoteTallies(skipCandidates.map((r) => r._id));
   const highQualityIds = candidates
     .filter(({ votes, likeRatio }) => votes >= MIN_VOTES_FOR_HIGH_QUALITY && likeRatio >= MIN_HIGH_QUALITY_LIKE_RATIO)

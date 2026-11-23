@@ -19,6 +19,7 @@ import {
   recentPlayedRounds,
   resetSelectionCaches,
   searchList,
+  selectionOdds,
   selectList,
   warmSelectionCaches,
 } from "@tenthings/lists";
@@ -40,6 +41,7 @@ afterAll(async () => {
 beforeEach(async () => {
   await db.master.db!.dropDatabase();
   resetSelectionCaches();
+  selectionOdds.lowQualityRetry = 0;
 });
 
 // Past the onboarding ramp, so selection isn't limited to high-quality Lists.
@@ -75,6 +77,28 @@ test("skips low-quality, banned, other-language and disabled-category Lists", as
   ]);
   await GameRound.create({ gameId: game._id, listId: lists[2]._id, outcome: "banned", language: "EN" });
   expect(await served(game)).toEqual(new Set(["Good"]));
+});
+
+test("now and then retries a low-quality List, still honouring bans", async () => {
+  selectionOdds.lowQualityRetry = 1;
+  const game = await makeGame();
+  const lists = await makeLists([
+    { name: "Good" },
+    { name: "Low", lowQuality: true },
+    { name: "BannedLow", lowQuality: true },
+  ]);
+  await GameRound.create({ gameId: game._id, listId: lists[2]._id, outcome: "banned", language: "EN" });
+  expect(await served(game, 10)).toEqual(new Set(["Low"]));
+});
+
+test("new Games never get a low-quality retry", async () => {
+  selectionOdds.lowQualityRetry = 1;
+  const game = await makeGame({ listsPlayed: 0 });
+  await makeLists([
+    { name: "Proven", highQuality: true },
+    { name: "Low", lowQuality: true },
+  ]);
+  expect(await served(game, 10)).toEqual(new Set(["Proven"]));
 });
 
 test("keeps recently played Lists on cooldown", async () => {
