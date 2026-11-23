@@ -132,6 +132,28 @@ const InputCell = styled.td`
   }
 `;
 
+const BlurbCell = styled(InputCell)`
+  position: relative;
+  && > textarea {
+    padding-right: 22px;
+  }
+  && > button {
+    position: absolute;
+    top: 4px;
+    right: 4px;
+    padding: 2px 6px;
+    color: #999;
+    opacity: 0;
+    &:hover {
+      color: darkred;
+    }
+  }
+  &:hover > button,
+  &:focus-within > button {
+    opacity: 1;
+  }
+`;
+
 const ImageCell = styled.td`
   && {
     padding: 0 !important;
@@ -186,7 +208,19 @@ function getEmbedUrl(url: string): string {
   return url;
 }
 
+/** The blurb's own picture, or its YouTube video's; nothing for text, Spotify and other links. */
+export function getThumbnailUrl(v: TenThingsValue): string | undefined {
+  if (!v.blurb) return undefined;
+  if (v.blurbType === "image") return v.blurb;
+  if (v.blurbType === "youtube") {
+    const id = v.blurb.match(/[?&]v=([^&]+)/)?.[1] ?? v.blurb.match(/youtu\.be\/([^&?]+)/)?.[1];
+    return id ? `https://img.youtube.com/vi/${id.trim()}/default.jpg` : undefined;
+  }
+  return undefined;
+}
+
 function BlurbModal({ item, onClose }: { item: TenThingsValue; onClose: () => void }) {
+  const [broken, setBroken] = useState(false);
   return (
     <div
       className="modal fade in"
@@ -202,9 +236,19 @@ function BlurbModal({ item, onClose }: { item: TenThingsValue; onClose: () => vo
             <h3 className="modal-title">{item.value}</h3>
           </div>
           <div className="modal-body" style={{ maxHeight: "calc(100vh - 200px)", overflowY: "auto" }}>
-            {item.blurbType === "image" && (
-              <img src={item.blurb} alt={item.value} style={{ maxWidth: "100%", display: "block", margin: "0 auto" }} />
-            )}
+            {item.blurbType === "image" &&
+              (broken ? (
+                <p className="text-danger" style={{ wordBreak: "break-all" }}>
+                  <i className="fas fa-unlink" /> This image can't be loaded: {item.blurb}
+                </p>
+              ) : (
+                <img
+                  src={item.blurb}
+                  alt={item.value}
+                  style={{ maxWidth: "100%", display: "block", margin: "0 auto" }}
+                  onError={() => setBroken(true)}
+                />
+              ))}
             {(item.blurbType === "youtube" || item.blurbType === "spotify" || item.blurbType === "link") &&
               item.blurb && (
                 <iframe width="100%" height="315" frameBorder={0} src={getEmbedUrl(item.blurb)} allowFullScreen />
@@ -338,6 +382,9 @@ const ValueRow = memo(
     }
 
     const canDelete = total > 10;
+    const thumbnail = getThumbnailUrl(v);
+    const hasPreview = !!v.blurb && v.blurbType !== "text";
+    const [brokenThumbnail, setBrokenThumbnail] = useState<string>();
     return (
       <tr>
         <IconColumn className="hidden-xs hidden-sm visible-md visible-lg" title={v.creator?.username}>
@@ -357,7 +404,7 @@ const ValueRow = memo(
             />
           )}
         </InputCell>
-        <InputCell>
+        <BlurbCell>
           {readOnly ? (
             <span>{v.blurb ?? ""}</span>
           ) : (
@@ -370,28 +417,46 @@ const ValueRow = memo(
               }}
             />
           )}
-        </InputCell>
+          {!readOnly && localBlurb && (
+            <button
+              type="button"
+              className="btn btn-link btn-xs"
+              title="Clear blurb"
+              aria-label={`Clear blurb of ${v.value}`}
+              // Keep the textarea focused so its blur doesn't save the old blurb first.
+              onMouseDown={(e) => e.preventDefault()}
+              onClick={() => {
+                setLocalBlurb("");
+                if (v.blurb) onUpdate(index, { blurb: "" });
+              }}
+            >
+              <i className="fas fa-times" />
+            </button>
+          )}
+        </BlurbCell>
         <td className="hidden-xs hidden-sm visible-md visible-lg" style={{ whiteSpace: "nowrap", fontSize: 12 }}>
           {fmtCreated(v)}
         </td>
         <td className="hidden-xs hidden-sm visible-md visible-lg" style={{ whiteSpace: "nowrap", fontSize: 12 }}>
           {formatDate(v.modifyDate)}
         </td>
-        <ImageCell style={{ width: 36 }} onClick={() => v.blurb && onBlurbClick(v)}>
-          {v.blurb && (
+        <ImageCell
+          style={{ width: 36, cursor: hasPreview ? "pointer" : "default" }}
+          onClick={() => hasPreview && onBlurbClick(v)}
+        >
+          {thumbnail && brokenThumbnail !== thumbnail && (
             <img
-              src={
-                v.blurbType === "image"
-                  ? v.blurb
-                  : `https://img.youtube.com/vi/${v.blurb?.match(/[?&]v=([^&]+)/)?.[1] ?? ""}/default.jpg`
-              }
+              src={thumbnail}
               alt=""
-              style={{ width: 28, height: 28, objectFit: "cover", cursor: "pointer" }}
-              onError={(e) => {
-                (e.target as HTMLImageElement).style.display = "none";
-              }}
+              style={{ width: 28, height: 28, objectFit: "cover" }}
+              onError={() => setBrokenThumbnail(thumbnail)}
             />
           )}
+          {thumbnail && brokenThumbnail === thumbnail && (
+            <i className="fas fa-unlink text-danger" title="This image can't be loaded" />
+          )}
+          {v.blurbType === "spotify" && <i className="fab fa-spotify text-success" />}
+          {v.blurbType === "link" && <i className="fas fa-link text-muted" />}
         </ImageCell>
         <DeleteColumn $canDelete={canDelete && !readOnly} onClick={() => canDelete && !readOnly && onRemove(index)}>
           <i className="fas fa-trash" />
@@ -566,6 +631,15 @@ export function ListEditor({
     } finally {
       setGettingBlurbs(false);
     }
+  };
+
+  const blurbCount = list.values.filter((v) => v.blurb).length;
+  const clearAllBlurbs = () => {
+    if (!window.confirm(`Clear all ${blurbCount} blurbs of this list?`)) return;
+    const l = listRef.current;
+    const updated = { ...l, values: l.values.map((v) => (v.blurb ? { ...v, blurb: "" } : v)) };
+    onChangeRef.current(updated);
+    onSaveRef.current(updated);
   };
 
   const applyClaude = (picked: PickedSuggestions) => {
@@ -903,16 +977,16 @@ export function ListEditor({
         </div>
 
         {/* Blurb retrieval: every source in one menu */}
-        {list._id !== "new" && (blurbSources.length > 0 || isAdmin) && (
+        {list._id !== "new" && (blurbSources.length > 0 || isAdmin || blurbCount > 0) && (
           <div ref={blurbRef} className={`dropdown btn-group${showBlurbMenu ? " open" : ""}`}>
             <button
               className="btn btn-default dropdown-toggle"
               type="button"
               disabled={gettingBlurbs || readOnly}
               onClick={() => setShowBlurbMenu((s) => !s)}
-              title="Fill empty blurbs from an image or video source"
+              title="Fill or clear blurbs"
             >
-              {gettingBlurbs ? <i className="fas fa-spinner fa-spin" /> : <i className="fas fa-images" />} Get blurbs{" "}
+              {gettingBlurbs ? <i className="fas fa-spinner fa-spin" /> : <i className="fas fa-images" />} Blurbs{" "}
               <span className="caret" />
             </button>
             <ul className="dropdown-menu">
@@ -950,6 +1024,24 @@ export function ListEditor({
                       }}
                     >
                       From a Fandom wiki…
+                    </a>
+                  </li>
+                </>
+              )}
+              {blurbCount > 0 && (
+                <>
+                  {(blurbSources.length > 0 || isAdmin) && <li role="separator" className="divider" />}
+                  <li>
+                    <a
+                      href="#"
+                      className="text-danger"
+                      onClick={(e) => {
+                        e.preventDefault();
+                        setShowBlurbMenu(false);
+                        clearAllBlurbs();
+                      }}
+                    >
+                      <i className="fas fa-eraser" /> Clear all blurbs
                     </a>
                   </li>
                 </>

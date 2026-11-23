@@ -293,7 +293,7 @@ describe("ListEditorDrawer", () => {
     render(<ListEditorDrawer listId="list1" onClose={jest.fn()} />);
     await settle();
 
-    fireEvent.click(screen.getByRole("button", { name: /Get blurbs/ }));
+    fireEvent.click(screen.getByRole("button", { name: "Blurbs" }));
     fireEvent.click(screen.getByRole("link", { name: "Get movie posters" }));
     await settle();
 
@@ -306,7 +306,7 @@ describe("ListEditorDrawer", () => {
     render(<ListEditorDrawer listId="list1" onClose={jest.fn()} />);
     await settle();
 
-    fireEvent.click(screen.getByRole("button", { name: /Get blurbs/ }));
+    fireEvent.click(screen.getByRole("button", { name: "Blurbs" }));
     expect(screen.getAllByRole("link").map((a) => a.textContent)).toEqual(
       expect.arrayContaining(["Get movie posters", "Get actor pics", "From a Fandom wiki…"]),
     );
@@ -315,5 +315,30 @@ describe("ListEditorDrawer", () => {
     expect(screen.getByPlaceholderText(/Any page on the wiki/)).toBeInTheDocument();
     fireEvent.click(screen.getByRole("button", { name: "Close wiki images" }));
     expect(screen.queryByPlaceholderText(/Any page on the wiki/)).not.toBeInTheDocument();
+  });
+
+  it("clears one blurb from its row, and all of them from the menu", async () => {
+    setup();
+    const withBlurbs = existing();
+    withBlurbs.values = withBlurbs.values.map((v, i) => (i < 3 ? { ...v, blurb: `Blurb ${i}` } : v));
+    mockGetList.mockResolvedValue(withBlurbs);
+    mockUpdateList.mockImplementation(async (l) => l);
+    const confirm = jest.spyOn(window, "confirm").mockReturnValue(true);
+    render(<ListEditorDrawer listId="list1" onClose={jest.fn()} />);
+    await settle();
+
+    fireEvent.click(screen.getByRole("button", { name: "Clear blurb of Answer 0" }));
+    await settle();
+    let saved = mockUpdateList.mock.calls.at(-1)[0];
+    expect(saved.values.map((v: any) => v.blurb ?? "")).toEqual(["", "Blurb 1", "Blurb 2", ...Array(7).fill("")]);
+    expect(screen.queryByDisplayValue("Blurb 0")).not.toBeInTheDocument();
+
+    fireEvent.click(screen.getByRole("button", { name: "Blurbs" }));
+    fireEvent.click(screen.getByRole("link", { name: /Clear all blurbs/ }));
+    await settle();
+    expect(confirm).toHaveBeenCalledWith("Clear all 2 blurbs of this list?");
+    saved = mockUpdateList.mock.calls.at(-1)[0];
+    expect(saved.values.every((v: any) => !v.blurb)).toBe(true);
+    confirm.mockRestore();
   });
 });
