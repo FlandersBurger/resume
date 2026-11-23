@@ -46,8 +46,6 @@
     "characters": "캐릭터",
     "details": "세부 사항",
     "filmography": "필모그래피",
-    "marvel": "마블",
-    "dc": "디씨",
     "star_wars": "스타워즈",
     "titles": "제목"
   },
@@ -82,8 +80,6 @@
     "central_asia": "중앙 아시아",
     "china": "중국",
     "commonwealth": "영연방",
-    "east_africa": "동아프리카",
-    "egypt": "이집트",
     "europe": "유럽",
     "european_union": "유럽 연합",
     "france": "프랑스",
@@ -96,7 +92,6 @@
     "mediterranean": "지중해",
     "mexico": "멕시코",
     "middle_east": "중동",
-    "north_africa": "북아프리카",
     "north_america": "북아메리카",
     "oceania": "오세아니아",
     "pacific_ocean": "태평양",
@@ -104,12 +99,9 @@
     "scandinavia": "스칸디나비아",
     "spain": "스페인",
     "southeast_asia": "동남아시아",
-    "southern_africa": "남아프리카",
-    "south_africa": "남아프리카 공화국",
     "south_america": "남아메리카",
     "united_kingdom": "영국",
-    "united_states": "미국",
-    "west_africa": "서아프리카"
+    "united_states": "미국"
   },
   "history": {
     "name": "역사",

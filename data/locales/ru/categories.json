@@ -46,8 +46,6 @@
     "characters": "Персонажи",
     "details": "Детали",
     "filmography": "Фильмография",
-    "marvel": "Марвел",
-    "dc": "Диси",
     "star_wars": "Звездные войны",
     "titles": "Названия"
   },
@@ -82,8 +80,6 @@
     "central_asia": "Центральная Азия",
     "china": "Китай",
     "commonwealth": "Содружество",
-    "east_africa": "Восточная Африка",
-    "egypt": "Египет",
     "europe": "Европа",
     "european_union": "Европейский Союз",
     "france": "Франция",
@@ -96,7 +92,6 @@
     "mediterranean": "Средиземное море",
     "mexico": "Мексика",
     "middle_east": "Ближний Восток",
-    "north_africa": "Северная Африка",
     "north_america": "Северная Америка",
     "oceania": "Океания",
     "pacific_ocean": "Тихий океан",
@@ -104,12 +99,9 @@
     "scandinavia": "Скандинавия",
     "spain": "Испания",
     "southeast_asia": "Юго-Восточная Азия",
-    "southern_africa": "Южная Африка",
-    "south_africa": "Южная Африка",
     "south_america": "Южная Америка",
     "united_kingdom": "Великобритания",
-    "united_states": "Соединенные Штаты",
-    "west_africa": "Западная Африка"
+    "united_states": "Соединенные Штаты"
   },
   "history": {
     "name": "История",

@@ -46,8 +46,6 @@
     "characters": "Karakter",
     "details": "Detail",
     "filmography": "Filmografi",
-    "marvel": "Marvel",
-    "dc": "DC",
     "star_wars": "Star Wars",
     "titles": "Judul"
   },
@@ -82,8 +80,6 @@
     "central_asia": "Asia Tengah",
     "china": "Cina",
     "commonwealth": "Persemakmuran",
-    "east_africa": "Afrika Timur",
-    "egypt": "Mesir",
     "europe": "Eropa",
     "european_union": "Uni Eropa",
     "france": "Prancis",
@@ -96,7 +92,6 @@
     "mediterranean": "Laut Mediterania",
     "mexico": "Meksiko",
     "middle_east": "Timur Tengah",
-    "north_africa": "Afrika Utara",
     "north_america": "Amerika Utara",
     "oceania": "Oseania",
     "pacific_ocean": "Samudra Pasifik",
@@ -104,12 +99,9 @@
     "scandinavia": "Skandinavia",
     "spain": "Spanyol",
     "southeast_asia": "Asia Tenggara",
-    "southern_africa": "Afrika Selatan",
-    "south_africa": "Afrika Selatan",
     "south_america": "Amerika Selatan",
     "united_kingdom": "Inggris Raya",
-    "united_states": "Amerika Serikat",
-    "west_africa": "Afrika Barat"
+    "united_states": "Amerika Serikat"
   },
   "history": {
     "name": "Sejarah",

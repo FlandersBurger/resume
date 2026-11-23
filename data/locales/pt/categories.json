@@ -46,8 +46,6 @@
     "characters": "Personagens",
     "details": "Detalhes",
     "filmography": "Filmografia",
-    "marvel": "Marvel",
-    "dc": "DC",
     "star_wars": "Star Wars",
     "titles": "Títulos"
   },
@@ -82,8 +80,6 @@
     "central_asia": "Ásia Central",
     "china": "China",
     "commonwealth": "Comunidade das Nações",
-    "east_africa": "África Oriental",
-    "egypt": "Egito",
     "europe": "Europa",
     "european_union": "União Europeia",
     "france": "França",
@@ -96,7 +92,6 @@
     "mediterranean": "Mar Mediterrâneo",
     "mexico": "México",
     "middle_east": "Oriente Médio",
-    "north_africa": "Norte da África",
     "north_america": "América do Norte",
     "oceania": "Oceania",
     "pacific_ocean": "Oceano Pacífico",
@@ -104,12 +99,9 @@
     "scandinavia": "Escandinávia",
     "spain": "Espanha",
     "southeast_asia": "Sudeste Asiático",
-    "southern_africa": "África Austral",
-    "south_africa": "África do Sul",
     "south_america": "América do Sul",
     "united_kingdom": "Reino Unido",
-    "united_states": "Estados Unidos",
-    "west_africa": "África Ocidental"
+    "united_states": "Estados Unidos"
   },
   "history": {
     "name": "História",

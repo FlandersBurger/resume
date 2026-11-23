@@ -33,6 +33,7 @@
     "reality": "Reality",
     "seasons": "Seasons",
     "streaming": "Streaming",
+    "superheroes": "Superheroes",
     "telenovelas": "Telenovelas",
     "titles": "Titles"
   },
@@ -46,9 +47,8 @@
     "characters": "Characters",
     "details": "Details",
     "filmography": "Filmography",
-    "marvel": "Marvel",
-    "dc": "DC",
     "star_wars": "Star wars",
+    "superheroes": "Superheroes",
     "titles": "Titles"
   },
   "culture": {
@@ -82,8 +82,6 @@
     "central_asia": "Central Asia",
     "china": "China",
     "commonwealth": "Commonwealth",
-    "east_africa": "East Africa",
-    "egypt": "Egypt",
     "europe": "Europe",
     "european_union": "European Union",
     "france": "France",
@@ -96,7 +94,6 @@
     "mediterranean": "Mediterranean Sea",
     "mexico": "Mexico",
     "middle_east": "Middle East",
-    "north_africa": "North Africa",
     "north_america": "North America",
     "oceania": "Oceania",
     "pacific_ocean": "Pacific Ocean",
@@ -104,12 +101,9 @@
     "scandinavia": "Scandinavia",
     "spain": "Spain",
     "southeast_asia": "Southeast Asia",
-    "southern_africa": "Southern Africa",
-    "south_africa": "South Africa",
     "south_america": "South America",
     "united_kingdom": "United Kingdom",
-    "united_states": "United States",
-    "west_africa": "West Africa"
+    "united_states": "United States"
   },
   "history": {
     "name": "History",
