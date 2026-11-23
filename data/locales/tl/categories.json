@@ -46,8 +46,6 @@
     "characters": "Mga Karakter",
     "details": "Mga Detalye",
     "filmography": "Filmograpiya",
-    "marvel": "Marvel",
-    "dc": "DC",
     "star_wars": "Star Wars",
     "titles": "Mga Pamagat"
   },
@@ -82,8 +80,6 @@
     "central_asia": "Gitnang Asya",
     "china": "Tsina",
     "commonwealth": "Komonwelt",
-    "east_africa": "Silangang Aprika",
-    "egypt": "Ehipto",
     "europe": "Europa",
     "european_union": "Unyong Europeo",
     "france": "Pransya",
@@ -96,7 +92,6 @@
     "mediterranean": "Dagat Mediteraneo",
     "mexico": "Meksiko",
     "middle_east": "Gitnang Silangan",
-    "north_africa": "Hilagang Aprika",
     "north_america": "Hilagang Amerika",
     "oceania": "Oceania",
     "pacific_ocean": "Karagatang Pasipiko",
@@ -104,12 +99,9 @@
     "scandinavia": "Scandinavia",
     "spain": "Espanya",
     "southeast_asia": "Timog-silangang Asya",
-    "southern_africa": "Timog Aprika",
-    "south_africa": "Timog Aprika",
     "south_america": "Timog Amerika",
     "united_kingdom": "Reyno Unido",
-    "united_states": "Estados Unidos",
-    "west_africa": "Kanlurang Aprika"
+    "united_states": "Estados Unidos"
   },
   "history": {
     "name": "Kasaysayan",

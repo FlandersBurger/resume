@@ -46,8 +46,6 @@
     "characters": "चरित्र",
     "details": "विवरण",
     "filmography": "फिल्मोग्राफी",
-    "marvel": "मार्वल",
-    "dc": "डीसी",
     "star_wars": "स्टार वार्स",
     "titles": "शीर्षक"
   },
@@ -82,8 +80,6 @@
     "central_asia": "मध्य एशिया",
     "china": "चीन",
     "commonwealth": "राष्ट्रमंडल",
-    "east_africa": "पूर्वी अफ्रीका",
-    "egypt": "मिस्र",
     "europe": "यूरोप",
     "european_union": "यूरोपीय संघ",
     "france": "फ्रांस",
@@ -96,7 +92,6 @@
     "mediterranean": "भूमध्य सागर",
     "mexico": "मेक्सिको",
     "middle_east": "मध्य पूर्व",
-    "north_africa": "उत्तरी अफ्रीका",
     "north_america": "उत्तरी अमेरिका",
     "oceania": "ओशिनिया",
     "pacific_ocean": "प्रशांत महासागर",
@@ -104,12 +99,9 @@
     "scandinavia": "स्कैंडिनेविया",
     "spain": "स्पेन",
     "southeast_asia": "दक्षिण पूर्व एशिया",
-    "southern_africa": "दक्षिणी अफ्रीका",
-    "south_africa": "दक्षिण अफ्रीका",
     "south_america": "दक्षिण अमेरिका",
     "united_kingdom": "यूनाइटेड किंगडम",
-    "united_states": "संयुक्त राज्य अमेरिका",
-    "west_africa": "पश्चिम अफ्रीका"
+    "united_states": "संयुक्त राज्य अमेरिका"
   },
   "history": {
     "name": "इतिहास",

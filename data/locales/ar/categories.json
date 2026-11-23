@@ -46,8 +46,6 @@
     "characters": "شخصيات",
     "details": "تفاصيل",
     "filmography": "فيلموغرافيا",
-    "marvel": "مارفل",
-    "dc": "دي سي",
     "star_wars": "حرب النجوم",
     "titles": "عناوين"
   },
@@ -82,8 +80,6 @@
     "central_asia": "آسيا الوسطى",
     "china": "الصين",
     "commonwealth": "الكومنولث",
-    "east_africa": "شرق أفريقيا",
-    "egypt": "مصر",
     "europe": "أوروبا",
     "european_union": "الاتحاد الأوروبي",
     "france": "فرنسا",
@@ -96,7 +92,6 @@
     "mediterranean": "البحر الأبيض المتوسط",
     "mexico": "المكسيك",
     "middle_east": "الشرق الأوسط",
-    "north_africa": "شمال أفريقيا",
     "north_america": "أمريكا الشمالية",
     "oceania": "أوقيانوسيا",
     "pacific_ocean": "المحيط الهادئ",
@@ -104,12 +99,9 @@
     "scandinavia": "إسكندنافيا",
     "spain": "إسبانيا",
     "southeast_asia": "جنوب شرق آسيا",
-    "southern_africa": "جنوب أفريقيا",
-    "south_africa": "جنوب أفريقيا",
     "south_america": "أمريكا الجنوبية",
     "united_kingdom": "المملكة المتحدة",
-    "united_states": "الولايات المتحدة",
-    "west_africa": "غرب أفريقيا"
+    "united_states": "الولايات المتحدة"
   },
   "history": {
     "name": "تاريخ",
