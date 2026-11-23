@@ -1,82 +1,136 @@
-import { applySuggestions, reconcileSuggestions } from "@utils/list-suggestions";
+import { applySuggestions, ListSuggestions, reconcileSuggestions, VettedList } from "@utils/list-suggestions";
 
 const s = (value: string) => ({ value, reason: "r", source: "" });
 const f = (value: string, to: string) => ({ ...s(value), to });
+const b = (value: string, blurb: string) => ({ ...s(value), blurb });
+
+const none: ListSuggestions = {
+  add: [],
+  remove: [],
+  fix: [],
+  blurbs: [],
+  name: null,
+  description: null,
+  categories: null,
+  difficulty: null,
+  frequency: null,
+  note: "",
+};
+
+const list: VettedList = {
+  name: "Dragon Prince characters",
+  description: "Characters",
+  categories: ["television"],
+  difficulty: 1,
+  frequency: 3,
+  values: [
+    { value: "Rayla", blurb: "Moonshadow elf" },
+    { value: "Callum", blurb: "" },
+    { value: "Lord Viren" },
+    { value: "Ezaran", blurb: "" },
+  ],
+};
+const valid = ["television", "television.animation", "movies"];
+const reconcile = (suggestions: Partial<ListSuggestions>) =>
+  reconcileSuggestions({ ...none, ...suggestions }, list, valid);
 
 describe("reconcileSuggestions", () => {
-  const existing = ["Rayla", "Callum", "Lord Viren", "Ezaran"];
-
-  it("drops additions already on the list or repeated", () => {
-    const { add } = reconcileSuggestions(
-      { add: [s("rayla!"), s("Aaravos"), s("aaravos"), s("")], remove: [], fix: [], note: "" },
-      existing,
-    );
-    expect(add.map(({ value }) => value)).toEqual(["Aaravos"]);
+  it("drops additions already on the list or repeated, keeping their blurbs", () => {
+    const { add } = reconcile({ add: [b("rayla!", ""), b("Aaravos", "Startouch elf"), b("aaravos", ""), b("", "")] });
+    expect(add).toEqual([b("Aaravos", "Startouch elf")]);
   });
 
   it("points removals and fixes at the existing answer and drops unknown ones", () => {
-    const result = reconcileSuggestions(
-      {
-        add: [],
-        remove: [s("callum"), s("Nobody")],
-        fix: [f("lord viren", "Viren"), f("Ghost", "Ghosts")],
-        note: "n",
-      },
-      existing,
-    );
-    expect(result.remove.map(({ value }) => value)).toEqual(["Callum"]);
+    const result = reconcile({
+      remove: [s("callum"), s("Nobody")],
+      fix: [f("lord viren", "Viren"), f("Ghost", "Ghosts")],
+    });
+    expect(result.remove).toEqual([s("Callum")]);
     expect(result.fix).toEqual([f("Lord Viren", "Viren")]);
-    expect(result.note).toBe("n");
   });
 
   it("drops fixes that collide with another answer or change nothing, and one change per answer", () => {
-    const result = reconcileSuggestions(
-      {
-        add: [s("Ezran")],
-        remove: [s("Ezaran")],
-        fix: [f("Ezaran", "Ezran"), f("Rayla", "Callum"), f("Callum", "Callum")],
-        note: "",
-      },
-      existing,
-    );
-    expect(result.remove.map(({ value }) => value)).toEqual(["Ezaran"]);
+    const result = reconcile({
+      add: [b("Ezran", "")],
+      remove: [s("Ezaran")],
+      fix: [f("Ezaran", "Ezran"), f("Rayla", "Callum"), f("Callum", "Callum")],
+    });
+    expect(result.remove).toEqual([s("Ezaran")]);
     expect(result.fix).toEqual([]);
-    expect(result.add.map(({ value }) => value)).toEqual(["Ezran"]);
-  });
-
-  it("keeps a fix that only changes case or punctuation", () => {
-    expect(
-      reconcileSuggestions({ add: [], remove: [], fix: [f("rayla", "RAYLA")], note: "" }, existing).fix,
-    ).toHaveLength(1);
+    expect(result.add).toEqual([b("Ezran", "")]);
   });
 
   it("turns a fix's new name into a duplicate for later additions", () => {
-    const result = reconcileSuggestions(
-      { add: [s("Ezran")], remove: [], fix: [f("Ezaran", "Ezran")], note: "" },
-      existing,
-    );
+    const result = reconcile({ add: [b("Ezran", "")], fix: [f("Ezaran", "Ezran")] });
     expect(result.add).toEqual([]);
     expect(result.fix).toHaveLength(1);
+  });
+
+  it("only fills blurbs that are empty, on answers that stay, once each", () => {
+    const result = reconcile({
+      remove: [s("Ezaran")],
+      blurbs: [
+        b("rayla", "x"),
+        b("callum", "Prince"),
+        b("Callum", "again"),
+        b("Lord Viren", "Mage"),
+        b("Ezaran", "y"),
+        b("Nobody", "z"),
+      ],
+    });
+    expect(result.blurbs).toEqual([b("Callum", "Prince"), b("Lord Viren", "Mage")]);
+  });
+
+  it("keeps only settings that change something, with real categories", () => {
+    const changed = reconcile({
+      name: { to: "The Dragon Prince characters", reason: "r" },
+      description: { to: "Characters", reason: "same" },
+      categories: { to: ["television", "television.animation", "made-up"], reason: "r" },
+      difficulty: { to: 1, reason: "same" },
+      frequency: { to: 7, reason: "invalid" },
+    });
+    expect(changed.name?.to).toBe("The Dragon Prince characters");
+    expect(changed.description).toBeNull();
+    expect(changed.categories?.to).toEqual(["television", "television.animation"]);
+    expect(changed.difficulty).toBeNull();
+    expect(changed.frequency).toBeNull();
+    expect(reconcile({ categories: { to: ["television"], reason: "same" } }).categories).toBeNull();
+    expect(reconcile({ categories: { to: ["made-up"], reason: "none valid" } }).categories).toBeNull();
   });
 });
 
 describe("applySuggestions", () => {
-  it("removes, renames in place keeping the rest of the answer, and appends", () => {
-    const values = [
-      { _id: "1", value: "Rayla", blurb: "elf" },
-      { _id: "2", value: "Lord Viren", blurb: "mage" },
-      { _id: "3", value: "Bait", blurb: "" },
-    ];
+  it("applies answers, blurbs and settings, keeping the rest of each answer", () => {
+    const current = {
+      name: "Old",
+      difficulty: 1,
+      values: [
+        { _id: "1", value: "Rayla", blurb: "elf" },
+        { _id: "2", value: "Lord Viren", blurb: "" },
+        { _id: "3", value: "Bait", blurb: "" },
+      ],
+    };
     expect(
       applySuggestions(
-        values,
-        { add: [s("Aaravos")], remove: [s("Bait")], fix: [f("Lord Viren", "Viren")] },
-        (value) => ({ value, blurb: "" }) as (typeof values)[number],
+        current,
+        {
+          add: [b("Aaravos", "Startouch elf")],
+          remove: [s("Bait")],
+          fix: [f("Lord Viren", "Viren")],
+          blurbs: [b("Lord Viren", "Mage")],
+          name: { to: "New", reason: "r" },
+          difficulty: { to: 2, reason: "r" },
+        },
+        (value, blurb) => ({ value, blurb }) as (typeof current.values)[number],
       ),
-    ).toEqual([
-      { _id: "1", value: "Rayla", blurb: "elf" },
-      { _id: "2", value: "Viren", blurb: "mage" },
-      { value: "Aaravos", blurb: "" },
-    ]);
+    ).toEqual({
+      name: "New",
+      difficulty: 2,
+      values: [
+        { _id: "1", value: "Rayla", blurb: "elf" },
+        { _id: "2", value: "Viren", blurb: "Mage" },
+        { value: "Aaravos", blurb: "Startouch elf" },
+      ],
+    });
   });
 });

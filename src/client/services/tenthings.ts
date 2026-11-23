@@ -313,11 +313,13 @@ export function getClaudeEnabled() {
   return claudeStatus;
 }
 
-/** Claude's suggested changes to a list, not yet applied, and what the run cost in dollars. */
-export async function suggestListChanges(id: string, options: { instruction?: string; webSearch?: boolean }) {
+/** Claude's vetting of a list (answers, blurbs, settings), not yet applied, and what the run cost in dollars. */
+export async function vetList(id: string, instruction?: string) {
   const { data } = await http.post<{ suggestions: ListSuggestions; cost: number }>(
     `/api/tenthings/lists/${id}/claude`,
-    options,
+    {
+      instruction,
+    },
   );
   return data;
 }

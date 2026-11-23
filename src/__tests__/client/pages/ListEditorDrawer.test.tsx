@@ -9,7 +9,7 @@ import {
   getBlurbs,
   getClaudeEnabled,
   getList,
-  suggestListChanges,
+  vetList,
   updateList,
 } from "../../../client/services/tenthings";
 import { defaultContextValue } from "../../__mocks__/AppContextMock";
@@ -22,7 +22,7 @@ jest.mock("../../../client/services/tenthings", () => ({
   updateList: jest.fn(),
   getBlurbs: jest.fn(),
   getClaudeEnabled: jest.fn().mockResolvedValue(false),
-  suggestListChanges: jest.fn(),
+  vetList: jest.fn(),
   getCategories: jest.fn(),
   getLanguages: jest.fn(),
 }));
@@ -247,15 +247,21 @@ describe("ListEditorDrawer", () => {
     mockUpdateList.mockImplementation(async (l) => l);
     const { unmount } = render(<ListEditorDrawer listId="list1" onClose={jest.fn()} />);
     await settle();
-    expect(screen.queryByRole("button", { name: /Update with Claude/ })).not.toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: /^ ?Vet$/ })).not.toBeInTheDocument();
     unmount();
 
     (getClaudeEnabled as jest.Mock).mockResolvedValueOnce(true);
-    (suggestListChanges as jest.Mock).mockResolvedValue({
+    (vetList as jest.Mock).mockResolvedValue({
       suggestions: {
-        add: [{ value: "Nurse", reason: "r", source: "" }],
+        add: [{ value: "Nurse", blurb: "Cares for patients", reason: "r", source: "" }],
         remove: [],
         fix: [{ value: "Answer 0", to: "Notary", reason: "r", source: "" }],
+        blurbs: [{ value: "Answer 1", blurb: "A job", reason: "r", source: "" }],
+        name: null,
+        description: { to: "Jobs whose name starts with N", reason: "r" },
+        categories: null,
+        difficulty: null,
+        frequency: null,
         note: "",
       },
       cost: 0.01,
@@ -263,14 +269,15 @@ describe("ListEditorDrawer", () => {
     render(<ListEditorDrawer listId="list1" onClose={jest.fn()} />);
     await settle();
 
-    fireEvent.click(screen.getByRole("button", { name: /Update with Claude/ }));
-    fireEvent.click(screen.getByRole("button", { name: "Suggest" }));
-    fireEvent.click(await screen.findByRole("button", { name: "Apply 2 changes" }));
+    fireEvent.click(screen.getByRole("button", { name: /^ ?Vet$/ }));
+    fireEvent.click(await screen.findByRole("button", { name: "Apply 4 changes" }));
     await settle();
 
     const saved = mockUpdateList.mock.calls.at(-1)[0];
     expect(saved.values[0]).toEqual({ _id: "v0", value: "Notary" });
-    expect(saved.values.at(-1)).toEqual({ value: "Nurse", blurb: "" });
+    expect(saved.values[1]).toEqual({ _id: "v1", value: "Answer 1", blurb: "A job" });
+    expect(saved.values.at(-1)).toEqual({ value: "Nurse", blurb: "Cares for patients" });
+    expect(saved.description).toBe("Jobs whose name starts with N");
     expect(saved.values).toHaveLength(11);
   });
 
