@@ -15,6 +15,7 @@ import { reconcileSuggestions } from "@utils/list-suggestions";
 import { normalizeListName, standardizeTerms } from "@utils/list-names";
 import { SupportedLanguage } from "@tenthings/languages";
 import MediaWiki from "@root/connections/mediawiki";
+import { wikiFor } from "@utils/fandom-wikis";
 // const Spotify = require('@/controllers/connections/spotify');
 // const spotify = new Spotify();
 // spotify.init();
@@ -270,14 +271,19 @@ tenthingsListsRoute.post("/:id/claude", async (req: Request<{ id: string }>, res
 
 tenthingsListsRoute.post("/:id/blurbs/:type", async (req: Request<{ id: string; type: string }>, res: Response) => {
   if (!res.locals.isAuthorized) res.sendStatus(401);
-  else if (req.params.type === "fandom" && !res.locals.isAdmin) res.sendStatus(401);
   else {
     let list = await List.findOne({ _id: req.params.id });
     if (list && req.params.type === "fandom") {
+      // Anyone can pull from the wiki assigned to the list; only admins can point the server at any other URL.
+      const wikiUrl = res.locals.isAdmin && req.body?.wikiUrl ? String(req.body.wikiUrl) : wikiFor(list)?.url;
+      if (!wikiUrl) {
+        res.status(res.locals.isAdmin ? 400 : 403).json({ error: "No wiki is assigned to this list." });
+        return;
+      }
       let images: Map<string, string>;
       try {
         images = await MediaWiki.getImages(
-          String(req.body?.wikiUrl ?? ""),
+          wikiUrl,
           list.values.filter(({ blurb }) => !blurb).map(({ value }) => value),
         );
       } catch (error) {

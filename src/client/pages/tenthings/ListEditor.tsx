@@ -16,6 +16,7 @@ import { VetModal } from "./VetModal";
 import { getClaudeEnabled } from "../../services/tenthings";
 import { answersGivenAway, applySuggestions, PickedSuggestions } from "@utils/list-suggestions";
 import { kindCompletions, listNameHints, normalizeListName, standardizeTerms } from "@utils/list-names";
+import { wikiFor } from "@utils/fandom-wikis";
 import { PasteAnswersModal } from "./PasteAnswersModal";
 
 const EditListPanel = styled.div<{ $active?: boolean }>`
@@ -544,6 +545,7 @@ export function ListEditor({
   const blurbSources = BLURB_TYPES.filter(
     (bt) => (isAdmin || !bt.adminOnly) && list.categories.some((c) => bt.categories.includes(c.split(".")[0])),
   );
+  const assignedWiki = wikiFor(list);
 
   type SortCol = "value" | "blurb" | "creator" | "date" | "modifyDate";
   const [sortCol, setSortCol] = useState<SortCol | null>("value");
@@ -707,13 +709,14 @@ export function ListEditor({
     setShowPaste(false);
   };
 
-  const getWikiImages = async () => {
+  /** Without a URL, the server uses the wiki assigned to the list. */
+  const getWikiImages = async (url?: string) => {
     const missing = list.values.filter((v) => !v.blurb).length;
     setGettingBlurbs(true);
     setWikiStatus("");
     try {
-      localStorage.setItem(wikiKey, wikiUrl);
-      const updated = await getBlurbs(list._id, "fandom", wikiUrl);
+      if (url) localStorage.setItem(wikiKey, url);
+      const updated = await getBlurbs(list._id, "fandom", url);
       onChange(updated);
       const found = missing - updated.values.filter((v) => !v.blurb).length;
       setWikiStatus(`Found images for ${found} of ${missing} answers without a blurb.`);
@@ -1148,7 +1151,7 @@ export function ListEditor({
         </div>
 
         {/* Blurb retrieval: every source in one menu */}
-        {list._id !== "new" && (blurbSources.length > 0 || isAdmin || blurbCount > 0) && (
+        {list._id !== "new" && (assignedWiki || blurbSources.length > 0 || isAdmin || blurbCount > 0) && (
           <div ref={blurbRef} className={`dropdown btn-group${showBlurbMenu ? " open" : ""}`}>
             <button
               className="btn btn-default dropdown-toggle"
@@ -1161,6 +1164,23 @@ export function ListEditor({
               <span className="caret" />
             </button>
             <ul className="dropdown-menu">
+              {assignedWiki && (
+                <>
+                  <li>
+                    <a
+                      href="#"
+                      onClick={(e) => {
+                        e.preventDefault();
+                        setShowBlurbMenu(false);
+                        getWikiImages();
+                      }}
+                    >
+                      Get pics from {assignedWiki.name}
+                    </a>
+                  </li>
+                  {blurbSources.length > 0 && <li role="separator" className="divider" />}
+                </>
+              )}
               {blurbSources.map((bt) => (
                 <li key={bt.api}>
                   <a
@@ -1183,7 +1203,7 @@ export function ListEditor({
               ))}
               {isAdmin && (
                 <>
-                  {blurbSources.length > 0 && <li role="separator" className="divider" />}
+                  {(assignedWiki || blurbSources.length > 0) && <li role="separator" className="divider" />}
                   <li>
                     <a
                       href="#"
@@ -1201,7 +1221,7 @@ export function ListEditor({
               )}
               {blurbCount > 0 && (
                 <>
-                  {(blurbSources.length > 0 || isAdmin) && <li role="separator" className="divider" />}
+                  {(assignedWiki || blurbSources.length > 0 || isAdmin) && <li role="separator" className="divider" />}
                   <li>
                     <a
                       href="#"
@@ -1272,11 +1292,15 @@ export function ListEditor({
               placeholder="Any page on the wiki, e.g. https://dragonprince.fandom.com/wiki/Category:Characters"
               value={wikiUrl}
               onChange={(e) => setWikiUrl(e.target.value)}
-              onKeyDown={(e) => e.key === "Enter" && wikiUrl && !gettingBlurbs && getWikiImages()}
+              onKeyDown={(e) => e.key === "Enter" && wikiUrl && !gettingBlurbs && getWikiImages(wikiUrl)}
               autoComplete="off"
             />
             <span className="input-group-btn">
-              <button className="btn btn-default" disabled={!wikiUrl || gettingBlurbs} onClick={getWikiImages}>
+              <button
+                className="btn btn-default"
+                disabled={!wikiUrl || gettingBlurbs}
+                onClick={() => getWikiImages(wikiUrl)}
+              >
                 {gettingBlurbs ? <i className="fas fa-spinner fa-spin" /> : "Fill empty blurbs"}
               </button>
               <button
@@ -1293,6 +1317,11 @@ export function ListEditor({
             </span>
           </div>
           {wikiStatus && <small style={{ color: "var(--text-muted)" }}>{wikiStatus}</small>}
+        </div>
+      )}
+      {wikiStatus && !(isAdmin && showWiki) && (
+        <div style={{ marginTop: 10 }}>
+          <small style={{ color: "var(--text-muted)" }}>{wikiStatus}</small>
         </div>
       )}
 
