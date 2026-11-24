@@ -25,6 +25,16 @@ const KIND_SPELLINGS: Record<string, Record<string, string>> = {
     novelas: "Novelas",
     series: "Séries",
   },
+  ID: {
+    lagu: "Lagu",
+    lirik: "Lirik",
+    album: "Album",
+    film: "Film",
+    anggota: "Anggota",
+    karakter: "Karakter",
+    pemeran: "Pemeran",
+    drama: "Drama",
+  },
 };
 
 const bare = (word: string) => word.normalize("NFD").replace(/\p{M}/gu, "").toLowerCase();
@@ -48,6 +58,16 @@ const ENGLISH_PHRASES: [RegExp, string][] = [
   [/\bbeginning with\b/gi, "starting with"],
 ];
 
-/** The name in the house phrasing, for English lists; other languages keep their own. */
-export const standardizeListPhrases = (name: string, language: string): string =>
-  language === "EN" ? ENGLISH_PHRASES.reduce((result, [from, to]) => result.replace(from, to), name) : name;
+/** Indonesian reduplication is written with a hyphen: "Nama nama negara" → "Nama-nama negara". */
+const hyphenateReduplication = (name: string) =>
+  name.replace(
+    /(?<![\p{L}-])(\p{L}{3,}) \1(?![\p{L}-])/giu,
+    (match, word: string) => `${word}-${match.slice(word.length + 1)}`,
+  );
+
+/** The name in the house phrasing, for English and Indonesian lists; other languages keep their own. */
+export const standardizeListPhrases = (name: string, language: string): string => {
+  if (language === "EN") return ENGLISH_PHRASES.reduce((result, [from, to]) => result.replace(from, to), name);
+  if (language === "ID") return hyphenateReduplication(name);
+  return name;
+};

@@ -47,6 +47,20 @@ describe("standardizeListPhrases", () => {
     ["3-Letter Words that start with E/I/O/U and end with E", "3-Letter Words starting with E/I/O/U and ending with E"],
   ])("rewrites %j", (name, expected) => expect(standardizeListPhrases(name, "EN")).toBe(expected));
 
+  it.each([
+    ["Nama nama negara di dunia", "Nama-nama negara di dunia"],
+    ["Jenis jenis jeruk", "Jenis-jenis jeruk"],
+    ["Nama nama anak dari presiden presiden indonesia", "Nama-nama anak dari presiden-presiden indonesia"],
+    ["Negara negara di oceania", "Negara-negara di oceania"],
+    ["Hal yang sama sama sekali", "Hal yang sama-sama sekali"],
+  ])("hyphenates Indonesian reduplication in %j", (name, expected) =>
+    expect(standardizeListPhrases(name, "ID")).toBe(expected),
+  );
+
+  it.each(["Nama-nama negara", "Lagu Raisa", "Jenis-jenis jeruk"])("leaves %j alone", (name) =>
+    expect(standardizeListPhrases(name, "ID")).toBe(name),
+  );
+
   it("leaves other languages alone", () => {
     expect(standardizeListPhrases("Words that start with A", "PT")).toBe("Words that start with A");
   });
