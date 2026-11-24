@@ -170,6 +170,20 @@ describe("ListEditorDrawer", () => {
     expect(mockUpdateList).toHaveBeenCalledWith(expect.objectContaining({ name: "Tom Cruise - Cast" }));
   });
 
+  it("counts the description's characters near the limit and flags an old one over it", async () => {
+    setup();
+    mockGetList.mockResolvedValue(existing({ description: "x".repeat(320) }));
+    render(<ListEditorDrawer listId="list1" onClose={jest.fn()} onSaved={jest.fn()} />);
+    await settle();
+
+    expect(screen.getByText(/320 \/ 300 characters: shorten the description/)).toBeInTheDocument();
+    const textarea = screen.getByPlaceholderText(/Description displays/);
+    expect(textarea).toHaveAttribute("maxLength", "320");
+
+    fireEvent.change(textarea, { target: { value: "x".repeat(260) } });
+    expect(screen.getByText("260 / 300 characters")).toBeInTheDocument();
+  });
+
   it("warns when the description gives away an answer", async () => {
     setup();
     mockGetList.mockResolvedValue(existing({ description: "Nurses come first, then answer 3." }));

@@ -1,4 +1,5 @@
 import {
+  blurbTooLong,
   kindCompletions,
   listNameHints,
   normalizeListName,
@@ -31,6 +32,16 @@ describe("withListKind", () => {
     ["Raisa - Lagu", "Album", "ID", "Raisa - Album"],
     ["", "Songs", "EN", ""],
   ])("%j + %j → %j", (name, kind, language, expected) => expect(withListKind(name, kind, language)).toBe(expected));
+});
+
+describe("blurbTooLong", () => {
+  it.each([
+    ["", false],
+    ["x".repeat(300), false],
+    ["x".repeat(301), true],
+    [`https://example.com/${"x".repeat(900)}`, false],
+    [`https://example.com/${"x".repeat(1000)}`, true],
+  ])("%#", (blurb, expected) => expect(blurbTooLong(blurb)).toBe(expected));
 });
 
 describe("kindCompletions", () => {

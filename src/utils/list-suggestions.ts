@@ -1,3 +1,4 @@
+import { blurbTooLong, MAX_DESCRIPTION_LENGTH } from "./list-names";
 import { removeAllButLetters } from "./string-helpers";
 
 /** Lowercase words without accents or punctuation, padded with spaces so " word " matches whole words only. */
@@ -121,16 +122,20 @@ export const reconcileSuggestions = (
   const removed = new Set(remove.map(({ value }) => value));
   const blurbs = (suggestions.blurbs ?? []).flatMap((item) => {
     const existing = byKey.get(removeAllButLetters(item.value));
-    if (!existing || existing.blurb || removed.has(existing.value) || !item.blurb.trim()) return [];
+    if (!existing || existing.blurb || removed.has(existing.value) || !item.blurb.trim() || blurbTooLong(item.blurb))
+      return [];
     return [{ ...item, value: existing.value }];
   });
 
-  const add = (suggestions.add ?? []).filter(({ value }) => {
-    const key = removeAllButLetters(value);
-    if (!key || seen.has(key)) return false;
-    seen.add(key);
-    return true;
-  });
+  const add = (suggestions.add ?? [])
+    .filter(({ value }) => {
+      const key = removeAllButLetters(value);
+      if (!key || seen.has(key)) return false;
+      seen.add(key);
+      return true;
+    })
+    // An answer is worth adding without its blurb; a blurb over the limit isn't.
+    .map((item) => (blurbTooLong(item.blurb) ? { ...item, blurb: "" } : item));
 
   const valid = new Set(validCategories);
   const categories = suggestions.categories?.to.filter((c) => valid.has(c));
@@ -150,7 +155,11 @@ export const reconcileSuggestions = (
     name: setting(suggestions.name, (to) => !!to.trim() && to.trim() !== list.name),
     description: setting(
       suggestions.description,
-      (to) => !!to.trim() && to.trim() !== (list.description ?? "") && !answersGivenAway(to, list.name, answers).length,
+      (to) =>
+        !!to.trim() &&
+        to.trim() !== (list.description ?? "") &&
+        to.length <= MAX_DESCRIPTION_LENGTH &&
+        !answersGivenAway(to, list.name, answers).length,
     ),
     categories:
       suggestions.categories && categories?.length && !sameSet(categories, list.categories)

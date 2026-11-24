@@ -115,6 +115,23 @@ describe("reconcileSuggestions", () => {
     expect(description("Featuring Ezaran.", { remove: [s("Ezaran")] })).not.toBeNull();
     expect(description("Prince Ezran rules.", { fix: [f("Ezaran", "Ezran")] })).toBeNull();
   });
+
+  it("drops blurbs over the length limit, keeping the answers they came with", () => {
+    const long = "x".repeat(301);
+    const url = `https://example.com/${"x".repeat(400)}.jpg`;
+    const result = reconcile({
+      add: [b("Aaravos", long), b("Soren", url)],
+      blurbs: [b("Callum", long), b("Lord Viren", url)],
+    });
+    expect(result.add).toEqual([b("Aaravos", ""), b("Soren", url)]);
+    expect(result.blurbs).toEqual([b("Lord Viren", url)]);
+  });
+
+  it("drops a description over the length limit", () => {
+    const description = (to: string) => reconcile({ description: { to, reason: "r" } }).description;
+    expect(description("x".repeat(300))).not.toBeNull();
+    expect(description("x".repeat(301))).toBeNull();
+  });
 });
 
 describe("answersIn", () => {

@@ -12,7 +12,27 @@ import Unsplash from "@root/connections/unsplash";
 import * as Claude from "@root/connections/claude";
 import categories from "@tenthings/categories";
 import { reconcileSuggestions } from "@utils/list-suggestions";
-import { normalizeListName, standardizeTerms } from "@utils/list-names";
+import {
+  blurbTooLong,
+  MAX_BLURB_LENGTH,
+  MAX_DESCRIPTION_LENGTH,
+  normalizeListName,
+  standardizeTerms,
+} from "@utils/list-names";
+
+/** A new or changed description over the limit; one that's unchanged can stay, so old lists can still be edited. */
+const descriptionTooLong = (description: unknown, previous?: string) =>
+  typeof description === "string" && description.length > MAX_DESCRIPTION_LENGTH && description !== (previous ?? "");
+const descriptionError = { error: `Keep the description to ${MAX_DESCRIPTION_LENGTH} characters.` };
+
+/** The first new or changed blurb over the limit, measured against the answers as they're stored. */
+const longBlurb = (incoming: { _id?: unknown; blurb?: string }[], stored: { _id?: unknown; blurb?: string }[] = []) => {
+  const before = new Map(stored.map((v) => [String(v._id), v.blurb ?? ""]));
+  return incoming.find((v) => blurbTooLong(v.blurb) && v.blurb !== before.get(String(v._id)));
+};
+const blurbError = (value?: { value?: string }) => ({
+  error: `Keep the blurb${value?.value ? ` of "${value.value}"` : ""} to ${MAX_BLURB_LENGTH} characters (a link can be longer).`,
+});
 import { SupportedLanguage } from "@tenthings/languages";
 import MediaWiki from "@root/connections/mediawiki";
 // const Spotify = require('@/controllers/connections/spotify');
@@ -380,6 +400,11 @@ tenthingsListsRoute.put("/:id", async (req: Request<{ id: string }>, res: Respon
       list.values.filter(({ creator }) => !creator).forEach((value) => (value.creator = list.creator));
 
       const existingValuesById = new Map(list.values.map((v) => [String(v._id), v]));
+      const tooLong = longBlurb(req.body.values || [], list.values);
+      if (tooLong) {
+        res.status(400).json(blurbError(tooLong as IListValue));
+        return;
+      }
       const now = new Date();
       (req.body.values || []).forEach((incoming: IListValue) => {
         const existing = existingValuesById.get(String(incoming._id));
@@ -392,9 +417,14 @@ tenthingsListsRoute.put("/:id", async (req: Request<{ id: string }>, res: Respon
       });
 
       const previousName = list.name;
+      const previousDescription = list.description;
       Object.assign(list, req.body);
       list.name = normalizeListName(list.name, list.language);
       if (list.description) list.description = standardizeTerms(list.description);
+      if (descriptionTooLong(list.description, previousDescription)) {
+        res.status(400).json(descriptionError);
+        return;
+      }
       // Only a rename is checked, so lists that were already duplicates can still be edited.
       if (
         list.name.toLowerCase() !== previousName.toLowerCase() &&
@@ -448,7 +478,18 @@ tenthingsListsRoute.post("/", async (req: Request, res: Response) => {
     if (typeof req.body.list.description === "string")
       req.body.list.description = standardizeTerms(req.body.list.description);
     req.body.list.search = removeAllButLetters(req.body.list.name);
-    const stored = req.body.list._id ? await List.findById(req.body.list._id).select("name").lean() : null;
+    const stored = req.body.list._id
+      ? await List.findById(req.body.list._id).select("name description values._id values.blurb").lean()
+      : null;
+    if (descriptionTooLong(req.body.list.description, stored?.description)) {
+      res.status(400).json(descriptionError);
+      return;
+    }
+    const tooLong = longBlurb(req.body.list.values, stored?.values);
+    if (tooLong) {
+      res.status(400).json(blurbError(tooLong as IListValue));
+      return;
+    }
     if (
       stored?.name.toLowerCase() !== req.body.list.name.toLowerCase() &&
       (await findDuplicate(req.body.list.name, req.body.list.language, req.body.list._id))
@@ -548,6 +589,7 @@ tenthingsListsRoute.post("/:id/values", async (req: Request<{ id: string }>, res
     const list = await List.findOne({ _id: req.params.id });
     if (!list) res.sendStatus(404);
     else if (list.values.some(({ value }) => value === req.body.value)) res.sendStatus(400);
+    else if (blurbTooLong(req.body.blurb)) res.status(400).json(blurbError(req.body));
     else {
       const now = new Date();
       list.values.push({ ...req.body, creator: res.locals.user!._id, date: now.toISOString(), modifyDate: now });
@@ -576,6 +618,8 @@ tenthingsListsRoute.put(
         const value = list.values.find(({ _id }) => _id!.toString() === req.params.valueId);
         if (!value) res.sendStatus(404);
         else if (value.creator !== res.locals.user?._id && !res.locals.isAdmin) res.sendStatus(401);
+        else if (req.body.blurb !== value.blurb && blurbTooLong(req.body.blurb))
+          res.status(400).json(blurbError(value));
         else {
           if (moment(list.modifyDate).diff(list.date, "days") > 1) {
             bot.notifyAdmins(

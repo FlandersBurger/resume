@@ -15,7 +15,16 @@ import { categoryLabel, formatDate, formatPct } from "./format";
 import { VetModal } from "./VetModal";
 import { getClaudeEnabled } from "../../services/tenthings";
 import { answersGivenAway, applySuggestions, PickedSuggestions } from "@utils/list-suggestions";
-import { kindCompletions, listNameHints, normalizeListName, standardizeTerms } from "@utils/list-names";
+import {
+  isUrlBlurb,
+  kindCompletions,
+  MAX_BLURB_LENGTH,
+  MAX_URL_BLURB_LENGTH,
+  listNameHints,
+  MAX_DESCRIPTION_LENGTH,
+  normalizeListName,
+  standardizeTerms,
+} from "@utils/list-names";
 import { PasteAnswersModal } from "./PasteAnswersModal";
 
 const EditListPanel = styled.div<{ $active?: boolean }>`
@@ -327,6 +336,7 @@ function AutoTextarea({
   onKeyDown,
   placeholder,
   disabled,
+  maxLength,
   forwardedRef,
 }: {
   value: string;
@@ -335,6 +345,7 @@ function AutoTextarea({
   onKeyDown?: (e: React.KeyboardEvent<HTMLTextAreaElement>) => void;
   placeholder?: string;
   disabled?: boolean;
+  maxLength?: number;
   forwardedRef?: React.Ref<HTMLTextAreaElement>;
 }) {
   const ref = useRef<HTMLTextAreaElement>(null);
@@ -364,6 +375,7 @@ function AutoTextarea({
       }}
       className="form-control"
       value={value}
+      maxLength={maxLength ?? MAX_URL_BLURB_LENGTH}
       placeholder={placeholder}
       disabled={disabled}
       onChange={(e) => {
@@ -378,6 +390,16 @@ function AutoTextarea({
       onKeyDown={onKeyDown}
       style={{ resize: "none", overflow: "hidden", height: COLLAPSED }}
     />
+  );
+}
+
+/** A text blurb's length once it nears the limit; links are exempt. */
+function BlurbLength({ blurb }: { blurb: string }) {
+  if (isUrlBlurb(blurb) || blurb.length <= MAX_BLURB_LENGTH - 50) return null;
+  return (
+    <small className={blurb.length > MAX_BLURB_LENGTH ? "text-danger" : "text-muted"}>
+      {blurb.length} / {MAX_BLURB_LENGTH}
+    </small>
   );
 }
 
@@ -449,6 +471,7 @@ const ValueRow = memo(
               }}
             />
           )}
+          {!readOnly && <BlurbLength blurb={localBlurb} />}
           {!readOnly && localBlurb && (
             <button
               type="button"
@@ -632,6 +655,11 @@ export function ListEditor({
     () => listNameHints(list.name, list.language, list.categories),
     [list.name, list.language, list.categories],
   );
+  const descriptionLength = (list.description ?? "").length;
+  // An old description over the limit can be trimmed bit by bit, but not grown.
+  const savedDescription = useRef({ id: list._id, length: descriptionLength });
+  if (savedDescription.current.id !== list._id) savedDescription.current = { id: list._id, length: descriptionLength };
+  const savedDescriptionLength = savedDescription.current.length;
   const givenAway = useMemo(
     () =>
       answersGivenAway(
@@ -1005,6 +1033,7 @@ export function ListEditor({
           value={list.description ?? ""}
           placeholder="Description displays when the list is introduced to the players."
           disabled={readOnly}
+          maxLength={Math.max(MAX_DESCRIPTION_LENGTH, savedDescriptionLength)}
           onChange={(v) => onChange({ ...list, description: v })}
           onBlur={() => {
             const description = standardizeTerms(listRef.current.description ?? "");
@@ -1017,12 +1046,25 @@ export function ListEditor({
           }}
         />
       </div>
-      {!readOnly && givenAway.length > 0 && (
+      {!readOnly && (givenAway.length > 0 || descriptionLength > MAX_DESCRIPTION_LENGTH - 50) && (
         <NameNotes>
-          <li className="text-warning">
-            Players see the description while they guess, and it gives away{" "}
-            {givenAway.map((answer) => `"${answer}"`).join(", ")}.
-          </li>
+          {descriptionLength > MAX_DESCRIPTION_LENGTH ? (
+            <li className="text-danger">
+              {descriptionLength} / {MAX_DESCRIPTION_LENGTH} characters: shorten the description to save a change to it.
+            </li>
+          ) : (
+            descriptionLength > MAX_DESCRIPTION_LENGTH - 50 && (
+              <li>
+                {descriptionLength} / {MAX_DESCRIPTION_LENGTH} characters
+              </li>
+            )
+          )}
+          {givenAway.length > 0 && (
+            <li className="text-warning">
+              Players see the description while they guess, and it gives away{" "}
+              {givenAway.map((answer) => `"${answer}"`).join(", ")}.
+            </li>
+          )}
         </NameNotes>
       )}
 
@@ -1364,6 +1406,7 @@ export function ListEditor({
                     onKeyDown={(e) => handleKeyDown(e, "blurb")}
                     forwardedRef={newBlurbInputRef}
                   />
+                  <BlurbLength blurb={newItem.blurb} />
                 </InputCell>
                 <td className="hidden-xs hidden-sm visible-md visible-lg" />
                 <td className="hidden-xs hidden-sm visible-md visible-lg" />

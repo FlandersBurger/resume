@@ -79,6 +79,16 @@ export const standardizeListPhrases = (name: string, language: string): string =
 };
 
 /** The kinds the editor offers for "Subject - Kind" names, per language. */
+/** Players read the description in a round's intro: a sentence or two, not a Wikipedia intro. */
+export const MAX_DESCRIPTION_LENGTH = 300;
+/** A fun fact shown once an answer is guessed. Image and video URLs can run longer. */
+export const MAX_BLURB_LENGTH = 300;
+export const MAX_URL_BLURB_LENGTH = 1000;
+
+export const isUrlBlurb = (blurb: string) => /^https?:\/\//i.test(blurb.trim());
+export const blurbTooLong = (blurb?: string | null) =>
+  !!blurb && blurb.length > (isUrlBlurb(blurb) ? MAX_URL_BLURB_LENGTH : MAX_BLURB_LENGTH);
+
 export const LIST_KINDS: Record<string, string[]> = {
   EN: [
     "Songs",
