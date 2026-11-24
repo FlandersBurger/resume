@@ -13,6 +13,7 @@ import * as Claude from "@root/connections/claude";
 import categories from "@tenthings/categories";
 import { reconcileSuggestions } from "@utils/list-suggestions";
 import { normalizeListName } from "@utils/list-names";
+import { SupportedLanguage } from "@tenthings/languages";
 import MediaWiki from "@root/connections/mediawiki";
 // const Spotify = require('@/controllers/connections/spotify');
 // const spotify = new Spotify();
@@ -123,6 +124,47 @@ tenthingsListsRoute.get("/", async (req: QueryableRequest, res: Response) => {
     ? listsWithRoundCounts
     : listsWithRoundCounts.map(({ creator: _c, values: _v, ...rest }) => rest);
   res.json({ result, nextPage: page + 1, count });
+});
+
+const escapeRegex = (text: string) => text.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+
+/** Another enabled list in the same language with this name, ignoring case and accents. */
+const findDuplicate = (name: string, language: SupportedLanguage, exceptId?: string | Types.ObjectId) =>
+  List.findOne({ name, language, enabled: true, ...(exceptId && { _id: { $ne: exceptId } }) })
+    .collation({ locale: "en", strength: 1 })
+    .select("_id name")
+    .lean();
+
+const duplicateError = (name: string) => ({ error: `There's already a list called "${name}" in this language.` });
+
+/**
+ * Lists in the same language about the same subject (the part before the last " - "), so the editor can
+ * point a creator at a list they could add to instead of starting a duplicate.
+ */
+tenthingsListsRoute.get("/similar", async (req: Request, res: Response) => {
+  const name = normalizeListName(String(req.query.name ?? ""));
+  const language = String(req.query.language ?? "") as SupportedLanguage;
+  if (!name || !language) {
+    res.json({ lists: [], duplicate: null });
+    return;
+  }
+  const at = name.lastIndexOf(" - ");
+  const subject = at >= 0 ? name.slice(0, at) : name;
+  const exclude = Types.ObjectId.isValid(String(req.query.exclude)) ? String(req.query.exclude) : undefined;
+  const [lists, duplicate] = await Promise.all([
+    List.find({
+      language,
+      enabled: true,
+      name: { $regex: `^${escapeRegex(subject)}( - |$)`, $options: "i" },
+      ...(exclude && { _id: { $ne: exclude } }),
+    })
+      .sort({ plays: -1 })
+      .limit(6)
+      .select("_id name")
+      .lean(),
+    findDuplicate(name, language, exclude),
+  ]);
+  res.json({ lists, duplicate });
 });
 
 tenthingsListsRoute.post("/random", async (_: Request, res: Response) => {
@@ -313,8 +355,17 @@ tenthingsListsRoute.put("/:id", async (req: Request<{ id: string }>, res: Respon
         }
       });
 
+      const previousName = list.name;
       Object.assign(list, req.body);
       list.name = normalizeListName(list.name, list.language);
+      // Only a rename is checked, so lists that were already duplicates can still be edited.
+      if (
+        list.name.toLowerCase() !== previousName.toLowerCase() &&
+        (await findDuplicate(list.name, list.language, list._id))
+      ) {
+        res.status(400).json(duplicateError(list.name));
+        return;
+      }
       if (list.values.length < MIN_LIST_VALUES) {
         res.status(400).json({ error: `A list must have at least ${MIN_LIST_VALUES} values.` });
         return;
@@ -358,6 +409,14 @@ tenthingsListsRoute.post("/", async (req: Request, res: Response) => {
     req.body.list.modifyDate = new Date();
     req.body.list.name = normalizeListName(req.body.list.name ?? "", req.body.list.language);
     req.body.list.search = removeAllButLetters(req.body.list.name);
+    const stored = req.body.list._id ? await List.findById(req.body.list._id).select("name").lean() : null;
+    if (
+      stored?.name.toLowerCase() !== req.body.list.name.toLowerCase() &&
+      (await findDuplicate(req.body.list.name, req.body.list.language, req.body.list._id))
+    ) {
+      res.status(400).json(duplicateError(req.body.list.name));
+      return;
+    }
     // The editor never holds the List's votes, so the score is recomputed in Mongo after saving.
     delete req.body.list.score;
     req.body.list.values
