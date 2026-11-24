@@ -252,6 +252,7 @@
     "bugPrompt": "<b>BUG</b>\nPlease provide some details as to what went wrong in your next message, {{name}}!",
     "newListsHeading": "<b>New lists</b>",
     "updatedListsHeading": "<b>Updated lists</b>",
+    "moreLists": "…and {{count}} more",
     "listUpdatesOptOut": "Switch off these updates through /settings",
     "discordPromo": "Ten Things is on Discord too! Got friends or a community there? <a href=\"{{url}}\">Add Ten Things to your Discord server</a> and play together."
   },

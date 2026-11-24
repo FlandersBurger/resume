@@ -16,8 +16,8 @@ import { IStats } from "@models/tenthings/stats";
 import { updateMinigames } from "./minigame";
 import { SupportedLanguage } from "./languages";
 import { Game, GameRound, Player, Stats, List } from "@models/index";
-import i18n from "@root/i18n";
 import { getFrequencyMessage } from "./messages";
+import { listUpdateMessage } from "./listUpdates";
 import { capitalize } from "@utils/string-helpers";
 import {
   getSkipRateBounds,
@@ -242,7 +242,7 @@ const sendListUpdates = async () => {
   const lists = await List.find({
     $or: [{ date: { $gte: yesterday } }, { modifyDate: { $gte: yesterday }, date: { $lt: yesterday } }],
   })
-    .select("name language date")
+    .select("name language date plays")
     .lean();
   if (lists.length === 0) return bot.notifyAdmin("No lists created or modified");
 
@@ -270,21 +270,12 @@ const sendListUpdates = async () => {
   let sentTo = 0;
   let messages = 0;
   for (const { languages, uiLanguage, channels } of groups.values()) {
-    const relevantNew = newLists.filter(({ language }) => languages.includes(language));
-    const relevantUpdated = updatedLists.filter(({ language }) => languages.includes(language));
-    if (relevantNew.length === 0 && relevantUpdated.length === 0) continue;
-
-    let message = "";
-    if (relevantNew.length > 0) {
-      message += i18n(uiLanguage, "sentences.newListsHeading");
-      relevantNew.forEach(({ name }) => (message += `\n- ${name}`));
-    }
-    if (relevantUpdated.length > 0) {
-      if (message) message += "\n\n";
-      message += i18n(uiLanguage, "sentences.updatedListsHeading");
-      relevantUpdated.forEach(({ name }) => (message += `\n- ${name}`));
-    }
-    message += `\n\n<i>${i18n(uiLanguage, "sentences.listUpdatesOptOut")}</i>`;
+    const message = listUpdateMessage(
+      newLists.filter(({ language }) => languages.includes(language)),
+      updatedLists.filter(({ language }) => languages.includes(language)),
+      uiLanguage,
+    );
+    if (!message) continue;
     bot.broadcast(channels, message, { silent: true });
     sentTo += channels.length;
     messages++;
