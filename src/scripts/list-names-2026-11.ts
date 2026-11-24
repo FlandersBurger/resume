@@ -58,7 +58,6 @@ const RENAMES: Record<string, string> = {
   "6a40f6b92562d32bce082278": "Tubero - Songs",
   "5e690db1a98a440dbebcf019": "Nightwish - Songs",
   "5f13acbe6894c91171b978a3": "Atif Aslam - Songs",
-  "639d2daa1831a262ca25f893": "Ed Sheeran - No.6 Collaborations Project - Songs",
 
   // Characters
   "5f131d7bd6a4527cd5d8ee83": "Studio Ghibli - Characters",
@@ -74,7 +73,6 @@ const RENAMES: Record<string, string> = {
   "606efce698514e57658a865f": "Banana Fish - Characters",
   "60effb6ca07e706b6d8ad694": "Kartrider Rush+ - Characters",
   "689121dc126629161a482b76": "Genshin Impact - Characters",
-  "60cb5a7a5d17e50f257f0e0d": "Shakespeare - Characters",
   "5e5d5cf9d1882a14621e7bd9": "Eureka - Characters",
   "66838a46be141505652cf429": "Mahabharat - Characters",
   "5e97cff6e98f9b74e6a323d9": "Things associated with Vampires",
@@ -137,7 +135,8 @@ const RENAMES: Record<string, string> = {
   "600767c405ff32758d762372": "The Boyz - Albums",
   "5ef6a1e0811201389878482b": "Carly Rae Jepsen - Songs",
   "5ea3d51e41529660e6484613": "Taylor Swift - Songs",
-  "602dc24c34e15137a82de29f": "2NE1 - Albums",
+  // Too few albums for an Albums list, so its songs join 2NE1 - Songs
+  "602dc24c34e15137a82de29f": "2NE1 - Songs",
   "607f880cdb59db56bafe63b1": "Death Grips - Albums",
   "66cd7001cc9b30ce0c9176ad": "Xdinary Heroes - Songs",
   "6387c7912cb1eb7165b2c8a1": "Doris Day - Albums",
@@ -221,7 +220,486 @@ const RENAMES: Record<string, string> = {
   "64db0c0bb3427254f8d6d874": 'Taylor Swift - "From the Vault" Songs',
 };
 
+/** Lists to delete outright: too niche to keep. */
+const DELETES = ["639d2daa1831a262ca25f893"]; // Ed Sheeran No. 6 Collaborations Project Songs
+
+/**
+ * The answers a merged song list keeps, by the id of the list it merges into: its well-known songs. Merging
+ * two catalogues adds up every deep cut, and less is more when a round picks 10 answers at random. Merged
+ * lists not listed here keep every answer. Either way, answers that differ only in case or punctuation are
+ * kept once.
+ */
+const KEEP: Record<string, string[]> = {
+  // Dreamcatcher: the title tracks
+  "5ef971d6333181566ca84696": [
+    "Chase Me",
+    "Good Night",
+    "Fly High",
+    "You and I",
+    "What",
+    "Piri",
+    "Scream",
+    "Deja Vu",
+    "Odd Eye",
+    "Full Moon",
+    "Endless Night",
+    "Over the Sky",
+  ],
+  // Katy Perry
+  "5ed90e8aaf104f6e1b847b2b": [
+    "Part Of Me",
+    "I Kissed a Girl",
+    "The One That Got Away",
+    "Last Friday Night (T.G.I.F.)",
+    "Wide Awake",
+    "California Gurls",
+    "E.T.",
+    "Hot N Cold",
+    "Firework",
+    "Teenage Dream",
+    "Roar",
+    "Dark Horse",
+    "Unconditionally",
+    "Birthday",
+    "This Is How We Do",
+    "Chained To The Rhythm",
+    "Swish Swish",
+    "Bon appétit",
+    "Rise",
+    "Never Really Over",
+    "Waking Up In Vegas",
+    "Thinking Of You",
+    "Smile",
+  ],
+  // Day6
+  "5ecf13ccf4fc17377984f002": [
+    "Finale",
+    "Breaking Down",
+    "Beautiful Feeling",
+    "Stop The Rain",
+    "If -Mata Aetara-",
+    "I Smile",
+    "You Were Beautiful",
+    "Hi Hello",
+    "Congratulations",
+    "Dance Dance",
+    "Days Gone By",
+    "I Loved You",
+    "I Like You",
+    "I Wait",
+    "Letting Go",
+    "Shoot Me",
+    "Sweet Chaos",
+    "Time of Our Life",
+    "What Can I Do",
+    "When You Love Someone",
+    "All Alone",
+    "Zombie",
+    "I'm Serious",
+    "How Can I Say",
+    "Best Part",
+  ],
+  // IU
+  "5edc74dd776bfa29abc80369": [
+    "Good Day",
+    "You and I",
+    "Palette",
+    "BBIBBI",
+    "Blueming",
+    "Celebrity",
+    "Lilac",
+    "Coin",
+    "Eight",
+    "Through the Night",
+    "Twenty-Three",
+    "Love Poem",
+    "The Red Shoes",
+    "Friday",
+    "Marshmallow",
+    "Nagging",
+    "Every End of the Day",
+    "Sleepless Rainy Night",
+    "Peach",
+    "Hold My Hand",
+    "Ending Scene",
+    "Can't Love You Anymore",
+    "Boo",
+    "Autumn Morning",
+    "My Old Story",
+    "The Story Only I Didn't Know",
+    "Give You My Heart",
+  ],
+  // Lady Gaga
+  "5c9a6578eec5596385b95f6c": [
+    "Just Dance",
+    "Poker Face",
+    "Paparazzi",
+    "Bad Romance",
+    "Alejandro",
+    "Born This Way",
+    "Judas",
+    "Yoü and I",
+    "Marry The Night",
+    "Applause",
+    "Million Reasons",
+    "Shallow",
+    "Stupid Love",
+    "Perfect Illusion",
+    "Sour Candy",
+  ],
+  // SEVENTEEN: the title tracks
+  "5eb7d10483b43640f2cbe09b": [
+    "Pretty U",
+    "Left & Right",
+    "Fear",
+    "Happy Ending",
+    "Home",
+    "Oh My!",
+    "Thanks",
+    "Very Nice",
+    "Call! Call! Call!",
+    "Getting Closer",
+    "Don't Wanna Cry",
+    "Boom Boom",
+    "Mansae",
+    "Clap",
+    "Adore U",
+    "Hit",
+    "Fallin' Flower",
+  ],
+  // ITZY: the title tracks
+  "5f418ab9f6701956bf9be48b": [
+    "DALLA DALLA",
+    "ICY",
+    "WANNABE",
+    "NOT SHY",
+    "Mafia In the Morning",
+    "LOCO",
+    "Sneakers",
+    "Cheshire",
+    "Cake",
+    "Ringo",
+    "Voltage",
+    "Boys Like You",
+    "Blah Blah Blah",
+  ],
+  // My Chemical Romance
+  "5f2766bc200c3110b38d4499": [
+    "Helena",
+    "I'm Not Okay (I Promise)",
+    "The Ghost Of You",
+    "Welcome to the Black Parade",
+    "Famous Last Words",
+    "Teenagers",
+    "I Don't Love You",
+    "Na Na Na",
+    "Sing",
+    "Cancer",
+    "The Sharpest Lives",
+    "Thank You For The Venom",
+    "Vampires Will Never Hurt You",
+    "The Kids From Yesterday",
+    "Cemetery Drive",
+  ],
+  // Eminem
+  "5cca68de2e33e64425af86c7": [
+    "Encore",
+    "Forgot About Dre",
+    "Rap God",
+    "When I'm Gone",
+    "Mockingbird",
+    "Just Lose It",
+    "Not Afraid",
+    "Without Me",
+    "The Monster",
+    "Smack That",
+    "Lose Yourself",
+    "Cleanin' Out My Closet",
+    "My Name Is",
+    "The Real Slim Shady",
+    "Stan",
+    "Love the Way You Lie",
+    "Sing For The Moment",
+    "Superman",
+    "Like Toy Soldiers",
+    "Shake That",
+    "We Made You",
+    "Crack A Bottle",
+    "Beautiful",
+    "No Love",
+    "Berzerk",
+    "Survival",
+    "Venom",
+    "Lucky You",
+    "Killshot",
+    "Godzilla",
+    "Till I Collapse",
+    "The Way I Am",
+    "Guilty Conscience",
+    "Role Model",
+    "White America",
+    "Space Bound",
+    "River",
+    "Walk On Water",
+    "Renegade",
+    "Business",
+    "Mosh",
+    "Ass Like That",
+    "Kim",
+  ],
+  // Taylor Swift
+  "5cca79122e33e64425af8771": [
+    "Tim McGraw",
+    "Teardrops On My Guitar",
+    "Our Song",
+    "Picture To Burn",
+    "Should've Said No",
+    "Love Story",
+    "You Belong With Me",
+    "Fifteen",
+    "White Horse",
+    "Fearless",
+    "Mine",
+    "Back To December",
+    "Mean",
+    "Sparks Fly",
+    "The Story Of Us",
+    "Ours",
+    "Enchanted",
+    "Dear John",
+    "Long Live",
+    "Speak Now",
+    "We Are Never Ever Getting Back Together",
+    "I Knew You Were Trouble",
+    "22",
+    "Red",
+    "All Too Well",
+    "Begin Again",
+    "Everything Has Changed",
+    "Shake It Off",
+    "Blank Space",
+    "Style",
+    "Bad Blood",
+    "Wildest Dreams",
+    "Out Of The Woods",
+    "New Romantics",
+    "Welcome To New York",
+    "Look What You Made Me Do",
+    "Ready for It",
+    "End Game",
+    "Delicate",
+    "Gorgeous",
+    "Getaway Car",
+    "ME!",
+    "You Need To Calm Down",
+    "Lover",
+    "The Man",
+    "Cruel Summer",
+    "cardigan",
+    "exile",
+    "the 1",
+    "betty",
+    "august",
+    "willow",
+    "champagne problems",
+    "no body, no crime",
+    "I Don't Wanna Live Forever",
+    "Today Was a Fairytale",
+    "Safe & Sound",
+  ],
+  // Kim Petras: the singles, with the right title for "I Don't Want It at All"
+  "5f87bf500db63c6a34ffe093": [
+    "Blow It All",
+    "Another One",
+    "Do Me",
+    "All I Do Is Cry",
+    "Broken",
+    "Personal Hell",
+    "Got My Number",
+    "Sweet Spot",
+    "Malibu",
+    "Reminds Me",
+    "How It's Done",
+    "Icy",
+    "1,2,3 Dayz Up",
+    "Homework",
+    "If U Think About Me",
+    "Feeling of Falling",
+    "All the Time",
+    "Can't Do Better",
+    "Heart to Break",
+    "Faded",
+    "Hills",
+    "Slow it Down",
+    "Hillside Boys",
+    "I Don't Want It At All",
+  ],
+  // James Arthur
+  "5fea9eee20e08345240bc8d7": [
+    "Impossible",
+    "Say You Won't Let Go",
+    "Can I Be Him",
+    "Naked",
+    "Empty Space",
+    "Rewrite the Stars",
+    "Train Wreck",
+    "Recovery",
+    "Get Down",
+    "You're Nobody Till Somebody Loves You",
+    "Safe Inside",
+    "Car's Outside",
+    "Lasting Lover",
+    "Falling Like the Stars",
+    "Quite Miss Home",
+    "Treehouse",
+  ],
+  // Jackson Wang
+  "5eeab1ea8ea0dd730dd1ab4f": [
+    "Bruce Lee",
+    "MK Circus",
+    "X",
+    "Papillon",
+    "I Love You 3000 II",
+    "Tequila Sunrise",
+    "MOOD",
+    "Walking",
+    "DWAY!",
+    "Bullet to the Heart",
+    "Oxygen",
+    "Different Game",
+    "Fendiman",
+    "100 Ways",
+    "Okay",
+    "Dawn of Us",
+    "LMLY",
+    "Pretty Please",
+  ],
+  // 2NE1: the singles, plus Lollipop and Crush
+  "5f163acb6ccf9829806dadf2": [
+    "Happy",
+    "Gotta Be You",
+    "Missing You",
+    "Do You Love Me",
+    "Falling In Love",
+    "I Love You",
+    "Hate You",
+    "Ugly",
+    "I Am The Best",
+    "Lonely",
+    "It Hurts",
+    "Clap Your Hands",
+    "Go Away",
+    "Can't Nobody",
+    "Try to Follow Me",
+    "I Don't Care",
+    "Goodbye",
+    "Come Back Home",
+    "Fire",
+    "Lollipop (feat. BIGBANG)",
+    "Crush",
+    "Don't Stop The Music",
+  ],
+  // Gorillaz
+  "5f52bc59224fe44b514a0a0d": [
+    "Clint Eastwood",
+    "19-2000",
+    "Rock the House",
+    "Tomorrow Comes Today",
+    "Feel Good Inc",
+    "DARE",
+    "Dirty Harry",
+    "Kids With Guns",
+    "El Mañana",
+    "Stylo",
+    "Superfast Jellyfish",
+    "On Melancholy Hill",
+    "Rhinestone Eyes",
+    "Humility",
+    "Saturnz Barz",
+    "Andromeda",
+    "Strobelite",
+    "Tranz",
+    "Désolé",
+    "Momentary Bliss",
+  ],
+  // Tove Lo: the singles
+  "5f629b8f21aa860f074108f7": [
+    "Say It",
+    "Close",
+    "Heroes (We Could Be)",
+    "Calling on Me",
+    "Sadder Badder Cooler",
+    "Bikini Porn",
+    "Sweettalk My Heart",
+    "Are U Gonna Tell Her",
+    "Bad as the Boys",
+    "Glad He's Gone",
+    "bitches",
+    "disco tits",
+    "True Disaster",
+    "Cool Girl",
+    "Moments",
+    "Timebomb",
+    "Talking Body",
+    "Not on Drugs",
+    "Habits (Stay High)",
+    "Love Ballad",
+  ],
+  // Xdinary Heroes
+  "65fcd58366b9ed27b44d6a98": [
+    "Pluto",
+    "Pirates",
+    "Knock Down",
+    "Man in the Box",
+    "Good Enough",
+    "Test Me",
+    "Hair Cut",
+    "Strawberry Cake",
+    "Happy Death Day",
+    "Freakin' Bad",
+    "Break the Brake",
+    "Little Things",
+  ],
+};
+
+/** Answers to drop from lists that aren't merged: other versions of songs already in the list. */
+const DROP: Record<string, string[]> = {
+  "646882016146164601d45dcf": [
+    "Blue Flame (2023 Ver.)",
+    "The World Is My Oyster (2023 Ver.)",
+    "FEARLESS (2023 Ver.)",
+    "Blue Flame - Japanese Ver.",
+    "FEARLESS - Japanese Ver.",
+  ],
+  "6467651e6146164601d1deab": [
+    "PTT (Paint The Town) [Japanese Ver.]",
+    "Star (Voice English Ver.)",
+    "LOONATIC - Eng. Ver.",
+    "ViViD - Acoustic Mix Version",
+  ],
+};
+
+const MIN_ANSWERS = 10;
+
 type Doc = IList & { _id: Types.ObjectId };
+
+const answerKey = (value: string) => removeAllButLetters(value);
+
+/** The merged list's answers, each once, limited to `keep` when given. Throws on a `keep` entry it can't find. */
+const pickAnswers = (list: IList, keep?: string[]) => {
+  const wanted = keep && new Set(keep.map(answerKey));
+  const seen = new Set<string>();
+  const values = list.values.filter(({ value }) => {
+    const k = answerKey(value);
+    if (seen.has(k) || (wanted && !wanted.has(k))) return false;
+    seen.add(k);
+    return true;
+  });
+  const unmatched = keep?.filter((value) => !seen.has(answerKey(value))) ?? [];
+  if (unmatched.length) throw new Error(`"${list.name}": answers to keep not found: ${unmatched.join(", ")}`);
+  if (values.length < MIN_ANSWERS) throw new Error(`"${list.name}" would have only ${values.length} answers`);
+  return values;
+};
 
 const key = (list: Pick<IList, "language" | "name">) => `${list.language}|${list.name.toLowerCase()}`;
 
@@ -229,10 +707,12 @@ const key = (list: Pick<IList, "language" | "name">) => `${list.language}|${list
   const apply = process.argv.includes("--apply");
   const connection = await createConnection(process.env.MONGO_URL!).asPromise();
   const lists = connection.collection<Doc>("lists");
-  const all = await lists.find({}).toArray();
+  const everything = await lists.find({}).toArray();
 
-  const missing = Object.keys(RENAMES).filter((id) => !all.some(({ _id }) => String(_id) === id));
-  if (missing.length) throw new Error(`Lists in RENAMES not found: ${missing.join(", ")}`);
+  const ids = [...Object.keys(RENAMES), ...Object.keys(DROP), ...DELETES];
+  const missing = ids.filter((id) => !everything.some(({ _id }) => String(_id) === id));
+  if (missing.length) throw new Error(`Lists not found: ${missing.join(", ")}`);
+  const all = everything.filter(({ _id }) => !DELETES.includes(String(_id)));
 
   const renamed = new Map<string, string>();
   for (const list of all) {
@@ -260,8 +740,31 @@ const key = (list: Pick<IList, "language" | "name">) => `${list.language}|${list
         .map((l) => `${l._id} "${l.name}"`)
         .join(", ")}`,
     );
+  const unknownKeep = Object.keys(KEEP).filter((id) => !merges.some((group) => String(group[0]._id) === id));
+  if (unknownKeep.length) throw new Error(`KEEP lists that aren't merged into: ${unknownKeep.join(", ")}`);
+
+  // Worked out before anything is written, so a typo in KEEP or DROP stops the run.
+  const mergedLists = merges.map((group) => {
+    const name = nameOf(group[0]);
+    const result = group.slice(1).reduce<IList>((acc, list) => mergeLists(acc, list), group[0]);
+    const before = group.reduce((n, list) => n + list.values.length, 0);
+    const values = pickAnswers({ ...result, name }, KEEP[String(group[0]._id)]);
+    console.log(`  ${name}: ${before} answers across ${group.length} lists → ${values.length}`);
+    return { group, doc: { ...result, name, search: removeAllButLetters(name), values } as Doc };
+  });
+  const drops = Object.entries(DROP).map(([id, values]) => {
+    const list = all.find(({ _id }) => String(_id) === id)!;
+    const gone = new Set(values);
+    const absent = values.filter((value) => !list.values.some((v) => v.value === value));
+    if (absent.length) throw new Error(`"${list.name}": answers to drop not found: ${absent.join(", ")}`);
+    console.log(`drop from "${nameOf(list)}": ${values.join(" | ")}`);
+    return { id: list._id, values: list.values.filter(({ value }) => !gone.has(value)) };
+  });
+  for (const id of DELETES) console.log(`delete ${id}  ${everything.find(({ _id }) => String(_id) === id)!.name}`);
+
   console.log(
-    `\n${renamed.size} renames, ${merges.length} merges removing ${merges.reduce((n, g) => n + g.length - 1, 0)} lists`,
+    `\n${renamed.size} renames, ${merges.length} merges removing ${merges.reduce((n, g) => n + g.length - 1, 0)} lists, ` +
+      `${drops.length} lists trimmed, ${DELETES.length} deleted`,
   );
 
   if (!apply) {
@@ -284,13 +787,15 @@ const key = (list: Pick<IList, "language" | "name">) => `${list.language}|${list
         },
       })),
     );
-  for (const group of merges) {
-    const name = nameOf(group[0]);
-    const result = group.slice(1).reduce<IList>((acc, list) => mergeLists(acc, list), group[0]);
-    await lists.replaceOne({ _id: group[0]._id }, { ...result, name, search: removeAllButLetters(name) } as Doc);
+  for (const { group, doc } of mergedLists) {
+    await lists.replaceOne({ _id: group[0]._id }, doc);
     await lists.deleteMany({ _id: { $in: group.slice(1).map(({ _id }) => _id) } });
   }
-  console.log(`Wrote ${renames.length} renames and ${merges.length} merges.`);
+  for (const { id, values } of drops) await lists.updateOne({ _id: id }, { $set: { values } });
+  await lists.deleteMany({ _id: { $in: DELETES.map((id) => new Types.ObjectId(id)) } });
+  console.log(
+    `Wrote ${renames.length} renames, ${merges.length} merges, ${drops.length} trims and ${DELETES.length} deletions.`,
+  );
   process.exit(0);
 })().catch((error) => {
   console.error(error);
