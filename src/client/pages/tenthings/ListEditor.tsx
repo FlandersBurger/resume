@@ -14,7 +14,7 @@ import { TenThingsTableContainer } from "./SharedStyles";
 import { categoryLabel, formatDate, formatPct } from "./format";
 import { VetModal } from "./VetModal";
 import { getClaudeEnabled } from "../../services/tenthings";
-import { applySuggestions, PickedSuggestions } from "@utils/list-suggestions";
+import { answersGivenAway, applySuggestions, PickedSuggestions } from "@utils/list-suggestions";
 import { kindCompletions, listNameHints, normalizeListName, standardizeTerms } from "@utils/list-names";
 import { PasteAnswersModal } from "./PasteAnswersModal";
 
@@ -377,7 +377,6 @@ function AutoTextarea({
       }}
       onKeyDown={onKeyDown}
       style={{ resize: "none", overflow: "hidden", height: COLLAPSED }}
-      maxLength={3500}
     />
   );
 }
@@ -632,6 +631,15 @@ export function ListEditor({
   const nameHints = useMemo(
     () => listNameHints(list.name, list.language, list.categories),
     [list.name, list.language, list.categories],
+  );
+  const givenAway = useMemo(
+    () =>
+      answersGivenAway(
+        list.description ?? "",
+        list.name,
+        list.values.map(({ value }) => value),
+      ),
+    [list.description, list.name, list.values],
   );
   const [nameFocused, setNameFocused] = useState(false);
   const [activeKind, setActiveKind] = useState(0);
@@ -1009,6 +1017,14 @@ export function ListEditor({
           }}
         />
       </div>
+      {!readOnly && givenAway.length > 0 && (
+        <NameNotes>
+          <li className="text-warning">
+            Players see the description while they guess, and it gives away{" "}
+            {givenAway.map((answer) => `"${answer}"`).join(", ")}.
+          </li>
+        </NameNotes>
+      )}
 
       <br />
 

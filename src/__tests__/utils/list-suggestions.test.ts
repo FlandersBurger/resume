@@ -1,4 +1,11 @@
-import { applySuggestions, ListSuggestions, reconcileSuggestions, VettedList } from "@utils/list-suggestions";
+import {
+  answersGivenAway,
+  answersIn,
+  applySuggestions,
+  ListSuggestions,
+  reconcileSuggestions,
+  VettedList,
+} from "@utils/list-suggestions";
 
 const s = (value: string) => ({ value, reason: "r", source: "" });
 const f = (value: string, to: string) => ({ ...s(value), to });
@@ -96,6 +103,37 @@ describe("reconcileSuggestions", () => {
     expect(changed.frequency).toBeNull();
     expect(reconcile({ categories: { to: ["television"], reason: "same" } }).categories).toBeNull();
     expect(reconcile({ categories: { to: ["made-up"], reason: "none valid" } }).categories).toBeNull();
+  });
+
+  it("drops a description that gives away an answer the list will have", () => {
+    const description = (to: string, more: Partial<ListSuggestions> = {}) =>
+      reconcile({ description: { to, reason: "r" }, ...more }).description?.to ?? null;
+    expect(description("An animated fantasy series from the makers of Avatar.")).not.toBeNull();
+    expect(description("Rayla is a Moonshadow elf.")).toBeNull();
+    expect(description("Led by LORD VIREN's ambitions.")).toBeNull();
+    expect(description("Featuring the archmage Aaravos.", { add: [b("Aaravos", "")] })).toBeNull();
+    expect(description("Featuring Ezaran.", { remove: [s("Ezaran")] })).not.toBeNull();
+    expect(description("Prince Ezran rules.", { fix: [f("Ezaran", "Ezran")] })).toBeNull();
+  });
+});
+
+describe("answersIn", () => {
+  it.each([
+    ["Rayla is an elf", ["Rayla", "Callum"], ["Rayla"]],
+    ["Songs like Água de Beber", ["agua de beber"], ["agua de beber"]],
+    ["A song by the Beatles", ["Help!", "Let It Be"], []],
+    ["Recalled everything", ["Call"], []],
+    ["Io and Europa", ["Io", "Europa"], ["Europa"]],
+  ])("%j with %j → %j", (text, answers, expected) => expect(answersIn(text, answers)).toEqual(expected));
+});
+
+describe("answersGivenAway", () => {
+  it("leaves out answers the name already shows", () => {
+    const answers = ["Metallica", "Master of Puppets", "Load"];
+    expect(answersGivenAway("Metallica formed in 1981.", "Metallica - Albums", answers)).toEqual([]);
+    expect(answersGivenAway("Famous for Master of Puppets.", "Metallica - Albums", answers)).toEqual([
+      "Master of Puppets",
+    ]);
   });
 });
 

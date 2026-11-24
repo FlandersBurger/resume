@@ -1,5 +1,35 @@
 import { removeAllButLetters } from "./string-helpers";
 
+/** Lowercase words without accents or punctuation, padded with spaces so " word " matches whole words only. */
+const words = (text: string) =>
+  ` ${text
+    .normalize("NFD")
+    .replace(/\p{M}/gu, "")
+    .toLowerCase()
+    .replace(/[^\p{L}\p{N}]+/gu, " ")
+    .trim()} `;
+
+/**
+ * The answers a text gives away: each one that appears in it as whole words, ignoring case, accents and
+ * punctuation. Answers shorter than 3 letters are skipped, since they'd match ordinary words.
+ */
+export const answersIn = (text: string, answers: string[]): string[] => {
+  const haystack = words(text);
+  return answers.filter((answer) => {
+    const needle = words(answer);
+    return needle.replace(/ /g, "").length >= 3 && haystack.includes(needle);
+  });
+};
+
+/** The answers a description gives away, leaving out those the list's name already shows players. */
+export const answersGivenAway = (description: string, name: string, answers: string[]): string[] => {
+  const shown = new Set(answersIn(name, answers));
+  return answersIn(
+    description,
+    answers.filter((answer) => !shown.has(answer)),
+  );
+};
+
 export interface Suggestion {
   value: string;
   reason: string;
@@ -60,7 +90,7 @@ const sameSet = (a: string[], b: string[]) => a.length === b.length && a.every((
  * Lines Claude's suggestions up with the list as it is, dropping anything that wouldn't change it or can't
  * apply: additions already on it (or repeated), removals, fixes and blurbs naming no existing answer (matched
  * the way guesses are), fixes onto another answer, blurbs for answers that already have one, categories that
- * don't exist, and settings equal to the current ones.
+ * don't exist, settings equal to the current ones, and a description that names one of the answers.
  */
 export const reconcileSuggestions = (
   suggestions: Partial<ListSuggestions>,
@@ -105,6 +135,12 @@ export const reconcileSuggestions = (
   const valid = new Set(validCategories);
   const categories = suggestions.categories?.to.filter((c) => valid.has(c));
   const setting = <T>(s: SettingSuggestion<T> | null | undefined, ok: (to: T) => boolean) => (s && ok(s.to) ? s : null);
+  // Players read the description while they guess, so one that names an answer the list will have is no good.
+  const answers = [
+    ...list.values.map(({ value }) => value).filter((value) => !removed.has(value)),
+    ...add.map(({ value }) => value),
+    ...fix.map(({ to }) => to),
+  ];
 
   return {
     add,
@@ -112,7 +148,10 @@ export const reconcileSuggestions = (
     fix,
     blurbs: blurbs.filter((b, i) => blurbs.findIndex(({ value }) => value === b.value) === i),
     name: setting(suggestions.name, (to) => !!to.trim() && to.trim() !== list.name),
-    description: setting(suggestions.description, (to) => !!to.trim() && to.trim() !== (list.description ?? "")),
+    description: setting(
+      suggestions.description,
+      (to) => !!to.trim() && to.trim() !== (list.description ?? "") && !answersGivenAway(to, list.name, answers).length,
+    ),
     categories:
       suggestions.categories && categories?.length && !sameSet(categories, list.categories)
         ? { ...suggestions.categories, to: categories }
