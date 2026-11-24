@@ -48,8 +48,14 @@ const spellKind = (name: string, language?: string): string => {
   return kind ? `${name.slice(0, at + 3)}${kind}` : name;
 };
 
+/** Every spelling of the acronym (LGBT, LGBTQ+, Lgbt, GLBT…) as the house form, LGBTQIA+. */
+const LGBTQIA = /(?<![\p{L}\d])(?:LGBT|GLBT|LGTB)[TQIAPKS2+*]*(?![\p{L}\d])/giu;
+
+/** House terms, in any text a list shows players: its name and its description. */
+export const standardizeTerms = (text: string): string => text.replace(LGBTQIA, "LGBTQIA+");
+
 export const normalizeListName = (name: string, language?: string): string =>
-  spellKind(name.replace(SEPARATOR, " - ").replace(/\s+/g, " ").trim(), language);
+  spellKind(standardizeTerms(name.replace(SEPARATOR, " - ").replace(/\s+/g, " ").trim()), language);
 
 /** English phrasings with one house form: "Words starting with …". */
 const ENGLISH_PHRASES: [RegExp, string][] = [

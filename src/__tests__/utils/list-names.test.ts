@@ -1,4 +1,26 @@
-import { listNameHints, normalizeListName, standardizeListPhrases, withListKind } from "@utils/list-names";
+import {
+  listNameHints,
+  normalizeListName,
+  standardizeListPhrases,
+  standardizeTerms,
+  withListKind,
+} from "@utils/list-names";
+
+describe("standardizeTerms", () => {
+  it.each([
+    ["Famous LGBTQ+ People", "Famous LGBTQIA+ People"],
+    ["Film franchises featuring LGBT characters", "Film franchises featuring LGBTQIA+ characters"],
+    ["Músicos LGBTq+", "Músicos LGBTQIA+"],
+    ["Serial Netflix bertema Lgbt", "Serial Netflix bertema LGBTQIA+"],
+    ["Big Brother Brasil - Participantes LGBT+", "Big Brother Brasil - Participantes LGBTQIA+"],
+    ["Cantoras LGBTQIA+", "Cantoras LGBTQIA+"],
+    ["Horror Movies with LGBTQ+ Characters/Storylines", "Horror Movies with LGBTQIA+ Characters/Storylines"],
+  ])("%j → %j", (text, expected) => expect(standardizeTerms(text)).toBe(expected));
+
+  it("is part of normalizing a name", () => {
+    expect(normalizeListName("Worst Countries for LGBTQ+ rights")).toBe("Worst Countries for LGBTQIA+ rights");
+  });
+});
 
 describe("withListKind", () => {
   it.each([

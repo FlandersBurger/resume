@@ -12,7 +12,7 @@ import Unsplash from "@root/connections/unsplash";
 import * as Claude from "@root/connections/claude";
 import categories from "@tenthings/categories";
 import { reconcileSuggestions } from "@utils/list-suggestions";
-import { normalizeListName } from "@utils/list-names";
+import { normalizeListName, standardizeTerms } from "@utils/list-names";
 import { SupportedLanguage } from "@tenthings/languages";
 import MediaWiki from "@root/connections/mediawiki";
 // const Spotify = require('@/controllers/connections/spotify');
@@ -358,6 +358,7 @@ tenthingsListsRoute.put("/:id", async (req: Request<{ id: string }>, res: Respon
       const previousName = list.name;
       Object.assign(list, req.body);
       list.name = normalizeListName(list.name, list.language);
+      if (list.description) list.description = standardizeTerms(list.description);
       // Only a rename is checked, so lists that were already duplicates can still be edited.
       if (
         list.name.toLowerCase() !== previousName.toLowerCase() &&
@@ -408,6 +409,8 @@ tenthingsListsRoute.post("/", async (req: Request, res: Response) => {
     const previousModifyDate = moment(req.body.list.modifyDate);
     req.body.list.modifyDate = new Date();
     req.body.list.name = normalizeListName(req.body.list.name ?? "", req.body.list.language);
+    if (typeof req.body.list.description === "string")
+      req.body.list.description = standardizeTerms(req.body.list.description);
     req.body.list.search = removeAllButLetters(req.body.list.name);
     const stored = req.body.list._id ? await List.findById(req.body.list._id).select("name").lean() : null;
     if (

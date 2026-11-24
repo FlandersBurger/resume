@@ -15,7 +15,7 @@ import { categoryLabel, formatDate, formatPct } from "./format";
 import { VetModal } from "./VetModal";
 import { getClaudeEnabled } from "../../services/tenthings";
 import { applySuggestions, PickedSuggestions } from "@utils/list-suggestions";
-import { LIST_KINDS, listNameHints, normalizeListName, withListKind } from "@utils/list-names";
+import { LIST_KINDS, listNameHints, normalizeListName, standardizeTerms, withListKind } from "@utils/list-names";
 import { PasteAnswersModal } from "./PasteAnswersModal";
 
 const EditListPanel = styled.div<{ $active?: boolean }>`
@@ -952,7 +952,15 @@ export function ListEditor({
           placeholder="Description displays when the list is introduced to the players."
           disabled={readOnly}
           onChange={(v) => onChange({ ...list, description: v })}
-          onBlur={() => onSaveRef.current(listRef.current)}
+          onBlur={() => {
+            const description = standardizeTerms(listRef.current.description ?? "");
+            const tidied =
+              description === (listRef.current.description ?? "")
+                ? listRef.current
+                : { ...listRef.current, description };
+            if (tidied !== listRef.current) onChangeRef.current(tidied);
+            onSaveRef.current(tidied);
+          }}
         />
       </div>
 
