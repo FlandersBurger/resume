@@ -17,6 +17,25 @@ describe("normalizeListName", () => {
   );
 });
 
+describe("normalizeListName for Portuguese", () => {
+  it.each([
+    ["NX Zero - músicas", "NX Zero - Músicas"],
+    ["Eminem - Musicas", "Eminem - Músicas"],
+    ["Ben 10 - personagens", "Ben 10 - Personagens"],
+    ["Demi Lovato - Albuns", "Demi Lovato - Álbuns"],
+    ["Seriados - series", "Seriados - Séries"],
+  ])("spells the kind in %j", (name, expected) => expect(normalizeListName(name, "PT")).toBe(expected));
+
+  it.each(["Músicas de Zeca Pagodinho", "Luan Santana - Canções", "Anitta - Músicas"])("leaves %j alone", (name) =>
+    expect(normalizeListName(name, "PT")).toBe(name),
+  );
+
+  it("only spells kinds for Portuguese lists", () => {
+    expect(normalizeListName("Foo - musicas", "EN")).toBe("Foo - musicas");
+    expect(normalizeListName("Foo - musicas")).toBe("Foo - musicas");
+  });
+});
+
 describe("standardizeListPhrases", () => {
   it.each([
     ["Elements that start with C", "Elements starting with C"],

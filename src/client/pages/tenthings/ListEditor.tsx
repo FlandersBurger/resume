@@ -840,8 +840,8 @@ export function ListEditor({
           disabled={readOnly}
           onChange={(e) => onChange({ ...list, name: e.target.value })}
           onBlur={() => {
-            // Tidy dashes and spaces where the creator can see it, before saving.
-            const name = normalizeListName(listRef.current.name);
+            // Tidy dashes, spaces and kind spelling where the creator can see it, before saving.
+            const name = normalizeListName(listRef.current.name, listRef.current.language);
             const tidied = name === listRef.current.name ? listRef.current : { ...listRef.current, name };
             if (tidied !== listRef.current) onChangeRef.current(tidied);
             onSaveRef.current(tidied);
