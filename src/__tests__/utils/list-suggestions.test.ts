@@ -1,4 +1,5 @@
 import {
+  answersGivenAway,
   answersIn,
   applySuggestions,
   ListSuggestions,
@@ -124,6 +125,16 @@ describe("answersIn", () => {
     ["Recalled everything", ["Call"], []],
     ["Io and Europa", ["Io", "Europa"], ["Europa"]],
   ])("%j with %j → %j", (text, answers, expected) => expect(answersIn(text, answers)).toEqual(expected));
+});
+
+describe("answersGivenAway", () => {
+  it("leaves out answers the name already shows", () => {
+    const answers = ["Metallica", "Master of Puppets", "Load"];
+    expect(answersGivenAway("Metallica formed in 1981.", "Metallica - Albums", answers)).toEqual([]);
+    expect(answersGivenAway("Famous for Master of Puppets.", "Metallica - Albums", answers)).toEqual([
+      "Master of Puppets",
+    ]);
+  });
 });
 
 describe("applySuggestions", () => {

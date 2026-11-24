@@ -21,6 +21,15 @@ export const answersIn = (text: string, answers: string[]): string[] => {
   });
 };
 
+/** The answers a description gives away, leaving out those the list's name already shows players. */
+export const answersGivenAway = (description: string, name: string, answers: string[]): string[] => {
+  const shown = new Set(answersIn(name, answers));
+  return answersIn(
+    description,
+    answers.filter((answer) => !shown.has(answer)),
+  );
+};
+
 export interface Suggestion {
   value: string;
   reason: string;
@@ -141,7 +150,7 @@ export const reconcileSuggestions = (
     name: setting(suggestions.name, (to) => !!to.trim() && to.trim() !== list.name),
     description: setting(
       suggestions.description,
-      (to) => !!to.trim() && to.trim() !== (list.description ?? "") && !answersIn(to, answers).length,
+      (to) => !!to.trim() && to.trim() !== (list.description ?? "") && !answersGivenAway(to, list.name, answers).length,
     ),
     categories:
       suggestions.categories && categories?.length && !sameSet(categories, list.categories)

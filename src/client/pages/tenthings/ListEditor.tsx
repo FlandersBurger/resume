@@ -14,7 +14,7 @@ import { TenThingsTableContainer } from "./SharedStyles";
 import { categoryLabel, formatDate, formatPct } from "./format";
 import { VetModal } from "./VetModal";
 import { getClaudeEnabled } from "../../services/tenthings";
-import { answersIn, applySuggestions, PickedSuggestions } from "@utils/list-suggestions";
+import { answersGivenAway, applySuggestions, PickedSuggestions } from "@utils/list-suggestions";
 import { LIST_KINDS, listNameHints, normalizeListName, standardizeTerms, withListKind } from "@utils/list-names";
 import { PasteAnswersModal } from "./PasteAnswersModal";
 
@@ -632,11 +632,12 @@ export function ListEditor({
   const kinds = LIST_KINDS[list.language] ?? [];
   const givenAway = useMemo(
     () =>
-      answersIn(
+      answersGivenAway(
         list.description ?? "",
+        list.name,
         list.values.map(({ value }) => value),
       ),
-    [list.description, list.values],
+    [list.description, list.name, list.values],
   );
 
   const [similar, setSimilar] = useState<SimilarLists>({ lists: [], duplicate: null });
