@@ -142,17 +142,32 @@ describe("ListEditorDrawer", () => {
     expect(mockUpdateList).toHaveBeenCalledWith(expect.objectContaining({ name: "IU - Songs" }));
   });
 
-  it("names the list Subject - Kind from the kind picker", async () => {
+  it("completes the kind after a dash, with the keyboard or a click", async () => {
     setup();
     mockGetList.mockResolvedValue(existing({ name: "Tom Cruise" }));
     mockUpdateList.mockImplementation(async (l) => l);
     render(<ListEditorDrawer listId="list1" onClose={jest.fn()} onSaved={jest.fn()} />);
     await settle();
 
-    fireEvent.change(screen.getByLabelText("Kind"), { target: { value: "Movies" } });
-    await settle();
+    const name = screen.getByPlaceholderText("Name");
+    fireEvent.focus(name);
+    expect(screen.queryByRole("listbox")).toBeNull();
 
-    expect(screen.getByPlaceholderText("Name")).toHaveValue("Tom Cruise - Movies");
+    fireEvent.change(name, { target: { value: "Tom Cruise - mo" } });
+    const options = screen.getAllByRole("option");
+    expect(options.map((o) => o.textContent)).toEqual(["Tom Cruise - Movies", "Tom Cruise - Movies & TV Shows"]);
+
+    fireEvent.keyDown(name, { key: "ArrowDown" });
+    fireEvent.keyDown(name, { key: "Enter" });
+    await settle();
+    expect(name).toHaveValue("Tom Cruise - Movies & TV Shows");
+    expect(screen.queryByRole("listbox")).toBeNull();
+
+    fireEvent.change(name, { target: { value: "Tom Cruise - c" } });
+    fireEvent.mouseDown(screen.getByRole("option", { name: "Tom Cruise - Cast" }).querySelector("a")!);
+    await settle();
+    expect(name).toHaveValue("Tom Cruise - Cast");
+    expect(mockUpdateList).toHaveBeenCalledWith(expect.objectContaining({ name: "Tom Cruise - Cast" }));
   });
 
   it("warns when the description gives away an answer", async () => {

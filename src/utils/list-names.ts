@@ -109,6 +109,20 @@ export const withListKind = (name: string, kind: string, language: string): stri
   return subject ? `${subject} - ${kind}` : name;
 };
 
+/**
+ * Completions for a name being typed as "Subject - Kind": once there's a dash after the subject, the language's kinds
+ * that start with what follows it. Nothing when the kind is already complete or no kind matches.
+ */
+export const kindCompletions = (name: string, language: string): string[] => {
+  const match = name.match(/^(.*\S)\s+[-–—]+\s*([^-–—]*)$/);
+  if (!match) return [];
+  const [, subject, typed] = match;
+  const start = bare(typed.trim());
+  const kinds = LIST_KINDS[language] ?? [];
+  if (kinds.some((kind) => bare(kind) === start)) return [];
+  return kinds.filter((kind) => bare(kind).startsWith(start)).map((kind) => `${subject} - ${kind}`);
+};
+
 export interface ListNameHint {
   message: string;
   /** The name with the hint applied, when there's one right answer. */
