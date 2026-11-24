@@ -1,9 +1,9 @@
 import Anthropic from "@anthropic-ai/sdk";
 import { DIFFICULTIES, FREQUENCIES, ListSuggestions } from "@utils/list-suggestions";
 
-const MODEL = "claude-opus-5-5";
-/** Claude Opus 5.5 rates per token, and web search per request, to show what a run cost. */
-const PRICE = { input: 4 / 1e6, cacheWrite: 5 / 1e6, cacheRead: 0.2 / 1e6, output: 20 / 1e6, search: 10 / 1000 };
+const MODEL = "claude-sonnet-5-5";
+/** Claude Sonnet 5.5 rates per token, and web search per request, to show what a run cost. */
+const PRICE = { input: 2 / 1e6, cacheWrite: 2.5 / 1e6, cacheRead: 0.1 / 1e6, output: 10 / 1e6, search: 10 / 1000 };
 /** Search results are long and billed as input, so Claude gets a few searches and is told to use them sparingly. */
 const MAX_SEARCHES = 3;
 const MAX_CONTINUATIONS = 5;

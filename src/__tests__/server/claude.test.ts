@@ -32,9 +32,9 @@ describe("vetList", () => {
     const result = await vetList(list, valid, "add the leads");
 
     expect(result.suggestions).toEqual(results);
-    expect(result.cost).toBeCloseTo(1000 * 4e-6 + 100 * 20e-6);
+    expect(result.cost).toBeCloseTo(1000 * 2e-6 + 100 * 10e-6);
     const params = stream.mock.calls[0][0];
-    expect(params.model).toBe("claude-opus-5-5");
+    expect(params.model).toBe("claude-sonnet-5-5");
     expect(params.fallbacks).toBe("default");
     expect(params.tools[0]).toMatchObject({ type: "web_search_20260209", max_uses: 3 });
     const submitTool = params.tools[1];
@@ -89,6 +89,6 @@ describe("costOf", () => {
           server_tool_use: { web_search_requests: 3 },
         }) as any,
       ),
-    ).toBeCloseTo(0.004 + 0.002 + 0.002 + 0.005 + 0.03);
+    ).toBeCloseTo(0.002 + 0.001 + 0.001 + 0.0025 + 0.03);
   });
 });
