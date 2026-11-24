@@ -15,7 +15,7 @@ import { categoryLabel, formatDate, formatPct } from "./format";
 import { VetModal } from "./VetModal";
 import { getClaudeEnabled } from "../../services/tenthings";
 import { applySuggestions, PickedSuggestions } from "@utils/list-suggestions";
-import { LIST_KINDS, listNameHints, normalizeListName, standardizeTerms, withListKind } from "@utils/list-names";
+import { kindCompletions, listNameHints, normalizeListName, standardizeTerms } from "@utils/list-names";
 import { PasteAnswersModal } from "./PasteAnswersModal";
 
 const EditListPanel = styled.div<{ $active?: boolean }>`
@@ -76,9 +76,13 @@ const BtnIcon = styled.button`
 
 const EditorTableContainer = styled(TenThingsTableContainer)``;
 
-const KindPicker = styled.select`
+/** The "Subject - Kind" completions, open under the name field while it has focus. */
+const KindMenu = styled.ul`
   && {
-    width: auto;
+    display: block;
+    top: 100%;
+    left: 0;
+    min-width: 240px;
   }
 `;
 
@@ -629,7 +633,25 @@ export function ListEditor({
     () => listNameHints(list.name, list.language, list.categories),
     [list.name, list.language, list.categories],
   );
-  const kinds = LIST_KINDS[list.language] ?? [];
+  const [nameFocused, setNameFocused] = useState(false);
+  const [activeKind, setActiveKind] = useState(0);
+  const completions = useMemo(
+    () => (nameFocused && !readOnly ? kindCompletions(list.name, list.language) : []),
+    [nameFocused, readOnly, list.name, list.language],
+  );
+  const onNameKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (!completions.length) return;
+    if (e.key === "ArrowDown" || e.key === "ArrowUp") {
+      e.preventDefault();
+      const step = e.key === "ArrowDown" ? 1 : -1;
+      setActiveKind((i) => (i + step + completions.length) % completions.length);
+    } else if (e.key === "Enter") {
+      e.preventDefault();
+      commitName(completions[Math.min(activeKind, completions.length - 1)]);
+    } else if (e.key === "Escape") {
+      setNameFocused(false);
+    }
+  };
 
   const [similar, setSimilar] = useState<SimilarLists>({ lists: [], duplicate: null });
   useEffect(() => {
@@ -891,33 +913,57 @@ export function ListEditor({
       <br />
 
       {/* Name */}
-      <div className="input-group">
+      <div className="input-group" style={{ position: "relative" }}>
         <span className="input-group-addon">Name</span>
         <input
           className="form-control"
           placeholder="Name"
           value={list.name}
           disabled={readOnly}
-          onChange={(e) => onChange({ ...list, name: e.target.value })}
-          onBlur={() => commitName(listRef.current.name)}
+          role="combobox"
+          aria-autocomplete="list"
+          aria-expanded={completions.length > 0}
+          aria-controls="list-kind-completions"
+          aria-activedescendant={completions.length ? `list-kind-${activeKind}` : undefined}
+          onChange={(e) => {
+            setNameFocused(true);
+            setActiveKind(0);
+            onChange({ ...list, name: e.target.value });
+          }}
+          onFocus={() => setNameFocused(true)}
+          onKeyDown={onNameKeyDown}
+          onBlur={() => {
+            setNameFocused(false);
+            commitName(listRef.current.name);
+          }}
           autoComplete="off"
         />
-        {kinds.length > 0 && !readOnly && (
-          <KindPicker
-            className="form-control"
-            aria-label="Kind"
-            title='Name the list "Subject - Kind"'
-            value=""
-            disabled={!list.name.trim()}
-            onChange={(e) => e.target.value && commitName(withListKind(list.name, e.target.value, list.language))}
-          >
-            <option value="">Kind…</option>
-            {kinds.map((kind) => (
-              <option key={kind} value={kind}>
-                {kind}
-              </option>
+        {completions.length > 0 && (
+          <KindMenu className="dropdown-menu" id="list-kind-completions" role="listbox" aria-label="Kinds">
+            {completions.map((completion, i) => (
+              <li
+                key={completion}
+                id={`list-kind-${i}`}
+                role="option"
+                aria-selected={i === activeKind}
+                className={i === activeKind ? "active" : undefined}
+              >
+                <a
+                  href="#"
+                  tabIndex={-1}
+                  // mousedown, not click: picking happens before the input's blur closes the menu
+                  onMouseDown={(e) => {
+                    e.preventDefault();
+                    commitName(completion);
+                    setNameFocused(false);
+                  }}
+                  onMouseEnter={() => setActiveKind(i)}
+                >
+                  {completion}
+                </a>
+              </li>
             ))}
-          </KindPicker>
+          </KindMenu>
         )}
       </div>
       {!readOnly && (nameHints.length > 0 || similar.lists.length > 0 || similar.duplicate) && (
