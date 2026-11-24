@@ -148,7 +148,7 @@ const RENAMES: Record<string, string> = {
 
   // Filmography → Movies & TV Shows (each of these mixes both)
   "5eec49c1ffae4207d7c4f1be": "Natasha Lyonne - Movies & TV Shows",
-  "5fc5c36dd1655309e110091e": "Satoshi Kon - Movies & TV Shows",
+  "5fc5c36dd1655309e110091e": "Directed by Satoshi Kon",
   "5f1a7a6c23e73b592bfa1b88": "Tom Holland - Movies & TV Shows",
   "60f46e03a07e706b6de5f359": "Melissa McCarthy - Movies & TV Shows",
 
