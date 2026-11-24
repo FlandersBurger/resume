@@ -7,6 +7,7 @@ import { categoryLabel, formatDate, formatPct } from "./format";
 import { VetModal } from "./VetModal";
 import { getClaudeEnabled } from "../../services/tenthings";
 import { applySuggestions, PickedSuggestions } from "@utils/list-suggestions";
+import { normalizeListName } from "@utils/list-names";
 import { PasteAnswersModal } from "./PasteAnswersModal";
 
 const EditListPanel = styled.div<{ $active?: boolean }>`
@@ -838,7 +839,13 @@ export function ListEditor({
           value={list.name}
           disabled={readOnly}
           onChange={(e) => onChange({ ...list, name: e.target.value })}
-          onBlur={() => onSaveRef.current(listRef.current)}
+          onBlur={() => {
+            // Tidy dashes and spaces where the creator can see it, before saving.
+            const name = normalizeListName(listRef.current.name);
+            const tidied = name === listRef.current.name ? listRef.current : { ...listRef.current, name };
+            if (tidied !== listRef.current) onChangeRef.current(tidied);
+            onSaveRef.current(tidied);
+          }}
           autoComplete="off"
         />
       </div>
