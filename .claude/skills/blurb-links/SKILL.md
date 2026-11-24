@@ -29,12 +29,17 @@ Bulk writes follow the [list-cleanup](../list-cleanup/SKILL.md) loop: plan, revi
 
 The user's ranking, best first:
 
-1. **Animated GIF** of the answer itself (Minecraft's `Torch.gif`, Pokémon's `0618Stunfisk_SwSh.gif` model).
+1. **Animated GIF** of the answer itself (Minecraft's `Torch.gif`, Pokémon's `0151Mew BW.gif`). Small game sprites still count: the user prefers them to large stills.
 2. **PNG with transparency** (IHDR colour type 4 or 6, or a `tRNS` chunk; the first few hundred bytes tell you).
 3. **Non-busy static image:** the official render or artwork, which on a wiki is the file named after the answer, over scene shots, posters and screenshots.
 4. Any static image.
 
-Skip shiny, back, icon, mini and fan-art variants. Among equals, take the larger.
+Skip shiny, back, faint, icon, map and fan-art variants. Among equals, take the larger. `getImages` in `src/connections/mediawiki.ts` applies the GIF step.
+
+## Songs
+
+- A song answer's blurb is its **YouTube video**. Look it up on Wikidata first (property P1651, YouTube video ID: free, no key); `YouTube.getMusicVideo` (`src/connections/youtube.ts`) searches YouTube but spends quota (100 units a search, about 100 searches a day). Fandom song pages carry no YouTube links.
+- A **lyrics list** (answers are lines of one song) puts the song's YouTube link in the list **description**, not in the blurbs.
 
 ## Fandom wikis
 
