@@ -22,7 +22,7 @@ import { wikiFor } from "@utils/fandom-wikis";
 
 import { IList, IListValue } from "@models/tenthings/list";
 import { GameRound, List, User } from "@models/index";
-import { parseSymbols, removeAllButLetters } from "@utils/string-helpers";
+import { accentInsensitivePattern, parseSymbols, removeAllButLetters } from "@utils/string-helpers";
 import { getList, getRandomList, invalidateListPool, mergeLists } from "@tenthings/lists";
 import {
   listMetricsFields,
@@ -642,7 +642,7 @@ const parseQuery = (query: { [key: string]: string }) => {
         if (query[key]) {
           mergeOrClause(params, [
             { $text: { $search: `"${query[key]}"` } },
-            { name: { $regex: query[key], $options: "i" } },
+            { name: { $regex: accentInsensitivePattern(query[key]), $options: "i" } },
           ]);
         }
         break;
@@ -656,7 +656,7 @@ const parseQuery = (query: { [key: string]: string }) => {
         break;
       }
       case "name":
-        Object.assign(params, { name: { $regex: query[key], $options: "i" } });
+        Object.assign(params, { name: { $regex: accentInsensitivePattern(query[key]), $options: "i" } });
         break;
       case "creator":
         Object.assign(params, { creator: new Types.ObjectId(query[key]) });

@@ -1,4 +1,5 @@
 import {
+  accentInsensitivePattern,
   removeDiacritics,
   removeSpecialCharacters,
   removeAllButLetters,
@@ -157,5 +158,28 @@ describe("maskUrls", () => {
 
   it("leaves a plain string without URLs unchanged", () => {
     expect(maskUrls("no urls here")).toBe("no urls here");
+  });
+});
+
+describe("accentInsensitivePattern", () => {
+  const matches = (search: string, name: string) => new RegExp(accentInsensitivePattern(search), "i").test(name);
+
+  it("matches accented names from a plain search", () => {
+    expect(matches("pokemon", "Pokémon Types")).toBe(true);
+    expect(matches("Bjork", "Björk albums")).toBe(true);
+  });
+
+  it("matches plain names from an accented search", () => {
+    expect(matches("pokémon", "Pokemon Types")).toBe(true);
+  });
+
+  it("treats regex characters literally", () => {
+    expect(matches("a.c", "abc")).toBe(false);
+    expect(matches("(1990)", "Hits (1990)")).toBe(true);
+  });
+
+  it("uses real characters rather than unicode escapes, so MongoDB can run it", () => {
+    expect(accentInsensitivePattern("e")).toContain("é");
+    expect(accentInsensitivePattern("e")).not.toContain("\\u");
   });
 });
