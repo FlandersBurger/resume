@@ -4,7 +4,7 @@ import { IList } from "@models/tenthings/list";
 import { IGame, IGameSettings } from "@models/tenthings/game";
 
 import sampleSize from "lodash/sampleSize";
-import { removeSpecialCharacters } from "@utils/string-helpers";
+import { accentInsensitivePattern, removeSpecialCharacters } from "@utils/string-helpers";
 import { SupportedLanguage } from "./languages";
 import { playedRounds, roundTally } from "@models/tenthings/listMetrics";
 
@@ -300,7 +300,7 @@ const MAX_SEARCH_RESULTS = 10;
  */
 export const searchList = async (search: string, game: IGame): Promise<ListName[]> => {
   const availableLanguages = getAvailableLanguages(game);
-  const pattern = new RegExp(removeSpecialCharacters(search), "i");
+  const pattern = new RegExp(accentInsensitivePattern(removeSpecialCharacters(search)), "i");
   const disabledCategories = new Set(game.disabledCategories);
   const found = new Map<string, ListName>();
   /** Adds a random few of `lists` not found yet; true once there are enough. */
