@@ -1,4 +1,5 @@
 import {
+  kindCompletions,
   listNameHints,
   normalizeListName,
   standardizeListPhrases,
@@ -30,6 +31,29 @@ describe("withListKind", () => {
     ["Raisa - Lagu", "Album", "ID", "Raisa - Album"],
     ["", "Songs", "EN", ""],
   ])("%j + %j → %j", (name, kind, language, expected) => expect(withListKind(name, kind, language)).toBe(expected));
+});
+
+describe("kindCompletions", () => {
+  it("offers every kind right after the dash", () => {
+    expect(kindCompletions("Tom Cruise - ", "EN")).toHaveLength(10);
+    expect(kindCompletions("Tom Cruise -", "EN")[0]).toBe("Tom Cruise - Songs");
+  });
+
+  it.each([
+    ["Tom Cruise - mo", "EN", ["Tom Cruise - Movies", "Tom Cruise - Movies & TV Shows"]],
+    ["Breaking Bad - Season 1 - Ch", "EN", ["Breaking Bad - Season 1 - Characters"]],
+    ["Anitta – mus", "PT", ["Anitta - Músicas"]],
+    ["Raisa - L", "ID", ["Raisa - Lagu"]],
+  ])("completes %j (%s)", (name, language, expected) => expect(kindCompletions(name, language)).toEqual(expected));
+
+  it.each([
+    ["Tom Cruise", "EN"],
+    ["Tom Cruise - Movies", "EN"],
+    ["Spider-Man", "EN"],
+    ["K-dramas - 2000–2009", "EN"],
+    ["Tom Cruise - Xyz", "EN"],
+    ["Foo - ", "NL"],
+  ])("has nothing for %j (%s)", (name, language) => expect(kindCompletions(name, language)).toEqual([]));
 });
 
 describe("listNameHints", () => {
