@@ -40,7 +40,7 @@ describe("VetModal", () => {
     await waitFor(() => expect(screen.getByText("Bait is a toad.")).toBeInTheDocument());
 
     expect(mockVet).toHaveBeenCalledTimes(1);
-    expect(mockVet).toHaveBeenCalledWith("l1", undefined);
+    expect(mockVet).toHaveBeenCalledWith(expect.objectContaining({ _id: "l1" }), undefined);
     expect(screen.getByText(/cost ≈ \$0\.04/)).toBeInTheDocument();
     expect(screen.getByText("Movies, Television")).toBeInTheDocument();
     expect(screen.getByText("Hard")).toBeInTheDocument();
@@ -65,7 +65,9 @@ describe("VetModal", () => {
     const ask = await screen.findByPlaceholderText(/Ask for something specific/);
     fireEvent.change(ask, { target: { value: "add season 7" } });
     fireEvent.click(screen.getByRole("button", { name: "Vet again" }));
-    await waitFor(() => expect(mockVet).toHaveBeenLastCalledWith("l1", "add season 7"));
+    await waitFor(() =>
+      expect(mockVet).toHaveBeenLastCalledWith(expect.objectContaining({ _id: "l1" }), "add season 7"),
+    );
   });
 
   it("shows the server's error", async () => {
