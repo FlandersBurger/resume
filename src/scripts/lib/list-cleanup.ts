@@ -115,8 +115,10 @@ export const runListCleanup = async ({
     const gone = new Set(values);
     const absent = values.filter((value) => !list.values.some((v) => v.value === value));
     if (absent.length) throw new Error(`"${list.name}": answers to drop not found: ${absent.join(", ")}`);
+    const kept = list.values.filter(({ value }) => !gone.has(value));
+    if (kept.length < MIN_ANSWERS) throw new Error(`"${list.name}" would have only ${kept.length} answers`);
     console.log(`drop from "${nameOf(list)}": ${values.join(" | ")}`);
-    return { id: list._id, values: list.values.filter(({ value }) => !gone.has(value)) };
+    return { id: list._id, values: kept };
   });
   for (const id of DELETES) console.log(`delete ${id}  ${everything.find(({ _id }) => String(_id) === id)!.name}`);
 
