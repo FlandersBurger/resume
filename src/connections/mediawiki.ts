@@ -10,6 +10,7 @@ interface PageImage {
   title: string;
   missing?: string;
   original?: { source: string };
+  imageinfo?: { url: string; width?: number; height?: number }[];
 }
 
 interface QueryResponse {
@@ -18,6 +19,13 @@ interface QueryResponse {
     redirects?: { from: string; to: string }[];
     pages?: Record<string, PageImage>;
   };
+}
+
+type ImageInfoResponse = QueryResponse;
+
+interface ImagesResponse {
+  query?: { pages?: Record<string, { title: string; images?: { title: string }[] }> };
+  continue?: Record<string, string>;
 }
 
 /**
@@ -97,7 +105,7 @@ const resolveTitles = (titles: string[], data: QueryResponse) => {
  * image on an answer.
  */
 export const getImages = async (wikiUrl: string, answers: string[]): Promise<Map<string, string>> => {
-  const images = new Map<string, string>();
+  const found = new Map<string, { title: string; image: string }>();
   const api = await findApi(wikiUrl);
   if (!api) throw new Error(`No MediaWiki API found for ${wikiUrl}`);
 
@@ -108,22 +116,80 @@ export const getImages = async (wikiUrl: string, answers: string[]): Promise<Map
     const batch = titles.slice(i, i + TITLES_PER_QUERY);
     const data = await query(api, { titles: batch.join("|") });
     resolveTitles(batch, data).forEach((page, index) => {
-      if (page?.original?.source) images.set(batch[index], cleanImageUrl(page.original.source));
+      if (page?.original?.source) found.set(batch[index], { title: page.title, image: page.original.source });
     });
   }
 
-  for (const answer of unique.filter((answer) => !images.has(answer))) {
+  for (const answer of unique.filter((answer) => !found.has(answer))) {
     try {
       const data = await query(api, { generator: "search", gsrsearch: answer, gsrnamespace: "0", gsrlimit: "1" });
       const [page] = Object.values(data.query?.pages ?? {});
       if (page?.original?.source && looselyMatches(answer, page.title))
-        images.set(answer, cleanImageUrl(page.original.source));
+        found.set(answer, { title: page.title, image: page.original.source });
     } catch (error) {
       console.error(error);
     }
   }
 
-  return images;
+  let gifs = new Map<string, string>();
+  try {
+    gifs = await getGifs(api, [...new Set([...found.values()].map(({ title }) => title))]);
+  } catch (error) {
+    console.error(error); // the page images still do
+  }
+  return new Map([...found].map(([answer, { title, image }]) => [answer, cleanImageUrl(gifs.get(title) ?? image)]));
+};
+
+/** Variants that aren't the thing itself, or don't show it well. */
+const NOT_THE_ANSWER = /shiny|back|faint|icon|mini|menu|sleep|map|logo/i;
+
+/**
+ * An animated GIF beats a still: for each page, the largest GIF on it whose file is named after the page
+ * ("Torch.gif" on Torch, "0006Charizard VI.gif" on Charizard), skipping shiny, back and icon variants.
+ */
+const getGifs = async (api: string, titles: string[]): Promise<Map<string, string>> => {
+  const candidates = new Map<string, string[]>();
+  for (let i = 0; i < titles.length; i += TITLES_PER_QUERY) {
+    const batch = titles.slice(i, i + TITLES_PER_QUERY);
+    let next: Record<string, string> | undefined = {};
+    while (next) {
+      const { data }: { data: ImagesResponse } = await httpClient().get<ImagesResponse>(api, {
+        params: { action: "query", format: "json", prop: "images", imlimit: "max", titles: batch.join("|"), ...next },
+        headers: HEADERS,
+      });
+      for (const page of Object.values(data.query?.pages ?? {})) {
+        const name = removeAllButLetters(page.title);
+        const gifs = (page.images ?? [])
+          .map(({ title }) => title)
+          .filter((file) => /\.gif$/i.test(file) && !NOT_THE_ANSWER.test(file))
+          // "File:0006Charizard VI.gif": namespace and any leading number off before comparing.
+          .filter((file) => !!name && removeAllButLetters(file.replace(/^[^:]*:\s*\d*\s*/, "")).startsWith(name));
+        if (gifs.length) candidates.set(page.title, [...(candidates.get(page.title) ?? []), ...gifs]);
+      }
+      next = data.continue;
+    }
+  }
+
+  const files = [...new Set([...candidates.values()].flat())];
+  const info = new Map<string, { url: string; size: number }>();
+  for (let i = 0; i < files.length; i += TITLES_PER_QUERY) {
+    const batch = files.slice(i, i + TITLES_PER_QUERY);
+    const { data }: { data: ImageInfoResponse } = await httpClient().get<ImageInfoResponse>(api, {
+      params: { action: "query", format: "json", prop: "imageinfo", iiprop: "url|size", titles: batch.join("|") },
+      headers: HEADERS,
+    });
+    resolveTitles(batch, data).forEach((page, index) => {
+      const ii = page?.imageinfo?.[0];
+      if (ii?.url) info.set(batch[index], { url: ii.url, size: (ii.width ?? 0) * (ii.height ?? 0) });
+    });
+  }
+
+  const best = new Map<string, string>();
+  for (const [title, gifs] of candidates) {
+    const [top] = gifs.flatMap((file) => info.get(file) ?? []).sort((a, b) => b.size - a.size);
+    if (top) best.set(title, top.url);
+  }
+  return best;
 };
 
 export default { getImages };

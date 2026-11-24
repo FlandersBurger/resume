@@ -384,6 +384,27 @@ describe("ListEditorDrawer", () => {
     expect(screen.getByDisplayValue(url)).toBeInTheDocument();
   });
 
+  it("offers anyone the Fandom wiki assigned to the list's subject", async () => {
+    setup();
+    mockGetList.mockResolvedValue(existing({ name: "Harry Potter - Spells", categories: ["literature"] }));
+    (getBlurbs as jest.Mock).mockImplementation(async () => {
+      const fetched = existing({ name: "Harry Potter - Spells", categories: ["literature"] });
+      fetched.values = fetched.values.map((v, i) => (i < 4 ? { ...v, blurb: `https://x.org/${i}.gif` } : v));
+      return fetched;
+    });
+    render(<ListEditorDrawer listId="list1" onClose={jest.fn()} />);
+    await settle();
+
+    fireEvent.click(screen.getByRole("button", { name: "Blurbs" }));
+    fireEvent.click(screen.getByRole("link", { name: "Get pics from Harry Potter Wiki" }));
+    await settle();
+
+    // No URL: the server uses the assigned wiki.
+    expect(getBlurbs).toHaveBeenCalledWith("list1", "fandom", undefined);
+    expect(screen.getByText(/Found images for 4 of/)).toBeInTheDocument();
+    expect(screen.queryByText("From a Fandom wiki…")).not.toBeInTheDocument();
+  });
+
   it("puts every blurb source in one menu, with the wiki option for admins", async () => {
     setup({ isAdmin: true });
     mockGetList.mockResolvedValue(existing({ categories: ["movies"] }));
