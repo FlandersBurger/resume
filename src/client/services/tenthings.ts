@@ -133,6 +133,21 @@ export async function getRandomList() {
   return data;
 }
 
+export interface SimilarLists {
+  /** Lists in the same language about the same subject (the part of the name before the last " - "). */
+  lists: { _id: string; name: string }[];
+  /** A list with exactly this name, ignoring case and accents: saving under it is refused. */
+  duplicate: { _id: string; name: string } | null;
+}
+
+/** `exclude` is the list being edited, so it isn't reported as its own duplicate. */
+export async function getSimilarLists(name: string, language: string, exclude?: string) {
+  const params = new URLSearchParams({ name, language });
+  if (exclude) params.append("exclude", exclude);
+  const { data } = await http.get<SimilarLists>(`/api/tenthings/lists/similar?${params}`);
+  return data;
+}
+
 export async function searchLists(name: string) {
   const { data } = await http.get<TenThingsList[]>(`/api/tenthings/search/list-names/${name}`);
   return data;

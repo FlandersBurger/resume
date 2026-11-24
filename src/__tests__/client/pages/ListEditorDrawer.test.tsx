@@ -9,6 +9,7 @@ import {
   getBlurbs,
   getClaudeEnabled,
   getList,
+  getSimilarLists,
   vetList,
   updateList,
 } from "../../../client/services/tenthings";
@@ -25,6 +26,7 @@ jest.mock("../../../client/services/tenthings", () => ({
   vetList: jest.fn(),
   getCategories: jest.fn(),
   getLanguages: jest.fn(),
+  getSimilarLists: jest.fn().mockResolvedValue({ lists: [], duplicate: null }),
 }));
 
 const mockUseApp = useApp as jest.MockedFunction<typeof useApp>;
@@ -124,6 +126,48 @@ describe("ListEditorDrawer", () => {
 
     expect(name).toHaveValue("Kamelot - Albums");
     expect(mockUpdateList).toHaveBeenCalledWith(expect.objectContaining({ name: "Kamelot - Albums" }));
+  });
+
+  it("suggests the house name and applies it in one click", async () => {
+    setup();
+    mockGetList.mockResolvedValue(existing({ name: "IU - Singles" }));
+    mockUpdateList.mockImplementation(async (l) => l);
+    render(<ListEditorDrawer listId="list1" onClose={jest.fn()} onSaved={jest.fn()} />);
+    await settle();
+
+    fireEvent.click(screen.getByRole("button", { name: 'Use "IU - Songs"' }));
+    await settle();
+
+    expect(screen.getByPlaceholderText("Name")).toHaveValue("IU - Songs");
+    expect(mockUpdateList).toHaveBeenCalledWith(expect.objectContaining({ name: "IU - Songs" }));
+  });
+
+  it("names the list Subject - Kind from the kind picker", async () => {
+    setup();
+    mockGetList.mockResolvedValue(existing({ name: "Tom Cruise" }));
+    mockUpdateList.mockImplementation(async (l) => l);
+    render(<ListEditorDrawer listId="list1" onClose={jest.fn()} onSaved={jest.fn()} />);
+    await settle();
+
+    fireEvent.change(screen.getByLabelText("Kind"), { target: { value: "Movies" } });
+    await settle();
+
+    expect(screen.getByPlaceholderText("Name")).toHaveValue("Tom Cruise - Movies");
+  });
+
+  it("warns about a list with the same name and points at lists on the same subject", async () => {
+    setup();
+    mockGetList.mockResolvedValue(existing({ name: "IU - Songs" }));
+    (getSimilarLists as jest.Mock).mockResolvedValue({
+      lists: [{ _id: "a", name: "IU - Members" }],
+      duplicate: { _id: "b", name: "IU - Songs" },
+    });
+    render(<ListEditorDrawer listId="list1" onClose={jest.fn()} onSaved={jest.fn()} />);
+    await settle();
+    await act(async () => new Promise((r) => setTimeout(r, 700)));
+
+    expect(getSimilarLists).toHaveBeenCalledWith("IU - Songs", "EN", "list1");
+    expect(screen.getByText(/There's already a list called "IU - Songs"/)).toBeInTheDocument();
   });
 
   it("saves an existing List even when it drops below ten Answers", async () => {

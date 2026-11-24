@@ -1,13 +1,21 @@
 import { useState, useRef, memo, useCallback, useEffect, useMemo } from "react";
 import styled from "styled-components";
-import { TenThingsList, TenThingsValue, Language, CategoryOption, getBlurbs } from "../../services/tenthings";
+import {
+  TenThingsList,
+  TenThingsValue,
+  Language,
+  CategoryOption,
+  getBlurbs,
+  getSimilarLists,
+  SimilarLists,
+} from "../../services/tenthings";
 import { removeAllButLetters } from "@utils/string-helpers";
 import { TenThingsTableContainer } from "./SharedStyles";
 import { categoryLabel, formatDate, formatPct } from "./format";
 import { VetModal } from "./VetModal";
 import { getClaudeEnabled } from "../../services/tenthings";
 import { applySuggestions, PickedSuggestions } from "@utils/list-suggestions";
-import { normalizeListName } from "@utils/list-names";
+import { LIST_KINDS, listNameHints, normalizeListName, standardizeTerms, withListKind } from "@utils/list-names";
 import { PasteAnswersModal } from "./PasteAnswersModal";
 
 const EditListPanel = styled.div<{ $active?: boolean }>`
@@ -67,6 +75,26 @@ const BtnIcon = styled.button`
 `;
 
 const EditorTableContainer = styled(TenThingsTableContainer)``;
+
+const KindPicker = styled.select`
+  && {
+    width: auto;
+  }
+`;
+
+/** Naming suggestions and similar lists, under the name field. */
+const NameNotes = styled.ul`
+  list-style: none;
+  margin: 4px 0 8px;
+  padding: 0;
+  font-size: 0.9em;
+  color: var(--text-muted);
+
+  .btn-link {
+    padding: 0 0 0 6px;
+    vertical-align: baseline;
+  }
+`;
 
 const CategoryMenu = styled.div`
   padding: 10px 12px;
@@ -590,6 +618,38 @@ export function ListEditor({
   const onSaveRef = useRef(onSave);
   onSaveRef.current = onSave;
 
+  /** Tidies the name (dashes, spaces, kind spelling) where the creator can see it, then saves. */
+  const commitName = (name: string) => {
+    const tidied = { ...listRef.current, name: normalizeListName(name, listRef.current.language) };
+    if (tidied.name !== listRef.current.name) onChangeRef.current(tidied);
+    onSaveRef.current(tidied);
+  };
+
+  const nameHints = useMemo(
+    () => listNameHints(list.name, list.language, list.categories),
+    [list.name, list.language, list.categories],
+  );
+  const kinds = LIST_KINDS[list.language] ?? [];
+
+  const [similar, setSimilar] = useState<SimilarLists>({ lists: [], duplicate: null });
+  useEffect(() => {
+    const name = list.name.trim();
+    if (readOnly || name.length < 3) {
+      setSimilar({ lists: [], duplicate: null });
+      return;
+    }
+    let current = true;
+    const timer = setTimeout(() => {
+      getSimilarLists(name, list.language, list._id === "new" ? undefined : list._id)
+        .then((found) => current && setSimilar(found))
+        .catch(() => current && setSimilar({ lists: [], duplicate: null }));
+    }, 500);
+    return () => {
+      current = false;
+      clearTimeout(timer);
+    };
+  }, [list.name, list.language, list._id, readOnly]);
+
   const addValue = () => {
     if (!newItem.value) return;
     if (hasDuplicate(newItem.value)) {
@@ -839,16 +899,50 @@ export function ListEditor({
           value={list.name}
           disabled={readOnly}
           onChange={(e) => onChange({ ...list, name: e.target.value })}
-          onBlur={() => {
-            // Tidy dashes, spaces and kind spelling where the creator can see it, before saving.
-            const name = normalizeListName(listRef.current.name, listRef.current.language);
-            const tidied = name === listRef.current.name ? listRef.current : { ...listRef.current, name };
-            if (tidied !== listRef.current) onChangeRef.current(tidied);
-            onSaveRef.current(tidied);
-          }}
+          onBlur={() => commitName(listRef.current.name)}
           autoComplete="off"
         />
+        {kinds.length > 0 && !readOnly && (
+          <KindPicker
+            className="form-control"
+            aria-label="Kind"
+            title='Name the list "Subject - Kind"'
+            value=""
+            disabled={!list.name.trim()}
+            onChange={(e) => e.target.value && commitName(withListKind(list.name, e.target.value, list.language))}
+          >
+            <option value="">Kind…</option>
+            {kinds.map((kind) => (
+              <option key={kind} value={kind}>
+                {kind}
+              </option>
+            ))}
+          </KindPicker>
+        )}
       </div>
+      {!readOnly && (nameHints.length > 0 || similar.lists.length > 0 || similar.duplicate) && (
+        <NameNotes>
+          {similar.duplicate && (
+            <li className="text-danger">There's already a list called "{similar.duplicate.name}" in this language.</li>
+          )}
+          {nameHints.map(({ message, fix }) => (
+            <li key={message}>
+              {message}
+              {fix && (
+                <button type="button" className="btn btn-link btn-xs" onClick={() => commitName(fix)}>
+                  Use "{fix}"
+                </button>
+              )}
+            </li>
+          ))}
+          {!similar.duplicate && similar.lists.length > 0 && (
+            <li>
+              Lists about the same subject: {similar.lists.map(({ name }) => name).join(", ")}. If yours is one of them,
+              add your answers there instead.
+            </li>
+          )}
+        </NameNotes>
+      )}
 
       {/* Description */}
       <div className="input-group">
@@ -858,7 +952,15 @@ export function ListEditor({
           placeholder="Description displays when the list is introduced to the players."
           disabled={readOnly}
           onChange={(v) => onChange({ ...list, description: v })}
-          onBlur={() => onSaveRef.current(listRef.current)}
+          onBlur={() => {
+            const description = standardizeTerms(listRef.current.description ?? "");
+            const tidied =
+              description === (listRef.current.description ?? "")
+                ? listRef.current
+                : { ...listRef.current, description };
+            if (tidied !== listRef.current) onChangeRef.current(tidied);
+            onSaveRef.current(tidied);
+          }}
         />
       </div>
 

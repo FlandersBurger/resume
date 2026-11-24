@@ -1,4 +1,72 @@
-import { normalizeListName, standardizeListPhrases } from "@utils/list-names";
+import {
+  listNameHints,
+  normalizeListName,
+  standardizeListPhrases,
+  standardizeTerms,
+  withListKind,
+} from "@utils/list-names";
+
+describe("standardizeTerms", () => {
+  it.each([
+    ["Famous LGBTQ+ People", "Famous LGBTQIA+ People"],
+    ["Film franchises featuring LGBT characters", "Film franchises featuring LGBTQIA+ characters"],
+    ["Músicos LGBTq+", "Músicos LGBTQIA+"],
+    ["Serial Netflix bertema Lgbt", "Serial Netflix bertema LGBTQIA+"],
+    ["Big Brother Brasil - Participantes LGBT+", "Big Brother Brasil - Participantes LGBTQIA+"],
+    ["Cantoras LGBTQIA+", "Cantoras LGBTQIA+"],
+    ["Horror Movies with LGBTQ+ Characters/Storylines", "Horror Movies with LGBTQIA+ Characters/Storylines"],
+  ])("%j → %j", (text, expected) => expect(standardizeTerms(text)).toBe(expected));
+
+  it("is part of normalizing a name", () => {
+    expect(normalizeListName("Worst Countries for LGBTQ+ rights")).toBe("Worst Countries for LGBTQIA+ rights");
+  });
+});
+
+describe("withListKind", () => {
+  it.each([
+    ["Tom Cruise", "Movies", "EN", "Tom Cruise - Movies"],
+    ["IU - Songs", "Members", "EN", "IU - Members"],
+    ["Breaking Bad - Season 1", "Characters", "EN", "Breaking Bad - Season 1 - Characters"],
+    ["Raisa - Lagu", "Album", "ID", "Raisa - Album"],
+    ["", "Songs", "EN", ""],
+  ])("%j + %j → %j", (name, kind, language, expected) => expect(withListKind(name, kind, language)).toBe(expected));
+});
+
+describe("listNameHints", () => {
+  const fixes = (name: string, language = "EN", categories: string[] = []) =>
+    listNameHints(name, language, categories).map(({ fix }) => fix);
+
+  it.each([
+    ["Elements that start with C", "Elements starting with C"],
+    ["IU - Singles", "IU - Songs"],
+    ["Tom Holland - Filmography", "Tom Holland - Movies"],
+    ["Declan McKenna Songs", "Declan McKenna - Songs"],
+    ["Countries With The Most Billionaires", "Countries with The Most Billionaires"],
+  ])("suggests %j → %j", (name, fix) => expect(fixes(name)).toContain(fix));
+
+  it("suggests the kind for a person's movies only when the list is a filmography", () => {
+    expect(fixes("Gene Kelly Movies", "EN", ["movies.filmography"])).toContain("Gene Kelly - Movies");
+    expect(fixes("Zombie Movies", "EN", ["movies.titles"])).toEqual([]);
+  });
+
+  it("explains a discography without guessing the kind", () => {
+    expect(listNameHints("Foo Fighters - Discography", "EN")).toEqual([
+      { message: 'Name a discography "Albums" or "Songs", whichever its answers are.' },
+    ]);
+  });
+
+  it.each([
+    ["Músicas de Zeca Pagodinho", "PT", "Zeca Pagodinho - Músicas"],
+    ["Luan Santana - Canções", "PT", "Luan Santana - Músicas"],
+    ["Lagu Raisa", "ID", "Raisa - Lagu"],
+    ["Nama nama negara", "ID", "Nama-nama negara"],
+  ])("suggests %j (%s) → %j", (name, language, fix) => expect(fixes(name, language)).toContain(fix));
+
+  it.each(["Tom Cruise - Movies", "Penguins", "Star Wars: A New Hope - Characters", "Directed by Wes Anderson"])(
+    "has nothing to say about %j",
+    (name) => expect(listNameHints(name, "EN")).toEqual([]),
+  );
+});
 
 describe("normalizeListName", () => {
   it.each([
