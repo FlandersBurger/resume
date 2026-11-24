@@ -225,6 +225,13 @@ const BLURB_TYPES = [
   { api: "wiki", categories: OBJECT_CATEGORIES, text: "Get Wiki pics", adminOnly: false },
 ];
 
+/** "Found 18 of 24 answers without a blurb, 12 of them on other lists." */
+const blurbsFound = (missing: number, updated: TenThingsList, fromRelated: number) => {
+  const found = missing - updated.values.filter((v) => !v.blurb).length;
+  const borrowed = fromRelated ? `, ${fromRelated === found ? "all" : fromRelated} of them on other lists` : "";
+  return `Found ${found} of ${missing} answers without a blurb${borrowed}.`;
+};
+
 function getEmbedUrl(url: string): string {
   if (url.includes("youtube.com")) {
     const m = url.match(/[?&]v=([^&]+)/);
@@ -716,10 +723,9 @@ export function ListEditor({
     setWikiStatus("");
     try {
       if (url) localStorage.setItem(wikiKey, url);
-      const updated = await getBlurbs(list._id, "fandom", url);
+      const { list: updated, fromRelated } = await getBlurbs(list._id, "fandom", url);
       onChange(updated);
-      const found = missing - updated.values.filter((v) => !v.blurb).length;
-      setWikiStatus(`Found images for ${found} of ${missing} answers without a blurb.`);
+      setWikiStatus(blurbsFound(missing, updated, fromRelated));
     } catch (error: any) {
       setWikiStatus(error?.response?.data?.error ?? "Couldn't read that wiki.");
     } finally {
@@ -1189,9 +1195,14 @@ export function ListEditor({
                       e.preventDefault();
                       setShowBlurbMenu(false);
                       setGettingBlurbs(true);
+                      setWikiStatus("");
+                      const missing = list.values.filter((v) => !v.blurb).length;
                       try {
-                        const updated = await getBlurbs(list._id, bt.api);
+                        const { list: updated, fromRelated } = await getBlurbs(list._id, bt.api);
                         onChange(updated);
+                        setWikiStatus(blurbsFound(missing, updated, fromRelated));
+                      } catch {
+                        setWikiStatus("Couldn't get blurbs right now.");
                       } finally {
                         setGettingBlurbs(false);
                       }

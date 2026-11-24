@@ -372,7 +372,7 @@ describe("ListEditorDrawer", () => {
     (getBlurbs as jest.Mock).mockImplementation(async () => {
       const fetched = existing({ categories: ["movies"] });
       fetched.values[0] = { ...fetched.values[0], blurb: url };
-      return fetched;
+      return { list: fetched, fromRelated: 0 };
     });
     render(<ListEditorDrawer listId="list1" onClose={jest.fn()} />);
     await settle();
@@ -390,7 +390,7 @@ describe("ListEditorDrawer", () => {
     (getBlurbs as jest.Mock).mockImplementation(async () => {
       const fetched = existing({ name: "Harry Potter - Spells", categories: ["literature"] });
       fetched.values = fetched.values.map((v, i) => (i < 4 ? { ...v, blurb: `https://x.org/${i}.gif` } : v));
-      return fetched;
+      return { list: fetched, fromRelated: 3 };
     });
     render(<ListEditorDrawer listId="list1" onClose={jest.fn()} />);
     await settle();
@@ -401,7 +401,7 @@ describe("ListEditorDrawer", () => {
 
     // No URL: the server uses the assigned wiki.
     expect(getBlurbs).toHaveBeenCalledWith("list1", "fandom", undefined);
-    expect(screen.getByText(/Found images for 4 of/)).toBeInTheDocument();
+    expect(screen.getByText("Found 4 of 10 answers without a blurb, 3 of them on other lists.")).toBeInTheDocument();
     expect(screen.queryByText("From a Fandom wiki…")).not.toBeInTheDocument();
   });
 

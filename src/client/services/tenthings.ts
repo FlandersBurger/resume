@@ -117,11 +117,14 @@ export async function deleteList(id: string) {
   await http.delete(`/api/tenthings/lists/${id}`);
 }
 
-/** `wikiUrl` is any page on the wiki to pull images from, for the "fandom" type. */
+/**
+ * Fills the list's empty blurbs, from related lists first and then the source. `wikiUrl` is any page on the
+ * wiki to pull images from, for the "fandom" type. `fromRelated` is how many came from other lists.
+ */
 export async function getBlurbs(id: string, type: string, wikiUrl?: string) {
   const url = `/api/tenthings/lists/${id}/blurbs/${type}`;
   const res = wikiUrl ? await http.post(url, { wikiUrl }) : await http.post(url);
-  return res.data as TenThingsList;
+  return { list: res.data as TenThingsList, fromRelated: Number(res.headers?.["x-local-blurbs"] ?? 0) };
 }
 
 export async function mergeLists(ids: string[]) {
