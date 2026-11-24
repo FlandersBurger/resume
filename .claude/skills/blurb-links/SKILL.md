@@ -38,7 +38,7 @@ Skip shiny, back, icon, mini and fan-art variants. Among equals, take the larger
 
 ## Fandom wikis
 
-- Match per **list subject** (the part of the name before `-`), not per category: categories are broad, subjects name a franchise. `https://<slug>.fandom.com/api.php` with `meta=siteinfo` tells you whether a wiki exists. Slug guesses go wrong ("The Wiki", unrelated wikis), so a person confirms each subject → wiki pairing.
+- Match per **list subject** (the part of the name before the spaced dash: "Harry Potter" in "Harry Potter - Spells"), not per category: categories are broad, subjects name a franchise. `https://<slug>.fandom.com/api.php` with `meta=siteinfo` tells you whether a wiki exists. Slug guesses go wrong ("The Wiki", unrelated wikis), so a person confirms each subject → wiki pairing.
 - Look answers up as exact titles with `redirects=1&prop=pageimages|pageprops&piprop=original&ppprop=disambiguation`, 50 titles a query. Skip disambiguation pages. A redirect can land on a different thing (Galarian Stunfisk → Stunfisk): put redirected matches in their own review section.
 - Lists of generic terms (card anatomy, game jargon) get random page images: skip them, or map answers to titles first ("Fire" → "Fire type", "Great" → "Great Ball").
 - Some franchises have a second wiki for a spin-off (`pokemongo.fandom.com`).
