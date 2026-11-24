@@ -58,12 +58,10 @@ const TAG = [
   "67ee02960112233ec5771838", // Negara yang membolehkan pernikahan sesama jenis
   "6810a8c21fa30da7e8402fab", // Panggilan antar sesama gay
   "689cf50a126629161af88dfe", // Divas brasileiras que os gays usam de GIF
-  "698e073016dc524ccced306d", // Kota gay terbanyak di indonesia
   "69948f3916dc524cccd48e42", // Serial Netflix bertema Lgbt
   "69c0a76a16dc524ccc60d478", // Budaya Queer Nusantara
   "69d0728f137d60779930a0af", // Karakter queer di anime Sailormoon
   "69d07341137d60779930efae", // Karakter Queer di anime One Piece
-  "69d1f2ca137d607799b20afe", // Indonesian famous queer
   "6390e2412cb1eb7165c0877c", // Personalidades LGBTQIA+
   "65f8f4b066b9ed27b4c59bb6", // Cantoras LGBTQIA+
 ];
