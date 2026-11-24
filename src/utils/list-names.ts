@@ -11,7 +11,45 @@
  */
 const SEPARATOR = /\s+[-‐-―−]+\s+/g;
 
-export const normalizeListName = (name: string): string => name.replace(SEPARATOR, " - ").replace(/\s+/g, " ").trim();
+/** How each language spells the kind after the last " - ", keyed by the word without case or accents. */
+const KIND_SPELLINGS: Record<string, Record<string, string>> = {
+  PT: {
+    musicas: "Músicas",
+    personagens: "Personagens",
+    filmes: "Filmes",
+    albuns: "Álbuns",
+    faixas: "Faixas",
+    letra: "Letra",
+    integrantes: "Integrantes",
+    membros: "Membros",
+    novelas: "Novelas",
+    series: "Séries",
+  },
+  ID: {
+    lagu: "Lagu",
+    lirik: "Lirik",
+    album: "Album",
+    film: "Film",
+    anggota: "Anggota",
+    karakter: "Karakter",
+    pemeran: "Pemeran",
+    drama: "Drama",
+  },
+};
+
+const bare = (word: string) => word.normalize("NFD").replace(/\p{M}/gu, "").toLowerCase();
+
+/** "NX Zero - músicas" → "NX Zero - Músicas", for languages with known kind words. */
+const spellKind = (name: string, language?: string): string => {
+  const spellings = language && KIND_SPELLINGS[language];
+  const at = name.lastIndexOf(" - ");
+  if (!spellings || at < 0) return name;
+  const kind = spellings[bare(name.slice(at + 3))];
+  return kind ? `${name.slice(0, at + 3)}${kind}` : name;
+};
+
+export const normalizeListName = (name: string, language?: string): string =>
+  spellKind(name.replace(SEPARATOR, " - ").replace(/\s+/g, " ").trim(), language);
 
 /** English phrasings with one house form: "Words starting with …". */
 const ENGLISH_PHRASES: [RegExp, string][] = [
@@ -20,6 +58,16 @@ const ENGLISH_PHRASES: [RegExp, string][] = [
   [/\bbeginning with\b/gi, "starting with"],
 ];
 
-/** The name in the house phrasing, for English lists; other languages keep their own. */
-export const standardizeListPhrases = (name: string, language: string): string =>
-  language === "EN" ? ENGLISH_PHRASES.reduce((result, [from, to]) => result.replace(from, to), name) : name;
+/** Indonesian reduplication is written with a hyphen: "Nama nama negara" → "Nama-nama negara". */
+const hyphenateReduplication = (name: string) =>
+  name.replace(
+    /(?<![\p{L}-])(\p{L}{3,}) \1(?![\p{L}-])/giu,
+    (match, word: string) => `${word}-${match.slice(word.length + 1)}`,
+  );
+
+/** The name in the house phrasing, for English and Indonesian lists; other languages keep their own. */
+export const standardizeListPhrases = (name: string, language: string): string => {
+  if (language === "EN") return ENGLISH_PHRASES.reduce((result, [from, to]) => result.replace(from, to), name);
+  if (language === "ID") return hyphenateReduplication(name);
+  return name;
+};

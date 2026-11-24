@@ -314,7 +314,7 @@ tenthingsListsRoute.put("/:id", async (req: Request<{ id: string }>, res: Respon
       });
 
       Object.assign(list, req.body);
-      list.name = normalizeListName(list.name);
+      list.name = normalizeListName(list.name, list.language);
       if (list.values.length < MIN_LIST_VALUES) {
         res.status(400).json({ error: `A list must have at least ${MIN_LIST_VALUES} values.` });
         return;
@@ -356,7 +356,7 @@ tenthingsListsRoute.post("/", async (req: Request, res: Response) => {
     const yesterday = moment().subtract(1, "days");
     const previousModifyDate = moment(req.body.list.modifyDate);
     req.body.list.modifyDate = new Date();
-    req.body.list.name = normalizeListName(req.body.list.name ?? "");
+    req.body.list.name = normalizeListName(req.body.list.name ?? "", req.body.list.language);
     req.body.list.search = removeAllButLetters(req.body.list.name);
     // The editor never holds the List's votes, so the score is recomputed in Mongo after saving.
     delete req.body.list.score;
