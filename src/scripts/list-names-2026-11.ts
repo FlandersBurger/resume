@@ -1,0 +1,298 @@
+// One-off cleanup of list names to the house style in src/utils/list-names.ts and the Vet prompt.
+//
+// Every list gets the safe fixes (dashes, spaces) and English lists the house phrasing ("starting with").
+// RENAMES holds the reviewed judgement calls. A rename that lands on the name of another list in the same
+// language merges the two into the oldest, the same way the admin merge does.
+//
+//   npx tsx --env-file=.env src/scripts/list-names-2026-11.ts          dry run: prints what would change
+//   npx tsx --env-file=.env src/scripts/list-names-2026-11.ts --apply  backs up the lists collection, then writes
+//
+// Imports only pure modules: importing the models would start the bots.
+import { createConnection, Types } from "mongoose";
+import type { IList } from "@models/tenthings/list";
+import { normalizeListName, standardizeListPhrases } from "@utils/list-names";
+import { mergeLists } from "@utils/list-merge";
+import { removeAllButLetters } from "@utils/string-helpers";
+
+const RENAMES: Record<string, string> = {
+  // "X Movies" for one person, franchise or studio → "X - Movies"
+  "5bea3a1886a77229362392e9": "Gene Kelly - Movies",
+  "5b92bafc57ebb761a8c4a324": "Tom Cruise - Movies",
+  "5b5fefeb053e4b2660afe811": "Will Smith - Movies",
+  "5bca001d49e0c10d29816b76": "Denzel Washington - Movies",
+  "5edaee2465aae30fdb2f3376": "Ryan Gosling - Movies",
+  "5cce6a58d481a30618acf5f8": "Johnny Depp - Movies",
+  "5ef55d2685d3a02d71e2fc19": "Ryan Reynolds - Movies",
+  "5b464b763ae7ee30f75d507a": "Jim Carrey - Movies",
+  "5eb0f84a16b9bf71d388d53d": "Anne Hathaway - Movies",
+  "5dc0f9a08f6c58315dfabb16": "Bill Murray - Movies",
+  "5bf2375cbf8fcc52fc7e9ca8": "Angelina Jolie - Movies",
+  "5cc7c08a2e33e64425af5a5b": "Keanu Reeves - Movies",
+  "5cb15dc9893a7557bfc4b5cd": "Jennifer Lawrence - Movies",
+  "5e699bf3b93e67137e26f7bb": "Edward Norton - Movies",
+  "5ee45faf3442402cbcc9d7cf": "Harrison Ford - Movies",
+  "5c303fe1665d8335281aa1a9": "Brad Pitt - Movies",
+  "5c0fe32ed448807c460bafff": "Bruce Willis - Movies",
+  "5f20fdca5c988e2a50260c63": "Jason Statham - Movies",
+  "5b4e232b0e604a1779fb03e6": "Adam Sandler - Movies",
+  "5bbf7adf5dca6130755baf41": "Jackie Chan - Movies",
+  "5b5ff9d9053e4b2660afe888": "Robin Williams - Movies",
+  "5ebe105d3a622f12e8cdd961": "Dwayne Johnson - Movies",
+  "5b92afd357ebb761a8c4a127": "Tom Hanks - Movies",
+  "5ea461fb9c8781108474af07": "Scarlett Johansson - Movies",
+  "663ab9bd467695ba1b2c93c8": "Nicolas Cage - Movies",
+  "5d37378262e99d7358904a67": "Arnold Schwarzenegger - Movies",
+  "5babc16d381cd95e2bdf1e5f": "Madea - Movies",
+  "5ebe11623a622f12e8cddde7": "Barbie - Movies",
+  "5bc124515dca6130755bb181": "Ernest - Movies",
+  "5b4627c9b1436b72a67b0002": "Pixar - Movies",
+  "5b6905be25fce910d63d497a": "Studio Ghibli - Movies",
+  "5bd79f7740d2d70bbd50582a": "DreamWorks Animation - Movies",
+  "5eb522a9d10ce418fcee326e": "A24 - Movies",
+  "607ae5fcab17c91e752350cd": "Batman - Animated Movies",
+  "634a75b14c99fe0455906c4e": "Nickelodeon - Animated Movies",
+
+  // Songs
+  "5f418022f6701956bf9bd568": "Declan McKenna - Songs",
+  "5f5942aff1c7c214b7d63a92": "Frank Iero - Songs",
+  "6a40f6b92562d32bce082278": "Tubero - Songs",
+  "5e690db1a98a440dbebcf019": "Nightwish - Songs",
+  "5f13acbe6894c91171b978a3": "Atif Aslam - Songs",
+  "639d2daa1831a262ca25f893": "Ed Sheeran - No.6 Collaborations Project - Songs",
+
+  // Characters
+  "5f131d7bd6a4527cd5d8ee83": "Studio Ghibli - Characters",
+  "5e3eefca1f8c48631546d1b2": "The Witcher (TV Series) - Characters",
+  "5ed7ebbcd8c3dd67a775b42d": "Haikyuu - Characters",
+  "5efc7feda186d30672a49802": "Tekken - Characters",
+  "5e136153aafac77a2250e0b5": "Donkey Kong - Characters",
+  "5f26908250d8b205c092b282": "Arrowverse - Characters",
+  "5cce664ed481a30618acf52e": "Sacha Baron Cohen - Characters",
+  "5eb7cbaa83b43640f2cbc477": "Peaky Blinders - Characters",
+  "5eaa6d62b9790e3262988deb": "Vis a Vis (Locked Up) - Characters",
+  "62f5296ccc14bb3a221cd8de": "Riverdale - Characters",
+  "606efce698514e57658a865f": "Banana Fish - Characters",
+  "60effb6ca07e706b6d8ad694": "Kartrider Rush+ - Characters",
+  "689121dc126629161a482b76": "Genshin Impact - Characters",
+  "60cb5a7a5d17e50f257f0e0d": "Shakespeare - Characters",
+  "5e5d5cf9d1882a14621e7bd9": "Eureka - Characters",
+  "66838a46be141505652cf429": "Mahabharat - Characters",
+  "5e97cff6e98f9b74e6a323d9": "Things associated with Vampires",
+
+  // Singles → Songs (an existing "X - Songs" list is merged in by the collision step)
+  "5ef971d6333181566ca84696": "Dreamcatcher - Songs",
+  "5eecd084f61b210b019ed408": "SF9 - Songs",
+  "5ef656407420923348ac8bff": "9MUSES - Songs",
+  "5f164f597786152b549b0193": "Katy Perry - Songs",
+  "5ed104bbc68180130b37c174": "MAMAMOO - Songs",
+  "5ecf13ccf4fc17377984f002": "Day6 - Songs",
+  "5edc74dd776bfa29abc80369": "IU - Songs",
+  "5ecc6576b1aa950ffd1a4beb": "CLC - Songs",
+  "5eb7d8a774d8a741bd05b919": "EXO - Songs",
+  "5eb7d10483b43640f2cbe09b": "SEVENTEEN - Songs",
+  "5eec3f12ffae4207d7c4bdc8": "Fifth Harmony - Songs",
+  "5f2766bc200c3110b38d4499": "My Chemical Romance - Songs",
+  "5e5d5888d1882a14621e7a3e": "Arkells - Songs",
+  "5ec12b3c639bfb437c5b3f18": "Cosmic Girls (WJSN) - Songs",
+  "5ed712566c31fc4df6d539e0": "PENTAGON - Songs",
+  "5fa4958bcdda862fba8bcc87": "Brown Eyed Girls - Songs",
+  "5fa49934cdda862fba8bd22a": "T-ara - Songs",
+  "5fa59b09cdda862fba9a240f": "Wonder Girls - Songs",
+  "5fa6c59bcdda862fbaa903e8": "SISTAR - Songs",
+  "5fa6c836cdda862fbaa90bd3": "f(x) - Songs",
+  "5fa6cb72cdda862fbaa9174b": "AOA - Songs",
+  "5fc42de78b2a1a2f47936a4a": "S.E.S - Songs",
+  "5ff02b9d20e08345244f6205": "G-Dragon - Songs",
+  "5f2650b0d62bf403a5dcc67c": "Little Mix - Songs",
+  "5eeab1ea8ea0dd730dd1ab4f": "Jackson Wang - Songs",
+  "5f163acb6ccf9829806dadf2": "2NE1 - Songs",
+  "5f2f585e86d2745771845e14": "Troye Sivan - Songs",
+  "5ed48bee0fc14e3a974d9847": "ASTRO - Songs",
+  "5f52bc59224fe44b514a0a0d": "Gorillaz - Songs",
+  "5f55514af6011262ff85a938": "Kesha - Songs",
+  "5f5f1b1491b4e461eca6a790": "Momoland - Songs",
+  "5f625509afb1797d22b1a1ec": "Lauren Alaina - Songs",
+  "5f62989921aa860f07410423": "Cheryl - Songs",
+  "5f629b8f21aa860f074108f7": "Tove Lo - Songs",
+  "5f79fa89de5ed62fda13e74a": "Two Door Cinema Club - Songs",
+  "5f87bf500db63c6a34ffe093": "Kim Petras - Songs",
+  "5f8a4c2c86ac886bcdcd7436": "24K - Songs",
+  "5ecbd0b20943290d5200e3df": "BIGBANG - Songs",
+  "6164135f05456811ac55aea7": "The xx - Songs",
+  "6164172205456811ac55b6b1": "Cage the Elephant - Songs",
+  "61f4195b2f05f634d3fe42a6": "Lady Gaga - Songs",
+  "6015936bda3df151fa611b78": "James Arthur - Songs",
+  "63525f096b63a47322d2b0d7": "ITZY - Songs",
+
+  // Discography → Albums or Songs, by what the answers are
+  "5f12973ad6a4527cd5d6f60c": "RBD - Albums",
+  "5f13c41e6894c91171b9e22f": "Red Velvet - Songs",
+  "5edf20ddd27c0a49bea098e4": "DAY6 - Songs",
+  "5f129ad4d6a4527cd5d6ffc3": "RuPaul - Albums",
+  "5ef6a9756b895538d35253ea": "Years & Years - Songs",
+  "5f2593a1c32cf97d45168d99": "Foo Fighters - Albums",
+  "5f4f67bc03019216090dfb0d": "KUURO - Songs",
+  "5f568e16b7714a6ed49df32f": "NCT - Albums",
+  "60038c5405ff32758d40c916": "Marilyn Manson - Albums",
+  "600767c405ff32758d762372": "The Boyz - Albums",
+  "5ef6a1e0811201389878482b": "Carly Rae Jepsen - Songs",
+  "5ea3d51e41529660e6484613": "Taylor Swift - Songs",
+  "602dc24c34e15137a82de29f": "2NE1 - Albums",
+  "607f880cdb59db56bafe63b1": "Death Grips - Albums",
+  "66cd7001cc9b30ce0c9176ad": "Xdinary Heroes - Songs",
+  "6387c7912cb1eb7165b2c8a1": "Doris Day - Albums",
+  "6467651e6146164601d1deab": "LOONA - Songs",
+  "646882016146164601d45dcf": "LE SSERAFIM - Songs",
+  "64688bf06146164601d46b4c": "Lovejoy - Songs",
+  "65a13357548c4a18ab5233ff": "Eminem - Songs",
+
+  // Filmography → Movies & TV Shows (each of these mixes both)
+  "5eec49c1ffae4207d7c4f1be": "Natasha Lyonne - Movies & TV Shows",
+  "5fc5c36dd1655309e110091e": "Satoshi Kon - Movies & TV Shows",
+  "5f1a7a6c23e73b592bfa1b88": "Tom Holland - Movies & TV Shows",
+  "60f46e03a07e706b6de5f359": "Melissa McCarthy - Movies & TV Shows",
+
+  // Small words capitalized mid-name, outside titles that are spelled that way
+  "5ee7116787f156524dd828c6": "Weirdest Things that Fell from the Sky",
+  "5f35867e83a03323069ca29b": "People Known by Two Initials + Surname",
+  "5ed1d3f1216d8a5ca849cebe": "Countries that Might Disappear with Global Warming",
+  "5ed4911e0fc14e3a974dc328": "Men Taylor Swift Has Written About in Her Songs",
+  "5ebc7b92af24557dac03e953": "Marvel Comics - Women that Fly",
+  "5e2f0e3814a2914b18639563": "Non-Brazilian Performers at the first Rock in Rio festival",
+  "5ed48c7f0fc14e3a974d9c4d": "Unique Holiday Traditions from Around the World",
+  "5ed28e2d13be4b2347797f60": "One Important Historical Event for Each 20th Century Decade",
+  "5ee6a9417e5ead4af2bcf52e": "TV Shows Based on Books",
+  "5ef4156f0c9bb21be91a5896": "Foods that Do Not Need to Be Refrigerated",
+  "5df8dd5d7ae4760a5c36995f": "Countries and Territories with the Most Billionaires",
+  "5c61ce880cb0b54b1b19b459": "Cities Associated with The Beatles",
+  "5ed1d3f2216d8a5ca849f113": "Countries with the Most International Airports",
+  "5e7ba23c0fd113084ac4127f": "Countries with the Highest Motorbike Usage",
+  "5c5efd440cb0b54b1b19a15b": "Countries with the Most Electric Cars",
+  "5f4b027d2ce8e0464a2c38d7": "Non-European Countries that Border European Countries",
+  "5f1f0a4a47a3ed1865b01bff": "Ancient Buildings Still in Use Today",
+  "5e3045a814a2914b1863a11d": "Countries with the Longest Coastline",
+  "5fa5c601cdda862fba9a61cb": "K-pop Boy Groups with 3 Letters",
+  "5ed1d3f2216d8a5ca849d3f0": "Countries with the Largest Rail Networks",
+  "5fdc5c1939b49e0a9939881d": "National Flags Containing the Country's Name",
+  "5f1ab038791e805e300cd94b": "Anime Based on Video Games",
+  "5f216f63fa59df319a23b052": "Most Recurring Word on Each Country’s Wikipedia Page",
+  "5e43f852b78a1274bb262f68": "City Names starting with a Vowel",
+  "5c48f0fb208f9235f0016ffc": "Countries with the Most Books Published Per Capita",
+  "5f52b585224fe44b5149f71e": "Top Rated Albums on Rate Your Music",
+  "5f53bb01af7b4a54abd29014": "Top Rated 2019 Singles on Rate Your Music",
+  "5f53be44af7b4a54abd29a86": "Top Rated Pop Singles of the 2010s on Rate Your Music",
+  "5f5dd834cf4ede546f4bfdc3": "Gay Characters from TV Shows",
+  "5f63ba6997f84a1d845363db": "Singers that competed on Dancing with the Stars",
+  "5f66dab96a05b3462cc40450": "K-pop Girl Groups Songs with Summer Concept",
+  "5f86fa1ed162214b41c6f1ad": "Animals Native to Russia",
+  "600081d405ff32758d0cabfb": "Metal Bands that Covered The Beatles",
+  "6000bbbb05ff32758d18ad27": "Hollywood Actors and Actresses Who’ve Been in the Most Movies",
+  "6004d90305ff32758d52f0ec": "The Worst Games of All Time According to Metacritic",
+  "5f94a6ec2958ae7afe49d821": "K-pop Groups that Had Two or More Comebacks in 2020",
+  "603fb472c889a4310771ad7d": "Countries with the Highest Public Transit Use",
+  "6076ac1675a27603f51462ac": "Anime Inspired by Fairy Tales",
+  "60812b87ca6a4b0ac65689c5": "K-pop Groups with Numbers in Their Names",
+  "608151aeca6a4b0ac656ea6e": "Every 29th Day of the Year",
+  "63356cd9f19d863b220d6241": "Bollywood Actors with Most No. of Movies",
+  "60f671284493c30166144977": "Highest-Paid Actors of 2020",
+  "605e137813e1a30f0cbebe2b": "Most-Downloaded Apps of 2020",
+  "63ecc129e63b26243a7cfa44": "Ways to Piss Someone Off on Internet",
+  "5f1bcafb91231b7222a7851a": 'Artists Who Recorded "We Are the World"',
+  // ...and titles whose official spelling has them lowercase
+  "5eec38fcffae4207d7c4a6dd": "Once Upon a Time - Storybrooke Names",
+  "5e5734f265e8a750fe421b6a": "Once Upon a Time - Villains",
+  "5edab126ac3b170973c81c0c": "A Song of Ice and Fire - Characters not in the show",
+  "5e81225f544372430e047583": "Panic! at the Disco - Music Videos",
+  "5f5e378b58015157cd1711b8": "Songs Covered by Panic! at the Disco",
+  "5d3ee76c3d7f712ee90ab608": "Orange Is the New Black - Characters",
+  "5f767d51e85c64062ae1c7c4": "Percy Jackson and the Olympians - Quotes",
+  "5f431f1fb79814686451d7d7": "Percy Jackson and the Olympians - Characters",
+  "5f7f2085394c3f67c70a95b5": "Star vs. the Forces of Evil - Characters",
+  "62369b6b52ddf713da32b35d": "Five Nights at Freddy's - Animatronics",
+  "600b10c90332a7095417ac3a": "Welcome to the Black Parade - Lyrics",
+  "6066e84c3b1260713fa6cddf": "The Falcon and the Winter Soldier - Characters",
+  "5ee078d654d1095b7dd24190": "How to Get Away with Murder - Cast",
+  "5f63b6a397f84a1d8453558f": "How to Get Away with Murder - Characters",
+  "5f0857911721ba1b8c1aaaad": "Too Hot to Handle - Cast",
+  "5fe746b420e0834524dbddf3": "Scott Pilgrim vs. the World - Characters",
+  "5edf84a92a7b2d4f65209a27": "Les Misérables - Do You Hear the People Sing? - Lyrics",
+  "6781804f6bfcd9bfca0c2123": "ZAYN - Room Under the Stairs - Songs",
+  "63de4a1e9921f81acc42bc2b": "Lana Del Rey - Born to Die - Album Tracklist",
+  "64db0c0bb3427254f8d6d874": 'Taylor Swift - "From the Vault" Songs',
+};
+
+type Doc = IList & { _id: Types.ObjectId };
+
+const key = (list: Pick<IList, "language" | "name">) => `${list.language}|${list.name.toLowerCase()}`;
+
+(async () => {
+  const apply = process.argv.includes("--apply");
+  const connection = await createConnection(process.env.MONGO_URL!).asPromise();
+  const lists = connection.collection<Doc>("lists");
+  const all = await lists.find({}).toArray();
+
+  const missing = Object.keys(RENAMES).filter((id) => !all.some(({ _id }) => String(_id) === id));
+  if (missing.length) throw new Error(`Lists in RENAMES not found: ${missing.join(", ")}`);
+
+  const renamed = new Map<string, string>();
+  for (const list of all) {
+    const name = RENAMES[String(list._id)] ?? standardizeListPhrases(normalizeListName(list.name ?? ""), list.language);
+    if (name !== list.name) renamed.set(String(list._id), name);
+  }
+  const nameOf = (list: Doc) => renamed.get(String(list._id)) ?? list.name;
+
+  // Enabled lists in the same language that end up with the same name, where a rename caused it.
+  const groups = new Map<string, Doc[]>();
+  for (const list of all.filter(({ enabled }) => enabled)) {
+    const k = key({ language: list.language, name: nameOf(list) });
+    groups.set(k, [...(groups.get(k) ?? []), list]);
+  }
+  const merges = [...groups.values()]
+    .filter((group) => group.length > 1 && group.some(({ _id }) => renamed.has(String(_id))))
+    .map((group) => group.sort((a, b) => +new Date(a.date) - +new Date(b.date)));
+
+  for (const [id, name] of renamed)
+    console.log(`rename ${id}  ${all.find(({ _id }) => String(_id) === id)!.name}  →  ${name}`);
+  for (const group of merges)
+    console.log(
+      `merge into ${group[0]._id} "${nameOf(group[0])}" ← ${group
+        .slice(1)
+        .map((l) => `${l._id} "${l.name}"`)
+        .join(", ")}`,
+    );
+  console.log(
+    `\n${renamed.size} renames, ${merges.length} merges removing ${merges.reduce((n, g) => n + g.length - 1, 0)} lists`,
+  );
+
+  if (!apply) {
+    console.log("Dry run: nothing written. Rerun with --apply to write.");
+    return process.exit(0);
+  }
+
+  const backup = `lists_backup_names_${new Date().toISOString().slice(0, 10).replaceAll("-", "_")}`;
+  await lists.aggregate([{ $match: {} }, { $out: backup }]).toArray();
+  console.log(`Backed up ${await connection.collection(backup).countDocuments()} lists to ${backup}`);
+
+  const merged = new Set(merges.flatMap((group) => group.map(({ _id }) => String(_id))));
+  const renames = [...renamed].filter(([id]) => !merged.has(id));
+  if (renames.length)
+    await lists.bulkWrite(
+      renames.map(([id, name]) => ({
+        updateOne: {
+          filter: { _id: new Types.ObjectId(id) },
+          update: { $set: { name, search: removeAllButLetters(name) } },
+        },
+      })),
+    );
+  for (const group of merges) {
+    const name = nameOf(group[0]);
+    const result = group.slice(1).reduce<IList>((acc, list) => mergeLists(acc, list), group[0]);
+    await lists.replaceOne({ _id: group[0]._id }, { ...result, name, search: removeAllButLetters(name) } as Doc);
+    await lists.deleteMany({ _id: { $in: group.slice(1).map(({ _id }) => _id) } });
+  }
+  console.log(`Wrote ${renames.length} renames and ${merges.length} merges.`);
+  process.exit(0);
+})().catch((error) => {
+  console.error(error);
+  process.exit(1);
+});

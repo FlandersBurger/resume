@@ -110,6 +110,22 @@ describe("ListEditorDrawer", () => {
     expect(onSaved).toHaveBeenCalledWith(expect.objectContaining({ name: "Jobs beginning with N" }), false);
   });
 
+  it("tidies the name's dashes and spaces when the field loses focus", async () => {
+    setup();
+    mockGetList.mockResolvedValue(existing());
+    mockUpdateList.mockImplementation(async (l) => l);
+    render(<ListEditorDrawer listId="list1" onClose={jest.fn()} onSaved={jest.fn()} />);
+    await settle();
+
+    const name = screen.getByPlaceholderText("Name");
+    fireEvent.change(name, { target: { value: " Kamelot –  Albums " } });
+    fireEvent.blur(name);
+    await settle();
+
+    expect(name).toHaveValue("Kamelot - Albums");
+    expect(mockUpdateList).toHaveBeenCalledWith(expect.objectContaining({ name: "Kamelot - Albums" }));
+  });
+
   it("saves an existing List even when it drops below ten Answers", async () => {
     setup();
     mockGetList.mockResolvedValue(existing({ values: answers(9) }));
