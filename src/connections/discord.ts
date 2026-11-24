@@ -21,6 +21,7 @@ import { maskUrls } from "@utils/string-helpers";
 import { discordInviteUrl } from "@tenthings/links";
 import { styleText } from "util";
 import { htmlToMarkdown } from "./discordMarkdown";
+import { BOTS_OFF_NOTICE, botsEnabled } from "./bots";
 
 export type DiscordUser = {
   id: string;
@@ -253,11 +254,11 @@ class DiscordBot {
       console.error("Discord chat queue error:", error);
     });
 
-    if (token) {
+    if (token && botsEnabled()) {
       this.client.login(token).catch((error) => {
         console.error("Discord login failed:", error);
       });
-    }
+    } else if (token) console.log(`Discord bot ${BOTS_OFF_NOTICE}`);
   }
 
   public onMessage = (handler: MessageHandler) => {

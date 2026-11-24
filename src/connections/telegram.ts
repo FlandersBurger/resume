@@ -13,6 +13,7 @@ import { TelegramCallbackData } from "@tenthings/providers/telegram/callbacks";
 import { convertTelegramUserToPlayer, TelegramMessage } from "@root/controllers/bots/tenthings/providers/telegram";
 import { classifyTelegramError, describeFailure, Failure, mayHaveArrived } from "@root/connections/telegram-errors";
 import { styleText } from "util";
+import { BOTS_OFF_NOTICE, botsEnabled } from "@root/connections/bots";
 
 const BANNED_TELEGRAM_USERS = [1726294650, 6758829541];
 
@@ -132,7 +133,8 @@ class TelegramBot {
 
   constructor(token: string) {
     this.baseUrl = `https://api.telegram.org/bot${token}`;
-    this.init();
+    if (botsEnabled()) this.init();
+    else console.log(`Telegram bot ${BOTS_OFF_NOTICE}`);
   }
 
   private init = async () => {
@@ -170,6 +172,7 @@ class TelegramBot {
     options: CallOptions = {},
     attempt = 0,
   ): Promise<CallResult<T>> => {
+    if (!botsEnabled()) return { ok: false, failure: { kind: "ignorable", reason: `Telegram bot ${BOTS_OFF_NOTICE}` } };
     try {
       const { data } = await httpClient().get(`${this.baseUrl}/${method}`, { params: toQuery(params) });
       return { ok: true, result: data.result };
