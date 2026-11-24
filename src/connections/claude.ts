@@ -92,8 +92,14 @@ const submitTool = (validCategories: string[]): Anthropic.Beta.BetaTool => ({
         description: "Blurbs for existing answers that have none. `value` is the existing answer.",
         items: withFields({ blurb: stringField("The blurb.") }),
       },
-      name: setting(stringField("The better list name."), "A clearer list name."),
-      description: setting(stringField("The better description."), "A better description."),
+      name: setting(
+        stringField("The new list name, as close to the creator's as possible."),
+        "A new list name, only when the current one is a problem or breaks the naming style.",
+      ),
+      description: setting(
+        stringField("The description: a short bit of trivia, or the creator's with only the problem fixed."),
+        "A description when the list has none, or a fix when the current one is a problem.",
+      ),
       categories: setting(
         { type: "array", items: { type: "string", enum: validCategories } },
         "The full set of categories the list should have.",
@@ -119,7 +125,10 @@ Vet the whole list:
   - an open-ended pick (an actor's films, a band's songs, a show's characters, "famous" anything): keep only the entries the topic is known for. Suggest removing obscure ones (Losin' It on a Tom Cruise films list), and add only well-known missing ones (Top Gun if it were absent).
   Also remove answers that are wrong, out of date, duplicated or outside the list's scope, and fix misspellings and forms players are unlikely to type (e.g. "Lord Viren" when everyone says "Viren"). Never cut a list below 10 answers.
 - blurbs: write blurbs for answers that have none, and for answers you add, matching the style and length of the list's existing blurbs (a sentence or two when there are none yet). Write text only and never make up a URL. If the existing blurbs are mostly images or videos, skip blurbs and say in the note which image source would suit the list (movie posters, TV posters, actor pictures, book covers, music videos, Wikipedia, Unsplash, Pexels, or a Fandom wiki).
-- settings: suggest a clearer name, a better description (it introduces the list to players and should make the scope unambiguous), the right categories (only from the allowed ones, as the complete set), how hard the list is, and how often its answers change. Leave a setting null when it's fine.
+- name: the creator's name sets the list's intent and scope, and answers are vetted against it; never change that intent. Suggest a new name only when the current one is nonsensical or garbled, biased or offensive, needlessly limiting, doesn't match its answers, or breaks the naming style below. Don't reword a name that already follows the style just to polish it, and keep any change as close to the creator's as you can.
+  Naming style: a game-show host should be able to shout the name and contestants know what to blurt out. Keep it short and self-explanatory ("Penguins", not "Types of Penguins", since penguin species are what anyone would name). Keep "Types of X" when the plain noun would invite named examples instead (a "Waterfalls" list would get Niagara, not "Plunge"), and never turn it into "X - Types". The categories are shown with the name, so they can carry context. A catalogue of one subject is "Subject - Kind", with a plain hyphen between spaces: "Tom Cruise - Movies", "The Beatles - Songs", "Breaking Bad - Characters", "Kamelot - Albums". For kinds: an artist's singles are "Songs"; a discography is "Albums" or "Songs", whichever its answers are; a filmography is "Movies" ("Movies & TV Shows" when it mixes both); "Roles" are character names and "Title Tracks" are K-pop lead songs, so keep both. "X - Movies" means movies X appears in, so use "Directed by X" and "Written by X" for work behind the camera or on the page. Use the phrases "Words starting with …" and "Things associated with …". Capitalize the first word and proper nouns, and keep small words (with, of, the, and, in, from, by, that) lowercase mid-name unless they're part of a title. Hyphens inside words stay (Spider-Man, K-dramas). Lists that aren't in English follow their own language's conventions.
+- description: when there is one, it's the creator's: leave it unless it's nonsensical, biased or offensive, or wrong. When there is none, write one: a short bit of trivia about the topic rather than a dry summary, plus a few words on what counts when the name alone doesn't make that clear. Text only, no URLs.
+- other settings: suggest the right categories (only from the allowed ones, as the complete set), how hard the list is, and how often its answers change. Leave a setting null when it's fine.
 
 Keep the list's language: text for a list marked NL is in Dutch, and so on. Only suggest changes you are confident in. Most lists need no web search: search only when answers change over time or you are unsure about specific ones, and keep it to a couple of searches. When you are done, call submit_vet once with everything, using empty arrays and null where you have nothing to suggest.`;
 
