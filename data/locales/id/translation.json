@@ -247,7 +247,8 @@
     "listUpdatesOptOut": "Matikan pembaruan ini melalui /settings",
     "discordPromo": "Ten Things juga ada di Discord! Punya teman atau komunitas di sana? <a href=\"{{url}}\">Tambahkan Ten Things ke server Discord Anda</a> dan bermain bersama.",
     "addListYourself": "💡 Anda dapat menambahkannya sendiri ke Sepuluh Hal: masuk di <a href=\"{{url}}\">belgocanadian.com/tenthings-lists</a> dan klik \"Daftar baru\".",
-    "alsoCorrect": "Juga benar:"
+    "alsoCorrect": "Juga benar:",
+    "moreLists": "…dan {{count}} lainnya"
   },
   "warnings": {
     "minimum1Category": "Setidaknya 1 kategori diperlukan",

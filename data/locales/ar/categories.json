@@ -34,7 +34,8 @@
     "streaming": "بث",
     "telenovelas": "مسلسلات",
     "titles": "عناوين",
-    "awards": "الجوائز"
+    "awards": "الجوائز",
+    "superheroes": "الأبطال الخارقون"
   },
   "movies": {
     "name": "أفلام",
@@ -47,7 +48,8 @@
     "details": "تفاصيل",
     "filmography": "فيلموغرافيا",
     "star_wars": "حرب النجوم",
-    "titles": "عناوين"
+    "titles": "عناوين",
+    "superheroes": "الأبطال الخارقون"
   },
   "culture": {
     "name": "ثقافة",
@@ -121,7 +123,8 @@
     "monuments": "آثار",
     "prehistory": "ما قبل التاريخ",
     "renaissance": "عصر النهضة",
-    "world_wars": "حروب عالمية"
+    "world_wars": "حروب عالمية",
+    "former_countries": "الدول السابقة"
   },
   "science": {
     "name": "علوم",
@@ -154,7 +157,8 @@
     "tabletop_gaming": "ألعاب الطاولة",
     "vr": "واقع افتراضي",
     "nintendo": "نينتندو",
-    "tabletop_rpg": "ألعاب تقمص الأدوار على الطاولة"
+    "tabletop_rpg": "ألعاب تقمص الأدوار على الطاولة",
+    "characters": "الشخصيات"
   },
   "sports": {
     "name": "رياضة",
@@ -218,7 +222,8 @@
     "tourism": "سياحة",
     "transportation": "نقل",
     "flags": "الأعلام",
-    "brands": "العلامات التجارية"
+    "brands": "العلامات التجارية",
+    "people": "الأشخاص"
   },
   "language": {
     "name": "لغة",

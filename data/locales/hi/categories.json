@@ -34,7 +34,8 @@
     "streaming": "स्ट्रीमिंग",
     "telenovelas": "टेलीनोवेलास",
     "titles": "शीर्षक",
-    "awards": "पुरस्कार"
+    "awards": "पुरस्कार",
+    "superheroes": "सुपरहीरो"
   },
   "movies": {
     "name": "फिल्में",
@@ -47,7 +48,8 @@
     "details": "विवरण",
     "filmography": "फिल्मोग्राफी",
     "star_wars": "स्टार वार्स",
-    "titles": "शीर्षक"
+    "titles": "शीर्षक",
+    "superheroes": "सुपरहीरो"
   },
   "culture": {
     "name": "संस्कृति",
@@ -121,7 +123,8 @@
     "monuments": "स्मारक",
     "prehistory": "प्रागैतिहासिक",
     "renaissance": "पुनर्जागरण",
-    "world_wars": "विश्व युद्ध"
+    "world_wars": "विश्व युद्ध",
+    "former_countries": "पूर्व देश"
   },
   "science": {
     "name": "विज्ञान",
@@ -154,7 +157,8 @@
     "tabletop_gaming": "टेबलटॉप गेमिंग",
     "vr": "वीआर",
     "nintendo": "निंटेंडो",
-    "tabletop_rpg": "टेबलटॉप आरपीजी"
+    "tabletop_rpg": "टेबलटॉप आरपीजी",
+    "characters": "पात्र"
   },
   "sports": {
     "name": "खेल",
@@ -218,7 +222,8 @@
     "tourism": "पर्यटन",
     "transportation": "परिवहन",
     "flags": "झंडे",
-    "brands": "ब्रांड्स"
+    "brands": "ब्रांड्स",
+    "people": "लोग"
   },
   "language": {
     "name": "भाषा",

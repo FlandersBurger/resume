@@ -247,7 +247,8 @@
     "listUpdatesOptOut": "Отключите эти уведомления через /settings",
     "discordPromo": "Ten Things также есть в Discord! У вас есть друзья или сообщество там? <a href=\"{{url}}\">Добавьте Ten Things на свой сервер Discord</a> и играйте вместе.",
     "addListYourself": "💡 Вы можете добавить это в список «Десять вещей» самостоятельно: войдите на сайт <a href=\"{{url}}\">belgocanadian.com/tenthings-lists</a> и нажмите «Новый список».",
-    "alsoCorrect": "Также правильно:"
+    "alsoCorrect": "Также правильно:",
+    "moreLists": "…и {{count}} ещё"
   },
   "warnings": {
     "minimum1Category": "Требуется минимум 1 категория",

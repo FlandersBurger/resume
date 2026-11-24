@@ -34,7 +34,8 @@
     "streaming": "Streaming",
     "telenovelas": "Mga Telenovela",
     "titles": "Mga Pamagat",
-    "awards": "Mga parangal"
+    "awards": "Mga parangal",
+    "superheroes": "Mga Superhero"
   },
   "movies": {
     "name": "Mga Pelikula",
@@ -47,7 +48,8 @@
     "details": "Mga Detalye",
     "filmography": "Filmograpiya",
     "star_wars": "Star Wars",
-    "titles": "Mga Pamagat"
+    "titles": "Mga Pamagat",
+    "superheroes": "Mga Superhero"
   },
   "culture": {
     "name": "Kultura",
@@ -121,7 +123,8 @@
     "monuments": "Mga Monumento",
     "prehistory": "Prehistoriko",
     "renaissance": "Renaissance",
-    "world_wars": "Mga Digmaang Pandaigdig"
+    "world_wars": "Mga Digmaang Pandaigdig",
+    "former_countries": "Mga dating bansa"
   },
   "science": {
     "name": "Agham",
@@ -154,7 +157,8 @@
     "tabletop_gaming": "Tabletop Gaming",
     "vr": "VR",
     "nintendo": "Nintendo",
-    "tabletop_rpg": "RPG ng tabletop"
+    "tabletop_rpg": "RPG ng tabletop",
+    "characters": "Mga Tauhan"
   },
   "sports": {
     "name": "Palakasan",
@@ -218,7 +222,8 @@
     "tourism": "Turismo",
     "transportation": "Transportasyon",
     "flags": "Mga watawat",
-    "brands": "Mga tatak"
+    "brands": "Mga tatak",
+    "people": "Mga Tao"
   },
   "language": {
     "name": "Wika",

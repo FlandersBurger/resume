@@ -34,7 +34,8 @@
     "streaming": "Streaming",
     "telenovelas": "Telenovelas",
     "titles": "Titel",
-    "awards": "Auszeichnungen"
+    "awards": "Auszeichnungen",
+    "superheroes": "Superhelden"
   },
   "movies": {
     "name": "Filme",
@@ -47,7 +48,8 @@
     "details": "Details",
     "filmography": "Filmografie",
     "star_wars": "Star Wars",
-    "titles": "Titel"
+    "titles": "Titel",
+    "superheroes": "Superhelden"
   },
   "culture": {
     "name": "Kultur",
@@ -121,7 +123,8 @@
     "monuments": "Denkmäler",
     "prehistory": "Urgeschichte",
     "renaissance": "Renaissance",
-    "world_wars": "Weltkriege"
+    "world_wars": "Weltkriege",
+    "former_countries": "Ehemalige Länder"
   },
   "science": {
     "name": "Wissenschaft",
@@ -154,7 +157,8 @@
     "tabletop_gaming": "Tabletop-Spiele",
     "vr": "VR",
     "nintendo": "Nintendo",
-    "tabletop_rpg": "Tabletop-Rollenspiel"
+    "tabletop_rpg": "Tabletop-Rollenspiel",
+    "characters": "Figuren"
   },
   "sports": {
     "name": "Sport",
@@ -218,7 +222,8 @@
     "tourism": "Tourismus",
     "transportation": "Transport",
     "flags": "Flaggen",
-    "brands": "Marken"
+    "brands": "Marken",
+    "people": "Personen"
   },
   "language": {
     "name": "Sprache",

@@ -34,7 +34,8 @@
     "streaming": "Streaming",
     "telenovelas": "Telenovelas",
     "titles": "Titels",
-    "awards": "Prijzen"
+    "awards": "Prijzen",
+    "superheroes": "Superhelden"
   },
   "movies": {
     "name": "Films",
@@ -47,7 +48,8 @@
     "details": "Details",
     "filmography": "Filmografie",
     "star_wars": "Star Wars",
-    "titles": "Titels"
+    "titles": "Titels",
+    "superheroes": "Superhelden"
   },
   "culture": {
     "name": "Cultuur",
@@ -121,7 +123,8 @@
     "monuments": "Monumenten",
     "prehistory": "Prehistorie",
     "renaissance": "Renaissance",
-    "world_wars": "Wereldoorlogen"
+    "world_wars": "Wereldoorlogen",
+    "former_countries": "Voormalige landen"
   },
   "science": {
     "name": "Wetenschap",
@@ -154,7 +157,8 @@
     "tabletop_gaming": "Tafelblad gaming",
     "vr": "VR",
     "nintendo": "Nintendo",
-    "tabletop_rpg": "Tafelblad-RPG"
+    "tabletop_rpg": "Tafelblad-RPG",
+    "characters": "Personages"
   },
   "sports": {
     "name": "Sport",
@@ -218,7 +222,8 @@
     "tourism": "Toerisme",
     "transportation": "Vervoer",
     "flags": "Vlaggen",
-    "brands": "Merken"
+    "brands": "Merken",
+    "people": "Mensen"
   },
   "language": {
     "name": "Taal",

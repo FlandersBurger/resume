@@ -34,7 +34,8 @@
     "seasons": "シーズン",
     "streaming": "ストリーミング配信",
     "telenovelas": "テレノベラ",
-    "titles": "タイトル"
+    "titles": "タイトル",
+    "superheroes": "スーパーヒーロー"
   },
   "movies": {
     "name": "映画",
@@ -47,7 +48,8 @@
     "details": "詳細",
     "filmography": "フィルモグラフィー",
     "star_wars": "スター・ウォーズ",
-    "titles": "タイトル"
+    "titles": "タイトル",
+    "superheroes": "スーパーヒーロー"
   },
   "culture": {
     "name": "文化",
@@ -121,7 +123,8 @@
     "monuments": "記念碑",
     "prehistory": "先史時代",
     "renaissance": "ルネサンス",
-    "world_wars": "世界大戦"
+    "world_wars": "世界大戦",
+    "former_countries": "かつての国々"
   },
   "science": {
     "name": "科学",
@@ -154,7 +157,8 @@
     "survival": "サバイバル",
     "tabletop_gaming": "テーブルトップゲーム",
     "tabletop_rpg": "テーブルトップRPG",
-    "vr": "VR"
+    "vr": "VR",
+    "characters": "キャラクター"
   },
   "sports": {
     "name": "スポーツ",
@@ -218,7 +222,8 @@
     "politics": "政治",
     "social_movements": "社会運動",
     "tourism": "観光",
-    "transportation": "交通"
+    "transportation": "交通",
+    "people": "人物"
   },
   "language": {
     "name": "言語",

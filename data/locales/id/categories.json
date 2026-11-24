@@ -34,7 +34,8 @@
     "streaming": "Streaming",
     "telenovelas": "Telenovela",
     "titles": "Judul",
-    "awards": "Penghargaan"
+    "awards": "Penghargaan",
+    "superheroes": "Pahlawan Super"
   },
   "movies": {
     "name": "Film",
@@ -47,7 +48,8 @@
     "details": "Detail",
     "filmography": "Filmografi",
     "star_wars": "Star Wars",
-    "titles": "Judul"
+    "titles": "Judul",
+    "superheroes": "Pahlawan Super"
   },
   "culture": {
     "name": "Budaya",
@@ -121,7 +123,8 @@
     "monuments": "Monumen",
     "prehistory": "Prasejarah",
     "renaissance": "Renaisans",
-    "world_wars": "Perang dunia"
+    "world_wars": "Perang dunia",
+    "former_countries": "Negara-negara sebelumnya"
   },
   "science": {
     "name": "Ilmu Pengetahuan",
@@ -154,7 +157,8 @@
     "tabletop_gaming": "Permainan meja",
     "vr": "VR",
     "nintendo": "Nintendo",
-    "tabletop_rpg": "RPG Meja"
+    "tabletop_rpg": "RPG Meja",
+    "characters": "Tokoh"
   },
   "sports": {
     "name": "Olahraga",
@@ -218,7 +222,8 @@
     "tourism": "Pariwisata",
     "transportation": "Transportasi",
     "flags": "Bendera",
-    "brands": "Merek"
+    "brands": "Merek",
+    "people": "Orang-orang"
   },
   "language": {
     "name": "Bahasa",

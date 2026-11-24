@@ -247,7 +247,8 @@
     "updatedListsHeading": "<b>Bijgewerkte lijsten</b>",
     "listUpdatesOptOut": "Zet deze updates uit via /settings",
     "discordPromo": "Ten Things is ook op Discord! Heb je daar vrienden of een community? <a href=\"{{url}}\">Voeg Ten Things toe aan je Discord-server</a> en speel samen.",
-    "alsoCorrect": "Ook correct:"
+    "alsoCorrect": "Ook correct:",
+    "moreLists": "…en {{count}} meer"
   },
   "warnings": {
     "minimum1Category": "Minimaal 1 categorie is vereist",

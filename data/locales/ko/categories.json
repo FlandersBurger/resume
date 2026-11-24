@@ -34,7 +34,8 @@
     "streaming": "스트리밍",
     "telenovelas": "텔레노벨라",
     "titles": "제목",
-    "awards": "수상"
+    "awards": "수상",
+    "superheroes": "슈퍼히어로"
   },
   "movies": {
     "name": "영화",
@@ -47,7 +48,8 @@
     "details": "세부 사항",
     "filmography": "필모그래피",
     "star_wars": "스타워즈",
-    "titles": "제목"
+    "titles": "제목",
+    "superheroes": "슈퍼히어로"
   },
   "culture": {
     "name": "문화",
@@ -121,7 +123,8 @@
     "monuments": "기념물",
     "prehistory": "선사 시대",
     "renaissance": "르네상스",
-    "world_wars": "세계 대전"
+    "world_wars": "세계 대전",
+    "former_countries": "과거 국가들"
   },
   "science": {
     "name": "과학",
@@ -154,7 +157,8 @@
     "tabletop_gaming": "테이블탑 게임",
     "vr": "VR",
     "nintendo": "닌텐도",
-    "tabletop_rpg": "테이블탑 RPG"
+    "tabletop_rpg": "테이블탑 RPG",
+    "characters": "등장인물"
   },
   "sports": {
     "name": "스포츠",
@@ -218,7 +222,8 @@
     "tourism": "관광",
     "transportation": "교통",
     "flags": "플래그",
-    "brands": "브랜드"
+    "brands": "브랜드",
+    "people": "사람들"
   },
   "language": {
     "name": "언어",
