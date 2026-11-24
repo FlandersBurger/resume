@@ -14,7 +14,7 @@ import { TenThingsTableContainer } from "./SharedStyles";
 import { categoryLabel, formatDate, formatPct } from "./format";
 import { VetModal } from "./VetModal";
 import { getClaudeEnabled } from "../../services/tenthings";
-import { applySuggestions, PickedSuggestions } from "@utils/list-suggestions";
+import { answersIn, applySuggestions, PickedSuggestions } from "@utils/list-suggestions";
 import { LIST_KINDS, listNameHints, normalizeListName, standardizeTerms, withListKind } from "@utils/list-names";
 import { PasteAnswersModal } from "./PasteAnswersModal";
 
@@ -630,6 +630,14 @@ export function ListEditor({
     [list.name, list.language, list.categories],
   );
   const kinds = LIST_KINDS[list.language] ?? [];
+  const givenAway = useMemo(
+    () =>
+      answersIn(
+        list.description ?? "",
+        list.values.map(({ value }) => value),
+      ),
+    [list.description, list.values],
+  );
 
   const [similar, setSimilar] = useState<SimilarLists>({ lists: [], duplicate: null });
   useEffect(() => {
@@ -963,6 +971,14 @@ export function ListEditor({
           }}
         />
       </div>
+      {!readOnly && givenAway.length > 0 && (
+        <NameNotes>
+          <li className="text-warning">
+            Players see the description while they guess, and it gives away{" "}
+            {givenAway.map((answer) => `"${answer}"`).join(", ")}.
+          </li>
+        </NameNotes>
+      )}
 
       <br />
 

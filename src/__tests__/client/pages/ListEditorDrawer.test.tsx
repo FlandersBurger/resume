@@ -155,6 +155,15 @@ describe("ListEditorDrawer", () => {
     expect(screen.getByPlaceholderText("Name")).toHaveValue("Tom Cruise - Movies");
   });
 
+  it("warns when the description gives away an answer", async () => {
+    setup();
+    mockGetList.mockResolvedValue(existing({ description: "Nurses come first, then answer 3." }));
+    render(<ListEditorDrawer listId="list1" onClose={jest.fn()} onSaved={jest.fn()} />);
+    await settle();
+
+    expect(screen.getByText(/it gives away "Answer 3"/)).toBeInTheDocument();
+  });
+
   it("warns about a list with the same name and points at lists on the same subject", async () => {
     setup();
     mockGetList.mockResolvedValue(existing({ name: "IU - Songs" }));
