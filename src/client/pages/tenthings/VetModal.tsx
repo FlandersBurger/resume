@@ -102,7 +102,7 @@ export function VetModal({ list, categoryOptions, onApply, onClose }: Props) {
     setLoading(true);
     setError("");
     try {
-      const data = await vetList(list._id, ask || undefined);
+      const data = await vetList(list, ask || undefined);
       setResult(data);
       setPicked(defaultPicks(data.suggestions));
     } catch (e: any) {

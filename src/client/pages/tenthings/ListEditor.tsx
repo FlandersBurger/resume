@@ -1173,14 +1173,18 @@ export function ListEditor({
           </div>
         )}
 
-        {/* Owner-only: billed to the site's API key */}
-        {claudeEnabled && list._id !== "new" && (
+        {/* Owner-only: billed to the site's API key. On a new list it fills the answers from the name. */}
+        {claudeEnabled && (list._id !== "new" || list.name.trim()) && (
           <div className="btn-group" role="group">
             <button
               className="btn btn-default"
               disabled={readOnly}
               onClick={() => setShowClaude(true)}
-              title="Have Claude check the answers, blurbs, description, categories and settings"
+              title={
+                list._id === "new"
+                  ? "Have Claude fill the list from its name: you pick what to add"
+                  : "Have Claude check the answers, blurbs, description, categories and settings"
+              }
             >
               <i className="fas fa-magic" /> Vet
             </button>

@@ -204,6 +204,53 @@ tenthingsListsRoute.get("/claude/status", (_req: Request, res: Response) => {
   res.json({ enabled: canUseClaude(res) });
 });
 
+/** Vets a list and answers with suggestions reconciled against it. Nothing is saved. */
+const sendVet = async (res: Response, vetted: Claude.ListForVet, instruction: unknown) => {
+  const validCategories = Object.entries(categories).flatMap(([category, subcategories]) => [
+    category,
+    ...subcategories.map((subcategory) => `${category}.${subcategory}`),
+  ]);
+  try {
+    const { suggestions, cost } = await Claude.vetList(vetted, validCategories, String(instruction ?? "").trim());
+    res.json({ suggestions: reconcileSuggestions(suggestions, vetted, validCategories), cost });
+  } catch (error) {
+    console.error(error);
+    res.status(502).json({ error: error instanceof Error ? error.message : "Claude couldn't vet this list." });
+  }
+};
+
+/** A list that isn't saved yet, as the editor holds it: Claude fills it from its name. */
+tenthingsListsRoute.post("/claude", async (req: Request, res: Response) => {
+  if (!canUseClaude(res)) {
+    res.sendStatus(401);
+    return;
+  }
+  const list = req.body?.list ?? {};
+  const name = typeof list.name === "string" ? list.name.trim().slice(0, 200) : "";
+  if (!name || typeof list.language !== "string") {
+    res.status(400).json({ error: "Give the list a name and a language first." });
+    return;
+  }
+  const strings = (items: unknown, max: number) =>
+    (Array.isArray(items) ? items : []).filter((item): item is string => typeof item === "string").slice(0, max);
+  const vetted: Claude.ListForVet = {
+    name,
+    description: typeof list.description === "string" ? list.description.slice(0, 1000) : "",
+    language: list.language,
+    categories: strings(list.categories, 20),
+    difficulty: typeof list.difficulty === "number" ? list.difficulty : undefined,
+    frequency: typeof list.frequency === "number" ? list.frequency : undefined,
+    values: (Array.isArray(list.values) ? list.values : [])
+      .filter((v: { value?: unknown }) => typeof v?.value === "string" && v.value.trim())
+      .slice(0, 200)
+      .map(({ value, blurb }: { value: string; blurb?: unknown }) => ({
+        value,
+        blurb: typeof blurb === "string" ? blurb : "",
+      })),
+  };
+  await sendVet(res, vetted, req.body?.instruction);
+});
+
 tenthingsListsRoute.post("/:id/claude", async (req: Request<{ id: string }>, res: Response) => {
   if (!canUseClaude(res)) {
     res.sendStatus(401);
@@ -214,22 +261,11 @@ tenthingsListsRoute.post("/:id/claude", async (req: Request<{ id: string }>, res
     res.sendStatus(404);
     return;
   }
-  const vetted = { ...list, values: list.values.map(({ value, blurb }) => ({ value, blurb })) };
-  const validCategories = Object.entries(categories).flatMap(([category, subcategories]) => [
-    category,
-    ...subcategories.map((subcategory) => `${category}.${subcategory}`),
-  ]);
-  try {
-    const { suggestions, cost } = await Claude.vetList(
-      vetted,
-      validCategories,
-      String(req.body?.instruction ?? "").trim(),
-    );
-    res.json({ suggestions: reconcileSuggestions(suggestions, vetted, validCategories), cost });
-  } catch (error) {
-    console.error(error);
-    res.status(502).json({ error: error instanceof Error ? error.message : "Claude couldn't vet this list." });
-  }
+  await sendVet(
+    res,
+    { ...list, values: list.values.map(({ value, blurb }) => ({ value, blurb })) },
+    req.body?.instruction,
+  );
 });
 
 tenthingsListsRoute.post("/:id/blurbs/:type", async (req: Request<{ id: string; type: string }>, res: Response) => {

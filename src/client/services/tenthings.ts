@@ -328,13 +328,15 @@ export function getClaudeEnabled() {
   return claudeStatus;
 }
 
-/** Claude's vetting of a list (answers, blurbs, settings), not yet applied, and what the run cost in dollars. */
-export async function vetList(id: string, instruction?: string) {
+/**
+ * Claude's vetting of a list (answers, blurbs, settings), not yet applied, and what the run cost in dollars.
+ * A saved list is vetted as stored; a new one is sent as the editor holds it, and Claude fills it.
+ */
+export async function vetList(list: TenThingsList, instruction?: string) {
+  const isNew = list._id === "new";
   const { data } = await http.post<{ suggestions: ListSuggestions; cost: number }>(
-    `/api/tenthings/lists/${id}/claude`,
-    {
-      instruction,
-    },
+    isNew ? "/api/tenthings/lists/claude" : `/api/tenthings/lists/${list._id}/claude`,
+    isNew ? { list, instruction } : { instruction },
   );
   return data;
 }
