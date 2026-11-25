@@ -4,11 +4,9 @@ import moment from "moment";
 
 import bot from "@root/connections/telegram";
 import GoodReads from "@root/connections/goodreads";
-import MovieDB from "@root/connections/moviedb";
+import { tmdbLookup } from "@root/connections/moviedb";
 import YouTube from "@root/connections/youtube";
 import Wikipedia from "@root/connections/wikipedia";
-import Pexels from "@root/connections/pexels";
-import Unsplash from "@root/connections/unsplash";
 import * as Claude from "@root/connections/claude";
 import categories from "@tenthings/categories";
 import { reconcileSuggestions } from "@utils/list-suggestions";
@@ -341,18 +339,19 @@ tenthingsListsRoute.post("/:id/blurbs/:type", async (req: Request<{ id: string; 
       else res.sendStatus(404);
     } else if (list) {
       let changed = local > 0;
+      const tmdb = tmdbLookup(list.name, list.language);
       for (let value of list.values) {
         if (!value.blurb) {
           let blurbUrl;
           switch (req.params.type) {
             case "movies":
-              blurbUrl = await MovieDB.getImage(value.value, "movie");
+              blurbUrl = await tmdb.poster(value.value, "movie");
               break;
             case "tv":
-              blurbUrl = await MovieDB.getImage(value.value, "tv");
+              blurbUrl = await tmdb.poster(value.value, "tv");
               break;
             case "actors":
-              blurbUrl = await MovieDB.getImage(value.value, "person");
+              blurbUrl = await tmdb.person(value.value);
               break;
             case "books":
               const author = list.name.indexOf("Written by ") === 0 ? list.name.substring(11) : "";
@@ -365,12 +364,6 @@ tenthingsListsRoute.post("/:id/blurbs/:type", async (req: Request<{ id: string; 
               break;
             case "wiki":
               blurbUrl = await Wikipedia.getImage(value.value);
-              break;
-            case "unsplash":
-              blurbUrl = await Unsplash.getImage(value.value);
-              break;
-            case "pexels":
-              blurbUrl = await Pexels.getImage(value.value);
               break;
             default:
               break;

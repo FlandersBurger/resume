@@ -220,8 +220,6 @@ const BLURB_TYPES = [
   { api: "actors", categories: ["movies", "television"], text: "Get actor pics", adminOnly: false },
   { api: "books", categories: ["literature"], text: "Get book covers", adminOnly: false },
   { api: "musicvideos", categories: ["music"], text: "Get music videos", adminOnly: true },
-  { api: "unsplash", categories: OBJECT_CATEGORIES, text: "Get Unsplash pics", adminOnly: false },
-  { api: "pexels", categories: OBJECT_CATEGORIES, text: "Get Pexels pics", adminOnly: false },
   { api: "wiki", categories: OBJECT_CATEGORIES, text: "Get Wiki pics", adminOnly: false },
 ];
 
