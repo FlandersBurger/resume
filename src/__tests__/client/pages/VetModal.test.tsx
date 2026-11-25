@@ -59,6 +59,15 @@ describe("VetModal", () => {
     });
   });
 
+  it("strikes through a removal once it's ticked", async () => {
+    mockVet.mockResolvedValue({ suggestions, cost: 0 });
+    render(<VetModal list={list} categoryOptions={categoryOptions} onApply={jest.fn()} onClose={jest.fn()} />);
+    const bait = await screen.findByText("Bait");
+    expect(bait).not.toHaveClass("struck");
+    fireEvent.click(screen.getByLabelText(/Bait/));
+    expect(bait).toHaveClass("struck");
+  });
+
   it("vets again with an instruction", async () => {
     mockVet.mockResolvedValue({ suggestions: { ...suggestions, note: "" }, cost: 0 });
     render(<VetModal list={list} categoryOptions={categoryOptions} onApply={jest.fn()} onClose={jest.fn()} />);

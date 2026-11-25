@@ -42,6 +42,9 @@ const Group = styled.div`
     color: var(--text-muted);
     font-size: 12px;
   }
+  .struck {
+    text-decoration: line-through;
+  }
 `;
 
 type ItemKind = "add" | "remove" | "fix" | "blurbs";
@@ -228,7 +231,7 @@ export function VetModal({ list, categoryOptions, onApply, onClose }: Props) {
                     check(
                       key("remove", i),
                       <>
-                        {item.value}
+                        <span className={picked.has(key("remove", i)) ? "struck" : undefined}>{item.value}</span>
                         <Reason reason={item.reason} source={item.source} />
                       </>,
                     ),
