@@ -79,6 +79,14 @@ test("skips low-quality, banned, other-language and disabled-category Lists", as
   expect(await served(game)).toEqual(new Set(["Good"]));
 });
 
+test("never serves a disabled List, even once every other List is on cooldown", async () => {
+  const game = await makeGame();
+  const [played] = await makeLists([{ name: "Played" }, { name: "Off", enabled: false }]);
+  expect(await served(game)).toEqual(new Set(["Played"]));
+  await GameRound.create({ gameId: game._id, listId: played._id, outcome: "completed", language: "EN" });
+  expect((await selectList(game)).list.name).toBe("Played");
+});
+
 test("now and then retries a low-quality List, still honouring bans", async () => {
   selectionOdds.lowQualityRetry = 1;
   const game = await makeGame();
@@ -278,6 +286,17 @@ describe("searching for Lists", () => {
     const game = await makeGame();
     await makeLists([{ name: "Planets", values: [{ value: "Jupiter" }] }, { name: "Rivers" }]);
     expect(await names(game, "Jupiter")).toEqual(["Planets"]);
+  });
+
+  test("leaves out disabled Lists, by name and by text", async () => {
+    const game = await makeGame();
+    await makeLists([
+      { name: "Album On" },
+      { name: "Album Off", enabled: false },
+      { name: "Moons", values: [{ value: "Europa" }], enabled: false },
+    ]);
+    expect(await names(game, "album")).toEqual(["Album On"]);
+    expect(await names(game, "Europa")).toEqual([]);
   });
 });
 
