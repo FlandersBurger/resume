@@ -4,7 +4,7 @@ jest.mock("@anthropic-ai/sdk", () => ({
   default: jest.fn().mockImplementation(() => ({ beta: { messages: { stream } } })),
 }));
 
-import { costOf, vetList } from "@root/connections/claude";
+import { costOf, needsSearch, vetList } from "@root/connections/claude";
 
 const list = {
   name: "Dragon Prince characters",
@@ -32,11 +32,13 @@ describe("vetList", () => {
     const result = await vetList(list, valid, "add the leads");
 
     expect(result.suggestions).toEqual(results);
-    expect(result.cost).toBeCloseTo(1000 * 2e-6 + 100 * 10e-6);
+    expect(result.cost).toBeCloseTo(1000 * 0.1e-6 + 100 * 0.5e-6, 9);
     const params = stream.mock.calls[0][0];
-    expect(params.model).toBe("claude-sonnet-5-5");
-    expect(params.fallbacks).toBe("default");
-    expect(params.tools[0]).toMatchObject({ type: "web_search_20260209", max_uses: 3 });
+    expect(params.model).toBe("claude-haiku-5-5");
+    expect(params.fallbacks).toBeUndefined();
+    expect(params.output_config).toEqual({ effort: "low" });
+    expect(params.cache_control).toEqual({ type: "ephemeral" });
+    expect(params.tools[0]).toMatchObject({ type: "web_search_20250305", max_uses: 2 });
     const submitTool = params.tools[1];
     expect(submitTool.strict).toBe(true);
     expect(submitTool.input_schema.properties.categories.anyOf[0].properties.to.items.enum).toEqual(valid);
@@ -48,6 +50,14 @@ describe("vetList", () => {
     expect(prompt).toContain(`- Rayla | ${"x".repeat(160)}…`);
     expect(prompt).toContain("Allowed categories: television, movies");
     expect(prompt).toContain("The editor also asks: add the leads");
+  });
+
+  it("leaves web search out when the answers rarely change", async () => {
+    stream.mockReturnValueOnce(reply({ stop_reason: "tool_use", content: [submit] }));
+
+    await vetList({ ...list, frequency: 2 }, valid);
+
+    expect(stream.mock.calls[0][0].tools.map((tool: { name: string }) => tool.name)).toEqual(["submit_vet"]);
   });
 
   it("resumes a paused search turn", async () => {
@@ -79,6 +89,21 @@ describe("vetList", () => {
   });
 });
 
+describe("needsSearch", () => {
+  it.each([
+    [undefined, "", true],
+    [0, "", true],
+    [1, "", true],
+    [2, "", false],
+    [3, "", false],
+    [3, "check the latest season", true],
+    [3, "Search for missing ones", true],
+    [3, "add new blurbs", false],
+  ])("frequency %p with request %p → %p", (frequency, instruction, expected) => {
+    expect(needsSearch({ ...list, frequency }, instruction)).toBe(expected);
+  });
+});
+
 describe("costOf", () => {
   it("counts cache and web searches", () => {
     expect(
@@ -89,6 +114,6 @@ describe("costOf", () => {
           server_tool_use: { web_search_requests: 3 },
         }) as any,
       ),
-    ).toBeCloseTo(0.002 + 0.001 + 0.001 + 0.0025 + 0.03);
+    ).toBeCloseTo(0.0001 + 0.00005 + 0.0001 + 0.000125 + 0.03, 7);
   });
 });

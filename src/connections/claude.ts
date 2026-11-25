@@ -1,11 +1,22 @@
 import Anthropic from "@anthropic-ai/sdk";
 import { DIFFICULTIES, FREQUENCIES, ListSuggestions } from "@utils/list-suggestions";
 
-const MODEL = "claude-sonnet-5-5";
-/** Claude Sonnet 5.5 rates per token, and web search per request, to show what a run cost. */
-const PRICE = { input: 2 / 1e6, cacheWrite: 2.5 / 1e6, cacheRead: 0.1 / 1e6, output: 10 / 1e6, search: 10 / 1000 };
-/** Search results are long and billed as input, so Claude gets a few searches and is told to use them sparingly. */
-const MAX_SEARCHES = 3;
+const MODEL = "claude-haiku-5-5";
+/**
+ * Claude Haiku 5.5 rates per token (for prompts up to 100K tokens, which a vet never nears), and web search per
+ * request, to show what a run cost.
+ */
+const PRICE = {
+  input: 0.1 / 1e6,
+  cacheWrite: 0.125 / 1e6,
+  cacheRead: 0.01 / 1e6,
+  output: 0.5 / 1e6,
+  search: 10 / 1000,
+};
+/** Search results are long and billed as input, so Claude gets a couple of searches and is told to use them sparingly. */
+const MAX_SEARCHES = 2;
+/** Answers that change "frequently" or "yearly" (FREQUENCIES 0 and 1) may have moved on since Claude was trained. */
+const SEARCHABLE_FREQUENCIES = [0, 1];
 const MAX_CONTINUATIONS = 5;
 /** Enough of each blurb for Claude to see the list's style without paying for long ones in full. */
 const BLURB_PREVIEW = 160;
@@ -133,7 +144,7 @@ Vet the whole list:
 - description: players see it while they guess, so it must never name, spell out or give away any answer, not even one or a partial one. When there is one, it's the creator's: leave it unless it's nonsensical, biased or offensive, wrong, or gives away an answer (then fix only that). When there is none, write one: a short bit of trivia about the topic rather than a dry summary, plus a few words on what counts when the name alone doesn't make that clear. Text only, no URLs.
 - other settings: suggest the right categories (only from the allowed ones, as the complete set), how hard the list is, and how often its answers change. Leave a setting null when it's fine.
 
-Keep the list's language: text for a list marked NL is in Dutch, and so on. Only suggest changes you are confident in. Most lists need no web search: search only when answers change over time or you are unsure about specific ones, and keep it to a couple of searches. When you are done, call submit_vet once with everything, using empty arrays and null where you have nothing to suggest.`;
+Keep the list's language: text for a list marked NL is in Dutch, and so on. Only suggest changes you are confident in. When web search is available, most lists still need none: search only for answers that may have changed recently or that you are unsure about, and keep it to a couple of searches. When you are done, call submit_vet once with everything, using empty arrays and null where you have nothing to suggest.`;
 
 const preview = (blurb = "") => (blurb.length > BLURB_PREVIEW ? `${blurb.slice(0, BLURB_PREVIEW)}…` : blurb);
 
@@ -162,6 +173,15 @@ export const costOf = (usage: Anthropic.Beta.BetaUsage) =>
 
 export const isConfigured = () => !!process.env.ANTHROPIC_API_KEY;
 
+/**
+ * Web search is where most of a run's cost goes, so it's only offered when the answers can go out of date, when
+ * nobody has said how often they change, or when the editor's request mentions searching or being up to date.
+ */
+export const needsSearch = (list: ListForVet, instruction?: string) =>
+  list.frequency == null ||
+  SEARCHABLE_FREQUENCIES.includes(list.frequency) ||
+  /\b(search|look up|latest|up[- ]to[- ]date|recent)/i.test(instruction ?? "");
+
 let client: Anthropic | undefined;
 
 /**
@@ -176,7 +196,10 @@ export const vetList = async (
   client ??= new Anthropic();
   const submit = submitTool(validCategories);
   const tools: Anthropic.Beta.BetaToolUnion[] = [
-    { type: "web_search_20260209", name: "web_search", max_uses: MAX_SEARCHES },
+    // Claude Haiku 5.5 takes the basic search tool, not the dynamic-filtering one.
+    ...(needsSearch(list, instruction)
+      ? [{ type: "web_search_20250305", name: "web_search", max_uses: MAX_SEARCHES } as const]
+      : []),
     submit,
   ];
   const messages: Anthropic.Beta.BetaMessageParam[] = [
@@ -190,15 +213,22 @@ export const vetList = async (
       .stream({
         model: MODEL,
         max_tokens: 64000,
-        betas: ["server-side-fallback-2026-07-01"],
-        fallbacks: "default",
-        output_config: { effort: "medium" },
+        // Claude Haiku 5.5 has no server-side refusal fallback; a refusal is reported below.
+        output_config: { effort: "low" },
+        // Caches the prompt so web-search iterations and continuations re-read it at a tenth of the input rate.
+        cache_control: { type: "ephemeral" },
         system: SYSTEM,
         tools,
         messages,
       })
       .finalMessage();
     cost += costOf(response.usage);
+    const { input_tokens, cache_creation_input_tokens, cache_read_input_tokens, output_tokens, server_tool_use } =
+      response.usage;
+    console.info(
+      `Vet "${list.name}" turn ${turn}: input ${input_tokens}, cache write ${cache_creation_input_tokens ?? 0}, ` +
+        `cache read ${cache_read_input_tokens ?? 0}, output ${output_tokens}, searches ${server_tool_use?.web_search_requests ?? 0}`,
+    );
 
     if (response.stop_reason === "refusal") throw new Error("Claude declined to vet this list.");
     if (response.stop_reason === "max_tokens") throw new Error("Claude's answer was cut off.");
