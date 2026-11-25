@@ -5,8 +5,7 @@
 import { CATEGORY_WIKIS, SUBJECT_WIKIS, listSubject, wikiFor } from "./fandom-wikis";
 import { accentInsensitivePattern, removeAllButLetters } from "./string-helpers";
 
-export type BlurbSource =
-  "fandom" | "movies" | "tv" | "actors" | "books" | "musicvideos" | "wiki" | "unsplash" | "pexels";
+export type BlurbSource = "fandom" | "movies" | "tv" | "actors" | "books" | "musicvideos" | "wiki";
 
 /** The top-level categories whose lists share pictures for each source; matches the editor's blurb menu. */
 const SOURCE_CATEGORIES: Partial<Record<BlurbSource, string[]>> = {
@@ -15,8 +14,6 @@ const SOURCE_CATEGORIES: Partial<Record<BlurbSource, string[]>> = {
   actors: ["movies", "television"],
   books: ["literature"],
   wiki: ["culture", "nature", "misc", "society", "sports"],
-  unsplash: ["culture", "nature", "misc", "society", "sports"],
-  pexels: ["culture", "nature", "misc", "society", "sports"],
 };
 
 export interface RelatedScope {
