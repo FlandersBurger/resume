@@ -48,12 +48,15 @@ export const apiCandidates = (wikiUrl: string): string[] => {
 /**
  * Fandom serves its originals as WebP under a /revision/latest path that doesn't look like an image.
  * Dropping the revision path and asking for the original format gives a plain .png/.jpg URL that
- * getBlurbType recognises and Telegram can send.
+ * getBlurbType recognises and Telegram can send. A `path-prefix` (non-English or shared wikis) is part of
+ * the file's location, so it moves into the path: /bleach/images/… with path-prefix=en is /bleach/en/images/….
  */
 export const cleanImageUrl = (source: string): string => {
   const url = new URL(source);
   if (!url.hostname.endsWith("wikia.nocookie.net")) return source;
+  const prefix = url.searchParams.get("path-prefix");
   url.pathname = url.pathname.replace(/\/revision\/.*$/, "");
+  if (prefix) url.pathname = url.pathname.replace(/^(\/[^/]+)\/images\//, `$1/${encodeURIComponent(prefix)}/images/`);
   url.search = "?format=original";
   return url.toString();
 };

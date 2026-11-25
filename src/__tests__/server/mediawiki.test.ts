@@ -29,6 +29,17 @@ describe("cleanImageUrl", () => {
     );
   });
 
+  it("keeps the wiki's path prefix as a folder, or the file 404s", () => {
+    expect(
+      cleanImageUrl(
+        "https://static.wikia.nocookie.net/bleach/images/3/3a/Ep416ChadProfile.png/revision/latest?cb=20261027095411&path-prefix=en",
+      ),
+    ).toBe("https://static.wikia.nocookie.net/bleach/en/images/3/3a/Ep416ChadProfile.png?format=original");
+    expect(
+      cleanImageUrl("https://static.wikia.nocookie.net/e__/images/1/11/Revival.jpg/revision/latest?path-prefix=eminem"),
+    ).toBe("https://static.wikia.nocookie.net/e__/eminem/images/1/11/Revival.jpg?format=original");
+  });
+
   it("leaves other hosts alone", () => {
     const url = "https://upload.wikimedia.org/wikipedia/commons/a/ab/Tokyo.jpg";
     expect(cleanImageUrl(url)).toBe(url);

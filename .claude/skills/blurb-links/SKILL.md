@@ -22,7 +22,7 @@ Bulk writes follow the [list-cleanup](../list-cleanup/SKILL.md) loop: plan, revi
 - Google `imgres?imgurl=`, `url?url=` / `q=`, Bing `mediaurl=`: the target is in the query string. `images.app.goo.gl/…` 302s to an `imgres` URL (read `Location` without following).
 - Wikipedia `Page#/media/File:X` or `/wiki/File:X`: ask that wiki's API for `prop=imageinfo&iiprop=url` (`iiurlwidth` gives a thumbnail for SVG/TIFF).
 - Wikimedia `.svg`: use the PNG rendering, `/thumb/a/ab/X.svg/640px-X.svg.png`.
-- Fandom (`*.wikia.nocookie.net`): drop `/revision/…` and add `?format=original` (`cleanImageUrl` in `src/connections/mediawiki.ts`). It keeps GIFs animated and gives a URL that ends like an image.
+- Fandom (`*.wikia.nocookie.net`): drop `/revision/…` and add `?format=original` (`cleanImageUrl` in `src/connections/mediawiki.ts`). It keeps GIFs animated and gives a URL that ends like an image. Keep any `path-prefix=X` as a folder (`/bleach/images/…` becomes `/bleach/en/images/…`), or the file 404s.
 - Keep the result within `MAX_URL_BLURB_LENGTH` (1,000); when nothing loads, clear the blurb and keep the answer.
 
 ## Choosing an image
