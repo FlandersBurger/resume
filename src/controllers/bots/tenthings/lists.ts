@@ -108,6 +108,9 @@ const cachedRead = <T>(load: () => Promise<T>, maxAgeMs: number) => {
   };
 };
 
+/** Lists that can be played or searched: a List with `enabled: false` is kept but never served. */
+const playable = { enabled: { $ne: false } };
+
 /** How long the List pool is served before it's read again (in the background). */
 export const LIST_POOL_REFRESH_MS = 5 * 60_000;
 
@@ -117,7 +120,11 @@ export const LIST_POOL_REFRESH_MS = 5 * 60_000;
  */
 const readListPool = () =>
   cachedRead(
-    () => List.find({}).select("_id name language categories lowQuality highQuality starred").lean<PoolList[]>().exec(),
+    () =>
+      List.find(playable)
+        .select("_id name language categories lowQuality highQuality starred")
+        .lean<PoolList[]>()
+        .exec(),
     LIST_POOL_REFRESH_MS,
   );
 let listPool = readListPool();
@@ -271,6 +278,7 @@ export const selectList = async (game: IGame): Promise<{ list: HydratedDocument<
   if (!list) {
     // Cooldown exhausted — ignore cooldown, still filter low-quality
     const exhaustedQuery = {
+      ...playable,
       _id: { $nin: [...banned, ...skipHeavy] },
       categories: { $nin: game.disabledCategories },
       lowQuality: { $ne: true },
@@ -278,7 +286,7 @@ export const selectList = async (game: IGame): Promise<{ list: HydratedDocument<
     };
     list = await getRandomList({ ...exhaustedQuery, language: { $in: availableLanguages } });
     // Last resort: drop quality filter entirely
-    if (!list) list = await getRandomList({ _id: { $nin: banned }, language: "EN" });
+    if (!list) list = await getRandomList({ ...playable, _id: { $nin: banned }, language: "EN" });
   }
 
   const ms = Date.now() - startedAt;
@@ -313,6 +321,7 @@ export const searchList = async (search: string, game: IGame): Promise<ListName[
   const byText = (query: QueryOptions<IList>) =>
     List.find({
       ...query,
+      ...playable,
       language: { $in: availableLanguages },
       $text: { $search: `"${search}"` },
       _id: { $nin: [...found.values()].map(({ _id }) => _id) },
