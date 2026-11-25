@@ -1,5 +1,5 @@
 import { QueryableRequest, Request, Response, Router } from "express";
-import { Types, FlattenMaps } from "mongoose";
+import { Types, FlattenMaps, HydratedDocument } from "mongoose";
 import moment from "moment";
 
 import bot from "@root/connections/telegram";
@@ -16,6 +16,7 @@ import { normalizeListName, standardizeTerms } from "@utils/list-names";
 import { SupportedLanguage } from "@tenthings/languages";
 import MediaWiki from "@root/connections/mediawiki";
 import { wikiFor } from "@utils/fandom-wikis";
+import { BlurbSource, pickLocalBlurbs, relatedListsFilter, relatedScope } from "@utils/local-blurbs";
 // const Spotify = require('@/controllers/connections/spotify');
 // const spotify = new Spotify();
 // spotify.init();
@@ -269,17 +270,52 @@ tenthingsListsRoute.post("/:id/claude", async (req: Request<{ id: string }>, res
   );
 });
 
+/** Gives the list's blurb-less answers the picture or video related lists use for them; returns how many. */
+const fillFromRelatedLists = async (list: HydratedDocument<IList>, source: BlurbSource): Promise<number> => {
+  const empty = list.values.filter(({ blurb }) => !blurb);
+  const filter = relatedListsFilter(
+    relatedScope(list, source),
+    empty.map(({ value }) => value.trim()),
+  );
+  if (!filter) return 0;
+  const others = await List.find({ ...filter, _id: { $ne: list._id } })
+    .select("values.value values.blurb")
+    .lean<{ values: { value: string; blurb?: string }[] }[]>();
+  const picks = pickLocalBlurbs(
+    empty.map(({ value }) => value),
+    others.flatMap(({ values }) => values),
+    source,
+  );
+  let filled = 0;
+  for (const value of empty) {
+    const blurb = picks.get(value.value);
+    if (!blurb) continue;
+    value.blurb = blurb;
+    value.modifyDate = new Date();
+    filled++;
+  }
+  return filled;
+};
+
 tenthingsListsRoute.post("/:id/blurbs/:type", async (req: Request<{ id: string; type: string }>, res: Response) => {
   if (!res.locals.isAuthorized) res.sendStatus(401);
   else {
     let list = await List.findOne({ _id: req.params.id });
-    if (list && req.params.type === "fandom") {
-      // Anyone can pull from the wiki assigned to the list; only admins can point the server at any other URL.
-      const wikiUrl = res.locals.isAdmin && req.body?.wikiUrl ? String(req.body.wikiUrl) : wikiFor(list)?.url;
-      if (!wikiUrl) {
-        res.status(res.locals.isAdmin ? 400 : 403).json({ error: "No wiki is assigned to this list." });
-        return;
-      }
+    // Anyone can pull from the wiki assigned to the list; only admins can point the server at any other URL.
+    const wikiUrl =
+      list && req.params.type === "fandom"
+        ? res.locals.isAdmin && req.body?.wikiUrl
+          ? String(req.body.wikiUrl)
+          : wikiFor(list)?.url
+        : undefined;
+    if (list && req.params.type === "fandom" && !wikiUrl) {
+      res.status(res.locals.isAdmin ? 400 : 403).json({ error: "No wiki is assigned to this list." });
+      return;
+    }
+    // Related lists first: one query, and only what they don't have goes out to the source.
+    const local = list ? await fillFromRelatedLists(list, req.params.type as BlurbSource) : 0;
+    res.setHeader("X-Local-Blurbs", String(local));
+    if (list && wikiUrl) {
       let images: Map<string, string>;
       try {
         images = await MediaWiki.getImages(
@@ -290,7 +326,7 @@ tenthingsListsRoute.post("/:id/blurbs/:type", async (req: Request<{ id: string; 
         res.status(400).json({ error: error instanceof Error ? error.message : "Couldn't read that wiki." });
         return;
       }
-      let changed = false;
+      let changed = local > 0;
       for (const value of list.values) {
         const image = !value.blurb && images.get(value.value.trim());
         if (image) {
@@ -304,7 +340,7 @@ tenthingsListsRoute.post("/:id/blurbs/:type", async (req: Request<{ id: string; 
       if (freshList) res.json(freshList);
       else res.sendStatus(404);
     } else if (list) {
-      let changed = false;
+      let changed = local > 0;
       for (let value of list.values) {
         if (!value.blurb) {
           let blurbUrl;

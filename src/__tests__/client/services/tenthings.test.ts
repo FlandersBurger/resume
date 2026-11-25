@@ -122,6 +122,13 @@ describe("getBlurbs", () => {
     expect(mockHttp.post).toHaveBeenCalledWith("/api/tenthings/lists/l1/blurbs/wikipedia");
   });
 
+  it("reports how many blurbs came from other lists", async () => {
+    mockHttp.post.mockResolvedValueOnce({ data: sampleList, headers: { "x-local-blurbs": "7" } });
+    expect(await getBlurbs("l1", "fandom")).toEqual({ list: sampleList, fromRelated: 7 });
+    mockHttp.post.mockResolvedValueOnce({ data: sampleList });
+    expect((await getBlurbs("l1", "movies")).fromRelated).toBe(0);
+  });
+
   it("sends the wiki to read images from", async () => {
     mockHttp.post.mockResolvedValueOnce({ data: sampleList });
     await getBlurbs("l1", "fandom", "https://dragonprince.fandom.com/wiki/Category:Characters");

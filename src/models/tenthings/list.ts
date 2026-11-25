@@ -158,6 +158,8 @@ listSchema.virtual("calculatedDifficulty").get(function (this: IList) {
 listSchema.plugin(mongooseLeanVirtuals);
 
 listSchema.index({ name: 1 });
+// Reusing blurbs across lists looks answers up by value (src/utils/local-blurbs.ts).
+listSchema.index({ "values.value": 1 });
 listSchema.index({ name: "text", description: "text", "values.value": "text", "values.blurb": "text" });
 listSchema.index({ plays: -1 });
 listSchema.index({ plays: -1, language: 1 });
