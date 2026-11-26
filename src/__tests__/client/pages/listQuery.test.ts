@@ -20,6 +20,10 @@ describe("the filter in the URL", () => {
       languages: ["EN", "NL"],
       categories: ["geography"],
       quality: ["low"],
+      starred: ["unstarred"],
+      difficulty: ["0", "none"],
+      frequency: ["3"],
+      enabled: ["disabled"],
       sortBy: "likeRatio",
       sortDir: "asc" as const,
       mine: true,
@@ -51,9 +55,30 @@ describe("toRequest", () => {
   });
 });
 
+describe("toRequest filters", () => {
+  it("passes starred, difficulty, frequency and status through", () => {
+    const filter = {
+      ...DEFAULT_FILTER,
+      starred: ["starred"],
+      difficulty: ["2"],
+      frequency: ["none"],
+      enabled: ["disabled"],
+    };
+    expect(toRequest(filter)).toMatchObject({
+      starred: ["starred"],
+      difficulty: ["2"],
+      frequency: ["none"],
+      enabled: ["disabled"],
+    });
+  });
+});
+
 describe("activeFilterCount and toggleSort", () => {
   it("counts filters, not search or sort", () => {
     expect(activeFilterCount({ ...DEFAULT_FILTER, search: "x", languages: ["EN"], mine: true })).toBe(2);
+    expect(
+      activeFilterCount({ ...DEFAULT_FILTER, starred: ["starred"], difficulty: ["1", "2"], enabled: ["disabled"] }),
+    ).toBe(4);
   });
 
   it("flips the current column and sorts a new one ascending", () => {
