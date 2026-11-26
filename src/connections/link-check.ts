@@ -95,47 +95,81 @@ const parse = (url: string, base?: string) => {
   }
 };
 
+/** Why a public request didn't get an answer: `refused` errors are the link's fault, the rest the site's. */
+export class PublicRequestError extends Error {
+  constructor(
+    message: string,
+    readonly refused: boolean,
+  ) {
+    super(message);
+  }
+}
+
+export interface PublicResponse<T> {
+  status: number;
+  data: T;
+}
+
 /**
- * Loads `link` (following up to 5 redirects) and says whether it can be saved as a source: a page that loads is
- * fine, a missing page or site is refused, and a site that blocks the check or doesn't answer is accepted
- * unchecked. Sites that turn automated visits away are taken at their word, never worked around.
+ * GETs a link someone typed in, following up to 5 redirects by hand so each hop is checked: only public web
+ * addresses are ever contacted. Resolves with whatever status the last hop gave; rejects with a
+ * PublicRequestError when the link is unusable (`refused`) or the site didn't answer.
  */
-export const checkLink = async (link: string): Promise<LinkCheck> => {
-  if (link.length > MAX_LENGTH) return { ok: false, error: `A source can be at most ${MAX_LENGTH} characters.` };
+export const publicGet = async <T = unknown>(
+  link: string,
+  options: { params?: Record<string, string>; responseType?: "stream" | "text" | "json"; maxBytes?: number } = {},
+): Promise<PublicResponse<T>> => {
+  if (link.length > MAX_LENGTH) throw new PublicRequestError(`A source can be at most ${MAX_LENGTH} characters.`, true);
   let url = parse(link.trim());
   for (let hop = 0; hop <= MAX_REDIRECTS; hop++) {
     const problem = shapeProblem(url);
-    if (problem) return { ok: false, error: problem };
-    let status: number;
-    let location: string | undefined;
+    if (problem) throw new PublicRequestError(problem, true);
+    let response;
     try {
-      const response = await axios.get(url!.href, {
+      response = await axios.get(url!.href, {
         httpAgent,
         httpsAgent,
         proxy: false,
         maxRedirects: 0,
-        responseType: "stream",
+        params: hop === 0 ? options.params : undefined,
+        responseType: options.responseType ?? "stream",
+        maxContentLength: options.maxBytes ?? 5_000_000,
         timeout: TIMEOUT_MS,
         signal: AbortSignal.timeout(TIMEOUT_MS),
         validateStatus: () => true,
-        headers: { "User-Agent": "TenThingsLinkCheck/1.0", Accept: "text/html,*/*" },
+        headers: { "User-Agent": "TenThingsLinkCheck/1.0", Accept: "text/html,application/json,*/*" },
       });
-      response.data.destroy(); // only the status matters
-      status = response.status;
-      location = response.headers.location;
     } catch (error: any) {
       const code = error?.code ?? error?.cause?.code;
-      if (code === "EPRIVATE") return { ok: false, error: PUBLIC_ONLY };
-      if (code === "ENOTFOUND") return { ok: false, error: `There's no website at ${url!.hostname}.` };
-      return { ok: true, checked: false }; // timed out, refused or reset: can't tell
+      if (code === "EPRIVATE") throw new PublicRequestError(PUBLIC_ONLY, true);
+      if (code === "ENOTFOUND") throw new PublicRequestError(`There's no website at ${url!.hostname}.`, true);
+      throw new PublicRequestError(`${url!.hostname} didn't answer.`, false);
     }
-    if (status >= 300 && status < 400 && location) {
+    const location = response.headers.location;
+    if (response.status >= 300 && response.status < 400 && location) {
+      if (options.responseType === "stream" || !options.responseType) response.data.destroy();
       url = parse(location, url!.href);
       continue;
     }
+    return { status: response.status, data: response.data as T };
+  }
+  throw new PublicRequestError("Too many redirects.", false);
+};
+
+/**
+ * Loads `link` and says whether it can be saved as a source: a page that loads is fine, a missing page or site
+ * is refused, and a site that blocks the check or doesn't answer is accepted unchecked. Sites that turn
+ * automated visits away are taken at their word, never worked around.
+ */
+export const checkLink = async (link: string): Promise<LinkCheck> => {
+  try {
+    const { status, data } = await publicGet<{ destroy: () => void }>(link);
+    data.destroy(); // only the status matters
     if (status >= 200 && status < 300) return { ok: true, checked: true };
     if (status === 404 || status === 410) return { ok: false, error: `That page doesn't exist (${status}).` };
     return { ok: true, checked: false }; // blocked (401, 403, 429…) or the site's own error
+  } catch (error) {
+    if (error instanceof PublicRequestError && error.refused) return { ok: false, error: error.message };
+    return { ok: true, checked: false }; // timed out, refused or reset: can't tell
   }
-  return { ok: true, checked: false };
 };

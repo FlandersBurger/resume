@@ -9,6 +9,7 @@ import YouTube from "@root/connections/youtube";
 import Wikipedia from "@root/connections/wikipedia";
 import * as Claude from "@root/connections/claude";
 import { checkLink } from "@root/connections/link-check";
+import { readSource } from "@root/connections/source-page";
 import categories from "@tenthings/categories";
 import { reconcileSuggestions } from "@utils/list-suggestions";
 import { normalizeListName, standardizeTerms } from "@utils/list-names";
@@ -245,7 +246,13 @@ const sendVet = async (res: Response, vetted: Claude.ListForVet, instruction: un
     ...subcategories.map((subcategory) => `${category}.${subcategory}`),
   ]);
   try {
-    const { suggestions, cost } = await Claude.vetList(vetted, validCategories, String(instruction ?? "").trim());
+    // The page is read here, never taken from the request; a page that can't be read is simply left out.
+    const sourceText = vetted.source ? await readSource(vetted.source) : undefined;
+    const { suggestions, cost } = await Claude.vetList(
+      { ...vetted, sourceText },
+      validCategories,
+      String(instruction ?? "").trim(),
+    );
     const reconciled = reconcileSuggestions(suggestions, vetted, validCategories);
     // Claude only suggests links it found, but a page can still be gone or blocked from the server.
     if (reconciled.source && !(await checkLink(reconciled.source.to)).ok) reconciled.source = null;
