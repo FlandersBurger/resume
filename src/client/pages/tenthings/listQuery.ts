@@ -12,6 +12,14 @@ export interface ListFilter {
   categories: string[];
   /** List quality states (admins only): "high", "neutral", "low". */
   quality: string[];
+  /** "starred" and/or "unstarred". */
+  starred: string[];
+  /** Difficulty indexes ("0" easy to "2" hard), or "none". */
+  difficulty: string[];
+  /** Frequency indexes ("0" changes frequently to "3" never), or "none". */
+  frequency: string[];
+  /** List states (admins only): "enabled", "disabled". */
+  enabled: string[];
   sortBy: string;
   sortDir: SortDir;
   /** Only the signed-in User's own Lists. */
@@ -24,6 +32,10 @@ export const DEFAULT_FILTER: ListFilter = {
   languages: [],
   categories: [],
   quality: [],
+  starred: [],
+  difficulty: [],
+  frequency: [],
+  enabled: [],
   sortBy: "date",
   sortDir: "desc",
   mine: false,
@@ -40,6 +52,10 @@ export function filterFromParams(params: URLSearchParams): ListFilter {
     languages: list(params.get("lang")),
     categories: list(params.get("cat")),
     quality: list(params.get("quality")),
+    starred: list(params.get("starred")),
+    difficulty: list(params.get("diff")),
+    frequency: list(params.get("freq")),
+    enabled: list(params.get("status")),
     sortBy: params.get("sort") || DEFAULT_FILTER.sortBy,
     sortDir: dir === "asc" || dir === "desc" ? dir : DEFAULT_FILTER.sortDir,
     mine: params.get("mine") === "1",
@@ -59,6 +75,10 @@ export function filterToParams(filter: ListFilter, prev: URLSearchParams): URLSe
   put("lang", filter.languages.join(","), "");
   put("cat", filter.categories.join(","), "");
   put("quality", filter.quality.join(","), "");
+  put("starred", filter.starred.join(","), "");
+  put("diff", filter.difficulty.join(","), "");
+  put("freq", filter.frequency.join(","), "");
+  put("status", filter.enabled.join(","), "");
   put("sort", filter.sortBy, DEFAULT_FILTER.sortBy);
   put("dir", filter.sortDir, DEFAULT_FILTER.sortDir);
   put("mine", filter.mine ? "1" : "", "");
@@ -72,6 +92,10 @@ export function toRequest(filter: ListFilter, userId?: string): GetListsOptions 
     language: filter.languages,
     categories: filter.categories,
     quality: filter.quality,
+    starred: filter.starred,
+    difficulty: filter.difficulty,
+    frequency: filter.frequency,
+    enabled: filter.enabled,
     sortBy: filter.sortBy,
     orderBy: filter.sortDir,
     creator: filter.mine && userId ? userId : undefined,
@@ -80,7 +104,14 @@ export function toRequest(filter: ListFilter, userId?: string): GetListsOptions 
 
 /** How many filters are narrowing the Lists (search and sort don't count). */
 export const activeFilterCount = (filter: ListFilter) =>
-  filter.languages.length + filter.categories.length + filter.quality.length + (filter.mine ? 1 : 0);
+  filter.languages.length +
+  filter.categories.length +
+  filter.quality.length +
+  filter.starred.length +
+  filter.difficulty.length +
+  filter.frequency.length +
+  filter.enabled.length +
+  (filter.mine ? 1 : 0);
 
 /** Clicking a column: flip the direction on the current column, or sort a new one ascending. */
 export const toggleSort = (filter: ListFilter, column: string): Pick<ListFilter, "sortBy" | "sortDir"> =>

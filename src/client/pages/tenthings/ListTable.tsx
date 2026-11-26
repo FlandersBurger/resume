@@ -5,6 +5,7 @@ import { TenThingsList, CategoryOption, Language } from "../../services/tenthing
 import { TenThingsTableContainer } from "./SharedStyles";
 import { ListFilter, activeFilterCount, toggleSort } from "./listQuery";
 import { categoryLabel, formatDate, formatPct } from "./format";
+import { DIFFICULTIES, FREQUENCIES } from "@utils/list-suggestions";
 
 const ListRowTooltip = styled.div`
   position: fixed;
@@ -63,6 +64,83 @@ const ListsTableWrapper = styled(TenThingsTableContainer)`
     cursor: pointer;
   }
 `;
+
+interface FilterOption {
+  value: string;
+  label: string;
+  icon?: string;
+  title?: string;
+}
+
+const NOT_SET: FilterOption = { value: "none", label: "Not set", icon: "far fa-circle" };
+
+const STARRED_OPTIONS: FilterOption[] = [
+  { value: "starred", label: "Starred", icon: "fas fa-star text-warning" },
+  { value: "unstarred", label: "Unstarred", icon: "far fa-star" },
+];
+
+const DIFFICULTY_ICONS = ["fas fa-smile-beam", "fas fa-grin-beam-sweat", "fas fa-dizzy"];
+const DIFFICULTY_OPTIONS: FilterOption[] = [
+  ...DIFFICULTIES.map((label, i) => ({ value: String(i), label, icon: DIFFICULTY_ICONS[i] })),
+  NOT_SET,
+];
+
+const FREQUENCY_ICONS = ["fas fa-rabbit-fast", "fas fa-turtle", "fas fa-snowflake", "fas fa-chimney"];
+const FREQUENCY_OPTIONS: FilterOption[] = [
+  ...FREQUENCIES.map((label, i) => ({ value: String(i), label, icon: FREQUENCY_ICONS[i] })),
+  NOT_SET,
+];
+
+const QUALITY_OPTIONS: FilterOption[] = [
+  { value: "high", label: "High", icon: "fas fa-award text-success" },
+  { value: "neutral", label: "Neutral", icon: "far fa-circle" },
+  { value: "low", label: "Low", icon: "fas fa-exclamation-triangle text-warning" },
+];
+
+const STATUS_OPTIONS: FilterOption[] = [
+  { value: "enabled", label: "Enabled", icon: "fas fa-check text-success" },
+  { value: "disabled", label: "Disabled", icon: "fas fa-ban text-danger" },
+];
+
+/** One row of toggle buttons in the filter panel, with a Clear button once any is on. */
+function FilterRow({
+  label,
+  options,
+  selected,
+  onChange,
+  activeClass = "btn-primary",
+}: {
+  label: string;
+  options: FilterOption[];
+  selected: string[];
+  onChange: (next: string[]) => void;
+  activeClass?: string;
+}) {
+  return (
+    <div style={{ marginBottom: 8 }}>
+      <strong style={{ marginRight: 8 }}>{label}:</strong>
+      {options.map((opt) => {
+        const active = selected.includes(opt.value);
+        return (
+          <button
+            key={opt.value}
+            className={`btn btn-xs ${active ? activeClass : "btn-default"}`}
+            style={{ margin: "2px 3px" }}
+            title={opt.title}
+            onClick={() => onChange(active ? selected.filter((v) => v !== opt.value) : [...selected, opt.value])}
+          >
+            {opt.icon && <i className={opt.icon} />} {opt.label}
+          </button>
+        );
+      })}
+      {selected.length > 0 && (
+        <button className="btn btn-xs btn-danger" style={{ margin: "2px 3px" }} onClick={() => onChange([])}>
+          <i className="fas fa-times" /> Clear
+        </button>
+      )}
+    </div>
+  );
+}
 
 interface Props {
   lists: TenThingsList[];
@@ -129,6 +207,10 @@ export function ListTable({
     languages: languageFilter,
     categories: categoryFilter,
     quality: qualityFilter,
+    starred: starredFilter,
+    difficulty: difficultyFilter,
+    frequency: frequencyFilter,
+    enabled: enabledFilter,
     sortBy: sortField,
     sortDir,
     mine: myListsOnly,
@@ -137,9 +219,6 @@ export function ListTable({
   const onSortChange = (column: string) => onFilterChange(toggleSort(filter, column));
   const onSearchChange = (s: string, field: ListFilter["searchField"]) =>
     onFilterChange({ search: s, searchField: field });
-  const onLanguageFilterChange = (languages: string[]) => onFilterChange({ languages });
-  const onCategoryFilterChange = (categories: string[]) => onFilterChange({ categories });
-  const onQualityFilterChange = (quality: string[]) => onFilterChange({ quality });
   const onMyListsToggle = canFilterMine ? () => onFilterChange({ mine: !myListsOnly }) : undefined;
 
   const [tooltip, setTooltip] = useState<{ text: string; x: number; y: number } | null>(null);
@@ -247,104 +326,59 @@ export function ListTable({
               </div>
             )}
             {languageOptions.length > 0 && (
-              <div style={{ marginBottom: 8 }}>
-                <strong style={{ marginRight: 8 }}>Language:</strong>
-                {languageOptions.map((lang) => {
-                  const active = languageFilter.includes(lang.code);
-                  return (
-                    <button
-                      key={lang.code}
-                      className={`btn btn-xs ${active ? "btn-primary" : "btn-default"}`}
-                      style={{ margin: "2px 3px" }}
-                      onClick={() => {
-                        const next = active
-                          ? languageFilter.filter((c) => c !== lang.code)
-                          : [...languageFilter, lang.code];
-                        onLanguageFilterChange?.(next);
-                      }}
-                    >
-                      {lang.native || lang.name || lang.code}
-                    </button>
-                  );
-                })}
-                {languageFilter.length > 0 && (
-                  <button
-                    className="btn btn-xs btn-danger"
-                    style={{ margin: "2px 3px" }}
-                    onClick={() => onLanguageFilterChange?.([])}
-                  >
-                    <i className="fas fa-times" /> Clear
-                  </button>
-                )}
-              </div>
+              <FilterRow
+                label="Language"
+                options={languageOptions.map((lang) => ({
+                  value: lang.code,
+                  label: lang.code.toUpperCase(),
+                  title: lang.native || lang.name,
+                }))}
+                selected={languageFilter}
+                onChange={(languages) => onFilterChange({ languages })}
+              />
             )}
             {categoryOptions.length > 0 && (
-              <div>
-                <strong style={{ marginRight: 8 }}>Category:</strong>
-                {categoryOptions.map((cat) => {
-                  const active = categoryFilter.includes(cat.value);
-                  return (
-                    <button
-                      key={cat.value}
-                      className={`btn btn-xs ${active ? "btn-info" : "btn-default"}`}
-                      style={{ margin: "2px 3px" }}
-                      onClick={() => {
-                        const next = active
-                          ? categoryFilter.filter((c) => c !== cat.value)
-                          : [...categoryFilter, cat.value];
-                        onCategoryFilterChange?.(next);
-                      }}
-                    >
-                      {cat.label}
-                    </button>
-                  );
-                })}
-                {categoryFilter.length > 0 && (
-                  <button
-                    className="btn btn-xs btn-danger"
-                    style={{ margin: "2px 3px" }}
-                    onClick={() => onCategoryFilterChange?.([])}
-                  >
-                    <i className="fas fa-times" /> Clear
-                  </button>
-                )}
-              </div>
+              <FilterRow
+                label="Category"
+                options={categoryOptions}
+                selected={categoryFilter}
+                onChange={(categories) => onFilterChange({ categories })}
+                activeClass="btn-info"
+              />
             )}
-            {isAdmin && onQualityFilterChange && (
-              <div style={{ marginTop: 8 }}>
-                <strong style={{ marginRight: 8 }}>Quality:</strong>
-                {[
-                  { value: "high", label: "High", icon: "fas fa-award text-success" },
-                  { value: "neutral", label: "Neutral", icon: "far fa-circle" },
-                  { value: "low", label: "Low", icon: "fas fa-exclamation-triangle text-warning" },
-                ].map((opt) => {
-                  const active = qualityFilter.includes(opt.value);
-                  return (
-                    <button
-                      key={opt.value}
-                      className={`btn btn-xs ${active ? "btn-primary" : "btn-default"}`}
-                      style={{ margin: "2px 3px" }}
-                      onClick={() => {
-                        const next = active
-                          ? qualityFilter.filter((v) => v !== opt.value)
-                          : [...qualityFilter, opt.value];
-                        onQualityFilterChange(next);
-                      }}
-                    >
-                      <i className={opt.icon} /> {opt.label}
-                    </button>
-                  );
-                })}
-                {qualityFilter.length > 0 && (
-                  <button
-                    className="btn btn-xs btn-danger"
-                    style={{ margin: "2px 3px" }}
-                    onClick={() => onQualityFilterChange([])}
-                  >
-                    <i className="fas fa-times" /> Clear
-                  </button>
-                )}
-              </div>
+            <FilterRow
+              label="Starred"
+              options={STARRED_OPTIONS}
+              selected={starredFilter}
+              onChange={(starred) => onFilterChange({ starred })}
+            />
+            <FilterRow
+              label="Difficulty"
+              options={DIFFICULTY_OPTIONS}
+              selected={difficultyFilter}
+              onChange={(difficulty) => onFilterChange({ difficulty })}
+            />
+            <FilterRow
+              label="Frequency"
+              options={FREQUENCY_OPTIONS}
+              selected={frequencyFilter}
+              onChange={(frequency) => onFilterChange({ frequency })}
+            />
+            {isAdmin && (
+              <>
+                <FilterRow
+                  label="Quality"
+                  options={QUALITY_OPTIONS}
+                  selected={qualityFilter}
+                  onChange={(quality) => onFilterChange({ quality })}
+                />
+                <FilterRow
+                  label="Status"
+                  options={STATUS_OPTIONS}
+                  selected={enabledFilter}
+                  onChange={(enabled) => onFilterChange({ enabled })}
+                />
+              </>
             )}
           </div>
         </div>

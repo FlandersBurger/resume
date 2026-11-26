@@ -736,6 +736,34 @@ const parseQuery = (query: { [key: string]: string }) => {
         if (clauses.length) mergeOrClause(params, clauses);
         break;
       }
+      // Two-state flags: picking one state narrows, picking both (or neither) doesn't.
+      case "starred":
+      case "enabled": {
+        const states = query[key].split(",").filter(Boolean);
+        const on = key === "starred" ? "starred" : "enabled";
+        const off = key === "starred" ? "unstarred" : "disabled";
+        if (states.includes(on) !== states.includes(off)) {
+          Object.assign(params, { [key]: states.includes(on) ? true : { $ne: true } });
+        }
+        break;
+      }
+      // Indexes into DIFFICULTIES / FREQUENCIES; "none" is a List without one set.
+      case "difficulty":
+      case "frequency": {
+        const levels = query[key]
+          .split(",")
+          .filter(Boolean)
+          .map((v) => (v === "none" ? null : Number(v)))
+          .filter((v) => v === null || Number.isInteger(v));
+        // Match by rounding: some older Lists hold a fractional difficulty such as 1.66.
+        if (levels.length) {
+          mergeOrClause(
+            params,
+            levels.map((v) => ({ [key]: v === null ? null : { $gte: v - 0.5, $lt: v + 0.5 } })),
+          );
+        }
+        break;
+      }
       case "name":
         Object.assign(params, { name: { $regex: accentInsensitivePattern(query[key]), $options: "i" } });
         break;

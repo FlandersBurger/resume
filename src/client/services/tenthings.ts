@@ -65,6 +65,14 @@ export interface GetListsOptions {
   languageNot?: string[];
   categoriesNot?: string[];
   quality?: string[];
+  /** "starred" and/or "unstarred". */
+  starred?: string[];
+  /** Difficulty indexes as strings, or "none". */
+  difficulty?: string[];
+  /** Frequency indexes as strings, or "none". */
+  frequency?: string[];
+  /** "enabled" and/or "disabled". */
+  enabled?: string[];
   search?: string;
   name?: string;
   creator?: string;
@@ -81,6 +89,10 @@ export async function getLists(options: GetListsOptions = {}) {
   if (options.languageNot?.length) params.append("!language", options.languageNot.join(","));
   if (options.categoriesNot?.length) params.append("!categories", options.categoriesNot.join(","));
   if (options.quality?.length) params.append("quality", options.quality.join(","));
+  if (options.starred?.length) params.append("starred", options.starred.join(","));
+  if (options.difficulty?.length) params.append("difficulty", options.difficulty.join(","));
+  if (options.frequency?.length) params.append("frequency", options.frequency.join(","));
+  if (options.enabled?.length) params.append("enabled", options.enabled.join(","));
   if (options.search) params.append("search", options.search);
   if (options.name) params.append("name", options.name);
   if (options.creator) params.append("creator", options.creator);

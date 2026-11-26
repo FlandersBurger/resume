@@ -2,12 +2,7 @@ import { useEffect, useState } from "react";
 import { Link, Navigate, useSearchParams } from "react-router-dom";
 import styled from "styled-components";
 import { Helmet } from "react-helmet-async";
-import {
-  getLists,
-  getListTotal,
-  CategoryOption,
-  TenThingsList,
-} from "../../services/tenthings";
+import { getLists, getListTotal, CategoryOption, TenThingsList } from "../../services/tenthings";
 import { useTenThingsReference } from "../../hooks/useTenThingsReference";
 import { useApp } from "../../context/AppContext";
 
@@ -16,7 +11,7 @@ const DISCORD_URL =
   "https://discord.com/oauth2/authorize?client_id=1508334882198392832&permissions=274877975552&integration_type=0&scope=bot+applications.commands";
 
 // Query params the lists page used to own when it lived at /tenthings; old bot links still carry them.
-const LIST_PARAMS = ["list", "search", "field", "lang", "cat", "quality"];
+const LIST_PARAMS = ["list", "search", "field", "lang", "cat", "quality", "starred", "diff", "freq", "status"];
 
 // A sample round for the hero illustration: some answers guessed, the rest still hidden.
 const SAMPLE_LIST = "Largest countries by area";
