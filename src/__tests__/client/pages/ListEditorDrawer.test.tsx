@@ -10,6 +10,7 @@ import {
   getClaudeEnabled,
   getList,
   getSimilarLists,
+  searchLists,
   vetList,
   updateList,
 } from "../../../client/services/tenthings";
@@ -27,6 +28,7 @@ jest.mock("../../../client/services/tenthings", () => ({
   getCategories: jest.fn(),
   getLanguages: jest.fn(),
   getSimilarLists: jest.fn().mockResolvedValue({ lists: [], duplicate: null }),
+  searchLists: jest.fn().mockResolvedValue([]),
 }));
 
 const mockUseApp = useApp as jest.MockedFunction<typeof useApp>;
@@ -168,6 +170,51 @@ describe("ListEditorDrawer", () => {
     await settle();
     expect(name).toHaveValue("Tom Cruise - Cast");
     expect(mockUpdateList).toHaveBeenCalledWith(expect.objectContaining({ name: "Tom Cruise - Cast" }));
+  });
+
+  it("offers existing lists as a new name is typed, and opens the one picked", async () => {
+    setup();
+    (searchLists as jest.Mock).mockResolvedValue([
+      { _id: "a", name: "Rivers in Europe", language: "EN" },
+      { _id: "b", name: "Longest Rivers", language: "EN" },
+    ]);
+    const onOpenList = jest.fn();
+    render(<ListEditorDrawer listId="new" onClose={jest.fn()} onOpenList={onOpenList} />);
+    await settle();
+
+    const name = screen.getByPlaceholderText("Name");
+    fireEvent.focus(name);
+    fireEvent.change(name, { target: { value: "Rivers" } });
+    await act(async () => new Promise((r) => setTimeout(r, 300)));
+
+    expect(searchLists).toHaveBeenCalledWith("Rivers");
+    expect(screen.getAllByRole("option").map((o) => o.textContent)).toEqual(["Rivers in EuropeEN", "Longest RiversEN"]);
+
+    // Enter alone doesn't jump to another list; the arrow keys pick one.
+    fireEvent.keyDown(name, { key: "Enter" });
+    expect(onOpenList).not.toHaveBeenCalled();
+    fireEvent.keyDown(name, { key: "ArrowDown" });
+    fireEvent.keyDown(name, { key: "ArrowDown" });
+    fireEvent.keyDown(name, { key: "Enter" });
+    expect(onOpenList).toHaveBeenCalledWith("b");
+  });
+
+  it("leaves the list being edited out of the name matches, and doesn't search without a host to open them", async () => {
+    setup();
+    mockGetList.mockResolvedValue(existing({ name: "Rivers in Europe" }));
+    (searchLists as jest.Mock).mockResolvedValue([{ _id: "list1", name: "Rivers in Europe", language: "EN" }]);
+    const { rerender } = render(<ListEditorDrawer listId="list1" onClose={jest.fn()} onOpenList={jest.fn()} />);
+    await settle();
+    fireEvent.focus(screen.getByPlaceholderText("Name"));
+    await act(async () => new Promise((r) => setTimeout(r, 300)));
+    expect(searchLists).toHaveBeenCalled();
+    expect(screen.queryByRole("listbox")).toBeNull();
+
+    (searchLists as jest.Mock).mockClear();
+    rerender(<ListEditorDrawer listId="list1" onClose={jest.fn()} />);
+    fireEvent.change(screen.getByPlaceholderText("Name"), { target: { value: "Rivers of Asia" } });
+    await act(async () => new Promise((r) => setTimeout(r, 300)));
+    expect(searchLists).not.toHaveBeenCalled();
   });
 
   it("warns when the description gives away an answer", async () => {

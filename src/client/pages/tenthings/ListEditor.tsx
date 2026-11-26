@@ -1,4 +1,4 @@
-import { useState, useRef, memo, useCallback, useEffect, useMemo } from "react";
+import { Fragment, useState, useRef, memo, useCallback, useEffect, useMemo } from "react";
 import styled from "styled-components";
 import {
   TenThingsList,
@@ -9,6 +9,8 @@ import {
   getSimilarLists,
   SimilarLists,
   checkSource,
+  searchLists,
+  ListNameMatch,
 } from "../../services/tenthings";
 import { removeAllButLetters } from "@utils/string-helpers";
 import { TenThingsTableContainer } from "./SharedStyles";
@@ -78,13 +80,20 @@ const BtnIcon = styled.button`
 
 const EditorTableContainer = styled(TenThingsTableContainer)``;
 
-/** The "Subject - Kind" completions, open under the name field while it has focus. */
-const KindMenu = styled.ul`
+/** The "Subject - Kind" completions and existing lists with that name, open under the name field while it has focus. */
+const NameMenu = styled.ul`
   && {
     display: block;
     top: 100%;
     left: 0;
     min-width: 240px;
+    max-height: 360px;
+    overflow-y: auto;
+  }
+  .list-language {
+    margin-left: 6px;
+    font-size: 0.8em;
+    opacity: 0.7;
   }
 `;
 
@@ -318,6 +327,8 @@ interface Props {
   onSave: (list: TenThingsList) => void;
   /** Shows the delete button when given. */
   onDelete?: () => void;
+  /** Opens another list; when given, existing lists matching the name are offered as it's typed. */
+  onOpenList?: (id: string) => void;
 }
 
 const fmtCreated = (v: TenThingsValue) => {
@@ -525,6 +536,7 @@ export function ListEditor({
   onChange,
   onSave,
   onDelete,
+  onOpenList,
 }: Props) {
   const [newItem, setNewItem] = useState({ value: "", blurb: "" });
   const [showCategories, setShowCategories] = useState(false);
@@ -677,20 +689,61 @@ export function ListEditor({
     [list.description, list.name, list.values],
   );
   const [nameFocused, setNameFocused] = useState(false);
-  const [activeKind, setActiveKind] = useState(0);
   const completions = useMemo(
     () => (nameFocused && !readOnly ? kindCompletions(list.name, list.language) : []),
     [nameFocused, readOnly, list.name, list.language],
   );
+
+  // Existing lists whose name contains what's typed, so a creator can open one instead of starting a duplicate.
+  const [nameMatches, setNameMatches] = useState<ListNameMatch[]>([]);
+  const searchNames = !readOnly && !!onOpenList;
+  useEffect(() => {
+    const name = list.name.trim();
+    if (!searchNames || name.length < 3) {
+      setNameMatches([]);
+      return;
+    }
+    let current = true;
+    const timer = setTimeout(() => {
+      searchLists(name)
+        .then((found) => current && setNameMatches(found.filter(({ _id }) => _id !== list._id)))
+        .catch(() => current && setNameMatches([]));
+    }, 250);
+    return () => {
+      current = false;
+      clearTimeout(timer);
+    };
+  }, [list.name, list._id, searchNames]);
+
+  type NameOption = { kind: string } | { list: ListNameMatch };
+  const nameOptions = useMemo<NameOption[]>(
+    () =>
+      nameFocused
+        ? [
+            ...completions.map((kind) => ({ kind })),
+            ...(searchNames ? nameMatches.map((match) => ({ list: match })) : []),
+          ]
+        : [],
+    [nameFocused, completions, nameMatches, searchNames],
+  );
+  // null until the arrow keys move: a kind is picked by default, an existing list never is,
+  // so Enter after typing a name doesn't jump to another list.
+  const [activeOption, setActiveOption] = useState<number | null>(null);
+  const highlighted = activeOption ?? (nameOptions[0] && "kind" in nameOptions[0] ? 0 : -1);
+  const pickNameOption = (option: NameOption) => {
+    if ("kind" in option) return commitName(option.kind);
+    setNameFocused(false);
+    onOpenList?.(option.list._id);
+  };
   const onNameKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (!completions.length) return;
+    if (!nameOptions.length) return;
     if (e.key === "ArrowDown" || e.key === "ArrowUp") {
       e.preventDefault();
       const step = e.key === "ArrowDown" ? 1 : -1;
-      setActiveKind((i) => (i + step + completions.length) % completions.length);
-    } else if (e.key === "Enter") {
+      setActiveOption((highlighted + step + nameOptions.length) % nameOptions.length);
+    } else if (e.key === "Enter" && nameOptions[highlighted]) {
       e.preventDefault();
-      commitName(completions[Math.min(activeKind, completions.length - 1)]);
+      pickNameOption(nameOptions[highlighted]);
     } else if (e.key === "Escape") {
       setNameFocused(false);
     }
@@ -965,12 +1018,12 @@ export function ListEditor({
           disabled={readOnly}
           role="combobox"
           aria-autocomplete="list"
-          aria-expanded={completions.length > 0}
-          aria-controls="list-kind-completions"
-          aria-activedescendant={completions.length ? `list-kind-${activeKind}` : undefined}
+          aria-expanded={nameOptions.length > 0}
+          aria-controls="list-name-options"
+          aria-activedescendant={nameOptions[highlighted] ? `list-name-option-${highlighted}` : undefined}
           onChange={(e) => {
             setNameFocused(true);
-            setActiveKind(0);
+            setActiveOption(null);
             onChange({ ...list, name: e.target.value });
           }}
           onFocus={() => setNameFocused(true)}
@@ -981,32 +1034,44 @@ export function ListEditor({
           }}
           autoComplete="off"
         />
-        {completions.length > 0 && (
-          <KindMenu className="dropdown-menu" id="list-kind-completions" role="listbox" aria-label="Kinds">
-            {completions.map((completion, i) => (
-              <li
-                key={completion}
-                id={`list-kind-${i}`}
-                role="option"
-                aria-selected={i === activeKind}
-                className={i === activeKind ? "active" : undefined}
-              >
-                <a
-                  href="#"
-                  tabIndex={-1}
-                  // mousedown, not click: picking happens before the input's blur closes the menu
-                  onMouseDown={(e) => {
-                    e.preventDefault();
-                    commitName(completion);
-                    setNameFocused(false);
-                  }}
-                  onMouseEnter={() => setActiveKind(i)}
-                >
-                  {completion}
-                </a>
-              </li>
-            ))}
-          </KindMenu>
+        {nameOptions.length > 0 && (
+          <NameMenu className="dropdown-menu" id="list-name-options" role="listbox" aria-label="Name suggestions">
+            {nameOptions.map((option, i) => {
+              const isList = "list" in option;
+              const label = isList ? option.list.name : option.kind;
+              const firstList = isList && (i === 0 || !("list" in nameOptions[i - 1]));
+              return (
+                <Fragment key={isList ? option.list._id : option.kind}>
+                  {firstList && (
+                    <li className="dropdown-header" role="presentation">
+                      Existing lists: open one to add your answers there
+                    </li>
+                  )}
+                  <li
+                    id={`list-name-option-${i}`}
+                    role="option"
+                    aria-selected={i === highlighted}
+                    className={i === highlighted ? "active" : undefined}
+                  >
+                    <a
+                      href="#"
+                      tabIndex={-1}
+                      // mousedown, not click: picking happens before the input's blur closes the menu
+                      onMouseDown={(e) => {
+                        e.preventDefault();
+                        pickNameOption(option);
+                        setNameFocused(false);
+                      }}
+                      onMouseEnter={() => setActiveOption(i)}
+                    >
+                      {label}
+                      {isList && <span className="list-language">{option.list.language}</span>}
+                    </a>
+                  </li>
+                </Fragment>
+              );
+            })}
+          </NameMenu>
         )}
       </div>
       {!readOnly && (nameHints.length > 0 || similar.lists.length > 0 || similar.duplicate) && (

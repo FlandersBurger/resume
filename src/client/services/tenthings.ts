@@ -164,8 +164,15 @@ export async function getSimilarLists(name: string, language: string, exclude?: 
   return data;
 }
 
+/** An existing list whose name matches what's being typed. */
+export interface ListNameMatch {
+  _id: string;
+  name: string;
+  language: string;
+}
+
 export async function searchLists(name: string) {
-  const { data } = await http.get<TenThingsList[]>(`/api/tenthings/search/list-names/${name}`);
+  const { data } = await http.get<ListNameMatch[]>(`/api/tenthings/search/list-names/${encodeURIComponent(name)}`);
   return data;
 }
 

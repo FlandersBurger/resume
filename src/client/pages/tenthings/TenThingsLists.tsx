@@ -1,19 +1,13 @@
 import { useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import { Helmet } from "react-helmet-async";
-import {
-  updateList,
-  deleteList,
-  mergeLists,
-  TenThingsList,
-} from "../../services/tenthings";
+import { updateList, deleteList, mergeLists, TenThingsList } from "../../services/tenthings";
 import { useApp } from "../../context/AppContext";
 import { ListTable } from "./ListTable";
 import { ListEditorDrawer } from "./ListEditorDrawer";
 import { DeleteListsModal } from "./DeleteListsModal";
 import { useListQuery } from "./useListQuery";
 import { useTenThingsReference } from "../../hooks/useTenThingsReference";
-
 
 export default function TenThingsLists() {
   const { currentUser, toast, isAdmin } = useApp();
@@ -164,6 +158,7 @@ export default function TenThingsLists() {
           onClose={handleClose}
           onSaved={handleSaved}
           onDelete={(list) => setDeleteModalLists([list])}
+          onOpenList={openList}
         />
       </div>
 
