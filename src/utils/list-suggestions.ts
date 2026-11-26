@@ -63,6 +63,8 @@ export interface ListSuggestions {
   blurbs: BlurbSuggestion[];
   name: SettingSuggestion<string> | null;
   description: SettingSuggestion<string> | null;
+  /** A page listing the answers, for a list without a source. */
+  source: SettingSuggestion<string> | null;
   categories: SettingSuggestion<string[]> | null;
   /** 0 easy, 1 medium, 2 hard. */
   difficulty: SettingSuggestion<number> | null;
@@ -78,6 +80,7 @@ export const FREQUENCIES = ["Changes frequently", "Changes yearly", "Rarely chan
 export interface VettedList {
   name: string;
   description?: string;
+  source?: string;
   categories: string[];
   difficulty?: number;
   frequency?: number;
@@ -90,7 +93,8 @@ const sameSet = (a: string[], b: string[]) => a.length === b.length && a.every((
  * Lines Claude's suggestions up with the list as it is, dropping anything that wouldn't change it or can't
  * apply: additions already on it (or repeated), removals, fixes and blurbs naming no existing answer (matched
  * the way guesses are), fixes onto another answer, blurbs for answers that already have one, categories that
- * don't exist, settings equal to the current ones, and a description that names one of the answers.
+ * don't exist, settings equal to the current ones, a description that names one of the answers, and a source
+ * that isn't a link or would replace the creator's.
  */
 export const reconcileSuggestions = (
   suggestions: Partial<ListSuggestions>,
@@ -152,6 +156,7 @@ export const reconcileSuggestions = (
       suggestions.description,
       (to) => !!to.trim() && to.trim() !== (list.description ?? "") && !answersGivenAway(to, list.name, answers).length,
     ),
+    source: setting(suggestions.source, (to) => !list.source && /^https?:\/\/\S+$/i.test(to.trim())),
     categories:
       suggestions.categories && categories?.length && !sameSet(categories, list.categories)
         ? { ...suggestions.categories, to: categories }
@@ -163,7 +168,7 @@ export const reconcileSuggestions = (
 };
 
 export type PickedSuggestions = Pick<ListSuggestions, "add" | "remove" | "fix" | "blurbs"> &
-  Partial<Pick<ListSuggestions, "name" | "description" | "categories" | "difficulty" | "frequency">>;
+  Partial<Pick<ListSuggestions, "name" | "description" | "source" | "categories" | "difficulty" | "frequency">>;
 
 /** The list after applying the chosen suggestions; fixes and blurbs keep the rest of the answer as it was. */
 export const applySuggestions = <V extends { value: string; blurb?: string }, L extends { values: V[] }>(
@@ -189,6 +194,7 @@ export const applySuggestions = <V extends { value: string; blurb?: string }, L 
     values,
     ...(picked.name ? { name: picked.name.to } : {}),
     ...(picked.description ? { description: picked.description.to } : {}),
+    ...(picked.source ? { source: picked.source.to.trim() } : {}),
     ...(picked.categories ? { categories: picked.categories.to } : {}),
     ...(picked.difficulty ? { difficulty: picked.difficulty.to } : {}),
     ...(picked.frequency ? { frequency: picked.frequency.to } : {}),

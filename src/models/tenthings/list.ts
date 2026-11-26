@@ -26,6 +26,10 @@ export interface IList {
   name: string;
   search: string;
   description: string;
+  /** Where the true answers live (a wiki, a Wikipedia list, an official page), checked when it is saved. */
+  source?: string;
+  /** False when the source's site turned the check away or didn't answer. */
+  sourceChecked?: boolean;
   language: SupportedLanguage;
   categories: string[];
   creator: Types.ObjectId | IUser;
@@ -90,6 +94,8 @@ const listSchema = new Schema<IList>(
     name: String,
     search: String,
     description: String,
+    source: { type: String, required: false },
+    sourceChecked: { type: Boolean, required: false },
     language: { type: String, required: true, default: SupportedLanguage.EN },
     categories: [String],
     creator: { type: Schema.Types.ObjectId, ref: "User", required: false },

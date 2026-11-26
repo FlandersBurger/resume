@@ -8,6 +8,7 @@ import { tmdbLookup } from "@root/connections/moviedb";
 import YouTube from "@root/connections/youtube";
 import Wikipedia from "@root/connections/wikipedia";
 import * as Claude from "@root/connections/claude";
+import { checkLink } from "@root/connections/link-check";
 import categories from "@tenthings/categories";
 import { reconcileSuggestions } from "@utils/list-suggestions";
 import { normalizeListName, standardizeTerms } from "@utils/list-names";
@@ -36,6 +37,39 @@ import { every } from "lodash";
 import { telegram } from "@tenthings/providers/telegram";
 
 export const tenthingsListsRoute = Router();
+
+/** A Fandom wiki's address, when a list's source is a page on one. */
+const fandomSource = (source?: string) => {
+  const match = source?.match(/^https:\/\/[a-z0-9-]+(\.[a-z0-9-]+)*\.fandom\.com(?=\/|$)/i);
+  return match?.[0];
+};
+
+/**
+ * Checks the source in a list being saved, when it changed, and records whether the check got through. Only
+ * the server sets `sourceChecked`. Sends the refusal and returns false when the link can't be used.
+ */
+const acceptSource = async (body: Partial<IList> | undefined, stored: string | undefined, res: Response) => {
+  if (!body) return true;
+  delete body.sourceChecked;
+  if (body.source === undefined) return true;
+  const source = typeof body.source === "string" ? body.source.trim() : "";
+  body.source = source;
+  if (!source || source === (stored ?? "")) return true;
+  const check = await checkLink(source);
+  if (!check.ok) {
+    res.status(400).json({ error: check.error });
+    return false;
+  }
+  body.sourceChecked = check.checked;
+  return true;
+};
+
+/** Whether a link would be accepted as a source, so the editor can say so before saving. */
+tenthingsListsRoute.post("/source-check", async (req: Request, res: Response) => {
+  if (!res.locals.isAuthorized) res.sendStatus(401);
+  else if (typeof req.body?.url !== "string" || !req.body.url.trim()) res.status(400).json({ error: "No link given." });
+  else res.json(await checkLink(req.body.url.trim()));
+});
 
 // Any write to the Lists makes the in-memory List pool stale, once the write is done.
 tenthingsListsRoute.use((req, res, next) => {
@@ -212,7 +246,10 @@ const sendVet = async (res: Response, vetted: Claude.ListForVet, instruction: un
   ]);
   try {
     const { suggestions, cost } = await Claude.vetList(vetted, validCategories, String(instruction ?? "").trim());
-    res.json({ suggestions: reconcileSuggestions(suggestions, vetted, validCategories), cost });
+    const reconciled = reconcileSuggestions(suggestions, vetted, validCategories);
+    // Claude only suggests links it found, but a page can still be gone or blocked from the server.
+    if (reconciled.source && !(await checkLink(reconciled.source.to)).ok) reconciled.source = null;
+    res.json({ suggestions: reconciled, cost });
   } catch (error) {
     console.error(error);
     res.status(502).json({ error: error instanceof Error ? error.message : "Claude couldn't vet this list." });
@@ -236,6 +273,7 @@ tenthingsListsRoute.post("/claude", async (req: Request, res: Response) => {
   const vetted: Claude.ListForVet = {
     name,
     description: typeof list.description === "string" ? list.description.slice(0, 1000) : "",
+    source: typeof list.source === "string" ? list.source.slice(0, 500) : "",
     language: list.language,
     categories: strings(list.categories, 20),
     difficulty: typeof list.difficulty === "number" ? list.difficulty : undefined,
@@ -299,12 +337,12 @@ tenthingsListsRoute.post("/:id/blurbs/:type", async (req: Request<{ id: string; 
   if (!res.locals.isAuthorized) res.sendStatus(401);
   else {
     let list = await List.findOne({ _id: req.params.id });
-    // Anyone can pull from the wiki assigned to the list; only admins can point the server at any other URL.
+    // Anyone can pull from the wiki assigned to the list or its Fandom source; only admins can type in another.
     const wikiUrl =
       list && req.params.type === "fandom"
         ? res.locals.isAdmin && req.body?.wikiUrl
           ? String(req.body.wikiUrl)
-          : wikiFor(list)?.url
+          : (wikiFor(list)?.url ?? fandomSource(list.source))
         : undefined;
     if (list && req.params.type === "fandom" && !wikiUrl) {
       res.status(res.locals.isAdmin ? 400 : 403).json({ error: "No wiki is assigned to this list." });
@@ -332,6 +370,11 @@ tenthingsListsRoute.post("/:id/blurbs/:type", async (req: Request<{ id: string; 
           value.modifyDate = new Date();
           changed = true;
         }
+      }
+      if (!list.source && req.body?.wikiUrl && fandomSource(wikiUrl)) {
+        list.source = wikiUrl;
+        list.sourceChecked = true; // the wiki just answered
+        changed = true;
       }
       if (changed) await list.save();
       const freshList = await getList(list._id);
@@ -426,6 +469,7 @@ tenthingsListsRoute.put("/:id", async (req: Request<{ id: string }>, res: Respon
         }
       });
 
+      if (!(await acceptSource(req.body, list.source, res))) return;
       const previousName = list.name;
       Object.assign(list, req.body);
       list.name = normalizeListName(list.name, list.language);
@@ -483,7 +527,8 @@ tenthingsListsRoute.post("/", async (req: Request, res: Response) => {
     if (typeof req.body.list.description === "string")
       req.body.list.description = standardizeTerms(req.body.list.description);
     req.body.list.search = removeAllButLetters(req.body.list.name);
-    const stored = req.body.list._id ? await List.findById(req.body.list._id).select("name").lean() : null;
+    const stored = req.body.list._id ? await List.findById(req.body.list._id).select("name source").lean() : null;
+    if (!(await acceptSource(req.body.list, stored?.source, res))) return;
     if (
       stored?.name.toLowerCase() !== req.body.list.name.toLowerCase() &&
       (await findDuplicate(req.body.list.name, req.body.list.language, req.body.list._id))

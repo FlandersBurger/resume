@@ -1,12 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import styled from "styled-components";
 import { useApp, User } from "../../context/AppContext";
-import {
-  TenThingsList,
-  createList,
-  getList,
-  updateList,
-} from "../../services/tenthings";
+import { TenThingsList, createList, getList, updateList } from "../../services/tenthings";
 import { ListEditor } from "./ListEditor";
 import { useTenThingsReference } from "../../hooks/useTenThingsReference";
 
@@ -139,9 +134,9 @@ export function ListEditorDrawer({ listId, readOnly: forceReadOnly = false, onCl
         callbacks.current.onSaved?.(saved, created);
         if (created) callbacks.current.toast("List created");
       }
-    } catch {
+    } catch (error: any) {
       pending.current = null;
-      callbacks.current.toast("Failed to save list");
+      callbacks.current.toast(error?.response?.data?.error ?? "Failed to save list");
     } finally {
       saving.current = false;
     }

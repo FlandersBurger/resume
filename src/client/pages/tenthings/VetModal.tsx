@@ -45,11 +45,12 @@ const Group = styled.div`
 `;
 
 type ItemKind = "add" | "remove" | "fix" | "blurbs";
-type SettingKind = "name" | "description" | "categories" | "difficulty" | "frequency";
+type SettingKind = "name" | "description" | "source" | "categories" | "difficulty" | "frequency";
 
 const SETTINGS: { kind: SettingKind; title: string }[] = [
   { kind: "name", title: "Name" },
   { kind: "description", title: "Description" },
+  { kind: "source", title: "Source" },
   { kind: "categories", title: "Categories" },
   { kind: "difficulty", title: "Difficulty" },
   { kind: "frequency", title: "Changes" },
@@ -140,6 +141,12 @@ export function VetModal({ list, categoryOptions, onApply, onClose }: Props) {
     if (kind === "categories") return categoryLabel(s.to, categoryOptions);
     if (kind === "difficulty") return DIFFICULTIES[s.to];
     if (kind === "frequency") return FREQUENCIES[s.to];
+    if (kind === "source")
+      return (
+        <a href={s.to} target="_blank" rel="noopener noreferrer">
+          {s.to}
+        </a>
+      );
     return s.to;
   };
 

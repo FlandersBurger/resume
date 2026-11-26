@@ -8,6 +8,7 @@ import {
   getBlurbs,
   getSimilarLists,
   SimilarLists,
+  checkSource,
 } from "../../services/tenthings";
 import { removeAllButLetters } from "@utils/string-helpers";
 import { TenThingsTableContainer } from "./SharedStyles";
@@ -545,6 +546,33 @@ export function ListEditor({
   const [wikiUrl, setWikiUrl] = useState("");
   const [wikiStatus, setWikiStatus] = useState("");
   const wikiKey = `tenthings-wiki-url:${list._id}`;
+  // The source as typed; it only reaches the list once the server has checked the link.
+  const [sourceDraft, setSourceDraft] = useState(list.source ?? "");
+  const [sourceError, setSourceError] = useState("");
+  const [checkingSource, setCheckingSource] = useState(false);
+  useEffect(() => {
+    setSourceDraft(list.source ?? "");
+    setSourceError("");
+  }, [list._id, list.source]);
+  const saveSource = async () => {
+    const source = sourceDraft.trim();
+    if (source === (listRef.current.source ?? "")) return setSourceError("");
+    if (source) {
+      setCheckingSource(true);
+      try {
+        const check = await checkSource(source);
+        if (!check.ok) return setSourceError(check.error);
+      } catch {
+        return setSourceError("Couldn't check that link.");
+      } finally {
+        setCheckingSource(false);
+      }
+    }
+    setSourceError("");
+    const updated = { ...listRef.current, source };
+    onChangeRef.current(updated);
+    onSaveRef.current(updated);
+  };
   const [showBlurbMenu, setShowBlurbMenu] = useState(false);
   const blurbRef = useRef<HTMLDivElement>(null);
   const blurbSources = BLURB_TYPES.filter(
@@ -1033,6 +1061,38 @@ export function ListEditor({
         </NameNotes>
       )}
 
+      {/* Source */}
+      <div className="input-group" style={{ marginTop: 6 }}>
+        <span className="input-group-addon">Source</span>
+        <input
+          className="form-control"
+          type="url"
+          value={sourceDraft}
+          placeholder="Link to where the answers come from, e.g. a wiki or Wikipedia page. Players don't see it."
+          disabled={readOnly || checkingSource}
+          onChange={(e) => setSourceDraft(e.target.value)}
+          onBlur={saveSource}
+          onKeyDown={(e) => e.key === "Enter" && (e.target as HTMLInputElement).blur()}
+          autoComplete="off"
+        />
+        {list.source && (
+          <span className="input-group-btn">
+            <a className="btn btn-default" href={list.source} target="_blank" rel="noopener noreferrer" title="Open">
+              {checkingSource ? <i className="fas fa-spinner fa-spin" /> : <i className="fas fa-external-link-alt" />}
+            </a>
+          </span>
+        )}
+      </div>
+      {(sourceError || (list.source && list.sourceChecked === false && sourceDraft === list.source)) && (
+        <NameNotes>
+          {sourceError ? (
+            <li className="text-danger">{sourceError}</li>
+          ) : (
+            <li>Saved, but unchecked: the site turned the check away or didn't answer.</li>
+          )}
+        </NameNotes>
+      )}
+
       <br />
 
       {/* Toolbar */}
@@ -1219,7 +1279,12 @@ export function ListEditor({
                       onClick={(e) => {
                         e.preventDefault();
                         setShowBlurbMenu(false);
-                        if (!wikiUrl) setWikiUrl(localStorage.getItem(wikiKey) ?? "");
+                        if (!wikiUrl)
+                          setWikiUrl(
+                            /^https:\/\/[^/]+\.fandom\.com(\/|$)/i.test(list.source ?? "")
+                              ? list.source!
+                              : (localStorage.getItem(wikiKey) ?? ""),
+                          );
                         setShowWiki(true);
                       }}
                     >
