@@ -21,6 +21,7 @@ import { answersGivenAway, applySuggestions, PickedSuggestions } from "@utils/li
 import { kindCompletions, listNameHints, normalizeListName, standardizeTerms } from "@utils/list-names";
 import { wikiFor } from "@utils/fandom-wikis";
 import { PasteAnswersModal } from "./PasteAnswersModal";
+import { toggleCategory as withCategoryToggled } from "./categories";
 
 const EditListPanel = styled.div<{ $active?: boolean }>`
   top: 50px;
@@ -405,12 +406,15 @@ const ValueRow = memo(
     index,
     readOnly,
     total,
+    byListCreator,
     onUpdate,
     onRemove,
     onBlurbClick,
   }: {
     v: TenThingsValue;
     index: number;
+    /** False when someone other than the list's creator added this answer; it's then shown in blue. */
+    byListCreator: boolean;
     readOnly: boolean;
     total: number;
     onUpdate: (index: number, patch: Partial<TenThingsValue>) => void;
@@ -437,7 +441,10 @@ const ValueRow = memo(
     const [brokenThumbnail, setBrokenThumbnail] = useState<string>();
     return (
       <tr>
-        <IconColumn className="hidden-xs hidden-sm visible-md visible-lg" title={v.creator?.username}>
+        <IconColumn
+          className={`hidden-xs hidden-sm visible-md visible-lg${byListCreator ? "" : " text-info"}`}
+          title={byListCreator ? v.creator?.username : `${v.creator?.username}, not the list's creator`}
+        >
           <i className="fas fa-user" />
         </IconColumn>
         <InputCell>
@@ -520,6 +527,7 @@ const ValueRow = memo(
     prev.v.blurb === next.v.blurb &&
     prev.v.blurbType === next.v.blurbType &&
     prev.readOnly === next.readOnly &&
+    prev.byListCreator === next.byListCreator &&
     prev.total === next.total &&
     prev.index === next.index,
   // onUpdate/onRemove/onBlurbClick are stable (empty useCallback deps), no need to compare
@@ -768,12 +776,12 @@ export function ListEditor({
     };
   }, [list.name, list.language, list._id, readOnly]);
 
+  const newItemIsDuplicate = !!newItem.value.trim() && hasDuplicate(newItem.value);
+
   const addValue = () => {
     if (!newItem.value) return;
-    if (hasDuplicate(newItem.value)) {
-      alert(`"${newItem.value}" is already in the list`);
-      return;
-    }
+    // The add button already says so; Tab from the blurb lands here too.
+    if (hasDuplicate(newItem.value)) return;
     const updatedList = {
       ...listRef.current,
       values: [...listRef.current.values, { value: newItem.value, blurb: newItem.blurb }],
@@ -856,8 +864,7 @@ export function ListEditor({
   }, []); // stable — reads latest list via ref
 
   const toggleCategory = (cat: string) => {
-    const cats = list.categories.includes(cat) ? list.categories.filter((c) => c !== cat) : [...list.categories, cat];
-    const updated = { ...list, categories: cats };
+    const updated = { ...list, categories: withCategoryToggled(list.categories, cat) };
     onChange(updated);
     onSave(updated);
   };
@@ -1003,6 +1010,7 @@ export function ListEditor({
         <kbd>
           Please search existing lists first and add answers to them. Subjective, niche and duplicate lists will be
           deleted.
+          {list.categories.includes("music") && " Music lists will be scrutinized by admins for global recognition."}
         </kbd>
       )}
 
@@ -1536,26 +1544,36 @@ export function ListEditor({
                 <td className="hidden-xs hidden-sm visible-md visible-lg" />
                 <td className="hidden-xs hidden-sm visible-md visible-lg" />
                 <td colSpan={2} style={{ textAlign: "center" }}>
-                  <button className="btn btn-sm btn-default" onClick={addValue} disabled={!newItem.value}>
-                    <i className="fas fa-plus" />
+                  <button
+                    className={`btn btn-sm ${newItemIsDuplicate ? "btn-danger" : "btn-default"}`}
+                    onClick={addValue}
+                    disabled={!newItem.value || newItemIsDuplicate}
+                    title={newItemIsDuplicate ? `"${newItem.value}" is already in the list` : "Add answer"}
+                  >
+                    <i className={`fas ${newItemIsDuplicate ? "fa-ban" : "fa-plus"}`} />
                   </button>
+                  {newItemIsDuplicate && <div className="text-danger small">Already in the list</div>}
                 </td>
               </tr>
             )}
 
             {/* Existing items */}
-            {sortedIndices.map((i) => (
-              <ValueRow
-                key={list.values[i]._id?.toString() || i}
-                v={list.values[i]}
-                index={i}
-                readOnly={readOnly}
-                total={list.values.length}
-                onUpdate={updateValue}
-                onRemove={removeValue}
-                onBlurbClick={setSelectedItem}
-              />
-            ))}
+            {sortedIndices.map((i) => {
+              const v = list.values[i];
+              return (
+                <ValueRow
+                  key={v._id?.toString() || i}
+                  v={v}
+                  index={i}
+                  readOnly={readOnly}
+                  total={list.values.length}
+                  byListCreator={!v.creator || !list.creator || String(v.creator._id) === String(list.creator._id)}
+                  onUpdate={updateValue}
+                  onRemove={removeValue}
+                  onBlurbClick={setSelectedItem}
+                />
+              );
+            })}
           </tbody>
         </table>
       </EditorTableContainer>

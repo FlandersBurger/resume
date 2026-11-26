@@ -87,6 +87,9 @@ interface Props {
   onLoadMore: () => void;
   onRefresh: () => void;
   onAddList: () => void;
+  /** Sets categories on the selected lists. */
+  onEditHighlighted?: () => void;
+  /** Asks to merge the selected lists. */
   onMerge?: () => void;
   onDeleteHighlighted?: () => void;
   onFavorite?: (list: TenThingsList) => void;
@@ -114,6 +117,7 @@ export function ListTable({
   onLoadMore,
   onRefresh,
   onAddList,
+  onEditHighlighted,
   onMerge,
   onDeleteHighlighted,
   onFavorite,
@@ -131,7 +135,8 @@ export function ListTable({
   } = filter;
   const filterCount = activeFilterCount(filter);
   const onSortChange = (column: string) => onFilterChange(toggleSort(filter, column));
-  const onSearchChange = (s: string, field: ListFilter["searchField"]) => onFilterChange({ search: s, searchField: field });
+  const onSearchChange = (s: string, field: ListFilter["searchField"]) =>
+    onFilterChange({ search: s, searchField: field });
   const onLanguageFilterChange = (languages: string[]) => onFilterChange({ languages });
   const onCategoryFilterChange = (categories: string[]) => onFilterChange({ categories });
   const onQualityFilterChange = (quality: string[]) => onFilterChange({ quality });
@@ -169,8 +174,8 @@ export function ListTable({
               <i className="far fa-sparkles" /> New list
             </button>
           )}
-          {isAdmin && onMerge && (
-            <button className="btn btn-primary" onClick={onMerge} title="Edit selected lists">
+          {isAdmin && onEditHighlighted && (
+            <button className="btn btn-primary" onClick={onEditHighlighted} title="Edit selected lists">
               <i className="far fa-edit" /> ({highlightedCount})
             </button>
           )}

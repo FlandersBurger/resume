@@ -140,8 +140,16 @@ export async function getBlurbs(id: string, type: string, wikiUrl?: string) {
   return { list: res.data as TenThingsList, fromRelated: Number(res.headers?.["x-local-blurbs"] ?? 0) };
 }
 
+/** Saves only the given fields; the server leaves the rest of the list as it is. */
+export async function updateListFields(id: string, fields: Partial<Omit<TenThingsList, "_id">>) {
+  const { data } = await http.put<TenThingsList>(`/api/tenthings/lists/${id}`, fields);
+  return data;
+}
+
+/** Merges the lists into the oldest one, deletes the others and returns the merged list. */
 export async function mergeLists(ids: string[]) {
-  await http.post("/api/tenthings/lists/merge", { lists: ids });
+  const { data } = await http.post<TenThingsList>("/api/tenthings/lists/merge", { lists: ids });
+  return data;
 }
 
 export async function getRandomList() {

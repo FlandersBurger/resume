@@ -217,6 +217,42 @@ describe("ListEditorDrawer", () => {
     expect(searchLists).not.toHaveBeenCalled();
   });
 
+  it("flags a duplicate answer while it's typed and won't add it", async () => {
+    setup();
+    mockGetList.mockResolvedValue(existing());
+    mockUpdateList.mockImplementation(async (l) => l);
+    render(<ListEditorDrawer listId="list1" onClose={jest.fn()} />);
+    await settle();
+
+    fireEvent.change(screen.getByPlaceholderText("New answer (11)"), { target: { value: "answer 3!" } });
+    expect(screen.getByText("Already in the list")).toBeInTheDocument();
+    expect(screen.getByTitle('"answer 3!" is already in the list')).toBeDisabled();
+    expect(mockUpdateList).not.toHaveBeenCalled();
+  });
+
+  it("tells creators of new music lists that admins check them", async () => {
+    setup();
+    (getCategories as jest.Mock).mockResolvedValue([{ value: "music", label: "Music" }]);
+    render(<ListEditorDrawer listId="new" onClose={jest.fn()} />);
+    await settle();
+    expect(screen.queryByText(/Music lists will be scrutinized/)).toBeNull();
+
+    fireEvent.click(screen.getByRole("button", { name: "Music" }));
+    expect(screen.getByText(/Music lists will be scrutinized/)).toBeInTheDocument();
+  });
+
+  it("shows which answers someone other than the list's creator added", async () => {
+    setup();
+    mockGetList.mockResolvedValue(
+      existing({ values: answers(10).map((v, i) => ({ ...v, creator: i === 0 ? someoneElse : me })) }),
+    );
+    render(<ListEditorDrawer listId="list1" onClose={jest.fn()} />);
+    await settle();
+
+    expect(screen.getByTitle("other, not the list's creator")).toHaveClass("text-info");
+    expect(screen.getAllByTitle("me")[0]).not.toHaveClass("text-info");
+  });
+
   it("warns when the description gives away an answer", async () => {
     setup();
     mockGetList.mockResolvedValue(existing({ description: "Nurses come first, then answer 3." }));
