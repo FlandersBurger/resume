@@ -24,6 +24,7 @@ const BLURB_PREVIEW = 160;
 export interface ListForVet {
   name: string;
   description?: string;
+  source?: string;
   language: string;
   categories: string[];
   difficulty?: number;
@@ -77,6 +78,7 @@ const submitTool = (validCategories: string[]): Anthropic.Beta.BetaTool => ({
       "blurbs",
       "name",
       "description",
+      "source",
       "categories",
       "difficulty",
       "frequency",
@@ -113,6 +115,10 @@ const submitTool = (validCategories: string[]): Anthropic.Beta.BetaTool => ({
         ),
         "A description when the list has none and one would explain or teach something, or a fix when the current one is a problem.",
       ),
+      source: setting(
+        stringField("The URL of a page from your search results that lists the answers."),
+        "A source when the list has none and your searches found the page its answers come from.",
+      ),
       categories: setting(
         { type: "array", items: { type: "string", enum: validCategories } },
         "The full set of categories the list should have.",
@@ -145,6 +151,7 @@ Vet the whole list:
   - a few words on what counts when the name alone isn't fully clear to every player: an acronym or local term, or what "largest" or "non-obtainable" means here.
   - one specific fact players would be glad to learn, about the list's whole topic rather than one part of it (for "Movies set in Paris", Paris and film, not Paris alone: "The world's first paid public film screening was held in a Paris café in 1895.").
   Most topics have such a fact. Leave the description null only when you have neither; a sentence that just restates the name or says the topic is popular ("Paris has long been a favourite film backdrop…") is filler, never a description. Text only, no URLs.
+- source: the page where the list's true answers live, when the creator gave one. Check the answers against it first, searching that site before the rest of the web. When there is none and your searches turned up the page the answers come from (a wiki category, a Wikipedia list, an official site), suggest it. Only suggest a URL your search results showed you.
 - other settings: suggest the right categories (only from the allowed ones, as the complete set), how hard the list is, and how often its answers change. Leave a setting null when it's fine.
 
 Keep the list's language: text for a list marked NL is in Dutch, and so on. Only suggest changes you are confident in. When web search is available, most lists still need none: search only for answers that may have changed recently or that you are unsure about, and keep it to a couple of searches. When you are done, call submit_vet once with everything, using empty arrays and null where you have nothing to suggest.`;
@@ -155,6 +162,7 @@ const describeList = (list: ListForVet, validCategories: string[], instruction?:
   [
     `List name: ${list.name}`,
     `Description: ${list.description || "(none)"}`,
+    `Source: ${list.source || "(none)"}`,
     `Language: ${list.language}`,
     `Categories: ${list.categories.join(", ") || "none"}`,
     `Difficulty: ${DIFFICULTIES[list.difficulty ?? -1] ?? "not set"}`,

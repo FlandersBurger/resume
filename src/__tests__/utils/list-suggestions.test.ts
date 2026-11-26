@@ -18,6 +18,7 @@ const none: ListSuggestions = {
   blurbs: [],
   name: null,
   description: null,
+  source: null,
   categories: null,
   difficulty: null,
   frequency: null,
@@ -114,6 +115,15 @@ describe("reconcileSuggestions", () => {
     expect(description("Featuring the archmage Aaravos.", { add: [b("Aaravos", "")] })).toBeNull();
     expect(description("Featuring Ezaran.", { remove: [s("Ezaran")] })).not.toBeNull();
     expect(description("Prince Ezran rules.", { fix: [f("Ezaran", "Ezran")] })).toBeNull();
+  });
+
+  it("suggests a source only as a link, and never over the creator's", () => {
+    const wiki = { to: "https://dragonprince.fandom.com/wiki/Category:Characters", reason: "r" };
+    expect(reconcile({ source: wiki }).source).toEqual(wiki);
+    expect(reconcile({ source: { to: "the Dragon Prince wiki", reason: "r" } }).source).toBeNull();
+    expect(
+      reconcileSuggestions({ ...none, source: wiki }, { ...list, source: "https://x.org" }, valid).source,
+    ).toBeNull();
   });
 });
 

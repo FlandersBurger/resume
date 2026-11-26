@@ -5,6 +5,10 @@ export interface TenThingsList {
   _id: string;
   name: string;
   description?: string;
+  /** Where the true answers live; checked by the server when saved. */
+  source?: string;
+  /** False when the source's site turned the check away or didn't answer. */
+  sourceChecked?: boolean;
   language: string;
   categories: string[];
   answers: number;
@@ -110,6 +114,15 @@ export async function createList(userId: string, list: Partial<TenThingsList>) {
 
 export async function updateList(list: TenThingsList) {
   const { data } = await http.put<TenThingsList>(`/api/tenthings/lists/${list._id}`, list);
+  return data;
+}
+
+/** Whether the server would save `url` as a list's source, and if not, why. */
+export async function checkSource(url: string) {
+  const { data } = await http.post<{ ok: true; checked: boolean } | { ok: false; error: string }>(
+    "/api/tenthings/lists/source-check",
+    { url },
+  );
   return data;
 }
 
