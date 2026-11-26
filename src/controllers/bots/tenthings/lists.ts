@@ -381,3 +381,10 @@ export const getList = async (listId: Types.ObjectId): Promise<IList | undefined
 };
 
 export { mergeLists } from "@utils/list-merge";
+
+/** Another enabled List in the same language with this name, ignoring case and accents. */
+export const findDuplicate = (name: string, language: SupportedLanguage, exceptId?: string | Types.ObjectId) =>
+  List.findOne({ name, language, enabled: true, ...(exceptId && { _id: { $ne: exceptId } }) })
+    .collation({ locale: "en", strength: 1 })
+    .select("_id name")
+    .lean();

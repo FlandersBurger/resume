@@ -24,7 +24,7 @@ import { BlurbSource, pickLocalBlurbs, relatedListsFilter, relatedScope } from "
 import { IList, IListValue } from "@models/tenthings/list";
 import { GameRound, List, User } from "@models/index";
 import { accentInsensitivePattern, parseSymbols, removeAllButLetters } from "@utils/string-helpers";
-import { getList, getRandomList, invalidateListPool, mergeLists } from "@tenthings/lists";
+import { findDuplicate, getList, getRandomList, invalidateListPool, mergeLists } from "@tenthings/lists";
 import {
   listMetricsFields,
   playedRounds,
@@ -33,6 +33,8 @@ import {
   roundTally,
   RoundTally,
 } from "@models/tenthings/listMetrics";
+import { queueListTranslation } from "@tenthings/translations/queue";
+import { rootOf } from "@utils/list-translation";
 import { curateListKeyboard } from "@tenthings/providers/telegram/keyboards";
 import { every } from "lodash";
 import { telegram } from "@tenthings/providers/telegram";
@@ -43,6 +45,12 @@ export const tenthingsListsRoute = Router();
 const fandomSource = (source?: string) => {
   const match = source?.match(/^https:\/\/[a-z0-9-]+(\.[a-z0-9-]+)*\.fandom\.com(?=\/|$)/i);
   return match?.[0];
+};
+
+/** Translation links are only set by the translation worker, never by an editor saving a List. */
+const dropTranslationFields = (body: Partial<IList> | undefined) => {
+  delete body?.translationOf;
+  delete body?.translationSkips;
 };
 
 /**
@@ -79,6 +87,10 @@ tenthingsListsRoute.use((req, res, next) => {
 });
 
 const MIN_LIST_VALUES = 10;
+
+/** A newly starred List is translated into the other bot languages in the background; saving never waits on it. */
+const queueTranslation = (list: Pick<IList, "_id" | "translationOf">) =>
+  queueListTranslation(rootOf(list)).catch((error) => console.error("Queueing a List translation failed", error));
 
 const VIRTUAL_SORT_FIELDS = new Set(["likeRatio", "upvotes", "downvotes", "answers", "playRatio", "quality"]);
 
@@ -162,13 +174,6 @@ tenthingsListsRoute.get("/", async (req: QueryableRequest, res: Response) => {
 });
 
 const escapeRegex = (text: string) => text.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
-
-/** Another enabled list in the same language with this name, ignoring case and accents. */
-const findDuplicate = (name: string, language: SupportedLanguage, exceptId?: string | Types.ObjectId) =>
-  List.findOne({ name, language, enabled: true, ...(exceptId && { _id: { $ne: exceptId } }) })
-    .collation({ locale: "en", strength: 1 })
-    .select("_id name")
-    .lean();
 
 const duplicateError = (name: string) => ({ error: `There's already a list called "${name}" in this language.` });
 
@@ -476,8 +481,10 @@ tenthingsListsRoute.put("/:id", async (req: Request<{ id: string }>, res: Respon
         }
       });
 
+      dropTranslationFields(req.body);
       if (!(await acceptSource(req.body, list.source, res))) return;
       const previousName = list.name;
+      const wasStarred = list.starred;
       Object.assign(list, req.body);
       list.name = normalizeListName(list.name, list.language);
       if (list.description) list.description = standardizeTerms(list.description);
@@ -505,6 +512,7 @@ tenthingsListsRoute.put("/:id", async (req: Request<{ id: string }>, res: Respon
         res.status(400).json({ error: error instanceof Error ? error.message : "Failed to save list." });
         return;
       }
+      if (!wasStarred && list.starred) queueTranslation(list);
       const updatedList = await getList(new Types.ObjectId(req.params.id));
       if (!updatedList) res.sendStatus(404);
       else {
@@ -534,7 +542,10 @@ tenthingsListsRoute.post("/", async (req: Request, res: Response) => {
     if (typeof req.body.list.description === "string")
       req.body.list.description = standardizeTerms(req.body.list.description);
     req.body.list.search = removeAllButLetters(req.body.list.name);
-    const stored = req.body.list._id ? await List.findById(req.body.list._id).select("name source").lean() : null;
+    const stored = req.body.list._id
+      ? await List.findById(req.body.list._id).select("name source starred").lean()
+      : null;
+    dropTranslationFields(req.body.list);
     if (!(await acceptSource(req.body.list, stored?.source, res))) return;
     if (
       stored?.name.toLowerCase() !== req.body.list.name.toLowerCase() &&
@@ -555,6 +566,7 @@ tenthingsListsRoute.post("/", async (req: Request, res: Response) => {
       { returnDocument: "after", upsert: true },
     );
     if (list) await List.updateOne({ _id: list._id }, refreshScoreUpdate, pipelineUpdateOptions);
+    if (list?.starred && !stored?.starred) queueTranslation(list);
 
     const updatedList = await getList(list._id);
     if (!updatedList) res.sendStatus(404);

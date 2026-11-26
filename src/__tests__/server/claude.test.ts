@@ -4,7 +4,7 @@ jest.mock("@anthropic-ai/sdk", () => ({
   default: jest.fn().mockImplementation(() => ({ beta: { messages: { stream } } })),
 }));
 
-import { costOf, needsSearch, vetList } from "@root/connections/claude";
+import { checkTranslatable, costOf, needsSearch, translateList, vetList } from "@root/connections/claude";
 
 const list = {
   name: "Dragon Prince characters",
@@ -115,5 +115,89 @@ describe("costOf", () => {
         }) as any,
       ),
     ).toBeCloseTo(0.0001 + 0.00005 + 0.0001 + 0.000125 + 0.03, 7);
+  });
+});
+
+describe("translating", () => {
+  const toTranslate = {
+    name: "Planets",
+    language: "EN",
+    categories: ["science"],
+    values: [
+      { value: "Mars", blurb: "https://example.com/mars.jpg" },
+      { value: "Venus", blurb: "Hottest planet." },
+      { value: "Earth" },
+    ],
+  };
+  const entry = (language: string) => ({
+    language,
+    skip: false,
+    reason: "",
+    name: `Planets ${language}`,
+    description: "",
+    values: [],
+  });
+  const translated = (languages: string[]) =>
+    reply({
+      stop_reason: "tool_use",
+      content: [
+        { type: "tool_use", id: "t", name: "submit_translation", input: { translations: languages.map(entry) } },
+      ],
+    });
+
+  it("asks whether a List can be translated, hiding links", async () => {
+    stream.mockReturnValueOnce(
+      reply({
+        stop_reason: "tool_use",
+        content: [
+          { type: "tool_use", id: "t", name: "submit_check", input: { translatable: false, reason: "lyrics" } },
+        ],
+      }),
+    );
+
+    const result = await checkTranslatable(toTranslate);
+
+    expect(result).toMatchObject({ translatable: false, reason: "lyrics" });
+    const prompt = stream.mock.calls[0][0].messages[0].content[0].text;
+    expect(prompt).toContain("0. Mars | [link]");
+    expect(prompt).toContain("1. Venus | Hottest planet.");
+    expect(prompt).toContain("2. Earth | (no blurb)");
+    expect(prompt).not.toContain("example.com");
+  });
+
+  it("translates a few languages per request and adds up the cost", async () => {
+    stream
+      .mockReturnValueOnce(translated(["DE", "ES", "FR", "NL"]))
+      .mockReturnValueOnce(translated(["PT", "RU", "IT"]));
+
+    const result = await translateList(toTranslate, ["DE", "ES", "FR", "NL", "PT", "RU"]);
+
+    expect(stream).toHaveBeenCalledTimes(2);
+    const [first, second] = stream.mock.calls.map(([params]) => params);
+    expect(first.tools[0].input_schema.properties.translations.items.properties.language.enum).toEqual([
+      "DE",
+      "ES",
+      "FR",
+      "NL",
+    ]);
+    expect(second.messages[0].content[1].text).toBe("Translate it into: PT, RU");
+    expect(first.messages[0].content[0].cache_control).toEqual({ type: "ephemeral" });
+    // A language that wasn't asked for is dropped.
+    expect(result.translations.map(({ language }) => language)).toEqual(["DE", "ES", "FR", "NL", "PT", "RU"]);
+    expect(result.cost).toBeCloseTo(2 * (1000 * 0.1e-6 + 100 * 0.5e-6), 9);
+  });
+
+  it("nudges once when Claude answers without the tool, then gives up", async () => {
+    stream
+      .mockReturnValueOnce(reply({ stop_reason: "end_turn", content: [{ type: "text", text: "Sure!" }] }))
+      .mockReturnValueOnce(reply({ stop_reason: "end_turn", content: [{ type: "text", text: "Done." }] }));
+
+    await expect(translateList(toTranslate, ["NL"])).rejects.toThrow("didn't return any results");
+    expect(stream.mock.calls[1][0].messages.at(-1).content).toBe("Call submit_translation with your results.");
+  });
+
+  it("throws on a refusal", async () => {
+    stream.mockReturnValueOnce(reply({ stop_reason: "refusal", content: [] }));
+    await expect(translateList(toTranslate, ["NL"])).rejects.toThrow("declined");
   });
 });
