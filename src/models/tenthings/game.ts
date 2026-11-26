@@ -70,6 +70,8 @@ export interface IGame {
   list: IGameList;
   date: Date;
   minigame: {
+    /** The Minigame drawn, for its play counters. */
+    minigameId?: Types.ObjectId;
     answer: string;
     date: Date;
     lists: string[];
@@ -134,6 +136,7 @@ const gameSchema = new Schema<IGame>(
     },
     date: { type: Date, required: true, default: Date.now },
     minigame: {
+      minigameId: { type: Schema.Types.ObjectId, ref: "Minigame", required: false },
       answer: { type: String, required: false },
       date: { type: Date, required: true, default: Date.now },
       lists: [{ type: String, required: false }],

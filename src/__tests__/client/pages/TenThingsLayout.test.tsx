@@ -38,7 +38,7 @@ describe("TenThingsLayout", () => {
 
   it("adds admin tabs for admins", () => {
     renderLayout("/tenthings", { currentUser: { _id: "1", username: "alice", admin: true }, isAdmin: true });
-    expect(tabNames()).toEqual(["Overview", "Play", "Lists", "Games", "Stats", "Admin", "Sass"]);
+    expect(tabNames()).toEqual(["Overview", "Play", "Lists", "Games", "Stats", "Admin", "Sass", "Minigames"]);
   });
 
   it("marks the Games tab active on a specific game", () => {

@@ -60,6 +60,7 @@ export default function TenThingsLayout() {
           <AdminTabs>
             <NavLink to="/tenthings-admin">Admin</NavLink>
             <NavLink to="/tenthings-sass">Sass</NavLink>
+            <NavLink to="/tenthings-minigames">Minigames</NavLink>
           </AdminTabs>
         )}
       </Tabs>
