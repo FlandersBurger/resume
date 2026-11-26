@@ -140,8 +140,16 @@ export async function getBlurbs(id: string, type: string, wikiUrl?: string) {
   return { list: res.data as TenThingsList, fromRelated: Number(res.headers?.["x-local-blurbs"] ?? 0) };
 }
 
+/** Saves only the given fields; the server leaves the rest of the list as it is. */
+export async function updateListFields(id: string, fields: Partial<Omit<TenThingsList, "_id">>) {
+  const { data } = await http.put<TenThingsList>(`/api/tenthings/lists/${id}`, fields);
+  return data;
+}
+
+/** Merges the lists into the oldest one, deletes the others and returns the merged list. */
 export async function mergeLists(ids: string[]) {
-  await http.post("/api/tenthings/lists/merge", { lists: ids });
+  const { data } = await http.post<TenThingsList>("/api/tenthings/lists/merge", { lists: ids });
+  return data;
 }
 
 export async function getRandomList() {
@@ -164,8 +172,15 @@ export async function getSimilarLists(name: string, language: string, exclude?: 
   return data;
 }
 
+/** An existing list whose name matches what's being typed. */
+export interface ListNameMatch {
+  _id: string;
+  name: string;
+  language: string;
+}
+
 export async function searchLists(name: string) {
-  const { data } = await http.get<TenThingsList[]>(`/api/tenthings/search/list-names/${name}`);
+  const { data } = await http.get<ListNameMatch[]>(`/api/tenthings/search/list-names/${encodeURIComponent(name)}`);
   return data;
 }
 

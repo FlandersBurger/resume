@@ -1,19 +1,14 @@
 import { useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import { Helmet } from "react-helmet-async";
-import {
-  updateList,
-  deleteList,
-  mergeLists,
-  TenThingsList,
-} from "../../services/tenthings";
+import { updateList, deleteList, mergeLists, TenThingsList } from "../../services/tenthings";
 import { useApp } from "../../context/AppContext";
 import { ListTable } from "./ListTable";
 import { ListEditorDrawer } from "./ListEditorDrawer";
-import { DeleteListsModal } from "./DeleteListsModal";
+import { ConfirmListsModal } from "./ConfirmListsModal";
+import { EditListsModal } from "./EditListsModal";
 import { useListQuery } from "./useListQuery";
 import { useTenThingsReference } from "../../hooks/useTenThingsReference";
-
 
 export default function TenThingsLists() {
   const { currentUser, toast, isAdmin } = useApp();
@@ -28,6 +23,9 @@ export default function TenThingsLists() {
   const [highlightedIds, setHighlightedIds] = useState<string[]>([]);
   const { categoryOptions, languageOptions } = useTenThingsReference();
   const [deleteModalLists, setDeleteModalLists] = useState<TenThingsList[]>([]);
+  const [mergeModalLists, setMergeModalLists] = useState<TenThingsList[]>([]);
+  const [editingHighlighted, setEditingHighlighted] = useState(false);
+  const highlightedLists = lists.filter((l) => highlightedIds.includes(l._id));
 
   const openList = (id: string) => {
     setOpenListId(id);
@@ -98,12 +96,23 @@ export default function TenThingsLists() {
     }
   };
 
-  const handleMerge = async () => {
-    if (highlightedIds.length < 2) return;
-    await mergeLists(highlightedIds);
-    setHighlightedIds([]);
-    refresh();
-    toast("Lists merged");
+  const handleMerge = () => {
+    if (highlightedLists.length >= 2) setMergeModalLists(highlightedLists);
+  };
+
+  const confirmMerge = async () => {
+    try {
+      const merged = await mergeLists(mergeModalLists.map(({ _id }) => _id));
+      setMergeModalLists([]);
+      setHighlightedIds([]);
+      refresh();
+      toast("Lists merged");
+      openList(merged._id);
+    } catch (error: any) {
+      toast(
+        error?.response?.status === 400 ? "Only lists in the same language can be merged" : "Failed to merge the lists",
+      );
+    }
   };
 
   const toggleHighlight = (id: string) => {
@@ -151,7 +160,8 @@ export default function TenThingsLists() {
             onLoadMore={loadMore}
             onRefresh={refresh}
             onAddList={handleAddList}
-            onMerge={highlightedIds.length >= 2 ? handleMerge : undefined}
+            onEditHighlighted={highlightedLists.length >= 1 ? () => setEditingHighlighted(true) : undefined}
+            onMerge={highlightedLists.length >= 2 ? handleMerge : undefined}
             onDeleteHighlighted={highlightedIds.length >= 1 ? handleDeleteHighlighted : undefined}
             highlightedCount={highlightedIds.length}
             onFavorite={handleFavorite}
@@ -164,11 +174,35 @@ export default function TenThingsLists() {
           onClose={handleClose}
           onSaved={handleSaved}
           onDelete={(list) => setDeleteModalLists([list])}
+          onOpenList={openList}
         />
       </div>
 
       {deleteModalLists.length > 0 && (
-        <DeleteListsModal lists={deleteModalLists} onConfirm={confirmDelete} onCancel={() => setDeleteModalLists([])} />
+        <ConfirmListsModal
+          action="Delete"
+          lists={deleteModalLists}
+          onConfirm={confirmDelete}
+          onCancel={() => setDeleteModalLists([])}
+        />
+      )}
+      {mergeModalLists.length > 0 && (
+        <ConfirmListsModal
+          action="Merge"
+          lists={mergeModalLists}
+          note="Their answers are combined into the oldest list, and the others are deleted."
+          onConfirm={confirmMerge}
+          onCancel={() => setMergeModalLists([])}
+        />
+      )}
+      {editingHighlighted && highlightedLists.length > 0 && (
+        <EditListsModal
+          lists={highlightedLists}
+          categoryOptions={categoryOptions}
+          onUpdated={(updated) => updated.forEach(replaceList)}
+          onError={toast}
+          onClose={() => setEditingHighlighted(false)}
+        />
       )}
     </div>
   );

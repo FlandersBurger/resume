@@ -46,6 +46,8 @@ interface Props {
   onSaved?: (list: TenThingsList, created: boolean) => void;
   /** Shows a delete button; the host confirms and deletes. */
   onDelete?: (list: TenThingsList) => void;
+  /** Switches the drawer to another List; when given, the name field offers existing Lists as it's typed. */
+  onOpenList?: (id: string) => void;
 }
 
 /**
@@ -53,7 +55,14 @@ interface Props {
  * changes: an existing List on every change, a new List only once it's complete. Edits made
  * while a new List is being created are saved to that List rather than creating another.
  */
-export function ListEditorDrawer({ listId, readOnly: forceReadOnly = false, onClose, onSaved, onDelete }: Props) {
+export function ListEditorDrawer({
+  listId,
+  readOnly: forceReadOnly = false,
+  onClose,
+  onSaved,
+  onDelete,
+  onOpenList,
+}: Props) {
   const { currentUser, isAdmin, toast } = useApp();
   const [list, setList] = useState<TenThingsList | null>(null);
   const [visible, setVisible] = useState(false);
@@ -157,6 +166,7 @@ export function ListEditorDrawer({ listId, readOnly: forceReadOnly = false, onCl
         onChange={setList}
         onSave={save}
         onDelete={onDelete && !readOnly ? () => onDelete(list) : undefined}
+        onOpenList={onOpenList}
       />
       <Backdrop $visible={visible} onClick={onClose} data-testid="list-editor-backdrop" />
     </>

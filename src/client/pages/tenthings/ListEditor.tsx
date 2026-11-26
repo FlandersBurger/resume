@@ -1,4 +1,4 @@
-import { useState, useRef, memo, useCallback, useEffect, useMemo } from "react";
+import { Fragment, useState, useRef, memo, useCallback, useEffect, useMemo } from "react";
 import styled from "styled-components";
 import {
   TenThingsList,
@@ -9,6 +9,8 @@ import {
   getSimilarLists,
   SimilarLists,
   checkSource,
+  searchLists,
+  ListNameMatch,
 } from "../../services/tenthings";
 import { removeAllButLetters } from "@utils/string-helpers";
 import { TenThingsTableContainer } from "./SharedStyles";
@@ -19,6 +21,7 @@ import { answersGivenAway, applySuggestions, PickedSuggestions } from "@utils/li
 import { kindCompletions, listNameHints, normalizeListName, standardizeTerms } from "@utils/list-names";
 import { wikiFor } from "@utils/fandom-wikis";
 import { PasteAnswersModal } from "./PasteAnswersModal";
+import { toggleCategory as withCategoryToggled } from "./categories";
 
 const EditListPanel = styled.div<{ $active?: boolean }>`
   top: 50px;
@@ -78,13 +81,20 @@ const BtnIcon = styled.button`
 
 const EditorTableContainer = styled(TenThingsTableContainer)``;
 
-/** The "Subject - Kind" completions, open under the name field while it has focus. */
-const KindMenu = styled.ul`
+/** The "Subject - Kind" completions and existing lists with that name, open under the name field while it has focus. */
+const NameMenu = styled.ul`
   && {
     display: block;
     top: 100%;
     left: 0;
     min-width: 240px;
+    max-height: 360px;
+    overflow-y: auto;
+  }
+  .list-language {
+    margin-left: 6px;
+    font-size: 0.8em;
+    opacity: 0.7;
   }
 `;
 
@@ -318,6 +328,8 @@ interface Props {
   onSave: (list: TenThingsList) => void;
   /** Shows the delete button when given. */
   onDelete?: () => void;
+  /** Opens another list; when given, existing lists matching the name are offered as it's typed. */
+  onOpenList?: (id: string) => void;
 }
 
 const fmtCreated = (v: TenThingsValue) => {
@@ -394,12 +406,15 @@ const ValueRow = memo(
     index,
     readOnly,
     total,
+    byListCreator,
     onUpdate,
     onRemove,
     onBlurbClick,
   }: {
     v: TenThingsValue;
     index: number;
+    /** False when someone other than the list's creator added this answer; it's then shown in blue. */
+    byListCreator: boolean;
     readOnly: boolean;
     total: number;
     onUpdate: (index: number, patch: Partial<TenThingsValue>) => void;
@@ -426,7 +441,10 @@ const ValueRow = memo(
     const [brokenThumbnail, setBrokenThumbnail] = useState<string>();
     return (
       <tr>
-        <IconColumn className="hidden-xs hidden-sm visible-md visible-lg" title={v.creator?.username}>
+        <IconColumn
+          className={`hidden-xs hidden-sm visible-md visible-lg${byListCreator ? "" : " text-info"}`}
+          title={byListCreator ? v.creator?.username : `${v.creator?.username}, not the list's creator`}
+        >
           <i className="fas fa-user" />
         </IconColumn>
         <InputCell>
@@ -509,6 +527,7 @@ const ValueRow = memo(
     prev.v.blurb === next.v.blurb &&
     prev.v.blurbType === next.v.blurbType &&
     prev.readOnly === next.readOnly &&
+    prev.byListCreator === next.byListCreator &&
     prev.total === next.total &&
     prev.index === next.index,
   // onUpdate/onRemove/onBlurbClick are stable (empty useCallback deps), no need to compare
@@ -525,6 +544,7 @@ export function ListEditor({
   onChange,
   onSave,
   onDelete,
+  onOpenList,
 }: Props) {
   const [newItem, setNewItem] = useState({ value: "", blurb: "" });
   const [showCategories, setShowCategories] = useState(false);
@@ -677,20 +697,61 @@ export function ListEditor({
     [list.description, list.name, list.values],
   );
   const [nameFocused, setNameFocused] = useState(false);
-  const [activeKind, setActiveKind] = useState(0);
   const completions = useMemo(
     () => (nameFocused && !readOnly ? kindCompletions(list.name, list.language) : []),
     [nameFocused, readOnly, list.name, list.language],
   );
+
+  // Existing lists whose name contains what's typed, so a creator can open one instead of starting a duplicate.
+  const [nameMatches, setNameMatches] = useState<ListNameMatch[]>([]);
+  const searchNames = !readOnly && !!onOpenList;
+  useEffect(() => {
+    const name = list.name.trim();
+    if (!searchNames || name.length < 3) {
+      setNameMatches([]);
+      return;
+    }
+    let current = true;
+    const timer = setTimeout(() => {
+      searchLists(name)
+        .then((found) => current && setNameMatches(found.filter(({ _id }) => _id !== list._id)))
+        .catch(() => current && setNameMatches([]));
+    }, 250);
+    return () => {
+      current = false;
+      clearTimeout(timer);
+    };
+  }, [list.name, list._id, searchNames]);
+
+  type NameOption = { kind: string } | { list: ListNameMatch };
+  const nameOptions = useMemo<NameOption[]>(
+    () =>
+      nameFocused
+        ? [
+            ...completions.map((kind) => ({ kind })),
+            ...(searchNames ? nameMatches.map((match) => ({ list: match })) : []),
+          ]
+        : [],
+    [nameFocused, completions, nameMatches, searchNames],
+  );
+  // null until the arrow keys move: a kind is picked by default, an existing list never is,
+  // so Enter after typing a name doesn't jump to another list.
+  const [activeOption, setActiveOption] = useState<number | null>(null);
+  const highlighted = activeOption ?? (nameOptions[0] && "kind" in nameOptions[0] ? 0 : -1);
+  const pickNameOption = (option: NameOption) => {
+    if ("kind" in option) return commitName(option.kind);
+    setNameFocused(false);
+    onOpenList?.(option.list._id);
+  };
   const onNameKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (!completions.length) return;
+    if (!nameOptions.length) return;
     if (e.key === "ArrowDown" || e.key === "ArrowUp") {
       e.preventDefault();
       const step = e.key === "ArrowDown" ? 1 : -1;
-      setActiveKind((i) => (i + step + completions.length) % completions.length);
-    } else if (e.key === "Enter") {
+      setActiveOption((highlighted + step + nameOptions.length) % nameOptions.length);
+    } else if (e.key === "Enter" && nameOptions[highlighted]) {
       e.preventDefault();
-      commitName(completions[Math.min(activeKind, completions.length - 1)]);
+      pickNameOption(nameOptions[highlighted]);
     } else if (e.key === "Escape") {
       setNameFocused(false);
     }
@@ -715,12 +776,12 @@ export function ListEditor({
     };
   }, [list.name, list.language, list._id, readOnly]);
 
+  const newItemIsDuplicate = !!newItem.value.trim() && hasDuplicate(newItem.value);
+
   const addValue = () => {
     if (!newItem.value) return;
-    if (hasDuplicate(newItem.value)) {
-      alert(`"${newItem.value}" is already in the list`);
-      return;
-    }
+    // The add button already says so; Tab from the blurb lands here too.
+    if (hasDuplicate(newItem.value)) return;
     const updatedList = {
       ...listRef.current,
       values: [...listRef.current.values, { value: newItem.value, blurb: newItem.blurb }],
@@ -803,8 +864,7 @@ export function ListEditor({
   }, []); // stable — reads latest list via ref
 
   const toggleCategory = (cat: string) => {
-    const cats = list.categories.includes(cat) ? list.categories.filter((c) => c !== cat) : [...list.categories, cat];
-    const updated = { ...list, categories: cats };
+    const updated = { ...list, categories: withCategoryToggled(list.categories, cat) };
     onChange(updated);
     onSave(updated);
   };
@@ -950,6 +1010,7 @@ export function ListEditor({
         <kbd>
           Please search existing lists first and add answers to them. Subjective, niche and duplicate lists will be
           deleted.
+          {list.categories.includes("music") && " Music lists will be scrutinized by admins for global recognition."}
         </kbd>
       )}
 
@@ -965,12 +1026,12 @@ export function ListEditor({
           disabled={readOnly}
           role="combobox"
           aria-autocomplete="list"
-          aria-expanded={completions.length > 0}
-          aria-controls="list-kind-completions"
-          aria-activedescendant={completions.length ? `list-kind-${activeKind}` : undefined}
+          aria-expanded={nameOptions.length > 0}
+          aria-controls="list-name-options"
+          aria-activedescendant={nameOptions[highlighted] ? `list-name-option-${highlighted}` : undefined}
           onChange={(e) => {
             setNameFocused(true);
-            setActiveKind(0);
+            setActiveOption(null);
             onChange({ ...list, name: e.target.value });
           }}
           onFocus={() => setNameFocused(true)}
@@ -981,32 +1042,44 @@ export function ListEditor({
           }}
           autoComplete="off"
         />
-        {completions.length > 0 && (
-          <KindMenu className="dropdown-menu" id="list-kind-completions" role="listbox" aria-label="Kinds">
-            {completions.map((completion, i) => (
-              <li
-                key={completion}
-                id={`list-kind-${i}`}
-                role="option"
-                aria-selected={i === activeKind}
-                className={i === activeKind ? "active" : undefined}
-              >
-                <a
-                  href="#"
-                  tabIndex={-1}
-                  // mousedown, not click: picking happens before the input's blur closes the menu
-                  onMouseDown={(e) => {
-                    e.preventDefault();
-                    commitName(completion);
-                    setNameFocused(false);
-                  }}
-                  onMouseEnter={() => setActiveKind(i)}
-                >
-                  {completion}
-                </a>
-              </li>
-            ))}
-          </KindMenu>
+        {nameOptions.length > 0 && (
+          <NameMenu className="dropdown-menu" id="list-name-options" role="listbox" aria-label="Name suggestions">
+            {nameOptions.map((option, i) => {
+              const isList = "list" in option;
+              const label = isList ? option.list.name : option.kind;
+              const firstList = isList && (i === 0 || !("list" in nameOptions[i - 1]));
+              return (
+                <Fragment key={isList ? option.list._id : option.kind}>
+                  {firstList && (
+                    <li className="dropdown-header" role="presentation">
+                      Existing lists: open one to add your answers there
+                    </li>
+                  )}
+                  <li
+                    id={`list-name-option-${i}`}
+                    role="option"
+                    aria-selected={i === highlighted}
+                    className={i === highlighted ? "active" : undefined}
+                  >
+                    <a
+                      href="#"
+                      tabIndex={-1}
+                      // mousedown, not click: picking happens before the input's blur closes the menu
+                      onMouseDown={(e) => {
+                        e.preventDefault();
+                        pickNameOption(option);
+                        setNameFocused(false);
+                      }}
+                      onMouseEnter={() => setActiveOption(i)}
+                    >
+                      {label}
+                      {isList && <span className="list-language">{option.list.language}</span>}
+                    </a>
+                  </li>
+                </Fragment>
+              );
+            })}
+          </NameMenu>
         )}
       </div>
       {!readOnly && (nameHints.length > 0 || similar.lists.length > 0 || similar.duplicate) && (
@@ -1471,26 +1544,36 @@ export function ListEditor({
                 <td className="hidden-xs hidden-sm visible-md visible-lg" />
                 <td className="hidden-xs hidden-sm visible-md visible-lg" />
                 <td colSpan={2} style={{ textAlign: "center" }}>
-                  <button className="btn btn-sm btn-default" onClick={addValue} disabled={!newItem.value}>
-                    <i className="fas fa-plus" />
+                  <button
+                    className={`btn btn-sm ${newItemIsDuplicate ? "btn-danger" : "btn-default"}`}
+                    onClick={addValue}
+                    disabled={!newItem.value || newItemIsDuplicate}
+                    title={newItemIsDuplicate ? `"${newItem.value}" is already in the list` : "Add answer"}
+                  >
+                    <i className={`fas ${newItemIsDuplicate ? "fa-ban" : "fa-plus"}`} />
                   </button>
+                  {newItemIsDuplicate && <div className="text-danger small">Already in the list</div>}
                 </td>
               </tr>
             )}
 
             {/* Existing items */}
-            {sortedIndices.map((i) => (
-              <ValueRow
-                key={list.values[i]._id?.toString() || i}
-                v={list.values[i]}
-                index={i}
-                readOnly={readOnly}
-                total={list.values.length}
-                onUpdate={updateValue}
-                onRemove={removeValue}
-                onBlurbClick={setSelectedItem}
-              />
-            ))}
+            {sortedIndices.map((i) => {
+              const v = list.values[i];
+              return (
+                <ValueRow
+                  key={v._id?.toString() || i}
+                  v={v}
+                  index={i}
+                  readOnly={readOnly}
+                  total={list.values.length}
+                  byListCreator={!v.creator || !list.creator || String(v.creator._id) === String(list.creator._id)}
+                  onUpdate={updateValue}
+                  onRemove={removeValue}
+                  onBlurbClick={setSelectedItem}
+                />
+              );
+            })}
           </tbody>
         </table>
       </EditorTableContainer>

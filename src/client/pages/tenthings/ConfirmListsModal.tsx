@@ -1,15 +1,30 @@
-import { useState } from "react";
+import { ReactNode, useState } from "react";
 import { TenThingsList } from "../../services/tenthings";
 
 interface Props {
+  /** What happens to the lists, as the title and button say it: "Delete" or "Merge". */
+  action: string;
   lists: TenThingsList[];
-  onConfirm: () => void;
+  /** Shown under the lists, e.g. what a merge keeps. */
+  note?: ReactNode;
+  onConfirm: () => void | Promise<void>;
   onCancel: () => void;
 }
 
-export function DeleteListsModal({ lists, onConfirm, onCancel }: Props) {
+/** Lists the lists an irreversible action will hit, and only goes ahead once that's acknowledged. */
+export function ConfirmListsModal({ action, lists, note, onConfirm, onCancel }: Props) {
   const [confirmed, setConfirmed] = useState(false);
+  const [busy, setBusy] = useState(false);
   const plural = lists.length > 1;
+
+  const confirm = async () => {
+    setBusy(true);
+    try {
+      await onConfirm();
+    } finally {
+      setBusy(false);
+    }
+  };
 
   return (
     <div className="modal fade in" role="dialog" style={{ display: "block", backgroundColor: "rgba(0,0,0,0.5)" }}>
@@ -19,7 +34,9 @@ export function DeleteListsModal({ lists, onConfirm, onCancel }: Props) {
             <button type="button" className="close" onClick={onCancel}>
               &times;
             </button>
-            <h3 className="modal-title">Delete list{plural ? "s" : ""}</h3>
+            <h3 className="modal-title">
+              {action} list{plural ? "s" : ""}
+            </h3>
           </div>
           <div className="modal-body">
             <ul className="list-group">
@@ -29,6 +46,7 @@ export function DeleteListsModal({ lists, onConfirm, onCancel }: Props) {
                 </li>
               ))}
             </ul>
+            {note && <p className="text-muted">{note}</p>}
             <h4
               className="confirm-message"
               style={{ cursor: "pointer", marginTop: 16 }}
@@ -43,8 +61,8 @@ export function DeleteListsModal({ lists, onConfirm, onCancel }: Props) {
           </div>
           <div className="modal-footer">
             <div className="btn-group">
-              <button type="button" className="btn btn-danger" onClick={onConfirm} disabled={!confirmed}>
-                Delete {lists.length} list{plural ? "s" : ""}
+              <button type="button" className="btn btn-danger" onClick={confirm} disabled={!confirmed || busy}>
+                {action} {lists.length} list{plural ? "s" : ""}
               </button>
               <button type="button" className="btn btn-default" onClick={onCancel}>
                 Cancel
