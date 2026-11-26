@@ -58,6 +58,15 @@ export interface IList {
   blurbs: number;
   playRatio: number;
   actualPlays: number;
+  /** The original List this one was translated from: always the original, never another translation. */
+  translationOf?: Types.ObjectId;
+  /** Languages (or "*" for every language) Claude said this List can't be translated into. */
+  translationSkips?: ITranslationSkip[];
+}
+
+export interface ITranslationSkip {
+  language: string;
+  reason: string;
 }
 
 let List: { [key: string]: Model<IList> } = {};
@@ -120,6 +129,11 @@ const listSchema = new Schema<IList>(
     picks: { type: Number, required: true, default: 0 },
     score: { type: Number, required: true, default: 0 },
     voters: [{ type: String }],
+    translationOf: { type: Schema.Types.ObjectId, ref: "List", required: false },
+    translationSkips: {
+      type: [{ _id: false, language: { type: String, required: true }, reason: { type: String, default: "" } }],
+      default: undefined,
+    },
     votes: [
       {
         voter: { type: String, required: true },
@@ -171,6 +185,8 @@ listSchema.index({ plays: -1 });
 listSchema.index({ plays: -1, language: 1 });
 // The pool a new Round picks its List from is filtered by language (and starred on the web).
 listSchema.index({ language: 1, starred: 1 });
+// A translation group is an original List plus every List translated from it.
+listSchema.index({ translationOf: 1, language: 1 });
 
 for (const name in db) {
   List[name] = db[name].model<IList>("List", listSchema);
