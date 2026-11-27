@@ -48,8 +48,12 @@ beforeEach(() => {
   mockList.create.mockImplementation((list) => Promise.resolve({ _id: new Types.ObjectId(), ...list }));
   mockFindDuplicate.mockResolvedValue(null);
   mockClaude.checkTranslatable.mockResolvedValue({ translatable: true, reason: "", needsLookup: false, cost: 0.001 });
-  mockClaude.translateList.mockImplementation((_list, languages: string[]) =>
-    Promise.resolve({ translations: languages.map((language) => translation(language)), cost: 0.01 }),
+  mockClaude.translateList.mockImplementation((_list, languages: string[], { lookup } = {}) =>
+    Promise.resolve({
+      translations: languages.map((language) => translation(language)),
+      cost: 0.01,
+      lookedUp: lookup ? languages : [],
+    }),
   );
 });
 
@@ -90,8 +94,8 @@ it("looks up official names when the check says so", async () => {
   const result = await translateIntoBotLanguages(rootId);
 
   expect(mockClaude.translateList.mock.calls[0][2]).toEqual({ lookup: true });
-  expect(result.lookedUp).toBe(true);
-  expect(translationSummary(result)).toContain("(official names looked up)");
+  expect(result.lookedUp).toHaveLength(12);
+  expect(translationSummary(result)).toContain("(names looked up: AR, DE,");
 });
 
 it("does nothing for a List that isn't starred", async () => {
@@ -153,6 +157,7 @@ it("leaves out remembered skips and remembers Claude's new ones, but not broken 
             : translation(language),
       ),
       cost: 0.01,
+      lookedUp: [],
     }),
   );
 

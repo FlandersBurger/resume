@@ -17,8 +17,8 @@ export interface TranslationResult {
   skipped: { language: string; reason: string }[];
   /** Why nothing was tried, when nothing was. */
   ignored?: string;
-  /** Whether official names were looked up on the web. */
-  lookedUp?: boolean;
+  /** The languages whose names were looked up on the web. */
+  lookedUp?: string[];
   cost: number;
 }
 
@@ -32,7 +32,7 @@ export const translationSummary = ({ name, created, skipped, cost, lookedUp }: T
     ...(skipped.length
       ? [`Skipped: ${skipped.map(({ language, reason }) => `${language} (${escapeHtml(reason)})`).join(", ")}`]
       : []),
-    `Cost: $${cost.toFixed(3)}${lookedUp ? " (official names looked up)" : ""}`,
+    `Cost: $${cost.toFixed(3)}` + (lookedUp?.length ? ` (names looked up: ${lookedUp.join(", ")})` : ""),
   ].join("\n");
 
 /**
@@ -70,10 +70,9 @@ export const translateIntoBotLanguages = async (listId: Types.ObjectId | string)
     await remember([{ language: EVERY_LANGUAGE, reason }]);
     return { ...result, skipped: [{ language: "all", reason }] };
   }
-  result.lookedUp = check.needsLookup;
-
-  const { translations, cost } = await Claude.translateList(source, targets, { lookup: check.needsLookup });
+  const { translations, cost, lookedUp } = await Claude.translateList(source, targets, { lookup: check.needsLookup });
   result.cost += cost;
+  result.lookedUp = lookedUp;
   const newSkips: ITranslationSkip[] = [];
   for (const target of targets) {
     // Every bot language is a supported language.

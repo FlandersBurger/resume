@@ -16,16 +16,22 @@ const PRICE = {
 type Price = typeof PRICE;
 /**
  * Lists named from a game, book or show need their official translations, which Haiku doesn't know: those are
- * translated by Claude Opus 5.5 with web search, at these rates.
+ * translated by Claude Sonnet 5.5 with web search, at these rates. On the Minecraft enchantments it matched 60% of
+ * Mojang's official names for $0.37, against 64% for $1.15 on Claude Opus 5.5 and 46% on Haiku alone.
  */
-const LOOKUP_MODEL = "claude-opus-5-5";
+const LOOKUP_MODEL = "claude-sonnet-5-5";
 const LOOKUP_PRICE: Price = {
-  input: 4 / 1e6,
-  cacheWrite: 5 / 1e6,
-  cacheRead: 0.2 / 1e6,
-  output: 20 / 1e6,
+  input: 2 / 1e6,
+  cacheWrite: 2.5 / 1e6,
+  cacheRead: 0.1 / 1e6,
+  output: 10 / 1e6,
   search: 10 / 1000,
 };
+/**
+ * A language where at least this share of Haiku's answers are low confidence is translated again with a lookup.
+ * Haiku's "low" answers were right 23% of the time, its "high" ones 74%.
+ */
+const LOW_CONFIDENCE_SHARE = 0.5;
 /** Searches per request when looking up official names: about one per language. */
 const LOOKUP_SEARCHES = 5;
 /** Search results are long and billed as input, so Claude gets a couple of searches and is told to use them sparingly. */
@@ -299,6 +305,8 @@ export interface TranslatedValue {
   value: string;
   /** The translated blurb, or an empty string for a link blurb, which stays as it is. */
   blurb: string;
+  /** How sure Claude is that players in that language use this name. */
+  confidence?: "high" | "medium" | "low";
 }
 
 export interface ListTranslation {
@@ -338,6 +346,7 @@ Translate the list into each language asked for:
 - name: translate it in the house style, with that language's own words. The English naming style, which other languages follow in spirit: ${NAMING_STYLE}
 - description: translate it, or return an empty string when there is none. It must never name or give away an answer.
 - skip: set it, with a short reason, for a language the list doesn't work in. Answers becoming the same word is never a reason to skip. ${UNTRANSLATABLE}
+- confidence: rate each answer for how sure you are it's the name players in that language actually use. high: you know it's the official or standard name there. medium: a reasonable translation, but there may be an established name you don't know. low: you translated the words or guessed. A fluent translation of words you didn't recognise as an established name is low, not high.
 
 Call submit_translation once, with one entry per language asked for.`;
 
@@ -387,11 +396,12 @@ const translationTool = (languages: string[]): Anthropic.Beta.BetaTool => ({
               items: {
                 type: "object",
                 additionalProperties: false,
-                required: ["index", "value", "blurb"],
+                required: ["index", "value", "blurb", "confidence"],
                 properties: {
                   index: { type: "integer", description: "The answer's number in the list." },
                   value: stringField("The translated answer."),
                   blurb: stringField("The translated blurb, or an empty string."),
+                  confidence: { type: "string", enum: ["high", "medium", "low"] },
                 },
               },
             },
@@ -426,8 +436,8 @@ const describeForTranslation = (list: ListForTranslation) =>
 
 /**
  * Runs one request that must end in a call to `tool`, and returns its input with what it cost. With `lookup`,
- * it runs on Claude Opus 5.5 with web search (and resumes the turns a search pauses), falling back to another
- * model if Claude Opus 5.5 declines.
+ * it runs on Claude Sonnet 5.5 with web search (and resumes the turns a search pauses), falling back to another
+ * model if Claude Sonnet 5.5 declines.
  */
 const callTool = async <T>(
   system: string,
@@ -490,15 +500,40 @@ export const checkTranslatable = async (
   return { ...input, cost };
 };
 
+/** Whether Haiku marked so many of a language's answers low that it was guessing. */
+export const isUnsure = ({ skip, values }: ListTranslation) =>
+  !skip &&
+  values.length > 0 &&
+  values.filter(({ confidence }) => confidence === "low").length >= values.length * LOW_CONFIDENCE_SHARE;
+
 /**
- * Translates a list into each of `languages`, a few languages per request; with `lookup`, Claude Opus 5.5 looks
- * up official names on the web. Nothing is saved: it's Claude's answer, which buildTranslatedList checks before
- * anything is written.
+ * Translates a list into each of `languages`. With `lookup`, Claude Sonnet 5.5 looks up official names on the
+ * web; without, Haiku translates and any language it was mostly guessing at is translated again with a lookup.
+ * `lookedUp` names the languages that were. Nothing is saved: it's Claude's answer, which buildTranslatedList
+ * checks before anything is written.
  */
 export const translateList = async (
   list: ListForTranslation,
   languages: string[],
   { lookup = false }: { lookup?: boolean } = {},
+): Promise<{ translations: ListTranslation[]; cost: number; lookedUp: string[] }> => {
+  const first = await translateBatch(list, languages, lookup);
+  if (lookup) return { ...first, lookedUp: languages };
+  const unsure = first.translations.filter(isUnsure).map(({ language }) => language);
+  if (!unsure.length) return { ...first, lookedUp: [] };
+  const redo = await translateBatch(list, unsure, true);
+  return {
+    translations: [...first.translations.filter(({ language }) => !unsure.includes(language)), ...redo.translations],
+    cost: first.cost + redo.cost,
+    lookedUp: unsure,
+  };
+};
+
+/** One pass over `languages`, a few per request. */
+const translateBatch = async (
+  list: ListForTranslation,
+  languages: string[],
+  lookup: boolean,
 ): Promise<{ translations: ListTranslation[]; cost: number }> => {
   const translations: ListTranslation[] = [];
   let cost = 0;

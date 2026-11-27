@@ -116,7 +116,8 @@ const main = async () => {
       continue;
     }
     if (check.needsLookup) console.log("  looking up official names");
-    const { translations, cost: spent } = await translateList(source, targets, { lookup: check.needsLookup });
+    const { translations, cost: spent, lookedUp } = await translateList(source, targets, { lookup: check.needsLookup });
+    if (lookedUp.length && !check.needsLookup) console.log(`  unsure, looked up: ${lookedUp.join(", ")}`);
     cost += spent;
     for (const language of targets) {
       const translation = translations.find((t) => t.language === language);

@@ -207,7 +207,46 @@ describe("translating", () => {
     expect(stream.mock.calls[1][0].messages.at(-1).content).toBe("Call submit_translation with your results.");
   });
 
-  it("looks up official names with Claude Opus 5.5 and web search, resuming paused turns", async () => {
+  it("redoes with a lookup only the languages Haiku was mostly guessing at", async () => {
+    const rated = (language: string, confidence: string[]) => ({
+      ...entry(language),
+      values: confidence.map((c, index) => ({ index, value: `${language} ${index}`, blurb: "", confidence: c })),
+    });
+    stream
+      .mockReturnValueOnce(
+        reply({
+          stop_reason: "tool_use",
+          content: [
+            {
+              type: "tool_use",
+              id: "t",
+              name: "submit_translation",
+              input: {
+                translations: [
+                  rated("DE", ["high", "medium", "low"]),
+                  rated("NL", ["low", "low", "medium"]),
+                  rated("FR", ["medium", "medium", "medium"]),
+                ],
+              },
+            },
+          ],
+        }),
+      )
+      .mockReturnValueOnce(translated(["NL"]));
+
+    const result = await translateList(toTranslate, ["DE", "NL", "FR"]);
+
+    expect(stream).toHaveBeenCalledTimes(2);
+    const [first, second] = stream.mock.calls.map(([params]) => params);
+    expect(first.model).toBe("claude-haiku-5-5");
+    expect(second.model).toBe("claude-sonnet-5-5");
+    expect(second.messages[0].content[1].text).toBe("Translate it into: NL");
+    expect(result.lookedUp).toEqual(["NL"]);
+    expect(result.translations.map(({ language }) => language)).toEqual(["DE", "FR", "NL"]);
+    expect(result.translations.find(({ language }) => language === "NL")?.values).toEqual([]);
+  });
+
+  it("looks up official names with Claude Sonnet 5.5 and web search, resuming paused turns", async () => {
     stream
       .mockReturnValueOnce(reply({ stop_reason: "pause_turn", content: [{ type: "text", text: "Searching" }] }))
       .mockReturnValueOnce(translated(["NL"]));
@@ -216,15 +255,16 @@ describe("translating", () => {
 
     expect(result.translations).toHaveLength(1);
     const [first, second] = stream.mock.calls.map(([params]) => params);
-    expect(first.model).toBe("claude-opus-5-5");
+    expect(first.model).toBe("claude-sonnet-5-5");
+    expect(result.lookedUp).toEqual(["NL"]);
     expect(first.tools[0]).toMatchObject({ type: "web_search_20260209", name: "web_search" });
     expect(first.fallbacks).toBe("default");
     expect(first.betas).toEqual(["server-side-fallback-2026-07-01"]);
     expect(first.system).toContain("official names in each language");
     // A paused turn resumes without a nudge.
     expect(second.messages.at(-1)).toEqual({ role: "assistant", content: [{ type: "text", text: "Searching" }] });
-    // Opus rates: $4 in, $20 out per million.
-    expect(result.cost).toBeCloseTo(2 * (1000 * 4e-6 + 100 * 20e-6), 9);
+    // Sonnet rates: $2 in, $10 out per million.
+    expect(result.cost).toBeCloseTo(2 * (1000 * 2e-6 + 100 * 10e-6), 9);
   });
 
   it("throws on a refusal", async () => {
