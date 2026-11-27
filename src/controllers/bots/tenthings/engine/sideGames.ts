@@ -4,7 +4,7 @@
 import { HydratedDocument } from "mongoose";
 import { styleText } from "util";
 import { debugLog } from "@root/debug-log";
-import { Player } from "@models/index";
+import { Minigame, Player } from "@models/index";
 import { IGame } from "@models/tenthings/game";
 import { GameType } from "@models/tenthings/gameType";
 import { getAnswerScore } from "@tenthings/guesses";
@@ -32,10 +32,20 @@ type Handler<T extends SideGameActionType> = (
   scheduler: Scheduler,
 ) => Promise<EngineEvent[]>;
 
+/**
+ * Adds one to a play counter of the Minigame `game` has drawn. Tinygames are drawn from Lists
+ * and keep no counters; neither do Minigames drawn before the Game remembered which one it was.
+ */
+const countMinigame = async (game: GameDoc, sideGame: SideGame, counter: "draws" | "solves" | "skips" | "hints") => {
+  const id = game.minigame.minigameId;
+  if (sideGame !== GameType.MINIGAME || !id) return;
+  await Minigame.updateOne({ _id: id }, { $inc: { [counter]: 1 } });
+};
+
 const startSideGame = async (game: GameDoc, sideGame: SideGame): Promise<EngineEvent[]> => {
   if (sideGame === GameType.MINIGAME) await drawMinigame(game);
   else await drawTinygame(game);
-  await saveGame(game);
+  await Promise.all([saveGame(game), countMinigame(game, sideGame, "draws")]);
   return [{ type: "sideGameStarted", sideGame }];
 };
 
@@ -69,7 +79,7 @@ export const sideGameHandlers: { [T in SideGameActionType]: Handler<T> } = {
     if (player.infractions > 0) player.infractions--;
     game[sideGame].plays++;
     await endSideGame(game, sideGame, scheduler, NEXT_SIDE_GAME_AFTER_GUESS_MS);
-    await Promise.all([player.save(), saveGame(game)]);
+    await Promise.all([player.save(), saveGame(game), countMinigame(game, sideGame, "solves")]);
     debugLog(
       `${game._id} (${game.settings.language}) - ${styleText("gray", sideGame)} "${styleText("blueBright", answer)}" by ${player.first_name}`,
     );
@@ -96,6 +106,7 @@ export const sideGameHandlers: { [T in SideGameActionType]: Handler<T> } = {
     await Promise.all([
       Player.updateOne({ _id: actor.playerId }, { $inc: { hints: 1 }, $set: { hintStreak: 0 } }),
       saveGame(game),
+      countMinigame(game, sideGame, "hints"),
     ]);
     return [{ type: "sideGameHintGiven", sideGame }];
   },
@@ -110,7 +121,7 @@ export const sideGameHandlers: { [T in SideGameActionType]: Handler<T> } = {
     const { answer } = game[sideGame];
     if (!answer) return startSideGame(game, sideGame);
     await endSideGame(game, sideGame, scheduler, NEXT_SIDE_GAME_AFTER_SKIP_MS);
-    await saveGame(game);
+    await Promise.all([saveGame(game), countMinigame(game, sideGame, "skips")]);
     return [{ type: "sideGameSkipped", sideGame, answer }];
   },
 };

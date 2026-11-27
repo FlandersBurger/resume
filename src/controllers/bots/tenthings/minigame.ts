@@ -24,6 +24,7 @@ export const drawMinigame = async (game: IGame) => {
   });
   if (!minigame) throw new Error("No Minigames");
 
+  game.minigame.minigameId = minigame._id;
   game.minigame.answer = minigame.answer;
   game.minigame.hints = 0;
   game.minigame.date = moment().toDate();

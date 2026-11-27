@@ -244,3 +244,36 @@ describe("skipping a side game", () => {
     ]);
   });
 });
+
+describe("a Minigame's play counters", () => {
+  const counters = async () => {
+    const m = await Minigame.findOne({ answer: "Mercury" }).lean();
+    return { draws: m!.draws, solves: m!.solves, skips: m!.skips, hints: m!.hints };
+  };
+
+  it("count draws, Hints, answers and Skips", async () => {
+    const { gameId, ann } = await setup({ personal: true });
+    await run(show(gameId, ann));
+    expect((await Game.findById(gameId))!.minigame.minigameId).toBeDefined();
+    await run(hint(gameId, ann));
+    await run(guess(gameId, ann, "Mercury"));
+    await run(scheduled[0].action);
+    await run(skip(gameId, ann));
+    expect(await counters()).toEqual({ draws: 2, solves: 1, skips: 1, hints: 1 });
+  });
+
+  it("aren't touched by Tinygames", async () => {
+    const { gameId, ann } = await setup();
+    await run(show(gameId, ann, TINY));
+    await run(hint(gameId, ann, TINY));
+    await run(skip(gameId, ann, TINY));
+    expect(await counters()).toEqual({ draws: 0, solves: 0, skips: 0, hints: 0 });
+  });
+
+  it("skip Minigames drawn before the Game remembered which one", async () => {
+    const { gameId, ann } = await setup();
+    await Game.updateOne({ _id: gameId }, { "minigame.answer": "Mercury" });
+    await run(guess(gameId, ann, "Mercury"));
+    expect(await counters()).toEqual({ draws: 0, solves: 0, skips: 0, hints: 0 });
+  });
+});

@@ -40,6 +40,7 @@ const TenThingsGame = lazy(() => import("./pages/TenThingsGame"));
 const TenThingsPlay = lazy(() => import("./pages/TenThingsPlay"));
 const TenThingsAdmin = lazy(() => import("./pages/TenThingsAdmin"));
 const TenThingsSass = lazy(() => import("./pages/TenThingsSass"));
+const TenThingsMinigames = lazy(() => import("./pages/TenThingsMinigames"));
 const TenThingsStats = lazy(() => import("./pages/TenThingsStats"));
 const QuizGoogle = lazy(() => import("./pages/quizzes/QuizGoogle"));
 const QuizLogos = lazy(() => import("./pages/quizzes/QuizLogos"));
@@ -344,6 +345,7 @@ export default function App() {
               <Route element={<RequireAdmin />}>
                 <Route path="/tenthings-admin" element={<TenThingsAdmin />} />
                 <Route path="/tenthings-sass" element={<TenThingsSass />} />
+                <Route path="/tenthings-minigames" element={<TenThingsMinigames />} />
               </Route>
             </Route>
             <Route path="/google" element={<QuizGoogle />} />

@@ -344,6 +344,88 @@ export async function deleteSass(id: string) {
   await http.delete(`/api/tenthings/sass/${id}`);
 }
 
+export interface MinigameRow {
+  _id: string;
+  answer: string;
+  language: string;
+  categories: string[];
+  lists: string[];
+  listCount: number;
+  draws: number;
+  solves: number;
+  skips: number;
+  hints: number;
+  /** Solves out of solves plus skips; null before either happened. */
+  solveRate: number | null;
+  createdAt?: string;
+  updatedAt?: string;
+}
+
+export interface MinigameDetail extends Omit<MinigameRow, "lists" | "listCount" | "solveRate"> {
+  /** The Lists it comes from; `_id` is missing when no List has that name any more. */
+  lists: { _id?: string; name: string; categories: string[]; starred?: boolean }[];
+  /** Games showing it right now. */
+  inPlay: number;
+}
+
+export interface MinigameQuery {
+  search?: string;
+  language?: string[];
+  categories?: string[];
+  sortBy?: string;
+  orderBy?: "asc" | "desc";
+  page?: number;
+  limit?: number;
+}
+
+export type MinigameTop = { _id: string; answer: string; language: string; value: number };
+
+export interface MinigameStats {
+  total: number;
+  draws: number;
+  solves: number;
+  skips: number;
+  hints: number;
+  /** Minigames drawn at least once since draws were counted. */
+  played: number;
+  newThisWeek: number;
+  avgLists: number;
+  /** Games with a Minigame showing right now. */
+  inPlay: number;
+  languages: { _id: string; count: number }[];
+  categories: { _id: string; count: number }[];
+  /** `_id` is the lower bound of a bucket of list counts, or "51+". */
+  listCounts: { _id: number | string; count: number }[];
+  mostDrawn: MinigameTop[];
+  mostSkipped: MinigameTop[];
+  mostHinted: MinigameTop[];
+  /** Lowest solve rate among those answered or skipped at least 5 times; `value` is the rate. */
+  hardest: MinigameTop[];
+}
+
+export async function getMinigames(query: MinigameQuery = {}) {
+  const params = new URLSearchParams();
+  if (query.search) params.append("search", query.search);
+  if (query.language?.length) params.append("language", query.language.join(","));
+  if (query.categories?.length) params.append("categories", query.categories.join(","));
+  if (query.sortBy) params.append("sort_by", query.sortBy);
+  if (query.orderBy) params.append("order_by", query.orderBy);
+  if (query.page) params.append("page", String(query.page));
+  if (query.limit) params.append("limit", String(query.limit));
+  const { data } = await http.get<{ result: MinigameRow[]; count: number }>(`/api/tenthings/minigames?${params}`);
+  return data;
+}
+
+export async function getMinigame(id: string) {
+  const { data } = await http.get<MinigameDetail>(`/api/tenthings/minigames/${id}`);
+  return data;
+}
+
+export async function getMinigameStats() {
+  const { data } = await http.get<MinigameStats>("/api/tenthings/minigames/stats");
+  return data;
+}
+
 export async function getListRanking(
   stat: ListStatKey,
   options: { language?: string[]; categories?: string[]; creator?: string } = {},
