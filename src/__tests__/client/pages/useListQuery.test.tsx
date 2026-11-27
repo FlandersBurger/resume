@@ -11,7 +11,8 @@ jest.mock("../../../client/services/tenthings", () => ({ getLists: jest.fn() }))
 
 const mockGetLists = getLists as jest.Mock;
 
-const lists = (prefix: string, n: number) => Array.from({ length: n }, (_, i) => ({ _id: `${prefix}${i}`, name: `${prefix}${i}` }));
+const lists = (prefix: string, n: number) =>
+  Array.from({ length: n }, (_, i) => ({ _id: `${prefix}${i}`, name: `${prefix}${i}` }));
 
 /** A request that resolves only when the test says so. */
 function deferred() {
@@ -81,7 +82,10 @@ describe("useListQuery", () => {
   });
 
   it("serves load more from the prefetched page, with the same name search", async () => {
-    mockGetLists.mockImplementation(async ({ page }) => ({ lists: lists(`p${page}-`, page === 1 ? PAGE_SIZE : 3), count: 53 }));
+    mockGetLists.mockImplementation(async ({ page }) => ({
+      lists: lists(`p${page}-`, page === 1 ? PAGE_SIZE : 3),
+      count: 53,
+    }));
     const { result } = renderQuery("/tenthings-lists?search=river");
     await waitFor(() => expect(result.current.hasMore).toBe(true));
     await waitFor(() => expect(mockGetLists).toHaveBeenCalledTimes(2)); // page 1 + prefetch of page 2
@@ -120,5 +124,19 @@ describe("useListQuery", () => {
     const { result } = renderQuery();
     await waitFor(() => expect(toast).toHaveBeenCalledWith("Failed to load lists"));
     expect(result.current.loading).toBe(false);
+  });
+
+  it("replaces a saved List in place, keeping the counts the save doesn't return", async () => {
+    const row = { _id: "a0", name: "Old", answers: 10, upvotes: 4, completedRounds: 7 };
+    mockGetLists.mockResolvedValue({ lists: [row, { _id: "a1", name: "Other" }], count: 2 });
+    const { result } = renderQuery();
+    await waitFor(() => expect(result.current.lists).toHaveLength(2));
+
+    const saved = { _id: "a0", name: "New", values: Array.from({ length: 11 }, (_, i) => ({ value: `v${i}` })) };
+    act(() => result.current.replaceList(saved as any));
+
+    expect(result.current.lists[0]).toMatchObject({ name: "New", answers: 11, upvotes: 4, completedRounds: 7 });
+    expect(result.current.lists[1].name).toBe("Other");
+    expect(mockGetLists).toHaveBeenCalledTimes(1);
   });
 });

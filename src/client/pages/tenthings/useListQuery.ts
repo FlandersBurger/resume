@@ -70,7 +70,10 @@ export function useListQuery() {
       if (page === 1) setCount(result.count);
       setHasMore(more);
       if (more) {
-        prefetched.current.set(page + 1, getLists({ ...request, page: page + 1, limit: PAGE_SIZE }).catch(() => null));
+        prefetched.current.set(
+          page + 1,
+          getLists({ ...request, page: page + 1, limit: PAGE_SIZE }).catch(() => null),
+        );
       }
     } catch {
       if (ticket === live.current.ticket) toastRef.current("Failed to load lists");
@@ -89,9 +92,17 @@ export function useListQuery() {
     prefetched.current.clear();
     return load(1);
   }, [load]);
-  /** Show a changed List in place without reloading. */
+  /**
+   * Show a changed List in place without reloading. A saved List comes back without the counts the
+   * query adds (votes, rounds), so those are kept from the row; the answer count is recounted.
+   */
   const replaceList = useCallback(
-    (updated: TenThingsList) => setLists((prev) => prev.map((l) => (l._id === updated._id ? updated : l))),
+    (updated: TenThingsList) =>
+      setLists((prev) =>
+        prev.map((l) =>
+          l._id === updated._id ? { ...l, ...updated, answers: updated.values?.length ?? l.answers } : l,
+        ),
+      ),
     [],
   );
 

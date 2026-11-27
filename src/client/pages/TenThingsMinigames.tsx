@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Link, useSearchParams } from "react-router-dom";
 import styled from "styled-components";
 import { useApp } from "../context/AppContext";
@@ -13,6 +13,7 @@ import {
   MinigameStats,
   MinigameTop,
 } from "../services/tenthings";
+import { useInfiniteScroll } from "../hooks/useInfiniteScroll";
 
 const PAGE_SIZE = 50;
 
@@ -265,7 +266,6 @@ export default function TenThingsMinigames() {
   const categories = csv(params.get("cat"));
   const sortBy = params.get("sort") || "answer";
   const sortDir = params.get("dir") === "desc" ? "desc" : "asc";
-  const page = Math.max(Number(params.get("page")) || 1, 1);
   const openId = params.get("open");
 
   const [searchText, setSearchText] = useState(search);
@@ -276,8 +276,11 @@ export default function TenThingsMinigames() {
   const [languageNames, setLanguageNames] = useState<Language[]>([]);
   const [detail, setDetail] = useState<MinigameDetail | null>(null);
 
-  /** Changes the URL; any change but paging or opening one goes back to page 1. */
-  const update = (changes: Record<string, string | null>, keepPage = false) => {
+  // Pages scrolled in so far, and a ticket so a late answer for an older filter is dropped.
+  const live = useRef({ page: 0, ticket: 0 });
+
+  /** Changes the URL. */
+  const update = (changes: Record<string, string | null>) => {
     setParams(
       (prev) => {
         const next = new URLSearchParams(prev);
@@ -285,7 +288,7 @@ export default function TenThingsMinigames() {
           if (value) next.set(key, value);
           else next.delete(key);
         }
-        if (!keepPage) next.delete("page");
+        next.delete("page"); // from before the table scrolled
         return next;
       },
       { replace: "open" in changes },
@@ -305,8 +308,8 @@ export default function TenThingsMinigames() {
     getLanguages().then(setLanguageNames);
   }, [isAdmin]);
 
-  useEffect(() => {
-    if (!isAdmin) return;
+  const loadPage = (page: number) => {
+    const ticket = ++live.current.ticket;
     setLoading(true);
     getMinigames({
       search,
@@ -318,12 +321,24 @@ export default function TenThingsMinigames() {
       limit: PAGE_SIZE,
     })
       .then(({ result, count }) => {
-        setRows(result);
+        if (ticket !== live.current.ticket) return;
+        live.current.page = page;
+        setRows((prev) => (page === 1 ? result : [...prev, ...result]));
         setCount(count);
       })
-      .finally(() => setLoading(false));
+      .finally(() => ticket === live.current.ticket && setLoading(false));
+  };
+
+  useEffect(() => {
+    if (isAdmin) loadPage(1);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isAdmin, search, params.get("lang"), params.get("cat"), sortBy, sortDir, page]);
+  }, [isAdmin, search, params.get("lang"), params.get("cat"), sortBy, sortDir]);
+
+  const scroll = useInfiniteScroll({
+    hasMore: rows.length < count,
+    loading,
+    onLoadMore: () => loadPage(live.current.page + 1),
+  });
 
   // Back and forward change the search under the box.
   useEffect(() => setSearchText(search), [search]);
@@ -344,7 +359,7 @@ export default function TenThingsMinigames() {
     let current = true;
     getMinigame(openId)
       .then((d) => current && setDetail(d))
-      .catch(() => current && update({ open: null }, true));
+      .catch(() => current && update({ open: null }));
     return () => {
       current = false;
     };
@@ -353,9 +368,8 @@ export default function TenThingsMinigames() {
 
   if (!isAdmin) return null; // guarded by the route
 
-  const open = (id: string | null) => update({ open: id }, true);
+  const open = (id: string | null) => update({ open: id });
   const languageName = (code: string) => languageNames.find((l) => l.code === code)?.name ?? code;
-  const pages = Math.max(1, Math.ceil(count / PAGE_SIZE));
 
   const sortHeader = (column: string, label: string, numeric = false) => (
     <SortTh
@@ -460,7 +474,7 @@ export default function TenThingsMinigames() {
           title="Refresh"
           onClick={() => {
             loadStats();
-            update({}, true);
+            loadPage(1);
           }}
         >
           <i className="fas fa-sync" />
@@ -539,26 +553,20 @@ export default function TenThingsMinigames() {
         </tbody>
       </table>
 
-      {pages > 1 && (
-        <div className="btn-group" style={{ marginBottom: 16 }}>
-          <button
-            className="btn btn-default"
-            disabled={page <= 1}
-            onClick={() => update({ page: String(page - 1) }, true)}
-          >
-            <i className="fas fa-chevron-left" />
-          </button>
-          <span className="btn btn-default disabled">
-            Page {page} of {pages}
-          </span>
-          <button
-            className="btn btn-default"
-            disabled={page >= pages}
-            onClick={() => update({ page: String(page + 1) }, true)}
-          >
-            <i className="fas fa-chevron-right" />
-          </button>
+      {loading && rows.length > 0 && (
+        <div style={{ textAlign: "center", padding: 12 }}>
+          <i className="fas fa-spinner fa-spin" /> Loading...
         </div>
+      )}
+      {scroll.supported ? (
+        <div ref={scroll.sentinel} aria-hidden="true" />
+      ) : (
+        !loading &&
+        rows.length < count && (
+          <button className="btn btn-default btn-block" onClick={() => loadPage(live.current.page + 1)}>
+            Load more
+          </button>
+        )
       )}
 
       {openId && <Overlay onClick={() => open(null)} />}

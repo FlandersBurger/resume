@@ -6,6 +6,7 @@ import { TenThingsTableContainer } from "./SharedStyles";
 import { ListFilter, activeFilterCount, toggleSort } from "./listQuery";
 import { categoryLabel, formatDate, formatPct } from "./format";
 import { DIFFICULTIES, FREQUENCIES } from "@utils/list-suggestions";
+import { useInfiniteScroll } from "../../hooks/useInfiniteScroll";
 
 const ListRowTooltip = styled.div`
   position: fixed;
@@ -201,6 +202,7 @@ export function ListTable({
   onFavorite,
   onDeleteList,
 }: Props) {
+  const scroll = useInfiniteScroll({ hasMore, loading, onLoadMore });
   const {
     search,
     searchField,
@@ -603,10 +605,15 @@ export function ListTable({
           <i className="fas fa-spinner fa-spin" /> Loading...
         </div>
       )}
-      {!loading && hasMore && (
-        <button className="btn btn-default btn-block" onClick={onLoadMore}>
-          Load more
-        </button>
+      {scroll.supported ? (
+        <div ref={scroll.sentinel} aria-hidden="true" />
+      ) : (
+        !loading &&
+        hasMore && (
+          <button className="btn btn-default btn-block" onClick={onLoadMore}>
+            Load more
+          </button>
+        )
       )}
     </div>
   );
