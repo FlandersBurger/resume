@@ -13,6 +13,21 @@ const PRICE = {
   output: 0.5 / 1e6,
   search: 10 / 1000,
 };
+type Price = typeof PRICE;
+/**
+ * Lists named from a game, book or show need their official translations, which Haiku doesn't know: those are
+ * translated by Claude Opus 5.5 with web search, at these rates.
+ */
+const LOOKUP_MODEL = "claude-opus-5-5";
+const LOOKUP_PRICE: Price = {
+  input: 4 / 1e6,
+  cacheWrite: 5 / 1e6,
+  cacheRead: 0.2 / 1e6,
+  output: 20 / 1e6,
+  search: 10 / 1000,
+};
+/** Searches per request when looking up official names: about one per language. */
+const LOOKUP_SEARCHES = 5;
 /** Search results are long and billed as input, so Claude gets a couple of searches and is told to use them sparingly. */
 const MAX_SEARCHES = 2;
 /** Answers that change "frequently" or "yearly" (FREQUENCIES 0 and 1) may have moved on since Claude was trained. */
@@ -184,12 +199,12 @@ const describeList = (list: ListForVet, validCategories: string[], instruction?:
     .filter(Boolean)
     .join("\n");
 
-export const costOf = (usage: Anthropic.Beta.BetaUsage) =>
-  (usage.input_tokens ?? 0) * PRICE.input +
-  (usage.cache_creation_input_tokens ?? 0) * PRICE.cacheWrite +
-  (usage.cache_read_input_tokens ?? 0) * PRICE.cacheRead +
-  (usage.output_tokens ?? 0) * PRICE.output +
-  (usage.server_tool_use?.web_search_requests ?? 0) * PRICE.search;
+export const costOf = (usage: Anthropic.Beta.BetaUsage, price: Price = PRICE) =>
+  (usage.input_tokens ?? 0) * price.input +
+  (usage.cache_creation_input_tokens ?? 0) * price.cacheWrite +
+  (usage.cache_read_input_tokens ?? 0) * price.cacheRead +
+  (usage.output_tokens ?? 0) * price.output +
+  (usage.server_tool_use?.web_search_requests ?? 0) * price.search;
 
 export const isConfigured = () => !!process.env.ANTHROPIC_API_KEY;
 
@@ -307,13 +322,19 @@ const UNTRANSLATABLE = `A list can't be translated when it only works in its own
 
 const CHECK_SYSTEM = `${TRANSLATE_INTRO}
 
-Decide whether the list can be translated into other languages and still make a good round. ${UNTRANSLATABLE} Call submit_check once.`;
+Decide whether the list can be translated into other languages and still make a good round. ${UNTRANSLATABLE}
+
+Also say whether translating it needs official names to be looked up: answers that are names from a game, book, comic, show or other franchise (Minecraft enchantments, Pokémon moves, Harry Potter spells, a show's characters with localized names), whose translations come from its publisher and can't be worked out by translating the words. Film titles, countries, animals, foods and everyday things don't need a lookup.
+
+Call submit_check once.`;
+
+const LOOKUP_NOTE = `This list's answers are official names from a game, book, show or franchise. Use web search to find their official names in each language (the publisher's own localization, or the franchise wiki's page in that language) instead of translating the words, and keep the original only when a language has no official name. Search once per language at most.`;
 
 const TRANSLATE_SYSTEM = `${TRANSLATE_INTRO}
 
 Translate the list into each language asked for:
 - answers: give each answer as players in that language would type it. Use the official or common local name of a place, person, work or thing when there is one (the title a film was released under there, the local name of a country or animal), in the script that language uses; otherwise keep the original. Keep names of people, bands and brands as they are unless that language usually writes them in its own script (then use the usual spelling there). Never add, drop or merge answers: return every answer once, with its number as the index. When two answers become the same word in a language (sofa and couch, turtle and tortoise), give both that word: answers that come back the same are merged afterwards, and the list is kept as long as it still has 10 different answers.
-- blurbs: translate text blurbs naturally, keeping them about as long. A blurb shown as [link] is a picture or video, and one shown as (no blurb) is empty: return an empty string for both.
+- blurbs: every answer with a blurb gets its blurb back, translated, never dropped or folded into the answer. Translate text naturally, keeping it about as long, and keep numbers, symbols, letters and names in it exactly as they are: a blurb that is only a number, a symbol or a name (a rank, a letter, a surname) comes back unchanged, or in that language's script for a name. A link blurb (null in the list) is a picture or video, and an empty blurb is empty: return an empty string for both.
 - name: translate it in the house style, with that language's own words. The English naming style, which other languages follow in spirit: ${NAMING_STYLE}
 - description: translate it, or return an empty string when there is none. It must never name or give away an answer.
 - skip: set it, with a short reason, for a language the list doesn't work in. Answers becoming the same word is never a reason to skip. ${UNTRANSLATABLE}
@@ -327,10 +348,14 @@ const checkTool: Anthropic.Beta.BetaTool = {
   input_schema: {
     type: "object",
     additionalProperties: false,
-    required: ["translatable", "reason"],
+    required: ["translatable", "reason", "needsLookup"],
     properties: {
       translatable: { type: "boolean", description: "Whether the list works in other languages." },
       reason: stringField("Why not, in at most 10 words, or an empty string."),
+      needsLookup: {
+        type: "boolean",
+        description: "Whether its answers are official franchise names that must be looked up to translate.",
+      },
     },
   },
 };
@@ -377,45 +402,63 @@ const translationTool = (languages: string[]): Anthropic.Beta.BetaTool => ({
   },
 });
 
+/**
+ * The list for Claude. Answers go as JSON, so an answer and its blurb can never run together: a one-word blurb
+ * after "Joe | " was read as part of the answer.
+ */
 const describeForTranslation = (list: ListForTranslation) =>
   [
     `List name: ${list.name}`,
     `Description: ${list.description || "(none)"}`,
     `Language: ${list.language}`,
     `Categories: ${list.categories.join(", ") || "none"}`,
-    `\nAnswers (${list.values.length}), numbered, each with its blurb:`,
-    ...list.values.map(
-      ({ value, blurb }, index) =>
-        `${index}. ${value} | ${isLinkBlurb(blurb) ? "[link]" : blurb?.trim() || "(no blurb)"}`,
+    `\nAnswers (${list.values.length}), as JSON; a null blurb is a picture or video link:`,
+    JSON.stringify(
+      list.values.map(({ value, blurb }, index) => ({
+        index,
+        value,
+        blurb: isLinkBlurb(blurb) ? null : (blurb?.trim() ?? ""),
+      })),
+      null,
+      1,
     ),
   ].join("\n");
 
-/** Runs one request that must end in a call to `tool`, and returns its input with what it cost. */
+/**
+ * Runs one request that must end in a call to `tool`, and returns its input with what it cost. With `lookup`,
+ * it runs on Claude Opus 5.5 with web search (and resumes the turns a search pauses), falling back to another
+ * model if Claude Opus 5.5 declines.
+ */
 const callTool = async <T>(
   system: string,
   tool: Anthropic.Beta.BetaTool,
   content: Anthropic.Beta.BetaContentBlockParam[],
   label: string,
   maxTokens: number,
+  lookup = false,
 ): Promise<{ input: T; cost: number }> => {
   client ??= new Anthropic();
   const messages: Anthropic.Beta.BetaMessageParam[] = [{ role: "user", content }];
+  const price = lookup ? LOOKUP_PRICE : PRICE;
   let cost = 0;
-  for (let turn = 0; turn < 2; turn++) {
+  let nudged = false;
+  for (let turn = 0; turn <= MAX_CONTINUATIONS; turn++) {
     const response = await client.beta.messages
       .stream({
-        model: MODEL,
+        model: lookup ? LOOKUP_MODEL : MODEL,
         max_tokens: maxTokens,
-        output_config: { effort: "low" },
+        output_config: { effort: lookup ? "medium" : "low" },
         system,
-        tools: [tool],
+        tools: lookup ? [{ type: "web_search_20260209", name: "web_search", max_uses: LOOKUP_SEARCHES }, tool] : [tool],
         messages,
+        ...(lookup && { betas: ["server-side-fallback-2026-07-01"], fallbacks: "default" as const }),
       })
       .finalMessage();
-    cost += costOf(response.usage);
-    const { input_tokens, cache_read_input_tokens, output_tokens } = response.usage;
+    cost += costOf(response.usage, price);
+    const { input_tokens, cache_read_input_tokens, output_tokens, server_tool_use } = response.usage;
     console.info(
-      `${label} turn ${turn}: input ${input_tokens}, cache read ${cache_read_input_tokens ?? 0}, output ${output_tokens}`,
+      `${label} turn ${turn}: input ${input_tokens}, cache read ${cache_read_input_tokens ?? 0}, output ${output_tokens}` +
+        (lookup ? `, searches ${server_tool_use?.web_search_requests ?? 0}` : ""),
     );
     if (response.stop_reason === "refusal") throw new Error(`Claude declined: ${label}`);
     if (response.stop_reason === "max_tokens") throw new Error(`Claude's answer was cut off: ${label}`);
@@ -423,7 +466,11 @@ const callTool = async <T>(
       (block): block is Anthropic.Beta.BetaToolUseBlock => block.type === "tool_use" && block.name === tool.name,
     );
     if (submitted) return { input: submitted.input as T, cost };
+    if (response.stop_reason !== "pause_turn" && nudged) break;
     messages.push({ role: "assistant", content: response.content });
+    // A turn paused by a web search resumes from the assistant content alone.
+    if (response.stop_reason === "pause_turn") continue;
+    nudged = true;
     messages.push({ role: "user", content: `Call ${tool.name} with your results.` });
   }
   throw new Error(`Claude didn't return any results: ${label}`);
@@ -432,8 +479,8 @@ const callTool = async <T>(
 /** Asks Claude whether a list works in other languages at all, before paying to translate it. */
 export const checkTranslatable = async (
   list: ListForTranslation,
-): Promise<{ translatable: boolean; reason: string; cost: number }> => {
-  const { input, cost } = await callTool<{ translatable: boolean; reason: string }>(
+): Promise<{ translatable: boolean; reason: string; needsLookup: boolean; cost: number }> => {
+  const { input, cost } = await callTool<{ translatable: boolean; reason: string; needsLookup: boolean }>(
     CHECK_SYSTEM,
     checkTool,
     [{ type: "text", text: describeForTranslation(list) }],
@@ -444,16 +491,21 @@ export const checkTranslatable = async (
 };
 
 /**
- * Translates a list into each of `languages`, a few languages per request. Nothing is saved: it's Claude's
- * answer, which buildTranslatedList checks before anything is written.
+ * Translates a list into each of `languages`, a few languages per request; with `lookup`, Claude Opus 5.5 looks
+ * up official names on the web. Nothing is saved: it's Claude's answer, which buildTranslatedList checks before
+ * anything is written.
  */
 export const translateList = async (
   list: ListForTranslation,
   languages: string[],
+  { lookup = false }: { lookup?: boolean } = {},
 ): Promise<{ translations: ListTranslation[]; cost: number }> => {
   const translations: ListTranslation[] = [];
   let cost = 0;
-  // The list is the same in every request, so it's cached and re-read at a tenth of the input rate.
+  // Every request shares the tool, the system prompt and the list, so all but the first re-read them from the
+  // cache. The tool takes every language asked for (not just the request's) to keep it the same.
+  const tool = translationTool(languages);
+  const system = lookup ? `${TRANSLATE_SYSTEM}\n\n${LOOKUP_NOTE}` : TRANSLATE_SYSTEM;
   const listBlock: Anthropic.Beta.BetaTextBlockParam = {
     type: "text",
     text: describeForTranslation(list),
@@ -462,11 +514,12 @@ export const translateList = async (
   for (let i = 0; i < languages.length; i += LANGUAGES_PER_CALL) {
     const chunk = languages.slice(i, i + LANGUAGES_PER_CALL);
     const result = await callTool<{ translations: ListTranslation[] }>(
-      TRANSLATE_SYSTEM,
-      translationTool(chunk),
+      system,
+      tool,
       [listBlock, { type: "text", text: `Translate it into: ${chunk.join(", ")}` }],
-      `Translate "${list.name}" into ${chunk.join(", ")}`,
+      `Translate "${list.name}" into ${chunk.join(", ")}${lookup ? " (looking up names)" : ""}`,
       32000,
+      lookup,
     );
     cost += result.cost;
     translations.push(...result.input.translations.filter(({ language }) => chunk.includes(language)));

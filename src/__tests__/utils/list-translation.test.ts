@@ -104,6 +104,27 @@ describe("buildTranslatedList", () => {
     expect(result.list.values[1].blurb).toBe("");
   });
 
+  it("keeps a blurb Claude dropped as it was", () => {
+    const dropped = translation().values.map((v) => ({ ...v, blurb: v.index === 2 ? "" : v.blurb }));
+    const result = buildTranslatedList(source(), translation({ values: dropped }));
+    if (!("list" in result)) throw new Error(result.skip);
+    expect(result.list.values[2].blurb).toBe("Fact 2");
+  });
+
+  it("skips a language where most blurbs were dropped", () => {
+    const folded = translation().values.map((v) => ({ ...v, value: `${v.value} ${v.blurb}`, blurb: "" }));
+    expect(buildTranslatedList(source(), translation({ values: folded }))).toEqual({
+      skip: "10 of 10 blurbs dropped",
+    });
+  });
+
+  it("skips a language where an answer has its blurb run into it", () => {
+    const merged = translation().values.map((v) => (v.index === 4 ? { ...v, value: "Joe | Biden", blurb: "" } : v));
+    expect(buildTranslatedList(source(), translation({ values: merged }))).toEqual({
+      skip: "answer 4 (Answer 4) has its blurb in it",
+    });
+  });
+
   it("copies an unstarred original's star state", () => {
     const result = buildTranslatedList(source({ starred: false }), translation());
     expect("list" in result && result.list.starred).toBe(false);

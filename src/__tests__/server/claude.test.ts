@@ -159,9 +159,13 @@ describe("translating", () => {
 
     expect(result).toMatchObject({ translatable: false, reason: "lyrics" });
     const prompt = stream.mock.calls[0][0].messages[0].content[0].text;
-    expect(prompt).toContain("0. Mars | [link]");
-    expect(prompt).toContain("1. Venus | Hottest planet.");
-    expect(prompt).toContain("2. Earth | (no blurb)");
+    // Answers go as JSON, so a short blurb can't be read as part of its answer.
+    const answers = JSON.parse(prompt.slice(prompt.indexOf("[")));
+    expect(answers).toEqual([
+      { index: 0, value: "Mars", blurb: null },
+      { index: 1, value: "Venus", blurb: "Hottest planet." },
+      { index: 2, value: "Earth", blurb: "" },
+    ]);
     expect(prompt).not.toContain("example.com");
   });
 
@@ -174,12 +178,17 @@ describe("translating", () => {
 
     expect(stream).toHaveBeenCalledTimes(2);
     const [first, second] = stream.mock.calls.map(([params]) => params);
+    // The same tool in every request, so they share a cache.
+    expect(first.tools).toEqual(second.tools);
     expect(first.tools[0].input_schema.properties.translations.items.properties.language.enum).toEqual([
       "DE",
       "ES",
       "FR",
       "NL",
+      "PT",
+      "RU",
     ]);
+    expect(first.model).toBe("claude-haiku-5-5");
     expect(second.messages[0].content[1].text).toBe("Translate it into: PT, RU");
     expect(first.messages[0].content[0].cache_control).toEqual({ type: "ephemeral" });
     // Answers that collide are merged by buildTranslatedList, so they're no reason to skip a language.
@@ -196,6 +205,26 @@ describe("translating", () => {
 
     await expect(translateList(toTranslate, ["NL"])).rejects.toThrow("didn't return any results");
     expect(stream.mock.calls[1][0].messages.at(-1).content).toBe("Call submit_translation with your results.");
+  });
+
+  it("looks up official names with Claude Opus 5.5 and web search, resuming paused turns", async () => {
+    stream
+      .mockReturnValueOnce(reply({ stop_reason: "pause_turn", content: [{ type: "text", text: "Searching" }] }))
+      .mockReturnValueOnce(translated(["NL"]));
+
+    const result = await translateList(toTranslate, ["NL"], { lookup: true });
+
+    expect(result.translations).toHaveLength(1);
+    const [first, second] = stream.mock.calls.map(([params]) => params);
+    expect(first.model).toBe("claude-opus-5-5");
+    expect(first.tools[0]).toMatchObject({ type: "web_search_20260209", name: "web_search" });
+    expect(first.fallbacks).toBe("default");
+    expect(first.betas).toEqual(["server-side-fallback-2026-07-01"]);
+    expect(first.system).toContain("official names in each language");
+    // A paused turn resumes without a nudge.
+    expect(second.messages.at(-1)).toEqual({ role: "assistant", content: [{ type: "text", text: "Searching" }] });
+    // Opus rates: $4 in, $20 out per million.
+    expect(result.cost).toBeCloseTo(2 * (1000 * 4e-6 + 100 * 20e-6), 9);
   });
 
   it("throws on a refusal", async () => {

@@ -47,7 +47,7 @@ beforeEach(() => {
   mockList.exists.mockResolvedValue(null);
   mockList.create.mockImplementation((list) => Promise.resolve({ _id: new Types.ObjectId(), ...list }));
   mockFindDuplicate.mockResolvedValue(null);
-  mockClaude.checkTranslatable.mockResolvedValue({ translatable: true, reason: "", cost: 0.001 });
+  mockClaude.checkTranslatable.mockResolvedValue({ translatable: true, reason: "", needsLookup: false, cost: 0.001 });
   mockClaude.translateList.mockImplementation((_list, languages: string[]) =>
     Promise.resolve({ translations: languages.map((language) => translation(language)), cost: 0.01 }),
   );
@@ -65,9 +65,33 @@ it("translates into every bot language the group lacks", async () => {
   expect(mockList.create).toHaveBeenCalledTimes(10);
   expect(mockList.create.mock.calls[0][0]).toMatchObject({ translationOf: rootId, starred: true });
   expect(result.created).toHaveLength(10);
-  // Lists that already have translations were checked before.
-  expect(mockClaude.checkTranslatable).not.toHaveBeenCalled();
-  expect(result.cost).toBeCloseTo(0.01);
+  expect(mockClaude.translateList.mock.calls[0][2]).toEqual({ lookup: false });
+  expect(result.cost).toBeCloseTo(0.011);
+});
+
+it("ignores a late 'can't be translated' for a List that already has translations", async () => {
+  mockList.findById.mockReturnValue(lean(original()));
+  mockList.distinct.mockResolvedValue(["NL"]);
+  mockClaude.checkTranslatable.mockResolvedValue({ translatable: false, reason: "puns", needsLookup: false, cost: 0 });
+
+  const result = await translateIntoBotLanguages(rootId);
+
+  expect(result.created).toHaveLength(11);
+  expect(mockList.updateOne).not.toHaveBeenCalledWith(
+    { _id: rootId },
+    expect.objectContaining({ $push: expect.anything() }),
+  );
+});
+
+it("looks up official names when the check says so", async () => {
+  mockList.findById.mockReturnValue(lean(original()));
+  mockClaude.checkTranslatable.mockResolvedValue({ translatable: true, reason: "", needsLookup: true, cost: 0 });
+
+  const result = await translateIntoBotLanguages(rootId);
+
+  expect(mockClaude.translateList.mock.calls[0][2]).toEqual({ lookup: true });
+  expect(result.lookedUp).toBe(true);
+  expect(translationSummary(result)).toContain("(official names looked up)");
 });
 
 it("does nothing for a List that isn't starred", async () => {
