@@ -58,8 +58,11 @@ export default function TenThingsLists() {
   };
 
   const handleSaved = (saved: TenThingsList, created: boolean) => {
-    if (created) openList(saved._id);
-    refresh();
+    // A new List has to find its place in the sort; an edited one changes in place, keeping the pages loaded.
+    if (created) {
+      openList(saved._id);
+      refresh();
+    } else replaceList(saved);
   };
 
   const handleFavorite = async (list: TenThingsList) => {
