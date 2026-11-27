@@ -182,6 +182,8 @@ describe("translating", () => {
     ]);
     expect(second.messages[0].content[1].text).toBe("Translate it into: PT, RU");
     expect(first.messages[0].content[0].cache_control).toEqual({ type: "ephemeral" });
+    // Answers that collide are merged by buildTranslatedList, so they're no reason to skip a language.
+    expect(first.system).toContain("Answers becoming the same word is never a reason to skip.");
     // A language that wasn't asked for is dropped.
     expect(result.translations.map(({ language }) => language)).toEqual(["DE", "ES", "FR", "NL", "PT", "RU"]);
     expect(result.cost).toBeCloseTo(2 * (1000 * 0.1e-6 + 100 * 0.5e-6), 9);

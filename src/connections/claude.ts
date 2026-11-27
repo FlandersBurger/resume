@@ -312,11 +312,11 @@ Decide whether the list can be translated into other languages and still make a 
 const TRANSLATE_SYSTEM = `${TRANSLATE_INTRO}
 
 Translate the list into each language asked for:
-- answers: give each answer as players in that language would type it. Use the official or common local name of a place, person, work or thing when there is one (the title a film was released under there, the local name of a country or animal), in the script that language uses; otherwise keep the original. Keep names of people, bands and brands as they are unless that language usually writes them in its own script (then use the usual spelling there). Never add, drop or merge answers: return every answer once, with its number as the index.
+- answers: give each answer as players in that language would type it. Use the official or common local name of a place, person, work or thing when there is one (the title a film was released under there, the local name of a country or animal), in the script that language uses; otherwise keep the original. Keep names of people, bands and brands as they are unless that language usually writes them in its own script (then use the usual spelling there). Never add, drop or merge answers: return every answer once, with its number as the index. When two answers become the same word in a language (sofa and couch, turtle and tortoise), give both that word: answers that come back the same are merged afterwards, and the list is kept as long as it still has 10 different answers.
 - blurbs: translate text blurbs naturally, keeping them about as long. A blurb shown as [link] is a picture or video, and one shown as (no blurb) is empty: return an empty string for both.
 - name: translate it in the house style, with that language's own words. The English naming style, which other languages follow in spirit: ${NAMING_STYLE}
 - description: translate it, or return an empty string when there is none. It must never name or give away an answer.
-- skip: set it, with a short reason, for a language the list doesn't work in (for example when several answers become the same word there). ${UNTRANSLATABLE}
+- skip: set it, with a short reason, for a language the list doesn't work in. Answers becoming the same word is never a reason to skip. ${UNTRANSLATABLE}
 
 Call submit_translation once, with one entry per language asked for.`;
 
