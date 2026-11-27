@@ -136,6 +136,12 @@ const CategorySubgroup = styled.div`
   flex: 1;
 `;
 
+const LanguageToggles = styled.div`
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+`;
+
 const SectionBody = styled.div`
   padding-top: 10px;
   padding-bottom: 8px;
@@ -394,6 +400,7 @@ export default function TenThingsGame() {
     const name = g.platform ? g.platform.charAt(0).toUpperCase() + g.platform.slice(1) : "Game";
     return g.telegramChatId ? `${name} ${g.telegramChatId}` : name;
   };
+  const triviaLanguages: string[] = game?.settings?.languages ?? [];
   const currentGame = myGames.find((g) => gameUrlId(g) === gameId);
   const currentGameLabel = currentGame ? gameLabel(currentGame) : gameId ? `Game ${gameId}` : "Select game";
 
@@ -525,6 +532,38 @@ export default function TenThingsGame() {
                       </div>
                     ) : (
                       <span>{game.settings?.language || "-"}</span>
+                    )}
+                  </MetricRow>
+                  <MetricRow>
+                    <b>Trivia Languages</b>
+                    {isAdmin ? (
+                      <LanguageToggles>
+                        {languages.map((l) => {
+                          const active = triviaLanguages.includes(l.code);
+                          return (
+                            <button
+                              key={l.code}
+                              type="button"
+                              title={l.name}
+                              className={`btn btn-xs ${active ? "btn-primary" : "btn-default"}`}
+                              // A Game needs at least one Trivia Language.
+                              disabled={settingsSaving || (active && triviaLanguages.length === 1)}
+                              onClick={() =>
+                                handleSettingChange(
+                                  "languages",
+                                  active
+                                    ? triviaLanguages.filter((code) => code !== l.code)
+                                    : [...triviaLanguages, l.code],
+                                )
+                              }
+                            >
+                              {l.code}
+                            </button>
+                          );
+                        })}
+                      </LanguageToggles>
+                    ) : (
+                      <span>{triviaLanguages.join(", ") || "-"}</span>
                     )}
                   </MetricRow>
                   <MetricRow>
