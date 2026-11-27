@@ -108,16 +108,16 @@ const main = async () => {
       categories: list.categories,
       values: list.values.map(({ value, blurb }) => ({ value, blurb })),
     };
-    if (!existing.length && !list.translationSkips?.length) {
-      const check = await checkTranslatable(source);
-      cost += check.cost;
-      if (!check.translatable) {
-        console.log(`  skipped: can't be translated (${check.reason})`);
-        preview.push({ id: list._id, name: list.name, untranslatable: check.reason });
-        continue;
-      }
+    const check = await checkTranslatable(source);
+    cost += check.cost;
+    if (!check.translatable && !existing.length && !list.translationSkips?.length) {
+      console.log(`  skipped: can't be translated (${check.reason})`);
+      preview.push({ id: list._id, name: list.name, untranslatable: check.reason });
+      continue;
     }
-    const { translations, cost: spent } = await translateList(source, targets);
+    if (check.needsLookup) console.log("  looking up official names");
+    const { translations, cost: spent, lookedUp } = await translateList(source, targets, { lookup: check.needsLookup });
+    if (lookedUp.length && !check.needsLookup) console.log(`  unsure, looked up: ${lookedUp.join(", ")}`);
     cost += spent;
     for (const language of targets) {
       const translation = translations.find((t) => t.language === language);

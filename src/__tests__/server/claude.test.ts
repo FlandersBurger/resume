@@ -159,9 +159,13 @@ describe("translating", () => {
 
     expect(result).toMatchObject({ translatable: false, reason: "lyrics" });
     const prompt = stream.mock.calls[0][0].messages[0].content[0].text;
-    expect(prompt).toContain("0. Mars | [link]");
-    expect(prompt).toContain("1. Venus | Hottest planet.");
-    expect(prompt).toContain("2. Earth | (no blurb)");
+    // Answers go as JSON, so a short blurb can't be read as part of its answer.
+    const answers = JSON.parse(prompt.slice(prompt.indexOf("[")));
+    expect(answers).toEqual([
+      { index: 0, value: "Mars", blurb: null },
+      { index: 1, value: "Venus", blurb: "Hottest planet." },
+      { index: 2, value: "Earth", blurb: "" },
+    ]);
     expect(prompt).not.toContain("example.com");
   });
 
@@ -174,14 +178,21 @@ describe("translating", () => {
 
     expect(stream).toHaveBeenCalledTimes(2);
     const [first, second] = stream.mock.calls.map(([params]) => params);
+    // The same tool in every request, so they share a cache.
+    expect(first.tools).toEqual(second.tools);
     expect(first.tools[0].input_schema.properties.translations.items.properties.language.enum).toEqual([
       "DE",
       "ES",
       "FR",
       "NL",
+      "PT",
+      "RU",
     ]);
+    expect(first.model).toBe("claude-haiku-5-5");
     expect(second.messages[0].content[1].text).toBe("Translate it into: PT, RU");
     expect(first.messages[0].content[0].cache_control).toEqual({ type: "ephemeral" });
+    // Answers that collide are merged by buildTranslatedList, so they're no reason to skip a language.
+    expect(first.system).toContain("Answers becoming the same word is never a reason to skip.");
     // A language that wasn't asked for is dropped.
     expect(result.translations.map(({ language }) => language)).toEqual(["DE", "ES", "FR", "NL", "PT", "RU"]);
     expect(result.cost).toBeCloseTo(2 * (1000 * 0.1e-6 + 100 * 0.5e-6), 9);
@@ -194,6 +205,66 @@ describe("translating", () => {
 
     await expect(translateList(toTranslate, ["NL"])).rejects.toThrow("didn't return any results");
     expect(stream.mock.calls[1][0].messages.at(-1).content).toBe("Call submit_translation with your results.");
+  });
+
+  it("redoes with a lookup only the languages Haiku was mostly guessing at", async () => {
+    const rated = (language: string, confidence: string[]) => ({
+      ...entry(language),
+      values: confidence.map((c, index) => ({ index, value: `${language} ${index}`, blurb: "", confidence: c })),
+    });
+    stream
+      .mockReturnValueOnce(
+        reply({
+          stop_reason: "tool_use",
+          content: [
+            {
+              type: "tool_use",
+              id: "t",
+              name: "submit_translation",
+              input: {
+                translations: [
+                  rated("DE", ["high", "medium", "low"]),
+                  rated("NL", ["low", "low", "medium"]),
+                  rated("FR", ["medium", "medium", "medium"]),
+                ],
+              },
+            },
+          ],
+        }),
+      )
+      .mockReturnValueOnce(translated(["NL"]));
+
+    const result = await translateList(toTranslate, ["DE", "NL", "FR"]);
+
+    expect(stream).toHaveBeenCalledTimes(2);
+    const [first, second] = stream.mock.calls.map(([params]) => params);
+    expect(first.model).toBe("claude-haiku-5-5");
+    expect(second.model).toBe("claude-sonnet-5-5");
+    expect(second.messages[0].content[1].text).toBe("Translate it into: NL");
+    expect(result.lookedUp).toEqual(["NL"]);
+    expect(result.translations.map(({ language }) => language)).toEqual(["DE", "FR", "NL"]);
+    expect(result.translations.find(({ language }) => language === "NL")?.values).toEqual([]);
+  });
+
+  it("looks up official names with Claude Sonnet 5.5 and web search, resuming paused turns", async () => {
+    stream
+      .mockReturnValueOnce(reply({ stop_reason: "pause_turn", content: [{ type: "text", text: "Searching" }] }))
+      .mockReturnValueOnce(translated(["NL"]));
+
+    const result = await translateList(toTranslate, ["NL"], { lookup: true });
+
+    expect(result.translations).toHaveLength(1);
+    const [first, second] = stream.mock.calls.map(([params]) => params);
+    expect(first.model).toBe("claude-sonnet-5-5");
+    expect(result.lookedUp).toEqual(["NL"]);
+    expect(first.tools[0]).toMatchObject({ type: "web_search_20260209", name: "web_search" });
+    expect(first.fallbacks).toBe("default");
+    expect(first.betas).toEqual(["server-side-fallback-2026-07-01"]);
+    expect(first.system).toContain("official names in each language");
+    // A paused turn resumes without a nudge.
+    expect(second.messages.at(-1)).toEqual({ role: "assistant", content: [{ type: "text", text: "Searching" }] });
+    // Sonnet rates: $2 in, $10 out per million.
+    expect(result.cost).toBeCloseTo(2 * (1000 * 2e-6 + 100 * 10e-6), 9);
   });
 
   it("throws on a refusal", async () => {

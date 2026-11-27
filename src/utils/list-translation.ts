@@ -85,18 +85,33 @@ export const buildTranslatedList = (
 
   const byIndex = new Map(translation.values.map((value) => [value.index, value]));
   if (byIndex.size !== translation.values.length) return { skip: "an answer came back twice" };
+  // Claude dropping most of a list's blurbs means it misread the list (it once folded each surname blurb into
+  // its first-name answer), so the answers can't be trusted either. One dropped here and there is put back.
+  const textBlurbs = source.values.filter(({ blurb }) => blurb?.trim() && !isLink(blurb));
+  const dropped = textBlurbs.filter((original) => {
+    const translated = byIndex.get(source.values.indexOf(original));
+    return !translated?.blurb?.trim();
+  });
+  if (textBlurbs.length >= 4 && dropped.length > textBlurbs.length / 2)
+    return { skip: `${dropped.length} of ${textBlurbs.length} blurbs dropped` };
+
   const seen = new Set<string>();
   const values: IListValue[] = [];
   for (const [index, original] of source.values.entries()) {
     const translated = byIndex.get(index);
     const value = translated?.value?.trim();
     if (!value) return { skip: `answer ${index} (${original.value}) is missing` };
+    // An answer with its blurb run into it ("Joe | Biden"): the whole language is untrustworthy.
+    if (value.includes("|") && !original.value.includes("|"))
+      return { skip: `answer ${index} (${original.value}) has its blurb in it` };
     const key = removeAllButLetters(value);
     if (seen.has(key)) continue;
     seen.add(key);
+    const blurb = original.blurb?.trim() ?? "";
     values.push({
       value,
-      blurb: isLink(original.blurb) ? original.blurb : original.blurb ? (translated?.blurb ?? "").trim() : "",
+      // A blurb Claude dropped (a rank, a letter, a surname) is kept as it was rather than lost.
+      blurb: isLink(blurb) ? blurb : blurb ? translated?.blurb?.trim() || blurb : "",
       creator: original.creator,
       date: now.toISOString(),
       modifyDate: now,

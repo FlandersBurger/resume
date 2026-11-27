@@ -17,20 +17,22 @@ export interface TranslationResult {
   skipped: { language: string; reason: string }[];
   /** Why nothing was tried, when nothing was. */
   ignored?: string;
+  /** The languages whose names were looked up on the web. */
+  lookedUp?: string[];
   cost: number;
 }
 
 const escapeHtml = (text: string) => text.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
 
 /** The admin's summary of one List's translation. */
-export const translationSummary = ({ name, created, skipped, cost }: TranslationResult) =>
+export const translationSummary = ({ name, created, skipped, cost, lookedUp }: TranslationResult) =>
   [
     `🌐 <b>${escapeHtml(name)}</b> → ${created.length} ${created.length === 1 ? "language" : "languages"}` +
       (created.length ? `: ${created.map(({ language }) => language).join(", ")}` : ""),
     ...(skipped.length
       ? [`Skipped: ${skipped.map(({ language, reason }) => `${language} (${escapeHtml(reason)})`).join(", ")}`]
       : []),
-    `Cost: $${cost.toFixed(3)}`,
+    `Cost: $${cost.toFixed(3)}` + (lookedUp?.length ? ` (names looked up: ${lookedUp.join(", ")})` : ""),
   ].join("\n");
 
 /**
@@ -59,19 +61,18 @@ export const translateIntoBotLanguages = async (listId: Types.ObjectId | string)
   const remember = (skips: ITranslationSkip[]) =>
     skips.length ? List.updateOne({ _id: root._id }, { $push: { translationSkips: { $each: skips } } }) : null;
 
-  // Asked once per List: a List that already has translations, or skips, has been through it.
-  if (!existing.length && !root.translationSkips?.length) {
-    const check = await Claude.checkTranslatable(source);
-    result.cost += check.cost;
-    if (!check.translatable) {
-      const reason = check.reason || "can't be translated";
-      await remember([{ language: EVERY_LANGUAGE, reason }]);
-      return { ...result, skipped: [{ language: "all", reason }] };
-    }
+  // The check is cheap and also says whether official names need looking up, so it runs every time. Whether the
+  // List can be translated at all is only taken the first time: one with translations or skips is past that.
+  const check = await Claude.checkTranslatable(source);
+  result.cost += check.cost;
+  if (!check.translatable && !existing.length && !root.translationSkips?.length) {
+    const reason = check.reason || "can't be translated";
+    await remember([{ language: EVERY_LANGUAGE, reason }]);
+    return { ...result, skipped: [{ language: "all", reason }] };
   }
-
-  const { translations, cost } = await Claude.translateList(source, targets);
+  const { translations, cost, lookedUp } = await Claude.translateList(source, targets, { lookup: check.needsLookup });
   result.cost += cost;
+  result.lookedUp = lookedUp;
   const newSkips: ITranslationSkip[] = [];
   for (const target of targets) {
     // Every bot language is a supported language.
